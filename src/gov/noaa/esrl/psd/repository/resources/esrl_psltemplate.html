@@ -9,7 +9,7 @@
     <meta name="description" content="US Department of Commerce, NOAA, Physical Sciences Laboratory">
     <meta name="author" content="PSL Web Team">
 
-    <meta name="keywords" content="Physical Sciences Laboratory, NOAA, National Oceanic and Atmospheric Administration, ESRL, climate, weather, water, extremes, observations, computer modeling">
+	<meta name="keywords" content='Physical Sciences Laboratory, NOAA, ESRL, weather, water, climate, extremes, research, modeling, observations'>
 
 <title>${repository_name} - ${title}</title>
 
@@ -84,6 +84,9 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
     hs.dimmingOpacity = .75;
   </script>
   -->
+
+
+<script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
 
   <script>
 
@@ -464,12 +467,16 @@ $(function() {
           <ul class="dropdown-menu dropdown-intranet dropdown-menu-left row">
             <li class="col-sm-6">
               <ul class='about-menu'>
+                
                   <li><a href="/about/">About Us</a></li>
                   <li><a href="/about/org.html">Organization At-A-Glance</a></li>
+                  <li><a href="/research/divisions/">Research Divisions</a></li>
                   <li><a href="/reviews/">Science Reviews</a></li>
-                                  <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
-                                        title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
+				          <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
+				  	            title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
                   <li><a href="https://esrl.noaa.gov/about/visiting.html">Visiting NOAA Boulder</a></li>
+                  <li><a href="/about/opportunities/">Opportunities</a></li>
+                  
                 </ul>
             </li>
           </ul>
@@ -490,20 +497,21 @@ $(function() {
                 <ul class="">
                   <li class="hidden-xs hidden-sm"><span class="dropdown-header">Research</span></li>
                   <li><a href="/research/">Overview</a></li>
-                  <li><a href="/research/teams/">Teams</a></li>
+                  <li><a href="/research/divisions/">Research Divisions</a></li>
                   <li><a href="/pubs/">Publications</a></li>
                   <li><a href="/assessments/">Assessments</a></li>
                 </ul>
-                  </div>
+        	  </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Selected Topics</span></li>
-                  <li><a href="/data/20thC_Rean">20th Century Reanalysis</a></li>
-                  <li><a href="/arportal/">Atmospheric Rivers</a></li>
+                  <li><a href="/data/20thC_Rean/">20th Century Reanalysis</a></li>
+                  <li><a href="/arportal/">Atmospheric River Portal</a></li>
                   <li><a href="/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
                   <li><a href="/renewable_energy/">Renewable Energy</a></li>
-                  <li><a href="/csi/">Interpreting Climate Conditions</a></li>
                   <li><a href="/marine-heatwaves/">Marine Heatwaves</a></li>
+                  <li><a href="/mjo/">Madden-Julian Oscilation (MJO)</a></li>
+                  <li><a href="/fire_weather/">Fire Weather</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -519,6 +527,8 @@ $(function() {
                       data-placement="left" title="Multidisciplinary Drifting Observatory for the Study of Arctic Climate">MOSAiC</a></li>
                   <li><a href="/splash/" data-toggle="tooltip"
                       data-placement="left" title="Study of Precipitation, the Lower Atmosphere and Surface for Hydrometeorology">SPLASH</a></li>
+                      <li><a href="/renewable_energy/wfip3/" data-toggle="tooltip"
+                        data-placement="left" title="3rd Wind Forecast Improvement Project">WFIP3</a></li>    
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -539,11 +549,11 @@ $(function() {
             <li><a href="/data/gridded/index.html">Gridded Climate</a></li>
             <li><a href="/data/obs/">Profiler Network Data &amp; Image
                 Library</a></li>
-            <li><a href="/psd3/cruises/">Research Cruises</a></li>
+            <li><a href="/data/cruises/">Research Cruises</a></li>
             <li><a href="/arctic/data/">Arctic</a></li>
             <li><a href="/psd2/coastal/satres/">Satellite</a></li>
             <li><a href="/boulder/">Boulder Climate &amp; Weather</a></li>
-            <li><a href="/data/getpage">Plotting &amp; Analysis Tools</a></li>
+            <li><a href="/data/getpage/">Plotting &amp; Analysis Tools</a></li>
             <li><a href="/data/help/">Help</a></li>
 
           </ul>
@@ -560,10 +570,11 @@ $(function() {
             <li><a href="/data/20thC_Rean/" data-toggle="tooltip"
                 data-placement="left" data-html="true" title="The 20th Century Reanalysis Project">20th Century Reanalysis</a></li>
             <li><a href="/repository/facts/" data-toggle="tooltip"
-                data-placement="left" data-html="true" title="FACility for Weather and Climate AssessmenTS">FACTS</a></li>
+                data-placement="left" data-html="true" title="<strong>FAC</strong>ility for Weather and Climate Assessmen<strong>TS</strong>">FACTS</a></li>
 
             <li><a href="/data/writ/" data-toggle="tooltip"
-                data-placement="left" data-html="true" title="Web-based Reanalyses Intercomparison Tools">WRIT</a></li>
+                data-placement="left" data-html="true" title="<strong>W</strong>eb-based <strong>R</strong>eanalyses <strong>I</strong>ntercomparison <strong>T</strong>ools">WRIT</a></li>
+                <li><a href="/forecasts/">Forecasts</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -580,7 +591,6 @@ $(function() {
           <ul class="dropdown-menu dropdown-menu-left">
             <li><a href="/outreach/resources/">Research Handouts</a></li>
             <li><a href="/outreach/education/">Education Resources</a></li>
-            <li><a href="/outreach/funtastic-science-talks">Funtastic Science Talks</a></li>
           </ul>
         </li>
         <li class="dropdown hidden-sm hidden-xs">
@@ -656,48 +666,46 @@ $(function() {
 ${bottom}
 <!-- Footer -->
 <footer class="footer">
-        <div class="container">
-                <div style="padding-bottom: 25px;">
-                        <div class="row">
-                                <div class="col-md-4 col-sm-4">
-                                        <h4>Mailing Address</h4>
-                                        <p>
-                                                NOAA PSL<br />
-                                                325 Broadway<br />
-                                                Boulder, CO 80305-3328
-                                        </p>
+	<div class="container">
+		<div style="padding-bottom: 25px;">
+			<div class="row">
+				<div class="col-md-4 col-sm-4">
+					<h4>Mailing Address</h4>
+					<p>
+						NOAA PSL<br />
+						325 Broadway<br />
+						Boulder, CO 80305-3328
+					</p>
 
-                                        <h4>Connect with ESRL</h4>
-                                        <p>
-                        <a aria-label="Facebook" href="https://www.facebook.com/NOAAESRL"><i class="fab fa-facebook-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="Twitter" href="https://twitter.com/NOAA_ESRL"><i class="fab fa-twitter-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="YouTube" href="https://www.youtube.com/user/NOAAESRL"><i class="fab fa-youtube-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="Flickr" href="https://www.flickr.com/photos/noaa_esrl"><i class="fab fa-flickr fa-2x" aria-hidden="true"></i></a>
-                    </p>
-                                </div>
-                                <div class="col-md-5 col-sm-5">
-                                <h4>Physical Sciences Laboratory</h4>
-                                        <p><a href="/about/">About</a></p>
-                                        <p><a href="/about/contacts.html">Contact Us</a></p>
-                                        <p><a href="/site_index.html">Site Index</a></p>
-                                        <p><a href="/survey/">Take Our Survey</a></p>
-                                        <p><a href="mailto:webmaster.psl&#64;noaa.gov">Webmaster</a></p>
-                                </div>
-                                <div class="col-md-3 col-sm-3">
-                                <h4>More</h4>
-                                        <p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
-                                        <p><a href="/disclaimer/">Disclaimer</a></p>
-                                        <p><a href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a></p>
-                                        <p><a href="http://www.usa.gov/">USA.gov</a></p>
-                                </div>
-                        </div><!--/.row-->
-                </div>
-        </div><!--/.container-->
-        <div class="subFooter">
-                <div class="col-md-12">
-                        <a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a> &nbsp;|&nbsp; <a href="http://www.esrl.noaa.gov">ESRL</a>
-                </div>
-        </div>
+				</div>
+				<div class="col-md-5 col-sm-5">
+				<h4>Physical Sciences Laboratory</h4>
+					<p><a href="/about/">About</a></p>
+					<p><a href="/about/contacts.html">Contact Us</a></p>
+					<p><a href="/site_index.html">Site Index</a></p>
+					<p><a href="/survey/">Take Our Survey</a></p>
+					<p><a href="mailto:webmaster.psl&#64;noaa.gov">Webmaster</a></p>
+				</div>
+				<div class="col-md-3 col-sm-3">
+				<h4>More</h4>
+					
+					<p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
+					
+					<p><a href="https://www.noaa.gov/protecting-your-privacy">Privacy Policy</a></p>
+					<p><a href="/disclaimer/">Disclaimer</a></p>
+					<p><a href="https://www.noaa.gov/accessibility">Accessibility</a></p>
+					<p><a href="https://www.usa.gov/">USA.gov</a></p>
+				</div>
+			</div><!--/.row-->
+		</div>
+	</div><!--/.container-->
+	<div class="subFooter">
+
+		<div class="col-md-12">
+			<a href="https://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="https://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>
+		</div>
+		
+	</div>
 </footer>
 </body>
 </html>
