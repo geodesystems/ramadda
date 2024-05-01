@@ -82,9 +82,6 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
 
 
-    public static final String PROMPT_TITLE="Extract the title from the following document. Your result should be in proper case form. The document text is:";
-    public static final String PROMPT_KEYWORDS= "Extract keywords from the following text. The return format should be comma delimited keywords. Limit your response to no more than 10 keywords:";
-    public static final String PROMPT_SUMMARY = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
 
     private JobManager openAIJobManager;
     private JobManager geminiJobManager;
@@ -684,7 +681,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
+
 
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
@@ -728,7 +725,20 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
 
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
-	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education. The response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON.";
+	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education.";
+	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
+	if(typePrompt!=null) {
+	    jsonPrompt=typePrompt;
+	    jsonPrompt+="\n";
+	}
+	typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt.extra",(String) null);
+	if(typePrompt!=null) {
+	    typePrompt+="\n";
+	    jsonPrompt+=typePrompt;
+	    jsonPrompt+="\n";
+	}	
+	jsonPrompt+="\nThe response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
+
 	List<String> schema =new ArrayList<String>();
 	if(extractTitle) {
 	    jsonPrompt+="You should include a title. ";
