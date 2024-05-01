@@ -17,8 +17,8 @@
 {{description wikify="true"}}
 +toggle Information
 {{information  details="true"  showTitle="false"  }}
-{{tags}}
 -toggle
+{{tags}}
 ----
 {{notebook wikify="false"}}
 -section
