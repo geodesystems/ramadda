@@ -182,6 +182,15 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
     }
 
 
+    public static BufferedImage readBase64(String format, String base64Image) throws Exception {
+	byte[] imageBytes = Utils.decodeBase64(base64Image);
+	ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
+	BufferedImage image = ImageIO.read(bis);
+	bis.close();
+	return image;
+    }
+
+
     public static void main(String[]args) throws Exception {
 	BufferedImage   image = ImageIO.read(new File(args[0]));
         int width = image.getWidth();

@@ -8466,10 +8466,10 @@ public class EntryManager extends RepositoryManager {
         newEntry.setParentEntry(parent);
         newEntry.setResource(new Resource(newFile, Resource.TYPE_STOREDFILE));
         newEntry.setId(getRepository().getGUID());
-        newEntry.setName(request.getString(ARG_PUBLISH_NAME,
-                                           newFile.getName()));
+        newEntry.setName(request.getString(ARG_PUBLISH_NAME,""));
+
         if ( !Utils.stringDefined(newEntry.getName())) {
-            newEntry.setName(newFile.getName());
+	    newEntry.setName(StorageManager.getOriginalFilename(newFile.getName()));
         }
         newEntry.clearMetadata();
         newEntry.setUser(request.getUser());

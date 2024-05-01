@@ -9,16 +9,22 @@ import org.ramadda.data.services.*;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import ucar.unidata.util.Misc;
 
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
+
+
 
 import java.io.*;
 import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
+import org.json.*;
 
 
 /**
@@ -40,6 +46,9 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     /** _more_ */
     public static final int IDX_SITE_ID = IDX++;
+    /** _more_ */
+    public static final int IDX_STATE = IDX++;
+
 
     /** _more_ */
     public static final int IDX_TIME_OFFSET = IDX++;
@@ -55,7 +64,58 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     public AwcMetarTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
+	//Not now
+	//	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
     }
+
+
+    private void doCleanup() {
+	/*
+Table:TYPE_AWC_METAR
+ID (VARCHAR 200)
+SITE_ID (VARCHAR 200)
+TIME_OFFSET (INTEGER 10)
+STATE (VARCHAR 200)
+	*/
+
+	try {
+	    Request request = getRepository().getAdminRequest();
+	    String table = "TYPE_AWC_METAR";
+            Statement statement =
+                getDatabaseManager().select("ID,SITE_ID",
+					    table,
+                                            new org.ramadda.util.sql.Clause[] {});
+            ResultSet  results = statement.getResultSet();
+
+            while (results.next()) {
+                String id  = results.getString(1);
+                String site  = results.getString(2);		
+		JSONObject station = getStation(site);
+		if(station==null) {
+		    continue;
+		}
+		getDatabaseManager().update(table, "ID",id, new String[]{"STATE"},
+					    new Object[]{station.optString("st","")});
+		System.err.println("awc:" + id +" state:" +station.optString("st",""));
+		//Force the reindex
+		Entry entry = getEntryManager().getEntry(request,id);
+		if(entry==null) {
+		    System.err.println("usgs: could not find entry:" + id);
+		    continue;
+		}
+		List<Entry> entries = new ArrayList<Entry>();
+		entries.add(entry);
+		getSearchManager().entriesModified(request,  entries);
+            }
+            getDatabaseManager().closeAndReleaseConnection(statement);
+	}catch(Exception exc) {
+	    exc.printStackTrace();
+	}
+	    
+    }
+
+
+
 
 
     @Override

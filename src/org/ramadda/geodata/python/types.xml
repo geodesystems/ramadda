@@ -6,19 +6,24 @@
   </type>
 
   <type name="python_notebook"  description="IPython Notebook file"  pattern=".*\.ipynb" handler="org.ramadda.geodata.python.IPythonNotebookTypeHandler">
+     <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+
+     <action name="applyllm" label="Apply LLM" canedit="true"
+	     icon="fas fa-font" foruser="true" category="edit"/>
+     <property name="llm.prompt.extra" value="The text below is from an IPython notebook."/>
+
      <property name="icon" value="/python/ipynb.png"/>
+     <embedwiki><![CDATA[{{notebook}}]]></embedwiki>
      <wiki><![CDATA[
 +section # title="Notebook: {{name}}"
 {{description wikify="true"}}
-
++toggle Information
 {{information  details="true"  showTitle="false"  }}
-
+-toggle
+{{tags}}
 ----
-
 {{notebook wikify="false"}}
-
 -section
-
 ]]>
 
 </wiki>

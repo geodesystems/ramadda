@@ -752,7 +752,9 @@ function DisplayAnimation(display, enabled,attrs) {
 		if(this.useIndex) {
 		    date = i;
 		}  else {
-			date = record.getDate().getTime();
+		    let dttm = record.getDate();
+		    if(!dttm) continue;
+		    date = record.getDate().getTime();
 		    if(seenDate[date]) continue;
 		    seenDate[date] = true;
 		    if(debug)console.log("\ttick:" + record.getDate());

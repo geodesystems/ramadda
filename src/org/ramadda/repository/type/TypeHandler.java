@@ -96,6 +96,12 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
+    public enum CorpusType {
+	LLM,
+	SEARCH
+    }
+
+
     public static boolean debug = false;
 
     public static final int COPY_LIMIT = 5000;
@@ -309,11 +315,10 @@ public class TypeHandler extends RepositoryManager {
 
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
-
-
     private List<Utils.Macro> startDateMacros;
     private List<Utils.Macro> endDateMacros;    
 
+    private String embedWiki;
 
     /**  */
     private String help = "";
@@ -577,6 +582,16 @@ public class TypeHandler extends RepositoryManager {
 		}
 
 		WikiMacro m = new WikiMacro(macro);
+		if(m.isOutput()) {
+		    List<String> types = new ArrayList<String>();
+		    types.add(getType());
+		    getRepository().addOutputHandler(
+						     new TemplateOutputHandler(getRepository(),
+									       m.getName(),
+									       m.getLabel(),
+									       types,
+									       m.getWikiText(),m.getIcon()));
+		} 
 		wikiMacrosMap.put(m.getName(),m);
 		wikiMacros.add(m);
 	    }
@@ -627,7 +642,6 @@ public class TypeHandler extends RepositoryManager {
                     ? ""
                     : type));
             if (getType().indexOf(".") > 0) {
-                //            System.err.println("DOT TYPE: " + getType());
             }
 
 
@@ -644,7 +658,7 @@ public class TypeHandler extends RepositoryManager {
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
                     XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
-
+	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki",null);
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
                                      XmlUtil.getAttributeFromTree(node,
                                          "canCache", (String) null));
@@ -717,6 +731,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void addAction(Action action) {
+	if(action.getId().equals("documentchat") ||
+	   action.getId().equals("applyllm")) {
+	    if(!getRepository().getLLMManager().isLLMEnabled()) {
+		return;
+	    }
+	}
 	actions.add(action);
 	actionMap.put(action.id,action);
     }
@@ -768,6 +788,12 @@ public class TypeHandler extends RepositoryManager {
 	return false;
     }
 
+
+    public String getEmbedWiki(Request request, Entry entry) {
+	if(embedWiki!=null) return embedWiki;
+        if (getParent() != null) return getParent().getEmbedWiki(request, entry);
+	return "{{information details=true}}";
+    }
 
     public String getSearchDisplayText(Request request, Entry entry) throws Exception {
 	String name = getTypeProperty("search.wikimacro",null);
@@ -931,6 +957,15 @@ public class TypeHandler extends RepositoryManager {
         items.add(JsonUtil.quote("" + getIncludeInSearch()));
         items.add("isgroup");
         items.add("" + isGroup());
+	String bubble = getBubbleTemplate(request, null);
+	if(bubble!=null) {
+	    items.add("mapwiki");
+	    items.add(JU.quote(bubble));
+	}
+	
+
+
+
 
         List<String> cols    = new ArrayList<String>();
         List<Column> columns = getColumns();
@@ -1052,7 +1087,7 @@ public class TypeHandler extends RepositoryManager {
     private String getBubbleTemplate(Request request, Entry entry, boolean checkMetadata)
 	throws Exception {	
 
-	if(checkMetadata) {
+	if(entry!=null && checkMetadata) {
 	    List<Metadata> metadataList =
 		getMetadataManager().findMetadata(request, entry,
 						  "content.mapbubble", true);
@@ -1092,6 +1127,7 @@ public class TypeHandler extends RepositoryManager {
 
 		if (theMetadata != null) {
 		    return theMetadata.getAttr(4);
+
 		}
 	    }
 	}
@@ -1700,7 +1736,8 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         String action = request.getString("action", "");
-        if (action.equals("documentchat")) {
+
+	if (action.equals("documentchat")) {
 	    return getLLMManager().processDocumentChat(request,entry);
 	}
 
@@ -2543,16 +2580,13 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    public String getCorpus(Request request, Entry entry,CorpusType type) throws Exception {
+	if(type!=CorpusType.LLM) return null;
+	String path = entry.getResource().getPath();
+	return  getSearchManager().extractCorpus(request, path, null);
+    }
+	
+
     public Entry changeType(Request request, Entry entry) throws Exception {
         //Recreate the entry. This will fill in any extra entry type db tables
         Object[]     origValues =

@@ -8,7 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.metadata.MetadataManager;
-
+import static org.ramadda.repository.type.TypeHandler.CorpusType;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -82,9 +82,6 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
 
 
-    public static final String PROMPT_TITLE="Extract the title from the following document. Your result should be in proper case form. The document text is:";
-    public static final String PROMPT_KEYWORDS= "Extract keywords from the following text. The return format should be comma delimited keywords. Limit your response to no more than 10 keywords:";
-    public static final String PROMPT_SUMMARY = "Summarize the following text. \nAssume the reader has a college education. \nLimit the summary to no more than 4 sentences.";
 
     private JobManager openAIJobManager;
     private JobManager geminiJobManager;
@@ -166,7 +163,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	if(request.exists(ARG_OK)) {
-	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
+	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+	    //	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
 	    if(corpus==null) {
 		sb.append(getPageHandler().showDialogError("No file available."));
 	    } else {
@@ -256,15 +254,11 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    private String applyPromptToDocument(Request request, String path, String prompt,PromptInfo info)
+    private String applyPromptToDocument(Request request, Entry entry, String prompt,PromptInfo info)
 	throws Exception {
 	try {
-	    String corpus = getSearchManager().extractCorpus(request, path, null);
+	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    if(corpus==null) return null;
-	    if(path.startsWith("http")) {
-		//		corpus = Utils.stripTags(corpus);
-		//		System.err.println("CORPUS:" + corpus.replace("\n", " "));
-	    }
 	    info.corpusLength=corpus.length();
 	    if(info.offset>0 && info.offset<corpus.length()) {
 		corpus = corpus.substring(info.offset);
@@ -360,7 +354,9 @@ public class LLMManager extends  AdminHandlerImpl {
     
 
 
-    private  IO.Result  callOpenAI(Request request, String model, int maxReturnTokens,String gptText,String[]extraArgs)
+    private  IO.Result  callOpenAI(Request request, String model,
+				   int maxReturnTokens,
+				   String gptText,String[]extraArgs)
 	throws Throwable {
 	if(!isOpenAIEnabled()) return null;
 	//	synchronized(MUTEX_OPENAI) {
@@ -685,7 +681,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public static final String PROMPT_JSON = "Summarize the below text, extracting out the title, a summary to be no longer than four sentences, a list of keywords (limited to no more than 6 keywords), and if you can a list of authors. Your result must be valid JSON following the form:\n{\"title\":<the title>,\"authors\":<the authors>,\"summary\":<the summary>,\"keywords\":<the keywords>\n}\n";
+
 
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
@@ -693,7 +689,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
-		System.err.println("ERROR");
+		System.err.println("ERROR:" +exc);
+
 		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 		return false;
 	    } catch(Throwable thr) {
@@ -728,14 +725,27 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
 
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
-	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education. The response must be in valid JSON format and only JSON.";
+	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education.";
+	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
+	if(typePrompt!=null) {
+	    jsonPrompt=typePrompt;
+	    jsonPrompt+="\n";
+	}
+	typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt.extra",(String) null);
+	if(typePrompt!=null) {
+	    typePrompt+="\n";
+	    jsonPrompt+=typePrompt;
+	    jsonPrompt+="\n";
+	}	
+	jsonPrompt+="\nThe response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
+
 	List<String> schema =new ArrayList<String>();
 	if(extractTitle) {
 	    jsonPrompt+="You should include a title. ";
 	    schema.add("\"title\":\"<the title>\"");
 	}
 	if(extractSummary) {
-	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON should be a JSON string. ";
+	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON must, and I mean must, be a valid JSON string. ";
 	    schema.add("\"summary\":\"<the summary>\"");
 	}
 	if(extractKeywords) {
@@ -758,6 +768,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	json = json.replaceAll("^```json","").replaceAll("```$","").trim();
 	//	    System.err.println("JSON:" + json);
 	try {
+	    if(!json.startsWith("{")) {
+		int idx = json.indexOf("{");
+		if(idx>=0) {
+		    json = json.substring(idx);
+		    System.err.println(json);
+		}
+	    }
 	    JSONObject obj = new JSONObject(json);
 	    if(extractTitle) {
 		String title = obj.optString("title",null);
@@ -836,7 +853,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		PromptInfo info = new PromptInfo(TOKEN_LIMIT_UNDEFINED,request.get("offset",0));
 		String r = applyPromptToDocument(request,
-						 entry.getResource().getPath(),
+						 entry,
 						 request.getString("question",""),
 						 info);
 		String s;
@@ -859,20 +876,24 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
-	sb.append("<table width=100%><tr valign=top><td width=50%>");
+	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50%>");
+	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
 	    sb.append(HU.getPdfEmbed(url,Utils.makeMap("width","100%")));
 	}   else if(entry.getTypeHandler().isType("link")) {
 	    String url = entry.getResource().getPath();
 	    sb.append("<iframe style='border:var(--basic-border);' src='"+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
-	} else {
+	} else if(entry.getTypeHandler().isType("type_document_msfile")) {
 	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
 	    url = url.replace("?","%3F").replace("&","%26");
 	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
+	} else {
+	    String wiki = "<div style=border:var(--basic-border);'>{{import showTitle=false entry=" + entry.getId()+"}}</div>";
+	    sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
 	}
-	sb.append("</td><td>");
+	sb.append("</td><td width=50%>");
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");

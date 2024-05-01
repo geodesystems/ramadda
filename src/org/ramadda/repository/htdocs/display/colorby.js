@@ -180,8 +180,9 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
 
-    if(!colors)
+    if(!colors) {
 	colors = this.display.getColorTable(true);
+    }
     this.colors = colors;
 
 
@@ -225,7 +226,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
     }
 
     if (this.colors == null) {
-        this.colors = Utils.ColorTables.grayscale.colors;
+        this.colors = Utils.ColorTables.inversegrayscale.colors;
     }
 
 
@@ -385,6 +386,24 @@ ColorByInfo.prototype = {
 	}
 	if(!force && this.index<0) return;
 	if(this.colorScale) {
+	    let html = '<table width=100%><tr>';
+	    let steps = 4;
+	    let w = Math.round(parseFloat(100/(this.colorScale.length*steps)))+'%'
+	    this.colorScale.forEach(s=>{
+		for(let step=0;step<steps;step++) {
+		    let value = s.min+(s.max-s.min)/steps*step;
+		    let c =this.colorScaleInterval(value);
+		    let contents='&nbsp';
+		    if(step==0)
+			contents =s.min;
+		    else if(step==steps-1)
+			contents =s.max;		    
+		    let fg = Utils.getForegroundColor(c);
+		    html+=HU.tag('td',[ATTR_CLASS,'display-colorscale-item',ATTR_TITLE,value,ATTR_WIDTH,w,ATTR_STYLE,HU.css('color',fg,'background',c)],contents);		    
+		}
+	    });
+	    html += '</tr></table>';
+	    this.display.displayColorTableHtml(html,domId);
 	    return;
 	}
 	if(this.stringMap) {
@@ -432,12 +451,12 @@ ColorByInfo.prototype = {
 	}
     },
     setRange: function(minValue,maxValue, force) {
+	if(this.display.getColorByAllRecords() && !force) {
+	    return;
+	}
 	if(this.display.getProperty("useDataForColorRange") && this.origRange) {
 	    minValue = this.origRange[0];
 	    maxValue = this.origRange[1];	    
-//	    this.range = this.maxValue -this.minValue;
-//	    console.log(this.minValue,this.maxValue);
-//	    return;
 	}	    
 
 	if(displayDebug.colorTable)
@@ -445,6 +464,8 @@ ColorByInfo.prototype = {
 	if(!force && this.overrideRange) return;
 	this.origMinValue = minValue;
 	this.origMaxValue = maxValue;
+
+
 	if (this.colorByFunc) {
 	    if (minValue < 0) {
 		this.colorByOffset =  -minValue;
@@ -547,11 +568,6 @@ ColorByInfo.prototype = {
 	return  total;
     },    
     getColorFromRecord: function(record, dflt, checkHistory,debug) {
-
-
-
-
-
 	this.lastValue = NaN;
 	if(!this.initDisplayCalled)   this.initDisplay();
 	if(this.filterHighlight && !record.isHighlight(this.display)) {
@@ -611,15 +627,8 @@ ColorByInfo.prototype = {
     getColor: function(value, pointRecord, checkHistory) {
 	if(this.colorScaleInterval)
 	    return this.colorScaleInterval(value);
-
-//	if(checkHistory) {
-//	    if(this.colorHistory[value]) return this.colorHistory[value];
-//	}
 	let c = this.getColorInner(value, pointRecord);
 	if(c==null) c=this.nullColor;
-//	if(checkHistory) {
-//	    this.colorHistory[value] = c;
-//	}
 	return c;
     },
 

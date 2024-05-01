@@ -1,3 +1,4 @@
+
 /**
 Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
@@ -126,7 +127,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
     /**  */
     public static final boolean debugOpendap = false;
 
-
+    public static final String ARG_GRIDFIELD="gridField";
 
     /** set of suffixes */
     private HashSet<String> suffixSet;
@@ -607,35 +608,37 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
 
 
+    public GeoGrid getGrid(Request request,GridDataset gds) throws Exception {
+        String field = request.getString(ARG_GRIDFIELD, (String) null);
+        if ((field == null) || (field.length() == 0)) {
+            field = gds.getDataVariables().get(0).getShortName();
+        }
+        GeoGrid     grid = null;
+	if(field.startsWith("#")) {
+	    int index=Integer.parseInt(field.substring(1).trim())-1;
+	    List<GridDatatype> grids= gds.getGrids();
+	    if(index<0 || index>=grids.size()) return null;
+	    grid = (GeoGrid)grids.get(index);
+	} else {
+	    grid = (GeoGrid) gds.findGridByName(field);
+	}
+	if(grid==null) System.err.println("Cannot find grid field:" + field);
+	return grid;
+    }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param displayProps _more_
-     *
-     * @throws Exception _more_
-     */
+
     public void getWikiTagAttrs(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> displayProps)
             throws Exception {
 
         List<String> all   = new ArrayList<String>();
-        String       field = (String) props.get("gridField");
-        if (field == null) {
-            return;
-        }
         String      path = getPath(request, entry);
-        GridDataset gds  = getCdmManager().getGridDataset(entry, path);
-        GeoGrid     grid = (GeoGrid) gds.findGridByName(field);
+        GridDataset gds= getCdmManager().getGridDataset(entry, path);
+        GeoGrid     grid = getGrid(request, gds);
         if (grid == null) {
-            System.err.println("Cannot find grid field:" + grid);
-
             return;
         }
+	String field = grid.getName();
         GridCoordSystem        gcs       = grid.getCoordinateSystem();
         CoordinateAxis         xaxis     = gcs.getXHorizAxis();
         CoordinateAxis         yaxis     = gcs.getYHorizAxis();
@@ -643,7 +646,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         List<CalendarDate>     dates     = getGridDates(gds);
 
         List<VariableSimpleIF> variables = gds.getDataVariables();
-        all.add("gridField");
+        all.add(ARG_GRIDFIELD);
         String vars = null;
         for (VariableSimpleIF var : variables) {
             if (vars == null) {
@@ -992,11 +995,19 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                                              "" + llr.getLatMin(),
                                              "" + llr.getLonMax(), };
 
+            String[] selected= new String[] {
+		request.getString(ARG_AREA+"_north",""),
+		request.getString(ARG_AREA+"_west",""),		
+		request.getString(ARG_AREA+"_south",""),
+		request.getString(ARG_AREA+"_east","")};
+
+
             for (int i = 0; i < points.length; i++) {
                 sb.append(HU.hidden(SPATIALARGS[i] + ".original",
                                            points[i]));
             }
-            String llb = map.makeSelector(ARG_AREA, true, null,points,"","");
+	    
+            String llb = map.makeSelector(ARG_AREA, true, selected,points,"","");
             sb.append(HU.formEntryTop(msgLabel("Subset Spatially"),
                                              llb));
         }
@@ -1287,8 +1298,6 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             // boolean addLatLon,
             // NetcdfFileWriter writer
 
-	    System.err.println("subset date range:" + dates[0] +" -- " + dates[1] +"  "+ CalendarDateRange.of(dates[0],dates[1]));
-
             CFGridWriter2.writeFile(gds, varNames, llr, null, hStride,
                                     zRange, ((dates[0] == null)
                                              ? null
@@ -1309,13 +1318,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             getCdmManager().returnGridDataset(path, gds);
 
             if (doingPublish(request)) {
-                TypeHandler typeHandler =
-                    getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
-                Entry newEntry =
-                    typeHandler.createEntry(getRepository().getGUID());
-
+                TypeHandler typeHandler =  getRepository().getTypeHandler("cdm_grid");
+                Entry newEntry = typeHandler.createEntry(getRepository().getGUID());
                 return getEntryManager().processEntryPublish(request, f,
-                        newEntry, entry, "subset of");
+							     newEntry, entry, "subset of");
             }
 
             Result result =
@@ -1367,18 +1373,17 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         final boolean debug = false;
         String        path  = getPath(request, entry);
-        String gridField = request.getString("gridField", (String) null);
-        final GridDataset  gds   = getCdmManager().getGridDataset(entry,
-                                       path);
-        List<CalendarDate> dates = getGridDates(gds);
-        if ((gridField == null) || (gridField.length() == 0)) {
-            gridField = gds.getDataVariables().get(0).getShortName();
-        }
-        final String field = gridField;
-        GeoGrid      grid  = (GeoGrid) gds.findGridByName(field);
+        final GridDataset  gds   = getCdmManager().getGridDataset(entry,  path);
+        GeoGrid     grid = getGrid(request, gds);
         if (grid == null) {
-            throw new RuntimeException("Could not find grid field:" + field);
+            throw new RuntimeException("Could not find grid field:" + request.getString(ARG_GRIDFIELD,""));
         }
+        final String field = grid.getName();
+        List<CalendarDate> dates = getGridDates(gds);
+
+
+
+
         final String fieldLabel = grid.getDescription();
         int          timeIndex  = -1;
         Range        tRange     = null;
@@ -1575,7 +1580,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     String key = (String) keys.nextElement();
                     wikiProps.put(key, request.getString(key, ""));
                 }
-                wikiProps.put("gridField", field);
+                wikiProps.put(ARG_GRIDFIELD, field);
                 getWikiTagAttrs(request, entry, "display", wikiProps,
                                 displayProps);
 		getDisplayProperties(request, field,displayProps);
@@ -1588,7 +1593,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 DoubleFunction<Float> scaler = getScaler(unit);
                 long                  t1     = System.currentTimeMillis();
                 for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
-                        tIdx += timeStride) {
+		     tIdx += timeStride) {
                     Array a;
                     if (finalZRange.length() == 1) {
                         a = theGrid.readYXData(tIdx, 0);
@@ -1606,8 +1611,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 }
                 writer.println("]}");
                 writer.close();
-                System.err.println("time:"
-                                   + (System.currentTimeMillis() - t1));
+                System.err.println("time:" + (System.currentTimeMillis() - t1));
                 getCdmManager().returnGridDataset(path, gds);
             }
         });
@@ -1672,24 +1676,18 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (debug) {
             System.err.println("outputGridJson path:" + path);
         }
-        String gridField = request.getString("gridField", (String) null);
-        final GridDataset  gds   = getCdmManager().getGridDataset(entry,
-                                       path);
-        if ((gridField == null) || (gridField.length() == 0)) {
-            gridField = gds.getDataVariables().get(0).getShortName();
-        }
-        final String field = gridField;
-        GeoGrid      grid  = (GeoGrid) gds.findGridByName(field);
+        final GridDataset  gds   = getCdmManager().getGridDataset(entry,  path);
+        GeoGrid     grid = getGrid(request, gds);
         if (grid == null) {
-            throw new RuntimeException("Could not find grid field:" + field);
+            throw new RuntimeException("Could not find grid field:" + request.getString(ARG_GRIDFIELD,""));
         }
+        final String field = grid.getName();
         List<CalendarDate> dates = getGridDates(gds);
 	GridCoordSystem      gcs      = grid.getCoordinateSystem();
 	CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
 	if (timeAxis != null) {
 	    dates = timeAxis.getCalendarDates();
 	}
-
 
 
         final String fieldLabel = grid.getDescription();
@@ -1712,8 +1710,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
         if (zAxis != null) {
             zVals = zAxis.getCoordValues();
             if (debug && (zVals != null)) {
-                System.err.println("# Z levels:" + zVals.length + " v:"
-                                   + java.util.Arrays.toString(zVals));
+		//                System.err.println("# Z levels:" + zVals.length + " v:" + java.util.Arrays.toString(zVals));
             }
         }
         Range zRange = null;
@@ -1774,12 +1771,10 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         //If a stride was not specified then keep subsetting until we're under the max # points
         if (gridStride > 0) {
-            grid = grid.subset(tRange, zRange, bounds, 1, gridStride,
-                               gridStride);
+            grid = grid.subset(tRange, zRange, bounds, 1, gridStride, gridStride);
             Dimension xDimension = grid.getXDimension();
             Dimension yDimension = grid.getYDimension();
-            int numPoints = xDimension.getLength() * yDimension.getLength()
-                            * numTimes / timeStride;
+            int numPoints = xDimension.getLength() * yDimension.getLength()* (numTimes / timeStride);
             if (debug) {
                 System.err.println(
                     "\tnum points:" + numPoints + " per layer:"
@@ -1795,12 +1790,11 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
             while (true) {
                 Dimension xDimension = grid.getXDimension();
                 Dimension yDimension = grid.getYDimension();
-                int numPoints = xDimension.getLength()
-                                * yDimension.getLength() * zRange.length()
-                                * numTimes / timeStride;
+                int numPoints = xDimension.getLength()  * yDimension.getLength() * zRange.length()
+		    * (numTimes / timeStride);
                 if (debug) {
                     System.err.println(
-                        "\tnum points:" + numPoints + " per layer:"
+                        "\tloop num points:" + numPoints + " per layer:"
                         + (xDimension.getLength() * yDimension.getLength())
                         + " grid stride:" + gridStrideX);
                 }
@@ -1812,26 +1806,30 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 } else {
                     gridStrideY++;
                 }
-                grid = grid.subset(null, null, null, 1, gridStrideX,
-                                   gridStrideY);
+                grid = grid.subset(null, null, null, 1, gridStrideX, gridStrideY);
                 doX = !doX;
             }
         }
 
 
-
+	//Get the new GCS after we do the subset above
+	gcs      = grid.getCoordinateSystem();
         int                     lats   = (int) gcs.getYHorizAxis().getSize();
         int                     lons   = (int) gcs.getXHorizAxis().getSize();
+	if(debug) {
+	    LatLonRect llr=gcs.getLatLonBoundingBox();
+	    System.err.println("#lats:" + lats +" #lons:"+ lons +" " + llr.getLatMin() +" " +llr.getLatMax());
+	}
         final List<LatLonPoint> points = new ArrayList<LatLonPoint>();
         for (int lat = 0; lat < lats; lat++) {
             for (int lon = 0; lon < lons; lon++) {
-                points.add(gcs.getLatLon(lon, lat));
+		LatLonPoint point=gcs.getLatLon(lon, lat);
+                points.add(point);
             }
         }
 
         if (debug) {
-            System.err.println("\t# lat/lons:" + points.size() + " #dates:"
-                               + dates.size());
+            System.err.println("\t# lat/lons:" + points.size() + " #dates:" + dates.size());
         }
         PipedInputStream         in          = new PipedInputStream();
         final Range              finalZRange = zRange;
@@ -1887,9 +1885,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                     String key = (String) keys.nextElement();
                     wikiProps.put(key, request.getString(key, ""));
                 }
-                wikiProps.put("gridField", field);
-                getWikiTagAttrs(request, entry, "display", wikiProps,
-                                displayProps);
+                wikiProps.put(ARG_GRIDFIELD, field);
+                getWikiTagAttrs(request, entry, "display", wikiProps, displayProps);
 		getDisplayProperties(request, field,displayProps);
                 writer.println(",\"properties\":");
                 writer.println(JsonUtil.map(displayProps));
@@ -1899,6 +1896,7 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 long                  t1     = System.currentTimeMillis();
                 for (int tIdx = 0; (tIdx < theDates.size()) && (cnt < max);
                         tIdx += timeStride) {
+		    //		    if(tIdx>3) break;
                     Array a;
 		    //		    System.err.println("time idx:" + tIdx +" date:" + theDates.get(tIdx));
 		    try {

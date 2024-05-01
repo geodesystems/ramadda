@@ -157,22 +157,6 @@ public class BeforeAfterBase extends GenericTypeHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)

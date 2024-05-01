@@ -34,9 +34,20 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
 ]]>
  </property>
  <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true" values="file:/org/ramadda/geodata/point/resources/weatherstations.txt"
-	      bulkuploadhelp="Or upload a file of site ids. One per line."
+	      bulkuploadhelp="Or upload a file of site ids. One per line. There is a collection of each state's sites available at &lt;a target=_sites href='https://github.com/geodesystems/ramadda/tree/master/data/wx_sites'&gt;Github&lt;/a&gt;"
 	      addbulkupload="true"/>
-     <column  name="time_offset"  type="int" label="Time Offset" default="168" suffix="Hours before now"/>
+ <column  name="state"  type="enumeration" label="State" default="" cansearch="true"/>
+ <column  name="time_offset"  type="int" label="Time Offset" default="168" suffix="Hours before now"/>
+<property name="bubble">
+<![CDATA[
++section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
+{{group}}
+{{display_linechart showMenu="true" fields=temp}}
+{{display_linechart showMenu="true" fields=slp}}
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section  title="Station: {{field name=site_id raw=true}} -- {{name}}"
@@ -70,13 +81,15 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
 :heading Information
 {{information details=true}}
 ]]>
-
+-section
 </wiki>
   </type>
 
 
   <type name="type_nws_obs"  super="type_point" description="NWS Current Observations"
+	newfields="site_id,name,quit,_default"
 	handler="org.ramadda.geodata.point.NwsObsTypeHandler">
+    
     <property name="search.tabs" value="map,list"/>
      <property name="form.file.show" value="false"/>
      <property name="form.resource.show" value="false"/>
@@ -87,6 +100,7 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
      <property name="icon" value="/point/noaa.gif"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
      <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true" values="file:/org/ramadda/geodata/point/resources/weatherstations.txt"/>
+ <column  name="state"  type="enumeration" label="State" default="" cansearch="true"/>
  <property name="record.properties">
 skiplines=1
 fields=timestamp[type=date format="yyyy-MM-dd'T'HH:mm:ss"],latitude[chartable=true isLatitude=true],longitude[chartable=true isLongitude=true],temperature[unit=C],dewpoint[unit=C],winddirection[label="Wind Direction" unit=degrees],windspeed[label="Wind Speed" unit=m/s],windgust[label="Wind Gust" unit=m/s],barometricpressure[label="Barometric Pressure" unit=Pa],sealevelpressure[label="Sea Level Pressure" unit=Pa],visibility[unit=m],maxtemperaturelast24hours[label="Max Temperature Last 24 Hours" unit=C],mintemperaturelast24hours[label="Min Temperature Last 24 Hours" unit=C],precipitationlast3hours[label="Precipitation Last 3 Hours" unit=m],precipitationlast6hours[label="Precipitation Last 6 Hours" unit=m],relativehumidity[label="Relative Humidity" unit=%],windchill[label="Wind Chill" unit=C],heatindex[label="Hear Index" unit=C]
@@ -128,6 +142,15 @@ label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temperature de
 ----
 :heading Text
 {{display_text showMenu=false recordTemplate="${default itemsPerColumn=20}" }}
+----
+:heading Table
+{{display_download  showMenu=false}}
+{{display_table  showMenu=false}}
+:vspace 1em
+----
+:heading Information
+{{information details=true}}
+
 ]]>
 </wiki>
 </type>

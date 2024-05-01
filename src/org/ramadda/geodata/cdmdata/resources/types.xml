@@ -31,6 +31,38 @@
         handler="org.ramadda.geodata.cdmdata.GridTypeHandler"
         pattern=".*\.(grb|grib|grib2|grb2)$">
      <property name="icon" value="/cdmdata/grid.png"/>
+   <embedwiki><![CDATA[
+   {{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}}
+   ]]></embedwiki>
+
+   <wikimacro name="grid_raster_display" label="Raster Map">
+   <![CDATA[{{display_map   height="60vh" loadingMessage="Loading data..."   dateFormat=yyyymmddhhmm
+max=1000000   tooltip="${default}" centerOnConus=true 
+gridField=#1 gridTime=-1 request.gridTime.visible=false gridLevel=last gridStride=1 timeStride=3
+showPoints=false strokeColor=#fff fillOpacity=0 strokeWidth=0
+colorBy="#1"  colorTableAlpha="0.75"  colorByAllRecords=true 
+doGrid=true doHeatmap=true  hmOperator="average"  hmFilter=gauss25 hmGroupByDate=true  
+doAnimation=true animationLoop=true animationMode=frame animationSliderStyle="width:400px;"
+}}]]></wikimacro> 
+
+   <wikimacro name="grid_fullraster_display" label="Full Raster Map" isoutput="true" icon="/cdmdata/grid.png">
+     <![CDATA[+section title={{name}}
+{{description wikify=true}}
+{{display_map   height="60vh" loadingMessage="Loading data..."   dateFormat=yyyymmddhhmm
+max=1000000   tooltip="${default}" centerOnConus=true 
+gridField=#1 gridTime=-1 request.gridTime.visible=false gridLevel=last gridStride=1 timeStride=3
+showPoints=false strokeColor=#fff fillOpacity=0 strokeWidth=0
+colorBy="#1"  colorTableAlpha="0.75"  colorByAllRecords=true 
+doGrid=true doHeatmap=true  hmOperator="average"  hmFilter=gauss25 hmGroupByDate=true  
+doAnimation=true animationLoop=true animationMode=frame animationSliderStyle="width:400px;"
+}}
+----
+:heading Information
+{{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}}
+-section]]></wikimacro> 
+   
+
+
   </type>
 
 
@@ -205,6 +237,7 @@ ${charts}
 {{display_text showTitle="false" showMenu="false" labelWidth="100px"}}
 -col
 -row
+-section
 ]]>
 </wiki>
   </type>

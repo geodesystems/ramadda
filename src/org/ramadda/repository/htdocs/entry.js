@@ -698,6 +698,7 @@ function EntryType(props) {
 }
 
 
+//class:Entry
 function Entry(props) {
     if (props.repositoryId == null) {
         props.repositoryId = props.baseUrl;
@@ -727,8 +728,8 @@ function Entry(props) {
         childrenEntries: null,
         startDate: null,
         endDate: null,
+	embedWikiText:null
     });
-
     $.extend(this, props);
     this.domId = Utils.cleanId(this.id);
 
@@ -859,6 +860,9 @@ function Entry(props) {
             children.map(func);
             Utils.call(finish);
         },
+	getEmbedWikiText:function() {
+	    return this.embedWikiText;
+	},
         getParentName: function() {
 	    return this.parentName;
 	},
@@ -1269,9 +1273,14 @@ function EntrySearchSettings(props) {
 	    return this.providers[0];
 	},
 
+
 	setProvider:function(provider) {
-	    if(!this.providers) this.providers=[];
-	    this.providers.push(provider);
+	    if(provider==null) {
+		this.providers=null;
+		return
+	    }
+	    if(!Array.isArray(provider)) provider =[provider];
+	    this.providers = provider;
 	},
         getMax: function() {
             return this.max;

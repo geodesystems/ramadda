@@ -63,9 +63,11 @@ public class NwsStationTypeHandler extends PointTypeHandler {
 	if(!Utils.stringDefined(id)) return;
 	JSONObject station = getStation(id);
 	if(station==null) return;
-	if(!Utils.stringDefined(entry.getName())) entry.setName(station.getString("name"));
+	if(!Utils.stringDefined(entry.getName()))
+	    entry.setName(station.getString("name"));
     	entry.setLatitude(station.getDouble("lat"));
     	entry.setLongitude(station.getDouble("lon"));	
+	entry.setValue("state",station.optString("st",""));
    }
 
 

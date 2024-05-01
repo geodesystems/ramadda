@@ -56,6 +56,11 @@ image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
 label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
 label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)" prefixLabel=true suffix=" ${unit}"}
 </property>
+<embedwiki><![CDATA[
+{{group showMenu="false"}}
+{{display_linechart showMenu=true fieldsPatterns=".*temp,.*rh" lastRecords="1000"}}
+{{display_linechart showMenu=true fieldsPatterns=".*press" lastRecords="1000"}}
+]]></embedwiki>
 <property name="bubble">
 <![CDATA[
 +section  title="{{name}}"

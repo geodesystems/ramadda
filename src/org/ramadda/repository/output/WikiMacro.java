@@ -14,18 +14,28 @@ import ucar.unidata.xml.XmlUtil;
 public class WikiMacro {
     private String name;
     private String label;
+    private String icon;
     private String wikiText;
     private String properties;
+    private boolean isOutput=false;
     public WikiMacro(Element node) {
 	name = XmlUtil.getAttribute(node,"name","name");
+	icon = XmlUtil.getAttribute(node,"icon",(String)null);
 	label = XmlUtil.getAttribute(node,"label",name);
+	isOutput = XmlUtil.getAttribute(node,"isoutput",false);
 	properties = XmlUtil.getAttribute(node,"properties","");
 	wikiText = XmlUtil.getChildText(node);
+	if(wikiText!=null) wikiText = wikiText.trim();
     }
 
     public WikiMacro(String name, String wikiText) {
 	this.name  = name;
+	if(wikiText!=null) wikiText = wikiText.trim();
 	this.wikiText = wikiText;
+    }
+
+    public boolean isOutput() {
+	return isOutput;
     }
 
     /**
@@ -44,6 +54,10 @@ public class WikiMacro {
     **/
     public String getName () {
 	return name;
+    }
+
+    public String getIcon () {
+	return icon;
     }
 
     /**

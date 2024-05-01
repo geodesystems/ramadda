@@ -25,6 +25,7 @@
      <property name="form.description.iswiki" value="true"/>
      <property name="file.accept" value="application/pdf"/>    
      <property name="wiki.edit.links.label" value="PDF Tags"/>
+     <embedwiki><![CDATA[{{pdf}}]]></embedwiki>
      <wikiview name="embedpdf" label="Embed PDF" icon="/icons/pdf.png">
        <![CDATA[
 +section title={{name}}

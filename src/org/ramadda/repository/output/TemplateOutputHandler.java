@@ -104,6 +104,20 @@ public class TemplateOutputHandler extends OutputHandler {
         init(element);
     }
 
+    public TemplateOutputHandler(Repository repository, String id, String name,
+				 List<String> types,
+				 String wiki, String icon)
+				 throws Exception {
+        super(repository, name);
+	this.types=types;
+	fileWikiTemplate = folderWikiTemplate = wiki;
+        outputType = new OutputType(name, id, OutputType.TYPE_VIEW, "",
+				    icon!=null?icon:"/icons/page.png");
+        addType(outputType);
+    }
+
+
+
 
     /**
      * _more_
@@ -115,9 +129,7 @@ public class TemplateOutputHandler extends OutputHandler {
     private void init(Element element) throws Exception {
         embed = XmlUtil.getAttribute(element, ATTR_EMBED, false);
         String id = XmlUtil.getAttribute(element, ATTR_ID);
-        String wikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI,
-                                  "no wiki");
-
+        String wikiTemplate = XmlUtil.getGrandChildText(element, TAG_WIKI,"no wiki");
 
         folderWikiTemplate = XmlUtil.getGrandChildText(element,
                 TAG_WIKI_FOLDER, wikiTemplate);
@@ -128,12 +140,9 @@ public class TemplateOutputHandler extends OutputHandler {
 
         forGroups = types.contains("folder");
         forFiles  = types.contains("file");
-
         outputType = new OutputType(XmlUtil.getAttribute(element, ATTR_NAME,
                 id), id, OutputType.TYPE_VIEW, "",
-                     XmlUtil.getAttribute(element, ATTR_ICON,
-                                          "/icons/file.gif"));
-
+                     XmlUtil.getAttribute(element, ATTR_ICON, "/icons/file.gif"));
         addType(outputType);
     }
 

@@ -12,6 +12,9 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.w3c.dom.*;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.*;
 import java.net.URL;
 
@@ -28,7 +31,6 @@ public class SnotelTypeHandler extends PointTypeHandler {
     private static int IDX_STATE = IDX++;
     private static int IDX_COUNTY = IDX++;
     private static int IDX_NETWORK = IDX++;
-    private static int IDX_HUC_NAME = IDX++;
     private static int IDX_HUC_ID = IDX++;
 
 
@@ -59,19 +61,35 @@ public class SnotelTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
 	throws Exception {
-        if (fromImport) {
-            return;
-        }
+        if (fromImport) {return;}
+	initializeNewEntryInner(request, entry);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_number",seen,"^\\d+$",null);
+	int cnt=0;
+	List<Entry> goodEntries = new ArrayList<Entry>();
+	for(Entry newEntry: entries) {
+	    cnt++;
+	    System.err.println("SnotelTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue("site_number"));
+	    if(initializeNewEntryInner(request,newEntry))
+		goodEntries.add(newEntry);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  goodEntries,true, true);
+    }
+
+    private boolean initializeNewEntryInner(Request request, Entry entry)
+	throws Exception {
         String id = (String) entry.getStringValue(IDX_SITE_NUMBER, "");
         if ( !Utils.stringDefined(id)) {
-	    super.initializeNewEntry(request, entry, fromImport);
-            return;
+            return false;
         }
 
 
 	id =id.trim();
-	String url = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/stations?activeOnly=true&returnForecastPointMetadata=false&returnReservoirMetadata=false&returnStationElements=false&stationTriplets="+ id+"%3A*%3A*";
+	String url = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/stations?activeOnly=true&returnForecastPointMetadata=false&returnReservoirMetadata=false&returnStationElements=false&stationTriplets="+ id+"%3A*%3ASNTL";
 
+	//	System.err.println(url);
 	//https://www.wcc.nrcs.usda.gov/siteimages/663.jpg
 
         String json = null;
@@ -104,8 +122,6 @@ public class SnotelTypeHandler extends PointTypeHandler {
             double lon = obj.getDouble("longitude");
             double lat = obj.getDouble("latitude");	    
             entry.setLocation(lat, lon,obj.getDouble("elevation"));
-	    entry.setDescription("[https://wcc.sc.egov.usda.gov/nwcc/site?sitenum=" + id+" NRCS Site]");
-	    //            entry.setValue(IDX_LOCATION_TYPE, attrs.getString("locationTypeName"));
             if (!Utils.stringDefined(entry.getName())) {
                 entry.setName(obj.getString("name"));
             }
@@ -119,11 +135,11 @@ public class SnotelTypeHandler extends PointTypeHandler {
 	    entry.setValue(IDX_SITE_ID,siteId);
 	    String dataUrl = "http://www.wcc.nrcs.usda.gov/reportGenerator/view_csv/customSingleStationReport/daily/" + siteId+"|name/-14,0/WTEQ::value,WTEQ::delta,SNWD::value,SNWD::delta,PREC::value,TOBS::value,TMIN::value,TMAX::value";
 	    entry.setResource(new Resource(dataUrl));
-	    super.initializeNewEntry(request, entry, fromImport);
+	    return true;
         } catch (Exception exc) {
+	    getSessionManager().addSessionErrorMessage(request,"Error reading SNOTEL metadata for site:" +  id); 
             getLogManager().logError("Error reading SNOTEL URL:" + url, exc);
-            getLogManager().logError("JSON:" + json);
-            throw new RuntimeException("Error accessing SNOTEL API for site:"+ id);
+	    return false;
         }
     }
 }

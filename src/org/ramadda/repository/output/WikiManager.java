@@ -94,7 +94,7 @@ public class WikiManager extends RepositoryManager
     implements OutputConstants,WikiConstants, WikiPageHandler, SystemContext {
 
     private static boolean debugGetEntries = false;
-
+    private boolean debug1 = false;
 
     /** output type */
     public static final OutputType OUTPUT_WIKI = new OutputType("Wiki",
@@ -1534,6 +1534,7 @@ public class WikiManager extends RepositoryManager
 
 
         if (result == null) {
+	    System.err.println("WIKI ERROR:" + Utils.getStack(30));
             result = getMessage(wikiUtil, props,
                                 HU.span("Could not process tag: " + tag,HU.cssClass("ramadda-wiki-error")));
         }
@@ -4756,16 +4757,19 @@ public class WikiManager extends RepositoryManager
 	    List<String> post = null;
 	    String before = getProperty(wikiUtil, props,"linksBefore",null);
 	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
+	    String attrs="";
+	    String target  = getProperty(wikiUtil,props,"target",null);
+	    if(target!=null) attrs=HU.attrs("target",target);
 	    if(before!=null) {
 		pre = new ArrayList<String>();
 		for(List<String> toks: Utils.multiSplit(before,",",";",2)) {
-		    pre.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		    pre.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0),target));
 		}
 	    }
 	    if(after!=null) {
 		post = new ArrayList<String>();
 		for(List<String> toks: Utils.multiSplit(after,",",";",2)) {
-		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0)));
+		    post.add(HU.href(toks.get(0),toks.size()>1?toks.get(1):toks.get(0),target));
 		}
 	    }
 
@@ -4832,6 +4836,9 @@ public class WikiManager extends RepositoryManager
 	String template = getProperty(wikiUtil, props,
 				      "template", null);
 
+	String attrs="";
+	String target  = getProperty(wikiUtil,props,"target",null);
+	if(target!=null) attrs=HU.attrs("target",target);
 
 	boolean highlightThis = getProperty(wikiUtil, props,
 					    "highlightThis", false);
@@ -4854,8 +4861,7 @@ public class WikiManager extends RepositoryManager
 					  ? "&nbsp|&nbsp;"
 					  : ""));
 
-	String output = getProperty(wikiUtil, props, "output",
-				    (String) null);
+	String output = getProperty(wikiUtil, props, "output",   (String) null);
 	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
 	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<li>");
@@ -4919,7 +4925,7 @@ public class WikiManager extends RepositoryManager
 	    String snippet =  showSnippet?getSnippet(request,  child, true,""):showDescription?child.getDescription():null;
 
 	    String href = HU.href(url, linkLabel,
-				  HU.cssClass("ramadda-link " + cssClass)
+				  attrs+HU.cssClass("ramadda-link " + cssClass)
 				  + HU.style(style));
 	    
 	    if(decorate) {
@@ -6844,11 +6850,14 @@ public class WikiManager extends RepositoryManager
 	if (orderBy == null) {
 	    orderBy = getProperty(wikiUtil, props, "orderby");
 	}	    
-
+	if(orderBy==null) {
+	    orderBy = ORDERBY_NAME;
+	}
 
 	//xxxxx
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
 				     getProperty(wikiUtil,props,ATTR_SORT_ORDER,null));
+
 
 	if(sortDir==null) {
 	    String v = getProperty(wikiUtil,props,"ascending",null);
@@ -6866,8 +6875,15 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-	if(sortDir==null) sortDir = DIR_DOWN;
+	if(sortDir==null) {
+	    if (orderBy.equals(ORDERBY_NAME)) {
+		sortDir = DIR_UP;
+	    } else {
+		sortDir = DIR_DOWN;
+	    }
+	}
 	boolean descending = sortDir.equals(DIR_DOWN);
+
 
         HashSet     nots        = new HashSet();
 	SelectInfo select=null;
@@ -7181,6 +7197,9 @@ public class WikiManager extends RepositoryManager
             return rtmp;
         }
 
+	if(debug1)
+	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
+
         if (orderBy != null) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
@@ -7190,6 +7209,8 @@ public class WikiManager extends RepositoryManager
                 entries = getEntryUtil().sortEntriesOnNumber(entries, descending);		
             } else if (orderBy.equals(ORDERBY_NAME)) {
                 entries = getEntryUtil().sortEntriesOnName(entries, descending);
+		if(debug1)
+		    System.err.println("entries:" + entries);
             } else {
                 entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
 	    }
@@ -8305,7 +8326,7 @@ public class WikiManager extends RepositoryManager
        Implements from WikiPageHandler interface
        Checks for hasChildrenOfType=<some entry type>
     */
-    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs, StringBuilder ifBuffer)  {
+    public boolean ifBlockOk(WikiUtil wikiUtil, String attrs)  {
 	try {
 	    Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
 	    Hashtable props = HU.parseHtmlProperties(attrs);

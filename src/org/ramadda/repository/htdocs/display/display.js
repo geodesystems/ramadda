@@ -3,6 +3,7 @@
 */
 
 
+
 var  displayDebug= {
     getProperty:false,
     loadPointJson:false,
@@ -2169,8 +2170,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }		
             func.apply(this, [source, data]);
         },
-	wikify:function(wiki,entryId,wikiCallback,wikiError) {
-	    wikiError = wikiError || (error=>{this.handleError(error);});
+	wikify:function(wiki,entryId,wikiCallback,wikiError,containerId) {
+	    if(containerId) {
+		wikiCallback = html=>{this.addWikiHtml(jqid(containerId),html);};
+		wikiError = html=>{jqid(containerId).html(html);};
+	    } 
+	    wikiError = wikiError ?? (error=>{this.handleError(error);});
 	    let url = RamaddaUtil.getUrl("/wikify");
 	    $.post(url,{
 		doImports:"false",
@@ -2199,6 +2204,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	getColorTableHorizontal: function() {
 	    return this.getProperty("colorTableSide","bottom") == "bottom" || this.getProperty("colorTableSide","bottom") == "top";
 	},
+        displayColorTableHtml: function(html, domId){
+	    domId = this.getColorTableDisplayId()?? this.domId(domId);
+	    let dom = jqid(domId);
+	    dom.html(html);
+	},
+
         displayColorTable: function(ct, domId, min, max, args) {
 	    domId = this.getColorTableDisplayId()?? this.domId(domId);
 	    //Check if it is a date
@@ -2531,7 +2542,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return iconMap;
 	},
 	getColorByInfo: function(records, prop,colorByMapProp, defaultColorTable,propPrefix,lastColorBy,props) {
-	    if(this.getProperty('colorByAllRecords')) {
+	    if(this.getColorByAllRecords()) {
 		records = this.getRecords();
 	    }
 	    if(!records) return null;
@@ -4686,7 +4697,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showHeader: true,
                 headerRight: false,
                 showDetails: this.getShowDetails(),
-		showImage:true,
+		showImage:this.getProperty("showEntryImage")
             };
             $.extend(dfltProps, props);
 
@@ -4702,6 +4713,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let divid = HU.getUniqueId("entry_");
             html += HU.div([ID, divid], "");
             let metadata = entry.getMetadata();
+	    //Don't this now since this gets shown in the embed details
 	    if(dfltProps.showImage) {
 		if (entry.isImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
@@ -4751,6 +4763,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
+
             for (let colIdx = 0; colIdx < columns.length; colIdx++) {
                 let column = columns[colIdx];
                 let columnValue = column.value;
@@ -4781,23 +4794,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
-	    let columns = this.getProperty("entryColumns", null);
+	    let columns = this.getProperty('entryColumns', null);
 	    let showSnippet = this.getProperty('showSnippetInList');
             if (columns != null) {
-                let columnNames = this.getProperty("columnNames", null);
+                let columnNames = this.getProperty('columnNames', null);
                 if (columnNames != null) {
-                    columnNames = columnNames.split(",");
+                    columnNames = columnNames.split(',');
                 }
-                columns = columns.split(",");
+                columns = columns.split(',');
                 let ids = [];
                 let names = [];
                 for (let i = 0; i < columns.length; i++) {
-                    let toks = columns[i].split(":");
+                    let toks = columns[i].split(':');
                     let id = null,
                         name = null;
                     if (toks.length > 1) {
-                        if (toks[0] == "property") {
-                            name = "property";
+                        if (toks[0] == 'property') {
+                            name = 'property';
                             id = columns[i];
                         } else {
                             id = toks[0];
@@ -4817,9 +4830,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return this.getEntriesTable(entries, columns, columnNames);
             }
             let suffix = props.suffix;
-            let domIdSuffix = "";
+            let domIdSuffix = '';
             if (!suffix) {
-                suffix = "null";
+                suffix = 'null';
             } else {
                 domIdSuffix = suffix;
                 suffix = "'" + suffix + "'";
@@ -4895,8 +4908,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     line = left;
                 }
                 //                    line = HU.leftRight(left,toolbar,"60%","30%");
-
-
                 let mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
                 line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
                 html += HU.div([ATTR_ID,
@@ -5272,19 +5283,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
             } 
 	    let detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
-            if (!entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
+	    let embedWiki=	(!entry.isRemote)?entry.getEmbedWikiText():null;
+
+            if (!embedWiki && !entry.isSynth() && entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 detailsInner.html(HU.image(icon_progress));
                 let callback = function(entries) {
                     _this.displayChildren(entry, entries, suffix, handlerId);
                 };
                 let entries = entry.getChildrenEntries(callback);
             } else {
-                detailsInner.html(this.getEntryHtml(entry, {
+		let details = this.getEntryHtml(entry, {
                     showHeader: false
-                }));
+                })
+		let uid;
+		if(Utils.stringDefined(embedWiki)) {
+		    uid =this.getUniqueId("details");
+		    details+=HU.div([ATTR_ID,uid,
+				     ATTR_CLASS,'ramadda-button ramadda-clickable'],
+				    'Details');
+		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-embed']);
+		}
+                detailsInner.html(details);
+		if(uid) {
+		    jqid(uid).button().click(()=>{
+			let contents = jqid(uid+'_contents');
+			contents.html(HU.div([ATTR_CLASS,'ramadda-image-loading']));
+			this.wikify(embedWiki,entry.getId(),
+				    (html)=>{
+					this.addWikiHtml(contents, html);
+				    },
+				    (error)=>{
+					contents.html(error);
+				    });
+		    });
+		}
             }
 	    handleContent();
-
 
 
 	    let metadataMap  = {};
@@ -5323,6 +5357,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		entry.getParentEntry(handleAncestor);
 	    }
         },
+	addWikiHtml:function(container,html) {
+	    let debug = true;
+	    let js =[];
+	    //Parse out any script tags 
+	    let regexp = /<script *src=("|')?([^ "']+)("|')?.*?<\/script>/gs;
+	    let array = [...html.matchAll(regexp)];
+	    array.forEach(tuple=>{
+		html = html.replace(tuple[0],'');
+		let url = tuple[2];
+		url = url.replace(/'/g,'');
+		js.push(url);
+	    });
+	    //Run through any script tags and load them
+	    let cb = ()=>{
+		if(js.length==0 && js[0]==null) {
+		    container.html(html);
+		    return;
+		}
+		let url = js[0];
+		js.splice(0,1);
+		Utils.loadScript(url,cb);
+	    };
+	    cb();
+	},
+
+
 	metadataTagClicked:function(metadata) {
 	},
 	typeTagClicked:function(metadata) {
@@ -7213,22 +7273,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
 	initializeAnimation:function(filteredRecords) {
 	    let debug = false;
+	    if(!filteredRecords) filteredRecords = this.getRecords();
 	    let dateInfo = this.getDateInfo(filteredRecords);
-	    if(debug) console.log("checkSearchBar-11");
+	    if(debug) console.log("initializeAnimation-1");
 	    if (dateInfo.dateMax) {
-		if(debug) console.log("checkSearchBar-getAnimation");
+		if(debug) console.log("initializeAnimationr-getAnimation");
 		let animation = this.getAnimation();
 		if(animation.getEnabled()) {
-		    if(debug) console.log("checkSearchBar-calling animation.init");
+		    if(debug) console.log("initializeAnimation-calling animation.init");
 		    //		    console.log("dateMin:" + dateMin.toUTCString());
 		    animation.init(dateInfo.dateMin, dateInfo.dateMax,filteredRecords);
-		    if(debug) console.log("checkSearchBar-done calling animation.init");
+		    if(debug) console.log("initializeAnimation-done calling animation.init");
 		    if(!this.minDateObj) {
-			if(debug) console.log("checkSearchBar-calling setDateRange");
+			if(debug) console.log("initializeAnimation-calling setDateRange");
 			if(this.getProperty("animationFilter", true)) {
 			    this.setDateRange(animation.begin, animation.end);
 			}
-			if(debug) console.log("checkSearchBar-done calling setDateRange");
+			if(debug) console.log("initializeAnimation-done calling setDateRange");
 		    }
 		}
 	    }
@@ -7511,10 +7572,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.setDateRange(animation.begin, animation.end);
 	    if(!skipUpdateUI) {
 		this.haveCalledUpdateUI = false;
-		//		let t1 = new Date();
 		this.dataFilterChanged({source:"animation"});
-		//		let t2 = new Date();
-		//		Utils.displayTimes("timeChanged",[t1,t2]);
 	    }
 	    this.propagateEvent(DisplayEvent.propertyChanged, {
 		property: "dateRange",
@@ -7992,6 +8050,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    
 	    this.haveCalledUpdateUI = false;
 	    if(debug) console.log("\tcalling updateUI");
+	    if(reload && this.getAnimation().getEnabled()) {
+		this.initializeAnimation();
+	    }
+
 	    try {
 		let requirement = this.getRequirement();
 		if(requirement) {

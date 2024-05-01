@@ -168,6 +168,7 @@ Glyph.prototype = {
     },
 
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+
 	let props = this.properties;
 	if(props.dontShow)return;
 	debug = props.debug??debug;
@@ -195,7 +196,7 @@ Glyph.prototype = {
 		color = Utils.addAlphaToColor(c,countPerc);
 	    }
 	}
-	ctx.fillStyle =color || props.fillStyle || props.color || 'blue';
+	ctx.fillStyle =color || props.fillStyle || props.color || 'transparent';
 	ctx.strokeStyle =props.strokeStyle ?? props.color ?? opts.strokeStyle ?? '#000';
 	ctx.lineWidth=props.lineWidth??props.strokeWidth??opts.lineWidth??1;
 	if(props.type=='label') {

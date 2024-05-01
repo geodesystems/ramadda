@@ -159,7 +159,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	throws Exception {
 	if(fromImport) return;
 	initializeNewEntryInner(request, entry);
-	String id = ("" + entry.getValue("station_id")).trim();
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
 	HashSet<String> seen = new HashSet<String>();

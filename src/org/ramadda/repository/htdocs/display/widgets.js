@@ -712,6 +712,7 @@ Annotations.prototype = {
 let Gfx = {
     gridData: function(gridId,fields, records,args) {
 	
+
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
 	    args.cellSize = args.cellSizeX;
@@ -720,7 +721,7 @@ let Gfx = {
 	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
 	    args.cellSizeY= args.cellSizeX;
 	let opts = {
-	    shape:"circle",
+	    shape:"rect",
 	    color:"blue",
 	    w:800,
 	    h:400,
@@ -731,7 +732,7 @@ let Gfx = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-	//	console.log(JSON.stringify(opts,null,2));
+//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
 	let id = HtmlUtils.getUniqueId();
 	opts.scale=+opts.scale;
 	let scale = opts.scale;
@@ -824,7 +825,7 @@ let Gfx = {
 				  scale,
 				  fields,
 				  records,
-				  {type:"rect",
+				  {type:opts.shape,
 				   canvasWidth:canvas.width,
 				   canvasHeight: canvas.height,
 				   colorByInfo:opts.colorBy,
@@ -836,7 +837,6 @@ let Gfx = {
 				   dy:opts.cellSizeY/2,				   
 				  },
 				  "");
-	    opts.shape = "rect";
 	    for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(let colIdx=0;colIdx<cols;colIdx++)  {

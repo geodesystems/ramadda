@@ -239,6 +239,21 @@ public abstract class Converter extends Processor {
 
 
 
+    public static class NoHeader extends Converter {
+
+        public NoHeader() {
+        }
+
+
+
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return null;
+	    return row;
+        }
+    }
+    
+
+
 
     /**
      * Class description
