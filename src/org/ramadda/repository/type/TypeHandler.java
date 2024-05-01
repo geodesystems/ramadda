@@ -726,8 +726,11 @@ public class TypeHandler extends RepositoryManager {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+    }
 
 
+    public boolean applyEditCommand(Request request,Entry entry, String command) throws Exception {
+	return false;
     }
 
     public void addAction(Action action) {
