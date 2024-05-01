@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Apr 30 23:55:53 MDT 2024";
+var build_date="RAMADDA build date: Wed May  1 06:23:10 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8663,7 +8663,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showHeader: true,
                 headerRight: false,
                 showDetails: this.getShowDetails(),
-		showImage:true,
+		showImage:this.getProperty("showEntryImage")
             };
             $.extend(dfltProps, props);
 
@@ -8680,7 +8680,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             html += HU.div([ID, divid], "");
             let metadata = entry.getMetadata();
 	    //Don't this now since this gets shown in the embed details
-	    if(false && dfltProps.showImage) {
+	    if(dfltProps.showImage) {
 		if (entry.isImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
@@ -33396,6 +33396,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'entriesWidth',d: 0},
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
+	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
         {p:'showDetailsForGroup',d: false},
 	{p:'inputSize',d:'200px',tt:'Text input size'},
 	{p:'textInputSize',d:'20px',ex:'100%'},	
