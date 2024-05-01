@@ -168,6 +168,7 @@ Glyph.prototype = {
     },
 
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+
 	let props = this.properties;
 	if(props.dontShow)return;
 	debug = props.debug??debug;

@@ -57,6 +57,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
 	{p:'centerOnConus',ex:true},
+	{p:'centerOnNA',ex:true},
 	{p:'initBoundsUseAllRecords',ex:true},
 	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
 	{p:'zoomTimeout',ex:500,
@@ -527,6 +528,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    this.setProperty('zoomLevel',3);
 		this.setProperty('mapCenter','39.8333,-98.5855');
 	    }
+	    if(this.getCenterOnNA()) {
+		if(!this.getZoomLevel()) 
+		    this.setProperty('zoomLevel',3);
+		this.setProperty('mapCenter','46.17983,-92.43896');
+	    }	    
+
 	    this.hadUrlArgumentMapCenter = Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER));
 	    this.hadUrlArgumentZoom = Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL));
 	    if(!this.hadUrlArgumentMapCenter && this.getMapCenter()) {
