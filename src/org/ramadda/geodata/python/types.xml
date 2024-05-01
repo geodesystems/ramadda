@@ -10,6 +10,8 @@
 
      <action name="applyllm" label="Apply LLM" canedit="true"
 	     icon="fas fa-font" foruser="true" category="edit"/>
+     <property name="llm.prompt.extra" value="The text below is from an IPython notebook."/>
+
      <property name="icon" value="/python/ipynb.png"/>
      <embedwiki><![CDATA[{{notebook}}]]></embedwiki>
      <wiki><![CDATA[

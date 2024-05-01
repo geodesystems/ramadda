@@ -12,9 +12,11 @@ import org.json.*;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.ImageUtils;
 import org.ramadda.util.JsonUtil;
 
 import org.ramadda.util.ProcessRunner;
@@ -31,6 +33,7 @@ import ucar.unidata.util.PatternFileFilter;
 
 import ucar.unidata.util.StringUtil;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 
@@ -64,18 +67,48 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
 
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,
+                                   boolean fromImport)
+	throws Exception {
+
+	if(fromImport) return;
+	try {
+	    initializeNewEntryInner(request, entry);
+	} catch(Exception exc) {
+	    exc.printStackTrace();
+	    getSessionManager().addSessionErrorMessage(request,"Error initializing notebook:" +  exc); 
+	    
+	}
+    }
+
+    private void initializeNewEntryInner(Request request, Entry entry)
+	throws Exception {
+	JSONArray cells = getCells(entry);
+        for (int i = 0; i < cells.length(); i++) {
+            JSONObject    cell     = cells.getJSONObject(i);
+            String        cellType = cell.getString("cell_type");
+            if (!cell.has("outputs")) continue;
+	    JSONArray outputs = cell.getJSONArray("outputs");
+	    for (int outputIdx = 0; outputIdx < outputs.length();  outputIdx++) {
+		JSONObject output = outputs.getJSONObject(outputIdx);
+		if (!output.has("png")) continue;
+		BufferedImage image = ImageUtils.readBase64("png",output.getString("png"));
+		File tmpFile = getStorageManager().getTmpFile(request,"thumbnail.png");
+		ImageUtils.writeImageToFile(image, tmpFile);
+		String fileName = getStorageManager().copyToEntryDir(entry,
+								     tmpFile).getName();
+		Metadata thumbnailMetadata =
+		    new Metadata(getRepository().getGUID(), entry.getId(),
+				 ContentMetadataHandler.TYPE_THUMBNAIL, false,
+				 fileName, null, null, null, null);
+		getMetadataManager().addMetadata(request,entry, thumbnailMetadata);
+		return;
+	    }
+	}
+    }
+
+
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -311,6 +344,9 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
                     if (output.has("text")) {
                         processText(request, output, sb, index);
                     }
+                    if (output.has("png")) {
+                        processPng(request, output, sb, index);
+                    }		    
                 }
             }
         }
@@ -519,6 +555,19 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
     }
 
+    private void processPng(Request request, JSONObject obj, Appendable sb,
+                             int i)
+            throws Exception {
+        StringBuilder osb = new StringBuilder();
+	String png = obj.getString("png");
+	osb.append("<img src=\"data:image/png;base64,");
+	osb.append(png);
+	osb.append("\">");
+        String s = osb.toString();
+        writeOutput(request, sb, s, -1);
+
+    }
+    
     /**
      * _more_
      *
