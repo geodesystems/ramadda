@@ -90,6 +90,48 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     }
 
 
+    @Override
+    public String getCorpus(Request request, Entry entry, CorpusType corpusType) throws Exception {
+	boolean forLLM = corpusType==CorpusType.LLM;
+	JSONArray cells = getCells(entry);
+	StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cells.length(); i++) {
+            JSONObject    cell     = cells.getJSONObject(i);
+            String        cellType = cell.getString("cell_type");
+	    if (cellType.equals("code")) {
+		if(forLLM)
+		    sb.append("The following is python code\n");
+	    } else if (cellType.equals("markdown")) {
+		if(forLLM)
+		    sb.append("The following is markdown code\n");
+	    } 
+            if (cell.has("source")) {
+                readLines(cell, "source", sb);
+		sb.append("\n");
+            } else if (cell.has("input")) {
+                readLines(cell, "input", sb);
+		sb.append("\n");
+            }
+
+            if (cell.has("outputs")) {
+                JSONArray outputs = cell.getJSONArray("outputs");
+		for (int outputIdx = 0; outputIdx < outputs.length();  outputIdx++) {
+		   JSONObject output = outputs.getJSONObject(outputIdx);
+		   String     type   = output.getString("output_type");
+		   if (output.has("text")) {
+		       try {
+			   if(forLLM)
+			       sb.append("The following is the output of the above code\n");
+			   JSONArray text = output.getJSONArray("text");
+			   readLines(text, sb);
+		       } catch (Exception exc) {
+		       }
+		   }
+	       }
+	    }
+	}
+	return sb.toString();
+    }
 
 
     /**
@@ -150,16 +192,21 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    private JSONArray  getCells(Entry entry) throws Exception {
+        String json = getStorageManager().readSystemResource(entry.getFile());
+        JSONObject obj   = new JSONObject(new JSONTokener(json));
+        JSONArray  cells = null;
+        if (obj.has("cells")) {
+            cells = obj.getJSONArray("cells");
+        } else if (obj.has("worksheets")) {
+            JSONArray  worksheets = obj.getJSONArray("worksheets");
+            JSONObject worksheet  = worksheets.getJSONObject(0);
+            cells = worksheet.getJSONArray("cells");
+        }
+	return cells;
+    }
+
+
     private String renderNotebook(Request request, Entry entry)
             throws Exception {
 
@@ -200,16 +247,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
         //        getPageHandler().entrySectionOpen(request, entry, sb, "IPython Notebook", true);
         sb.append("<table width=100%>");
-        String json = getStorageManager().readSystemResource(entry.getFile());
-        JSONObject obj   = new JSONObject(new JSONTokener(json));
-        JSONArray  cells = null;
-        if (obj.has("cells")) {
-            cells = obj.getJSONArray("cells");
-        } else if (obj.has("worksheets")) {
-            JSONArray  worksheets = obj.getJSONArray("worksheets");
-            JSONObject worksheet  = worksheets.getJSONObject(0);
-            cells = worksheet.getJSONArray("cells");
-        }
+	JSONArray cells = getCells(entry);
         int index = 0;
         for (int i = 0; i < cells.length(); i++) {
             JSONObject    cell     = cells.getJSONObject(i);
@@ -269,16 +307,6 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
                         outputIdx++) {
                     JSONObject output = outputs.getJSONObject(outputIdx);
                     String     type   = output.getString("output_type");
-                    if (output.has("data")) {
-                        processData(request, output.getJSONObject("data"),
-                                    sb, index);
-                    }
-                    if (output.has("png") && type.equals("display_data")) {
-                        String png = output.getString("png");
-                        String img = "<img src=\"data:image/png;\nbase64,"
-                                     + png + "\">\n";
-                        writeOutput(request, sb, img, index);
-                    }
                     if (output.has("text")) {
                         processText(request, output, sb, index);
                     }
