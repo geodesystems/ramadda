@@ -8,7 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.metadata.MetadataManager;
-
+import static org.ramadda.repository.type.TypeHandler.CorpusType;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -256,15 +256,11 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    private String applyPromptToDocument(Request request, String path, String prompt,PromptInfo info)
+    private String applyPromptToDocument(Request request, Entry entry, String prompt,PromptInfo info)
 	throws Exception {
 	try {
-	    String corpus = getSearchManager().extractCorpus(request, path, null);
+	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    if(corpus==null) return null;
-	    if(path.startsWith("http")) {
-		//		corpus = Utils.stripTags(corpus);
-		//		System.err.println("CORPUS:" + corpus.replace("\n", " "));
-	    }
 	    info.corpusLength=corpus.length();
 	    if(info.offset>0 && info.offset<corpus.length()) {
 		corpus = corpus.substring(info.offset);
@@ -836,7 +832,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		PromptInfo info = new PromptInfo(TOKEN_LIMIT_UNDEFINED,request.get("offset",0));
 		String r = applyPromptToDocument(request,
-						 entry.getResource().getPath(),
+						 entry,
 						 request.getString("question",""),
 						 info);
 		String s;
@@ -860,17 +856,21 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
 	sb.append("<table width=100%><tr valign=top><td width=50%>");
+	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
 	    sb.append(HU.getPdfEmbed(url,Utils.makeMap("width","100%")));
 	}   else if(entry.getTypeHandler().isType("link")) {
 	    String url = entry.getResource().getPath();
 	    sb.append("<iframe style='border:var(--basic-border);' src='"+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
-	} else {
+	} else if(entry.getTypeHandler().isType("type_document_msfile")) {
 	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
 	    url =HU.url(url,"timestamp",""+entry.getChangeDate());
 	    url = url.replace("?","%3F").replace("&","%26");
 	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
+	} else {
+	    String wiki = "{{import showTitle=false entry=" + entry.getId()+"}}";
+	    sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
 	}
 	sb.append("</td><td>");
         String id = HU.getUniqueId("chat_div");

@@ -7,6 +7,7 @@ package org.ramadda.repository.search;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
+import static org.ramadda.repository.type.TypeHandler.CorpusType;
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.DatabaseManager;
@@ -807,7 +808,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    private String readContents(Request request,
+    private String readContents(Request request, Entry entry,
 				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	boolean isImage = Utils.isImage(f.getName());
 	if(isImage) {
@@ -858,7 +859,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return null;
 	}
 
-
+	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+	if(corpus!=null) return corpus;
 	return extractCorpus(request, f.toString(),metadataList);
 
     }	
@@ -878,7 +880,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	
 	if(!f.exists() && path.startsWith("http")) {
 	    String url = path;
-	    System.err.println("URL:"  + url);
 	    IO.Result result = IO.getHttpResult(IO.HTTP_METHOD_GET,new URL(url),"");
 	    if(result.getError()) return null;
 	    return result.getResult();
@@ -928,7 +929,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
 	    long t1 = System.currentTimeMillis();
-	    String contents = readContents(request, f,metadata);
+	    String contents = readContents(request, entry, f,metadata);
 	    long t2= System.currentTimeMillis();
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
