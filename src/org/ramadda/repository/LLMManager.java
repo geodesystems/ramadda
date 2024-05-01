@@ -866,7 +866,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
-	sb.append("<table width=100%><tr valign=top><td width=50%>");
+	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50%>");
 	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");

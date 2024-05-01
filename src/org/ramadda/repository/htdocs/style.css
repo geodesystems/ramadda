@@ -211,6 +211,10 @@ ramadda-heading, .ramadda-page-heading {
     font-weight:bold;
 }
 
+.ramadda-llm-chat .notebook-container {
+    max-width:100%;
+}
+
 .ramadda-lheading  {
     padding: 0px;
     margin: 0px;
