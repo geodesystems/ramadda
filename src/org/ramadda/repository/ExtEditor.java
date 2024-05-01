@@ -565,7 +565,7 @@ public class ExtEditor extends RepositoryManager {
 				    try {
 					for(EntryWrapper wrapper:  wrappers) {
 					    Entry entry = wrapper.entry;
-					    boolean changed = false;
+					    boolean changed = wrapper.getChanged();
 					    if(wrapper.name!=null) {
 						changed = true;
 						entry.setName(wrapper.name);
@@ -586,6 +586,9 @@ public class ExtEditor extends RepositoryManager {
 						changed = true;
 						entry.setEndDate(wrapper.endDate);
 					    }
+
+
+
 					    if(changed) {
 						getEntryManager().removeFromCache(entry);
 						if(!haveReset) {
@@ -1364,6 +1367,7 @@ public class ExtEditor extends RepositoryManager {
 	private Entry entry;
 	private Request request;
 	private Repository repository;
+	boolean changed = false;
 	String name;
 	String description;
 	Date startDate;
@@ -1452,6 +1456,18 @@ public class ExtEditor extends RepositoryManager {
 	    repository.getSearchManager().entriesModified(request, entries);
 	}
 
+
+	public void applyCommand(String command)  throws Exception {
+	    changed = entry.getTypeHandler().applyEditCommand(request,entry, command);
+	    if(changed) {
+		ctx.print("Thumbnail added:" + getName());
+	    }
+	}
+
+
+	public boolean getChanged() {
+	    return changed;
+	}
 
 	public String getName() {
 	    return entry.getName();
