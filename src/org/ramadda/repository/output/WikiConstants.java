@@ -303,7 +303,7 @@ public interface WikiConstants {
 
 
     /** thumbnail attribute */
-    public static final String ATTR_THUMBNAIL = "thumbnail";
+    public static final String ATTR_USE_THUMBNAIL = "useThumbnail";
 
     /** caption attribute */
     public static final String ATTR_CAPTION = "caption";

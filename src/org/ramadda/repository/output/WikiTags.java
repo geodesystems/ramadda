@@ -146,7 +146,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#"+ATTR_ALIGN,"left|center|right","popup","true"), 
                             new WikiTag(WIKI_TAG_GALLERY,null,
                                         ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
-					ATTR_POPUP, "true", ATTR_THUMBNAIL, "false",
+					ATTR_POPUP, "true", ATTR_USE_THUMBNAIL, "false",
 					"decorate","true","imageStyle","","padding","10px",
 					ATTR_CAPTION, "Figure ${count}: ${name}",
 					"#popupCaption",""), 

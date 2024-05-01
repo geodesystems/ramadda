@@ -7300,8 +7300,9 @@ public class WikiManager extends RepositoryManager
         boolean decorate  = getProperty(wikiUtil, props, "decorate",true);
         boolean random  = getProperty(wikiUtil, props, ATTR_RANDOM, false);
         boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
-        boolean thumbnail = getProperty(wikiUtil, props, ATTR_THUMBNAIL,
-                                        false);
+        boolean thumbnail = getProperty(wikiUtil, props, ATTR_USE_THUMBNAIL,
+					getProperty(wikiUtil,props,"thumbnail",
+						    false));
         String caption = getProperty(wikiUtil, props, ATTR_CAPTION,
                                      "${name}");
 	if(!Utils.stringDefined(caption)) caption=null;
@@ -7352,6 +7353,7 @@ public class WikiManager extends RepositoryManager
                     url = urls.get(0);
                 }
             }
+
 
             if (url == null) {
 		if(child.isImage()) {
