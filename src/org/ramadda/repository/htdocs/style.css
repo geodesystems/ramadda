@@ -212,7 +212,7 @@ ramadda-heading, .ramadda-page-heading {
 }
 
 .ramadda-llm-chat .container {
-    max-width:100%;
+    width:100%;
 }
 
 .ramadda-lheading  {
