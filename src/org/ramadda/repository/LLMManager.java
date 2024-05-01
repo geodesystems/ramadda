@@ -869,10 +869,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	    url = url.replace("?","%3F").replace("&","%26");
 	    sb.append("<iframe style='border:var(--basic-border);' src='https://view.officeapps.live.com/op/embed.aspx?src="+ url+"' width='100%' height='700px' frameborder='1'></iframe>\n");
 	} else {
-	    String wiki = "{{import showTitle=false entry=" + entry.getId()+"}}";
+	    String wiki = "<div style=border:var(--basic-border);'>{{import showTitle=false entry=" + entry.getId()+"}}</div>";
 	    sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
 	}
-	sb.append("</td><td>");
+	sb.append("</td><td width=50%>");
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");
