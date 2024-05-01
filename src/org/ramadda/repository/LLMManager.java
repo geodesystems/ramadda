@@ -150,6 +150,23 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
+    public void processArgs(Request request, String...args) {
+	for(String a:args) {
+	    if(a.equals("title")) request.put(LLMManager.ARG_EXTRACT_TITLE,"true");
+	    else if(a.equals("summary")) request.put(LLMManager.ARG_EXTRACT_SUMMARY,"true");
+	    else if(a.equals("authors")) request.put(LLMManager.ARG_EXTRACT_AUTHORS,"true");
+	    else if(a.equals("keywords")) request.put(LLMManager.ARG_EXTRACT_KEYWORDS,"true");
+	    else if(a.equals("debug")) request.put("debug","true");
+	    else if(a.startsWith("model:")) {
+		String model = a.substring("model:".length());
+		if(model.equals("gpt3.5")) model=MODEL_GPT_3_5;
+		else if(model.equals("gpt4")) model=MODEL_GPT_4;
+		request.put(ARG_MODEL,model);
+	    }
+	}
+    }
+
+
     public Result applyLLM(Request request, Entry entry) throws Exception  {
         StringBuilder sb      = new StringBuilder();
 	String pageUrl =request.toString();
@@ -163,15 +180,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	if(request.exists(ARG_OK)) {
-	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
-	    //	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
-	    if(corpus==null) {
-		sb.append(getPageHandler().showDialogError("No file available."));
-	    } else {
-		applyEntryExtract(request, entry, corpus);
-		getEntryManager().updateEntry(request, entry);
-		sb.append(getPageHandler().showDialogNote("LLM has been applied."));
-	    }
+	    applyLLMToEntry(request, entry,sb);
 	} else {
 	    sb.append(HU.formPost(pageUrl,""));
 	    sb.append(getNewEntryExtract(request));
@@ -182,6 +191,20 @@ public class LLMManager extends  AdminHandlerImpl {
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return getEntryManager().addEntryHeader(request, entry,
 						new Result("Apply LLM", sb));
+    }
+
+    public boolean applyLLMToEntry(Request request, Entry entry,StringBuilder sb) throws Exception {
+	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+	//	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
+	if(corpus==null) {
+	    sb.append(getPageHandler().showDialogError("No file available."));
+	    return false;
+	} else {
+	    applyEntryExtract(request, entry, corpus);
+	    getEntryManager().updateEntry(request, entry);
+	    sb.append(getPageHandler().showDialogNote("LLM has been applied."));
+	    return true;
+	}
     }
 
 
@@ -630,6 +653,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
     private Result processTranscribeInner(Request request)  throws Throwable {	
+	boolean debug = request.get("debug",this.debug);
 	if(request.isAnonymous()) {
 	    return makeJsonErrorResult("You must be logged in to use the rewrite service");
 	}
@@ -723,8 +747,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
-
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
+	//	System.err.println(extractKeywords + " " + extractSummary +" " + extractTitle +" " + extractAuthors);
 	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education.";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
@@ -756,8 +780,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	    jsonPrompt+="You should include a list of authors of the text. The authors should be a valid JSON list of strings. ";
 	    schema.add("\"authors\":[<authors>]");
 	}
-	jsonPrompt +="\nThe result JSON must adhere to the following schema: \n{" + Utils.join(schema,",")+"}\n";
-	//	System.err.println("Prompt:" + jsonPrompt);
+	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
+	if(debug) System.err.println("Prompt:" + jsonPrompt);
+
 	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,info);
 	if(!stringDefined(json)) {
 	    getLogManager().logSpecial("LLMManager:Failed to extract information for entry:" + entry.getName());

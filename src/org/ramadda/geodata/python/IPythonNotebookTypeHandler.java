@@ -116,8 +116,8 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
     @Override
-    public boolean applyEditCommand(Request request,Entry entry, String command) throws Exception {
-	if(!command.equals("addthumbnail")) return super.applyEditCommand(request, entry, command);
+    public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
+	if(!command.equals("addthumbnail")) return super.applyEditCommand(request, entry, command,args);
 	List<String> urls = new ArrayList<String>();
 	getMetadataManager().getThumbnailUrls(request, entry, urls);
 	if (urls.size() > 0) return false;

@@ -918,6 +918,10 @@ public class ExtEditor extends RepositoryManager {
 		    "entry.isImage(); entry.resizeImage(400); entry.grayscaleImage();\n" +
 		    "entry.makeThumbnail(deleteExisting:boolean);\n" +
 		    "entry.getValue('column_name');\n" +
+		    "entry.applyCommand('addthumbnail');\n" +
+		    "//apply llm. true=>skip if there is a description\n" +
+		    "//title,summary, etc are varargs\n" +
+		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
 		    "//stop processing but still apply any changes\n" +
@@ -1457,10 +1461,20 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
-	public void applyCommand(String command)  throws Exception {
-	    changed = entry.getTypeHandler().applyEditCommand(request,entry, command);
+	public void applyLLM(boolean ifDescEmpty,String...args)  throws Exception {
+	    if(ifDescEmpty && Utils.stringDefined(entry.getDescription())) {
+		ctx.print("Has description:" + getName());
+		return;
+	    }
+	    repository.getLLMManager().processArgs(request,args);
+	    ctx.print("applying llm:" + getName());
+	    changed = repository.getLLMManager().applyLLMToEntry(request,entry, new StringBuilder());
+	}
+
+	public void applyCommand(String command,String...args)  throws Exception {
+	    changed = entry.getTypeHandler().applyEditCommand(request,entry, command,args);
 	    if(changed) {
-		ctx.print("Thumbnail added:" + getName());
+		ctx.print("command: " + command +" applied to:" + getName());
 	    }
 	}
 

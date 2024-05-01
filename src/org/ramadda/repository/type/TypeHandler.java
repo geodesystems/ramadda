@@ -729,7 +729,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public boolean applyEditCommand(Request request,Entry entry, String command) throws Exception {
+    public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
 	return false;
     }
 
