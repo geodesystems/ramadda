@@ -166,7 +166,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	if(request.exists(ARG_OK)) {
-	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
+	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+	    //	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
 	    if(corpus==null) {
 		sb.append(getPageHandler().showDialogError("No file available."));
 	    } else {
@@ -356,7 +357,9 @@ public class LLMManager extends  AdminHandlerImpl {
     
 
 
-    private  IO.Result  callOpenAI(Request request, String model, int maxReturnTokens,String gptText,String[]extraArgs)
+    private  IO.Result  callOpenAI(Request request, String model,
+				   int maxReturnTokens,
+				   String gptText,String[]extraArgs)
 	throws Throwable {
 	if(!isOpenAIEnabled()) return null;
 	//	synchronized(MUTEX_OPENAI) {
@@ -689,7 +692,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
-		System.err.println("ERROR");
+		System.err.println("ERROR:" +exc);
+
 		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 		return false;
 	    } catch(Throwable thr) {
@@ -724,14 +728,14 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
 
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
-	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education. The response must be in valid JSON format and only JSON.";
+	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education. The response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON.";
 	List<String> schema =new ArrayList<String>();
 	if(extractTitle) {
 	    jsonPrompt+="You should include a title. ";
 	    schema.add("\"title\":\"<the title>\"");
 	}
 	if(extractSummary) {
-	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON should be a JSON string. ";
+	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON must, and I mean must, be a valid JSON string. ";
 	    schema.add("\"summary\":\"<the summary>\"");
 	}
 	if(extractKeywords) {
@@ -754,6 +758,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	json = json.replaceAll("^```json","").replaceAll("```$","").trim();
 	//	    System.err.println("JSON:" + json);
 	try {
+	    if(!json.startsWith("{")) {
+		int idx = json.indexOf("{");
+		if(idx>=0) {
+		    json = json.substring(idx);
+		    System.err.println(json);
+		}
+	    }
 	    JSONObject obj = new JSONObject(json);
 	    if(extractTitle) {
 		String title = obj.optString("title",null);

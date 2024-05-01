@@ -99,10 +99,10 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
             JSONObject    cell     = cells.getJSONObject(i);
             String        cellType = cell.getString("cell_type");
 	    if (cellType.equals("code")) {
-		if(forLLM)
+		//		if(forLLM)
 		    sb.append("The following is python code\n");
 	    } else if (cellType.equals("markdown")) {
-		if(forLLM)
+		//		if(forLLM)
 		    sb.append("The following is markdown code\n");
 	    } 
             if (cell.has("source")) {
@@ -113,14 +113,15 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 		sb.append("\n");
             }
 
-            if (cell.has("outputs")) {
+	    //Don't do the outputs for now
+            if (false && cell.has("outputs")) {
                 JSONArray outputs = cell.getJSONArray("outputs");
 		for (int outputIdx = 0; outputIdx < outputs.length();  outputIdx++) {
 		   JSONObject output = outputs.getJSONObject(outputIdx);
 		   String     type   = output.getString("output_type");
 		   if (output.has("text")) {
 		       try {
-			   if(forLLM)
+			   //			   if(forLLM)
 			       sb.append("The following is the output of the above code\n");
 			   JSONArray text = output.getJSONArray("text");
 			   readLines(text, sb);
