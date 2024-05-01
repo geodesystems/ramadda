@@ -467,6 +467,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'entriesWidth',d: 0},
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
+	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
         {p:'showDetailsForGroup',d: false},
 	{p:'inputSize',d:'200px',tt:'Text input size'},
 	{p:'textInputSize',d:'20px',ex:'100%'},	

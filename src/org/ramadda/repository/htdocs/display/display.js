@@ -4697,7 +4697,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showHeader: true,
                 headerRight: false,
                 showDetails: this.getShowDetails(),
-		showImage:true,
+		showImage:this.getProperty("showEntryImage")
             };
             $.extend(dfltProps, props);
 
@@ -4714,7 +4714,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             html += HU.div([ID, divid], "");
             let metadata = entry.getMetadata();
 	    //Don't this now since this gets shown in the embed details
-	    if(false && dfltProps.showImage) {
+	    if(dfltProps.showImage) {
 		if (entry.isImage()) {
                     let img = HU.tag(TAG_IMG, ["src", entry.getImageUrl(), /*ATTR_WIDTH,"100%",*/
 					       ATTR_CLASS, "display-entry-image"
