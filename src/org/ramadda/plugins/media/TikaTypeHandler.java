@@ -68,33 +68,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
         super(repository, entryNode);
     }
 
-    @Override
-    public void addAction(Action action) {
-	if(action.getId().equals("documentchat") ||
-	   action.getId().equals("applyllm")) {
-	    if(!getRepository().getLLMManager().isLLMEnabled()) {
-		return;
-	    }
-	}
-	super.addAction(action);
-    }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param service _more_
-     * @param output _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
