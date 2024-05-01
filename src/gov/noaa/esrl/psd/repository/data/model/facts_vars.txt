@@ -49,6 +49,7 @@ velpot:Velocity Potential
 wap:Omega   
 zg:Geopotential Height
 zg500:500 hPa Geopotential Height
+zg200:200 hPa Geopotential Height
 #
 # Old mostly ECHAM5 names
 #
