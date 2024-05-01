@@ -82,8 +82,13 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 	}
     }
 
+
     private void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
+	addThumbnail(request, entry);
+    }
+
+    private boolean addThumbnail(Request request, Entry entry) throws Exception {
 	JSONArray cells = getCells(entry);
         for (int i = 0; i < cells.length(); i++) {
             JSONObject    cell     = cells.getJSONObject(i);
@@ -103,11 +108,21 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 				 ContentMetadataHandler.TYPE_THUMBNAIL, false,
 				 fileName, null, null, null, null);
 		getMetadataManager().addMetadata(request,entry, thumbnailMetadata);
-		return;
+		return true;
 	    }
 	}
+	return false;
     }
 
+
+    @Override
+    public boolean applyEditCommand(Request request,Entry entry, String command) throws Exception {
+	if(!command.equals("addthumbnail")) return super.applyEditCommand(request, entry, command);
+	List<String> urls = new ArrayList<String>();
+	getMetadataManager().getThumbnailUrls(request, entry, urls);
+	if (urls.size() > 0) return false;
+	return addThumbnail(request, entry);
+    }
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
