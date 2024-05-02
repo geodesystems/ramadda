@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May  1 06:23:10 MDT 2024";
+var build_date="RAMADDA build date: Wed May  1 21:24:33 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -1201,6 +1201,7 @@ Annotations.prototype = {
 let Gfx = {
     gridData: function(gridId,fields, records,args) {
 	
+
 	if(!args) args = {};
 	if(isNaN(args.cellSize) || args.cellSize == null)
 	    args.cellSize = args.cellSizeX;
@@ -1209,7 +1210,7 @@ let Gfx = {
 	if(isNaN(args.cellSizeY) || args.cellSizeY == null)
 	    args.cellSizeY= args.cellSizeX;
 	let opts = {
-	    shape:"circle",
+	    shape:"rect",
 	    color:"blue",
 	    w:800,
 	    h:400,
@@ -1220,7 +1221,7 @@ let Gfx = {
 	    operator:"average"
 	}
 	$.extend(opts,args);
-	//	console.log(JSON.stringify(opts,null,2));
+//	opts.cellSizeX=2;	opts.cellSizeY=2;	opts.cellSize=2;
 	let id = HtmlUtils.getUniqueId();
 	opts.scale=+opts.scale;
 	let scale = opts.scale;
@@ -1313,7 +1314,7 @@ let Gfx = {
 				  scale,
 				  fields,
 				  records,
-				  {type:"rect",
+				  {type:opts.shape,
 				   canvasWidth:canvas.width,
 				   canvasHeight: canvas.height,
 				   colorByInfo:opts.colorBy,
@@ -1325,7 +1326,6 @@ let Gfx = {
 				   dy:opts.cellSizeY/2,				   
 				  },
 				  "");
-	    opts.shape = "rect";
 	    for(let rowIdx=0;rowIdx<rows;rowIdx++)  {
 		let row = grid[rowIdx];
 		for(let colIdx=0;colIdx<cols;colIdx++)  {
@@ -3598,6 +3598,7 @@ Glyph.prototype = {
     },
 
     draw: function(opts, canvas, ctx, x,y,args,debug) {
+
 	let props = this.properties;
 	if(props.dontShow)return;
 	debug = props.debug??debug;
@@ -37226,6 +37227,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
 	{p:'centerOnConus',ex:true},
+	{p:'centerOnNA',ex:true},
 	{p:'initBoundsUseAllRecords',ex:true},
 	{p:'initBoundsPadding',ex:'A percent, e.g.0.05'},
 	{p:'zoomTimeout',ex:500,
@@ -37696,6 +37698,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    this.setProperty('zoomLevel',3);
 		this.setProperty('mapCenter','39.8333,-98.5855');
 	    }
+	    if(this.getCenterOnNA()) {
+		if(!this.getZoomLevel()) 
+		    this.setProperty('zoomLevel',3);
+		this.setProperty('mapCenter','46.17983,-92.43896');
+	    }	    
+
 	    this.hadUrlArgumentMapCenter = Utils.stringDefined(HU.getUrlArgument(ARG_MAPCENTER));
 	    this.hadUrlArgumentZoom = Utils.stringDefined(HU.getUrlArgument(ARG_ZOOMLEVEL));
 	    if(!this.hadUrlArgumentMapCenter && this.getMapCenter()) {
