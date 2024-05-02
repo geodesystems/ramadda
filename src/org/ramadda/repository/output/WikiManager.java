@@ -9043,20 +9043,24 @@ public class WikiManager extends RepositoryManager
         String providers = getProperty(wikiUtil, props, "providers");
         if (providers != null) {
             List<String> processed = new ArrayList<String>();
-	    HashSet seen = new HashSet();
-            for (String tok : Utils.split(providers, ",")) {
+            for (String tok : Utils.split(providers, ",",true,true)) {
+		HashSet seen = new HashSet();
                 //                System.err.println ("Tok:" + tok);
-                if (tok.startsWith("name:") || tok.startsWith("category:") || tok.startsWith("type:")) {
+                if (tok.startsWith("ramadda:") || tok.startsWith("name:") || tok.startsWith("category:") || tok.startsWith("type:")) {
                     boolean doType  = tok.startsWith("type:");
+                    boolean doName  = tok.startsWith("name:");
+                    boolean doRamadda = tok.startsWith("ramadda:");
 		    String type = "";
                     String  pattern = "";
-                    boolean doName  = tok.startsWith("name:");
 		    if(doType) {
 			type = tok.substring("type:".length());
+		    } else if(doRamadda) {
+			pattern = tok.substring("ramadda:".length()).toLowerCase();
+			doName=true;
 		    } else {
 			 pattern = tok.substring(doName
 						 ? "name:".length()
-						 : "category:".length());
+						 : "category:".length()).toLowerCase();
 		    }
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider searchProvider :
@@ -9064,13 +9068,15 @@ public class WikiManager extends RepositoryManager
 			if(seen.contains(searchProvider.getId())) continue;
 			seen.add(searchProvider.getId());
                         boolean include = false;
+			if(doRamadda && !searchProvider.getType().equals("ramadda")) continue;
 			if(doType) {
 			    include = type.equals(searchProvider.getType());
 			} else {
 			    String  target  = doName
-				? searchProvider.getName()
-				: searchProvider.getCategory();
-			    include = target.equals(pattern);
+				? searchProvider.getName().toLowerCase()
+				: searchProvider.getCategory().toLowerCase();
+			    include = target.indexOf(pattern)>=0;
+//			    System.err.println("pattern:" + pattern +" target:" + target +" include:" + include);
 			    if ( !include) {
 				try {
 				    include = target.matches(pattern);
