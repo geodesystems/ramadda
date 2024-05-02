@@ -5196,6 +5196,11 @@ wiki {
     overflow-y: auto;
 }
 
+.ramadda-snippet-popup { 
+    pointer-events: none;
+}
+
+
 .toolbar-selected {
     margin:2px;
     border : var(--basic-border);
