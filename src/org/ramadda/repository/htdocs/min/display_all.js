@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu May  2 05:58:46 MDT 2024";
+var build_date="RAMADDA build date: Thu May  2 07:18:45 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5289,7 +5289,7 @@ function DisplayThing(argId, argProperties) {
 	    });
             values += "</tr><table>";
 	    if(this.getRecordHtmlStyle()){
-		values = HU.div([CLASS,"ramadda-shadow-box display-tooltip", STYLE,this.getRecordHtmlStyle()], values);
+		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip", ATTR_STYLE,this.getRecordHtmlStyle()], values);
 	    }
             return values;
         },
@@ -11444,7 +11444,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(tooltip=="" || tooltip=="none") return null;
 		    let style = _this.getProperty("tooltipStyle","font-size:10pt;");
 		    let tt =  _this.getRecordHtml(record,null,tooltip);
-		    if(style) tt=HU.div([STYLE,style],tt);
+		    if(style) tt=HU.div([ATTR_STYLE,style],tt);
 		    return tt;
 		},
 		close: function(event,ui) {
@@ -11464,7 +11464,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    collision: _this.getTooltipCollision("flip")
 		},
 		classes: {
-		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-shadow-box  display-tooltip")
+		    "ui-tooltip": _this.getProperty("tooltipClass", "ramadda-shadow-box  display-tooltip " + 'display-' + this.getType() +'-tooltip')
 		}
 	    };
 	    if(this.getTooltipImmediate()) {
