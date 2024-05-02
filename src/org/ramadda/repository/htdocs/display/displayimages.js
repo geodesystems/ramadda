@@ -410,6 +410,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 function RamaddaImagesDisplay(displayManager, id, properties) {
     const ID_GALLERY = "gallery";
     const ID_IMAGES = "images";
+    //never want to do this
+    properties.tooltipClick=null;
     if(!Utils.isDefined(properties["showRecordPager"])) {
 	properties["showRecordPager"] = true;
     }

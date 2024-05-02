@@ -584,7 +584,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 	addToggle:function(label,widgetId,toggleClose) {
 	    let toggleId = HU.getUniqueId('');
-	    label = HU.span([ATTR_CLASS,'display-search-label-toggle',
+	    label = HU.div([ATTR_CLASS,'display-search-label-toggle',
 			     ATTR_TITLE, "Toggle",ATTR_ID,toggleId],
 			    HU.span([ATTR_ID,toggleId+'_image'],
 				    HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + label);
