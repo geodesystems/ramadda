@@ -841,6 +841,10 @@ public class JsonOutputHandler extends OutputHandler {
 		    if(!metadataType.getCanView()) {
 			continue;
 		    }
+
+		    if(metadataType.hasFile()) {
+			System.err.println("metadata:" + fileOk);
+		    }
 		    if(!fileOk && metadataType.hasFile()) {
 			continue;
 		    }
