@@ -6457,7 +6457,7 @@ public class EntryManager extends RepositoryManager {
 		    createEntryFromXml(request, node,
 				       parentEntry, new Hashtable(),
 				       new Hashtable<String,Entry>(),
-				       false, TEMPLATE.YES,INTERNAL.NO,msg);
+				       false, TEMPLATE.YES,INTERNAL.NO,msg,serverInfo);
 
 		if(entryList.size()==0) continue;
 		Entry entry = entryList.get(0);
@@ -6466,7 +6466,6 @@ public class EntryManager extends RepositoryManager {
 		String slug = serverInfo.getSlug();
 		if(stringDefined(slug)) prefix+=slug+" - ";
 		entry.setName(prefix + entry.getName());		
-
 		entry.setRemoteServer(serverInfo);
 		Resource resource =  new Resource(
 						  "remote:"
@@ -6534,7 +6533,7 @@ public class EntryManager extends RepositoryManager {
                                           Hashtable<String, File> filesMap,
 					  Hashtable<String, Entry> entryMap,
                                           boolean checkAccess, TEMPLATE isTemplate,
-                                          INTERNAL isInternal,StringBuilder msg)
+                                          INTERNAL isInternal,StringBuilder msg,ServerInfo...remoteServers)
 	throws Exception {
 
         boolean doAnonymousUpload = false;
@@ -6784,6 +6783,7 @@ public class EntryManager extends RepositoryManager {
 
             String id    = getRepository().getGUID();
             Entry  entry = typeHandler.createEntry(id);
+	    if(remoteServers.length>0) entry.setRemoteServer(remoteServers[0]);
             if (originalId != null) {
                 entry.putProperty(ATTR_ORIGINALID, originalId);
             }
