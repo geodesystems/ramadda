@@ -567,7 +567,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    if(stringDefined(providers))
 		addAttr(sb, "providers",providers);
 
-	    for(String prop:new String[]{"tootip","providersMultiple","providersMultipleSize",
+	    for(String prop:new String[]{"tooltip","providersMultiple","providersMultipleSize",
 					 "showEntryImage"}) {
 		String v=Utils.getProperty(props,prop,null);
 		if(stringDefined(v))
