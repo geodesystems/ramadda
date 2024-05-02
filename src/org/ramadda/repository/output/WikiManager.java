@@ -4101,8 +4101,6 @@ public class WikiManager extends RepositoryManager
                 checkHeading(request, wikiUtil, props, sb);
             }
 
-
-
 	    boolean  linkTop = getProperty(wikiUtil, props, "linkTop",false);
             for (Entry child : children) {
 		String text = "";
@@ -5844,7 +5842,6 @@ public class WikiManager extends RepositoryManager
         }
         String text = child.getTypeHandler().getEntryText(child);
 	if(text!=null) {
-
 	    snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
 	    if (snippet == null) {
 		snippet = StringUtil.findPattern(text, "(?s)<snippet-hide>(.*)</snippet-hide>");
@@ -5852,6 +5849,10 @@ public class WikiManager extends RepositoryManager
 	    if (snippet == null) {
 		snippet = StringUtil.findPattern(text, "(?s)\\+snippet(.*?)-snippet");
 	    }
+	    if (snippet == null) {
+		snippet = StringUtil.findPattern(text, "(?s)\\+callout-[^\\n]+(.*?)-callout");
+	    }	    
+
 	    if (snippet == null) {
 		//Only get the first 400 characters so we just get the notes at the start of the text
 		if(text.length()>400) text=text.substring(0,399);
