@@ -342,7 +342,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         List<String> tabsToUse = tabs;
         String tabsProp = request.getString("search.tabs",
                                             request.getString("tabs",
-							      Utils.getProperty(props,"tabs",null)));
+							      Utils.getProperty(props,"tabs",
+										Utils.getProperty(props,"displayTypes",null))));
         if (tabsProp != null) {
             tabsToUse = Utils.split(tabsProp, ",", true, true);
         }
