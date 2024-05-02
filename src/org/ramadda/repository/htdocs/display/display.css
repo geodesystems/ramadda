@@ -92,7 +92,16 @@ table.dataTable {
 .display-tooltip {
     max-width:600px;
     margin:0px;
-    /* shadow popup */ background-color : #FFF; border:1px solid #ccc; border-radius: 4px;z-index:1000;box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+    /* shadow popup */ background-color : #FFF;
+    border:1px solid #ccc;
+    border-radius: 4px;
+    z-index:1000;
+    box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
+    -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+}
+
+.display-images-tooltip {
+    background:var(--color-mellow-yellow);
 }
 
 .display-dialog {
