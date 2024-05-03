@@ -1408,9 +1408,10 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void makeThumbnail(boolean deleteExisting) throws Exception {
-	    if(!isImage()) return;
-	    entry.getTypeHandler().addThumbnail(request,entry,deleteExisting);
-	    ctx.print("Thumnbail added:" + entry.getName());
+	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting)) {
+		changed=true;
+		ctx.print("Thumnbail added:" + entry.getName());
+	    }
 	}
 
 	public void grayscaleImage() throws Exception {

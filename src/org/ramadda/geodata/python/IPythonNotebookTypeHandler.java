@@ -167,9 +167,9 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     }
 
     @Override
-    public void addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
 	getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
-	extractThumbnail(request,entry);
+	return extractThumbnail(request,entry);
     }
 
 

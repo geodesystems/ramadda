@@ -736,9 +736,9 @@ public class TypeHandler extends RepositoryManager {
 	return false;
     }
 
-    public void addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
-	if(!entry.isImage()) return;
-	getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
+    public boolean addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+	if(!entry.isImage()) return false;
+	return getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
     }
 
 
