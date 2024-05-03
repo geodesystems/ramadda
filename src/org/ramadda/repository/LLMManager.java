@@ -749,19 +749,21 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
 	//	System.err.println(extractKeywords + " " + extractSummary +" " + extractTitle +" " + extractAuthors);
-	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. The text is a document. Assume the reader has a college education.";
+	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
 	    jsonPrompt=typePrompt;
 	    jsonPrompt+="\n";
 	}
+	jsonPrompt+="The name of the original document file is: " +getStorageManager().getOriginalFilename(entry.getResource().getPathName())+".\n";
+
+	jsonPrompt+="The type of the document is: " + entry.getTypeHandler().getDescription()+".\n";
+
 	typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt.extra",(String) null);
 	if(typePrompt!=null) {
-	    typePrompt+="\n";
-	    jsonPrompt+=typePrompt;
-	    jsonPrompt+="\n";
+	    jsonPrompt+=typePrompt+"\n";
 	}	
-	jsonPrompt+="\nThe response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
+	jsonPrompt+="The response must be in valid JSON format and only JSON. I reiterate, the result must only be valid JSON. Make sure that any embedded strings are properly escaped.\n";
 
 	List<String> schema =new ArrayList<String>();
 	if(extractTitle) {
