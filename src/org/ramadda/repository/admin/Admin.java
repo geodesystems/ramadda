@@ -1958,7 +1958,7 @@ public class Admin extends RepositoryManager {
 
 
 
-        StringBuffer statusSB = new StringBuffer();
+        StringBuilder statusSB = new StringBuilder();
         statusSB.append(HU.formTable());
         statusSB.append(
             HU.formEntry(
@@ -1979,6 +1979,7 @@ public class Admin extends RepositoryManager {
         }
 
         appendMemory(statusSB);
+	getSearchManager().addStats(statusSB);
         long uptime = ManagementFactory.getRuntimeMXBean().getUptime();
         /*
         statusSB.append(HU.formEntry(msgLabel("Up Time"),
