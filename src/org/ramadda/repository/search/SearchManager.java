@@ -1633,7 +1633,18 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	indexWriter.commit();
     }
 
+    public void addStats(StringBuilder sb) throws Exception {
+	IndexSearcher searcher = getLuceneSearcher();
+	CollectionStatistics stats = searcher.collectionStatistics(FIELD_NAME);
+	if(stats==null) {
+	    HU.formEntry(sb,"","No Lucene index statistics available");
+	    return;
+	}
 
+	HU.formEntry(sb,"","Lucene Statistics:");
+
+	HU.formEntry(sb,"#of documents:",""+ stats.docCount());
+    }
 
     /**
      * _more_
