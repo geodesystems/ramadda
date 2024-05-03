@@ -85,10 +85,10 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
     private void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
-	addThumbnail(request, entry);
+	extractThumbnail(request, entry);
     }
 
-    private boolean addThumbnail(Request request, Entry entry) throws Exception {
+    private boolean extractThumbnail(Request request, Entry entry) throws Exception {
 	JSONArray cells = getCells(entry);
         for (int i = 0; i < cells.length(); i++) {
             JSONObject    cell     = cells.getJSONObject(i);
@@ -138,14 +138,22 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
     }
 
-@Override
+    @Override
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
 	if(!command.equals("addthumbnail")) return super.applyEditCommand(request, entry, command,args);
 	List<String> urls = new ArrayList<String>();
 	getMetadataManager().getThumbnailUrls(request, entry, urls);
 	if (urls.size() > 0) return false;
-	return addThumbnail(request, entry);
+	addThumbnail(request, entry,true);
+	return true;
     }
+
+    @Override
+    public void addThumbnail(Request request, Entry entry, boolean deleteExisting) throws Exception {
+	getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
+	extractThumbnail(request,entry);
+    }
+
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
