@@ -2922,7 +2922,7 @@ public class WikiManager extends RepositoryManager
             boolean embedWikify = getProperty(wikiUtil, props, "wikify", false);
             int skipLines = getProperty(wikiUtil, props, ATTR_SKIP_LINES, 0);
             int maxLines = getProperty(wikiUtil, props, ATTR_MAX_LINES, 1000);
-            int maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, raw?-1:300);
+            String maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, null);
 
             boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
             String  as = getProperty(wikiUtil, props, "as",null);
@@ -2966,16 +2966,16 @@ public class WikiManager extends RepositoryManager
 		    as = ext;
 		}
 		if(as.equals("json") || as.equals("geojson")) {
-		    return  embedJson(request, txt.toString());
+		    return  embedJson(request, txt.toString(),props);
 		} else {
 		    StringBuilder tmp = new StringBuilder();
 		    WikiUtil.Chunk chunk = new WikiUtil.Chunk(as,txt);
 		    if(wikiUtil.handleCode(tmp,  chunk, this, doFile)) {
 			String s =  tmp.toString();
-			if(maxHeight>0) {
+			if(maxHeight!=null) {
 			    return HU.div(s,
-					  HU.style("max-height:" + maxHeight
-						   + "px; overflow-y:auto;"));
+					  HU.style("max-height:" + HU.makeDim(maxHeight,"px")
+						   + "; overflow-y:auto;"));
 			}
 			return s;
 		    }
@@ -2987,12 +2987,11 @@ public class WikiManager extends RepositoryManager
 		return  wikifyEntry(request, entry, wikiUtil, txt.toString(),
 				    false,  (HashSet)null, false);
 	    }
-	    String style = "";
-	    if(maxHeight>0) {
-		style += HU.css("max-height", maxHeight   + "px","overflow-y","auto");
-	    }
-	    style +=  getProperty(wikiUtil, props, "style","");
-	    if(maxHeight>0 || !raw) {
+
+	    String style = Utils.getProperty(props,"style","");
+	    String height= Utils.getProperty(props,"height",maxHeight);
+	    if(height!=null) style+=HU.css("height",HU.makeDim(height,"px"),"maxHeight",HU.makeDim(height,"px"),"overflow-y","auto");
+	    if(maxHeight!=null || !raw) {
 		return HU.pre(txt.toString(), HU.style(style));
 	    } else {
 		return txt.toString();
@@ -5583,17 +5582,20 @@ public class WikiManager extends RepositoryManager
 	
 
 
-    public String embedJson(Request request, String json) throws Exception {
+    public String embedJson(Request request, String json,Hashtable props) throws Exception {
         StringBuilder sb = new StringBuilder();
 	HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
 	String id = Utils.getGuid();
 	//entry.getResource().getPath(), true);
 	String formatted = JU.format(json,true);
-	HtmlUtils.open(sb, "div", "id", id);
-	HtmlUtils.pre(sb, formatted);
-	HtmlUtils.close(sb, "div");
-	sb.append(HtmlUtils.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
-	sb.append(HtmlUtils.script("RamaddaJU.init('" + id + "');"));
+	String style = Utils.getProperty(props,"style","");
+	String height= Utils.getProperty(props,"height",null);
+	if(height!=null) style+=HU.css("height",HU.makeDim(height,"px"),"maxHeight",HU.makeDim(height,"px"),"overflow-y","auto");
+	HU.open(sb, "div", "id", id,"style",style);
+	HU.pre(sb, formatted);
+	HU.close(sb, "div");
+	sb.append(HU.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
+	sb.append(HU.script("RamaddaJsonUtil.init('" + id + "');"));
 	return sb.toString();
     }
 	
