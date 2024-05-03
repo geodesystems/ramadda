@@ -1265,7 +1265,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    queries.add(builder.build());
 	}
-
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
 	    for(String type: Utils.split(request.getUnsafeString(ARG_TYPE),",",true,true)) {
@@ -3005,22 +3004,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param theRequest _more_
-     * @param serverInfo _more_
-     * @param tmpEntry _more_
-     * @param entries _more_
-     * @param running _more_
-     * @param runnableCnt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Runnable makeRunnable(final Request theRequest,
                                  final ServerInfo serverInfo,
                                  final Entry tmpEntry,
@@ -3116,21 +3099,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param theRequest _more_
-     * @param provider _more_
-     * @param entries _more_
-     * @param searchInfo _more_
-     * @param running _more_
-     * @param runnableCnt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Runnable makeRunnable(final Request theRequest,
                                  final SearchProvider provider,
                                  final List<Entry> entries,
