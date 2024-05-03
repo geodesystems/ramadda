@@ -570,6 +570,42 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
+            defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
+
+
+
+            List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
+            for (int i = 0; i < metadataNodes.size(); i++) {
+                Element metadataNode = (Element) metadataNodes.get(i);
+                requiredMetadata.add(new String[] {
+                    XmlUtil.getAttribute(metadataNode, ATTR_ID),
+                    XmlUtil.getAttribute(metadataNode, "label",
+                                         (String) null) });
+            }
+
+            List serviceNodes = XmlUtil.findChildren(node,
+						     Service.TAG_SERVICE);
+            for (int i = 0; i < serviceNodes.size(); i++) {
+                Element serviceNode = (Element) serviceNodes.get(i);
+                services.add(new Service(getRepository(), serviceNode));
+            }
+
+	    metadataTypes = makeInitialMetadataTypes();
+
+	    for(String mtd: Utils.split(Utils.getAttributeOrTag(node,ATTR_METADATA,""),",",true,true)) {
+		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
+	    }
+
+
+            childTypes = Utils.split(Utils.getAttributeOrTag(node,
+							     ATTR_CHILDTYPES, ""));
+            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
+                    ? ""
+                    : type));
+            if (getType().indexOf(".") > 0) {
+            }
+
+
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
 
@@ -609,40 +645,7 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
             wikiTemplateInner = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI_INNER, wikiTemplateInner));
-            defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
 
-
-
-            List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
-            for (int i = 0; i < metadataNodes.size(); i++) {
-                Element metadataNode = (Element) metadataNodes.get(i);
-                requiredMetadata.add(new String[] {
-                    XmlUtil.getAttribute(metadataNode, ATTR_ID),
-                    XmlUtil.getAttribute(metadataNode, "label",
-                                         (String) null) });
-            }
-
-            List serviceNodes = XmlUtil.findChildren(node,
-						     Service.TAG_SERVICE);
-            for (int i = 0; i < serviceNodes.size(); i++) {
-                Element serviceNode = (Element) serviceNodes.get(i);
-                services.add(new Service(getRepository(), serviceNode));
-            }
-
-	    metadataTypes = makeInitialMetadataTypes();
-
-	    for(String mtd: Utils.split(Utils.getAttributeOrTag(node,ATTR_METADATA,""),",",true,true)) {
-		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
-	    }
-
-
-            childTypes = Utils.split(Utils.getAttributeOrTag(node,
-							     ATTR_CHILDTYPES, ""));
-            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
-                    ? ""
-                    : type));
-            if (getType().indexOf(".") > 0) {
-            }
 
 
             includeInSearch = Utils.getAttributeOrTag(node,
