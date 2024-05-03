@@ -15,6 +15,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ImageUtils;
 import org.ramadda.util.JsonUtil;
@@ -25,6 +26,7 @@ import org.ramadda.util.WikiUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -125,13 +127,29 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     private String[]getImage(JSONObject obj) {
 	String imageString=null;
 	String imageType = "png";
-	if (obj.has("png"))
+	if (obj.has("png")) {
 	    imageString=obj.getString("png");
-	else if (obj.has("image/png"))
+	} else if (obj.has("image/png")) {
 	    imageString=obj.getString("image/png");
-	else if (obj.has("jpg")) {
+	} else if (obj.has("jpg")) {
 	    imageString=obj.getString("jpg");
 	    imageType = "jpg";
+	} else if (obj.has("text/html")) {
+	    JSONArray a = obj.getJSONArray("text/html");
+	    for(int i=0;i<a.length() && imageString==null;i++ ) {
+		String html = a.getString(i);
+		//	data:image/png;base64,
+		String s=StringUtil.findPattern(html,".*(data:image[^\"]+)\".*");
+		if(s!=null) {
+		    int idx = s.indexOf(",");
+		    if(idx>=0) {
+			imageString=s.substring(idx);
+			s = s.substring(0,idx);
+			if(s.matches("(?i).*(jpg|jpeg)")) imageType="jpg";
+		    }
+		}
+	    }
+	} else if (obj.has("jpg")) {
 	} 
 	if(imageString==null) return null;
 	return new String[]{imageType,imageString};
