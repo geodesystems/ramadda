@@ -32,6 +32,7 @@
 <![CDATA[
 +section title={{name}}
 +toggle Information
+{{description wikify="true"}}
 {{information details=true}}
 -toggle
 {{embed  xas=json height=80vh}}
