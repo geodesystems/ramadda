@@ -443,6 +443,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	{p:'minHeightGallery',ex:150},
 	{p:'maxHeightGallery',ex:150},	
 	{p:'columns',ex:'5'},
+	{p:'includeNonImages',d:true},
+	{p:'showPlaceholderImage',d:true},
     ];
 
     const SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
@@ -545,7 +547,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 	    baseStyle+=this.getProperty("blockStyle","");
 	    let cnt = 1;
 
-	    let blankImage =this.getProperty('showPlaceholderImage',true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
+	    let includeNonImages = this.getIncludeNonImages();
+	    let blankImage =this.getShowPlaceholderImage(true)?HU.image(ramaddaBaseUrl+'/images/placeholder.png',[ATTR_WIDTH,'100%']):
 		HU.space(1);
 	    
 	    records.forEach((record,rowIdx)=>{
@@ -580,6 +583,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 		let imgAttrs = [ATTR_STYLE,imageStyle,"alt",galleryLabel,ATTR_ID,base+"image" + rowIdx,"loading","lazy"];
 		if(width) imgAttrs.push(WIDTH,width);
 		else if(height) imgAttrs.push(HEIGHT,height);		
+		if(!Utils.stringDefined(image) &&!includeNonImages) return;
+
 		let img = (!Utils.stringDefined(image))?blankImage:HU.div([ATTR_CLASS,class3],HU.image(image,imgAttrs));
 		let topLbl = (topLabel!=null?HU.div([CLASS,"ramadda-clickable display-images-toplabel"], topLabel):"");
 		let lbl = HU.div([CLASS,"ramadda-clickable display-images-label"], label.trim());

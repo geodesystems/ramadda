@@ -2397,7 +2397,9 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 				 imageWidth:"140px",
 				 blockWidth:"150px",
 				 numberOfImages:500,
+				 includeNonImages:this.getProperty('includeNonImages',true),
 				 showTableOfContents:true,
+
 				 showTableOfContentsTooltip:false,
 				 addMapLocationToUrl:false,
 				 iconField:"iconUrl",
