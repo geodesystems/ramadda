@@ -6476,8 +6476,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 								     "${ramadda.root}", base);
 	js = js.replace("${ramadda.ismobile}",""+request.isMobile());
 	js  = js.replace("${ramadda.cdn}", getPageHandler().getCdnPath(""));
-	js = js.replace("${ramadda.search.tree}",
-			getSearchManager().isLuceneEnabled()+ "");
+	js = js.replace("${ramadda.search.tree}","true");
 	js = js.replace("${ramadda.urlroot}", base);
 	js = js.replace(
 			"${ramadda.baseentry}",

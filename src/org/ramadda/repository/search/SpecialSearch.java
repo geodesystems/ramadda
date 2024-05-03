@@ -651,20 +651,17 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HU.submit("Search", ARG_SEARCH_SUBMIT));
         formSB.append(HU.br());
 
-        if (getSearchManager().isLuceneEnabled()) {
-            String ancestor = request.getString(ARG_ANCESTOR + "_hidden",
-                                  request.getString(ARG_ANCESTOR, null));
+	String ancestor = request.getString(ARG_ANCESTOR + "_hidden",
+					    request.getString(ARG_ANCESTOR, null));
 
-            Entry ancestorEntry = (ancestor == null)
-                                  ? null
-                                  : getEntryManager().getEntry(request, ancestor);
-            String select =
-                getRepository().getHtmlOutputHandler().getSelect(request,
-								 ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
-								 true,true,"",true);
-	    formSB.append(select);
-        }
-
+	Entry ancestorEntry = (ancestor == null)
+	    ? null
+	    : getEntryManager().getEntry(request, ancestor);
+	String select =
+	    getRepository().getHtmlOutputHandler().getSelect(request,
+							     ARG_ANCESTOR, "Search under", true, "", ancestorEntry,
+							     true,true,"",true);
+	formSB.append(select);
 	String vspace = "<div style='height:0.5em'></div>";
 
 	List<String> contents = new ArrayList<String>();

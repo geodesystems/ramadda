@@ -859,6 +859,7 @@ public class EntryUtil extends RepositoryManager {
     public static List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
+	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
 	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
     }
 

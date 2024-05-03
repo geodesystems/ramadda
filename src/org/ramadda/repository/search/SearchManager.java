@@ -121,6 +121,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static boolean debugCorpus = false;
 
+    public static boolean debugSearch = false;
+
     public static final String SUFFIX_LATITUDE ="_latitude";
     public static final String SUFFIX_LONGITUDE ="_longitude";
 
@@ -242,7 +244,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
 
-    private boolean isLuceneEnabled = true;
 
     private Object LUCENE_MUTEX = new Object();
 
@@ -278,13 +279,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public  void debug(String msg) {
+	if(debugSearch) getLogManager().logSpecial(msg);
+    }
+
     @Override
     public void initAttributes() {
         super.initAttributes();
+        debugSearch = getRepository().getProperty("ramadda.search.debug",false);
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
 	tesseractPath = getRepository().getScriptPath("ramadda.tesseract");
 	indexImages = getRepository().getProperty("ramadda.indeximages",false);
-        isLuceneEnabled = getRepository().getProperty(PROP_SEARCH_LUCENE_ENABLED, true);
     }
 
     public List<String> getSynonyms(String word) throws Exception {
@@ -331,16 +336,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return showMetadata;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean isLuceneEnabled() {
-	//For now it is always true
-	return true;
-	//        return isLuceneEnabled;
-    }
 
 
 
@@ -484,41 +479,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return null;
     }
 
-    /**** Don't do this
-    @Override
-    public void addToAdminSettingsForm(String block, StringBuffer asb) {
-        if ( !block.equals(Admin.BLOCK_ACCESS)) {
-            return;
-        }
-        asb.append(HU.colspan(msgHeader("Search"), 2));
-	HU.formEntry(asb,  "",
-			    HU.labeledCheckbox(
-						      PROP_SEARCH_LUCENE_ENABLED, "true",
-						      isLuceneEnabled(),
-						      msg("Enable Lucene Indexing and Search")));
-    }
-    **/
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void applyAdminSettingsForm(Request request) throws Exception {
-        getRepository().writeGlobal(
-				    PROP_SEARCH_LUCENE_ENABLED,
-				    isLuceneEnabled = request.get(PROP_SEARCH_LUCENE_ENABLED, true));
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getId() {
         return "searchmanager";
     }
@@ -1071,8 +1033,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         StringBuffer sb = new StringBuffer();
 	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
 	//	QueryBuilder builder = new QueryBuilder(analyzer);
-
-	//	System.err.println("search:" + (scnt++));
 	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
@@ -1522,10 +1482,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    sort = Sort.RELEVANCE;
 	}
         IndexSearcher searcher = getLuceneSearcher();
-	//	searcher.setDefaultFieldSortScoring(true, false);
 	TopDocs       hits     = searcher.search(query, max+skip,sort);
-	//        TopDocs       hits     = searcher.search(query, 100);		
         ScoreDoc[]    docs     = hits.scoreDocs;
+	if(debugSearch)
+	    debug("SearchManager: lucene query:" + query +" skip:" + skip +" max:" + max);
 	HashSet seen = new HashSet();
         for (int i = skip; i < docs.length; i++) {
 	    //sanity check
@@ -1547,7 +1507,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 continue;
             }
 	    entries.add(entry);
-        }
+	}
+	if(debugSearch)
+	    debug("SearchManager: lucene query results:" + entries.size());
 
     }
 
@@ -1602,9 +1564,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @param entries _more_
      */
     public void entriesCreated(Request request, List<Entry> entries) {
-        if ( !isLuceneEnabled()) {
-            return;
-        }
         try {
             indexEntries(entries, request, true);
         } catch (Throwable exc) {
@@ -1620,9 +1579,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @param entries _more_
      */
     public void entriesModified(Request request, List<Entry> entries) {
-        if ( !isLuceneEnabled()) {
-            return;
-        }
         try {
             List<String> ids = new ArrayList<String>();
             for (Entry entry : entries) {
@@ -1637,9 +1593,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     public void entriesMoved(final List<Entry> entries) {
-        if ( !isLuceneEnabled()) {
-            return;
-        }
 	Misc.run(new Runnable() {
 		public void run() {
 		    try {
@@ -1688,9 +1641,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @param ids _more_
      */
     public void entriesDeleted(List<String> ids) {
-        if ( !isLuceneEnabled()) {
-            return;
-        }
         try {
 	    //	    synchronized(LUCENE_MUTEX) {
 		IndexWriter indexWriter = getLuceneWriter();
@@ -1938,23 +1888,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	};
 
 
-	if(isLuceneEnabled()) {
-	    String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
-	    Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
-	    String select =
-		getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
-								 null,
-								 true, "", ancestorEntry, true,true);
-
-	    String event = OutputHandler.getSelectEvent(request, ARG_ANCESTOR, true, "", ancestorEntry);
-	    sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",
-				ancestor!=null?ancestor:"",
-				HU.id(ARG_ANCESTOR + "_hidden")));
-	    String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
-					    HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
-
-	    sb.append(inset.apply(Utils.join(HU.space(1),HU.b("Under")+":",input,select)));
-	}
+	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
+	Entry ancestorEntry = ancestor==null?null:getEntryManager().getEntry(request, ancestor);
+	String select =
+	    getRepository().getHtmlOutputHandler().getSelect(request, ARG_ANCESTOR,
+							     null,
+							     true, "", ancestorEntry, true,true);
+	
+	String event = OutputHandler.getSelectEvent(request, ARG_ANCESTOR, true, "", ancestorEntry);
+	sb.append(HU.hidden(ARG_ANCESTOR + "_hidden",
+			    ancestor!=null?ancestor:"",
+			    HU.id(ARG_ANCESTOR + "_hidden")));
+	String input = HU.disabledInput(ARG_ANCESTOR, ancestorEntry!=null?ancestorEntry.getName():"",
+					HU.clazz("disabledinput ramadda-entry-popup-select") + HU.attr("placeholder","Search under") + HU.attr("onClick", event) + HU.SIZE_40 + HU.id(ARG_ANCESTOR));
+	
+	sb.append(inset.apply(Utils.join(HU.space(1),HU.b("Under")+":",input,select)));
 
 
         TypeHandler typeHandler = getRepository().getTypeHandler(request);

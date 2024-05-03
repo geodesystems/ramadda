@@ -10,6 +10,7 @@ import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AccessManager;
 import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.auth.User;
+import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.harvester.Harvester;
@@ -8091,7 +8092,7 @@ public class EntryManager extends RepositoryManager {
 	boolean didSearch = false;
 
 	//Check if we should let lucene do the searching
-	if(luceneOk && getSearchManager().isLuceneEnabled()) {
+	if(luceneOk) {
 	    //	    System.err.println("LUCENE");
 	    getSearchManager().processLuceneSearch(request, allEntries);
 	    didSearch = true;
@@ -8158,6 +8159,8 @@ public class EntryManager extends RepositoryManager {
 		    seen.put(entry.getId(), BLANK);
 		    allEntries.add(entry);
 		}
+		if(SearchManager.debugSearch)
+		    getSearchManager().debug("DB Search:" + clauses+" result:" + allEntries.size());
 	    } finally {
 		long t2 = System.currentTimeMillis();
 		if ((t2 - t1) > 60 * 1000) {
