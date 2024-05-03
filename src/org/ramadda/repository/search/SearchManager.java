@@ -733,6 +733,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
 		    getEntryManager().updateEntries(request, tmp,false);
+		    //IMPORTANT: We end up calling back into this method. To keep this section of code from
+		    //being called, thus leading to an infinite loop, pass in isNew=false
+		    indexEntries(tmp, request, false);
 		}
 	    }
         } else {
