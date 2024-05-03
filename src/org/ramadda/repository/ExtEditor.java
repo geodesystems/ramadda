@@ -1409,7 +1409,7 @@ public class ExtEditor extends RepositoryManager {
 
 	public void makeThumbnail(boolean deleteExisting) throws Exception {
 	    if(!isImage()) return;
-	    repository.getMetadataManager().addThumbnail(request,entry,deleteExisting);
+	    entry.getTypeHandler().addThumbnail(request,entry,deleteExisting);
 	    ctx.print("Thumnbail added:" + entry.getName());
 	}
 
