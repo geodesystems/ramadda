@@ -147,7 +147,7 @@
 +section title="{{name}}" #
 {{noheading}}
 {{description wikify=true}}
-{{display_slides doEntries=true showStrip=true mediaField=file_url imagesOnly=true addThumbnails=true thumbnailField=thumbnail urlField=entry_url nameField=name}}
+{{display_slides doEntries=true showStrip=true mediaField=image imagesOnly=true addThumbnails=true thumbnailField=thumbnail urlField=entry_url nameField=name}}
 -section
 ]]>
 </wiki>
@@ -429,6 +429,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 	     help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz;note" showinhtml="false"/>
 />     
 
+<embedwiki><![CDATA[{{3dmodel}}]]></embedwiki>
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
