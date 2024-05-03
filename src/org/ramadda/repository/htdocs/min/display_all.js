@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu May  2 09:58:19 MDT 2024";
+var build_date="RAMADDA build date: Thu May  2 20:14:05 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -34164,9 +34164,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
             this.providerMap = {};
-            if (this.getPropertyProviders() != null) {
-		if(this.getPropertyProviders().length==1) {
-		    this.provider = this.getPropertyProviders()[0].id;
+	    let providers = this.getPropertyProviders();
+            if (providers != null) {
+		if(providers.length==1) {
+		    this.provider = providers[0].id;
 		} else {
                     let options = "";
 		    let selected = HU.getUrlArgument(ID_PROVIDERS);
@@ -34220,7 +34221,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 				 ATTR_ID, this.getDomId(ID_PROVIDERS),
 				 ATTR_CLASS, "display-search-providers"];
 		    if(this.getProvidersMultiple()) {
-			attrs.push("size",this.getProvidersMultipleSize(),  "multiple", "multiple");
+			let size =Math.min(8,providers.length+1);
+			attrs.push("size",this.getProvidersMultipleSize(size),  "multiple", "multiple");
 		    }
 		    let providersSelect = HU.tag("select",attrs, options);
 		    providersSelect = this.addWidget('Providers',providersSelect,
@@ -34643,6 +34645,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""],
 			     this.getEntryTypes()?'Any of these types':'Any type');
 	    let hadSelected = false;
+	    let anySelected = false;
+	    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
+            this.entryTypes.every(type=>{
+                anySelected = this.getSearchSettings().hasType(type.getId());
+		if(fromUrl)
+		    anySelected = type.getId()==fromUrl;
+		return !anySelected;
+	    });
+
             for (let i = 0; i < this.entryTypes.length; i++) {
                 let type = this.entryTypes[i];
                 let icon = type.getIcon();
@@ -34651,10 +34662,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 ];
                 let selected = this.getSearchSettings().hasType(type.getId());
 		if(!selected) {
-		    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
 		    if(fromUrl)
 			selected = type.getId()==fromUrl;
 		}
+		if(!selected && !anySelected && i==0)  selected=true;
                 if (selected) {
 		    hadSelected = true;
                     optionAttrs.push("selected");
@@ -34683,7 +34694,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
-		this.writeHtml(ID_TYPE_DIV, select);
+		this.writeHtml(ID_TYPE_DIV, this.addWidget('Types',select));
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),

@@ -40,7 +40,7 @@ import java.util.concurrent.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = true;
+    public static boolean  debug = false;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";
