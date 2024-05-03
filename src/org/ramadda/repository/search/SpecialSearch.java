@@ -80,11 +80,16 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     /** _more_ */
     public static final String ARG_SEARCH_CLEAR = "search.clear";
 
+    private boolean newWay = true;
+
+
     /** _more_ */
     private String theType;
 
     /** _more_ */
     private TypeHandler typeHandler;
+
+
 
     /** _more_ */
     private String searchUrl;
@@ -257,6 +262,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (label == null) {
             label = msgLabel("Search") + typeHandler.getDescription();
         }
+        if (URL_SEARCH == null) {
+            URL_SEARCH = new RequestUrl(this, searchUrl);
+        }
+
+
     }
 
 
@@ -355,10 +365,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	if(Utils.getProperty(props,"showTitle",true)) {
 	    sb.append(HU.div(label,HU.attrs("class","ramadda-heading")));
 	}
-	makeSearchForm(request, sb,tabsToUse,props);
-	//        sb.append(HU.sectionClose());
-	if(true) return null;
 
+	if(newWay) {
+	    makeSearchForm(request, sb,tabsToUse,props);
+	    return null;
+	}
 
 
         int     cnt      = getEntryUtil().getEntryCount(typeHandler);
@@ -370,7 +381,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (request.defined(ARG_SEARCH_SUBMIT)) {
             doSearch = true;
         }
-
 
 
 	request.put("forsearch","true");
@@ -389,9 +399,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 
 
-        if (URL_SEARCH == null) {
-            URL_SEARCH = new RequestUrl(this, searchUrl);
-        }
 
 	
 
@@ -559,7 +566,13 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
     private void makeSearchForm(Request request, Appendable formSB,List<String> tabs,Hashtable props)
             throws Exception {
 
-	if(true) {
+        if (URL_SEARCH == null) {
+            URL_SEARCH = new RequestUrl(this, searchUrl);
+        }
+
+
+
+	if(newWay) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("{{display_entrylist ");
 	    addAttr(sb, "searchDirect","false");
@@ -808,18 +821,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
-    public void makeEntryList(Request request, Appendable sb,
-                              List<Entry> entries)
+    public void makeEntryList(Request request, Appendable sb, List<Entry> entries)
             throws Exception {
 
 	Hashtable props = new Hashtable();

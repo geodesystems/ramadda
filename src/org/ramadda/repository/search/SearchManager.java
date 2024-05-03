@@ -2784,6 +2784,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             final int[]     runnableCnt = { 0 };
             final boolean[] running     = { true };
             List<Runnable>  runnables   = new ArrayList<Runnable>();
+	    if(searchProviders.size()==0) {
+		getLogManager().logSpecial("No search providers selected");
+	    }
             for (SearchProvider searchProvider : searchProviders) {
                 Runnable runnable = makeRunnable(request, searchProvider,
 						 allEntries, searchInfo, running,
