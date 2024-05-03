@@ -27,6 +27,19 @@
 ]]>
 
 </wiki>
+
+<wikimacro name="ipython_notebook_raw" label="View Raw Notebook" isoutput="true" icon="/python/ipynb.png">
+<![CDATA[
++section title={{name}}
++toggle Information
+{{information details=true}}
+-toggle
+{{embed  xas=json height=80vh}}
+-section
+]]>
+</wikimacro>
+
+
   </type>
 
 
