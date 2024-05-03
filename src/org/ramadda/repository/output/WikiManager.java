@@ -9042,9 +9042,10 @@ public class WikiManager extends RepositoryManager
 
         String providers = getProperty(wikiUtil, props, "providers");
         if (providers != null) {
+	    List<SearchProvider> searchProviders =   getSearchManager().getSearchProviders();
             List<String> processed = new ArrayList<String>();
+	    HashSet added= new HashSet();
             for (String tok : Utils.split(providers, ",",true,true)) {
-		HashSet seen = new HashSet();
                 //                System.err.println ("Tok:" + tok);
                 if (tok.startsWith("ramadda:") || tok.startsWith("name:") || tok.startsWith("category:") || tok.startsWith("type:")) {
                     boolean doType  = tok.startsWith("type:");
@@ -9063,10 +9064,8 @@ public class WikiManager extends RepositoryManager
 						 : "category:".length()).toLowerCase();
 		    }
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
-                    for (SearchProvider searchProvider :
-			     getSearchManager().getSearchProviders()) {
-			if(seen.contains(searchProvider.getId())) continue;
-			seen.add(searchProvider.getId());
+                    for (SearchProvider searchProvider :searchProviders) {
+			if(added.contains(searchProvider.getId())) continue;
                         boolean include = false;
 			if(doRamadda && !searchProvider.getType().equals("ramadda")) continue;
 			if(doType) {
@@ -9076,7 +9075,6 @@ public class WikiManager extends RepositoryManager
 				? searchProvider.getName().toLowerCase()
 				: searchProvider.getCategory().toLowerCase();
 			    include = target.indexOf(pattern)>=0;
-//			    System.err.println("pattern:" + pattern +" target:" + target +" include:" + include);
 			    if ( !include) {
 				try {
 				    include = target.matches(pattern);
@@ -9084,9 +9082,11 @@ public class WikiManager extends RepositoryManager
 				    System.err.println("bad pattern:" + pattern);
 				}
 			    }
+			    //			    System.err.println("pattern:" + pattern +" target:" + target +" include:" + include);
 			}
 
                         if (include) {
+			    added.add(searchProvider.getId());
                             String icon = searchProvider.getSearchProviderIconUrl();
                             if (icon == null) {
                                 icon = "${root}/icons/magnifier.png";
@@ -9119,8 +9119,8 @@ public class WikiManager extends RepositoryManager
 
                 }
                 String id   = searchProvider.getId();
-		if(!seen.contains(id)) {
-		    seen.add(id);
+		if(!added.contains(id)) {
+		    added.add(id);
 		    String icon = searchProvider.getSearchProviderIconUrl();
 		    if (icon == null) {
 			icon = "${root}/icons/magnifier.png";
