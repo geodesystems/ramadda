@@ -6086,10 +6086,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public TypeHandler getTypeHandler(Request request,boolean useDefaultIfNotFound) throws Exception {
         if (request != null) {
-            String type = request.getString(ARG_TYPE,
-                                            TypeHandler.TYPE_ANY).trim();
-
-            return getTypeHandler(type, useDefaultIfNotFound);
+	    //Handle comma separated list of types
+            List<String> types = Utils.split(request.getString(ARG_TYPE,TypeHandler.TYPE_ANY),",",true,true);
+            return getTypeHandler(types.size()==0?TypeHandler.TYPE_ANY:types.get(0), useDefaultIfNotFound);
         } else {
             return getTypeHandler(TypeHandler.TYPE_FILE);
         }
