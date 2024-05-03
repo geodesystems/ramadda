@@ -69,10 +69,10 @@ public class TemplateOutputHandler extends OutputHandler {
     public static final String TAG_WIKI_FILE = "wiki.file";
 
     /** _more_ */
-    private boolean forGroups = true;
+    private boolean forGroups = false;
 
     /** _more_ */
-    private boolean forFiles = true;
+    private boolean forFiles = false;
 
     /** _more_ */
     private List<String> types;
@@ -183,7 +183,6 @@ public class TemplateOutputHandler extends OutputHandler {
         if (state.entry != null) {
             if (forFiles) {
                 links.add(makeLink(request, state.entry, outputType));
-
                 return;
             }
             for (String type : types) {
