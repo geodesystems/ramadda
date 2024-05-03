@@ -97,10 +97,17 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 	    JSONArray outputs = cell.getJSONArray("outputs");
 	    for (int outputIdx = 0; outputIdx < outputs.length();  outputIdx++) {
 		JSONObject output = outputs.getJSONObject(outputIdx);
-		if (!output.has("png")) continue;
-		BufferedImage image = ImageUtils.readBase64("png",output.getString("png"));
-		File tmpFile = getStorageManager().getTmpFile(request,"thumbnail.png");
-		ImageUtils.writeImageToFile(image, tmpFile);
+		String[] image  =getImage(output);
+		if(image==null) {
+		    if(output.has("data")) {
+			JSONObject data = output.getJSONObject("data");
+			image  =getImage(data);
+		    }
+		}
+		if(image==null) continue;
+		BufferedImage bufferedImage = ImageUtils.readBase64(image[0],image[1]);
+		File tmpFile = getStorageManager().getTmpFile(request,"thumbnail." + image[0]);
+		ImageUtils.writeImageToFile(bufferedImage, tmpFile);
 		String fileName = getStorageManager().copyToEntryDir(entry,
 								     tmpFile).getName();
 		Metadata thumbnailMetadata =
@@ -115,7 +122,23 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
     }
 
 
-    @Override
+    private String[]getImage(JSONObject obj) {
+	String imageString=null;
+	String imageType = "png";
+	if (obj.has("png"))
+	    imageString=obj.getString("png");
+	else if (obj.has("image/png"))
+	    imageString=obj.getString("image/png");
+	else if (obj.has("jpg")) {
+	    imageString=obj.getString("jpg");
+	    imageType = "jpg";
+	} 
+	if(imageString==null) return null;
+	return new String[]{imageType,imageString};
+
+    }
+
+@Override
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
 	if(!command.equals("addthumbnail")) return super.applyEditCommand(request, entry, command,args);
 	List<String> urls = new ArrayList<String>();
