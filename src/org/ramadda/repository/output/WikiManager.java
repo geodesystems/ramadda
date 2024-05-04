@@ -1097,7 +1097,6 @@ public class WikiManager extends RepositoryManager
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
-
         boolean       screenshot = getProperty(wikiUtil, props, "screenshot", false);
 	if(width!=null && width.equals("screenshot")) {
 	    screenshot = true;
@@ -1379,7 +1378,14 @@ public class WikiManager extends RepositoryManager
 	if(entry==null) {
 	    return getMessage(wikiUtil, props, msg("No image entry"));
 	}
-        if ((src == null) || (src.length() == 0)) {
+        if (!stringDefined(src) && getProperty(wikiUtil,props,"useThumbnail",false)) {
+	    String imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+	    if(imageUrl!=null) {
+		return getWikiImage(wikiUtil, request, imageUrl,entry,props);
+	    }
+	}
+
+        if (!stringDefined(src)) {
             if ( !entry.isImage()) {
                 return getMessage(wikiUtil, props, msg("Not an image"));
             }

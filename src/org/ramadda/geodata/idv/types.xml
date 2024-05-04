@@ -5,6 +5,23 @@
         category="Geoscience Data" 
         pattern="(.*\.zidv|.*\.xidv)">
      <property name="icon" value="/idv/idv.gif"/>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
++row
++col-8
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-col
++col-4
+{{mapentry  hideIfNoLocations="true"  showBounds=true  }}
+-col
+-row
+:vspace 1em
+{{image    width="80%" align="center"  popup="true" s message="" useThumbnail=true}} 
+-section
+]]></wiki>
+
 </type>
 
 
