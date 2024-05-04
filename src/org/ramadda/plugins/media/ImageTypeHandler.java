@@ -32,6 +32,10 @@ import java.util.List;
 public class ImageTypeHandler extends GenericTypeHandler {
 
 
+    public static final String ARG_IMAGE_RESIZE="imageresize";
+    public static final String ARG_STRIP_METADATA="stripmetadata";    
+    public static final String ARG_IMAGE_WIDTH="imagewidth";
+
     /**  */
     public static int IDX = 0;
 
@@ -63,11 +67,13 @@ public class ImageTypeHandler extends GenericTypeHandler {
             throws Exception {
 	sb.append(HU.b("Image:"));
 	sb.append("<div style='margin-left:30px;'>");
-        sb.append(HU.labeledCheckbox("imageresize", "true", false,"Resize image"));
+        sb.append(HU.labeledCheckbox(ARG_IMAGE_RESIZE, "true", false,"Resize image"));
 	sb.append(HU.space(2));
 	sb.append("Width:");
 	sb.append(HU.space(1));
-	sb.append(HU.input("imagewidth","600",HU.SIZE_5));
+	sb.append(HU.input(ARG_IMAGE_WIDTH,"600",HU.SIZE_5));
+	sb.append("<br>");
+        sb.append(HU.labeledCheckbox(ARG_STRIP_METADATA, "true", false,"Strip metadata"));
 	sb.append("<br>");
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from image"));
@@ -87,19 +93,22 @@ public class ImageTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry, fromImport);
 	if(fromImport) return;
-	if(!request.get("imageresize",false)) return;
+	if(!request.get(ARG_IMAGE_RESIZE,false) &&
+	   !request.get(ARG_STRIP_METADATA,false)) return;
 	if(!entry.getResource().isStoredFile()) return;
 
 	String theFile = entry.getResource().getPath();
 	Image image = ImageUtils.readImage(theFile);
-	int width = request.get("imagewidth",600);
-	if (image.getWidth(null) > width) {
-	    image = ImageUtils.resize(image, width, -1);
-	    ImageUtils.waitOnImage(image);
-	    ImageUtils.writeImageToFile(image, theFile);
-	    File f = new File(theFile);
-	    entry.getResource().setFileSize(f.length());
+	int width = request.get(ARG_IMAGE_WIDTH,600);
+	if(request.get(ARG_IMAGE_RESIZE,false)) {
+	    if (image.getWidth(null) > width) {
+		image = ImageUtils.resize(image, width, -1);
+		ImageUtils.waitOnImage(image);
+	    }
 	}
+	ImageUtils.writeImageToFile(image, theFile);
+	File f = new File(theFile);
+	entry.getResource().setFileSize(f.length());
     }
     
 
