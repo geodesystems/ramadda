@@ -42,6 +42,9 @@ import java.util.List;
 /** This is generated code from generate.tcl. Do not edit it! */
 public class TextRecord extends DataRecord {
 
+    public static final boolean debugDate = false;
+
+
     /** _more_ */
     public static final int ATTR_FIRST =
         org.ramadda.data.point.PointRecord.ATTR_LAST;
@@ -623,7 +626,7 @@ public class TextRecord extends DataRecord {
      * @throws Exception _more_
      */
     private Date parseDate(RecordField field, String tok) throws Exception {
-	boolean debug = false;
+	boolean debug = debugDate;
         tok = tok.trim();
 	if(debug) System.err.println("parseDate:" + tok);
         if (tok.equals("") || tok.equals("null")) {
@@ -735,6 +738,8 @@ public class TextRecord extends DataRecord {
      */
     private SimpleDateFormat getDateFormat(RecordField field) {
         SimpleDateFormat sdf = field.getDateFormat();
+	if(debugDate)
+	    System.err.println("TextRecord: date format:" + field.getSDateFormat());
         if (sdf == null) {
             field.setDateFormat(sdf =
                 getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));
