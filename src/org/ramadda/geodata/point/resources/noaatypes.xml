@@ -194,15 +194,18 @@ fields=station[type=enumeration label="Station" ],date[type=date label="Date"  f
 {{display type="linechart" showTitle="false" layoutHere="false" fields="temperature"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="dewpoint"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="wind_speed"}}
+{{display_template  showFirst=true  onlyShowSelected=true  height="300px"
+itemsPerColumn=10  template="${default}"
+}} 
 
 -col
 +col-md-4
 {{display_map justOneMarker=true xzoomLevel=3    showRecordSelection=false }}
-{{display_template  showFirst=true  onlyShowSelected=true  height="300px"
- template="${default}"
-}} 
 -col
 -row
+----
+:heading Information
+{{information details=true}}
 -section
 ]]>
 </wiki>
