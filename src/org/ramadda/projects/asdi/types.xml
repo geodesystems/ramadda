@@ -5,53 +5,6 @@
     https://aws.amazon.com/marketplace/pp/prodview-yyq26ae3m6csk?sr=0-3&ref_=beagle&applicationId=AWSMPContessa#resources
     on S3 at: s3://noaa-gsod-pds/
 -->
-<type name="type_noaa_gsod"  super="type_point" description="NOAA Global Surface Summary of Day">
-<!-- This specifies the file class that handles this data -->
-    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-    <property name="icon" value="/point/noaa.gif"/>
-    <column  name="station_name"   label="Station Name" size="1000" cansearch="true">
-      <property name="record_field" value="name"/>
-      <property name="is_default_entry_name" value="true"/>
-    </column>
-    <column  name="station_id"  type="enumerationplus" label="Station ID" size="1000" cansearch="true">
-      <property name="record_field" value="station"/>
-    </column>
-
-    <!-- record.properties defines the data schema -->
-    <property name="record.properties">
-      skiplines=1
-      fields=station[type=enumeration], date[type=date format=yyyy-MM-dd], latitude, longitude, elevation, name[type=string], temp[label="Temperature"], temp_attributes, dewp[label="Dewpoint"], dewp_attributes, slp, slp_attributes, stp, stp_attributes, visib, visib_attributes, wdsp[label="Wind Speed"], wdsp_attributes, mxspd, gust[label="Wind Gust"], max, max_attributes[type=string], min, min_attributes[type=string], prcp, prcp_attributes[type=string], sndp, frshtt[type=string]
-    </property>
-<!-- The wiki display -->
-<wiki>
-<![CDATA[
-+section  title="Station: {{name}}"
-+note
-Provided by: [https://www.noaa.gov/ NOAA], 
-part of the [https://aws.amazon.com/marketplace/seller-profile?id=e40a6e9c-c840-413d-a235-0a5e458ae0c0 Amazon Sustainability Data Initiative].
-[https://aws.amazon.com/marketplace/pp/prodview-yyq26ae3m6csk?sr=0-3&ref_=beagle&applicationId=AWSMPContessa#resources More information]
--note
-{{description}}
-----
-+row
-+col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display_linechart showMenu="true" fields=temp}}
-{{display_linechart showMenu="true" fields=dewp}}
-{{display_barchart showMenu="true" fields=prcp}}
--col
-+col-md-4
-{{resource  message="" title="Download Data"}}
-{{display_template showFirst=true template="Station: ${name} (${station})"}}
-{{display_map justOneMarker=true}}
--col
--row
-{{display_htmltable showMenu="true"
-fields="station, date, name, temp, dewp, slp, stp, visib, wdsp,  mxspd, gust, max, min,  prcp, sndp"}}
-]]>
-</wiki>
-</type>
-
 <type name="type_asdi_sondehub_json"  super="type_point" description="SondeHub JSON Data"  handler="org.ramadda.data.services.PointTypeHandler">
 <property name="icon" value="/icons/json.png"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
