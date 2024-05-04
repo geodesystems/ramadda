@@ -76,50 +76,6 @@ csvcommands1=-json,,,-print
 </wiki>
 </type>
 
-  <type name="type_point_isd"  super="type_point" description="NOAA ISD Data"  
-handler="org.ramadda.data.services.PointTypeHandler">
-    <property name="icon" value="/point/noaa.gif"/>
-    <property name="record.file.class" value="org.ramadda.projects.asdi.NoaaIsdFile"/>
-    <column  name="station_name"   label="Station Name" size="1000" cansearch="true">
-      <property name="record_field" value="name"/>
-      <property name="is_default_entry_name" value="true"/>
-    </column>
-    <column  name="station"  type="enumerationplus" label="Station ID" size="1000" cansearch="true">
-      <property name="record_field" value="station"/>
-    </column>
-
- <property name="record.properties">
-<![CDATA[
-skiplines=1
-fields=station[type=enumeration label="Station" ],date[type=date label="Date"  format="yyyy-MM-dd'T'HH:mm:ss" ],source[type=enumeration label="Source" ],latitude[type=double label="Latitude" ],longitude[type=double label="Longitude" ],elevation[type=double label="Elevation" ],name[type=string label="Name" ],report_type[type=string label="Report Type" ],call_sign[type=enumeration label="Call Sign" ],quality_control[type=enumeration label="Quality Control" ],wind_dir[type=double label="Wind Dir" ],wind_qc[type=string label="Wind Qc" ],wind_type[type=enumeration label="Wind Type" ],wind_speed[type=double label="Wind Speed" ],wind_speed_qc[type=string label="Wind Speed Qc"],cig_agl[type=double label="Cig Agl" ],cig_qc[type=string label="Cig Qc" ],cig_type[type=enumeration label="Cig Type" ],cig_cavok_code[type=enumeration label="Cig Cavok Code" ],vis[type=double label="Vis" ],vis_qc[type=string label="Vis Qc" ],vis_var[type=enumeration label="Vis Var" ],vis_var_qc[type=enumeration label="Vis Var Qc" ],temperature[type=double label="Temperature" ],temperature_qc[type=string label="Temperature Qc" ],dewpoint[type=double label="Dewpoint" ],dewpoint_qc[type=string label="Dewpoint Qc" ],pressure[type=double label="Pressure" ],pressure_qc[type=string label="Pressure Qc" ]
-]]>
-     </property>
-<wiki>
-<![CDATA[
-+section # title="NOAA ISD Site:  {{name}} - {{field name=station}}"
-{{description}}
-----
-+row
-+col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display type="linechart" showTitle="false" layoutHere="false" fields="temperature"}}
-{{display type="linechart" showTitle="false" layoutHere="false" fields="dewpoint"}}
-{{display type="linechart" showTitle="false" layoutHere="false" fields="wind_speed"}}
-
--col
-+col-md-4
-{{display_map justOneMarker=true xzoomLevel=3    showRecordSelection=false }}
-{{display_template  showFirst=true  onlyShowSelected=true  height="300px"
- template="${default}"
-}} 
--col
--row
--section
-]]>
-</wiki>
-
-  </type>
-
 
 
 </types>
