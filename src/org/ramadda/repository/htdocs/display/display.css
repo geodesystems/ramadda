@@ -1618,7 +1618,6 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-entrylist-entry-main:hover {
-    background: #f6f6f6;
     background: #f0f8ff;
 }
 
@@ -1653,7 +1652,12 @@ svg > g > g:last-child { pointer-events: none }
 
 }
 .display-entrylist-details-ancestors, .display-entrylist-details-tags {
-    padding-left: 24px;
+    padding-left:5px;
+    margin-left: 24px;
+}
+
+.display-entrylist-details-ancestors {
+    font-weight:500;
 }
 
 
