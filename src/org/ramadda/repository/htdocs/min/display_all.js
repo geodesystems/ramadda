@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May  3 04:47:12 MDT 2024";
+var build_date="RAMADDA build date: Fri May  3 20:32:10 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4977,7 +4977,10 @@ function DisplayThing(argId, argProperties) {
 		    value = String(value).trim();
 		    if(value=="") return "";
 		    value.split(",").forEach(tagValue=>{
-			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,TITLE,tagValue, STYLE, HU.css("background", color),CLASS,"display-search-tag"],tagValue);
+			result+= HU.div(["metadata-type",type,"metadata-value",tagValue,
+					 ATTR_TITLE,tagValue,
+					 ATTR_STYLE, HU.css("background", color),
+					 ATTR_CLASS,"display-search-tag"],tagValue);
 		    });
 		    if(filter) result = filter.getLabel()+": " + result+"<br>";
 		    return result;
@@ -5183,7 +5186,7 @@ function DisplayThing(argId, argProperties) {
 		    if(group!=field.getGroup()) {
 			group = field.getGroup();
 			if(Utils.isDefined(group)) {
-			    rows.push(HU.tr([],HU.td(["colspan","2"],HU.div([CLASS,"ramadda-header-small"],group))));
+			    rows.push(HU.tr([],HU.td(["colspan","2"],HU.div([ATTR_CLASS,"ramadda-header-small"],group))));
 			}
 		    }
                     let initValue = record.getValue(field.getIndex());
@@ -9149,6 +9152,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let map = {};
 	    let list = [];
 	    entry.getMetadata().forEach(m=>{
+		
 		//Check for exclusions
 		if(["content.pagestyle", "content.pagetemplate","content.thumbnail","content.attachment"].includes(m.type)) return;
 		if(m.type.startsWith("map")) return;
@@ -9162,7 +9166,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(label.length>20) label = label.substring(0,19) +"...";
 		label = prefix +label;
 		let id = Utils.getUniqueId("metadata_");
-		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ID,id,CLASS,"display-search-tag",TITLE, tt,STYLE, HU.css("background", getMetadataColor(m.type))],label);
+		let tag = HU.div(["metadata-type",m.type,"metadata-value", m.value.attr1,ID,id,
+				  ATTR_CLASS,"display-search-tag",ATTR_TITLE, tt,
+				  ATTR_STYLE, HU.css("background", getMetadataColor(m.type))],label);
 		if(!groupThem)
 		    metadata+= tag;
 		else {
@@ -9184,9 +9190,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    return metadata;
 	},
+	addSearchToTags: function() {
+	    return true;
+	},
 	typeSearchEnabled:function() {
 	    return true;
 	},
+
         toggleEntryDetails: async function(event, entryId, suffix, handlerId, entry) {
 	    if(!entry) {
 		await this.getEntry(entryId, e => {
@@ -9286,15 +9296,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
             }
 	    handleContent();
-
-
 	    let metadataMap  = {};
 	    let prefix = entry.isSynth()?"":HU.getIconImage("fas fa-search") + SPACE;
+	    if(!this.addSearchToTags()) prefix='';
 	    if(!this.typeSearchEnabled()) prefix='';
 	    let metadata = this.makeEntryTags(entry,false,prefix,metadataMap);
-
 	    let bar = this.jq(ID_DETAILS_TAGS + entry.getIdForDom() + suffix);
-	    let typeTag = $(HU.span([CLASS,"display-search-tag"],prefix + "Type: " + entry.getType().getLabel())).appendTo(bar);
+	    let typeTag = $(HU.span([ATTR_CLASS,"display-search-tag"],prefix + "Type: " + entry.getType().getLabel())).appendTo(bar);
 	    if(!entry.isSynth()) {
 		typeTag.click(function() {
 		    _this.typeTagClicked(entry.getType());
@@ -34502,7 +34510,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.metadataBoxes[type][value] = cbxId;
 		let cbx = HU.checkbox("",[ID,cbxId,"metadata-type",type,"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
 		if(metadata.length>popupLimit) {
-		    cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
+		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
+				   ATTR_STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
 		}
 		cbxs.push(cbx);
 	    }
@@ -34559,7 +34568,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		tagGroup = $(HU.div([CLASS,"display-search-tag-group",ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));			     
 	    }
 
-	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,label+":" + value, STYLE, HU.css("background", Utils.getEnumColor(type)),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,label+":" + value,
+				ATTR_STYLE, HU.css("background", Utils.getEnumColor(type)),
+				ATTR_CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 	    tag.click(function() {
 		$(this).remove();
 		if(cbx)
@@ -34567,6 +34578,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		_this.submitSearchForm();
 	    });
 	    return true;
+	},
+	addSearchToTags: function() {
+	    return false;
 	},
 	typeSearchEnabled:function() {
 	    return this.jq(ID_TYPE_FIELD).length>0;
