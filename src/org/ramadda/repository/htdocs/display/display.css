@@ -1578,7 +1578,6 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-entrylist-content .ui-tabs-panel {
     padding:0px;
-    padding-top:4px;    
 }
 
 
@@ -1611,9 +1610,7 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-entrylist-entry-main {
    padding: 3px;
-   border-top: 1px #ccc solid;
-   border-bottom: 1px #ccc solid;
-   border-color: transparent;
+   border-bottom: 1px #ddd solid;
 }
 
 .display-entrylist-entry-main-even {
@@ -1621,9 +1618,8 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-entrylist-entry-main:hover {
-   background: #f6f6f6;
-   border-top: 1px #aaa solid;
-   border-bottom: 1px #aaa solid;
+    background: #f6f6f6;
+    background: #f0f8ff;
 }
 
 
@@ -1649,7 +1645,12 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 .display-entrylist-details-snippet   {
-    margin-left:24px;
+    background:#fff;
+    margin-left:30px;
+    margin-right:5px;
+    margin-bottom:5px;
+    border:var(--basic-border);
+
 }
 .display-entrylist-details-ancestors, .display-entrylist-details-tags {
     padding-left: 24px;

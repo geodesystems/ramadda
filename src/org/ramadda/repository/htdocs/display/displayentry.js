@@ -1565,7 +1565,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		this.metadataBoxes[type][value] = cbxId;
 		let cbx = HU.checkbox("",[ID,cbxId,"metadata-type",type,"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
 		if(metadata.length>popupLimit) {
-		    cbx = HU.span([CLASS,'display-search-tag','tag',label,STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
+		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
+				   ATTR_STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
 		}
 		cbxs.push(cbx);
 	    }
@@ -1622,7 +1623,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		tagGroup = $(HU.div([CLASS,"display-search-tag-group",ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));			     
 	    }
 
-	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,label+":" + value, STYLE, HU.css("background", Utils.getEnumColor(type)),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,label+":" + value,
+				ATTR_STYLE, HU.css("background", Utils.getEnumColor(type)),
+				ATTR_CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 	    tag.click(function() {
 		$(this).remove();
 		if(cbx)
@@ -1630,6 +1633,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		_this.submitSearchForm();
 	    });
 	    return true;
+	},
+	addSearchToTags: function() {
+	    return false;
 	},
 	typeSearchEnabled:function() {
 	    return this.jq(ID_TYPE_FIELD).length>0;
