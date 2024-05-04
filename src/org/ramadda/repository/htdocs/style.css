@@ -300,6 +300,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     cursor:pointer;
 }
 
+.fancybox-image {
+    background:#fff;
+}
+
 .fancybox-caption__body {
     font-size:16pt;
 }
