@@ -580,7 +580,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    if(stringDefined(providers))
 		addAttr(sb, "providers",providers);
 
-	    for(String prop:new String[]{"tooltip","providersMultiple","providersMultipleSize",
+	    for(String prop:new String[]{"tooltip","formHeight",
+					 "providersMultiple","providersMultipleSize",
 					 "showEntryImage","includeNonImages"}) {
 		String v=Utils.getProperty(props,prop,null);
 		if(stringDefined(v))
