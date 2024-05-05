@@ -24,6 +24,7 @@ public interface DataTypes {
 
     /** _more_ */
     public static final String DATATYPE_ENTRY = "entry";
+    public static final String DATATYPE_ENTRY_LIST = "entrylist";    
 
     /** _more_ */
     public static final String DATATYPE_FILE = "file";

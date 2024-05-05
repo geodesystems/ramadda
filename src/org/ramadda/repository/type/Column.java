@@ -457,6 +457,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     /** _more_ */
     private int size = 200;
 
+    private String entryType;
+
     /** _more_ */
     private double min = Double.NaN;
 
@@ -674,7 +676,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         canExport      = getAttributeOrTag(element, ATTR_CANEXPORT, canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
         canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
-	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:size);
+	size           = getAttributeOrTag(element, ATTR_SIZE, isType(DATATYPE_CLOB)?1000000:	isType(DATATYPE_ENTRY_LIST)?5000:size);
+	entryType = getAttributeOrTag(element,"entryType",null);
+
         min            = getAttributeOrTag(element, ATTR_MIN, min);
         max            = getAttributeOrTag(element, ATTR_MAX, max);
         required       = getAttributeOrTag(element, ATTR_REQUIRED, required);
@@ -1210,10 +1214,10 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     public boolean isString() {
         return isType(DATATYPE_STRING) || isEnumeration()
-               || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
-               || isType(DATATYPE_ENTRY) || isType(DATATYPE_EMAIL)
-               || isType(DATATYPE_WIKI) || isType(DATATYPE_URL)
-               || isType(DATATYPE_LIST);
+	    || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
+	    || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST) || isType(DATATYPE_EMAIL)
+	    || isType(DATATYPE_WIKI) || isType(DATATYPE_URL)
+	    || isType(DATATYPE_LIST);
     }
 
     /**
@@ -1551,6 +1555,42 @@ public class Column implements DataTypes, Constants, Cloneable {
                     sb.append("---");
                 }
 
+            }
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+            String entryIds  = toString(values, offset);
+            List<Entry> entries=null;
+            if (Utils.stringDefined(entryIds)) {
+		entries=new ArrayList<Entry>();
+		for(String entryId: Utils.split(entryIds,",",true,true)) {
+		    try {
+			entries.add(getRepository().getEntryManager().getEntry(null,  entryId));
+		    } catch (Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		}
+            }
+            if (raw) {
+                sb.append(entryIds);
+            } else {
+                if (entries != null) {
+                    try {
+			int cnt=0;
+			for(Entry theEntry: entries) {
+			    String link =
+				getRepository().getEntryManager().getAjaxLink(
+									      request, theEntry,
+									      theEntry.getName()).toString();
+			    
+			    if(cnt++>0) sb.append(", ");
+			    sb.append(link);
+			}
+                    } catch (Exception exc) {
+                        throw new RuntimeException(exc);
+                    }
+
+                } else {
+                    sb.append("---");
+                }
             }
         } else if (isType(DATATYPE_EMAIL)) {
             String s = toString(values, offset);
@@ -2163,7 +2203,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	} else  if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
                 || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
                 || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
-                || isType(DATATYPE_ENTRY)) {
+                || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST)) {
             defineColumn(statement, name, "varchar(" + size + ") ",
                          ignoreErrors);
         } else if (isType(DATATYPE_WIKI)) {
@@ -2564,6 +2604,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (Utils.stringDefined(value)) {
                 where.add(Clause.eq(columnName, value));
             }
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+	    //TODO:
+            String value = request.getString(searchArg + "_hidden", "");
+            if (Utils.stringDefined(value)) {
+                where.add(Clause.eq(columnName, value));
+            }	    
         } else if (isType(DATATYPE_LIST)) {
             boolean hadFile = values != null;
             if (values == null) {
@@ -3151,6 +3197,15 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget =
                 getRepository().getEntryManager().getEntryFormSelect(request,
                     entry, urlArg, value);
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+	    //TODO
+            String value = "";
+            if (values != null) {
+                value = toString(values, offset);
+            }
+            widget =
+                getRepository().getEntryManager().getEntryFormSelect(request,
+                    entry, urlArg, value);
         } else {
             String value = ((dflt != null)
                             ? dflt
@@ -3484,6 +3539,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = request.getString(urlArg + "_hidden", (String)Utils.getNonNull(values[offset],
 											    ""));
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+            values[offset] = request.getString(urlArg + "_hidden", (String)Utils.getNonNull(values[offset],
+											    ""));	    
         } else {
             //string
 	    if (request.exists(urlArg)) {
@@ -3577,6 +3635,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_ENTRY)) {
             values[offset] = value;
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+            values[offset] = value;	    
         } else {
             values[offset] = value;
         }
@@ -3863,6 +3923,32 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? HU.attr("placeholder", placeholderMax)
                     : "") + HU.attr("id", toId) + HU.attr("size", size));
         } else if (isType(DATATYPE_ENTRY)) {
+            String entryId  = request.getString(searchArg + "_hidden", "");
+            Entry  theEntry = null;
+            if ((entryId != null) && (entryId.length() > 0)) {
+                try {
+                    theEntry =
+                        getRepository().getEntryManager().getEntry(null,
+                            entryId);
+                } catch (Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+
+            String select =
+                getRepository().getHtmlOutputHandler().getSelect(request,
+                    searchArg, "Select", true, null, entry);
+            StringBuffer sb = new StringBuffer();
+            sb.append(HU.hidden(searchArg + "_hidden", entryId,
+                                       HU.id(searchArg + "_hidden")));
+            sb.append(HU.disabledInput(searchArg, ((theEntry != null)
+                    ? theEntry.getFullName()
+                    : ""), HU.id(searchArg)
+                           + HU.SIZE_60) + select);
+
+            widget = sb.toString();
+        } else if (isType(DATATYPE_ENTRY_LIST)) {
+	    //TODO
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;
             if ((entryId != null) && (entryId.length() > 0)) {
