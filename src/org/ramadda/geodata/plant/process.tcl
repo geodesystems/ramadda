@@ -74,6 +74,7 @@ puts $::typefp {
 csvcommands1=-addheader, timestamp.type date   timestamp.format {yyyy-MM-dd'T'HH:mm:ss'Z'}
 </property>
 }
+
 puts $::typefp {
 <property name="bubble">
 <![CDATA[ 
@@ -83,6 +84,16 @@ puts $::typefp {
 -section
 ]]></property>
 }
+puts $::typefp {
+<embedwiki>
+<![CDATA[ 
++section title={{name}}
+{{display_linechart fields=#3}}
+{{display_linechart fields=#4}}
+-section
+]]></embedwiki>
+}
+
 puts $::typefp {
 <wiki><![CDATA[
 +section title={{name}}

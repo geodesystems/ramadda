@@ -22,6 +22,15 @@ csvcommands1=-addheader, timestamp.type date   timestamp.format {yyyy-MM-dd'T'HH
 ]]></property>
 
 
+<embedwiki>
+<![CDATA[ 
++section title={{name}}
+{{display_linechart fields=#3}}
+{{display_linechart fields=#4}}
+-section
+]]></embedwiki>
+
+
 <wiki><![CDATA[
 +section title={{name}}
 +row
