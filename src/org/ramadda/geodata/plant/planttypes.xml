@@ -1,0 +1,36 @@
+<types supercategory="Geoscience" category="Plant Data">
+<type name="type_sapflux_plant_sapf" super="point_text_csv" description="Plantflux Test" handler="org.ramadda.data.services.PointTypeHandler">
+<property name="icon" value="/plant/tree.png"/>
+<property name="form.area.show" value="false"/>
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<column  name="site_id"  type="string" label="Site ID" cansearch="true"/>
+<column  name="country"  type="enumeration" label="Country" cansearch="true"/>
+<column  name="biome"  type="enumeration" label="Biome" cansearch="true"/>
+<column  name="institution"  type="enumeration" label="Institution" cansearch="true"/>
+
+<property name="record.properties"> 
+csvcommands1=-addheader, timestamp.type date   timestamp.format {yyyy-MM-dd'T'HH:mm:ss'Z'}
+</property>
+
+
+<wiki><![CDATA[
++section title={{name}}
++row
++col-8
+{{display_linechart fields=#3}} 
+{{display_linechart fields=#4}} 
+{{display_linechart fields=#5}} 
+-col
++col-4
+{{mapentry}}
+-col
+-row
+{{display_download}}
+{{display_table}}
+:heading Information
+{{information details=true}}
+-section
+]]></wiki>
+
+</type>
+</types>
