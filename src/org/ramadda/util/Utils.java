@@ -1645,7 +1645,7 @@ public class Utils extends IO {
                                         int dflt)
 	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
-        if (attrValue == null) {
+        if (!stringDefined(attrValue)) {
             return dflt;
         }
 
@@ -1668,7 +1668,7 @@ public class Utils extends IO {
                                            double dflt)
 	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
-        if (attrValue == null) {
+        if (!stringDefined(attrValue)) {
             return dflt;
         }
 
