@@ -31,11 +31,32 @@
     <property name="icon" value="/files/r.png"/>
 </type>
 
-<type name="type_file_matlab"
-      description="Matlab File" pattern=".*\.(mat|m)" >
+<type name="type_file_matlab" foruser="false"
+      description="Matlab File">
      <property name="icon" value="/files/matlab.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
+</type>
+
+<type name="type_file_matlab_code" super="type_file_matlab"
+      description="Matlab Code File" pattern=".*\.m" >
+  <property name="canbeindexed" value="true"/>
+  <embedwiki><![CDATA[{{embed maxHeight=400px}}]]></embedwiki>
+  <wiki_inner><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
++toggle Information
+{{information details=true}}
+-toggle
+{{embed maxHeight="800px"}}
+-section
+]]>
+</wiki_inner>
+
+</type>
+
+<type name="type_file_matlab_data" super="type_file_matlab"
+      description="Matlab Data File" pattern=".*\.mat" >
 </type>
 
 <type name="type_json"  super="type_convertible" description="JSON File as CSV"
