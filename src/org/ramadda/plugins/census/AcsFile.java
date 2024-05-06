@@ -53,6 +53,9 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class AcsFile extends CsvFile {
 
+
+
+
     /** _more_ */
     private static Hashtable specialNames;
 
@@ -225,7 +228,7 @@ public class AcsFile extends CsvFile {
                     CensusVariable var   = getVariable(value);
                     String         type  = RecordField.TYPE_DOUBLE;
                     numeric[i] = true;
-                    depends[i] = -1;
+                    depends[i] = CensusVariable.NULL_INDEX;
                     name[i]    = false;
                     special[i] = isNameSpecial(value);
 		    isState[i] = value.equals("state");
@@ -261,7 +264,9 @@ public class AcsFile extends CsvFile {
                                 && (var.getConcept().length() > 0)) {
                             label = var.getConcept() + " - " + label;
                         }
-                        if (depends[i] >= 0) {
+			String alias = var.getAlias();
+			if(alias!=null) label = alias;
+                        if (depends[i] != CensusVariable.NULL_INDEX) {
                             label = "% " + label;
 			    value+="_percentage";
                         }
@@ -339,10 +344,10 @@ public class AcsFile extends CsvFile {
                             }
                         }
 
-                        if (depends[allColIdx] >= 0) {
+                        if (depends[allColIdx] != CensusVariable.NULL_INDEX) {
                             double v1 = Double.parseDouble(value);
-                            double v2 = Double.parseDouble(
-                                            rowValues[depends[allColIdx]]);
+			    int index = depends[allColIdx];
+                            double v2 = Double.parseDouble(rowValues[index>=0?index:allColIdx+index]);
 			    //			    if(rowIdx<100)System.err.println("col:" + colIdx +" on:" + depends[allColIdx] + " v1:" + v1 +" v2:" + v2);
                             value = "" + ((int) (1000 * v1 / v2)) / 10.0;
                         }

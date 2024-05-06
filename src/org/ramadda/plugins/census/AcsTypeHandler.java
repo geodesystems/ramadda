@@ -270,8 +270,11 @@ public class AcsTypeHandler extends PointTypeHandler {
         if (entry == null) {
             return vars;
         }
+	Hashtable<String,Integer> indices = new Hashtable<String,Integer>();
+	int cnt=0;
         for (String id : getFieldLines(entry)) {
-            int     index = -1;
+            int     index = CensusVariable.NULL_INDEX;
+	    String alias=null;
             boolean skip  = false;
             if (id.indexOf(":") >= 0) {
                 List<String> toks = StringUtil.split(id, ":");
@@ -279,19 +282,33 @@ public class AcsTypeHandler extends PointTypeHandler {
                 for (int i = 1; i < toks.size(); i++) {
                     String tok = toks.get(i).trim();
                     if (tok.startsWith("%")) {
-                        index = Integer.decode(tok.substring(1)).intValue();
+			tok = tok.substring(1).trim();
+			if(tok.matches("^-?\\d+$")) {
+			    index = Integer.decode(tok).intValue();
+			} else {
+			    Integer lookup = indices.get(tok);
+			    if(lookup!=null) {
+				index = lookup.intValue();
+				//				System.err.println("look up:" + tok +" index=" + i);
+			    } else {
+				//				System.err.println("can't find look up:" + tok);
+			    }
+			}
                     } else if (tok.equals("skip")) {
                         skip = true;
-                    }
+                    } else {
+			alias=tok;
+		    }
                 }
-
-
             }
+	    //	    System.err.println("ID:" + id +" index:" + cnt);
+	    indices.put(id,cnt++);
             CensusVariable var = CensusVariable.getVariable(id);
             if (var != null) {
                 var = var.cloneMe();
+		if(alias!=null) var.setAlias(alias);
                 var.setSkip(skip);
-                if (index >= 0) {
+                if (index != CensusVariable.NULL_INDEX) {
                     var.setDependsIndex(index);
                 }
                 vars.add(var);

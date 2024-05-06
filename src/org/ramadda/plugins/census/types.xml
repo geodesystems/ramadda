@@ -76,7 +76,7 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 
   
 
-  <type name="type_census_age"  super="type_census_acs"  description="US Census ACS Data - Age" foruser="false">
+  <type name="type_census_age"  super="type_census_acs"  description="US Census ACS Data - Age" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
@@ -84,13 +84,10 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 {{display_download}}
 {{group showMenu="false" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display_table layoutHere="false" skipFields="latitude,longitude" height="450" chartHeight="450"}}
-{{display_map layoutHere="false"  width="100%" height="600" showTitle="true"  height="450"
-titleId="census.age.label"
-title="Colored by median age from blue (younger), to white (middle) to red (older)"
+{{display_map layoutHere="false"  strokeWidth=0.2 width="100%" height="600" height="450"
 colorBy="B01002_001E"
-colorBar="blue_white_red"
-strokeColor="black"
-}}
+colorByFields="B01002_001E,B19113_001E,B01001_002E_percentage,B01001_026E_percentage,B01002_001E,B01002_002E,B01002_003E,B05003_003E_percentage,B05003_014E_perentage"
+colorBar="blue_white_red" strokeColor="black"}}
 {{display_stats
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 layoutHere="false" showTitle="true" title="Summary Statistics"}}
@@ -98,92 +95,71 @@ layoutHere="false" showTitle="true" title="Summary Statistics"}}
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B01001_001E
-B01001_002E:%1
-B01001_026E:%1
-B01002_001E
-B01002_002E
-B01002_003E
-B05003_003E:%1
-B05003_014E:%1
-B19113_001E
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B01001_001E:Population
+B01001_002E:%1:Male
+B01001_026E:%1:Female
+B01002_001E:Median age
+B01002_002E:Median age male
+B01002_003E:Median age female
+B05003_003E:%1:Male under 18
+B05003_014E:%1:Female under 18
+B19113_001E:Median Income
 ]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-Area
-Population
-% Male
-% Female
-Median age
-Median age male
-Median age female
-% Male under 18
-% Female under 18
-Median income
-]]></property>
-  </type>
+</type>
 
 
-  <type name="type_census_children"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
+<type name="type_census_children"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"}}
-{{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
+{{group showMenu="true" showTitle="false" tooltip="${default}" }}
 +row
-+col-md-6
-:heading Under 6 living with two parents
-{{display_map  layoutHere="true"  height="400" #sizeBy="B19113_001E" colorBy="B05009_003E" colorBar="blue_white_red"}}
++col-6
+:heading Percent under 6 living with two parents
+{{display_map  strokeWidth=0.2 width=100%   height="400"  colorBy="B05009_003E_percentage" colorBar="blue_white_red"}}
 -col
-+col-md-6
-:heading Under 6 living with one parent
-{{display_map   layoutHere="true"  height="400" #sizeBy="B19113_001E" colorBy="B05009_013E" colorBar="blue_white_red"}}
++col-6
+:heading Median Income
+{{display_map  strokeWidth=0.2 width=100%  height="400"  colorBy="B19113_001E" colorBar="blue_white_red"}}
+-col
+-row
++toggleopen Charts
++row
++col-6
+{{display_scatterplot  height="400" fields="B19113_001E,B05009_003E_percentage"}}
+-col
++col-6
+{{display_scatterplot  height="400" fields="B19113_001E,B05009_021E_percentage"}}
 -col
 -row
 +row
-+col-md-6
-{{display type="scatterplot" layoutHere="true"  height="400" fields="B19113_001E,B05009_003E"}}
--col
-+col-md-6
-{{display type="scatterplot" layoutHere="true"  height="400" fields="B19113_001E,B05009_013E"}}
--col
--row
-+row
-+col-md-6
-{{display_stats layoutHere="true" showTitle="true" title="Summary Statistics"
++col-6
+{{display_stats  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 -col
-+col-md-6
-{{display type="text" layoutHere="true" showTitle="true" title="Details"}}
++col-6
+{{display_text layoutHere="true" showTitle="true" title="Details"}}
 -col
 -row
+-toggleopen
+{{display_table  skipFields="latitude,longitude" chartHeight="350"}}
 -section
-
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B05009_001E
-B05009_002E
-B05009_003E:%2
-B05009_013E:%2
-B05009_020E
-B05009_021E:%5
-B05009_031E:%5
-B19113_001E
-
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[Area
-Children under 18 
-Children under 6
-Under 6 living with two parents
-Under 6 living with one parent
-Children 6  to 17
-6 to 17 living with two parents
-6 to 17 living with one parent
-Median income
+<property name="fields.databaseDefault"><![CDATA[NAME
+NAME:Area
+B05009_001E:# Under 18
+B05009_002E:# Under 6
+B05009_020E:# 6-17
+B05009_003E:%B05009_002E:Under 6 living w 2 parents
+B05009_013E:%B05009_002E:Under 6 living w 1 parent
+B05009_021E:%B05009_020E:6-17 Living w 2 parents
+B05009_031E:%B05009_020E:6-17 Living w 1 parent
+B19113_001E:Median Income
 ]]></property>
   </type>
 
@@ -191,68 +167,66 @@ Median income
 
 
 
-  <type name="type_census_race"  super="type_census_acs"  description="US Census ACS Data - Race" foruser="false">
+<type name="type_census_race"  super="type_census_acs"  description="US Census ACS Data - Race" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{label id="census.race.label" wikify="true" text=":note Sized by median income. Colored by percentage race from yellow (higher) to blue (lower)." }}
+{{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}"
+}}
 +row
 +col-md-4
-{{display_map  layoutHere="true"   height="400" colorBy="B01001A_001E"  title="% White" showTitle="true"   #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map
+colorByFields="B01001A_001E_percentage,B01001B_001E_percentage,B01001I_001E_percentage,B01001D_001E_percentage,B19113_001E"
+strokeWidth=0.2 layoutHere="true"   height="400" colorBy="B01001A_001E_percentage"  showTitle="false"  colorBar="plotly_viridis" }}
 -col
 +col-md-4
-{{display_map  layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true"  #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map
+colorByFields="B01001A_001E_percentage,B01001B_001E_percentage,B01001I_001E_percentage,B01001D_001E_percentage,B19113_001E"
+strokeWidth=0.2  layoutHere="true"  height="400" colorBy="B01001B_001E_percentage"  showTitle="false" colorBar="plotly_viridis" }}
 -col
 +col-md-4
-{{display_map layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true"  #sizeBy="B19113_001E" colorBar="plotly_viridis" }}
+{{display_map
+colorByFields="B01001A_001E_percentage,B01001B_001E_percentage,B01001I_001E_percentage,B01001D_001E_percentage,B19113_001E"
+strokeWidth=0.2 layoutHere="true"  height="400" colorBy="B01001I_001E_percentage"  showTitle="false" colorBar="plotly_viridis" }}
 -col
 -row
 
 +row
 +col-md-4
-{{display type="scatterplot" layoutHere="true" fields="B19113_001E,B01001A_001E" map-display="false" chartHeight="350" }}
+{{display_scatterplot layoutHere="true" fields="B19113_001E,B01001A_001E_percentage" map-display="false" chartHeight="350" }}
 -col
 +col-md-4
-{{display type="scatterplot" layoutHere="true" fields="B19113_001E,B01001B_001E" map-display="false" chartHeight="350" }}
+{{display_scatterplot layoutHere="true" fields="B19113_001E,B01001B_001E_percentage" map-display="false" chartHeight="350" }}
 -col
 +col-md-4
-{{display type="scatterplot" layoutHere="true" fields="B19113_001E,B01001I_001E" map-display="false" chartHeight="350" }}
+{{display_scatterplot layoutHere="true" fields="B19113_001E,B01001I_001E_percentage" map-display="false" chartHeight="350" }}
 -col
 -row
 +row
 +col-md-12
 <center>
-{{display type="table" layoutHere="true" skipFields="latitude,longitude" map-colorBar="plotly_viridis"}}
+{{display_table layoutHere="true" skipFields="latitude,longitude" map-colorBar="plotly_viridis"}}
 </center>
 -col
 -row
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B01003_001E
-B01001A_001E:%1
-B01001B_001E:%1
-B01001I_001E:%1
-B01001D_001E:%1
-B19113_001E
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B01003_001E:Population
+B01001A_001E:%1:White
+B01001B_001E:%1:Black or African American
+B01001I_001E:%1:Hispanic or Latino
+B01001D_001E:%1:Asian
+B19113_001E:Median Income
 ]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-Area
-Population
-% White
-% Black or African American
-% Hispanic or Latino
-% Asian
-Median income
-]]></property>
-  </type>
+</type>
 
 
 
-  <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="false">
+  <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="true">
 <wiki><![CDATA[+section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
@@ -288,7 +262,7 @@ Median income
 ]]></property>
   </type>
 
-  <type name="type_census_nationality"  super="type_census_acs"  description="US Census ACS Data - Nationality" foruser="false">
+  <type name="type_census_nationality"  super="type_census_acs"  description="US Census ACS Data - Nationality" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
@@ -332,7 +306,7 @@ Median income
   </type>
 
 
-  <type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="false">
+  <type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
@@ -383,7 +357,7 @@ Median income
 ]]></property>
   </type>
 
-  <type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="false">
+  <type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
@@ -436,96 +410,47 @@ Median income
 ]]></property>
   </type>
 
-  <type name="type_census_commuting"  super="type_census_acs"  description="US Census ACS Data - Commuting" foruser="false">
+<type name="type_census_commuting"  super="type_census_acs"  description="US Census ACS Data - Commuting" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
-{{display_map layoutHere="false" 
-showTitle="true" 
-titleId="census.commuting.label"
-title="Sized by total number of workers. Yellow shows more workers that drove alone."
-colorBy="B08006_003E"
+{{display_table layoutHere="false" height=400px skipFields="latitude,longitude" }}
+{{display_map layoutHere="false"  height=400px showTitle="false" 
+strokeWidth=0.2
+colorBy="B08006_003E_percentage"
+colorByFields="B08006_003E_percentage,B08006_004E_percentage,B08006_008E_percentage,B08006_014E_percentage,B08006_015E_percentage,B19113_001E"
 colorBar="plotly_viridis"
 strokeColor="black"
 #sizeBy="B08006_001E"
 }}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_003E" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_004E" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_008E" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B08006_014E" map-display="false" chartWidth="600" showTitle="true" title="Biked"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_003E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_004E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_008E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_014E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Biked"}}
 
 {{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
 {{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
-
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B08006_001E
-B08006_003E:%1
-B08006_004E:%1
-B08006_008E:%1
-B08006_014E:%1
-B08006_015E:%1
-B19113_001E
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[Area
-Population
-% Workers drove alone
-% Workers carpooled
-default
-% Biked
-% Walked
-Median income
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B08006_001E:Population
+B08006_003E:%1:Drove alone
+B08006_004E:%1:Carpooled
+B08006_008E:%1:Public transportation
+B08006_014E:%1:Biked
+B08006_015E:%1:Walked
+B19113_001E:Median income
 ]]></property>
   </type>
 
-<!--
-  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
-<wiki><![CDATA[
 
-]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[
-
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-
-]]></property>
-  </type>
-
-  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
-<wiki><![CDATA[
-
-]]></wiki>
-
-    <property name="fields.databaseDefault"><![CDATA[
-
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-
-]]></property>
-  </type>
-
-  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
-<wiki><![CDATA[
-
-]]></wiki>
-
-    <property name="fields.databaseDefault"><![CDATA[
-
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-
-]]></property>
-  </type>
-
--->
 
 
   <type name="type_urbaninstitute_trend"  super="type_point" foruser="false">

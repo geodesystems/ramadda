@@ -36,6 +36,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class CensusVariable implements Comparable, Cloneable {
 
+    public static final int NULL_INDEX=-999;
+
     /** _more_ */
     public static final String PATTERNS =
         ".*(ancestry|margin of error|hispanic|other race|more races|pacific|latin|puerto|indian|occupation|spanish|white|black|africa|asia).*";
@@ -57,6 +59,9 @@ public class CensusVariable implements Comparable, Cloneable {
     /** _more_ */
     private String label;
 
+    private String alias;
+
+
     /** _more_ */
     private String conceptId;
 
@@ -64,7 +69,7 @@ public class CensusVariable implements Comparable, Cloneable {
     private String concept;
 
     /** _more_ */
-    private int dependsIndex = -1;
+    private int dependsIndex = NULL_INDEX;
 
     /** _more_ */
     private boolean skip = false;
@@ -333,6 +338,13 @@ public class CensusVariable implements Comparable, Cloneable {
     public boolean getSkip() {
         return skip;
     }
+
+    public void setAlias(String l) {
+	alias =l;
+    }
+    public String getAlias() {
+	return alias;
+    }    
 
 
 }
