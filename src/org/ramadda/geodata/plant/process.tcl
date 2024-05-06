@@ -8,6 +8,9 @@ puts $::entriesfp "<entries>"
 set ::shfp [open create.sh w]
 puts -nonewline $::shfp "zip  /Users/jeffmc/plant.zip entries.xml "
 
+#array set ::measurementNames {plant "Per Plant" leaf "Per Leaf Area" sapwood "Per Sapwood Area"}
+array set ::measurementNames {plant "Plant" leaf "Leaf" sapwood "Sapwood"}
+
 set ::cnt 0
 
 proc wentry {v} {
@@ -74,12 +77,14 @@ proc process {site type file measurement datatype} {
 	return;
     }
     incr ::cnt
-    if {$::cnt >10} return
-    puts stderr "processing site:$site #$::cnt"
+#    if {$::cnt >10} return
+#    puts stderr "processing site:$site #$::cnt"
     regsub -all {_} $site  {-} _site
-    set name $md(si_name)
-    regsub -all {_} $name { }  name
-    set name "$name - $_site - $datatype"
+    regsub -all {^[^-]+-} $_site {} _site
+    set siteName $md(si_name)
+#    regsub -all {_} $siteName { }  siteName
+    set name "$siteName - $_site - $datatype - $::measurementNames($measurement)"
+    puts stderr "$site -- $name"
     set country $md(si_country)
     if {[info exists ::countries($country)]} {
 	set country $::countries($country)
@@ -96,7 +101,7 @@ proc process {site type file measurement datatype} {
     puts $::sitefp "$site,$lat,$lon"
     flush $::sitefp
     puts -nonewline $::shfp " $datafile "
-    wentry "<entry  [attr name $name] [attr site_id $site] [attr country $country] [attr biome $biome]  [attr type $type] [attr altitude [num $md(si_elev)]] [attr latitude $lat] [attr longitude $lon] [attr file $datafile] "
+    wentry "<entry  [attr name $siteName] [attr site_id $site] [attr country $country] [attr biome $biome]  [attr type $type] [attr altitude [num $md(si_elev)]] [attr latitude $lat] [attr longitude $lon] [attr file $datafile] "
     wentry [attr measurement $measurement]
     wentry [attr datatype $datatype]
     wentry [attr stand_terrain $stand(st_terrain)]
@@ -196,8 +201,8 @@ regexp {.*/([^/]+)$} [exec pwd] match measurement
 
 
 foreach site $sites {process $site $entrytype sapf_data $measurement "Sap Flow"}
-set ::cnt 0
-foreach site $sites {process $site $entrytype env_data $measurement "Environmental"} 
+#set ::cnt 0
+#foreach site $sites {process $site $entrytype env_data $measurement "Environmental"} 
 
 close $::sitefp
 puts $::entriesfp "</entries>"
