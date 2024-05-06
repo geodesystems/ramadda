@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat May  4 05:23:24 MDT 2024";
+var build_date="RAMADDA build date: Mon May  6 03:00:53 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -292,7 +292,7 @@ $.extend(Utils,{
 			       ATTR_TITLE,title??'',
 			       ATTR_CLASS, "display-colortable-slice",
 			       ATTR_STYLE, HU.css('background', ct[i],"color",fg),
-			       ATTR_WIDTH, tdw], '&nbsp;');
+			       ATTR_WIDTH, tdw], '');
 	    } else {
 		attrs.push(ATTR_STYLE);
 		attrs.push(labelStyle);
@@ -7367,9 +7367,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
 		if(this.pointData) pointData = this.pointData;
                 let fields = this.getFieldsToSelect(pointData);
+//		console.log(fields.map(f=>{return f.getId() + '-' + f.getLabel();}));
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
-                        console.log("\thave fixed fields:" + fixedFields.length);
+                        console.log("\thave fixed fields:" + fixedFields);
 		    let selected = [];
                     for (let i = 0; i < fixedFields.length; i++) {
                         let sfield = fixedFields[i];
@@ -20265,11 +20266,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-	    //debug=true
+//	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
-	    if(debug) console.log("fields:" + selectedFields.map(f=>{return f.getId()}));
+	    if(debug) console.log(selectedFields.map(f=>{return f.getId()+'-'+f.getLabel()}));
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
