@@ -92,7 +92,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	String id = (String)  entry.getValue(IDX_STATION_ID);
 	if(!stringDefined(id)) return;
 	entry.setValue(IDX_DATA_TYPE,type);	
-	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id;
+	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id.toLowerCase();
 	try {
 	    String html = IO.readUrl(new URL(url));
 	    String name =  StringUtil.findPattern(html,"(?i).*currentstnname *= *'([^']+)'");
@@ -122,8 +122,11 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	    }
 	    if(name!=null && !stringDefined(entry.getName())) entry.setName(name);
 	} catch(Exception exc) {
-	    System.err.println("Error:" + exc +" url:" + url);
-	    exc.printStackTrace();
+	    getLogManager().logError("Error reading buoy metadata for id:" + id +" url:" + url,exc);
+	    getSessionManager().addSessionErrorMessage(request,"Error reading buoy metadata for station:" +  id +"<br>Url:" + url +
+						       "<br>Error:" +exc.getMessage());
+
+
 	}
     }
 
