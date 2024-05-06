@@ -1217,11 +1217,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-	    //debug=true
+//	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
-	    if(debug) console.log("fields:" + selectedFields.map(f=>{return f.getId()}));
+	    if(debug) console.log(selectedFields.map(f=>{return f.getId()+'-'+f.getLabel()}));
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();

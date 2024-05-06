@@ -3400,9 +3400,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
 		if(this.pointData) pointData = this.pointData;
                 let fields = this.getFieldsToSelect(pointData);
+//		console.log(fields.map(f=>{return f.getId() + '-' + f.getLabel();}));
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
-                        console.log("\thave fixed fields:" + fixedFields.length);
+                        console.log("\thave fixed fields:" + fixedFields);
 		    let selected = [];
                     for (let i = 0; i < fixedFields.length; i++) {
                         let sfield = fixedFields[i];
