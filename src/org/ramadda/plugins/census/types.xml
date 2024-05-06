@@ -226,17 +226,18 @@ B19113_001E:Median Income
 
 
 
-  <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="true">
+<type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="true">
 <wiki><![CDATA[+section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{display_download}}
 {{group showMenu="false" layoutColumns="2"  layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display_table showMenu=false  layoutHere="false" skipFields="latitude,longitude" height="450" chartHeight="450" }}
-{{display_map  showMenu=false layoutHere="false"  height="450" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
-colorBy="B07012_002E"
+{{display_map  showMenu=false layoutHere="false"  height="450" showTitle="false"
+colorBy="B07012_002E_percentage"
+colorByFields="B07012_002E_percentage,B07012_003E_percentage,B07012_004E_percentage,B19113_001E"
 colorBar="blue_white_red"
-strokeColor="black"
+strokeWidth=0.2 strokeColor="black"
 }}
 {{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
@@ -246,167 +247,122 @@ showDefault="false" showText="false" showMin="true" showMax="true" showAverage="
 ]]></wiki>
 
     <property name="fields.databaseDefault"><![CDATA[
-NAME
-B07012_001E
-B07012_002E:%1
-B07012_003E:%1
-B07012_004E:%1
-B19113_001E
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[Area
-Population
-% Below poverty level
-default
-default
-Median income
+NAME:Area
+B07012_001E:Population
+B07012_002E:%1:Below poverty level
+B07012_003E:%1:100 to 149 % of poverty level
+B07012_004E:%1:Above 150 % of poverty level
+B19113_001E:Median Income
 ]]></property>
   </type>
 
   <type name="type_census_nationality"  super="type_census_acs"  description="US Census ACS Data - Nationality" foruser="true">
 <wiki><![CDATA[
-+section title={{name}} #
++section title={{name}} 
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
-{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
-{{display type=map layoutHere=false column=1 
-showTitle="true" 
-title="Sized by population. Colored by percent non-citizens from blue (low) to yellow (high)"
-titleId="census.nationality.label"
-colorBy="B05001_006E"
-colorBar="plotly_viridis"
-strokeColor="magenta"
-#sizeBy="B05001_001E"
+{{display_table height=500px layoutHere=false skipFields="latitude,longitude" column=0 }}
+{{display_map height=500px layoutHere=false column=1 showTitle="false" 
+colorBy="B05001_002E_percentage"
+colorByFields="B05001_002E_percentage,B05001_004E_percentage,B05001_005E_percentage,B05001_006E_percentage,B19113_001E_percentage"
+colorBar="plotly_viridis" strokeColor="#000" strokeWidth=0.2
 }}
-{{display type=scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E" map-display="false" chartWidth="600"}}
+{{display_scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E_percentage" map-display="false" chartWidth="600"}}
 {{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display type="text" layoutHere=false column=1 showTitle="true" title="Details"}}
+{{display_text layoutHere=false column=1 showTitle="true" title="Details"}}
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B05001_001E
-B05001_002E:%1
-B05001_004E:%1
-B05001_005E:%1
-B05001_006E:%1
-B19113_001E
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[
-Area
-Population
-default
-default
-default
-% Not a U.S. citizen
-Median income
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B05001_001E:Population
+B05001_002E:%1:US Citizen
+B05001_004E:%1:US Citizen born abroad
+B05001_005E:%1:US Naturalized citizen 
+B05001_006E:%1:Not a citizen
+B19113_001E:Median income
 ]]></property>
   </type>
 
 
-  <type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="true">
+<type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
-{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
-{{display_map  layoutHere="false" 
-showTitle="true" 
+{{display_table height=500px layoutHere=false skipFields="latitude,longitude" column=0 }}
+{{display_map  height=500px layoutHere="false" 
+showTitle="false" 
 titleId="census.housing.label" 
-title="Sized by number of housing units. Yellow shows more renters."
-colorBy="B25003_003E"
+colorBy="B25003_002E_percentage"
+colorByFields="B25003_002E_percentage,B25003_003E_percentage,B25009_003E_percentage,B25009_004E_percentage,B25009_005E_percentage,B25009_014E_percentage,B25027_002E_percentage,B19113_001E"
 colorBar="plotly_viridis"
-strokeColor="magenta"
-#sizeBy="B25001_001E"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_002E" map-display="false" showTitle="true" title="Owner Occupied"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25003_003E" map-display="false" showTitle="true" title="Renter Occupied"}}
-{{display type="scatterplot" layoutHere="false" fields="B19113_001E,B25027_002E" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
+strokeColor="#000" strokeWidth=0.2}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B25003_002E_percentage" map-display="false" showTitle="true" title="Owner Occupied"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B25003_003E_percentage" map-display="false" showTitle="true" title="Renter Occupied"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B25027_002E_percentage" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
 {{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+{{display_text layoutHere="false"  showTitle="true" title="Details"}}
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B25001_001E
-B25003_002E:%1
-B25003_003E:%1
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B25001_001E:Total Units
+B25003_002E:%1:Owner Occupied
+B25003_003E:%1:Renter Occupied
 B25009_001E:skip
-B25009_003E:%4
-B25009_004E:%4
-B25009_005E:%4
+B25009_003E:%4:1 Person Household
+B25009_004E:%4:2 Person Household
+B25009_005E:%4:3 Person Household
 B25009_014E:%4
 B25027_002E:%4
-B19113_001E
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[Area
-Total Units
-% Owner Occupied
-% Renter Occupied
-skip
-% 1 Person Household
-% 2 Person Household
-% 3 Person Household
-default
-default
-Median income
+B19113_001E:Median Income
 ]]></property>
   </type>
 
-  <type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="true">
+<type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="true">
 <wiki><![CDATA[
 +section title={{name}} #
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display type=table layoutHere=false skipFields="latitude,longitude" }}
-{{display type=map layoutHere=false showTitle="true" 
-titleId="census.education.label" 
-title="Sized by median income. Colored by percent bachelors degree holders."
-colorBy="B15003_022E"
+{{display_table height=400px layoutHere=false skipFields="latitude,longitude" }}
+{{display_map height=400px  layoutHere=false showTitle="false" 
+colorBy="B15003_022E_percentage"
+colorByFields="B15003_002E_percentage,B15003_016E_percentage,B15003_017E_percentage,B15003_018E_percentage,B15003_021E_percentage,B15003_022E_percentage,B15003_023E_percentage,B15003_024E_percentage,B15003_025E_percentage,B19113_001E"
 colorBar="plotly_viridis"
-strokeColor="magenta"
-#sizeBy="B19113_001E"
+strokeColor="#000" strokeWidth=0.2
 }}
-{{display type=scatterplot layoutHere=false map-display="false" fields="B19113_001E,B15003_017E" title="High School Diploma" showTitle="true"  }}
-{{display type=scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_022E" title="Bachelor's Degree"  showTitle="true" }}
-{{display type=scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_024E" title="Professional Degree"  showTitle="true" }}
+{{display_scatterplot layoutHere=false map-display="false" fields="B19113_001E,B15003_017E_percentage" title="High School Diploma" showTitle="true"  }}
+{{display_scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_022E_percentage" title="Bachelor's Degree"  showTitle="true" }}
+{{display_scatterplot layoutHere=false  map-display="false" fields="B19113_001E,B15003_024E_percentage" title="Professional Degree"  showTitle="true" }}
 {{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+{{display_text layoutHere="false"  showTitle="true" title="Details"}}
 -section
 ]]></wiki>
 
-    <property name="fields.databaseDefault"><![CDATA[NAME
-B15003_001E
+<property name="fields.databaseDefault"><![CDATA[
+NAME:Area
+B15003_001E:Population
 B15003_002E:%1
 B15003_016E:%1
 B15003_017E:%1
 B15003_018E:%1
-B15003_021E:%1
-B15003_022E:%1
-B15003_023E:%1
-B15003_024E:%1
-B15003_025E:%1
-B19113_001E
-]]></property>
-    <property name="header.databaseDefault"><![CDATA[Area
-Population
-default
-default
-default
-default
-% Associates
-% Bachelors
-% Masters
-% Professional degree
-% PhD
-Median income
+B15003_021E:%1:Associates
+B15003_022E:%1:Bachelors
+B15003_023E:%1:Masters
+B15003_024E:%1:Professional degree
+B15003_025E:%1:Phd
+B19113_001E:Median income
 ]]></property>
   </type>
 
@@ -418,12 +374,10 @@ Median income
 {{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
 {{display_table layoutHere="false" height=400px skipFields="latitude,longitude" }}
 {{display_map layoutHere="false"  height=400px showTitle="false" 
-strokeWidth=0.2
+strokeColor="black" strokeWidth=0.2
 colorBy="B08006_003E_percentage"
 colorByFields="B08006_003E_percentage,B08006_004E_percentage,B08006_008E_percentage,B08006_014E_percentage,B08006_015E_percentage,B19113_001E"
 colorBar="plotly_viridis"
-strokeColor="black"
-#sizeBy="B08006_001E"
 }}
 {{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_003E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
 {{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_004E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
@@ -433,7 +387,7 @@ strokeColor="black"
 {{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+{{display_text layoutHere="false"  showTitle="true" title="Details"}}
 -section
 ]]></wiki>
 
@@ -467,32 +421,6 @@ B19113_001E:Median income
      <property name="map.chart.minSizeY" value="400"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   </type>
-
-<!--
-  <type name="type_urbaninstitute_employment"  super="type_urbaninstitute_trend"  description="MetroTrends Employment Data" handler="org.ramadda.data.services.PointTypeHandler" >
-     <property name="map.chart.fields" value="NumTotNonFarm,NumTotPriv"/>
-     <property name="record.properties">
-<![CDATA[
-skiplines=1
-fields=year[type=string label="Year"],month[type=string label="Month"],metronm[type=string],cbsa[type=string],NumEduHealth[label="Edu and Health"  chartable=true] ,NumFinance[label="Finance"  chartable=true], NumGoodsProd[label="Goods and Production"  chartable=true], NumGovt[label="Government"  chartable=true], NumInfo[label="Information"  chartable=true], NumLeisureHospit[label="Leisure and Hospitality"  chartable=true], NumManufact[label="Manufacturing"  chartable=true], NumOther[label="Other"  chartable=true], NumPrivServProv[label="Private Service Provider"  chartable=true], NumProfBusiness[label="Prof. Business"  chartable=true], NumRetailTrad[label="Retail and Trade"  chartable=true], NumServProv[label="Service Provider"  chartable=true], NumTotNonFarm[label="Total Non-Farm"  chartable=true], NumTotPriv[label="Total Private"  chartable=true], NumTradTranspUtil[label="Trad. Transp. and Util."  chartable=true], NumTranspUtil[label="Transp. and Util."  chartable=true], NumWholesaleTrad [label="Wholesale and Trade"  chartable=true]
-]]></property>
-    <column name="region"  type="enumerationplus"  columns="60" label="Region" default=""  cansearch="true"/>
-
-<wiki><![CDATA[
-+section title="{{name}}" #
-{{description}}
-{{group  layoutType="htable"  layoutColumns="2" showMenu="true" tooltip="${default}" }}
-{{display  type="linechart" fields="NumTotNonFarm,NumTotPriv" layoutHere="false" showTitle="false" vAxisMinValue="0"  }}
--section
-+section label="Information" #
-{{information  details="false"  }}
--section
-]]>
-</wiki>
-
-  </type>
--->
-
 
 
 </types>
