@@ -290,7 +290,7 @@ $.extend(Utils,{
 			       ATTR_TITLE,title??'',
 			       ATTR_CLASS, "display-colortable-slice",
 			       ATTR_STYLE, HU.css('background', ct[i],"color",fg),
-			       ATTR_WIDTH, tdw], '&nbsp;');
+			       ATTR_WIDTH, tdw], '');
 	    } else {
 		attrs.push(ATTR_STYLE);
 		attrs.push(labelStyle);
