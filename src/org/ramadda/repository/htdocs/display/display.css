@@ -1643,6 +1643,11 @@ svg > g > g:last-child { pointer-events: none }
     padding-left: 16px;
 }
 
+.display-entrylist-details-inner pre {
+    background:#fff;
+    border:0px;
+}
+
 .display-entrylist-details-snippet   {
     background:#fff;
     margin-left:30px;
