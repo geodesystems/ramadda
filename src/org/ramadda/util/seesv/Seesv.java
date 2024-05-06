@@ -1743,25 +1743,24 @@ public class Seesv implements SeesvCommands {
          *
          * @return _more_
          */
-        public String getLine(boolean decorate,boolean format) {
+        public String getLine(boolean decorate,boolean format,boolean json) {
 	    String prefix1 = (decorate?Utils.ANSI_BLUE:"");
 	    String prefix2 = (decorate?Utils.ANSI_GREEN:"");
 	    String prefix3 = (decorate?Utils.ANSI_CYAN:"");	    	    
 	    String suffix = (decorate?Utils.ANSI_RESET:"");
             StringBuilder sb = new StringBuilder();
-	    //	    if(true)
-	    //		return cmd +  " " +desc;
-		
             if (args != null) {
                 for (Arg arg : args) {
 		    if(format) sb.append("\n\t");
-                    sb.append("<" + prefix2+arg.id +" " + suffix.replace("\n","\\n")+ ((arg.desc.length() > 0)
-										 ? arg.desc.replace("\n","\\n")
-										       : ""));
+		    String desc = arg.desc;
+		    if(json && desc.length() > 0) desc = arg.desc.replace("\n","\\n");
+		    if(!json)
+			desc = desc.replace("<add>","").replace("</add>","").replace("&lt;","<").replace("&gt;",">");
+                    sb.append("<" + prefix2+arg.id +" " + suffix.replace("\n","\\n")+ desc);
 		    if (arg.props != null) {
-			//			for (int i = 0; i < arg.props.length;   i += 2) {
 			for (int i = 0; i < arg.props.length-1;   i+=2) {
 			    if(arg.props[i].equals(ATTR_TYPE)) continue;
+			    if(!json && arg.props[i].equals(ATTR_ROWS)) continue;
 			    sb.append(" " + arg.props[i]+"="+arg.props[i+1]);
 			}
 		    }
@@ -1799,6 +1798,29 @@ public class Seesv implements SeesvCommands {
 	    this( category,"");
 	}
     }
+
+
+    private static String add(String ...values) {
+	StringBuilder sb = new StringBuilder();
+	for(String s:values) {
+	    sb.append("<add>"+s+"</add>  ");
+	}
+	return sb.toString();
+    }
+
+    private static String argnl(String prefix,String ...values) {
+	StringBuilder sb = new StringBuilder();
+	sb.append(prefix);
+	for(String s:values) {
+	    if(sb.length()>0) {
+		sb.append("\n");
+		sb.append(prefix);
+	    }
+	    sb.append(s);
+	}
+	return sb.toString();
+    }    
+
 
     /** _more_ */
     private static final Cmd[] commands = {
@@ -2993,7 +3015,20 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a>",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",
-			"Name value pairs:\n\t\ttable.id &lt;new id&gt; table.name &lt;new name&gt;\ntable.cansearch false table.canlist false\ntable.icon &lt;icon&gt;, e.g., /db/database.png\n\t\t&lt;column&gt;.id &lt;new id for column&gt; &lt;column&gt;.label &lt;new label&gt;\n\t\t&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;\n\t\t&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;\n\t\t&lt;column&gt;.canlist false &lt;column&gt;.cansearch false\n\t\tdb.install &lt;true|false&gt; install the new db table\n\t\tdb.droptable &lt;true|false&gt; careful! this deletes any prior created dbs\n\tdb.yesreallydroptable true - this double checks", ATTR_ROWS, "10")),
+			"Name value pairs:" +
+			argnl("\t\t",
+			      add("table.id &lt;new id&gt;", "table.name &lt;new name&gt;"),
+			      add("table.cansearch false","table.canlist false"),
+			      add("table.icon &lt;icon&gt;")+", e.g., /db/database.png",
+			      add("&lt;column&gt;.id &lt;new id for column&gt;",
+				  "&lt;column&gt;.label &lt;new label&gt;"),
+			      add("&lt;column&gt;.type &lt;string|enumeration|double|int|date|latlon&gt;"),
+			      add("&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;"),
+			      add("&lt;column&gt;.canlist false &lt;column&gt;.cansearch false"),
+			      add("db.install &lt;true|false&gt;")+"install the new db table",
+			      add("db.droptable &lt;true|false&gt;")+" careful! this deletes any prior created dbs",
+			      add("db.yesreallydroptable true") +" - this double checks"),
+			ATTR_ROWS, "10")),
         new Cmd(CMD_DBPROPS, "Print to stdout props for db generation",
 		ARG_LABEL,"Print DB Properties",
 		new Arg("id pattern"),
@@ -3085,7 +3120,7 @@ public class Seesv implements SeesvCommands {
         boolean matchedCategory = false;
 
 	for (Cmd c : commands) {
-	    String cmd = c.getLine(format,format);
+	    String cmd = c.getLine(format,format,json);
             if (match != null) {
                 String text  = c.cmd;
                 String desc  = null;
@@ -3185,6 +3220,7 @@ public class Seesv implements SeesvCommands {
                 } else {
 		    cmd = cmd.replaceAll("<br>","\n");
                     pw.println(pad + cmd);
+		    
                 }
             }
             if (raw && cmd.startsWith(CMD_DB)) {
