@@ -1309,7 +1309,6 @@ function  SeesvForm(inputId, entry,params) {
 		    }
 		    return extra;
 		};
-
 		let getDesc = (arg,oneLine)=>{
 		    let extra = getExtra(arg);
 		    if(extra=="" && desc=="") return "";
@@ -1344,8 +1343,11 @@ function  SeesvForm(inputId, entry,params) {
 			let lines = Utils.split(v??'',a.delimiter);
 			v=Utils.join(lines,'\n');
 		    }
+		    desc = desc.replace(/<add>/g,"<add data-id=" + id+">");
 		    inner+=HU.formEntryTop(label,
-					   HU.hbox([HU.textarea("",v,["cols", a.columns || a.size || "30", "rows",a.rows,ID,id,"size",10]),
+					   HU.hbox([HU.textarea("",v,["cols", a.columns || a.size || "30",
+								      "rows",a.rows,
+								      ATTR_ID,id,"size",10]),
 						    HU.div([ATTR_STYLE,HU.css('max-height','200px','overflow-y','auto')],  desc)]));		
 		} else if(a.values || a.type=="enumeration") {
 		    let values
@@ -1399,15 +1401,24 @@ function  SeesvForm(inputId, entry,params) {
 	    }
 	    inner = HU.div([STYLE,HU.css('margin','5px')], inner);
 	    let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
+
+	    dialog.find("add").addClass('ramadda-clickable').click(function() {
+		let contents = $(this).html();
+		let id = $(this).attr('data-id');
+		contents = contents.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+		if(id) HtmlUtils.insertIntoTextarea(id,contents+'\n');
+	    });
+
+
 	    let _this = this;
 	    dialog.find(".seesv-column-button").click(function() {
 		if(_this.allColumnIds.length==0) return;
 		let inputId = $(this).attr('inputid');
 		let html = "";
 		_this.allColumnIds.forEach(id=>{
-		    html+=HU.div([CLASS,"ramadda-clickable","columnid",id],id);
+		    html+=HU.div([ATTR_CLASS,"ramadda-clickable","columnid",id],id);
 		});
-		html = HU.div([STYLE,HU.css('max-height:200px;overflow-y:auto;margin','5px')], html);
+		html = HU.div([ATTR_STYLE,HU.css('max-height:200px;overflow-y:auto;margin','5px')], html);
 		let popup =   HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:$(this)});
 		popup.find(".ramadda-clickable").click(function() {
 		    let id = $(this).attr("columnid");
