@@ -74,7 +74,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	"-changerow","0","*","^pm1$","pm1.0",
 	"-changerow","0","*","^pm.*25$","pm2.5",
 	"-sortby","date","up","date",
-	"-addheader","o3.label O3 co.label CO pm2_5.label \"PM 2.5\"  pm1_0.label \"PM 1.0\" pm10_0.label \"PM 10.0\" date.format yyyy-MM-dd'T'HH:mm:ss",
+	"-addheader","o3.type double co.type double pm2_5.type double pm1_0.type double pm10_0.type double o3.label O3 co.label CO pm2_5.label \"PM 2.5\"  pm1_0.label \"PM 1.0\" pm10_0.label \"PM 10.0\" date.format yyyy-MM-dd'T'HH:mm:ss",
 	"-print"
     };
 
