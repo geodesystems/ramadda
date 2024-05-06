@@ -746,7 +746,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /**
        is the file a pdf, doc, ppt, etc
      */
-    public boolean isDocument(String path) {
+    public boolean isDocument(Entry entry, String path) {
 	path = path.toLowerCase();	
 	//Only do documents
 	if(!(path.endsWith("pdf") ||
@@ -762,6 +762,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	     path.endsWith("pptx") ||	   	   
 	     path.endsWith("docx"))) {
 	    //	    System.err.println("not doc:" + path);
+	    if(entry!=null)
+		return entry.getTypeHandler().getTypeProperty("canbeindexed",false);
+
 	    return false;
 	}
 	return true;
@@ -805,7 +808,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-	if(!isDocument(f.getName())) {
+	if(!isDocument(entry, f.getName())) {
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: Not a document:" + f.getName());
 	    return null;
