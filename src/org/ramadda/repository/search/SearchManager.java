@@ -249,6 +249,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static final int LUCENE_MAX_LENGTH = 25_000_000;
 
+    private Directory luceneDirectory;
+
+
     private IndexWriter luceneWriter;
 
     private IndexSearcher luceneSearcher;
@@ -272,10 +275,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private boolean showMetadata= true;
 
-    public SearchManager(Repository repository) {
+    public SearchManager(Repository repository) throws Exception {
         super(repository);
         repository.addEntryChecker(this);
         getAdmin().addAdminHandler(this);
+	luceneDirectory = new NIOFSDirectory(Paths.get(getStorageManager().getLuceneDir().toString()));
     }
 
 
@@ -396,15 +400,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	getDatabaseManager().closeAndReleaseConnection(statement);
 
-	if(false) {
-	    indexWriter.deleteAll();
-	    commit(indexWriter);
-	} else {
-	    for(String id: ids)  {
-		indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
-	    }
-	    commit(indexWriter);
+	for(String id: ids)  {
+	    indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
 	}
+	commit(indexWriter);
 
 	Object mutex = new Object();
 	//Really 4
@@ -426,7 +425,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	getRepository().getJobManager().invokeAllAndWait(callables);
 	long t2 = System.currentTimeMillis();
 	if(ok[0]) {
-	    System.err.println("committing");
 	    commit(indexWriter);
 	}
 	getActionManager().actionComplete(actionId);
@@ -455,7 +453,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    }
 			    synchronized(mutex) {
 				getActionManager().setActionMessage(actionId,
-								    "Reindexed " + cnt[0] +" entries");
+								    "Reindexed " + cnt[0] +
+								    "/"+ total +
+								    " entries");
 			    }
 			}
 		    }
@@ -931,10 +931,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private IndexSearcher getLuceneSearcher() throws Exception {
 	if(luceneSearcher==null) {
-	    luceneSearcher = new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
-	    //	    return new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
+	    IndexReader reader = DirectoryReader.open(luceneDirectory);
+	    luceneSearcher = new IndexSearcher(reader);
+	}
+	DirectoryReader reader = DirectoryReader.openIfChanged((DirectoryReader) luceneSearcher.getIndexReader());
+	if (reader != null) {
+            luceneSearcher = new IndexSearcher(reader);
+        }
+        return luceneSearcher;
+	/*	if(luceneSearcher==null) {
+	    IndexReader reader = DirectoryReader.open(luceneDirectory);
+	    luceneSearcher = new IndexSearcher(reader);
+	    //	    luceneSearcher = new IndexSearcher(DirectoryReader.open(getLuceneWriter()));
 	}
 	return luceneSearcher;
+	*/
     }
 
 
@@ -1657,12 +1668,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void entriesDeleted(List<String> ids) {
         try {
 	    //	    synchronized(LUCENE_MUTEX) {
-		IndexWriter indexWriter = getLuceneWriter();
-		for (String id : ids) {
-		    indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
-		}
-		commit(indexWriter);
-		//	    }
+	    IndexWriter indexWriter = getLuceneWriter();
+	    for (String id : ids) {
+		indexWriter.deleteDocuments(new Term(FIELD_ENTRYID, id));
+	    }
+	    commit(indexWriter);
+	    //	    }
         } catch (Exception exc) {
             logError("Error deleting entries from Lucene index", exc);
         }
