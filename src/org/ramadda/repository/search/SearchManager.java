@@ -443,7 +443,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(entry==null) continue;
 			synchronized(mutex) {
 			    cnt[0]++;
-			    System.err.println("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
+			    getLogManager().logSpecial("#" + cnt[0] +"/"+ total +" entry:" + entry.getName());
 			}
 			indexEntry(indexWriter, entry, request, false);
 			getEntryManager().removeFromCache(entry);
