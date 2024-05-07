@@ -76,6 +76,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	if(!stringDefined(baseUrl)) return;
 	String nodeId  =(String) entry.getValue("nodeid");
 	if(!stringDefined(nodeId)) return;	
+	nodeId = nodeId.trim();
 	String url = "https://api." + baseUrl +"/production";
 	String json = IO.readUrl(new URL(url));
 	JSONArray array   = new JSONArray(json);
@@ -107,8 +108,9 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	//	System.err.println(vsn);
 
 	URL gpsUrl = getDataUrl(baseUrl);
-	String payload = "{\"start\":\"-6m\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
+	String payload = "{\"start\":\"-14d\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
 	String gps = IO.doPost(gpsUrl,payload);
+	System.err.println("gps:" + gps);
 	for(WaggleRecord record: parseData(gps)) {
 	    if(record.name.equals("sys.gps.lat")) entry.setLatitude(record.value);
 	    else if(record.name.equals("sys.gps.lon")) entry.setLongitude(record.value);

@@ -48,6 +48,8 @@ firstLineDefinesFields=true
 {{display_table}}
 -col
 +col-4
+<a href="https://portal.{{field name=serverroot}}/node/{{field name=nodeid}}">portal.{{field name=serverroot}}/node/{{field name=nodeid}}</a>
+<br>
 {{mapentry hideIfNoLocations=true width="100%" height="300px"}}
 -col
 -row
