@@ -1,0 +1,61 @@
+<types supercategory="Geoscience">
+  <type name="type_waggle_data"  description="Waggle Data" super="type_point" 
+	newfields="serverroot,nodeid,variable,date_offset,date,name,quit,_default"
+	editfields="serverroot,nodeid,variable,date_offset,date,name,_default"
+    handler="org.ramadda.geodata.point.WaggleTypeHandler">
+    
+<property name="record.properties">
+firstLineDefinesFields=true                                                          
+</property>
+    <property name="search.tabs" value="map,list"/>
+    <property name="record.file.cacheok" value="true"/>    
+    <property name="icon" value="/point/waggle.png"/>
+    <property name="form.location.show" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.properties.show" value="false"/>
+    <property name="date.nullok" value="true"/>
+    <column  name="serverroot"  type="enumerationplus" label="Server Root" addblanktoenumerationmenu="false"
+	     help="Base server URL where we can access api.&amp;lt;server root&amp;gt;/production and data.&amp;lt;server root&amp;gt;/production"
+	     default="sagecontinuum.org"
+	     values="sagecontinuum.org" cansearch="true"/>
+
+    <column  name="nodeid"  type="enumerationplus" label="Node ID" suffix="e.g., W019"  cansearch="true" addblanktoenumerationmenu="false"/>
+    <column  name="variable"  type="enumerationplus" default="env.temperature"
+	     values="env.temperature"
+	     label="Variable" suffix="e.g., env.temperature"  cansearch="true" addblanktoenumerationmenu="false"/>
+    <column  name="date_offset"  type="string" columns="6" label="Date Offset" suffix="e.g., -60s, -10m, -24h" />        
+
+    <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" group="Metadata"/>    
+    <column  name="focus"  type="enumerationplus" label="Focus"   cansearch="true"/>
+    <column  name="location"  type="enumerationplus" label="Location"   cansearch="true"/>
+    <column  name="state"  type="enumerationplus" label="State"   cansearch="true"/>    
+    <column  name="notes"  type="string" size="5000" rows="5" label="Notes"   cansearch="false"/>            
+
+<wiki>
+<![CDATA[
++section title="Node: {{name}}"
+{{property max="20000"}}
+{{description wikify=true}}
+{{group showMenu=false}}
++row
++col-8
+{{display_linechart xshowMenu=true fields=#2}}
+{{display_download}}
+{{display_table}}
+-col
++col-4
+{{mapentry hideIfNoLocations=true width="100%" height="300px"}}
+-col
+-row
+:vspace  1em
+----
+:heading Information
+{{information  details="true"  showTitle="false"  }} 
+-section
+]]>
+</wiki>
+</type>
+
+
+</types>
