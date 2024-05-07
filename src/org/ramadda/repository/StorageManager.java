@@ -166,6 +166,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the upload directory property */
     public static final String PROP_UPLOADDIR = "ramadda.storage.uploaddir";
 
+    public static final String PROP_LUCENEDIR = "ramadda.storage.lucenedir";    
+
     /** the plugins directory property */
     public static final String PROP_PLUGINSDIR = "ramadda.storage.pluginsdir";
 
@@ -214,6 +216,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the upload directory */
     private File uploadDir;
 
+    private File luceneDir;    
+
     /** the plugins directory */
     private File pluginsDir;
 
@@ -226,8 +230,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the storage directory */
     private File storageDir;
 
-    /** the index directory */
-    private File indexDir;
 
     /** the thumbnail directory */
     private TempDir thumbDir;
@@ -586,6 +588,16 @@ public class StorageManager extends RepositoryManager implements PointFile
 
         return uploadDir;
     }
+
+    public File getLuceneDir() {
+        if (luceneDir == null) {
+            luceneDir = getFileFromProperty(PROP_LUCENEDIR);
+            addOkToWriteToDirectory(luceneDir);
+        }
+
+        return luceneDir;
+    }    
+
 
     /**
      * Get the repository directory
@@ -1485,20 +1497,6 @@ public class StorageManager extends RepositoryManager implements PointFile
 
     }
 
-    /**
-     * Get the index directory
-     *
-     * @return the index directory path
-     */
-    public String getIndexDir() {
-        if (indexDir == null) {
-            indexDir = new File(IOUtil.joinDir(getRepositoryDir(),
-                    DIR_INDEX));
-            makeDirRecursive(indexDir);
-        }
-
-        return indexDir.toString();
-    }
 
     /**
      * Get the plugins directory

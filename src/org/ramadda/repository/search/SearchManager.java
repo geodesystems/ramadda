@@ -350,7 +350,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(luceneWriter==null) {
 	    synchronized(LUCENE_MUTEX) {
 		if(luceneWriter==null) {
-		    Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getIndexDir()));
+		    Directory index = new NIOFSDirectory(Paths.get(getStorageManager().getLuceneDir().toString()));
 		    IndexWriterConfig config = new IndexWriterConfig();
 		    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 		    luceneWriter = new IndexWriter(index, config);
