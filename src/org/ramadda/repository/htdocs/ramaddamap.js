@@ -2224,6 +2224,7 @@ RepositoryMap.prototype = {
                 if (value == "0") continue;
                 try {
                     let date = Utils.parseDate(value);
+		    if(!date) continue;
 		    if(date && isNaN(date.getTime())) continue;
                     if (isYear) didYear = true;
                     else didDate = true;
@@ -2232,7 +2233,7 @@ RepositoryMap.prototype = {
                             continue;
                         }
                     }
-                    this.dates.push(date);
+		    this.dates.push(date);
 		    
                     this.dateFeatures.push(feature);
                     this.minDate = this.minDate == null ? date : this.minDate.getTime() > date.getTime() ? date : this.minDate;
