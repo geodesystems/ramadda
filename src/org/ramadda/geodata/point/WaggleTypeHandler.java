@@ -64,9 +64,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
     }
 
 
-    private static final String URL ="https://data.sagecontinuum.org/api/v1/query";
-    //https://data.sagecontinuum.org
-
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
@@ -94,6 +91,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	}
 	if(!stringDefined(entry.getName())) entry.setName(nodeId +" - "+ vsn.getString("address"));
 	entry.setValue("focus",vsn.getString("focus"));
+	entry.setValue("project",vsn.getString("project"));	
 	String location = vsn.getString("location");
 	int idx = location.lastIndexOf(",");
 	if(idx>=0) {
@@ -107,15 +105,30 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	entry.setValue("notes",vsn.getString("notes").replace("\n","<br>"));		
 	//	System.err.println(vsn);
 
-	URL gpsUrl = getDataUrl(baseUrl);
-	String payload = "{\"start\":\"-14d\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
+	
+
+	URL gpsUrl = getDataUrl(entry);
+	String payload = "{\"start\":\"-365d\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
 	String gps = IO.doPost(gpsUrl,payload);
-	System.err.println("gps:" + gps);
 	for(WaggleRecord record: parseData(gps)) {
 	    if(record.name.equals("sys.gps.lat")) entry.setLatitude(record.value);
 	    else if(record.name.equals("sys.gps.lon")) entry.setLongitude(record.value);
 	    else if(record.name.equals("sys.gps.alt")) entry.setAltitude(record.value);    	    
 	}
+
+
+
+
+
+	if(!entry.hasLocationDefined()) {
+	    URL manifestUrl = new URL("https://auth."+ baseUrl+"/manifests/"+ nodeId);
+	    String manifest=IO.doGet(manifestUrl,"Accept","*/*");
+	    //	    System.out.println(manifest);
+	    JSONObject obj = new JSONObject(manifest);
+	    entry.setLatitude(obj.optDouble("gps_lat",Double.NaN));
+	    entry.setLongitude(obj.optDouble("gps_lon",Double.NaN));	    
+	}
+	
 
 
     }

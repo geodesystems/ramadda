@@ -29,11 +29,13 @@ firstLineDefinesFields=true
     <column  name="date_offset"  type="string" columns="6" label="Date Offset" suffix="e.g., -60s, -10m, -24h" />        
 
     <column  name="stride"  type="string"  columns="5" suffix="Skip factor-  e.g. 1d, 6h, 60s" label="Stride" />        
-    <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" group="Metadata"/>    
+    <column  name="project"  type="enumerationplus" label="Project"   cansearch="true" group="Metadata"/>
     <column  name="focus"  type="enumerationplus" label="Focus"   cansearch="true"/>
     <column  name="location"  type="enumerationplus" label="Location"   cansearch="true"/>
     <column  name="state"  type="enumerationplus" label="State"   cansearch="true"/>    
+    <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" />    
     <column  name="notes"  type="string" size="5000" rows="5" label="Notes"   cansearch="false"/>            
+
 
 <wiki>
 <![CDATA[
