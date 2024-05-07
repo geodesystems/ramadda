@@ -1,7 +1,7 @@
 <types supercategory="Geoscience">
   <type name="type_waggle_data"  description="Waggle Data" super="type_point" 
-	newfields="serverroot,nodeid,variable,date_offset,date,skip,name,quit,_default"
-	editfields="serverroot,nodeid,variable,date_offset,date,skip,name,_default"
+	newfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,quit,_default"
+	editfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,_default"
     handler="org.ramadda.geodata.point.WaggleTypeHandler">
     
 <property name="record.properties">
@@ -21,12 +21,14 @@ firstLineDefinesFields=true
 	     values="sagecontinuum.org" cansearch="true"/>
 
     <column  name="nodeid"  type="enumerationplus" label="Node ID" suffix="e.g., W019"  cansearch="true" addblanktoenumerationmenu="false"/>
+    <column  name="sensor"  type="enumerationplus" 
+	     label="Sensor" cansearch="true" addblanktoenumerationmenu="true"/>
     <column  name="variable"  type="enumerationplus" default="env.temperature"
 	     values="env.temperature"
 	     label="Variable" suffix="e.g., env.temperature"  cansearch="true" addblanktoenumerationmenu="false"/>
     <column  name="date_offset"  type="string" columns="6" label="Date Offset" suffix="e.g., -60s, -10m, -24h" />        
 
-    <column  name="skip"  type="int" label="Skip" default="0" />        
+    <column  name="stride"  type="string"  columns="5" suffix="Skip factor-  e.g. 1d, 6h, 60s" label="Stride" />        
     <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" group="Metadata"/>    
     <column  name="focus"  type="enumerationplus" label="Focus"   cansearch="true"/>
     <column  name="location"  type="enumerationplus" label="Location"   cansearch="true"/>

@@ -42,7 +42,7 @@ import java.util.Hashtable;
 
 public class WaggleTypeHandler extends PointTypeHandler {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
 
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
@@ -91,7 +91,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    getSessionManager().addSessionErrorMessage(request,"Could not find node:" + nodeId + " from: " + url);
 	    return;
 	}
-	if(!stringDefined(entry.getName())) entry.setName(vsn.getString("address"));
+	if(!stringDefined(entry.getName())) entry.setName(nodeId +" - "+ vsn.getString("address"));
 	entry.setValue("focus",vsn.getString("focus"));
 	String location = vsn.getString("location");
 	int idx = location.lastIndexOf(",");
@@ -159,11 +159,26 @@ public class WaggleTypeHandler extends PointTypeHandler {
             this.entry      = entry;
         }
 
+	private long  parseStep(String start) {
+	    String num = StringUtil.findPattern(start,"^([\\-\\d]+)");
+	    String unit = StringUtil.findPattern(start,"(d|h|m|s)$");
+	    if(num!=null && unit!=null) {
+		long base=0;
+		if(unit.equals("d")) base=DateUtil.daysToMillis(1);
+		else if(unit.equals("h")) base=DateUtil.hoursToMillis(1);		    
+		else if(unit.equals("m")) base=DateUtil.minutesToMillis(1);
+		else if(unit.equals("s")) base=1000;
+		return Integer.parseInt(num)*base;
+	    }
+	    return 0;
+	}
+
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
 	    String nodeId = (String) entry.getValue("nodeid");
 	    final String variable = (String) entry.getValue("variable");
+	    final String sensor = (String) entry.getValue("sensor");
 
 	    String start = (String)entry.getValue("date_offset");
 	    String end =null;
@@ -175,16 +190,9 @@ public class WaggleTypeHandler extends PointTypeHandler {
 		end = format(endDate);
 	    } else if(endDate!=null && Utils.stringDefined(start)) {
 		start=start.trim();
-		String num = StringUtil.findPattern(start,"^([\\-\\d]+)");
-		String unit = StringUtil.findPattern(start,"(d|h|m|s)$");
-		if(num!=null && unit!=null) {
-		    long base=0;
-		    if(unit.equals("d")) base=DateUtil.daysToMillis(1);
-		    else if(unit.equals("h")) base=DateUtil.hoursToMillis(1);		    
-		    else if(unit.equals("m")) base=DateUtil.minutesToMillis(1);
-		    else if(unit.equals("s")) base=1000;
-		    long ms = Integer.parseInt(num)*base;
-		    start=format(new Date(endDate.getTime()+ms));
+		long step = parseStep(start);
+		if(step!=0) {
+		    start=format(new Date(endDate.getTime()+step));
 		    end = format(endDate);
 		} else {
 		    System.err.println("Waggle: could not parse start:" + start);
@@ -196,20 +204,25 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    }
 
 	    List<String> items = new ArrayList<String>();
-	    Utils.add(items,"filter",JU.map("vsn",JU.quote(nodeId),"name",JU.quote(variable)));
+	    List<String> filter = new ArrayList<String>();
+	    Utils.add(filter,"vsn",JU.quote(nodeId),"name",JU.quote(variable));
+	    if(Utils.stringDefined(sensor))
+		Utils.add(filter,"sensor",JU.quote(sensor));
+	    Utils.add(items,"filter",JU.map(filter));
 	    Utils.add(items,"start",JU.quote(start));
 	    if(Utils.stringDefined(end)) {
 		Utils.add(items,"end",JU.quote(end));
 	    }
-	    Integer oskip = (Integer) entry.getValue("skip");
-	    final int skip = oskip.intValue();
+	    String stride = (String) entry.getValue("stride");
+	    final long delta = Utils.stringDefined(stride)?parseStep(stride):0;
 	    String payload = JU.map(items);
-	    System.err.println("query:"+payload.replace("\n"," "));
+	    //	    System.err.println("query:"+payload.replace("\n"," "));
 	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(entry).toString(),IO.HTTP_METHOD_POST,payload,null);
 	    InputStream pipedStream =IO.pipeIt(new IO.PipedThing(){
 		    public void run(OutputStream os) {
 			PrintStream           pw  = new PrintStream(os);
 			try {
+			    long lastTime=0;
 			    InputStream dataStream = IO.doMakeInputStream(path,false);
 			    BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
 			    pw.append("date[format=\"" + DATE_FORMAT+"\"],");
@@ -217,22 +230,16 @@ public class WaggleTypeHandler extends PointTypeHandler {
 			    pw.append("\n");
 			    String line;
 			    WaggleRecord record = new WaggleRecord();
-			    int _skip=-999;
 			    while((line=reader.readLine())!=null) {
 				record.read(line);
-				if(skip>0) {
-				    if(_skip==-999) {
-					_skip=skip;
-				    } else {
-					_skip--;
-					if(_skip>=0) {
-					    continue;
-					}
-					_skip=skip;
-				    }
+				if(delta>0) {
+				    Date d = new SimpleDateFormat(DATE_FORMAT).parse(record.timestamp);
+				    if(lastTime>0 && (d.getTime()-lastTime)<delta) continue;
+				    lastTime = d.getTime();
 				}
-				//				if(skip>0)  System.err.println("read:" + _skip);
-				Date d = new SimpleDateFormat(DATE_FORMAT).parse(record.timestamp);
+
+
+				//				System.out.println(record.raw +" " +record.timestamp +" " + d +" " + record.value);
 				pw.append(record.timestamp);
 				pw.append(",");
 				pw.print(record.value);
@@ -252,6 +259,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 
     public static class WaggleRecord {
 	String timestamp;
+	String raw;
 	String name;
 	double value;
 	public WaggleRecord() {
@@ -268,8 +276,9 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	}
 
 	public String convertTime(String t) {
+	    raw = t;
 	    int idx = t.indexOf(".");
-	    if(idx>0) t= t.substring(0,idx-1)+"Z";
+	    if(idx>0) t= t.substring(0,idx+2)+"Z";
 	    return t;
 	}
 
