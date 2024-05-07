@@ -1,7 +1,7 @@
 <types supercategory="Geoscience">
   <type name="type_waggle_data"  description="Waggle Data" super="type_point" 
-	newfields="serverroot,nodeid,variable,date_offset,date,name,quit,_default"
-	editfields="serverroot,nodeid,variable,date_offset,date,name,_default"
+	newfields="serverroot,nodeid,variable,date_offset,date,skip,name,quit,_default"
+	editfields="serverroot,nodeid,variable,date_offset,date,skip,name,_default"
     handler="org.ramadda.geodata.point.WaggleTypeHandler">
     
 <property name="record.properties">
@@ -26,6 +26,7 @@ firstLineDefinesFields=true
 	     label="Variable" suffix="e.g., env.temperature"  cansearch="true" addblanktoenumerationmenu="false"/>
     <column  name="date_offset"  type="string" columns="6" label="Date Offset" suffix="e.g., -60s, -10m, -24h" />        
 
+    <column  name="skip"  type="int" label="Skip" default="0" />        
     <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" group="Metadata"/>    
     <column  name="focus"  type="enumerationplus" label="Focus"   cansearch="true"/>
     <column  name="location"  type="enumerationplus" label="Location"   cansearch="true"/>

@@ -42,7 +42,7 @@ import java.util.Hashtable;
 
 public class WaggleTypeHandler extends PointTypeHandler {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS'Z'";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
@@ -121,7 +121,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
     public List<WaggleRecord> parseData(String data) {
 	List<WaggleRecord> records = new ArrayList<WaggleRecord>();
 	for(String line:Utils.split(data,"\n",true,true)) {
-	    if(records.size()<10) System.err.println(line);
 	    JSONObject obj = new JSONObject(line);
 	    records.add(new WaggleRecord(obj.getString("timestamp"),
 					 obj.getString("name"),
@@ -202,7 +201,8 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    if(Utils.stringDefined(end)) {
 		Utils.add(items,"end",JU.quote(end));
 	    }
-
+	    Integer oskip = (Integer) entry.getValue("skip");
+	    final int skip = oskip.intValue();
 	    String payload = JU.map(items);
 	    System.err.println("query:"+payload.replace("\n"," "));
 	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(entry).toString(),IO.HTTP_METHOD_POST,payload,null);
@@ -217,8 +217,22 @@ public class WaggleTypeHandler extends PointTypeHandler {
 			    pw.append("\n");
 			    String line;
 			    WaggleRecord record = new WaggleRecord();
+			    int _skip=-999;
 			    while((line=reader.readLine())!=null) {
 				record.read(line);
+				if(skip>0) {
+				    if(_skip==-999) {
+					_skip=skip;
+				    } else {
+					_skip--;
+					if(_skip>=0) {
+					    continue;
+					}
+					_skip=skip;
+				    }
+				}
+				//				if(skip>0)  System.err.println("read:" + _skip);
+				Date d = new SimpleDateFormat(DATE_FORMAT).parse(record.timestamp);
 				pw.append(record.timestamp);
 				pw.append(",");
 				pw.print(record.value);
@@ -248,14 +262,20 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	}
 
 	public WaggleRecord(String timestamp,	String name,double value) {
-	    this.timestamp=timestamp;
+	    this.timestamp=convertTime(timestamp);
 	    this.name = name;
 	    this.value=value;
 	}
 
+	public String convertTime(String t) {
+	    int idx = t.indexOf(".");
+	    if(idx>0) t= t.substring(0,idx-1)+"Z";
+	    return t;
+	}
+
 	public void read(String line) {
 	    JSONObject obj = new JSONObject(line);
-	    timestamp=obj.getString("timestamp");
+	    timestamp=convertTime(obj.getString("timestamp"));
 	    name = obj.getString("name");
 	    value=obj.optDouble("value",Double.NaN);
 	}
