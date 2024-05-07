@@ -20,7 +20,10 @@ firstLineDefinesFields=true
 	     default="sagecontinuum.org"
 	     values="sagecontinuum.org" cansearch="true"/>
 
-    <column  name="nodeid"  type="enumerationplus" label="Node ID" suffix="e.g., W019"  cansearch="true" addblanktoenumerationmenu="false"/>
+    <column  name="nodeid"  type="enumerationplus" label="Node ID" suffix="e.g., W019"  cansearch="true" addblanktoenumerationmenu="false"
+	      bulkuploadhelp="Or upload a file of node ids. One per line."	      
+	      addbulkupload="true"/>	     
+
     <column  name="sensor"  type="enumerationplus" 
 	     label="Sensor" cansearch="true" addblanktoenumerationmenu="true"/>
     <column  name="variable"  type="enumerationplus" default="env.temperature"

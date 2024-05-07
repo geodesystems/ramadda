@@ -28,6 +28,8 @@ import org.w3c.dom.*;
 import org.json.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.io.*;
 import java.net.URL;
@@ -37,7 +39,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import java.util.Hashtable;
 
 
 public class WaggleTypeHandler extends PointTypeHandler {
@@ -69,6 +70,19 @@ public class WaggleTypeHandler extends PointTypeHandler {
                                    boolean fromImport)
             throws Exception {
 	if(fromImport) return;
+	initializeNewEntryInner(request,  entry);
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"nodeid",seen,null,null);
+	for(Entry newEntry: entries) {
+	    initializeNewEntryInner(request,newEntry);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
+    }
+
+    private void initializeNewEntryInner(Request request, Entry entry)
+            throws Exception {
 	String baseUrl  =(String) entry.getValue("serverroot");
 	if(!stringDefined(baseUrl)) return;
 	String nodeId  =(String) entry.getValue("nodeid");
