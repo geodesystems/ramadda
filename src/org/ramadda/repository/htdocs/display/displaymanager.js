@@ -380,7 +380,6 @@ function DisplayManager(argId, argProperties) {
                     }
                 }
                 if (lon != null && lat != null) {
-		    console.log("latitude:" + lat+" longitude:" + lon);
                     jsonUrl = jsonUrl.replace("${latitude}", lat.toString());
                     jsonUrl = jsonUrl.replace("${longitude}", lon.toString());
                 }
