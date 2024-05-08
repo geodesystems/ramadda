@@ -9354,7 +9354,11 @@ public class WikiManager extends RepositoryManager
             js.append("\nvar " + groupVar +" = getOrCreateDisplayManager("
                       + HU.quote(mainDivId) + "," + JU.map(topProps)
                       + ",true);\n");
-            wikiUtil.appendJavascript(js.toString());
+	    //For now just add the JS as we go since if we process imported wiki
+	    //that has displays they think there is a displayManager already created but
+	    //it doesn't get added until the wiki processing here is done
+	    HU.script(sb,js.toString());
+	    //wikiUtil.appendJavascript(js.toString());
             return;
         } 
 
