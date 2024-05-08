@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  7 22:54:23 MDT 2024";
+var build_date="RAMADDA build date: Wed May  8 06:42:14 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33413,7 +33413,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 	{p:'comparators',d:'<=,>=,=,between',tt:'comparators for numeric search'},
-	{p:'searchDirect',d:true,tt:'Directly search remote RAMADDA repositories'},
+	{p:'searchDirect',d:false,tt:'Directly search remote RAMADDA repositories'},
         {p:'fields',d: null},
         {p:'formWidth',d: '225px'},
         {p:'entriesWidth',d: 0},
