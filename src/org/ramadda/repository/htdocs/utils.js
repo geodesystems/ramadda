@@ -3608,15 +3608,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     },
 
-    initPageSearch:function(select,parentSelect,label,hideAll,args) {
-	args = args??{};
+    initPageSearch:function(select,parentSelect,label,hideAll,opts) {
+	let args = {
+	    focus:true
+	};
+	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
-	let input = HU.input('','',['id',id,'placeholder',label??'Search','size','15']);
+	let input = HU.input('','',[ATTR_ID,id,'placeholder',label??'Search','size','15']);
 	if(args.target)
 	    $(args.target).html(input);
 	else
 	    document.write(input);
-	jqid(id).focus();
+	if(args.focus) {
+	    jqid(id).focus();
+	}
 	jqid(id).keyup(function(){
 	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
 	});
