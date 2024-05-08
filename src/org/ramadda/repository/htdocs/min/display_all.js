@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May  8 06:42:14 MDT 2024";
+var build_date="RAMADDA build date: Wed May  8 12:12:26 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -13673,7 +13673,6 @@ function DisplayManager(argId, argProperties) {
                     }
                 }
                 if (lon != null && lat != null) {
-		    console.log("latitude:" + lat+" longitude:" + lon);
                     jsonUrl = jsonUrl.replace("${latitude}", lat.toString());
                     jsonUrl = jsonUrl.replace("${longitude}", lon.toString());
                 }
