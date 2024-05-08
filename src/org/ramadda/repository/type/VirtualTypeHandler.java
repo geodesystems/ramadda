@@ -105,7 +105,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
 	    HU.formEntry(formBuffer,
 			 HU.b(msgLabel(column.getLabel()))+" " +
-			 HU.span(buttons,HU.cssClass("ramadda-button ramadda-clickable")) +
+			 HU.span(buttons,HU.cssClass("ramadda-clickable")) +
 			 "<br><table cellspacing=0 cellpadding=0 border=0>"
 			 + HU.row(HU.cols(widget, suffix),"valign=top")
 			 + "</table>");
