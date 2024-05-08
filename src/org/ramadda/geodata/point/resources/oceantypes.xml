@@ -907,7 +907,8 @@ addbulkupload="true"
   <column  name="station_name"  label="Station Name" type="string" cansearch="true"/>
   <column  name="state"  label="State" type="enumeration" cansearch="true"/>    
   <column  name="tidal"  label="Tidal" type="boolean" cansearch="true"/>
-  <column  name="flood_stage_minor"  label="Flood Stage Minor" default="NaN" type="double"   cansearch="false"/>
+  <column  name="flood_stage_minor"  label="Flood Stage Minor" default="NaN" type="double"   cansearch="false"
+	   group="Flood Stages"/>
   <column  name="flood_stage_moderate"  label="Flood Stage Moderate" default="NaN"  type="double"   cansearch="false"/>
   <column  name="flood_stage_major"  label="Flood Stage Major" default="NaN"  type="double"   cansearch="false"/>
   <column  name="datum_msl"  label="Mean Sea Level" default="NaN"  type="double"   cansearch="false" canedit="false"/>
@@ -924,7 +925,7 @@ addbulkupload="true"
       description="NOAA Tides - File" 
       super="type_noaa_tides" 
       editfields="station_id,_default"	>
-  <column  name="fields1"  label="Fields to show in chart 1" type="string"
+  <column  name="fields1"  label="Fields to show in chart 1" type="string" group="Chart Settings"
 	   cansearch="false" showinhtml="false" default="#2"/>
   <column  name="show_chart2"  label="Show second chart" type="boolean"
 	   default="false"
