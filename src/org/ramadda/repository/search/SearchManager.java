@@ -603,6 +603,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String _desc = desc.toString().toLowerCase();
 	corpus.append(_desc);
 	corpus.append(" ");
+	Entry parent = entry.getParentEntry();
+	if(parent!=null) {
+	    corpus.append(parent.getName());
+	    corpus.append(" ");
+	}
+		
         doc.add(new TextField(FIELD_DESCRIPTION, _desc,Field.Store.NO));
 
 	List<Column> columns = entry.getTypeHandler().getColumns();
