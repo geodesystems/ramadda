@@ -2646,9 +2646,9 @@ public class Admin extends RepositoryManager {
 
 	header.accept(topSB, "Reindex Lucene Index");
 	request.formPostWithAuthToken(topSB, URL_ADMIN_MAINTENANCE, "");
-	topSB.append(messageNote("Reindex all deletes entire index. Reindex partial only indexes entries not already indexed"));
+	topSB.append(messageNote("This runs through all of entries of the selected type and reindexes them"));
         topSB.append(HU.formTable());
-	List types= Utils.makeList(new TwoFacedObject("None",""));
+	List types= Utils.makeList(new TwoFacedObject("All Entry Types",""));
 	HU.formEntry(topSB,
 		     msgLabel("Type"),
 		     getRepository().makeTypeSelect(types, request, ARG_TYPE,"",false,null,false,null,false));
