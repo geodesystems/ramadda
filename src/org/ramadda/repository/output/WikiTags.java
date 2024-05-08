@@ -302,6 +302,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"showHeader","true",
 					"showSearchField","true",
 					"#providers","this,type:ramadda",
+					"#focus","false",
 					"#width","200px",
 					"#height","400px",
 					"#supers","comma separated list of super categories",

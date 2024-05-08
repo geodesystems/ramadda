@@ -2210,7 +2210,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         if (lastTok.equals("type")) {
             sb.append(HU.sectionOpen(null, false));
             HU.open(sb, "div", HU.cssClass("ramadda-links"));
-            addSearchByTypeList(request, sb,true,true,"",null,null,null);
+            addSearchByTypeList(request, sb,new Hashtable(),true,true,"",null,null,null);
             HU.close(sb, "div");
             sb.append(HU.sectionClose());
         } else {
@@ -2239,6 +2239,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public void addSearchByTypeList(Request request, Appendable sb,
+				    Hashtable props,
 				    boolean showHeader,
 				    boolean showSearchField,
 				    String listStyle,
@@ -2250,7 +2251,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String uid =  HU.getUniqueId("types");
 	if(showSearchField) {
 	    sb.append("<center>");
-	    HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','#" + uid +" .type-list-container','Find Type')");
+	    String args = JU.map("focus",Utils.getProperty(props,"focus","true"));
+	    HU.script(sb,HU.call("HtmlUtils.initPageSearch",
+				 "'.type-list-item'",
+				 "'#" + uid +" .type-list-container'",
+				 "'Find Type'",
+				 "false",args));
 	    sb.append("</center>");
 	}
 	sb.append(HU.open("div","id",uid));

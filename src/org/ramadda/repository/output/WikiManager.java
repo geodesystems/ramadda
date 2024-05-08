@@ -2185,7 +2185,7 @@ public class WikiManager extends RepositoryManager
 					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("cats"),",",true,true));	    
 	    if(props.get("types")!=null) types =
 					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("types"),",",true,true));	    
-	    getSearchManager().addSearchByTypeList(request, sb,showHeader,showSearchField,listStyle,supers,cats,types);
+	    getSearchManager().addSearchByTypeList(request, sb,props,showHeader,showSearchField,listStyle,supers,cats,types);
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_USER)) {
 	    List<String> ids = new ArrayList<String>();
