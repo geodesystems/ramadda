@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue May  7 00:06:28 MDT 2024";
+var build_date="RAMADDA build date: Tue May  7 22:52:18 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -4790,8 +4790,6 @@ function DisplayThing(argId, argProperties) {
 	    };
 
 
-
-
 	    let idToField = {}
 	    fields.forEach(f=>idToField[f.getId()] = f);
 	    //Look for a list
@@ -4810,15 +4808,23 @@ function DisplayThing(argId, argProperties) {
 			    break;
 			}
 		    }
-		} else if(t.tag=='match' && t.attrs['pattern']) {
+		} else if(t.tag=='match' && (t.attrs['pattern'] || t.attrs['numeric'])) {
 		    let pattern = t.attrs['pattern'];
-		    if(debug) console.log("checking for pattern:" + pattern);
+		    let numeric = t.attrs['numeric'];
+		    if(debug) console.log("checking for pattern:" + pattern +' or number:'+ numeric);
 		    fields.every(f=>{
-			if(f.getId().indexOf(pattern)>=0 || f.getLabel().indexOf(pattern)>=0 ||
-			   f.getId().match(pattern) || f.getLabel().match(pattern)) {
-			    field =f;
-			    if(debug) console.log("found pattern:" + f);
+			if(numeric && f.isNumeric()){
+			    field=f;
+			    if(debug) console.log("found number:" + f);
 			    return false;
+			}
+			if(pattern) {
+			    if(f.getId().indexOf(pattern)>=0 || f.getLabel().indexOf(pattern)>=0 ||
+			       f.getId().match(pattern) || f.getLabel().match(pattern)) {
+				field =f;
+				if(debug) console.log("found pattern:" + f);
+				return false;
+			    }
 			}
 			return true;
 		    });
