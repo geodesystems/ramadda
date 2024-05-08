@@ -677,11 +677,16 @@ public abstract class RecordFile {
      */
     public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
             throws Exception {
-        return new RecordIO(doMakeInputStream(buffered));
+        return new RecordIO(doMakeInputStream(visitInfo,buffered));
     }
 
 
 
+
+
+    public InputStream doMakeInputStream(VisitInfo visitInfo,boolean buffered) throws Exception {
+	return doMakeInputStream(buffered);
+    }
 
 
     /**
@@ -1012,6 +1017,7 @@ public abstract class RecordFile {
     public void doQuickVisit() {
         try {
             VisitInfo tmpVisitInfo = new VisitInfo();
+	    tmpVisitInfo.setQuickScan(true);
             RecordIO  recordIO     = doMakeInputIO(tmpVisitInfo, true);
             if (recordIO.isOk()) {
                 tmpVisitInfo.setRecordIO(recordIO);
@@ -1074,6 +1080,25 @@ public abstract class RecordFile {
 	
     }
 	
+    public int  getSkipToLast(int last) throws Exception {
+	int reallySkip = 0;
+	int numRecords = -1;
+	Integer num = pointCountCache.get(path.getPath());
+	if(num==null) {
+	    long t1  = System.currentTimeMillis();
+		    num = new Integer(countRecords());
+		    long t2  = System.currentTimeMillis();
+		    //		Utils.printTimes("RecordFile.countRecords",t1,t2);
+		}
+	pointCountCache.put(path.getPath(),num);
+	numRecords = num;
+	if(numRecords>last) {
+	    reallySkip = numRecords-last;
+	}
+	return reallySkip;
+    }
+
+
     /**
      * _more_
      *
@@ -1093,25 +1118,12 @@ public abstract class RecordFile {
         }
 
 	int last = visitInfo.getLast();
-	int numRecords = -1;
         int      skip     = getSkip(visitInfo);
 	int reallySkip = 0;
 	if(last>=0) {
-	    Integer num = pointCountCache.get(path.getPath());
-	    if(num==null) {
-		long t1  = System.currentTimeMillis();
-		num = new Integer(countRecords());
-		long t2  = System.currentTimeMillis();
-		//		Utils.printTimes("RecordFile.countRecords",t1,t2);
-	    }
-	    pointCountCache.put(path.getPath(),num);
-	    numRecords = num;
-	    if(numRecords>last) {
-		reallySkip = numRecords-last;
-	    }
+	    reallySkip = getSkipToLast(last);
 	}
 	
-	//	System.err.println("numRecords:" + numRecords+" last:" + last +" skip:" + reallySkip);
         RecordIO recordIO = doMakeInputIO(visitInfo, skip == 0);
         visitInfo.setRecordIO(recordIO);
         visitInfo = prepareToVisit(visitInfo);
