@@ -31,7 +31,7 @@
     <property name="icon" value="/files/r.png"/>
 </type>
 
-<type name="type_file_matlab" foruser="false"
+<type name="type_file_matlab" foruser="false" includeInSearch="true"
       description="Matlab File">
      <property name="icon" value="/files/matlab.png"/>
      <property name="form.area.show" value="false"/>
