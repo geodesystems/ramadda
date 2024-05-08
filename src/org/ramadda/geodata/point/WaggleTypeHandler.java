@@ -9,6 +9,7 @@ package org.ramadda.geodata.point;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.services.RecordConstants;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
@@ -61,7 +62,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new WaggleRecordFile(getRepository(), this,entry);
+        return new WaggleRecordFile(request,getRepository(), this,entry);
     }
 
 
@@ -117,9 +118,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	entry.setValue("location",location);
 	entry.setValue("node_type",vsn.getString("node_type"));	
 	entry.setValue("notes",vsn.getString("notes").replace("\n","<br>"));		
-	//	System.err.println(vsn);
-
-	
 
 	URL gpsUrl = getDataUrl(entry);
 	String payload = "{\"start\":\"-365d\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
@@ -137,7 +135,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	if(!entry.hasLocationDefined()) {
 	    URL manifestUrl = new URL("https://auth."+ baseUrl+"/manifests/"+ nodeId);
 	    String manifest=IO.doGet(manifestUrl,"Accept","*/*");
-	    //	    System.out.println(manifest);
 	    JSONObject obj = new JSONObject(manifest);
 	    entry.setLatitude(obj.optDouble("gps_lat",Double.NaN));
 	    entry.setLongitude(obj.optDouble("gps_lon",Double.NaN));	    
@@ -175,14 +172,16 @@ public class WaggleTypeHandler extends PointTypeHandler {
 
     public static class WaggleRecordFile extends CsvFile {
 
+	Request request;
         Repository repository;
 
 	WaggleTypeHandler typeHandler;
 
         Entry entry;
 
-        public WaggleRecordFile(Repository repository, WaggleTypeHandler typeHandler, Entry entry)
+        public WaggleRecordFile(Request request,Repository repository, WaggleTypeHandler typeHandler, Entry entry)
 	    throws IOException {
+	    this.request=request;
             this.repository = repository;
 	    this.typeHandler = typeHandler;
             this.entry      = entry;
@@ -201,10 +200,26 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    }
 	    return 0;
 	}
+        @Override
+	public String getFieldsProperty() {
+	    String variable = (String) entry.getValue("variable");
+	    return "date[format=\"" + DATE_FORMAT+"\"]," +variable;
+	}
+
+	/**
+	   Override this since when we have record.last set we know how to skip
+	 */
+        @Override 
+	public int  getSkipToLast(int last) throws Exception {
+	    return 0;
+	}
+
 
         @Override
-        public InputStream doMakeInputStream(boolean buffered)
+        public InputStream doMakeInputStream(VisitInfo visitInfo,boolean buffered)
                 throws Exception {
+	    //	    System.err.println("waggle");
+	    //	    System.err.println(Utils.getStack(10));
 	    String nodeId = (String) entry.getValue("nodeid");
 	    final String variable = (String) entry.getValue("variable");
 	    final String sensor = (String) entry.getValue("sensor");
@@ -239,6 +254,9 @@ public class WaggleTypeHandler extends PointTypeHandler {
 		Utils.add(filter,"sensor",JU.quote(sensor));
 	    Utils.add(items,"filter",JU.map(filter));
 	    Utils.add(items,"start",JU.quote(start));
+	    int last = visitInfo.getQuickScan()?1:request.get(RecordConstants.ARG_RECORD_LAST,-1);
+	    if(last>0)
+		Utils.add(items,"tail",""+last);
 	    if(Utils.stringDefined(end)) {
 		Utils.add(items,"end",JU.quote(end));
 	    }
@@ -247,33 +265,37 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    String payload = JU.map(items);
 	    //	    System.err.println("query:"+payload.replace("\n"," "));
 	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(entry).toString(),IO.HTTP_METHOD_POST,payload,null);
+	    
+
 	    InputStream pipedStream =IO.pipeIt(new IO.PipedThing(){
+		    int cnt=0;
 		    public void run(OutputStream os) {
 			PrintStream           pw  = new PrintStream(os);
 			try {
 			    long lastTime=0;
 			    InputStream dataStream = IO.doMakeInputStream(path,false);
 			    BufferedReader reader = new BufferedReader(new InputStreamReader(dataStream));
-			    pw.append("date[format=\"" + DATE_FORMAT+"\"],");
+			    pw.append("#fields=date[format=\"" + DATE_FORMAT+"\"],");
 			    pw.append(variable);
 			    pw.append("\n");
+			    pw.flush();
 			    String line;
 			    WaggleRecord record = new WaggleRecord();
 			    while((line=reader.readLine())!=null) {
+				cnt++;
 				record.read(line);
 				if(delta>0) {
 				    Date d = new SimpleDateFormat(DATE_FORMAT).parse(record.timestamp);
 				    if(lastTime>0 && (d.getTime()-lastTime)<delta) continue;
 				    lastTime = d.getTime();
 				}
-
-
-				//				System.out.println(record.raw +" " +record.timestamp +" " + d +" " + record.value);
 				pw.append(record.timestamp);
 				pw.append(",");
 				pw.print(record.value);
 				pw.append("\n");
+				pw.flush();
 			    }
+			    System.err.println("Waggle records cnt:" + cnt);
 			} catch(Exception exc) {
 			    typeHandler.getLogManager().logError("Filtering geojson:" + entry,exc);
 			    pw.println("Reading Waggle:" + exc);

@@ -4,9 +4,6 @@
 	editfields="serverroot,nodeid,sensor,variable,date_offset,date,stride,name,_default"
     handler="org.ramadda.geodata.point.WaggleTypeHandler">
     
-<property name="record.properties">
-firstLineDefinesFields=true                                                          
-</property>
     <property name="search.tabs" value="map,list"/>
     <property name="record.file.cacheok" value="true"/>    
     <property name="icon" value="/point/waggle.png"/>
@@ -38,6 +35,17 @@ firstLineDefinesFields=true
     <column  name="state"  type="enumerationplus" label="State"   cansearch="true"/>    
     <column  name="node_type"  type="enumerationplus" label="Node Type"   cansearch="true" />    
     <column  name="notes"  type="string" size="5000" rows="5" label="Notes"   cansearch="false"/>            
+<property name="record.properties">
+#firstLineDefinesFields=true                                                          
+</property>
+
+<property name="mapglyphs">
+props:fontSize:0px,iconSize:75,canvasWidth:500,canvasHeight:100,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+image,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}
+label,pady:5,pos:nw,dx:80,dy:10-ch,label:${entryname}  
+label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  numeric=true xpattern=".*" suffix=" ${unit}" prefixLabel=true}
+</property>
+
 
 
 <wiki>
