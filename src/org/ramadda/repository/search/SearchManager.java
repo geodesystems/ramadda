@@ -275,11 +275,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private boolean showMetadata= true;
 
-    public SearchManager(Repository repository) throws Exception {
+    public SearchManager(Repository repository)  {
         super(repository);
         repository.addEntryChecker(this);
         getAdmin().addAdminHandler(this);
-	luceneDirectory = new NIOFSDirectory(Paths.get(getStorageManager().getLuceneDir().toString()));
+	try {
+	    luceneDirectory = new NIOFSDirectory(Paths.get(getStorageManager().getLuceneDir().toString()));
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+
+	}
     }
 
 
