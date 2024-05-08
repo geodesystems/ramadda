@@ -981,7 +981,7 @@ NOAA Site</a>
 description="NOAA Tides - Base " 
 super="type_noaa_tides" >
   <column  name="days"  label="Days" type="int" 
-	 default="-1"
+	 default="-1" suffix="-1: use default"
 	 help="Override the # of days offset from the end date&lt;br&gt;Max: 6 minutes: 31 days; Hourly Height and High Low: 365 days; Monthly Mean- any number of years"
 	 cansearch="false"/>  
   <column name="datum" label="Datum" type="enumeration" default="STND"
@@ -994,16 +994,10 @@ description="NOAA Tides - Water Level"
 super="type_noaa_tides_base" 
 editfields="station_id,product,days,date,datum,_default">
   <property name="form.bulkupload.show" value="true"/>
-
-
   <property name="form.date.help" value="Optionally specify a date range"/>
-
   <property name="form.header.new">
 <![CDATA[+note\nEither specify a station and product or upload a file.<br>View station IDS at <a target=_map href=https://tidesandcurrents.noaa.gov/map/index.html>NOAA Tides and Currents Site</a>\n-note]]></property>    
-
-
-
-  <column  name="product"  label="Product" type="enumeration" values="water_level:6 Minutes,hourly_height:Hourly Height,high_low:High Low" cansearch="true"/>
+  <column  name="product"  label="Product" type="enumeration" values="water_level:6 Minutes,hourly_height:Hourly Height,high_low:High Low,predictions:Predictions" cansearch="true"/>
 <property name="record.properties">
 csvcommands1=-dateformat,yyyy-MM-dd HH:mm,GMT,-convertdate,date_time
 csvcommands2=-addheader, date_time.type date date_time.format {yyyy-MM-dd HH:mm} ty.label {Water level height} ty.type enumeration quality.type enumeration ty.enumeratedValues {HH:Higher High water;H:High water;L:Low water;LL:Lower Low water}

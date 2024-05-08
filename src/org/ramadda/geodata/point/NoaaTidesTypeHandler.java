@@ -34,6 +34,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
     private static final String PRODUCT_HOURLY_HEIGHT="hourly_height";
     private static final String PRODUCT_HIGH_LOW="high_low";        
     private static final String PRODUCT_MONTHLY_MEAN="monthly_mean";
+    private static final String PRODUCT_PREDICTIONS="predictions";    
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
     private static int IDX_STATION_ID = IDX++;
 
@@ -81,6 +82,8 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	try {
 	    //https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/8575512.json?expand=datums,floodlevels,disclaimers,notices,details,benchmarks&units=english
 	    String json = IO.readUrl(new URL(url));
+	    System.out.println(url);
+	    System.out.println(json);
             JSONObject  obj   = new JSONObject(json);
 
 	    JSONArray stations = obj.getJSONArray("stations");	    
@@ -121,6 +124,8 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
+
+
 
 	    entry.setValue("flood_stage_minor",new Double(flood.optDouble("nos_minor",Double.NaN)));
 	    entry.setValue("flood_stage_moderate",new Double(flood.optDouble("nos_moderate",Double.NaN)));
@@ -179,26 +184,31 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	int days = dateOffset==null?-1:dateOffset.intValue();
 	Date startDate = DateHandler.checkDate(new Date(entry.getStartDate()));
 	Date endDate = DateHandler.checkDate(new Date(entry.getEndDate()));	
-
-	if(endDate==null) endDate = new Date();
-	if(product.equals(PRODUCT_HIGH_LOW)) {
-	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:364));
-	} else 	if(product.equals(PRODUCT_HOURLY_HEIGHT)) {
-	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:364));
-	} else 	if(product.equals(PRODUCT_WATER_LEVEL)) {
-	    if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:31));
-	} else if(product.equals(PRODUCT_MONTHLY_MEAN)) {
-	    if(startDate==null) startDate =
-				    new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:365*40));
-
+	if(product.equals(PRODUCT_PREDICTIONS)) {
+	    if(startDate==null) startDate = new Date();
+	    if(endDate==null) endDate = new Date(startDate.getTime()+Utils.daysToMillis(days==-1?7:Math.abs(days)));
+	} else {
+	    if(endDate==null) endDate = new Date();
+	    if(product.equals(PRODUCT_HIGH_LOW)) {
+		if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:364));
+	    } else 	if(product.equals(PRODUCT_HOURLY_HEIGHT)) {
+		if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:364));
+	    } else 	if(product.equals(PRODUCT_WATER_LEVEL)) {
+		if(startDate==null) startDate = new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:31));
+	    } else if(product.equals(PRODUCT_MONTHLY_MEAN)) {
+		if(startDate==null)
+		    startDate =  new Date(endDate.getTime()-Utils.daysToMillis(days>0?days:365*40));
+	    }
 	}
 
+	String datum = (String)entry.getValue("datum","MLLW");
+	//	System.err.println("product:" + product +" datum:" + datum);
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
 			    "application","NOS.COOPS.TAC.WL",
 			    "time_zone","GMT",
 			    "units","english",
 			    "format","csv",
-			    "datum",(String)entry.getValue("datum","MLLW"),
+			    "datum",datum,
 			    "station",id,
 			    "product",product,
 			    "begin_date",sdf.format(startDate),
