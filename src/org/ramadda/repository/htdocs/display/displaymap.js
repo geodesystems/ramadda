@@ -759,18 +759,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		setTimeout(()=>{
                     if (this.getProperty("kmlLayer")) {
 			let ids = Utils.split(this.getProperty("kmlLayer"),',',true,true);
-			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);			
-			ids.forEach((id,idx)=>{
-			    let match = idx==0;
-			    if(id.startsWith('false:')) {
-				match = false;
-				id = id.substring('false:'.length);
-			    } else    if(id.startsWith('true:')) {
-				match = true;
-				id = id.substring('true:'.length);
-			    }
-
-
+			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);					ids.forEach((id,idx)=>{
+			    let match = true;
 			    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + id);
 			    let label = labels[idx];
 			    this.addBaseMapLayer(url, label,true,match);
@@ -781,18 +771,25 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let labels = Utils.split(this.getProperty("geojsonLayerName"),',',true,true);			
 			ids.forEach((id,idx)=>{
 			    let match = idx==0;
-			    if(id.startsWith('false:')) {
-				match = false;
-				id = id.substring('false:'.length);
-			    } else    if(id.startsWith('true:')) {
-				match = true;
-				id = id.substring('true:'.length);
-			    }
 			    let url = this.getRamadda().getEntryDownloadUrl(id);
 			    let label = labels[idx];
 			    this.addBaseMapLayer(url, label, false,match);
 			});
                     }
+		    let mapLayers = this.getProperty('mapLayers');
+		    if(mapLayers) {
+			let process=(layer)=>{
+			    let url
+			    if(layer.type=='kml')
+				url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + layer.id);
+			    else 
+				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
+			    this.addBaseMapLayer(url, layer.label, layer.type=='kml',layer.match);
+			};
+			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
+			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
+		    }
+
 		},500);
             }
         },
@@ -1715,7 +1712,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         doDisplayMap: function() {
             if (!this.getShowLayers()) return false;
             if (!this.getProperty("displayAsMap", true)) return false;
-            if(this.getProperty("kmlLayer") || this.getProperty("geojsonLayer")) {
+            if(this.getProperty("kmlLayer") || this.getProperty("geojsonLayer") || this.getProperty('mapLayers')) {
 		if(this.getShowLayers()) {
 		    return this.showVectorLayer;
 		}
@@ -4180,7 +4177,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltEndPointSize = endPointSize;
             let segmentWidth = parseInt(this.getSegmentWidth(1));
             let dfltSegmentWidth = segmentWidth;
-	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer"));
+	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer") || this.getProperty('mapLayers'));
             let showPoints = this.getProperty("showPoints", !haveLayer);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
