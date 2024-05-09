@@ -73310,6 +73310,9 @@ OpenLayers.Events.featureclick = OpenLayers.Class({
             layer = feature.layer;
 	    //jeffmc: check for NPE
 	    if(layer==null) continue;
+	    //jeffmc: check if the layer can be selected
+	    if(layer.canSelect===false) continue;
+
             clicked[layer.id] = true;
 	    //jeffmc: add the event:
             more = this.triggerEvent("featureclick", {feature: feature,event:evt});
