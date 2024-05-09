@@ -11578,20 +11578,21 @@ public class EntryManager extends RepositoryManager {
             getRepository().getHtmlOutputHandler().getSelect(request,
 							     baseArg,
 							     HU.span(HU.image("fas fa-hand-pointer"),
-								     HU.attr("title","Select")),
+								     HU.attrs("title","Select")),
 							     true, null, entry,entryType);
+	select  = HU.span(select,HU.attrs("class","ramadda-entry-select-links"));
         String event = getRepository().getHtmlOutputHandler().getSelectEvent(request, baseArg, true,null,  entry,entryType);
 
         sb.append("\n");
         sb.append(HU.hidden(baseArg + "_hidden", value,
 			    HU.id(baseArg + "_hidden")));
         sb.append("\n");
+	sb.append(select);
         sb.append(HU.disabledInput(baseArg, ((theEntry != null)
 					     ? theEntry.getFullName()
 					     : ""), HU.onMouseClick(event) +
-				   HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable") + HU.id(baseArg) + HU.SIZE_40) + select);
+				   HU.cssClass(HU.CLASS_DISABLEDINPUT+" ramadda-clickable") + HU.id(baseArg) + HU.SIZE_40));
         sb.append("\n");
-
         return sb.toString();
     }
 

@@ -955,7 +955,9 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
-                                   String selectType, Entry entry, boolean addView, boolean addClear,String...entryType)
+                                   String selectType, Entry entry, boolean addView,
+				   boolean addClear,
+				   String...entryType)
             throws Exception {
         return getSelect(request, elementId, label, allEntries, selectType, entry,
                          addView, addClear, "",false,entryType);
@@ -999,7 +1001,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       ? ""
                       : HU.mouseClickHref(event, label,
                                           linkExtra
-					  + HU.cssClass("ramadda-button ramadda-clickable")
+					  + HU.cssClass("ramadda-clickable")
                                           + HU.id(selectorId
                                               + "_selectlink"));
         if (addView) {
@@ -1081,10 +1083,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             throws Exception {
         String event = OutputHandler.getSelectEvent(request, arg, allEntries, selectType, entry);
         return HU.hidden(arg + "_hidden", (entry != null)
-                                          ? entry.getId()
-                                          : "", HU.id(arg
-                                          + "_hidden")) + HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),
-                                              "class=ramadda-clickable") + " " + HU.disabledInput(arg, (entry != null)
+			 ? entry.getId()
+			 : "", HU.id(arg
+				     + "_hidden")) +
+	    HU.span(HU.span(HU.faIcon("fas fa-hand-pointer"),
+			    HU.attrs("class","ramadda-clickable","style","margin-left:5px;")) +
+		    HU.space(1) + HU.disabledInput(arg, (entry != null)
                 ? entry.getName()
                 : "", HU.clazz("disabledinput ramadda-clickable ramadda-entry-popup-select")
                       + HU.SIZE_40 + HU.id(arg)), HU.attr("onClick", event));
