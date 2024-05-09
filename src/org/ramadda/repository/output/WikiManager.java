@@ -9542,10 +9542,10 @@ public class WikiManager extends RepositoryManager
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
 			if(matchData) {
-			    kmlIds.add(0,mapEntry.getId());
+			    kmlIds.add(0,"true:"+mapEntry.getId());
 			    kmlNames.add(0,mapEntry.getName().replaceAll(",", " "));
 			} else {
-			    kmlIds.add(mapEntry.getId());
+			    kmlIds.add("false:"+mapEntry.getId());
 			    kmlNames.add(mapEntry.getName().replaceAll(",", " "));
 			}
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
@@ -9562,10 +9562,10 @@ public class WikiManager extends RepositoryManager
 
                     } else {
 			if(matchData) {
-			    geojsonIds.add(0,mapEntry.getId());
+			    geojsonIds.add(0,"true:"+mapEntry.getId());
 			    geojsonNames.add(0,mapEntry.getName().replaceAll(","," "));
 			} else {
-			    geojsonIds.add(mapEntry.getId());
+			    geojsonIds.add("false:"+mapEntry.getId());
 			    geojsonNames.add(mapEntry.getName().replaceAll(","," "));
 			}
                     }
@@ -9576,21 +9576,21 @@ public class WikiManager extends RepositoryManager
                         }
                     }
 
-		    if(annotatedIds!=null) {
-			Utils.add(propList, "annotationLayer", JU.quote(annotatedIds),
-				  "annotationLayerName", JU.quote(annotatedNames));
-		    }
-			
-		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
-			if (kmlIds.size()>0) {
-			    Utils.add(propList, "kmlLayer", JU.quote(Utils.join(kmlIds,",")),
+		}
+		if(annotatedIds!=null) {
+		    Utils.add(propList, "annotationLayer", JU.quote(annotatedIds),
+			      "annotationLayerName", JU.quote(annotatedNames));
+		}
+		
+		if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
+		    if (kmlIds.size()>0) {
+			Utils.add(propList, "kmlLayer", JU.quote(Utils.join(kmlIds,",")),
 				      "kmlLayerName", JU.quote(Utils.join(kmlNames,",")));
-			}
-			if (geojsonIds.size()>0) {
-			    Utils.add(propList, "geojsonLayer",
-				      JU.quote(Utils.join(geojsonIds,",")), "geojsonLayerName",
-				      JU.quote(Utils.join(geojsonNames,",")));
-			}
+		    }
+		    if (geojsonIds.size()>0) {
+			Utils.add(propList, "geojsonLayer",
+				  JU.quote(Utils.join(geojsonIds,",")), "geojsonLayerName",
+				  JU.quote(Utils.join(geojsonNames,",")));
                     }
                 }
             }
