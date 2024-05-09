@@ -9517,17 +9517,20 @@ public class WikiManager extends RepositoryManager
                 getMetadataManager().findMetadata(request, entry,
 						  new String[]{"map_displaymap"}, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
-                String kmlIds       = null;
-                String geojsonIds   = null;
-                String kmlNames     = null;
+                List<String> kmlIds       = new ArrayList<String>();
+                List<String> kmlNames     = new ArrayList<String>();
+                List<String> geojsonIds   = new ArrayList<String>();
+                List<String> geojsonNames = new ArrayList<String>();
+
                 String annotatedIds     = null;		
                 String annotatedNames     = null;		
-                String geojsonNames = null;
+
 
                 for (Metadata metadata : metadataList) {
                     if ( !Utils.stringDefined(metadata.getAttr1())) {
                         continue;
                     }
+		    boolean matchData=Misc.equals("true",metadata.getAttr2());
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
 							   metadata.getAttr1());
@@ -9538,16 +9541,13 @@ public class WikiManager extends RepositoryManager
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
-                        if (kmlIds == null) {
-                            kmlIds   = mapEntry.getId();
-                            kmlNames = mapEntry.getName().replaceAll(",",
-								     " ");
-                        } else {
-                            kmlIds += "," + mapEntry.getId();
-                            kmlNames += ","
-				+ mapEntry.getName().replaceAll(",",
-								" ");
-                        }
+			if(matchData) {
+			    kmlIds.add(0,mapEntry.getId());
+			    kmlNames.add(0,mapEntry.getName().replaceAll(",", " "));
+			} else {
+			    kmlIds.add(mapEntry.getId());
+			    kmlNames.add(mapEntry.getName().replaceAll(",", " "));
+			}
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
                         if (annotatedIds == null) {
                             annotatedIds   = mapEntry.getId();
@@ -9561,15 +9561,13 @@ public class WikiManager extends RepositoryManager
                         }
 
                     } else {
-                        if (geojsonIds == null) {
-                            geojsonIds = mapEntry.getId();
-                            geojsonNames = mapEntry.getName().replaceAll(",",
-									 " ");
-                        } else {
-                            geojsonIds += "," + mapEntry.getId();
-                            geojsonNames +=
-                                "," + mapEntry.getName().replaceAll(",", " ");
-                        }
+			if(matchData) {
+			    geojsonIds.add(0,mapEntry.getId());
+			    geojsonNames.add(0,mapEntry.getName().replaceAll(","," "));
+			} else {
+			    geojsonIds.add(mapEntry.getId());
+			    geojsonNames.add(mapEntry.getName().replaceAll(","," "));
+			}
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");
@@ -9584,14 +9582,14 @@ public class WikiManager extends RepositoryManager
 		    }
 			
 		    if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
-			if (kmlIds != null) {
-			    Utils.add(propList, "kmlLayer", JU.quote(kmlIds),
-				      "kmlLayerName", JU.quote(kmlNames));
+			if (kmlIds.size()>0) {
+			    Utils.add(propList, "kmlLayer", JU.quote(Utils.join(kmlIds,",")),
+				      "kmlLayerName", JU.quote(Utils.join(kmlNames,",")));
 			}
-			if (geojsonIds != null) {
+			if (geojsonIds.size()>0) {
 			    Utils.add(propList, "geojsonLayer",
-				      JU.quote(geojsonIds), "geojsonLayerName",
-				      JU.quote(geojsonNames));
+				      JU.quote(Utils.join(geojsonIds,",")), "geojsonLayerName",
+				      JU.quote(Utils.join(geojsonNames,",")));
 			}
                     }
                 }
