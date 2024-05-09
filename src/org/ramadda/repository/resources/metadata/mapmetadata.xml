@@ -26,6 +26,7 @@
 
       <element
           datatype="entry"
+	  entrytype="geo_geojson,geo_kml,geo_shapefile"
           name="Map Entry"
           suffix="KML or GeoJSON Entry"/>
 
