@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu May  9 00:04:01 MDT 2024";
+var build_date="RAMADDA build date: Thu May  9 00:51:17 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37967,22 +37967,45 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (this.getShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
-                    if (this.getProperty("kmlLayer")) {
-			let ids = Utils.split(this.getProperty("kmlLayer"),',',true,true);
-			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);					ids.forEach((id,idx)=>{
-			    let match = true;
-			    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + id);
-			    let label = labels[idx];
+		    let match = true;
+		    let getId=id=>{
+			match = true;
+			if(id.startsWith('true:')) {
+			    id =id.substring('true:'.length);
+			    match=true;
+			} else if(id.startsWith('false:')) {
+			    id =id.substring('false:'.length);
+			    match = false;
+			}
+			return id;
+		    }
+                    if (this.getProperty("shapefileLayer")) {
+			let ids = Utils.split(this.getProperty('shapefileLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label,true,match);
 			});
                     }
-                    if (this.getProperty("geojsonLayer")) {
-			let ids = Utils.split(this.getProperty("geojsonLayer"),',',true,true);
-			let labels = Utils.split(this.getProperty("geojsonLayerName"),',',true,true);			
+                    if (this.getProperty('kmlLayer')) {
+			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
 			ids.forEach((id,idx)=>{
-			    let match = idx==0;
+			    id = getId(id);
 			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx];
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label, true,match);
+			});
+                    }
+                    if (this.getProperty('geojsonLayer')) {
+			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label, false,match);
 			});
                     }
@@ -37990,11 +38013,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    if(mapLayers) {
 			let process=(layer)=>{
 			    let url
-			    if(layer.type=='kml')
-				url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + layer.id);
+			    if(layer.type=='shapefile')
+				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.name, layer.type=='kml',layer.match);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
 			};
 			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
 			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
@@ -38060,10 +38083,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 layer.redraw();
 	    }
 	    if(this.getJustShowMapLayer()) return;
-	    console.log('baseMapLoaded',layer.name,matchData);
 	    if(!matchData)return;
             this.vectorLayer = layer;
-	    console.log('applyVectorMap',layer.name);
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
@@ -38923,7 +38944,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         doDisplayMap: function() {
             if (!this.getShowLayers()) return false;
             if (!this.getProperty("displayAsMap", true)) return false;
-            if(this.getProperty("kmlLayer") || this.getProperty("geojsonLayer") || this.getProperty('mapLayers')) {
+            if(this.getProperty("kmlLayer") ||
+	       this.getProperty("shapefileLayer") ||
+	       this.getProperty("geojsonLayer") ||
+	       this.getProperty('mapLayers')) {
 		if(this.getShowLayers()) {
 		    return this.showVectorLayer;
 		}
@@ -41388,7 +41412,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltEndPointSize = endPointSize;
             let segmentWidth = parseInt(this.getSegmentWidth(1));
             let dfltSegmentWidth = segmentWidth;
-	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer") || this.getProperty('mapLayers'));
+	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer") || 	       this.getProperty("shapefileLayer") || this.getProperty('mapLayers'));
             let showPoints = this.getProperty("showPoints", !haveLayer);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
