@@ -1059,7 +1059,20 @@ public class HtmlOutputHandler extends OutputHandler {
         if (firstCall) {
 	    String type = request.getString(ARG_ENTRYTYPE,null);
 	    if(type!=null)  {
-		String typeLabel = request.getString("typelabel",Utils.makeLabel(type));
+		StringBuilder tmp = new StringBuilder();
+		String typeLabel  = null;
+		if(stringDefined(type)) {
+		    for(String _type:Utils.split(type,",",true,true)) {
+			TypeHandler typeHandler = getRepository().getTypeHandler(_type);
+			if(typeHandler==null) continue;
+			if(tmp.length()>0) tmp.append(" - ");
+			tmp.append(typeHandler.getDescription());
+		    }
+		    typeLabel = tmp.toString();
+		}
+		if(typeLabel==null)
+		    typeLabel  = Utils.makeLabel(type);
+		typeLabel = request.getString("typelabel",typeLabel);
 		Request newRequest = new Request(getRepository(), request.getUser());
 		newRequest.put(Constants.ARG_MAX, "100");
 		newRequest.put(Constants.ARG_ORDERBY, Constants.ORDERBY_CREATEDATE);
