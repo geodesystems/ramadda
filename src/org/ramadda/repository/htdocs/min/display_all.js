@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May  8 12:12:26 MDT 2024";
+var build_date="RAMADDA build date: Wed May  8 19:45:53 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -74,12 +74,14 @@ $.extend(Utils,{
             }
             code += '});\n';
             html += HU.tr([],
-			  HU.td(['width','10%'],HtmlUtils.b(HU.span([ATTR_CLASS,'colortable-id'],ct.id))) +
+			  HU.td(['width','10%'],HU.b(HU.span([ATTR_CLASS,'colortable-id'],ct.id))) +
 			  HU.td(['align','right'],HU.space(2)+ct.colors.length+'&nbsp;') +
-			  HU.td([], HtmlUtils.div(['id', domId + '_' + cnt, 'style', 'overflow-x:hidden;max-width:500px;width:100%;'], '')) );
+			  HU.td([], HU.div(['id', domId + '_' + cnt, ATTR_STYLE, 'overflow-x:hidden;max-width:500px;width:100%;'], '')) );
             cnt++;
+	    html+='\n';
         });
         html+='</table>';
+
         //        Utils.makeDownloadFile('colortables.java',code);
         $('#' + domId).html(html);
         cnt = 0;
@@ -87,6 +89,7 @@ $.extend(Utils,{
             if(ct.category) {
 		return;
 	    }
+	    
             this.displayColorTable(ct, domId + '_' + cnt, 0, 1, {
                 showRange: false,
                 height: '20px'
@@ -102,21 +105,21 @@ $.extend(Utils,{
 	showToggle = Utils.isDefined(showToggle)?showToggle:true;
 	Utils.AllColorTables.forEach(colortable=>{
             if(colortable.category) {
-                item = HU.div(["style","text-decoration: underline;font-weight:bold"],colortable.category);
+                item = HU.div([ATTR_STYLE,"text-decoration: underline;font-weight:bold"],colortable.category);
                 popup+=item;
                 items.push(item);
 		return;
             }
-            var ct = Utils.getColorTableDisplay(colortable,  0, 1, {
+            let ct = Utils.getColorTableDisplay(colortable,  0, 1, {
                 showRange: false,
                 height: "20px"
             });
-	    let attrs = [STYLE,HU.css('width','400px'),TITLE,colortable.id,CLASS, "ramadda-colortable-select","colortable",colortable.id];
+	    let attrs = [ATTR_STYLE,HU.css('margin-bottom','2px','width','400px'),TITLE,colortable.id,CLASS, "ramadda-colortable-select","colortable",colortable.id];
 	    if(attr) attrs.push(attr,value);
-            ct = HtmlUtils.div(attrs,ct);
+            ct = HU.div(attrs,ct);
             if(wikiEditor) {
-                var call = "WikiUtil.insertText(" + HtmlUtils.squote(wikiEditor.getId()) +","+HtmlUtils.squote("colorTable=" + colortable.id)+")";
-                item = HtmlUtils.onClick(call,ct);
+                let call = "WikiUtil.insertText(" + HU.squote(wikiEditor.getId()) +","+HU.squote("colorTable=" + colortable.id)+")";
+                item = HU.onClick(call,ct);
                 popup+=item;
                 items.push(item);
             } else {
@@ -134,7 +137,7 @@ $.extend(Utils,{
     displayColorTable: function(ct, domId, min, max, args) {
         if (!ct) return;
         let html = this.getColorTableDisplay(ct,min,max,args);
-        $("#" + domId).html(html);
+        jqid(domId).html(html);
     },
     getColorTableDisplay: function(ct,  min, max, args) {
         if (!ct) return null;
@@ -172,7 +175,7 @@ $.extend(Utils,{
 		let info = colorInfo[v.color];
                 let value = v.value;
                 if(value=="") value = "&lt;blank&gt;";
-                info.label+=HtmlUtils.div([ATTR_TITLE,v.value,ATTR_STYLE,style],value);
+                info.label+=HU.div([ATTR_TITLE,v.value,ATTR_STYLE,style],value);
 		info.titles.push(value);
             });
         }
@@ -186,7 +189,7 @@ $.extend(Utils,{
             divargs.push(HU.css(WIDTH, HU.getDimension(String(options.width))));
         }
         
-        let html = HtmlUtils.open(DIV, divargs);
+        let html = HU.open(DIV, divargs);
 	if(!options.horizontal && Utils.stringDefined(options.title))
 	    html+=HU.div([ATTR_CLASS,'display-colortable-title'],options.title);
 	    
@@ -290,8 +293,8 @@ $.extend(Utils,{
             if(options.horizontal) {
                 html += HU.td(["data-value",val,
 			       ATTR_TITLE,title??'',
-			       ATTR_CLASS, "display-colortable-slice",
-			       ATTR_STYLE, HU.css('background', ct[i],"color",fg),
+			       ATTR_CLASS, "display-colortable-slice",	
+			       ATTR_STYLE, HU.css('min-width','1px','height','1.5em','background', ct[i],"color",fg),
 			       ATTR_WIDTH, tdw], '');
 	    } else {
 		attrs.push(ATTR_STYLE);
@@ -304,15 +307,15 @@ $.extend(Utils,{
         if(!options.showColorTableDots) {
             if (options.showRange) {
                 if(options.horizontal) 
-                    html += HU.td([WIDTH,'1%'], formatter(max) + SPACE);
+                    html += HU.td([ATTR_WIDTH,'1%'], formatter(max) + SPACE);
                 else
                     html += formatter(max) + "<br>"
             }
             if(options.horizontal) 
                 html += "</tr></table>";
         }
-        html += HtmlUtils.close(DIV);
-        html += HtmlUtils.open(DIV, [CLASS, "display-colortable-extra"]);
+        html += HU.close(DIV);
+        html += HU.open(DIV, [CLASS, "display-colortable-extra"]);
         if (Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
@@ -320,13 +323,13 @@ $.extend(Utils,{
             let bin ={};
             ct.forEach(color=>{
 		let info = colorInfo[color];
-                let cell = HtmlUtils.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
+                let cell = HU.div(["style","padding:2px;vertical-align:top;display:inline-block;width:" + tdw+";max-width:" + tdw+";overflow-x:auto;"],info?info.label:'');
                 html+=cell;
 //              bin[colCnt]+="<div style='border-top:1px solid #eee;'></div>";
             });
             html+="</div>"
         }
-        html += HtmlUtils.close(DIV);
+        html += HU.close(DIV);
 
         return html;
     },
