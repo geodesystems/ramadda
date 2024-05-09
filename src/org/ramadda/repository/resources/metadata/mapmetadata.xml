@@ -14,14 +14,9 @@
 
     </type>
 
-
-
-
     <type id="map_displaymap" name="Extra Map Layer">
       <help>
-	<![CDATA[
-		 Either GeoJson or KML Entry to display as a base layer in any map display 
-	]]>
+	<![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display]]>
       </help>
 
       <element
