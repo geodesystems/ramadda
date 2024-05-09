@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May  8 23:24:31 MDT 2024";
+var build_date="RAMADDA build date: Wed May  8 23:39:32 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37974,18 +37974,36 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let ids = Utils.split(this.getProperty("kmlLayer"),',',true,true);
 			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);			
 			ids.forEach((id,idx)=>{
+			    let match = idx==0;
+			    if(id.startsWith('false:')) {
+				match = false;
+				id = id.substring('false:'.length);
+			    } else    if(id.startsWith('true:')) {
+				match = true;
+				id = id.substring('true:'.length);
+			    }
+
+
 			    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + id);
 			    let label = labels[idx];
-			    this.addBaseMapLayer(url, label,true,idx==0);
+			    this.addBaseMapLayer(url, label,true,match);
 			});
                     }
                     if (this.getProperty("geojsonLayer")) {
 			let ids = Utils.split(this.getProperty("geojsonLayer"),',',true,true);
 			let labels = Utils.split(this.getProperty("geojsonLayerName"),',',true,true);			
 			ids.forEach((id,idx)=>{
+			    let match = idx==0;
+			    if(id.startsWith('false:')) {
+				match = false;
+				id = id.substring('false:'.length);
+			    } else    if(id.startsWith('true:')) {
+				match = true;
+				id = id.substring('true:'.length);
+			    }
 			    let url = this.getRamadda().getEntryDownloadUrl(id);
 			    let label = labels[idx];
-			    this.addBaseMapLayer(url, label, false,idx==0);
+			    this.addBaseMapLayer(url, label, false,match);
 			});
                     }
 		},500);
