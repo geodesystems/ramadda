@@ -755,21 +755,22 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
                     if (this.getProperty("kmlLayer")) {
-			let ids = Utils.split(this.getProperty("kmlLayer"),',',true,true);
-			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);					ids.forEach((id,idx)=>{
+			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
 			    let match = true;
-			    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + id);
-			    let label = labels[idx];
+			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label,true,match);
 			});
                     }
-                    if (this.getProperty("geojsonLayer")) {
-			let ids = Utils.split(this.getProperty("geojsonLayer"),',',true,true);
-			let labels = Utils.split(this.getProperty("geojsonLayerName"),',',true,true);			
+                    if (this.getProperty('geojsonLayer')) {
+			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
 			ids.forEach((id,idx)=>{
 			    let match = idx==0;
 			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx];
+			    let label = labels[idx]??'Map';
 			    this.addBaseMapLayer(url, label, false,match);
 			});
                     }
@@ -778,7 +779,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			let process=(layer)=>{
 			    let url
 			    if(layer.type=='kml')
-				url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + layer.id);
+				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
 			    this.addBaseMapLayer(url, layer.name, layer.type=='kml',layer.match);
