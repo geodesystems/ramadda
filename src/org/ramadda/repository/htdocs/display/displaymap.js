@@ -81,7 +81,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	 ex:'geojson:name:Some Name:url:resources/usmap.json:fillColor:transparent'},		
 
 	{p:'linkFields',tt:'Comma separated list of fields in the data to match with the map field, e.g., geoid'},	
-	{p:'linkFeature',tt:'The field in the map to match with the data field, e.g., geoid'},
+	{p:'linkFeature',ex:'geoid',tt:'The field in the map to match with the data field, e.g., geoid'},
 	{p:'debugFeatureLinking',tt:'Debug feature linking',ex:true},
 	{p:'pruneFeatures',ex:true,tt:'Hide any features in the map that don\'t have a corresponding record'},
 	{p:'polygonField',tt:'Field that contains a polygon'},		
