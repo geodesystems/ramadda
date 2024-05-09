@@ -5750,8 +5750,14 @@ public class WikiManager extends RepositoryManager
 	    "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
 	    "scrollToZoom", "boxColor", "shareSelected", "doPopup",
 	    "fill", "selectOnHover", "onSelect", "showDetailsLink",
-	    "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
-	    "kmlLayerName", "displayDiv", "initialBounds:bounds",
+	    "initialZoom:zoom", "defaultMapLayer:layer", 
+	    "kmlLayer",
+	    "kmlLayerName", 
+	    "geojsonLayer",
+	    "geojsonLayerName",
+	    "shapefileLayer",
+	    "shapefileLayerName",
+	    "displayDiv", "initialBounds:bounds",
 	    "showLatLonPosition"
 	};
 	for (String mapArg : mapArgs) {
