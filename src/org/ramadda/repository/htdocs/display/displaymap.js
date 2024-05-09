@@ -847,10 +847,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 layer.redraw();
 	    }
 	    if(this.getJustShowMapLayer()) return;
-	    console.log('baseMapLoaded',layer.name,matchData);
 	    if(!matchData)return;
             this.vectorLayer = layer;
-	    console.log('applyVectorMap',layer.name);
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
