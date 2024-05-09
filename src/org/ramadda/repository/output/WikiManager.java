@@ -9522,6 +9522,8 @@ public class WikiManager extends RepositoryManager
                 List<String> geojsonIds   = new ArrayList<String>();
                 List<String> geojsonNames = new ArrayList<String>();
 
+		List<String>mapLayers= new ArrayList<String>();
+
                 String annotatedIds     = null;		
                 String annotatedNames     = null;		
 
@@ -9541,13 +9543,10 @@ public class WikiManager extends RepositoryManager
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
-			if(matchData) {
-			    kmlIds.add(0,"true:"+mapEntry.getId());
-			    kmlNames.add(0,mapEntry.getName().replaceAll(",", " "));
-			} else {
-			    kmlIds.add("false:"+mapEntry.getId());
-			    kmlNames.add(mapEntry.getName().replaceAll(",", " "));
-			}
+			mapLayers.add(JU.map("match",""+matchData,
+					     "name",JU.quote(mapEntry.getName()),
+					     "id",JU.quote(mapEntry.getId()),
+					     "type",JU.quote("kml")));
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
                         if (annotatedIds == null) {
                             annotatedIds   = mapEntry.getId();
@@ -9561,13 +9560,10 @@ public class WikiManager extends RepositoryManager
                         }
 
                     } else {
-			if(matchData) {
-			    geojsonIds.add(0,"true:"+mapEntry.getId());
-			    geojsonNames.add(0,mapEntry.getName().replaceAll(","," "));
-			} else {
-			    geojsonIds.add("false:"+mapEntry.getId());
-			    geojsonNames.add(mapEntry.getName().replaceAll(","," "));
-			}
+			mapLayers.add(JU.map("match",""+matchData,
+					     "name",JU.quote(mapEntry.getName()),
+					     "id",JU.quote(mapEntry.getId()),
+					     "type",JU.quote("geojson")));
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");
@@ -9582,17 +9578,9 @@ public class WikiManager extends RepositoryManager
 			      "annotationLayerName", JU.quote(annotatedNames));
 		}
 		
-		if(props.get("kmlLayer")==null && props.get("geojsonLayer")==null) {
-		    if (kmlIds.size()>0) {
-			Utils.add(propList, "kmlLayer", JU.quote(Utils.join(kmlIds,",")),
-				      "kmlLayerName", JU.quote(Utils.join(kmlNames,",")));
-		    }
-		    if (geojsonIds.size()>0) {
-			Utils.add(propList, "geojsonLayer",
-				  JU.quote(Utils.join(geojsonIds,",")), "geojsonLayerName",
-				  JU.quote(Utils.join(geojsonNames,",")));
-                    }
-                }
+		if(mapLayers.size()>0) {
+		    Utils.add(propList, "mapLayers", JU.list(mapLayers));
+		}		    
             }
 	}
 
