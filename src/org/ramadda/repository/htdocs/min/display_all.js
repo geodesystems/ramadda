@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu May  9 06:52:52 MDT 2024";
+var build_date="RAMADDA build date: Thu May  9 10:48:25 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -38219,6 +38219,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'displayDiv',tt:'Div id to show highlights in'},
 	{p:'showRecordHighlight',d:true},
 	{p:'recordHighlightFeature',ex:'true',tt:'If there is a vector map that is being shown then highlight the map feature instead of drawing a point'},
+	{p:'recordHighlightIcon',ex:'/icons/plane.png'},
+	{p:'recordHighlightIconSize',d:30},
 	{p:'recordHighlightShape',ex:shapes},
 	{p:'recordHighlightRadius',ex:'20',tt:'Radius to use to show other displays highlighted record'},
 	{p:'recordHighlightStrokeWidth',ex:'2',tt:'Stroke to use to show other displays highlighted record'},
@@ -39173,8 +39175,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    points.push(MapUtils.createPoint(lon,80));
                     this.addHighlightMarker(this.getMap().createPolygon(id, "highlight", points, attrs, null));
 		} else {
-		    attrs.graphicName = this.getProperty("recordHighlightShape");
-		    this.addHighlightMarker(this.getMap().createPoint("highlight", point, attrs));
+		    attrs.graphicName = this.getRecordHighlightShape();
+		    let markerIcon = this.getRecordHighlightIcon();
+		    let marker;
+		    if(markerIcon) {
+			let size = this.getRecordHighlightIconSize();
+			marker = this.map.createMarker("highlight", point, markerIcon, "highlight",null,null, size,null,null,attrs);
+		    } else {
+			marker = this.getMap().createPoint("highlight", point, attrs);
+		    }
+		    this.addHighlightMarker(marker);
+		    
 		}
 		if(this.highlightMarkers) {
 		    this.highlightMarkers.forEach(marker=>{
