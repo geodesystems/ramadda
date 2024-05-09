@@ -757,13 +757,23 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (this.getShowLayers()) {
 		//do this later so the map displays its initial location OK
 		setTimeout(()=>{
-                    if (_this.getProperty("kmlLayer")) {
-			let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + _this.getProperty("kmlLayer"));
-			_this.addBaseMapLayer(url, true);
+                    if (this.getProperty("kmlLayer")) {
+			let ids = Utils.split(this.getProperty("kmlLayer"),',',true,true);
+			let labels = Utils.split(this.getProperty("kmlLayerName"),',',true,true);			
+			ids.forEach((id,idx)=>{
+			    let url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + id);
+			    let label = labels[idx];
+			    this.addBaseMapLayer(url, label,true,idx==0);
+			});
                     }
-                    if (_this.getProperty("geojsonLayer")) {
-			url = _this.getRamadda().getEntryDownloadUrl(_this.getProperty("geojsonLayer"));
-			_this.addBaseMapLayer(url, false);
+                    if (this.getProperty("geojsonLayer")) {
+			let ids = Utils.split(this.getProperty("geojsonLayer"),',',true,true);
+			let labels = Utils.split(this.getProperty("geojsonLayerName"),',',true,true);			
+			ids.forEach((id,idx)=>{
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx];
+			    this.addBaseMapLayer(url, label, false,idx==0);
+			});
                     }
 		},500);
             }
@@ -772,7 +782,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	},
         handleKeyDown:function(event) {
 	},	
-        addBaseMapLayer: function(url, isKml) {
+        addBaseMapLayer: function(url, label,isKml,matchData) {
             let _this = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo == null) {
@@ -789,20 +799,23 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    Utils.isDefined(this.getProperty("zoomLevel"))   ||
 		    Utils.isDefined(this.getProperty("mapCenter"));
 		let attrs =   {
-                    strokeColor: this.getVectorLayerStrokeColor(),
+                    strokeColor: matchData?this.getVectorLayerStrokeColor():
+			this.getProperty('extraVectorLayerStrokeColor','blue'),
 		    fillColor:this.getVectorLayerFillColor(),
-		    fillOpacity:this.getVectorLayerFillOpacity(),
-                    strokeWidth: this.getVectorLayerStrokeWidth(),
+		    fillOpacity:matchData?this.getVectorLayerFillOpacity():0,
+                    strokeWidth: matchData?this.getVectorLayerStrokeWidth():
+			this.getProperty('extraVectorLayerStrokeWidth',1),			
 		}
+//		if(!matchData) return;
 		//For some reason the attrs don't get applied to kml layers so we pass the attrs to baseMapLoaded
-		let callback = (map, layer) =>{_this.baseMapLoaded(layer, url,isKml?attrs:null);}
-                if (isKml)
-                    this.map.addKMLLayer(this.getProperty('kmlLayerName','Map'), url, this.doDisplayMap(), selectFunc,
+		let callback = (map, layer) =>{_this.baseMapLoaded(layer, url,isKml?attrs:null,matchData);}
+		let layer;
+		if (isKml)
+                    layer = this.map.addKMLLayer(label??'Map', url, matchData &&this.doDisplayMap(), selectFunc,
 					 null, attrs, callback, !hasBounds);
-                else {
-                    this.map.addGeoJsonLayer(this.getProperty('geojsonLayerName','Map'), url, this.doDisplayMap(), selectFunc,
+                else 
+                    layer = this.map.addGeoJsonLayer(label??'Map', url, matchData&&this.doDisplayMap(), selectFunc,
 					     null,   attrs,  callback, !hasBounds);
-		}
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
             } else {
@@ -810,7 +823,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                 mapLoadInfo.otherMaps.push(this);
             }
         },
-        baseMapLoaded: function(layer, url,attrs) {
+        baseMapLoaded: function(layer, url,attrs,matchData) {
 	    if(this.getJustShowMapLayer()) return;
             this.vectorLayer = layer;
 	    if(attrs &&layer.features) {
@@ -823,6 +836,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		});
                 layer.redraw();
 	    }
+	    if(!matchData)
+		return;
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {

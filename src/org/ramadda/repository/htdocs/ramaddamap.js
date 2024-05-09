@@ -230,6 +230,7 @@ function RepositoryMap(mapId, params) {
 		if(debugSelect)    console.log('nofeatureclick');
                 _this.handleNofeatureclick(e,e.layer);
             },
+	    
             featureclick: function(e) {
 		if(debugSelect)    console.log('featureclick');
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
@@ -1223,6 +1224,9 @@ RepositoryMap.prototype = {
         if (!layer)
             layer = feature.layer;
 
+	if(layer && !layer.canSelect) {
+	    return
+	}
 	if(debugPopup) console.log("handleFeatureClick");
         this.dateFeatureSelect(feature);
         if (layer.canSelect === false) {
@@ -2463,7 +2467,7 @@ RepositoryMap.prototype = {
 	if(layer.visibility) {
             this.showLoadingImage(true);
 	}
-       layer.isMapLayer = true;
+	layer.isMapLayer = true;
         layer.canSelect = canSelect;
         this.loadedLayers.push(layer);
         layer.events.on({
