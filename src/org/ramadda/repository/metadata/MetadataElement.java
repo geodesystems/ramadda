@@ -143,6 +143,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     private Hashtable<String, String> valueMap = new Hashtable<String,
                                                      String>();
 
+    
     /** _more_ */
     private String dflt = "";
 
@@ -690,19 +691,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return getDataType().equals(DATATYPE_GROUP);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param newMetadata _more_
-     * @param oldMetadata _more_
-     * @param suffix _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public String handleForm(Request request, Entry entry,
                              Metadata newMetadata, Metadata oldMetadata,
                              String suffix)
@@ -855,22 +843,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return theFile;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param templateType _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param value _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getValueForXml(Request request, String templateType,
                                  Entry entry, Metadata metadata,
                                  String value, Element parent)
@@ -896,23 +868,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     }
 
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param metadata _more_
-     * @param suffix _more_
-     * @param value _more_
-     * @param forEdit _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getForm(Request request, Entry entry, FormInfo formInfo,
                           Metadata metadata, String suffix, String value,
                           boolean forEdit)
@@ -985,7 +940,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                       Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_ENTRY)) {
             return getRepository().getEntryManager().getEntryFormSelect(
-                request, entry, arg, value);
+									request, entry, arg, value,entryType);
         } else if (dataType.equals(DATATYPE_API_KEY)) {
 	    String uid = HU.getUniqueId("apikey");
 	    if(!Utils.stringDefined(value)) value=Utils.getGuid();

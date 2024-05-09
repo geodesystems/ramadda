@@ -82,6 +82,8 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
+    public static final String ATTR_ENTRYTYPE = "entrytype";    
+
     /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
@@ -116,6 +118,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
     /** _more_ */
     private String suffixLabel;
+
+    protected String entryType;
 
     /** _more_ */
     private boolean showInHtml = true;
@@ -436,6 +440,7 @@ public class MetadataTypeBase extends RepositoryManager {
         setSuffixLabel(Utils.getAttributeOrTag(node, ATTR_SUFFIX,
                 (String) null));
 
+	entryType = XmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
                 false));
