@@ -778,11 +778,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    if(mapLayers) {
 			let process=(layer)=>{
 			    let url
-			    if(layer.type=='kml')
+			    if(layer.type=='shapefile')
 				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.name, layer.type=='kml',layer.match);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
 			};
 			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
 			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			

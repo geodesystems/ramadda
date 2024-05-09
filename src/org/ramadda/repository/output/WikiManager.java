@@ -9536,17 +9536,19 @@ public class WikiManager extends RepositoryManager
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
 							   metadata.getAttr1());
-                    if ((mapEntry == null)
-			|| !(mapEntry.getTypeHandler()
-			     .isType("geo_shapefile") || mapEntry.getTypeHandler().isType("geo_geojson") ||
-			     mapEntry.getTypeHandler().isType("geo_editable_json"))) {
+                    if (mapEntry == null) continue;
+
+                    if (!(mapEntry.getTypeHandler().isType("geo_shapefile") ||
+			  mapEntry.getTypeHandler().isType("geo_kml") ||
+			  mapEntry.getTypeHandler().isType("geo_geojson") ||
+			  mapEntry.getTypeHandler().isType("geo_editable_json"))) {
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
 			mapLayers.add(JU.map("match",""+matchData,
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
-					     "type",JU.quote("kml")));
+					     "type",JU.quote("shapefile")));
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
                         if (annotatedIds == null) {
                             annotatedIds   = mapEntry.getId();
@@ -9560,10 +9562,12 @@ public class WikiManager extends RepositoryManager
                         }
 
                     } else {
+			String type = "geojson";
+			if(mapEntry.getTypeHandler().isType("geo_kml")) type="kml";
 			mapLayers.add(JU.map("match",""+matchData,
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
-					     "type",JU.quote("geojson")));
+					     "type",JU.quote(type)));
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");
