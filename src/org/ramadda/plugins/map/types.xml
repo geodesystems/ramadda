@@ -44,7 +44,8 @@ entriesListHeader=""  }}
   <type name="geo_kml"  super="type_map"
 	mimetype="application/vnd.google-earth.kml+xml"
 	description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
-     <property name="icon" value="/icons/kml.png"/>
+    <property name="search.tabs" value="list,map"/>
+    <property name="icon" value="/icons/kml.png"/>
      <column name="showmap" label="Show Map" type="boolean" showinhtml="false" default="true"/>
      <wiki><![CDATA[
 +section title={{name}}
@@ -290,7 +291,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 	 priority="10"
 	 pattern="(?i).*imdvmap\.json$">
      <property name="wiki.edit.links.label" value="IMDV Tags"/>
-     <property name="search.tabs" value="map,list"/>
+
      <wikimacro name="imdvmap" label="IMDV Map">
      <![CDATA[{{display_imdv #entry="${entry}" height="calc(100vh - 150px)"  legendHeight="calc(100vh - 200px)" showBounds=false}}]]></wikimacro>
    <property name="form.description.iswiki" value="true"/>
