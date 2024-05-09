@@ -1305,8 +1305,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 if (suffixLabel == null) {
                     suffixLabel = "";
                 }
-                sb.append(HU.formEntryTop(elementLbl, HU.span(widget,HU.cssClass(clazz)),
-                        suffixLabel));
+		suffixLabel = HU.span(suffixLabel,HU.attrs("class","ramadda-metadata-widget-suffix"));
+                sb.append(HU.formEntryTop(elementLbl, HU.span(widget+ suffixLabel,HU.cssClass(clazz))
+));
             }
         }
 
