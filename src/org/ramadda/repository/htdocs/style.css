@@ -2415,6 +2415,10 @@ thin_hr,.ramadda-thin-hr {
     width:20em;
 }
 
+.ramadda-metadata-widget-suffix {
+    margin-left:5px;
+}
+
 .ramadda-metadata-widget-content-license .ui-selectmenu-button {
     width:40em;
 }
@@ -3789,6 +3793,11 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-select-popup .ramadda-folder-block {
     max-height:200px;
     overflow-y:auto;
+}
+
+.ramadda-entry-select-links {
+    white-space:nowrap; 
+    margin-right:5px;
 }
 
 .ramadda-select-block {
