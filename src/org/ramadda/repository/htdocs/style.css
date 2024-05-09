@@ -1419,6 +1419,10 @@ a.ramadda-menubar-button:hover {
     background:#fff;
 }
 
+.ramadda-gridbox .ramadda-subheading {
+    font-weight:500;
+}
+
 .ramadda-gridbox-embed {
 }
 
