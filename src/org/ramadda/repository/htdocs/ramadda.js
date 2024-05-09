@@ -92,7 +92,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
 
-    initEntryPopup:function(id,target) {
+    initEntryPopup:function(id,target,entryType) {
         let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
                                     HU.css("width","200px")]);
         input = HU.center(input);
@@ -111,6 +111,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             let keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == 13) {
                 let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
+		if(Utils.stringDefined(entryType)) searchLink=HU.url(searchLink,["type",entryType]);
                 results.html(HU.getIconImage(icon_wait) + " Searching...");
                 results.show();
                 let myCallback = {
