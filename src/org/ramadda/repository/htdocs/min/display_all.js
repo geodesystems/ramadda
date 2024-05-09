@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May  8 23:53:47 MDT 2024";
+var build_date="RAMADDA build date: Thu May  9 00:03:04 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -37721,10 +37721,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             if (!this.getShowLocationSearch(true)) {
                 params.showLocationSearch = false;
             }
-//            let mapLayers = this.getMapLayers(null);
-//            if (mapLayers) {
-//                params.mapLayers = [mapLayers];
-//            }
+
 
 	    params.addMarkerOnClick = this.getProperty('addMarkerOnClick');
 	    params.linked = this.getLinked(false);
@@ -37997,7 +37994,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 				url = RamaddaUtil.getUrl("/entry/show?output=shapefile.kml&entryid=" + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.label, layer.type=='kml',layer.match);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml',layer.match);
 			};
 			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
 			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
@@ -38034,7 +38031,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
                     strokeWidth: matchData?this.getVectorLayerStrokeWidth():
 			this.getProperty('extraVectorLayerStrokeWidth',1),			
 		}
-//		if(!matchData) return;
+
 		//For some reason the attrs don't get applied to kml layers so we pass the attrs to baseMapLoaded
 		let callback = (map, layer) =>{_this.baseMapLoaded(layer, url,isKml?attrs:null,matchData);}
 		let layer;
@@ -38052,7 +38049,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
         baseMapLoaded: function(layer, url,attrs,matchData) {
-	    if(this.getJustShowMapLayer()) return;
             this.vectorLayer = layer;
 	    if(attrs &&layer.features) {
 		layer.features.forEach(f=>{
@@ -38064,8 +38060,10 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		});
                 layer.redraw();
 	    }
-	    if(!matchData)
-		return;
+	    if(this.getJustShowMapLayer()) return;
+	    console.log('baseMapLoaded',layer.name,matchData);
+	    if(!matchData)return;
+	    console.log('applyVectorMap',layer.name);
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo) {
