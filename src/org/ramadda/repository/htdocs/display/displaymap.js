@@ -836,7 +836,6 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
             }
         },
         baseMapLoaded: function(layer, url,attrs,matchData) {
-            this.vectorLayer = layer;
 	    if(attrs &&layer.features) {
 		layer.features.forEach(f=>{
 		    if(f.style) {
@@ -850,6 +849,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    if(this.getJustShowMapLayer()) return;
 	    console.log('baseMapLoaded',layer.name,matchData);
 	    if(!matchData)return;
+            this.vectorLayer = layer;
 	    console.log('applyVectorMap',layer.name);
             this.applyVectorMap();
             mapLoadInfo = displayMapUrlToVectorListeners[url];
