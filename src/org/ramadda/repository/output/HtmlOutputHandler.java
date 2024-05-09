@@ -1032,8 +1032,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getSelectXml(Request request, Entry group,
-                               List<Entry> children)
+    public Result getSelectXml(Request request, Entry group, List<Entry> children)
             throws Exception {
 	children = getSelectEntries(request, children);
         String        selectType = request.getString(ARG_SELECTTYPE, "");
@@ -1107,9 +1106,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		    sb.append(getSelectLink(request, grandParent, seen,
 					    target));
 		}
-
-
-
 		sb.append(HU.close("div"));
 		sb.append(sectionDivider);
 	    }
@@ -1152,8 +1148,10 @@ public class HtmlOutputHandler extends OutputHandler {
 		HU.open(sb, "div", HU.cssClass("ramadda-select-search"));
 		String searchId = HU.getUniqueId("search");
 		HU.div(sb, "", HU.attrs("id", searchId));
-		sb.append(HU.script("RamaddaUtils.initEntryPopup('" + searchId
-				    + "','" + target + "');"));
+		sb.append(HU.script( HU.call("RamaddaUtils.initEntryPopup",
+					     HU.squote(searchId),
+					     HU.squote(target),
+					     HU.squote(request.getString("entrytype","")))));
 		HU.close(sb, "div");
 		sb.append(sectionDivider);
 	    }

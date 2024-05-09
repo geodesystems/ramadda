@@ -11565,7 +11565,7 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getEntryFormSelect(Request request, Entry entry,
-                                     String baseArg, String value)
+                                     String baseArg, String value,String...type)
 	throws Exception {
         Entry theEntry = null;
         if (value.length() > 0) {
@@ -11573,11 +11573,14 @@ public class EntryManager extends RepositoryManager {
 								  value);
         }
         StringBuffer sb = new StringBuffer();
+	String entryType = type.length>0?type[0]:null;
         String select =
             getRepository().getHtmlOutputHandler().getSelect(request,
-							     baseArg,  HU.span(HU.image("fas fa-hand-pointer"),HU.attr("title","Select")),
-							     true, null, entry);
-        String event = getRepository().getHtmlOutputHandler().getSelectEvent(request, baseArg, true,null,  entry);
+							     baseArg,
+							     HU.span(HU.image("fas fa-hand-pointer"),
+								     HU.attr("title","Select")),
+							     true, null, entry,entryType);
+        String event = getRepository().getHtmlOutputHandler().getSelectEvent(request, baseArg, true,null,  entry,entryType);
 
         sb.append("\n");
         sb.append(HU.hidden(baseArg + "_hidden", value,

@@ -924,96 +924,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param elementId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public static String getGroupSelect(Request request, String elementId)
-            throws Exception {
-        return getSelect(request, elementId, "Select", false, "", null);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param elementId _more_
-     * @param label _more_
-     * @param allEntries _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String type)
-            throws Exception {
-
-        return getSelect(request, elementId, label, allEntries, type, null);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param elementId _more_
-     * @param label _more_
-     * @param allEntries _more_
-     * @param type _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public static String getSelect(Request request, String elementId,
-                                   String label, boolean allEntries,
-                                   String type, Entry entry)
-            throws Exception {
-        return getSelect(request, elementId, label, allEntries, type, entry,
-                         true, true);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param formId _more_
-     * @param skipList _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
             throws Exception {
         addUrlShowingForm(sb, null, formId, skipList, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param entry _more_
-     * @param formId _more_
-     * @param skipList _more_
-     * @param hook _more_
-     * @param includeCopyArgs _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addUrlShowingForm(Appendable sb, Entry entry,
                                          String formId, String skipList,
                                          String hook, String...opts)
@@ -1037,52 +953,41 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 					: "null", hook==null?"null": hook, args));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param elementId _more_
-     * @param label _more_
-     * @param allEntries _more_
-     * @param type _more_
-     * @param entry _more_
-     * @param addClear _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
-                                   String type, Entry entry, boolean addView, boolean addClear)
+                                   String selectType, Entry entry, boolean addView, boolean addClear,String...entryType)
             throws Exception {
-        return getSelect(request, elementId, label, allEntries, type, entry,
-                         addView, addClear, "",false);
+        return getSelect(request, elementId, label, allEntries, selectType, entry,
+                         addView, addClear, "",false,entryType);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param elementId _more_
-     * @param label _more_
-     * @param allEntries _more_
-     * @param type _more_
-     * @param entry _more_
-     * @param addClear _more_
-     * @param linkExtra _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    public static String getGroupSelect(Request request, String elementId)
+            throws Exception {
+        return getSelect(request, elementId, "Select", false, "");
+    }
+
+
+    public static String getSelect(Request request, String elementId,
+                                   String label, boolean allEntries,
+                                   String selectType,String...entryType)
+            throws Exception {
+
+        return getSelect(request, elementId, label, allEntries, selectType, null,entryType);
+    }
+
+
+    public static String getSelect(Request request, String elementId,
+                                   String label, boolean allEntries,
+                                   String selectType, Entry entry,String...entryType)
+            throws Exception {
+        return getSelect(request, elementId, label, allEntries, selectType, entry,true, true,entryType);
+    }
+
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
                                    String type, Entry entry,
                                    boolean addView, boolean addClear, String linkExtra,
-				   boolean addField)
+				   boolean addField,String...entryType)
             throws Exception {
 
         boolean hasType    = Utils.stringDefined(type);
@@ -1147,49 +1052,34 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * @throws Exception _more_
      */
     public static String getSelectEvent(Request request, String elementId,
-                                        boolean allEntries, String type,
-                                        Entry entry)
+                                        boolean allEntries, String selectType,
+                                        Entry entry,String...entryType)
             throws Exception {
-        boolean hasType    = Utils.stringDefined(type);
+        boolean hasType    = Utils.stringDefined(selectType);
         String  selectorId = elementId + ( !hasType
                                            ? ""
-                                           : "_" + type);
+                                           : "_" + selectType);
         String event = HU.call(
                            "RamaddaUtils.selectInitialClick",
-                           HU.comma(
-                               "event", HU.squote(selectorId),
-                               HU.squote(elementId),
-                               HU.squote(
-                                   Boolean.toString(allEntries)), ( !hasType
-                ? "null"
-                : HU.squote(type)), ((entry != null)
-                                            ? HU.squote(entry.getId())
-                                            : "null"), HU.squote(
-                                                (request == null)
-                ? ""
-                : request.getString(ARG_ENTRYTYPE, ""))));
-
+			   "event", HU.squote(selectorId),
+			   HU.squote(elementId),
+			   HU.squote(Boolean.toString(allEntries)),
+			   ( !hasType? "null"
+			     : HU.squote(selectType)), 
+			   ((entry != null)
+			    ? HU.squote(entry.getId())
+			    : "null"),
+			   HU.squote((request == null)
+				     ? ""
+				     : request.getString(ARG_ENTRYTYPE, entryType.length>0?entryType[0]:"")));
         return event;
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param allEntries _more_
-     * @param type _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String makeEntrySelect(Request request, String arg,
-                                         boolean allEntries, String type,
+                                         boolean allEntries, String selectType,
                                          Entry entry)
             throws Exception {
-        String event = OutputHandler.getSelectEvent(request, arg, allEntries,
-                           type, entry);
-
+        String event = OutputHandler.getSelectEvent(request, arg, allEntries, selectType, entry);
         return HU.hidden(arg + "_hidden", (entry != null)
                                           ? entry.getId()
                                           : "", HU.id(arg
