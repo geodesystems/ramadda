@@ -46,6 +46,7 @@ import org.ramadda.repository.search.SearchManager;
 
 import org.ramadda.repository.server.RepositoryServlet;
 import org.ramadda.repository.type.Column;
+import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
@@ -243,6 +244,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         new OutputType("File Listing", "repository.filelisting",
                        OutputType.TYPE_OTHER, "",
                        ICON_FILELISTING);
+
+    public static final OutputType OUTPUT_CREATETYPE =
+        new OutputType("Create Entry Type", "repository.createtype",
+                       OutputType.TYPE_OTHER, "",
+                       ICON_FILELISTING);    
 
 
     /** the stand alone server */
@@ -1839,7 +1845,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (getPluginManager().haveSeen("types:" + file, false)) {
                         continue;
                     }
-                    Element root = XmlUtil.getRoot(file, getClass());
+                    Element root = XU.getRoot(file, getClass());
                     if (root == null) {
                         continue;
                     }
@@ -1859,7 +1865,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 System.err.println("bad file:" + file);
                 theFile = file;
                 try {
-                    Element root = XmlUtil.getRoot(file, getClass());
+                    Element root = XU.getRoot(file, getClass());
                     if (root == null) {
                         continue;
                     }
@@ -1895,7 +1901,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite, boolean debug)
 	throws Exception {
-        List children = XmlUtil.findChildren(root, TypeHandler.TAG_TYPE);
+        List children = XU.findChildren(root, TypeHandler.TAG_TYPE);
         List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         if ((children.size() == 0)
 	    && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
@@ -1904,7 +1910,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (int i = 0; i < children.size(); i++) {
                 Element entryNode = (Element) children.get(i);
                 typeHandlers.add(loadTypeHandler(entryNode, overwrite));
-		//		if(debug)   System.err.println((t2-t1) +" " + XmlUtil.toString(entryNode));
+		//		if(debug)   System.err.println((t2-t1) +" " + XU.toString(entryNode));
             }
         }
 
@@ -1924,11 +1930,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     private TypeHandler loadTypeHandler(Element entryNode, boolean overwrite)
 	throws Exception {
-        String classPath = XmlUtil.getAttribute(entryNode,
+        String classPath = XU.getAttribute(entryNode,
 						TypeHandler.ATTR_HANDLER, (String) null);
 
         if (classPath == null) {
-            String superType = XmlUtil.getAttribute(entryNode,
+            String superType = XU.getAttribute(entryNode,
 						    TypeHandler.ATTR_SUPER, (String) null);
             if (superType != null) {
                 TypeHandler parent = getTypeHandler(superType);
@@ -1937,7 +1943,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 						       "Cannot find parent type:" + superType);
                 }
                 classPath = parent.getClass().getName();
-                //                        System.err.println ("Using parent class:" +  classPath +" " + XmlUtil.toString(entryNode));
+                //                        System.err.println ("Using parent class:" +  classPath +" " + XU.toString(entryNode));
             } else {
                 classPath = "org.ramadda.repository.type.GenericTypeHandler";
             }
@@ -1956,7 +1962,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             return typeHandler;
         } catch (Exception exc) {
             System.err.println("Error creating type handler:"
-                               + XmlUtil.toString(entryNode).replaceAll("\\s\\s+"," "));
+                               + XU.toString(entryNode).replaceAll("\\s\\s+"," "));
             exc.printStackTrace();
             throw exc;
         }
@@ -1978,9 +1984,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (getPluginManager().haveSeen("services:" + commandFile)) {
                 continue;
             }
-            Element  root  = XmlUtil.getRoot(commandFile, getClass());
+            Element  root  = XU.getRoot(commandFile, getClass());
 
-            NodeList nodes = XmlUtil.getElements(root, Service.TAG_SERVICE);
+            NodeList nodes = XU.getElements(root, Service.TAG_SERVICE);
 
             for (int i = 0; i < nodes.getLength(); i++) {
                 Element node = (Element) nodes.item(i);
@@ -1994,18 +2000,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (getPluginManager().haveSeen("outputhandler:" + file)) {
                 continue;
             }
-            Element root = XmlUtil.getRoot(file, getClass());
+            Element root = XU.getRoot(file, getClass());
             if (root == null) {
                 continue;
             }
-            List children = XmlUtil.findChildren(root, TAG_OUTPUTHANDLER);
+            List children = XU.findChildren(root, TAG_OUTPUTHANDLER);
             for (int i = 0; i < children.size(); i++) {
                 Element node = (Element) children.get(i);
-                boolean required = XmlUtil.getAttribute(node, ARG_REQUIRED,
+                boolean required = XU.getAttribute(node, ARG_REQUIRED,
 							true);
                 try {
                     Class c =
-                        Misc.findClass(XmlUtil.getAttributeFromTree(node,
+                        Misc.findClass(XU.getAttributeFromTree(node,
 								    ATTR_CLASS));
 
                     Constructor ctor = Misc.findConstructor(c,
@@ -2024,7 +2030,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if ( !required) {
                         getLogManager().logWarning(
 						   "Couldn't load optional output handler:"
-						   + XmlUtil.toString(node));
+						   + XU.toString(node));
                         getLogManager().logWarning(exc.toString());
                     } else {
                         getLogManager().logError(
@@ -2052,7 +2058,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Constructor ctor =
             Misc.findConstructor(
 				 Misc.findClass(
-						XmlUtil.getAttributeFromTree(
+						XU.getAttributeFromTree(
 									     node, "handler",
 									     "org.ramadda.service.Service")), new Class[] {
 				     Repository.class,
@@ -3544,8 +3550,248 @@ public class Repository extends RepositoryBase implements RequestHandler,
         fileListingHandler.addType(OUTPUT_FILELISTING);
         addOutputHandler(fileListingHandler);
 
+
+        OutputHandler createTypeHandler = new OutputHandler(getRepository(),
+							     "Create Entry Type") {
+		public boolean canHandleOutput(OutputType output) {
+		    return output.equals(OUTPUT_CREATETYPE);
+		}
+		public void getEntryLinks(Request request, State state,
+					  List<Link> links)
+                    throws Exception {
+		    if (createTypeOK(request)) {
+			links.add(makeLink(request, state.getEntry(),
+					   OUTPUT_CREATETYPE));
+		    }
+		}
+
+
+		public Result outputEntry(Request request, OutputType outputType,
+					  Entry entry)
+                    throws Exception {
+		    return outputCreateType(request, entry);
+		}
+
+		@Override
+		public Result outputGroup(Request request, OutputType outputType,
+					  Entry group, List<Entry> children)
+                    throws Exception {
+		    return outputCreateType(request, group);
+		}
+		public String toString() {
+		    return "File listing handler";
+		}
+
+	    };
+        createTypeHandler.addType(OUTPUT_CREATETYPE);
+        addOutputHandler(createTypeHandler);
+
         getUserManager().initOutputHandlers();
 
+    }
+
+    private boolean createTypeOK(Request request) {
+	return !request.getUser().getAnonymous();
+    }
+
+    public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb) throws Exception {
+	String id = request.getString("typeid","");
+
+	if(!Utils.stringDefined(id)) {
+	    sb.append(getPageHandler().showDialogError("No ID specified"));
+	    return null;
+	}
+	sb = new StringBuilder();
+	
+	String name = request.getString("typename","");
+	if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
+	String handler = request.getString("handler","");
+	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.GenericTypeHandler";
+	
+	
+	
+	sb.append("<types>\n");
+	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
+	sb.append("<type ");
+	sb.append(XU.attrs("name","id","description",name,"handler",handler));
+	
+
+
+
+	if(request.defined("supertype")) {
+	    sb.append(XU.attr("super",request.getString("supertype","").trim()));
+	}
+
+	if(request.defined("supercategory")) {
+	    sb.append(XU.attr("supercategory",request.getString("supercategory","").trim()));
+	}
+
+	if(request.defined("category")) {
+	    sb.append(XU.attr("category",request.getString("category","").trim()));
+	}
+
+
+	sb.append(">\n");	
+
+
+	sb.append(XU.comment("Properties"));
+	if(request.defined("icon"))  {
+	    sb.append(XU.tag("property",XU.attrs("name","icon","value",request.getString("icon",""))));
+	    sb.append("\n");
+	}
+	
+
+
+
+	for(String line:Utils.split(request.getString("properties",""),"\n",true,true)) {
+	    if(line.startsWith("#")) continue;
+	    List<String> toks = Utils.splitUpTo(line,"=",2);
+	    if(toks.size()!=2) continue;
+	    sb.append(XU.tag("property",XU.attrs("name",toks.get(0).trim(),"value",toks.get(1).trim())));
+	    sb.append("\n");
+	}
+	int cnt=0;
+	
+	for(int i=0;i<6;i++) {
+	    String cname = request.getString("column_name_"+i,"");
+	    if(!Utils.stringDefined(cname)) continue;
+	    if(cnt++==0) {
+		sb.append("\n");
+		sb.append(XU.comment("Columns"));
+
+	    }
+	    
+	    String label = request.getString("column_label_"+i,"");
+	    if(!Utils.stringDefined(label)) label  = Utils.makeLabel(cname);
+	    String type = request.getString("column_type_"+i,"");
+	    String size = request.getString("column_size_"+i,"");
+	    String attrs = XU.attrs("name",cname,
+				    "label",label,
+				    "type",type,
+				    "help",request.getString("column_help_"+i,""));
+	    
+
+	    if(Utils.stringDefined(size)) 
+		attrs+=XU.attr("size",size);
+	    if(type.startsWith("enum"))
+		attrs+=XU.attr("values",request.getString("column_values_"+i,""));
+	    String group = request.getString("column_group_"+i,"");
+	    if(Utils.stringDefined(group)) 
+		attrs+=XU.attr("group",group);
+	    sb.append(XU.tag("column",attrs));
+	    sb.append("\n");
+	}
+
+	String seesv = (String)entry.getValue("convert_commands");
+	if(Utils.stringDefined(seesv)) {
+	    seesv+="\n-args";
+            List<String> lines  =  Seesv.tokenizeCommands(seesv,false).get(0);
+	    String csvCommands = Seesv.makeCsvCommands(lines);
+	    if(csvCommands!=null) {
+		sb.append("\n");
+		sb.append(XU.comment("SeeSV commands"));
+		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n")));
+		
+	    }
+	}
+
+
+	String desc = entry.getDescription();
+	if (Utils.stringDefined(desc) && entry.getTypeHandler().isWikiText(desc)) {
+	    sb.append("\n");
+	    sb.append(XU.comment("Wiki text"));
+	    desc=desc.replaceAll("^<wiki>","");
+	    sb.append(XU.tag("wiki","",XU.getCdata(desc)));
+	    
+	}
+	
+	request.setReturnFilename(id+"types.xml", false);	    
+	
+	sb.append("</type>\n");
+	sb.append("</types>\n");	
+	return new Result("", sb, MIME_XML);
+    }
+    
+
+    public Result outputCreateType(Request request, Entry entry) throws Exception {
+	if ( !createTypeOK(request)) {
+	    throw new AccessException("Create type not enabled", request);
+	}
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
+
+	if(request.exists("create")) {
+	    Result result= doOutputCreateType(request,  entry,sb);
+	    if(result!=null) return result;
+	}
+	
+
+	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
+	String formId = HU.getUniqueId("form_");
+	sb.append(request.form(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CREATETYPE));
+        sb.append(HU.formTable());
+	
+	HU.formEntry(sb,"", HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
+	
+
+        sb.append(HU.formEntry(msgLabel("Type ID"),
+			       HU.input("typeid",request.getString("typeid",""),HU.attrs("size","30")) +
+			       " e.g., type_your_type"));
+        sb.append(HU.formEntry(msgLabel("Type Name"),
+  			       HU.input("typename",request.getString("typename",""),HU.attrs("size", "30")) +" e.g., My Type"));
+        sb.append(HU.formEntry(msgLabel("Super Type"),
+			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
+			       " e.g., type_point"));
+        sb.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
+			       HU.input("handler",request.getString("handler",""),HU.attrs("size","50"))+"<br>"+
+			       "e.g.,<pre>org.ramadda.data.services.PointTypeHandler\norg.ramadda.repository.type.TypeHandler\norg.ramadda.repository.type.GenericTypeHandler</pre>"}));
+
+        sb.append(HU.formEntryTop(msgLabel("Super Category"),
+				  HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","50"))));
+        sb.append(HU.formEntryTop(msgLabel("Category"),
+				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","50"))));
+        sb.append(HU.formEntryTop(msgLabel("Icon"),
+				  HU.input("icon",request.getString("icon",""),HU.attrs("placeholder","/icons/chart.png","size","20"))));	
+
+
+	String dfltProps="#form.resource.show=false\n#form.date.show=false\nform.area.show=false\n";
+	dfltProps+= "form.location.show=true\n";
+	dfltProps+="form.properties.show=false\n";
+	dfltProps+="#record.file.class=org.ramadda.data.point.text.CsvFile\n";
+        sb.append(HU.formEntryTop(msgLabel("Properties"),
+				  HU.textArea("properties",request.getString("properties",dfltProps),8,50)));
+	
+        sb.append(HU.formTableClose());	
+	sb.append(HU.b("Columns:<br>"));
+        sb.append("<table width=100%>\n\n");
+	sb.append(HU.tr(HU.td("Name")+HU.td("Label")+HU.td("Type")+HU.td("Size")+HU.td("Enum Values")+HU.td("Group")+HU.td("Help")));
+	String w  =HU.attr("width","12%");
+	String isize  =HU.attr("size","12");
+	
+	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
+	for(int i=0;i<6;i++) {
+	    sb.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
+			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
+			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
+			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.attr("size","4")),"width=1%")+
+			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
+			    HU.td(HU.input("column_group_" +i,request.getString("column_group_"+i,""),isize),w)+
+			    HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));
+	}
+	
+        sb.append("</table>\n");
+        sb.append(HU.formTable());	
+	HU.formEntry(sb,"", HU.submit("Create Type","create"));
+        sb.append(HU.formTableClose());	
+	sb.append(HtmlUtils.formClose());
+	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()))));
+	
+	
+	getPageHandler().entrySectionClose(request, entry, sb);
+	Result result =  new Result("Create Type",sb);
+        return getEntryManager().addEntryHeader(request, entry, result);
     }
 
 
@@ -4112,8 +4358,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
         } else if (request.responseAsXml()) {
-            return XmlUtil.tag(TAG_RESPONSE,
-                               XmlUtil.attr(ATTR_CODE, CODE_ERROR), msg);
+            return XU.tag(TAG_RESPONSE,
+                               XU.attr(ATTR_CODE, CODE_ERROR), msg);
         } else if (request.responseAsText()) {
             return msg;
         } else {
@@ -4138,8 +4384,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeList("ok", msg));
         } else if (request.responseAsXml()) {
-            return XmlUtil.tag(TAG_RESPONSE,
-                               XmlUtil.attr(ATTR_CODE, CODE_OK), msg);
+            return XU.tag(TAG_RESPONSE,
+                               XU.attr(ATTR_CODE, CODE_OK), msg);
         } else if (request.responseAsText()) {
             return msg;
         } else {
@@ -5155,6 +5401,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
+
         //xxxxx
         prop = (String) coreProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
@@ -6150,11 +6397,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public Result processPing(Request request) throws Exception {
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
-            Document resultDoc = XmlUtil.makeDocument();
-            Element resultRoot = XmlUtil.create(resultDoc, TAG_RESPONSE,
+            Document resultDoc = XU.makeDocument();
+            Element resultRoot = XU.create(resultDoc, TAG_RESPONSE,
 						null, new String[] { ATTR_CODE,
 								     "ok" });
-            String xml = XmlUtil.toString(resultRoot);
+            String xml = XU.toString(resultRoot);
 
             return new Result(xml, MIME_XML);
         }
@@ -6324,7 +6571,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             String contents = IOUtil.readInputStream(is);
             contents = contents.trim();
             IO.close(is);
-            contents = JsonUtil.xmlToJson(XmlUtil.getRoot(contents));
+            contents = JsonUtil.xmlToJson(XU.getRoot(contents));
             //            System.out.println(contents);
 
             return new Result(new ByteArrayInputStream(contents.getBytes()),
@@ -6570,10 +6817,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processInfo(Request request) throws Exception {
         //        getDatabaseManager().printIt();
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
-            Document doc  = XmlUtil.makeDocument();
+            Document doc  = XU.makeDocument();
             Element  info = getServerInfo().toXml(this, doc);
             info.setAttribute(ATTR_CODE, CODE_OK);
-            String xml = XmlUtil.toString(info);
+            String xml = XU.toString(info);
 
             //            System.err.println("returning xml:" + xml);
             return new Result(xml, MIME_XML);
