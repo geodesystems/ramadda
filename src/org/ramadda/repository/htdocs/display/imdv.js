@@ -63,6 +63,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showViewInLegend=true',
 			  'showLayerSelectInLegend=true',			  
 			  'inMapLabel=',			  			  
+			  'showLegendBox=true',
 			  'showButtons=false',
 			  'showMeasures=false',
 			  'showTextSearch=true'];
@@ -92,6 +93,7 @@ var CLASS_FILTER_PLAY = 'imdv-filter-play';
 var CLASS_FILTER_STRING = 'imdv-filter-string';
  
 
+var ID_GLYPH_ID='glyphid';
 var ID_GLYPH_LEGEND = 'glyphlegend';
 
 var ID_LEVEL_RANGE_SLIDER = 'level_range_slider';
@@ -2004,7 +2006,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    dom.find('[buttoncommand]').click(function(event) {
 		event.preventDefault();
 		let command  = $(this).attr('buttoncommand');
-		let id  = $(this).attr('glyphid');
+		let id  = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph   = _this.findGlyph(id);
 		if(!mapGlyph) {
 		    console.error('No map glyph from id:' + id);
@@ -2043,20 +2045,20 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    let showPopup =(mapGlyph.isEntry() ||  Utils.stringDefined(mapGlyph.getPopupText()));
 	    if(showPopup) {
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup','glyphid',mapGlyph.getId(),'buttoncommand','popup'],
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','popup'],
 				     icon('fas fa-arrow-up-from-bracket')));
 	    }
 	    if(this.canChange() && includeEdit) {
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings','glyphid',mapGlyph.getId(),'buttoncommand','edit'],
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
-		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Select','glyphid',mapGlyph.getId(),'buttoncommand',ID_SELECT],
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Select',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',ID_SELECT],
 			    icon('fas fa-hand-pointer')));
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Delete','glyphid',mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Delete',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Add Isoline',
-					  'glyphid',mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
+					  ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
 	    }
 	    if(buttons.length==0) return '';
@@ -2068,9 +2070,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let style  = mapGlyph.getStyle()||{};
 	    let line = "";
 	    let type = mapGlyph.getType();
-	    let select = HU.span([ATTR_TITLE,'Click to select',ATTR_STYLE,HU.css('padding-left','0px','padding-right','5px'), 'glyphid',mapGlyph.getId(),
+	    let select = HU.span([ATTR_TITLE,'Click to select',ATTR_STYLE,HU.css('padding-left','0px','padding-right','5px'), ID_GLYPH_ID,mapGlyph.getId(),
 				  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature')], HU.getIconImage('fas fa-arrow-pointer'));
-	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible','glyphid',mapGlyph.getId(),
+	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible',ID_GLYPH_ID,mapGlyph.getId(),
 					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
 	    title+='<br>' +
@@ -2082,7 +2084,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(msg) {
 		col+='' + msg.replace(/<br>/g,' ');
 	    }
-	    line+= HU.td(['glyphid',mapGlyph.getId(),
+	    line+= HU.td([ID_GLYPH_ID,mapGlyph.getId(),
 			  STYLE,HU.css('padding','5px')],col);
 	    return line;
 	},	    
@@ -2253,7 +2255,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    this.jq(ID_LIST_DELETE).button().click(()=>{
 		let cut  = [];
 		this.jq(ID_LIST).find('.imdv-feature-selected').each(function() {
-		    let id  = $(this).attr('glyphid');
+		    let id  = $(this).attr(ID_GLYPH_ID);
 		    let mapGlyph   = _this.findGlyph(id);
 		    if(!mapGlyph) {
 			console.error('No map glyph from id:' + id);
@@ -4946,7 +4948,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		tolerance:'pointer',
 		drop: (event,ui)=>{
 		    notify();
-		    let draggedGlyph = this.findGlyph(ui.draggable.attr('glyphid'));
+		    let draggedGlyph = this.findGlyph(ui.draggable.attr(ID_GLYPH_ID));
 		    if(!draggedGlyph) {
 			console.log('Could not find dragged glyph');
 			return;
@@ -5134,7 +5136,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	    this.getContainer().find('.imdv-legend-item-edit').click(function(event) {
 		event.stopPropagation();
-		let id = $(this).attr('glyphid');
+		let id = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
 		_this.editFeatureProperties(mapGlyph);
@@ -5142,7 +5144,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	    this.getContainer().find('.' + CLASS_LEGEND_ITEM_VIEW).click(function(event) {
 		event.stopPropagation();
-		let id = $(this).attr('glyphid');
+		let id = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
 		mapGlyph.panMapTo(event.shiftKey);
@@ -5173,7 +5175,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			return
 		    }
 		}
-		let id = $(this).attr('glyphid');
+		let id = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph = _this.findGlyph(id);
 		if(!mapGlyph) return;
 		if(event.shiftKey) {

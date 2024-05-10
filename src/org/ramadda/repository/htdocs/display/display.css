@@ -3241,6 +3241,14 @@ table.dataTable tfoot td {
     border-bottom:1px solid #dadada;
 }
 
+.imdv-legend-box {
+    margin-top:10px;
+    width:15px;
+    height:15px;
+    margin-right:5px;
+    display:inline-block;
+}
+
 .imdv-legend-top {
     margin-right:10px;
     padding:5px;
