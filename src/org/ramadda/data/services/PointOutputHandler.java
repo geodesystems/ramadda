@@ -892,22 +892,15 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return getRecordJobManager().handleAsynchRequest(request, entry,
 							 outputType, pointEntries);
-
-        //        return null;
     }
 
 
-    /**
-     * make the map page
-     *
-     * @param request the request
-     * @param outputType otuput type
-     * @param entry _more_
-     *
-     * @return ramadda result
-     *
-     * @throws Exception on badness
-     */
+    public void getEntryFormCsv(Request request, Entry entry,   Appendable sb)
+	throws Exception {
+	getPointFormHandler().getEntryFormCsv(request, entry,sb);
+    }
+
+
     public Result outputEntryChart(Request request, OutputType outputType,
                                    Entry entry)
 	throws Exception {
@@ -916,22 +909,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                                           true);
         sb.append(getWikiManager().getStandardChartDisplay(request, entry));
         getPageHandler().entrySectionClose(request, entry, sb);
-
         return new Result("", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param displayProps _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public String getJsonUrl(Request request, Entry entry, Hashtable props,
                              List<String> displayProps)
 	throws Exception {

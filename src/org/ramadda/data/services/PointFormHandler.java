@@ -503,8 +503,18 @@ public class PointFormHandler extends RecordFormHandler {
         StringBuilder sb = new StringBuilder();
         request.getRepository().getPageHandler().entrySectionOpen(request,
                 entry, sb, "Data Download");
-        sb.append(msgSB);
+	if(msgSB!=null)
+	    sb.append(msgSB);
+	getEntryFormCsv(request,entry,sb);
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                entry, sb);
 
+
+        return new Result("", sb);
+    }
+
+    public void getEntryFormCsv(Request request, Entry entry,   Appendable sb)
+	throws Exception {
         RecordEntry recordEntry =
             getPointOutputHandler().doMakeEntry(request, entry);
         String formId = HU.getUniqueId("form_");
@@ -522,15 +532,8 @@ public class PointFormHandler extends RecordFormHandler {
         OutputHandler.addUrlShowingForm(sb, formId,
                                         "[\".*OpenLayers_Control.*\"]");
         sb.append(HU.formClose());
-
-        sb.append(HU.sectionClose());
-
-        request.getRepository().getPageHandler().entrySectionClose(request,
-                entry, sb);
-
-        return new Result("", sb);
     }
-
+    
 
 
     /**

@@ -43,6 +43,7 @@ import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
 import org.ramadda.repository.search.SearchManager;
 
+import org.ramadda.data.services.PointOutputHandler;
 
 import org.ramadda.repository.server.RepositoryServlet;
 import org.ramadda.repository.type.Column;
@@ -160,7 +161,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         null;
 
     /** dummy field 5 */
-    private static final org.ramadda.data.services.PointOutputHandler dummyField5ToForceCompile =
+    private static final PointOutputHandler dummyField5ToForceCompile =
         null;
 
 
@@ -6096,6 +6097,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private JsonOutputHandler jsonOutputHandler;
 
     private CsvOutputHandler csvOutputHandler;
+    private PointOutputHandler pointOutputHandler;    
 
     /**
      * _more_
@@ -6109,6 +6111,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         return csvOutputHandler;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public PointOutputHandler getPointOutputHandler() {
+        if (pointOutputHandler == null) {
+            pointOutputHandler = (PointOutputHandler) getOutputHandler(PointOutputHandler.class);
+        }
+
+        return pointOutputHandler;
     }
 
 
