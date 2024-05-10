@@ -34,6 +34,13 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explo
    header.standard=true
  </property>
 
+<property name="bubble">
+<![CDATA[
++section  title="OpenAQ Air Quality: {{name}}"
+{{group showMenu="true" }}
+{{display_linechart fields="pm2_5|pm10_0|pm1_0" vAxisMinValue="0"}}
+]]></property>
+
 <wiki>
 <![CDATA[
 +section  title="Air Quality Station: {{name}}"
