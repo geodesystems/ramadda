@@ -9,6 +9,8 @@ package org.ramadda.repository;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
+import ucar.unidata.xml.XmlUtil;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -26,6 +28,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public static final HtmlUtils HU = null;
+    public static final XmlUtil XU = null;    
 
 
     /** _more_ */
