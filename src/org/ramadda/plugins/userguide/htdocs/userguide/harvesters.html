@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="entryxml.html"><table><td valign=center><td><span title="Previous: Entry Xml Import/Export Format"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Entry Xml Import/Export Format</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 7.4: Harvesters</a></div>
+<div class="ramadda-page-title"><a href="#">Section 7.3: Harvesters</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="localfileview.html"><table><tr valign=center><td>Local File View</td><td><span title="Next: Local File View"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -53,19 +53,19 @@ The first thing you need to do is to specify in the <a href='admin.html#filesyst
 that it is OK to serve up files from that directory tree. Go to the <span class="ramadda-docs-menu">Admin-&gt;Settings-&gt;Access</span> page in RAMADDA 
 and enter the directory path, e.g., <i>/project/data</i>:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/filesystemaccess.png?version=856"><img  src="images/filesystemaccess.png?version=856"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="File System Access" ></a><br><span class="caption">Image 1: File System Access</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/filesystemaccess.png?version=59"><img  src="images/filesystemaccess.png?version=59"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="File System Access" ></a><br><span class="caption">Image 1: File System Access</span></div></div>
 
 Next, create a File Harvester by going to the Harvesters tab of the Admin pages and press the &quot;New Harvester&quot; button. 
 Specify a name (e.g., &quot;Test&quot;), leave the type as Local Files and hit create:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/harvester1.png?version=856"><img  src="images/harvester1.png?version=856"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Create a new File Harvester" ></a><br><span class="caption">Image 2: Create a new File Harvester</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/harvester1.png?version=59"><img  src="images/harvester1.png?version=59"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Create a new File Harvester" ></a><br><span class="caption">Image 2: Create a new File Harvester</span></div></div>
 
 This will take you to the Harvester Edit form. The minimal configuration you need to do here is to enter the file 
 system directory to scan and the RAMADDA folder to add the harvested entries to. In this example
 we are harvesting the directory tree <i>/project/data</i> and we are adding the entries into
 the RAMADDA folder <i>RAMADDA/Case Studies/Test</i>:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/harvester2.png?version=856"><img  src="images/harvester2.png?version=856"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Harvester Edit Form" ></a><br><span class="caption">Image 3: Harvester Edit Form</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image3"></a><div><a href="images/harvester2.png?version=59"><img  src="images/harvester2.png?version=59"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Harvester Edit Form" ></a><br><span class="caption">Image 3: Harvester Edit Form</span></div></div>
 
 
 When you have entered this information press &quot;Change&quot; which will apply the changes and then take you back
@@ -83,7 +83,7 @@ a Harvester any number of times and it will only add the new files that it has n
 
 
 <a name="run"></a>
-:heading 7.4.0 <label>Run Settings</label>
+:heading 7.3.0 <label>Run Settings</label>
 
 The form has  settings for running the harvester. When you are first creating a harvester sometimes it
 may takes some time to figure out just what you are harvesting and the name and folder settings for the repository
@@ -102,7 +102,7 @@ you might want to use an &quot;Hourly&quot; setting to get the image at some fix
 
 
 <a name="files"></a>
-:heading 7.4.1 <label>Files Settings</label>
+:heading 7.3.1 <label>Files Settings</label>
 
 Under &quot;Look for files&quot; you specify a directory on the server file system to scan and a regular expression to
 match on the file name.
@@ -146,7 +146,7 @@ The value for attr2 follows the "_" and is any number of characters except a sla
 
 
 <a name="entry"></a>
-:heading 7.4.2 <label>Entry Creation</label>
+:heading 7.3.2 <label>Entry Creation</label>
 
 
 
@@ -243,7 +243,7 @@ to the list of file system directories in the Admin-&gt;Access area</b>
 
 
 <a name="web"></a>
-:heading 7.4.3 <label>Web Harvesters</label>
+:heading 7.3.3 <label>Web Harvesters</label>
 
 The Web Harvesters work the same way as the File Harvesters but they fetch a URL (e.g., an image) every time they
 run. You can also define more that one URLS to fetch . The basic Run settings, Folder and entry creation mechanisms

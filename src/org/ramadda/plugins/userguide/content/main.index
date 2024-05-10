@@ -21,7 +21,6 @@ index.html
 >title:Data ingest, harvesters and import/export
 >>download.html
 >>dataingest.html
->>entrytypes.html
 >>entryxml.html
 >>harvesters.html
 >>localfileview.html
@@ -53,6 +52,7 @@ index.html
 >>llm.html
 >>readonly.html
 >>plugins.html
+>>entrytypes.html
 >>maps.html
 >>services.html
 >>admin.html

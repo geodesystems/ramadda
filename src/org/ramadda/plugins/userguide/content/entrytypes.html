@@ -1,14 +1,15 @@
-[ht::head {Defining New Entries}]
+[ht::head {Defining New Entry Types}]
 :navtop
 
 :heading Entry Types
-RAMADDA recognizes any file that ends with types.xml as an entry type definition file.
+RAMADDA recognizes any plugin file that ends with types.xml as an entry type definition file.
 Here is an <a href="${root}/userguide/examples/exampletypes.xml.txt">exampletypes.xml</a> file and
 there are numerous examples in the source code @ github,
 e.g. <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata/point/resources>https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata/point/resources</a>
 :p
-You can use the above xml file as a plugin. But, if you wanted to include html resources
-you would have a zipped directory like:
+You can use the above xml file as a plugin, copying it into your RAMADDA home/plugins directory.
+But, if you wanted to include html or other resources you should create a directory
+structure like below and zip the directory and copy the .zip file to the plugins directory.
 <pre>
 someplugin
       exampletypes.xml
@@ -17,11 +18,13 @@ someplugin
                example.png
 </pre>
 
-Note: the names above do not matter except the types.xml
+For example, this would allow you to reference the example.png image as an icon for the entry type with
+the property:
+<pre>
+&lt;property name="icon" value="/myplugin/example.png"/&gt;>
+</pre>
 
 
-To make use of the types simply add the types.xml (or the zip file) into your RAMADDA Home/plugins directory
-and restart RAMADDA.
 
 
 :heading Column Types
@@ -83,4 +86,43 @@ The example file above has an example of this wiki text, e.g.:
 \]\]&gt;
 &lt;/wiki&gt;
 -pre
+
+
+
+:heading Create Entry Type Form
+All entries have a Create Entry Type form available. From the Entry popup menu
+select "Create Entry Type"
+
+[ht::screenshot images/createtype1.png]
+
+Will give the below form (with examples filled in).
+[ht::screenshot images/createtype2.png]
+
+For example, let's say you have 100 CSV files of the same format and want to create a new entry type.
+Upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
+to data wrangle the CSV file, cleaning up the data, adding a header, etc. You can then edit the description
+of the CSV file and enter the appropriate <a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
+:p
+Once satisfied, to the the Create Entry Type form. You need to specify:
+<ul>
+<li> A type ID - this needs to start with type_, be lower case with no spaces or special characters
+<li> A name of the type
+<li> A "super type" - entry types in RAMADDA are hierarchical. If you want this to be point data the specify type_point. There is a link to the master list of all entry types  available.
+<li> A handler - this is the Java class that handles this type. If this is point data then specify "org.ramadda.data.services.PointTypeHandler". If it is just some normal entry but you will specify metadata columns then specify "org.ramadda.repository.type.GenericTypeHandler". Else specify "org.ramadda.repository.type.TypeHandler"
+<li> You can specify an optional Super Category and Category. This is used to organize the big list of types.
+<li> An icon. You can provide your own icon as described above or view the icons available on <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/icons>github</a>
+<li> Properties - these are flags to control what is shown, e.g., area, date, etc. Note: If this is point data based on a CSV file then make sure you include the record.file.class=org.ramadda.data.point.text.CsvFile
+<li> Columns - these are the columns as described above. For example, you can specify a "fruit" column whose tpye is enumeration and values are "Apple,Orange,Banana"
+</ul>  
+
+Once specified press Create Type. This will generate and download a types.xml file which you can install as a plugin. If you have any SeeSV commands specified for the entry then those are included in the generated
+types.xml. If you have wiki text specified then that too is included.
+
++callout-info
+The form settings are not saved on the RAMADDA server. Rather, they will be saved in your browsers local
+data storage keyed on the specific entry ID your are viewing. So, when you return to this form the past fields
+should be filled out.
+-callout
+
+
 </body>
