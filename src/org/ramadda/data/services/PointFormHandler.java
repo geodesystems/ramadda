@@ -888,7 +888,7 @@ public class PointFormHandler extends RecordFormHandler {
 	    List products = new ArrayList();
 	    products.add(new TwoFacedObject("CSV", "points.csv"));
 	    products.add(new TwoFacedObject("JSON", "points.json"));
-	    products.add(new TwoFacedObject("NetCDF", "points.nc"));
+	    //	    products.add(new TwoFacedObject("NetCDF", "points.nc"));
 	    HU.formEntry(subsetSB,msgLabel("Format"),
 			 HU.select(ARG_PRODUCT, products,
 				   request.getString(ARG_PRODUCT,"")));
