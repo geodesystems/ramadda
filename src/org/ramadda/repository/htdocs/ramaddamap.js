@@ -232,13 +232,16 @@ function RepositoryMap(mapId, params) {
             },
 	    
             featureclick: function(e) {
-		if(debugSelect)    console.log('featureclick');
+
 		if(_this.featureClickHandler && !_this.featureClickHandler(e))  {
+		    if(debugSelect)    console.log('featureclick-1');
 		    return;
 		}
                 if(e.feature && e.feature.noSelect) {
+		    if(debugSelect)    console.log('featureclick-2');
                     return;
                 }
+		if(debugSelect)    console.log('featureclick');
 		let time =  new Date().getTime();
 		//We get multiple click events if we have multiple features on the same point
 		if(Utils.isDefined(_this.lastClickTime)) {
@@ -1224,13 +1227,14 @@ RepositoryMap.prototype = {
         if (!layer)
             layer = feature.layer;
 
-	if(layer && !layer.canSelect) {
+	if(layer && (layer.canSelect===false)) {
+	    if(debugSelect)    console.log('handleFeatureclick- layer no select:' + layer.canSelect);
 	    return
 	}
 	if(debugPopup) console.log("handleFeatureClick");
         this.dateFeatureSelect(feature);
         if (layer.canSelect === false) {
-	    if(debugPopup) console.log("\tlayer no select");
+	    if(debugSelect || debugPopup) console.log("\tlayer no select");
 	    return;
 	}
         if (layer.selectedFeature) {
@@ -1239,7 +1243,7 @@ RepositoryMap.prototype = {
 
 
 	if(!this.params.doSelect) {
-	    if(debugPopup) console.log("\tparams no select");
+	    if(debugSelect || debugPopup) console.log("\tparams no select");
 	    return;
 	}
         this.selectedFeature = feature;
