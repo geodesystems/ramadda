@@ -547,6 +547,46 @@ public class Seesv implements SeesvCommands {
         this.outputStream = out;
     }
 
+    public static String makeCsvCommands(List<String> args) {
+	StringBuilder argsBuff = null;
+	int                doArgsCnt     = 0;
+	int                doArgsIndex   = 1;
+        for (int i = 0; i < args.size(); i++) {
+            String arg = args.get(i);
+	    if(arg.equals(CMD_ARGS)) {
+		continue;
+	    }
+
+	    if(arg.equals("-print")) {
+		continue;
+	    }
+	    if(arg.equals("-maxrows")) {
+		i++;
+		continue;
+	    }
+	    
+	    if (argsBuff == null) {
+		argsBuff = new StringBuilder();
+		argsBuff.append("csvcommands1=");
+	    } else {
+		doArgsCnt++;
+		if (doArgsCnt > 4) {
+		    argsBuff.append("\n");
+		    doArgsCnt = 0;
+		    doArgsIndex++;
+		    argsBuff.append("csvcommands" + doArgsIndex + "=");
+		} else {
+		    argsBuff.append(",");
+		}
+	    }
+	    arg = arg.replaceAll(",", "\\\\,").replace("\n"," ");
+	    argsBuff.append(arg);
+	}
+	if(argsBuff!=null) return argsBuff.toString();
+	return "";
+    }
+
+
     /**
      * _more_
      *
