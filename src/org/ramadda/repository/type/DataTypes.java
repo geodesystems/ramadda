@@ -98,5 +98,18 @@ public interface DataTypes {
     public static final String DATATYPE_DEPENDENTENUMERATION =
         "dependentenumeration";
 
+    public static final String[] BASE_TYPES = {
+	DATATYPE_STRING,
+	DATATYPE_ENUMERATION,
+	DATATYPE_ENUMERATIONPLUS,
+	DATATYPE_LIST,
+	DATATYPE_INT,
+	DATATYPE_DOUBLE,
+	DATATYPE_DATE,
+	DATATYPE_DATETIME,
+	DATATYPE_URL,
+	DATATYPE_WIKI,
+	DATATYPE_LATLON
+    };
 
 }
