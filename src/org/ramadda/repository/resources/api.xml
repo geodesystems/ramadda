@@ -52,6 +52,7 @@
     <api request="/entry/*"                method="processEntryShowPath"        authmethod="httpauth"  />
     <api request="/entry/dump"             method="processEntryDump" admin="true"/>
     <api request="/entry/types"             method="processEntryTypes"/>
+    <api request="/entry/types.html"        method="processEntryTypes"/>    
     <api request="/entry/activity"          method="processEntryActivity"       actions="edit"/>
     <api request="/entryfile/*"             method="processEntryFile"/>
     <api request="/sitemap.xml"            method="processSiteMap"     />    
