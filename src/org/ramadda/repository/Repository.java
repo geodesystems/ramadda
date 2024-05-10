@@ -249,7 +249,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final OutputType OUTPUT_CREATETYPE =
         new OutputType("Create Entry Type", "repository.createtype",
                        OutputType.TYPE_OTHER, "",
-                       ICON_FILELISTING);    
+                       "/icons/newtype.png");    
 
 
     /** the stand alone server */
@@ -3596,10 +3596,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb) throws Exception {
-	String id = request.getString("typeid","");
+	String id = request.getString("typeid","").trim();
 
 	if(!Utils.stringDefined(id)) {
 	    sb.append(getPageHandler().showDialogError("No ID specified"));
+	    return null;
+	}
+	id = Utils.makeID(id);
+	if(!id.startsWith("type_")) {
+	    sb.append(getPageHandler().showDialogError("Bad format for type ID"));
 	    return null;
 	}
 	sb = new StringBuilder();
@@ -3654,7 +3659,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	int cnt=0;
 	
 	for(int i=0;i<6;i++) {
-	    String cname = request.getString("column_name_"+i,"");
+	    String cname = request.getString("column_name_"+i,"").trim();
+	    cname= Utils.makeID(cname);
 	    if(!Utils.stringDefined(cname)) continue;
 	    if(cnt++==0) {
 		sb.append("\n");
@@ -3720,31 +3726,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
-
 	if(request.exists("create")) {
 	    Result result= doOutputCreateType(request,  entry,sb);
 	    if(result!=null) return result;
 	}
-	
-
+	sb.append(HU.center(HU.href(getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help")));
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
 	String formId = HU.getUniqueId("form_");
 	sb.append(request.form(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CREATETYPE));
+	sb.append(HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
         sb.append(HU.formTable());
 	
-	HU.formEntry(sb,"", HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
+
 	
 
         sb.append(HU.formEntry(msgLabel("Type ID"),
 			       HU.input("typeid",request.getString("typeid",""),HU.attrs("size","30")) +
-			       " e.g., type_your_type"));
+			       " Needs to be lower case, no spaces and start with type_, e.g., type_your_type"));
         sb.append(HU.formEntry(msgLabel("Type Name"),
   			       HU.input("typename",request.getString("typename",""),HU.attrs("size", "30")) +" e.g., My Type"));
+
+	String typeList=HU.href(getUrlBase()+"/entry/types.html","View All Types","target=_types");
         sb.append(HU.formEntry(msgLabel("Super Type"),
 			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
-			       " e.g., type_point"));
+			       " e.g., type_point. "+typeList));
         sb.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
 			       HU.input("handler",request.getString("handler",""),HU.attrs("size","50"))+"<br>"+
 			       "e.g.,<pre>org.ramadda.data.services.PointTypeHandler\norg.ramadda.repository.type.TypeHandler\norg.ramadda.repository.type.GenericTypeHandler</pre>"}));
@@ -3766,6 +3773,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	
         sb.append(HU.formTableClose());	
 	sb.append(HU.b("Columns:<br>"));
+	sb.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
         sb.append("<table width=100%>\n\n");
 	sb.append(HU.tr(HU.td("Name")+HU.td("Label")+HU.td("Type")+HU.td("Size")+HU.td("Enum Values")+HU.td("Group")+HU.td("Help")));
 	String w  =HU.attr("width","12%");

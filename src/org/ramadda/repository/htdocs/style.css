@@ -2813,6 +2813,10 @@ a.noline {
     border-top: 0px;
 }
 
+.ramadda-table-heading {
+    font-weight:bold;
+}
+
 .selectform-table-header {
     font-weight:bold;
     padding:4px;
