@@ -24,7 +24,7 @@ click on "Show Details". The ID is in the URL,
 e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/232797</a>
 -callout]]></property>
      <column name="location_id" label="Location ID"/>
-     <column  name="country"  label="Country" cansearch="true"/>
+     <column  name="country"  type="enumerationplus" label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
      <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
