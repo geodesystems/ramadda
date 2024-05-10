@@ -1081,15 +1081,16 @@ public abstract class RecordFile {
     }
 	
     public int  getSkipToLast(int last) throws Exception {
+	if(path==null || path.getPath()==null) return 0;
 	int reallySkip = 0;
 	int numRecords = -1;
 	Integer num = pointCountCache.get(path.getPath());
 	if(num==null) {
 	    long t1  = System.currentTimeMillis();
-		    num = new Integer(countRecords());
-		    long t2  = System.currentTimeMillis();
-		    //		Utils.printTimes("RecordFile.countRecords",t1,t2);
-		}
+	    num = new Integer(countRecords());
+	    long t2  = System.currentTimeMillis();
+	    //		Utils.printTimes("RecordFile.countRecords",t1,t2);
+	}
 	pointCountCache.put(path.getPath(),num);
 	numRecords = num;
 	if(numRecords>last) {
@@ -1536,6 +1537,7 @@ public abstract class RecordFile {
      * @return _more_
      */
     public IO.Path getNormalizedFilename() {
+	if(this.path==null || this.path.getPath()==null) return null;
         String path        = Utils.normalizeTemplateUrl(this.path.getPath());
         String pathReplace = (String) getProperty("pathReplace");
         if (pathReplace != null) {
