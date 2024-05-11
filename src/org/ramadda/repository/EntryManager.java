@@ -255,6 +255,7 @@ public class EntryManager extends RepositoryManager {
 		&& (request != null)) {
 		String key =  "http://"   + request.getRequestHostname();
                 Entry fromHostname = getEntryFromAlias(request,key);
+		System.err.println("key:" + key +" entry:" + fromHostname);
 		if(fromHostname==null) {
 		    aliasCache.put(key, topEntry);
 		} else {
