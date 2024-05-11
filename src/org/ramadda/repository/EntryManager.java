@@ -518,7 +518,6 @@ public class EntryManager extends RepositoryManager {
         while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
             Entry entry = getEntry(request, id);
-	    System.err.println("ID:" + id + " entry:"+ entry +" " + request.getUser());
 	    if(entry!=null) entries.add(entry);
         }
 	iter.close();
