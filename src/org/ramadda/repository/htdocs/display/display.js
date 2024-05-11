@@ -8999,7 +8999,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 } else {
                     let percent = Math.round((100 / this.columns))+"%";
                     let i = 0;
-		    html+=HU.open(TABLE,[WIDTH,'100%']);
+		    html+=HU.open(TABLE,[ATTR_WIDTH,'100%']);
 		    let colCnt = 100;
                     for (let i =0;i < displaysToLayout.length; i++) {
                         colCnt++;
@@ -9011,7 +9011,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 			    html+="\n";
                             colCnt = 0; 
                         }
-                        html += HU.td(["width",percent], displaysToLayout[i].layoutDiv);
+			//Add in the max-width so the width of the td doesn't exceed the percent value
+                        html += HU.td([ATTR_STYLE,"max-width:300px;", ATTR_WIDTH,percent], displaysToLayout[i].layoutDiv);
 			html+="\n";
 		    }
                     if (i > 0) {
