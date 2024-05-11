@@ -3274,11 +3274,11 @@ table.dataTable tfoot td {
 }
 
 .imdv-legend-map-wrapper {
+    max-width:200px;
     position:absolute;
     border:1px solid #aaa;
     border-radius: 6px;
     border-radius:var(--default-radius);    
-
     background:#fff;
     z-index:500;
 }

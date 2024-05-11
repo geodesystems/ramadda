@@ -7,7 +7,6 @@ var DEFAULT_DATAICONS = 'label,pos:nw,dx:80,dy:-ch+20,label:${${_field} decimals
 //DEFAULT_DATAICONS='label,pos:nw,dx:10,dy:-ch+20,label:${${_field} decimals=1 suffix=" ${unit}" prefix="${fieldName}"}\nimage,pos:nw,dx:10,dy:10-ch,width:60,height:60,url:${icon}'
 
 
-
 var DEFAULT_DATAICON_FIELD='atmp|temp.*|.*temp';
 var DEFAULT_DATAICON_FIELDS=DEFAULT_DATAICON_FIELD+',label=Temperature,unit=C\ndewpoint,label=Dewpoint,unit=C\n.*rh|relativehumidity,label=Relative Humidity,unit=%';
 
@@ -506,13 +505,13 @@ MapGlyph.prototype = {
 	    let h = HU.leftRightTable(HU.b(label),
 				    this.getHelp('#popuptext'));
 	    let help = 'Add macro:'+ HU.div([ATTR_CLASS,'imdv-side-help'],propsHelp);
-	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
+	    h+=  HU.hbox([HU.textarea('',style[id]??'',[ATTR_ID,domId,'rows',4,'cols', 40]),HU.space(2),help]);
 	    return h;
 	}
 	html+=makePopup('popupText','Popup Text:');
 	html+=HU.b('Legend Text:') +'<br>' +
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
-			[ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
+			[ATTR_ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
 	
 
 	content.push({header:'Properties',contents:html});
@@ -537,7 +536,7 @@ MapGlyph.prototype = {
 	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{style:'height:350px;max-height:350px;',suffix:'\n'});
 	let ex = HU.b('Add property:') + miscHelp
 
-	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ID,this.domId('miscproperties'),'rows',16,'cols', 40]),
+	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ATTR_ID,this.domId('miscproperties'),'rows',16,'cols', 40]),
 			 HU.space(2),ex]);
 	content.push({header:'Flags',contents:html});
 
@@ -597,7 +596,7 @@ MapGlyph.prototype = {
 			       HU.input('',dataIconInfo[ID_DATAICON_PROPS]??'',[ATTR_ID,this.domId(ID_DATAICON_PROPS),'size','80']));
 	    contents+=HU.b('Icon Specification:')  +'<br>';
 	    contents +=
-		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ID,this.domId(ID_DATAICON_MARKERS),'rows',4,'cols', 90]);
+		HU.textarea('',dataIconInfo[ID_DATAICON_MARKERS]??'',[ATTR_ID,this.domId(ID_DATAICON_MARKERS),'rows',4,'cols', 90]);
 	    content.push({
 		header:'Data Icons',
 		contents: contents});
@@ -1100,8 +1099,8 @@ MapGlyph.prototype = {
 	    markers.push(new Glyph(this.display,1.0, data.getRecordFields(),data.getRecords(),props,line));
 	});
 	let cid = HU.getUniqueId("canvas_");
-	let c = HU.tag("canvas",[ATTR_CLASS,"", STYLE,"xdisplay:none;", 	
-				 WIDTH,canvasWidth,HEIGHT,canvasHeight,ID,cid]);
+	let c = HU.tag("canvas",[ATTR_CLASS,"", ATTR_STYLE,"xdisplay:none;", 	
+				 ATTR_WIDTH,canvasWidth,ATTR_HEIGHT,canvasHeight,ATTR_ID,cid]);
 
 	let isShown = true;
 	markers.forEach(marker=>{
@@ -1176,7 +1175,7 @@ MapGlyph.prototype = {
 	    try {
 		let img = canvas.toDataURL();
 		if($('#testimg').length) 
-		    $("#testimg").html(HU.tag("img",[ATTR_SRC,img]));
+		    $("#testimg").html(HU.tag(TAG_IMG,[ATTR_SRC,img]));
 		canvas.remove();
 		this.style.label=null;
 		this.style.pointRadius=size;
@@ -3129,7 +3128,7 @@ MapGlyph.prototype = {
 					     my:'left top',
 					     at:'left bottom',
 					     anchor:$(this)});
-	    colorSelect.find('img').click(function() {
+	    colorSelect.find(TAG_IMG).click(function() {
 		_this.currentColorbar = $(this).attr('colorbar');
 		colorSelect.remove();
 		_this.initColorTables(_this.currentColorbar);

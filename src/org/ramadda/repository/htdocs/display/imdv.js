@@ -1670,9 +1670,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			}
 
 			if(!isJson) {
-			    linksHtml2+=HU.tr(HU.td(['width','10%','nowrap','true'],'')+HU.td(href));
+			    linksHtml2+=HU.tr(HU.td([ATTR_WIDTH,'10%','nowrap','true'],'')+HU.td(href));
 			} else {
-			    linksHtml1+=HU.tr(HU.td(['width','10%','nowrap','true'],
+			    linksHtml1+=HU.tr(HU.td([ATTR_WIDTH,'10%','nowrap','true'],
 						    HU.div([ATTR_TITLE,url,ATTR_CLASS,'imdv-stac-item'],HU.span(['link',url,ATTR_CLASS,'imdv-stac-link'], 'Load'))) +
 					      HU.td(href));
 			}
@@ -1703,7 +1703,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 			if(asset.href.endsWith('ovr')) isImage= false;
 			if(isImage) {
-			    images+=HU.tr(HU.td(['width','10%','nowrap','true'], HU.div([ATTR_CLASS,'imdv-stac-item'],HU.span(['asset-id',key,ATTR_CLASS,'imdv-stac-asset'], 'Add Image')))+
+			    images+=HU.tr(HU.td([ATTR_WIDTH,'10%','nowrap','true'], HU.div([ATTR_CLASS,'imdv-stac-item'],HU.span(['asset-id',key,ATTR_CLASS,'imdv-stac-asset'], 'Add Image')))+
 					  HU.td(link));
 			} else {
 			    other+=HU.tr(HU.td('')+ HU.td(link));
@@ -2125,7 +2125,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			console.error(inner);
 		    }
 		}
-		let skip = ['hereRoutingEnabled','googleRoutingEnabled','canEdit',ATTR_TITLE,'bounds','zoomLevel','mapCenter','width','height','user','entryIcon','entryId','thisEntryType','fileUrl','popupWidth','popupHeight','divid'];
+		let skip = ['hereRoutingEnabled','googleRoutingEnabled','canEdit',ATTR_TITLE,'bounds','zoomLevel','mapCenter',ATTR_WIDTH,'height','user','entryIcon','entryId','thisEntryType','fileUrl','popupWidth','popupHeight','divid'];
 		let userInput = "";
 		for(key in attrs) {
 		    if(skip.includes(key)) continue;
@@ -2188,7 +2188,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(mapGlyph.isSelected()) {
 		    clazz+= " " + LIST_SELECTED_CLASS;
 		}
-		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,'valign','top',ATTR_STYLE,'border-bottom:1px solid #ccc',"glyphid",mapGlyph.getId()]);
+		features+=HU.openTag("tr",[ATTR_CLASS,LIST_ROW_CLASS+" " + clazz,ATTR_VALIGN,'top',ATTR_STYLE,'border-bottom:1px solid #ccc',"glyphid",mapGlyph.getId()]);
 		let tds=this.makeListItem(mapGlyph,idx);
 		features+=tds;
 		features+="</tr>";
@@ -2456,7 +2456,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	menuItem: function(id,label,cmd) {
 	    if(cmd) {
-		//		HU.image(icon_command,['width','12px']);
+		//		HU.image(icon_command,[ATTR_WIDTH,'12px']);
 		let prefix = '';
 		if(cmd!='Esc') prefix = 'Ctrl-';
 		label = HU.leftRightTable(label,HU.div([ATTR_STYLE,'margin-left:8px;'], HU.span([ATTR_STYLE,'color:#ccc'], prefix+cmd)));
@@ -2585,7 +2585,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      ATTR_ID,this.domId(prop+"_icons")],'Loading...');
 		    widget = HU.hidden("",graphic,[ATTR_ID,domId]) +
 			'<table><tr valign=top><td width=1%>' +
-			HU.image(graphic,['width','24px',ATTR_ID,this.domId(prop+'_image')]) +
+			HU.image(graphic,[ATTR_WIDTH,'24px',ATTR_ID,this.domId(prop+'_image')]) +
 			'</td><td>' +
 			div +
 			"</td></tr></table>";
@@ -2616,7 +2616,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				hdr+=HU.span([ATTR_CLASS,
 					      HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
 					      'icon',icon,'textarea',domId],
-					     HU.getIconImage(icon,['width','16px']));
+					     HU.getIconImage(icon,[ATTR_WIDTH,'16px']));
 				hdr+=' ';
 			    });
 			    widget = HU.div([],hdr)+widget;
@@ -2676,7 +2676,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			    
 /*			    widget =  HU.div([ATTR_ID,domId+'_display',ATTR_CLASS,'ramadda-dot', ATTR_STYLE,HU.css('background',Utils.stringDefined(v)?v:'transparent')]) +
 				HU.space(2)+widget;
-			    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr(['valign','top'],HU.tds([],[widget,bar])));
+			    //			    widget  = HU.table(['cellpadding','0','cellspacing','0'],HU.tr([ATTR_VALIGN,'top'],HU.tds([],[widget,bar])));
 */
 			} else if(prop=="labelAlign") {
 			    html +=HU.formTableClose();
@@ -2770,7 +2770,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		HU.hidden('',level.max??this.maxLevel,[ATTR_ID,this.domId(ID_LEVEL_RANGE_MAX)])
 	    widget+=HU.hidden('','',[ATTR_ID,this.domId(ID_LEVEL_RANGE_CHANGED)]);
 	    let slider =
-		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative','width',width)]);
+		HU.div([ATTR_ID,this.domId(ID_LEVEL_RANGE_SLIDER),ATTR_STYLE,HU.css('margin-bottom','110px','margin-top','10px','position','relative',ATTR_WIDTH,width)]);
 
 	    let clear = HU.span([ATTR_TITLE,'Clear range values',
 				 ATTR_STYLE,HU.css('margin-left','10px'),
@@ -3020,7 +3020,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		dialog.find('#clippathdraw').button().click(function(){
 		    let input = _this.jq('glyphedit_clippath');
 		    let html = HU.div([ATTR_ID,_this.domId('clippath_container'),ATTR_STYLE,HU.css('position','relative','display','inline-block','background','#ccc;')],
-				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', 'width','600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
+				      HU.image(mapGlyph.style.imageUrl,[ATTR_TITLE,'Click to select point\nshift-click:use previous X\nmeta-click: use previous Y', ATTR_WIDTH,'600px',ATTR_CLASS,'theimage',ATTR_STYLE,HU.css('cursor','pointer','border','1px solid #ccc')]));
 		    let buttons = HU.buttons([HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
 					      HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
 
@@ -3041,9 +3041,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    image.on('load', function() {
 			let container = _this.jq('clippath_container');
 			container.append(
-			    HU.tag('canvas',[ATTR_ID,_this.domId('clippath_canvas'),
-					     'width',image.width(),
-					     'height',image.height(),					     
+			    HU.tag(TAG_CANVAS,[ATTR_ID,_this.domId('clippath_canvas'),
+					     ATTR_WIDTH,image.width(),
+					     ATTR_HEIGHT,image.height(),					     
 					     ATTR_STYLE,HU.css('position','absolute','pointer-events','none','left','0px','top','0px',
 							       'background','transparent')]));
 			
@@ -3227,7 +3227,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		used.forEach(icon=>{
 		    html+=HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-icons-recent'),
 				   'icon',icon],
-				  HU.getIconImage(icon,['width','24px']));
+				  HU.getIconImage(icon,[ATTR_WIDTH,'24px']));
 		});
 		this.jq('recenticons').html(html);
 		this.jq('recenticons').find('.ramadda-icons-recent').click(function(){
@@ -3247,11 +3247,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    html+=HU.div([ATTR_CLASS,'ramadda-imdv-image-category-label'],HU.b(cat.name));
 		    cat.images.forEach(image=>{
 			html+=HU.image(image.image,[ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image'),
-						    'width','24px',ATTR_STYLE,'margin-right:4px;margin-bottom:2px;','loading','lazy',ATTR_TITLE,image.name]);
+						    ATTR_WIDTH,'24px',ATTR_STYLE,'margin-right:4px;margin-bottom:2px;','loading','lazy',ATTR_TITLE,image.name]);
 		    });
 		});
 		html+="</div>";
-		html = HU.div([ATTR_STYLE,HU.css('width','400px','max-height','200px','overflow-y','auto')], html);
+		html = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,'400px','max-height','200px','overflow-y','auto')], html);
 		html = HU.input("","",[ATTR_ID,prefix+'_search','placeholder','Search','size','30']) +' ' +
 		    HU.span([ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'ramadda-imdv-image-delete')],'Clear')+
 		    HU.space(2) +
@@ -3648,7 +3648,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 
 	    
-	    basic=HU.table([],HU.tr(['valign','top'],HU.td([],basic) + HU.td(['width','50%'], right)));
+	    basic=HU.table([],HU.tr([ATTR_VALIGN,'top'],HU.td([],basic) + HU.td([ATTR_WIDTH,'50%'], right)));
 	    basic+='<p>';
 	    basic+=this.getLevelRangeWidget(this.getMapProperty('visibleLevelRange'),
 					    this.getMapProperty('showMarkerWhenNotVisible'));
@@ -3968,7 +3968,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			       HU.image(level.image,
 					['data-level',level.value,
 					 ATTR_TITLE,'Level:' + level.value,
-					 'width','100px',ATTR_CLASS,'ramadda-clickable']));
+					 ATTR_WIDTH,'100px',ATTR_CLASS,'ramadda-clickable']));
 		});
 		zoomPopup=HU.div([ATTR_STYLE,'text-align:center;max-height:300px;overflow-y:auto;'], zoomPopup);
 		html+= HU.hidden('',_this.getCurrentLevel(),
@@ -3978,7 +3978,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 						 [ATTR_TITLE,'Click to select level',
 						  ATTR_ID,_this.domId('choose_zoom_image'),
 					  
-						  'width','100px',ATTR_CLASS,'ramadda-clickable']));
+						  ATTR_WIDTH,'100px',ATTR_CLASS,'ramadda-clickable']));
 		html+=HU.formEntry('Zoom Level:',zoomButton);
 		html+=HU.formTableClose();
 		let buttons =HU.div([ATTR_CLASS,'ramadda-button-apply display-button'], 'Apply') + SPACE2 +
@@ -4137,7 +4137,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		}
 		if(!glyphType.handler) return;
 		let icon = glyphType.options.icon||Ramadda.getUrl('/map/marker-blue.png');
-		let label = HU.image(icon,['width','16']) +SPACE1 + glyphType.getName();
+		let label = HU.image(icon,[ATTR_WIDTH,'16']) +SPACE1 + glyphType.getName();
 		if(glyphType.getTooltip())
 		    label = HU.span([ATTR_TITLE,glyphType.getTooltip()],label);
 		html+= this.menuItem(this.domId('menunew_' + glyphType.type),label+SPACE2);
@@ -5074,7 +5074,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    if(html!="") {
 		let height= this.getProperty('height');
 		let legendHeight= this.getProperty('legendHeight',height);		
-		let css  = HU.css('max-width',HU.getDimension(legendWidth),'width',HU.getDimension(legendWidth));
+		let css  = HU.css('max-width',HU.getDimension(legendWidth),ATTR_WIDTH,HU.getDimension(legendWidth));
 		if(height && !inMap && !legendDiv) css+=HU.css('height',legendHeight);
 		if(!legendDiv) {
 		    let attrs = [ATTR_CLASS,'imdv-legend',ATTR_STYLE,css]
@@ -5470,7 +5470,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			HU.div([ATTR_STYLE,'display:inline-block;',ATTR_ID,this.domId(ID_ADDRESS_CLEAR),ATTR_TITLE,'Clear',ATTR_CLASS,CLASS_CLICKABLE],HU.getIconImage('fa-solid fa-eraser',[],[ATTR_STYLE,'color:#ccc;'])) +
 			' ' +
 			HU.div([ATTR_ID,this.domId(ID_ADDRESS_WAIT),ATTR_STYLE,HU.css('position','absolute','right','0px',
-										'display','inline-block','margin-right','2px','width','20px')])+
+										'display','inline-block','margin-right','2px',ATTR_WIDTH,'20px')])+
 			HU.input('','',[ATTR_ID,this.domId(ID_ADDRESS_INPUT),'placeholder','Search for address','size','20']));
 
 	    if(this.canChange()) {
@@ -5485,13 +5485,13 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'),
 				    ATTR_ID,this.domId(ID_MAP)+'_header']);
 	    if(this.canChange()) {
-		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],menuBar) +
-											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;','width','50%'],mapHeader+address)));
+		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
+											 HU.td([ATTR_WIDTH,'50%'], message) +
+											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;',ATTR_WIDTH,'50%'],mapHeader+address)));
 	    } else {
-		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),'width','100%'],HU.tr(['valign','bottom'],HU.td([],'') +
-											 HU.td(['width','50%'], message) +
-											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;','width','50%'],mapHeader+address)));
+		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],'') +
+											 HU.td([ATTR_WIDTH,'50%'], message) +
+											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;',ATTR_WIDTH,'50%'],mapHeader+address)));
 	    }
 	    
 
