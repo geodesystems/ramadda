@@ -370,11 +370,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public void reindexLucene(Request request,Object actionId, String type)  {
+    public void reindexLucene(Request request,Object actionId, String type, boolean deleteAll)  {
 	try {
 	    IndexWriter indexWriter = getLuceneWriter();
 	    try {
-		reindexLuceneInner(request, indexWriter, actionId, type);
+		reindexLuceneInner(request, indexWriter, actionId, type,deleteAll);
 	    } finally {
 		//		writer.close();
 	    }
@@ -384,11 +384,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
 
-    private void reindexLuceneInner(final Request request, final IndexWriter indexWriter, Object actionId, String type)  throws Throwable {	
+    private void reindexLuceneInner(final Request request, final IndexWriter indexWriter, Object actionId, String type,
+				    boolean deleteAll)  throws Throwable {	
 	Clause clause = null;
 	if(stringDefined(type)) {
 	    clause = Clause.or(getDatabaseManager().addTypeClause(getRepository(),request, Utils.split(type,",",true,true),null));
 	}
+	if(deleteAll) {
+	    indexWriter.deleteAll();
+	}
+
+
         Statement statement =
             getDatabaseManager().select(Tables.ENTRIES.COL_ID,
 					Misc.newList(Tables.ENTRIES.NAME),

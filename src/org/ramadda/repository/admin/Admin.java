@@ -125,6 +125,8 @@ public class Admin extends RepositoryManager {
     /** _more_ */
     public static final String ARG_REPLACE_PATTERN = "replacepattern";
 
+    public static final String ARG_DELETE_INDEX="deleteindex";
+
     /** _more_ */
     public static final String ARG_REPLACE_WITH = "replacewith";
 
@@ -1180,7 +1182,8 @@ public class Admin extends RepositoryManager {
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
                 try {
-                    getSearchManager().reindexLucene(request,actionId, request.getString(ARG_TYPE,null));
+                    getSearchManager().reindexLucene(request,actionId, request.getString(ARG_TYPE,null),
+						     request.get(ARG_DELETE_INDEX,false));
                 } catch (Exception exc) {
                     System.err.println("Error reindexing:" + exc);
                     throw exc;
@@ -2652,6 +2655,7 @@ public class Admin extends RepositoryManager {
 	HU.formEntry(topSB,
 		     msgLabel("Type"),
 		     getRepository().makeTypeSelect(types, request, ARG_TYPE,"",false,null,false,null,false));
+	HU.formEntry(topSB,"",HU.labeledCheckbox(ARG_DELETE_INDEX,"true",false,"Delete entire index"));
 	HU.formEntry(topSB,"",
 		     HU.submit("Reindex", ACTION_REINDEX));
         topSB.append(HU.formTableClose());
