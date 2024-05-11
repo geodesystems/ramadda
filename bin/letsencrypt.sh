@@ -246,11 +246,13 @@ esac
 
 
 #At some time certbot used 0003 
-LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0001"
+LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0003"
 if [ ! -d "$LETSENCRYPT_DIR" ]; then
-    LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0003"
+    LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0002"
 fi
-
+if [ ! -d "$LETSENCRYPT_DIR" ]; then
+    LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0001"
+fi
 if [ ! -d "$LETSENCRYPT_DIR" ]; then
     LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}"
 fi
