@@ -19,6 +19,9 @@ public interface Constants {
 
     //j--
 
+    public static final String MESSAGE_ACCESS="You do not have access to this entry";
+
+
     /** _more_ */
     public static final String RESOURCE_ALLCSS = "allcss.css";
 
