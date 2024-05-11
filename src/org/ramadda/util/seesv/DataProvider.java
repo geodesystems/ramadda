@@ -689,7 +689,21 @@ public abstract class DataProvider extends SeesvOperator {
             }
             try {
                 root = new JSONObject(s);
-                if (arrayPath != null) {
+		if(Misc.equals(arrayPath,"addkey")) {
+		    arrayPath="";
+		    array = new JSONArray();
+		    Iterator<String> keys = root.keys();
+		    while (keys.hasNext()) {
+			Object o = keys.next();
+			String key = o.toString();
+			JSONObject obj = root.getJSONObject(key);
+			obj.put("key",key);
+			array.put(obj);
+		    }
+		}
+
+
+                if (array==null && arrayPath != null) {
                     array = JsonUtil.readArray(root, arrayPath);
                 }
                 if (debug) {
