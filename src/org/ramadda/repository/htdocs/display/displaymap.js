@@ -797,7 +797,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			});
                     }
 		    let mapLayers = this.getProperty('mapLayers');
-		    if(mapLayers) {
+		    //Check to make sure it is an array
+		    if(mapLayers && mapLayers.forEach) {
 			let process=(layer)=>{
 			    let url
 			    if(layer.type=='shapefile')
