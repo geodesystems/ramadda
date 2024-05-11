@@ -603,6 +603,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	String _desc = desc.toString().toLowerCase();
 	corpus.append(_desc);
 	corpus.append(" ");
+	corpus.append(entry.getTypeHandler().getDescription());
+	corpus.append(" ");
+
+
 	Entry parent = entry.getParentEntry();
 	if(parent!=null) {
 	    corpus.append(parent.getName());
