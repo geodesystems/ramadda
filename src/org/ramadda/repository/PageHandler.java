@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository;
 
 
+import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.SessionManager;
 
@@ -34,6 +35,7 @@ import org.ramadda.util.geo.GeoUtils;
 
 
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -851,10 +853,21 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        List<String> navLinks = getNavLinks(request, userLinkTemplate);
+        List<String> navLinks = null;
+
+        try {
+	    navLinks = getNavLinks(request, userLinkTemplate);
+	} catch(Exception exc) {
+            Throwable     inner     = LogUtil.getInnerException(exc);
+	    if(inner instanceof AccessException) {
+		//Ignore access exception since the top-level entry might have an access control setting
+	    } else {
+		throw exc;
+	    }
+	}
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
 					      extra, true);
-        allLinks.addAll(navLinks);
+	if(navLinks!=null)        allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
         String menuHtml = HU.div(StringUtil.join("", allLinks),
 				 HU.id("ramadda_user_menu")+
@@ -2156,9 +2169,9 @@ public class PageHandler extends RepositoryManager {
 
             String html = template.replace("${url}", url);
             html = html.replace("${label}", label);
-            html = html.replace("${topgroup}",
-                                request.getRootEntry().getName());
-            links.add(html);
+	    html = html.replace("${topgroup}",
+				    request.getRootEntry().getName());
+	    links.add(html);
         }
 
         return links;
