@@ -429,13 +429,19 @@ public class EntryManager extends RepositoryManager {
      */
     public Entry getEntryFromAlias(Request request, String alias)
 	throws Exception {
+	//Use the admin request in case the aliases entry has access control
 	Entry entry = aliasCache.get(alias);
-	if(entry!=null) return entry;
-	List<Entry> entries =  getEntriesFromAlias(request, alias);
+	if(entry!=null) {
+	    //Then filter the entry for this user
+	    return  getAccessManager().filterEntry(request, entry);	    
+	}
+	Request adminRequest = getRepository().getAdminRequest();
+	List<Entry> entries =  getEntriesFromAlias(adminRequest, alias);
 	if(entries.size()>0) {
 	    entry =  entries.get(0);
 	    aliasCache.put(alias,entry);
-	    return entry;
+	    //Then filter the entry for this user
+	    return  getAccessManager().filterEntry(request, entry);	    
 	}
 	return null;
     }
