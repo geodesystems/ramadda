@@ -261,18 +261,18 @@ B19113_001E:Median Income
 +section title={{name}} 
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
-{{group showMenu=true layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
+{{group showMenu=false layoutColumns=2 layoutType=htable showTitle="false" tooltip="${default}" }}
 {{display_table height=500px layoutHere=false skipFields="latitude,longitude" column=0 }}
 {{display_map height=500px layoutHere=false column=1 showTitle="false" 
 colorBy="B05001_002E_percentage"
 colorByFields="B05001_002E_percentage,B05001_004E_percentage,B05001_005E_percentage,B05001_006E_percentage,B19113_001E_percentage"
 colorBar="plotly_viridis" strokeColor="#000" strokeWidth=0.2
 }}
-{{display_scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E_percentage" map-display="false" chartWidth="600"}}
-{{display_stats layoutHere="false"  showTitle="true" title="Summary Statistics"
+{{display_scatterplot layoutHere=false column=1 fields="B19113_001E,B05001_006E_percentage" map-display="false" height="250px" chartWidth="100%"}}
+{{display_stats layoutHere="false"  showTitle=false  
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display_text layoutHere=false column=1 showTitle="true" title="Details"}}
+{{display_text layoutHere=false column=1 showTitle="false" showMenu=false}}
 -section
 ]]></wiki>
 
@@ -372,22 +372,23 @@ B19113_001E:Median income
 {{displayProperty name="fieldAliases" value="B06011_001E:B19113_001E"}}
 {{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2" layoutType="htable" showTitle="false" tooltip="${default}" }}
-{{display_table layoutHere="false" height=400px skipFields="latitude,longitude" }}
+{{display_table displayStyle="max-width:100%;overflow-x:auto;" chartWidth=100% xwidth=100% layoutHere="false"
+height=400px skipFields="latitude,longitude" }}
 {{display_map layoutHere="false"  height=400px showTitle="false" 
 strokeColor="black" strokeWidth=0.2
 colorBy="B08006_003E_percentage"
 colorByFields="B08006_003E_percentage,B08006_004E_percentage,B08006_008E_percentage,B08006_014E_percentage,B08006_015E_percentage,B19113_001E"
 colorBar="plotly_viridis"
 }}
-{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_003E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
-{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_004E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
-{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_008E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
-{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_014E_percentage" map-display="false" chartWidth="600" showTitle="true" title="Biked"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_003E_percentage" map-display="false" width="100%" xchartWidth="400" showTitle="true" title="Drove Alone"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_004E_percentage" map-display="false" width="100%"  chartWidth="100%" showTitle="true" title="Car Pooled"}}
 
-{{display_stats layoutHere="false" showTitle="true" title="Summary Statistics"
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_008E_percentage" map-display="false" chartWidth="100%" showTitle="true" title="Public Transportation"}}
+{{display_scatterplot layoutHere="false" fields="B19113_001E,B08006_014E_percentage" map-display="false" chartWidth="100%" showTitle="true" title="Biked"}}
+{{display_stats layoutHere="false" showTitle="true" title="Summary Statistics" showMenu=false
 showDefault="false" showText="false" showMin="true" showMax="true" showAverage="true"
 }}
-{{display_text layoutHere="false"  showTitle="true" title="Details"}}
+{{display_text layoutHere="false"  showTitle="true" title="Details" showMenu=false}}
 -section
 ]]></wiki>
 
