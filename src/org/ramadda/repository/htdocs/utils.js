@@ -78,6 +78,7 @@ var TAG_DIV = "div";
 var SELECT = "select";
 var OPTION = "option";
 var VALUE = "value";
+var TAG_CANVAS = "canvas";
 var TAG_IMG = "img";
 var TAG_INPUT = "input";
 var TAG_LI = "li";
