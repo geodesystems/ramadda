@@ -434,8 +434,9 @@ public class EntryManager extends RepositoryManager {
 	if(entry!=null) {
 	    //Then filter the entry for this user
 	    entry =  getAccessManager().filterEntry(request, entry);	    
-	    if(entry==null)
-		throw new AccessException("You do not have access to this entry",request);
+	    if(entry==null) {
+		throw new AccessException(MESSAGE_ACCESS,request);
+	    }
 	    return entry;
 	}
 	Request adminRequest = getRepository().getAdminRequest();
@@ -445,8 +446,10 @@ public class EntryManager extends RepositoryManager {
 	    aliasCache.put(alias,entry);
 	    //Then filter the entry for this user
 	    entry =   getAccessManager().filterEntry(request, entry);
-	    if(entry==null)
-		throw new AccessException("You do not have access to this entry",request);	    
+	    if(entry==null)	{
+		throw new AccessException(MESSAGE_ACCESS,request);
+	    }
+	    
 	    return entry;
 	}
 	return null;
@@ -752,8 +755,7 @@ public class EntryManager extends RepositoryManager {
                     logInfo("Cannot access entry:" + entryId + "  IP:"
                             + request.getIp());
                     logInfo("Request:" + request);
-                    throw new IllegalArgumentException(
-						       "You do not have access to this entry");
+                    throw new IllegalArgumentException(MESSAGE_ACCESS);
                 }
             }
         } else {
@@ -1107,6 +1109,8 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
+	
         if (entry == null) {
 	    String id = request.getString(ARG_ENTRYID,null);
 	    if(id!=null &&
@@ -7691,8 +7695,7 @@ public class EntryManager extends RepositoryManager {
 
                 logInfo("Request:" + request);
 
-                throw new AccessException(
-					  "You do not have access to this entry", request);
+                throw new AccessException(MESSAGE_ACCESS, request);
             }
 
             throw new RepositoryUtil.MissingEntryException(
