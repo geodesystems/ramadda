@@ -2744,9 +2744,10 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    public void addInitialMetadata(Request request, Entry entry) throws Exception {
+
+    public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
 	if(this.parent!=null) {
-	    this.parent.addInitialMetadata(request, entry);
+	    this.parent.addInitialMetadata(request, entry,force);
 	}
 
     }

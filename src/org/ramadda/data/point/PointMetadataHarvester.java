@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2021 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.data.point;
@@ -34,6 +34,8 @@ public class PointMetadataHarvester extends RecordVisitor {
     /** _more_ */
     private int badCnt = 0;
 
+    private boolean force = false;
+    
     /** _more_ */
     private double minElevation = Double.NaN;
 
@@ -85,6 +87,25 @@ public class PointMetadataHarvester extends RecordVisitor {
      */
     public PointMetadataHarvester(LatLonGrid llg) {
         this.llg = llg;
+    }
+
+
+    /**
+       Set the Force property.
+
+       @param value The new value for Force
+    **/
+    public void setForce (boolean value) {
+	force = value;
+    }
+
+    /**
+       Get the Force property.
+
+       @return The Force
+    **/
+    public boolean getForce () {
+	return force;
     }
 
 
@@ -166,12 +187,12 @@ public class PointMetadataHarvester extends RecordVisitor {
                 badCnt++;
                 if (badCnt < 10) {
                     System.err.println(
-                        "PointMetadataHarvester: bad position: " + lat + " "
-                        + lon);
+				       "PointMetadataHarvester: bad position: " + lat + " "
+				       + lon);
                 }
                 if ((badCnt > 1000) && ((cnt == 0) || (badCnt > 10 * cnt))) {
                     System.err.println(
-                        "PointMetadataHarvester:Too many bad locations. Something must be wrong.");
+				       "PointMetadataHarvester:Too many bad locations. Something must be wrong.");
 
                     return false;
                 }
@@ -184,7 +205,7 @@ public class PointMetadataHarvester extends RecordVisitor {
         for (int fieldCnt = 0; fieldCnt < fields.size(); fieldCnt++) {
             RecordField field = fields.get(fieldCnt);
 	    if(field.isTypeEnumeration() || field.isTypeString()) {
-               ValueGetter valueGetter = field.getValueGetter();
+		ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
                     continue;
                 }
@@ -207,12 +228,12 @@ public class PointMetadataHarvester extends RecordVisitor {
 	    }
 
             if (field.isTypeNumeric()) {
-               ValueGetter valueGetter = field.getValueGetter();
+		ValueGetter valueGetter = field.getValueGetter();
                 if (valueGetter == null) {
                     continue;
                 }
                 double value = valueGetter.getValue(pointRecord, field,
-                                   visitInfo);
+						    visitInfo);
                 if (pointRecord.isMissingValue(field, value)) {
                     continue;
                 }
@@ -221,13 +242,13 @@ public class PointMetadataHarvester extends RecordVisitor {
                         ranges[fieldCnt][0] = value;
                     } else {
                         ranges[fieldCnt][0] = Math.min(value,
-                                ranges[fieldCnt][0]);
+						       ranges[fieldCnt][0]);
                     }
                     if (Double.isNaN(ranges[fieldCnt][1])) {
                         ranges[fieldCnt][1] = value;
                     } else {
                         ranges[fieldCnt][1] = Math.max(value,
-                                ranges[fieldCnt][1]);
+						       ranges[fieldCnt][1]);
                     }
                 }
             }

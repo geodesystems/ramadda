@@ -173,13 +173,13 @@ public class PointTypeHandler extends RecordTypeHandler {
         if (fromImport) {
             return;
         }
-	addInitialMetadata(request, entry);
+	addInitialMetadata(request, entry,false);
 
     }
 
 
     @Override
-    public void addInitialMetadata(Request request, Entry entry) throws Exception {
+    public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
         log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
         if ((file != null) && !file.exists()) {
@@ -206,6 +206,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         PointMetadataHarvester metadataHarvester =
             ((PointTypeHandler) entry.getTypeHandler())
                 .doMakeMetadataHarvester(pointEntry);
+	metadataHarvester.setForce(force);
         visitorGroup.addVisitor(metadataHarvester);
         final File quickScanFile = pointEntry.getQuickScanFile();
         DataOutputStream dos = new DataOutputStream(
@@ -213,6 +214,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                                        new FileOutputStream(quickScanFile)));
         boolean quickscanDouble =
             PointEntry.isDoubleBinaryFile(quickScanFile);
+
         //Make the latlon binary file when we ingest the  datafile
         visitorGroup.addVisitor(outputHandler.makeLatLonBinVisitor(request,
                 entry, pointEntries, null, dos, quickscanDouble));
@@ -608,8 +610,8 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         PointEntry pointEntry = (PointEntry) recordEntry;
         Entry      entry      = pointEntry.getEntry();
-        if ( !shouldProcessResource(null, entry)) {
-            return;
+        if (!metadata.getForce() && !shouldProcessResource(null, entry)) {
+	    return;
         }
 
 	boolean debug =getRepository().getProperty("debug.pointdata.new",entry.getTypeHandler().getTypeProperty("debug.pointdata.new",false));

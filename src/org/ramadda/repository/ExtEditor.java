@@ -258,7 +258,7 @@ public class ExtEditor extends RepositoryManager {
 				List<Entry> changedEntries = getEntryManager().addInitialMetadata(request,
 								     entries,
 								     false,false);
-				entry.getTypeHandler().addInitialMetadata(request, entry);
+				entry.getTypeHandler().addInitialMetadata(request, entry,true);
 				changed = true;
 			    }
 
