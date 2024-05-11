@@ -433,7 +433,10 @@ public class EntryManager extends RepositoryManager {
 	Entry entry = aliasCache.get(alias);
 	if(entry!=null) {
 	    //Then filter the entry for this user
-	    return  getAccessManager().filterEntry(request, entry);	    
+	    entry =  getAccessManager().filterEntry(request, entry);	    
+	    if(entry==null)
+		throw new AccessException("You do not have access to this entry",request);
+	    return entry;
 	}
 	Request adminRequest = getRepository().getAdminRequest();
 	List<Entry> entries =  getEntriesFromAlias(adminRequest, alias);
@@ -441,7 +444,10 @@ public class EntryManager extends RepositoryManager {
 	    entry =  entries.get(0);
 	    aliasCache.put(alias,entry);
 	    //Then filter the entry for this user
-	    return  getAccessManager().filterEntry(request, entry);	    
+	    entry =   getAccessManager().filterEntry(request, entry);
+	    if(entry==null)
+		throw new AccessException("You do not have access to this entry",request);	    
+	    return entry;
 	}
 	return null;
     }
