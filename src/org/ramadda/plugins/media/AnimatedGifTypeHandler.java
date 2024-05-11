@@ -78,6 +78,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/libgif.js"));
             HU.importJS(sb,getPageHandler().getCdnPath("/lib/libgif/rubbable.js"));
             HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/animatedgif.js","/media/animatedgif.js"));
+            HU.cssLink(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/animatedgif.css","/media/animatedgif.css"));
             String imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String id = HU.getUniqueId("image");
             boolean showControls =
@@ -90,6 +91,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
                 "true".equals(Utils.getString(props.get("addButtons"),
                     entry.getStringValue(IDX_ADDBUTTONS, "true")));
             if (showControls) {
+		sb.append("<div class=animatedgif-controls>");
                 sb.append("<a href='javascript:;' onmousedown='" + id
                           + ".pause(); return false;'>"
                           + HtmlUtils.faIconClass("fa-stop",
@@ -115,7 +117,7 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
                           + HtmlUtils.faIconClass("fa-step-forward",
                               "ramadda-clickable", "title",
                               "Step forward") + "</a>&nbsp;&nbsp;");
-                sb.append("<br>");
+                sb.append("</div>");
             }
             HU.div(sb, "", HU.attrs("id", id + "_div"));
             String attrs = HU.attrs("id", id, "src", imgUrl,
