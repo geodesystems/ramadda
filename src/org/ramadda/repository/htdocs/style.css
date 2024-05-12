@@ -3456,6 +3456,7 @@ pre {
 .metadata-tag a {
     text-decoration:none;
 }
+
 .metadata-tag-selected {
     background:#C5E5F5;
     border:1px solid #000;
@@ -3466,7 +3467,7 @@ img.metadata-tag {
     border-radius: 0px;
     background:transparent;
     padding:0px;
-    border:2px solid transparent;
+    border:2px solid transparent  !important;
 }
 
 img.metadata-tag:hover {
@@ -3475,7 +3476,7 @@ img.metadata-tag:hover {
 
 img.metadata-tag-selected {
     border:2px solid #000;
-    background:transparent;
+    background:transparent !important;
 }
 
 .metadata-image {
