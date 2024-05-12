@@ -1470,6 +1470,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 										    'size','5']));
 	    
 
+	    extra+=HU.div([ATTR_STYLE,'height:50px;']);
 
 	    if(!horizontal) 
 		extra += HU.closeTag(TAG_TABLE);
