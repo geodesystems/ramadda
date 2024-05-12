@@ -915,6 +915,7 @@ public class ExtEditor extends RepositoryManager {
 		    "entry.setStartDate(String); entry.setEndDate(String)\n" +
 		    "entry.hasLocationDefined(); entry.setLocation(lat,lon);\n"+
 		    "entry.getChildren();\n" +
+		    "entry.setColumnValue(name,value);\n" +
 		    "entry.isImage(); entry.resizeImage(400); entry.grayscaleImage();\n" +
 		    "entry.makeThumbnail(deleteExisting:boolean);\n" +
 		    "entry.getValue('column_name');\n" +
@@ -1524,6 +1525,11 @@ public class ExtEditor extends RepositoryManager {
 
 	public void setDescription(String description) {
 	    this.description = description;
+	}	
+
+	public void setColumnValue(String key, Object value) {
+	    entry.setValue(key, value);
+	    changed=true;
 	}	
 
 	public String getFile() {
