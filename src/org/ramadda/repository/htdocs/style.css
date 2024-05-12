@@ -3471,12 +3471,12 @@ img.metadata-tag {
 }
 
 img.metadata-tag:hover {
-    border:2px solid blue;
+    border:2px solid blue !important;
 }
 
 img.metadata-tag-selected {
-    border:2px solid #000;
-    background:transparent !important;
+    border:2px solid #000 !important;
+    background:transparent;
 }
 
 .metadata-image {
