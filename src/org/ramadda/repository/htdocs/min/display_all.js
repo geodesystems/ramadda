@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun May 12 11:06:03 MDT 2024";
+var build_date="RAMADDA build date: Sun May 12 11:41:00 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33537,25 +33537,46 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
             this.addExtraForm();
 	},
+	toggleAll:function(visible) {
+	    let _this = this;
+	    this.jq(ID_SEARCH_FORM).find('.display-search-label-toggle').each(function() {
+		_this.toggleWidget($(this),visible);
+	    });
+	},
+	toggleWidget:function(toggle, visible) {
+	    let widget = jqid(toggle.attr('data-widget-id'));
+	    let icon;
+	    if(!visible) {
+		widget.hide();
+		icon = 'fa-plus';
+	    } else {
+		widget.show();
+		icon = 'fa-minus';
+	    }
+	    icon = HU.getIconImage(icon, [], [ATTR_STYLE,'color:#fff;'])
+	    let imageId= toggle.attr('data-image-id');
+			      //			imageId,jqid(imageId).length);
+	    jqid(imageId).html(icon);
+	},
 	addToggle:function(label,widgetId,toggleClose) {
 	    let toggleId = HU.getUniqueId('');
+	    let imageId = toggleId+'_image';
 	    label = HU.div([ATTR_CLASS,'display-search-label-toggle',
-			     ATTR_TITLE, "Toggle",ATTR_ID,toggleId],
-			    HU.span([ATTR_ID,toggleId+'_image'],
-				    HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + label);
+			    'data-widget-id',widgetId,
+			    'data-image-id',imageId,
+			    ATTR_TITLE, "click: toggle; shift-click: toggle all",ATTR_ID,toggleId],
+			   HU.span([ATTR_ID,imageId],
+				   HU.getIconImage(toggleClose?'fa-plus':'fa-minus', [], [ATTR_STYLE,'color:#fff;'])) +' ' + label);
 	    setTimeout(()=>{
-		jqid(toggleId).click(()=>{
+		jqid(toggleId).click((event)=>{
+		    let toggle = jqid(toggleId);
 		    let widget = jqid(widgetId);
-		    let icon;
-		    if(widget.is(':visible')) {
-			widget.hide();
-			icon = 'fa-plus';
-		    } else {
-			widget.show();
-			icon = 'fa-minus';
+		    let visible = widget.is(':visible');
+		    if(event.shiftKey) {
+			this.toggleAll(!visible);
+			return;
 		    }
-		    icon = HU.getIconImage(icon, [], [ATTR_STYLE,'color:#fff;'])
-		    jqid(toggleId+'_image').html(icon);
+		    this.toggleWidget(toggle,!visible);
 		});
 	    },100);
 	    return label;
