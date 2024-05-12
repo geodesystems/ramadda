@@ -1028,7 +1028,9 @@ public class RowCollector extends Processor {
                     if (label.indexOf("<") >= 0) {
                         ctx.getWriter().print(label);
                     } else {
-                        ctx.getWriter().print(HU.span(label,
+			String contents = label;
+			if(!Utils.stringDefined(contents)) contents="&nbsp;";
+                        ctx.getWriter().print(HU.span(contents,
 						      HU.attr("title", label)));
                     }
                 }
