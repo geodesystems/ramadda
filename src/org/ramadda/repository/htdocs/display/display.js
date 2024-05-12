@@ -1844,6 +1844,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'excludeUndefined',ex:true,tt:'Exclude any records with an undefined value'},
 	{p:'excludeZero',ex:true,tt:'Exclude any records with a 0 value'},
 	{p:'filterPaginate',ex:'true',tt:'Show the record pagination'},
+	{p:'pageCount',d:1000,tt:'How many records to show when paginating'},	
 	{p:'recordSelectFilterFields',tt:'Set the value of other displays filter fields'},
 	{p:'selectFields',ex:'prop:label:field1,...fieldN;prop:....'},
 	{p:'dataFilters',canCache:true},
@@ -4244,10 +4245,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    records = this.filterDataPhase2(records);
 
 	    if(debug)   this.logMsg("filterData-3 #records:" + records.length);
-	    let filterPaginate = this.getProperty("filterPaginate");
-	    if(filterPaginate) {
+	    if(this.getFilterPaginate()) {
 		let skip = this.pageSkip||0;
-		let count = +this.getProperty("pageCount",1000);
+		let count = +this.getPageCount();
 		if(skip>0 || count<records.length) {
 		    let tmp = [];
 		    let newSkip = skip;
@@ -6644,7 +6644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREPREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
 	    header2 += HU.div([ID,this.getDomId(ID_HEADER2_PREFIX),ATTR_CLASS,CLASS_HEADER_SPAN],"");
 	    header2 +=  this.getHeader2();
-	    if(this.getProperty("pageRequest",false) || this.getProperty("filterPaginate")) {
+	    if(this.getProperty("pageRequest",false) || this.getFilterPaginate()) {
 		
 		header2 += HU.div([ATTR_CLASS,CLASS_HEADER_SPAN+" display-filter",ATTR_ID,this.getDomId(ID_PAGE_COUNT)]);
 	    }
@@ -7837,7 +7837,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return null;
 	},
 	updatePaginateLabel:function(skip, count,max) {
-	    let paginate = this.getProperty("filterPaginate");
+	    let paginate = this.getFilterPaginate();
 	    let label = count;
 	    if(skip!=null && skip>0)
 		label = String(skip+1)+"-"+(count+skip);
@@ -7866,7 +7866,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!this.pageSkip)
 		    this.pageSkip=0;
 		if(paginate) {
-		    this.pageSkip+= +this.getProperty("pageCount",1000);
+		    this.pageSkip+= +this.getPageCount();
 		    _this.haveCalledUpdateUI = false;
 		    _this.dataFilterChanged();
 		    _this.updatePaginateLabel(this.pageSkip, count,max);			
@@ -7879,7 +7879,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!this.pageSkip)
 		    this.pageSkip=0;
 		if(paginate) {
-		    this.pageSkip-= +this.getProperty("pageCount",1000);
+		    this.pageSkip-= +this.getPageCount();
 		    if(this.pageSkip<0) this.pageSkip=0;
 		    _this.haveCalledUpdateUI = false;
 		    _this.updatePaginateLabel(this.pageSkip, count,max);			
@@ -8001,7 +8001,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug) console.log("\tcalling setData");
 		this.dataCollection.setData(pointData);
 	    }
-	    let paginate = this.getProperty("filterPaginate");
+	    let paginate = this.getFilterPaginate();
 	    if(this.getProperty("pageRequest") || paginate) {
 		if(debug) console.log("\tupdating pageRequest");
 		let count = pointData.getRecords().length;
