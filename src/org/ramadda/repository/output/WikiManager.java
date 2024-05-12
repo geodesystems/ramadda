@@ -4752,7 +4752,9 @@ public class WikiManager extends RepositoryManager
             boolean isList = theTag.equals(WIKI_TAG_LIST);
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
-            if (children.size() == 0) {
+	    String before = getProperty(wikiUtil, props,"linksBefore",null);
+	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
+            if (children.size() == 0 && before==null && after==null) {
                 if (getProperty(wikiUtil, props, "defaultToCard", false)) {
                     return makeCard(request, wikiUtil, props, entry);
                 }
@@ -4761,8 +4763,6 @@ public class WikiManager extends RepositoryManager
             }
 	    List<String> pre = null;
 	    List<String> post = null;
-	    String before = getProperty(wikiUtil, props,"linksBefore",null);
-	    String after = getProperty(wikiUtil, props,"linksAfter",null);	    
 	    String attrs="";
 	    String target  = getProperty(wikiUtil,props,"target",null);
 	    if(target!=null) attrs=HU.attrs("target",target);
