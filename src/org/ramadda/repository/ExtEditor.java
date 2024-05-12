@@ -1471,6 +1471,9 @@ public class ExtEditor extends RepositoryManager {
 	    repository.getLLMManager().processArgs(request,args);
 	    ctx.print("applying llm:" + getName());
 	    changed = repository.getLLMManager().applyLLMToEntry(request,entry, new StringBuilder());
+	    if(changed) {
+		this.description = entry.getDescription();
+	    }
 	}
 
 	public void applyCommand(String command,String...args)  throws Exception {
