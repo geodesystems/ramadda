@@ -2288,6 +2288,11 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_NAME, "new column name")),
         new Cmd(CMD_ROLL, "Roll columns down into rows",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_GRAB, "Look for rows that match a pattern and grab column values and add them to subsequent rows",
+                new Arg(ARG_COLUMN, "Column to match", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("pattern", "Pattern  to match"),
+		new Arg(ARG_COLUMNS, "Columns to grab", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg("names", "Comma separated list of new column names")),
         new Cmd(CMD_SHIFT, "Shift columns over by count for given rows",
                 new Arg("rows", "Rows to apply to", ATTR_TYPE, TYPE_ROWS),
                 new Arg(ARG_COLUMN, "Column to start at", ATTR_TYPE, TYPE_COLUMN),
@@ -4983,6 +4988,15 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Roller(ctx, cols));
 		return i;
 	    });
+
+	defineFunction(CMD_GRAB,4 ,(ctx,args,i) -> {
+		String col = args.get(++i);
+	       	String pattern = args.get(++i);		
+		List<String> cols  = getCols(args.get(++i));
+		List<String> names = Utils.split(args.get(++i),",");
+		ctx.addProcessor(new Converter.Grabber(col,pattern,cols,names));
+		return i;
+	    });	
 
 
 	defineFunction(CMD_SPLAT, 4,(ctx,args,i) -> {

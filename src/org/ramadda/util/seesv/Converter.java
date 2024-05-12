@@ -238,6 +238,53 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class Grabber extends Converter {
+	int col=-1;
+	String scol;
+	String pattern;
+	List<String> names;
+	List<String> values;
+        public Grabber(String scol, String pattern,
+		       List<String> cols,List<String> names) {
+            super(cols);
+	    this.scol = scol;
+	    this.pattern = pattern;
+	    this.names = names;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		row.addAll(names);
+		col = getIndex(ctx,scol);
+		return row;
+	    }
+	    if(!row.indexOk(col)) return row;
+	    String v = row.getString(col);
+	    if(v.matches(pattern)) {
+		values = new ArrayList<String>();
+		List<Integer> indices = getIndices(ctx);
+		for(int i:indices) {
+		    if(row.indexOk(i)) values.add(row.getString(i));
+		    else values.add("");
+		}
+
+		return null;
+	    }
+	    if(values!=null) {
+		row.addAll(values);
+	    }
+	    return row;
+        }
+    }
+    
+
 
     public static class NoHeader extends Converter {
 
