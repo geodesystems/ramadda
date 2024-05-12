@@ -54,7 +54,7 @@ import java.util.List;
  *
  */
 
-public class IPythonNotebookTypeHandler extends TypeHandler {
+public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 
 
     /**
