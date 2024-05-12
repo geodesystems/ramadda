@@ -261,9 +261,7 @@ public class Row {
      * @param values _more_
      */
     public void addAll(List values) {
-        for (Object value : values) {
-            add(value);
-        }
+	this.values.addAll(values);
     }
 
     /**
