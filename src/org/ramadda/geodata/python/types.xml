@@ -13,6 +13,8 @@
      <property name="llm.prompt.extra" value="The text below is from an IPython notebook."/>
 
      <property name="icon" value="/python/ipynb.png"/>
+     <column  name="author"  label="Author" type="enumerationplus" cansearch="true"/>
+
      <embedwiki><![CDATA[{{notebook}}]]></embedwiki>
      <wiki><![CDATA[
 +section # title="Notebook: {{name}}"
