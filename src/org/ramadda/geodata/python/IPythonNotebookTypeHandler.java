@@ -184,10 +184,14 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
         }
         if (tag.equals(ARG_NOTEBOOKIFRAME)) {
 	    StringBuilder sb     = new StringBuilder();
+	    if(Utils.getProperty(props,"showTitle",true))
+		getPageHandler().entrySectionOpen(request, entry, sb,null);
 	    String height= Utils.getProperty(props,"height","800");
 	    String url = HU.url(getEntryManager().getEntryUrl(request, entry),ARG_NOTEBOOKIFRAME,"true");
 	    HU.open(sb,"iframe","src",url,"width","100%","height",height,"frameborder","0");
 	    HU.close(sb,"iframe");
+	    if(Utils.getProperty(props,"showTitle",true))
+		getPageHandler().entrySectionClose(request, entry, sb);
 	    return sb.toString();
 	}
 

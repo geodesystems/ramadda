@@ -31,7 +31,7 @@
 </wiki>
 
 <wikimacro name="notebookiframe" label="Notebook Iframe" icon="/python/ipynb.png">
-{{notebookiframe}}
+{{notebookiframe showTitle=true}}
 </wikimacro>
 
 <wikimacro name="ipython_notebook_raw" label="View Raw Notebook" isoutput="true" icon="/python/ipynb.png">
