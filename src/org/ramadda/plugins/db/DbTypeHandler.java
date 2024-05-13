@@ -1016,7 +1016,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
         if (forPrint) {
             String name = request.getString(ARG_DB_SEARCHNAME, (String) null);
-            getPageHandler().entrySectionOpen(request, entry, name, sb, null, false);
+            getPageHandler().entrySectionOpen(request, entry,  sb,name);
             addStyleSheet(request,sb);
             request.put(ARG_TEMPLATE, "empty");
             return;
@@ -1046,7 +1046,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if ( !isEmbedded(request)) {
-            getPageHandler().entrySectionOpen(request, entry, sb, "", true);
+            getPageHandler().entrySectionOpen(request, entry, sb, "");
         }
 
 

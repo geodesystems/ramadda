@@ -118,8 +118,7 @@ public class AssociationManager extends RepositoryManager {
 
 
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, fromEntry, sb,
-                                          msg("Add Link"), false);
+        getPageHandler().entrySectionOpen(request, fromEntry, sb,msg("Add Link"));
         sb.append("Add link between: " + fromEntry.getLabel());
         sb.append(" and:  " + toEntry.getLabel());
         request.formPostWithAuthToken(sb,
@@ -201,8 +200,7 @@ public class AssociationManager extends RepositoryManager {
         StringBuilder sb     = new StringBuilder();
         StringBuilder hidden = new StringBuilder();
 
-        getPageHandler().entrySectionOpen(request, fromEntry, sb,
-                                          msg("Delete Link"), false);
+        getPageHandler().entrySectionOpen(request, fromEntry, sb, msg("Delete Link"));
 
         getAuthManager().addAuthToken(request, hidden);
         hidden.append(HU.hidden(ARG_ASSOCIATION, associationId));

@@ -5184,7 +5184,7 @@ public class EntryManager extends RepositoryManager {
 		sb.append(HU.hidden(ARG_ENTRYID,parent.getId()));
 
 	    if(toEntry!=null) {
-		getPageHandler().entrySectionOpen(request, toEntry,sb,msg(label),false);
+		getPageHandler().entrySectionOpen(request, toEntry,sb,msg(label));
 	    } else {
 		getPageHandler().sectionOpen(request, sb,msg(label),false);
 	    }
@@ -6023,8 +6023,7 @@ public class EntryManager extends RepositoryManager {
 		 getRepository().getImportHandlers()) {
             importHandler.addImportTypes(importTypes, extraForm);
         }
-        getPageHandler().entrySectionOpen(request, group, sb,
-                                          msg("Import Entries"), true);
+        getPageHandler().entrySectionOpen(request, group, sb,  msg("Import Entries"));
 
         request.uploadFormWithAuthToken(sb,
                                         getRepository().URL_ENTRY_XMLCREATE,
@@ -6292,8 +6291,7 @@ public class EntryManager extends RepositoryManager {
 
         StringBuilder sb = new StringBuilder();
         if (parent != null) {
-            getPageHandler().entrySectionOpen(request, parent, sb,
-					      "Imported Entries", true);
+            getPageHandler().entrySectionOpen(request, parent, sb,  "Imported Entries");
         }
 
 

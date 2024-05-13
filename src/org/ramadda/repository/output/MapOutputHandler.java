@@ -104,7 +104,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         entriesToUse.add(entry);
         StringBuilder sb = new StringBuilder();
 
-        getPageHandler().entrySectionOpen(request, entry, sb, "Map", true);
+        getPageHandler().entrySectionOpen(request, entry, sb, "Map");
 
         String prefix = request.getPrefixHtml();
         if (prefix != null) {
@@ -146,8 +146,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         if (Utils.stringDefined(prefix)) {
             sb.append(prefix);
         } else {
-            getPageHandler().entrySectionOpen(request, group, sb, "Map",
-                    true);
+            getPageHandler().entrySectionOpen(request, group, sb, "Map");
         }
 
         if (children.size() == 0) {

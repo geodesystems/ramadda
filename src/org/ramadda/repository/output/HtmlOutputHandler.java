@@ -2266,7 +2266,7 @@ public class HtmlOutputHandler extends OutputHandler {
         } else {
             if ( !group.isDummy()) {
                 getPageHandler().entrySectionOpen(request, group, sb,
-                        "Entry Information", true);
+                        "Entry Information");
                 addDescription(request, group, sb, true, suffix);
                 if ( !doSimpleListing) {
                     sb.append(getInformationTabs(request, group, false,null,true,null));

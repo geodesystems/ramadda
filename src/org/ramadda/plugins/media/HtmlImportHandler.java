@@ -379,8 +379,7 @@ public class HtmlImportHandler extends ImportHandler {
         }
         StringBuilder sb = new StringBuilder();
 
-        getPageHandler().entrySectionOpen(request, parentEntry, sb,
-                                          "HTML Import", true);
+        getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
 
 
         String  pattern = request.getString(ARG_IMPORT_PATTERN, "");

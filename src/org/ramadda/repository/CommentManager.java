@@ -59,8 +59,7 @@ public class CommentManager extends RepositoryManager {
     public Result processCommentsShow(Request request) throws Exception {
         Entry        entry = getEntryManager().getEntry(request);
         StringBuffer sb    = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb, "Comments",
-                                          true);
+        getPageHandler().entrySectionOpen(request, entry, sb, "Comments");
         request.appendMessage(sb);
         String entryUrl =
             HtmlUtils.url(getEntryManager().getFullEntryShowUrl(request),
@@ -230,7 +229,7 @@ public class CommentManager extends RepositoryManager {
         comment = request.getEncodedString(ARG_COMMENT, BLANK).trim();
         if (comment.length() == 0) {
             getPageHandler().entrySectionOpen(request, entry, sb,
-                    "Add Comment", true);
+                    "Add Comment");
             sb.append(
                 getPageHandler().showDialogNote(
                     msg("Please enter a comment")));

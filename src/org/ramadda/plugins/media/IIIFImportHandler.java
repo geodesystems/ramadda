@@ -183,7 +183,7 @@ public class IIIFImportHandler extends ImportHandler {
         }
         getEntryManager().addNewEntries(request, entries);
         getPageHandler().entrySectionOpen(request, parentEntry, sb,
-                                          "Imported Entries", true);
+                                          "Imported Entries");
         sb.append("<ul>");
         for (Entry newEntry : entries) {
             sb.append("<li> ");

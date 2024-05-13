@@ -905,8 +905,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                                    Entry entry)
 	throws Exception {
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "Point Chart",
-                                          true);
+        getPageHandler().entrySectionOpen(request, entry, sb, "Point Chart");
         sb.append(getWikiManager().getStandardChartDisplay(request, entry));
         getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("", sb);

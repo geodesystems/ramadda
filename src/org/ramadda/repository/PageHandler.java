@@ -3660,31 +3660,21 @@ public class PageHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
-                                 String title, boolean showLine)
+                                 String title, boolean force)
             throws Exception {
-        entrySectionOpen(request, entry, null, sb, title, showLine);
+        entrySectionOpen(request, entry, null, sb, title, force);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entryLabel _more_
-     * @param sb _more_
-     * @param title _more_
-     * @param showLine _more_
-     *
-     * @throws Exception _more_
-     */
+
     public void entrySectionOpen(Request request, Entry entry,
                                  String entryLabel, Appendable sb,
-                                 String title, boolean showLine)
+                                 String title, boolean force)
             throws Exception {
 
-        if (request.isEmbedded()) {
+        if (!force && request.isEmbedded()) {
             return;
         }
-        sb.append(HU.sectionOpen(null, showLine));
+        sb.append(HU.sectionOpen(null, false));
         if (entry != null) {
             String label = Utils.stringDefined(entryLabel)
                            ? entryLabel
@@ -3716,7 +3706,12 @@ public class PageHandler extends RepositoryManager {
      */
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
-        if (request.isEmbedded()) {
+	entrySectionClose(request, entry, sb, false);
+    }
+
+    public void entrySectionClose(Request request, Entry entry, Appendable sb,boolean force)
+	throws Exception {	
+        if (!force &&request.isEmbedded()) {
             return;
         }
         sb.append(HU.sectionClose());

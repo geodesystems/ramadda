@@ -762,8 +762,7 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Extended Edit", true);
+        getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit");
 
 
 	sb.append(prefix);

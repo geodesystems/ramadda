@@ -446,7 +446,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             request.put(ARG_LONGITUDE, "_LONGITUDEMACRO_");
             StringBuffer html = new StringBuffer();
             getPageHandler().entrySectionOpen(request, entry, html,
-                    "Time Series", true);
+                    "Time Series");
 
             html.append(getWikiManager().getStandardChartDisplay(request,
                     entry));
@@ -706,8 +706,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
         String formId   = HU.getUniqueId("form_");
 
-        getPageHandler().entrySectionOpen(request, entry, sb, "Extract Time Series",
-                                          true);
+        getPageHandler().entrySectionOpen(request, entry, sb, "Extract Time Series");
 
 
 
@@ -1003,7 +1002,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         GridDataset  gds    = getCdmManager().getGridDataset(entry, path);
 	if(gds==null) {
             getPageHandler().entrySectionOpen(request, entry, sb,
-					      "Extract Time Series", true);
+					      "Extract Time Series");
 	    sb.append(getPageHandler().showDialogWarning("No grids found"));
             getPageHandler().entrySectionClose(request, entry, sb);
             return new Result("Extract Time Series",sb);
