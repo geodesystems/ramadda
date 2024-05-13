@@ -128,18 +128,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param parentEntry _more_
-     * @param synthId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    private String debugLine(String s) {
+	String debugLine = s.replace("\\"," ").replaceAll("(\n|\r)"," ");
+	return  Utils.clip(debugLine,50,"...");
+    }
+
+
     @Override
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
@@ -155,17 +149,13 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
         List<String> fromCache = cachedIds.get(idString);
         if (fromCache != null && fromCache.size()==0) {
-	    System.err.println("\tfrom cache is empty");
+	    System.err.println("virtual from cache is empty:" +debugLine(idString));
 	}
 
         if (fromCache == null) {
-	    String debugLine = idString.replace("\\"," ").replaceAll("(\n|\r)"," ");
-	    debugLine = Utils.clip(debugLine,50,"...");
-	    System.err.println("virtual creating:" +debugLine);
+	    System.err.println("virtual creating:" +debugLine(idString));
             fromCache = new ArrayList<String>();
-            //Don't cache for now
-            cachedIds.put(idString, fromCache);
-            List<String> lines = new ArrayList<String>();
+	    List<String> lines = new ArrayList<String>();
 	    String unescaped = Utils.unescapeNL(idString);
 	    for (String line : Utils.split(unescaped, "\n", true, true)) {
                 if (line.startsWith("#")) {
@@ -177,9 +167,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             List<Entry> entries = getWikiManager().getEntries(request, null,
 							      mainEntry, mainEntry, idString, null,
 							      false, "");
-	    debugLine = idString.replace("\\"," ").replaceAll("(\n|\r)"," ");
-	    debugLine = Utils.clip(debugLine,50,"...");
-	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine);
+
+	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine(idString));
 
             if (by == null) {
                 Metadata sortMetadata =
@@ -207,6 +196,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             for (Entry entry : entries) {
                 fromCache.add(entry.getId());
             }
+            cachedIds.put(idString, fromCache);
 	}
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
