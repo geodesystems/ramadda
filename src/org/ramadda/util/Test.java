@@ -24,7 +24,7 @@ public class Test {
     private static int totalRead =0;
     private static int loops = 1000;
     private static int sleep=0;
-    private static int timeThreshold = 1500;
+    private static int timeThreshold = 3000;
     private static boolean showSize = true;
     private static boolean verbose = false;
     private static boolean quiet = false;    
@@ -100,8 +100,8 @@ public class Test {
 		    return false;
 		}
 		long t2 = System.currentTimeMillis();
-		if((t2-t1)>3000) {
-		    System.err.println("*** delay:" + toks.get(0) +" " + toks.get(1));
+		if((t2-t1)>timeThreshold) {
+		    System.err.println("******  long time:" + (t2-t1)+ " " + toks.get(0) +" " + toks.get(1));
 		}
 	    }
 	    return true;
@@ -164,7 +164,7 @@ public class Test {
 	    if(title==null) title="";
 	    if(timeThreshold>=0 && time>timeThreshold) {
 		if(!quiet)
-		    System.out.println("#" + urlCnt +" " + title+ " long time:" + (time) +" url:" +url);
+		    System.out.println("#" + urlCnt +" " + title+ " ****** long time:" + (time) +" url:" +url);
 	    }
 	    long diff = (after.getTime()-startTime.getTime())/1000;
 	    int callsPer = diff<=0?0:(int)(totalRead/(double)diff);
