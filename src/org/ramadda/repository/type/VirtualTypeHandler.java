@@ -153,11 +153,11 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         boolean descending = !request.get(ARG_ASCENDING, false);
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
-	System.err.println("virtual:" + idString);
+	System.err.println("virtual:" + Utils.clip(idString,200,"...").replace("\n"," "));
         List<String> fromCache = cachedIds.get(idString);
 
         if (fromCache != null && fromCache.size()==0) {
-	    System.err.println("from cache is empty");
+	    System.err.println("\tfrom cache is empty");
 	}
 
         if (fromCache == null) {
@@ -176,7 +176,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             List<Entry> entries = getWikiManager().getEntries(request, null,
 							      mainEntry, mainEntry, idString, null,
 							      false, "");
-	    System.err.println("creating entries ID String:" + idString +" entries:" + entries.size());
+	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +Utils.clip(idString,200,"...").replace("\n"," "));
 
             if (by == null) {
                 Metadata sortMetadata =
@@ -204,7 +204,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             for (Entry entry : entries) {
                 fromCache.add(entry.getId());
             }
-        }
+	}
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
         return ids;
