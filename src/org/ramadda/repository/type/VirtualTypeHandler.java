@@ -37,6 +37,7 @@ import java.util.List;
 public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
 
+    private boolean debug  =false;
     /** 5 minute cache */
     private TTLCache<String, List<String>> cachedIds = new TTLCache<String,
                                                            List<String>>(5
@@ -150,11 +151,13 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	String cacheKey = idString;
         List<String> fromCache = cachedIds.get(cacheKey);
         if (fromCache != null && fromCache.size()==0) {
-	    System.err.println("virtual from cache is empty:" +debugLine(idString));
+	    if(debug)
+		System.err.println("virtual from cache is empty:" +debugLine(idString));
 	}
 
         if (fromCache == null) {
-	    System.err.println("virtual creating:" +debugLine(idString));
+	    if(debug)
+		System.err.println("virtual creating:" +debugLine(idString));
             fromCache = new ArrayList<String>();
 	    List<String> lines = new ArrayList<String>();
 	    String unescaped = Utils.unescapeNL(idString);
@@ -169,7 +172,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 							      mainEntry, mainEntry, idString, null,
 							      false, "");
 
-	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine(idString));
+	    if(debug)
+		System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine(idString));
 
             if (by == null) {
                 Metadata sortMetadata =
