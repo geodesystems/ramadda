@@ -881,12 +881,17 @@ public class WikiManager extends RepositoryManager
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
 
-	Entry theEntry = findEntryFromIdInner(request, entry, wikiUtil,  props, entryId);
-	if(theEntry!=null &&
-	   getProperty(wikiUtil,props,"ifHaveChildren",false)) {
-	    if(getEntryManager().getChildren(request, theEntry).size()==0) return null;
+	try {
+	    Entry theEntry = findEntryFromIdInner(request, entry, wikiUtil,  props, entryId);
+	    if(theEntry!=null &&
+	       getProperty(wikiUtil,props,"ifHaveChildren",false)) {
+		if(getEntryManager().getChildren(request, theEntry).size()==0) return null;
+	    }
+	    return theEntry;
+	} catch(Exception exc) {
+	    System.err.println("Error finding entry:" + entry.getName() + " " + entry.getId());
+	    throw exc;
 	}
-	return theEntry;
     }
 
     public Entry findEntryFromIdInner(Request request, Entry entry,
