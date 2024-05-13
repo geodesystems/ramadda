@@ -152,12 +152,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> fromCache = cachedIds.get(cacheKey);
         if (fromCache != null && fromCache.size()==0) {
 	    if(debug)
-		System.err.println("virtual from cache is empty:" +debugLine(idString));
+		System.err.println("virtual from cache is empty:" +mainEntry.getId() +" " + debugLine(idString));
 	}
 
         if (fromCache == null) {
 	    if(debug)
-		System.err.println("virtual creating:" +debugLine(idString));
+		System.err.println("virtual creating:" +mainEntry.getId() +" "+debugLine(idString));
             fromCache = new ArrayList<String>();
 	    List<String> lines = new ArrayList<String>();
 	    String unescaped = Utils.unescapeNL(idString);
@@ -173,7 +173,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 							      false, "");
 
 	    if(debug)
-		System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine(idString));
+		System.err.println("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
 
             if (by == null) {
                 Metadata sortMetadata =
