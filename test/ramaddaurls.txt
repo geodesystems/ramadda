@@ -884,16 +884,12 @@ echo:Glossaries
 https://ramadda.org/repository/entry/show?entryid=42d308ca-48e0-49f7-a294-358707efc56f#fortest
 echo:Interactive Chat
 https://ramadda.org/repository/entry/show?entryid=d63b1bde-4229-4987-96ea-188ee87d55c7#fortest
-echo:IPython Notebook Examples
-https://ramadda.org/repository/entry/show?entryid=29f9729c-f990-4bda-8bea-3d3fd8fee8de#fortest
 echo:JSON Files
 https://ramadda.org/repository/entry/show?entryid=9be34bef-4556-4d6c-8396-ebcbd805b538#fortest
 echo:Knowledge Management
 https://ramadda.org/repository/entry/show?entryid=c80e6e6f-806b-44d2-b461-e4f0a8c1470e#fortest
 echo:My Daily Log
 https://ramadda.org/repository/entry/show?entryid=e7ae3af8-c99d-4c09-8b58-593c450412be#fortest
-echo:News Feeds
-https://ramadda.org/repository/entry/show?entryid=6c76bee0-1215-4f91-909a-a513e2916b27#fortest
 echo:NGA Disparate Data Challenge
 https://ramadda.org/repository/entry/show?entryid=2b77c391-db29-4faf-81ff-045cab8e8c4a#fortest
 echo:Notes Collection
