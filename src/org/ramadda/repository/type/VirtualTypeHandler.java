@@ -147,7 +147,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         boolean descending = !request.get(ARG_ASCENDING, false);
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
-        List<String> fromCache = cachedIds.get(idString);
+	String cacheKey = idString;
+        List<String> fromCache = cachedIds.get(cacheKey);
         if (fromCache != null && fromCache.size()==0) {
 	    System.err.println("virtual from cache is empty:" +debugLine(idString));
 	}
@@ -196,7 +197,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             for (Entry entry : entries) {
                 fromCache.add(entry.getId());
             }
-            cachedIds.put(idString, fromCache);
+            cachedIds.put(cacheKey, fromCache);
 	}
         ids.addAll(fromCache);
         mainEntry.setChildIds(ids);
