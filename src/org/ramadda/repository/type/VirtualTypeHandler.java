@@ -153,14 +153,15 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         boolean descending = !request.get(ARG_ASCENDING, false);
 	//TODO:This doesn't work
 	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
-	System.err.println("virtual:" + Utils.clip(idString,200,"...").replace("\n"," "));
         List<String> fromCache = cachedIds.get(idString);
-
         if (fromCache != null && fromCache.size()==0) {
 	    System.err.println("\tfrom cache is empty");
 	}
 
         if (fromCache == null) {
+	    String debugLine = idString.replace("\\"," ").replaceAll("(\n|\r)"," ");
+	    debugLine = Utils.clip(debugLine,50,"...");
+	    System.err.println("virtual creating:" +debugLine);
             fromCache = new ArrayList<String>();
             //Don't cache for now
             cachedIds.put(idString, fromCache);
@@ -176,7 +177,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             List<Entry> entries = getWikiManager().getEntries(request, null,
 							      mainEntry, mainEntry, idString, null,
 							      false, "");
-	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +Utils.clip(idString,200,"...").replace("\n"," "));
+	    debugLine = idString.replace("\\"," ").replaceAll("(\n|\r)"," ");
+	    debugLine = Utils.clip(debugLine,50,"...");
+	    System.err.println("\tcreating entries:"  + entries.size()+" ID:" +debugLine);
 
             if (by == null) {
                 Metadata sortMetadata =
