@@ -354,6 +354,16 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 }
 
+
+.ramadda-iframe-progress {
+    background: URL(icons/mapprogress.gif);
+    background-size: 100px auto;
+    background-position: top;
+    background-repeat: no-repeat;
+
+}
+
+
 .ramadda-iframe-pdf {
     background: URL(icons/mapprogress.gif);
     background-size: 200px auto;

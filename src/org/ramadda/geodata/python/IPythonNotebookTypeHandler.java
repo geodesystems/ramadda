@@ -189,7 +189,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 	    }
 	    String height= Utils.getProperty(props,"height","800");
 	    String url = HU.url(getEntryManager().getEntryUrl(request, entry),ARG_NOTEBOOKIFRAME,"true");
-	    HU.open(sb,"iframe","src",url,"width","100%","height",height,"frameborder","0");
+	    HU.open(sb,"iframe","class","ramadda-iframe-progress","src",url,"width","100%","height",height,"frameborder","0");
 	    HU.close(sb,"iframe");
 	    if(Utils.getProperty(props,"showTitle",true))
 		getPageHandler().entrySectionClose(request, entry, sb,true);
