@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.regex.*;
 
 import java.net.URL;
 import ucar.unidata.util.Misc;
@@ -86,6 +87,26 @@ public class Test {
 	    print=true;
 	    url = url.substring("print:".length()).trim();
 	}
+	if(url.startsWith("children:")) {
+	    String id = url.substring("children:".length());
+	    String csvUrl ="https://ramadda.org/entry/show?ascending=true&orderby=name&output=default.csv&escape=true&fields=name,id&showheader=false&showheader=false&entryid="+ id;
+	    String csv = IO.readContents(csvUrl);
+	    for(String line:Utils.split(csv,"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,",",2);
+		String _url = "https://ramadda.org/entry/show?entryid=" +toks.get(1);
+		long t1 = System.currentTimeMillis();
+		if(!call(_url)) {
+		    System.err.println("failed:" + toks.get(0) +" " + toks.get(1));
+		    return false;
+		}
+		long t2 = System.currentTimeMillis();
+		if((t2-t1)>3000) {
+		    System.err.println("*** delay:" + toks.get(0) +" " + toks.get(1));
+		}
+	    }
+	    return true;
+	}	    
+
 	if(url.startsWith("echo:")) {
 	    if(!noecho)	    System.out.println(url.substring("echo:".length()));
 	    return true;
@@ -219,7 +240,11 @@ public class Test {
 	    File f = new File(args[i]);
 
 	    if(f.exists()) {
-		urls.addAll(Utils.split(IO.readContents(args[i]),"\n",true,true));
+		String contents = IO.readContents(args[i]);
+		Pattern pattern = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
+		Matcher matcher = pattern.matcher(contents);
+		contents = matcher.replaceAll("");
+		urls.addAll(Utils.split(contents,"\n",true,true));
 		continue;
 	    }
 	    urls.add(args[i]);
