@@ -30,6 +30,10 @@
 
 </wiki>
 
+<wikimacro name="notebookiframe" label="Notebook Iframe" icon="/python/ipynb.png">
+{{notebookiframe}}
+</wikimacro>
+
 <wikimacro name="ipython_notebook_raw" label="View Raw Notebook" isoutput="true" icon="/python/ipynb.png">
 <![CDATA[
 +section title={{name}}

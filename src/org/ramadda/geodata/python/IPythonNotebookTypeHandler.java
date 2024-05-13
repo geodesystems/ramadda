@@ -19,7 +19,6 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ImageUtils;
 import org.ramadda.util.JsonUtil;
-
 import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.WikiUtil;
 
@@ -55,6 +54,8 @@ import java.util.List;
  */
 
 public class IPythonNotebookTypeHandler extends GenericTypeHandler {
+    public static final String ARG_NOTEBOOKIFRAME= "notebookiframe";
+
 
 
     /**
@@ -181,6 +182,15 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
         if (tag.equals("notebook")) {
             return getHtmlDisplayInner(request, entry);
         }
+        if (tag.equals(ARG_NOTEBOOKIFRAME)) {
+	    StringBuilder sb     = new StringBuilder();
+	    String height= Utils.getProperty(props,"height","800");
+	    String url = HU.url(getEntryManager().getEntryUrl(request, entry),ARG_NOTEBOOKIFRAME,"true");
+	    HU.open(sb,"iframe","src",url,"width","100%","height",height,"frameborder","0");
+	    HU.close(sb,"iframe");
+	    return sb.toString();
+	}
+
 
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
@@ -230,6 +240,17 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 	}
 	return sb.toString();
     }
+
+    @Override
+    public Result getHtmlDisplay(Request request, Entry entry) throws Exception {
+	if(!request.get(ARG_NOTEBOOKIFRAME,false)) return super.getHtmlDisplay(request,entry);
+	StringBuilder sb = new StringBuilder();
+	sb.append(getHtmlDisplayInner(request, entry));
+	Result result = new Result("",sb);
+	result.setShouldDecorate(false);
+	return result;
+    }
+
 
 
     /**
@@ -343,7 +364,11 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
                 getRepository().getHtdocsUrl("/lib/prettify/prettify.css")));
 
 
+	sb.append(HU.importCss(".notebook-container {margin-top:5px;padding: 15px;background-color: #fff;min-height: 0; -webkit-box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2); box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);}"));
+
+
         //        getPageHandler().entrySectionOpen(request, entry, sb, "IPython Notebook", true);
+	sb.append("<div class='notebook-container'>");
         sb.append("<table width=100%>");
 	JSONArray cells = getCells(entry);
         int index = 0;
@@ -415,6 +440,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
             }
         }
         sb.append("</table>");
+	sb.append("</div>");
         //        getPageHandler().entrySectionClose(request, entry, sb);
         sb.append(HtmlUtils.script("prettyPrint();"));
 
@@ -675,10 +701,6 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
                            "&lt;").replaceAll(">", "&gt;") + "</pre>";
             writeOutput(request, sb, s, i);
         }
-
-
-
-
     }
 
 
