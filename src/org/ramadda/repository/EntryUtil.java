@@ -824,7 +824,8 @@ public class EntryUtil extends RepositoryManager {
 	    if(f1!=null) return -1;
 	    if(f2!=null) return 1;
 	    return 0;
-        } else {
+	} else {
+	    if(true) throw new IllegalStateException("SOrt order:" + on.on);
 	    System.err.println("Unknown sort order:" + on.on);
 	}
 
