@@ -1055,7 +1055,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},
 	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},
 	{p:'groupByField',tt:'Field id to group the paths'},	
-	{p:'pathWidth',ex:'2'},
+	{p:'pathWidth',d:'1'},
 	{p:'pathColor',ex:'red'},	
 	{p:'pathWindowTime',tt:'Show leading dots',ex:'1 day'},
 	{p:'pathWindowSize',tt:'Number of records to show as leading dots'},
@@ -4346,7 +4346,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let lastPoint;
 	    let pathAttrs ={
 		strokeColor: this.getProperty("pathColor",lineColor),
-		strokeWidth: this.getProperty("pathWidth",1)
+		strokeWidth: this.getPathWidth()
 	    };
 
 	    let fillColor = this.getFillColor();
