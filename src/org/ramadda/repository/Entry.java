@@ -175,8 +175,6 @@ public class Entry implements Cloneable {
 
     private String remoteId;    
 
-
-
     /** the icon for this Entry */
     private String icon;
 
@@ -519,7 +517,7 @@ public class Entry implements Cloneable {
             return null;
         }
 
-        return north + "," + west + "," + south + "," + east;
+        return getNorth() + "," + getWest() + "," + getSouth() + "," + getEast();
     }
 
     /**
@@ -528,9 +526,9 @@ public class Entry implements Cloneable {
      * @return  the bounds
      */
     public Rectangle2D.Double getBounds() {
-        return new Rectangle2D.Double(cleanLon(west), cleanLat(south),
-                                      cleanLon(east) - cleanLon(west),
-                                      cleanLat(north) - cleanLat(south));
+        return new Rectangle2D.Double(cleanLon(getWest()), cleanLat(getSouth()),
+                                      cleanLon(getEast()) - cleanLon(getWest()),
+                                      cleanLat(getNorth()) - cleanLat(getSouth()));
     }
 
 
@@ -1147,7 +1145,7 @@ public class Entry implements Cloneable {
      * @return the location (lat,lon)
      */
     public double[] getLocation() {
-        return new double[] { south, east };
+        return new double[] { getSouth(), getEast() };
     }
 
     /**
@@ -1156,7 +1154,7 @@ public class Entry implements Cloneable {
      * @return the latitude of the entry
      */
     public double getLatitude() {
-        return south;
+        return getSouth();
     }
 
     /**
@@ -1165,7 +1163,7 @@ public class Entry implements Cloneable {
      * @return the longitude of the entry
      */
     public double getLongitude() {
-        return east;
+        return getEast();
     }
 
 
@@ -1175,8 +1173,8 @@ public class Entry implements Cloneable {
      * @return the center of the location - [latitude,longitude]
      */
     public double[] getCenter() {
-        return new double[] { south + (north - south) / 2,
-			      east + (west - east) / 2 };
+        return new double[] { getSouth() + (getNorth() - getSouth()) / 2,
+			      getEast() + (getWest() - getEast()) / 2 };
     }
 
     /**
@@ -1557,8 +1555,8 @@ public class Entry implements Cloneable {
      */
     public double[][] getLatLonBounds() {
         return new double[][] {
-            { north, north, south, south, north },
-            { west, east, east, west, west }
+            { getNorth(), getNorth(), getSouth(), getSouth(), getNorth() },
+            { getWest(), getEast(), getEast(), getWest(), getWest() }
         };
     }
 
