@@ -110,7 +110,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /** _more_ */
+
     public static final String[] PRELOAD_CATEGORIES = { "Documents",
 							"General", "Information", "Collaboration", "Database" };
 
@@ -126,7 +126,7 @@ public class EntryManager extends RepositoryManager {
     }    
 
 
-    /** _more_ */
+
     public static boolean debug = false;
 
     private static boolean didone= false;
@@ -136,38 +136,25 @@ public class EntryManager extends RepositoryManager {
     /** How many entries to we keep in the cache */
     public static final int ENTRY_CACHE_LIMIT = 2000;
 
-    /** _more_ */
     public static final int SYNTHENTRY_CACHE_LIMIT = 10000;
 
-    /** _more_ */
     public static final int ENTRY_CACHE_TTL_MINUTES = 10;
 
-    /** _more_ */
     public static final int SYNTHENTRY_CACHE_TTL_MINUTES =  60;
 
-
-    /** _more_ */
     public static final String SESSION_ENTRIES = "entries";
 
-    /** _more_ */
     public static final String SESSION_TYPES = "types";
 
-    /** _more_ */
     private Object MUTEX_ENTRY = new Object();
 
-
-    /** _more_ */
     private static final String GROUP_TOP = "Top";
 
-    /** _more_ */
+
     private static final String ID_ROOT = "root";
 
-
-    /** _more_ */
     public static final String ID_PREFIX_REMOTE = "remote:";
 
-
-    /** _more_ */
     private TTLObject<Entry> rootCache;
 
     /** Caches sites */
@@ -181,7 +168,6 @@ public class EntryManager extends RepositoryManager {
 	new TTLCache<String,Hashtable<String,List<String>>>(Utils.minutesToMillis(5));    
 
 
-    /** _more_ */
     private TTLCache<String, Entry> synthEntryCache;
 
     //Keep the history around for 10 minutes
@@ -191,18 +177,11 @@ public class EntryManager extends RepositoryManager {
 
     private boolean httpCacheFile = true;
     
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+
     public EntryManager(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     */
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -210,11 +189,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void debug(String msg) {
         if (debug) {
             logInfo(msg);
@@ -224,22 +198,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Entry getRootEntry() {
         return getRootEntry(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public Entry getRootEntry(Request request) {
         try {
             if (rootCache == null) {
@@ -267,13 +229,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     protected Entry initTopEntry() throws Exception {
         String fixedTopId = getRepository().getProperty(PROP_ENTRY_TOP,
 							(String) null);
@@ -328,17 +283,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getParents(Request request, Entry entry)
 	throws Exception {
         Entry root = request.getRootEntry();
@@ -359,13 +303,7 @@ public class EntryManager extends RepositoryManager {
         return parents;
     }
 
-    /**
-     * _more_
-     *
-     * @param descendent _more_
-     *
-     * @return _more_
-     */
+
     public Entry getSecondToTopEntry(Entry descendent) {
         Entry topEntry = null;
         if (descendent != null) {
@@ -386,16 +324,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public String getFullEntryShowUrl(Request request) {
         if ((request == null) || !request.isRealRequest()) {
             return getRepository().URL_ENTRY_SHOW.getFullUrl(null);
@@ -404,29 +332,12 @@ public class EntryManager extends RepositoryManager {
         return request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+
     public String getFullEntryGetUrl(Request request) {
         return request.getAbsoluteUrl(getRepository().URL_ENTRY_GET);
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param alias _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntryFromAlias(Request request, String alias)
 	throws Exception {
 	//Use the admin request in case the aliases entry has access control
@@ -490,19 +401,6 @@ public class EntryManager extends RepositoryManager {
 	return new Result(xml.toString(), MIME_XML);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param metadataType _more_
-     * @param value _more_
-     * @param attrIndex _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getEntriesFromMetadata(Request request, String metadataType,
 					      String value, int attrIndex)
 	throws Exception {
@@ -562,13 +460,6 @@ public class EntryManager extends RepositoryManager {
 	}
     }
 	
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public synchronized TTLCache<String, Entry> getEntryCache() {
         //Get a local copy because another thread could clear the cache while we're in the middle of this
         TTLCache<String, Entry> theCache = entryCache;
@@ -581,11 +472,6 @@ public class EntryManager extends RepositoryManager {
         return theCache;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private TTLCache<String, Entry> getSynthEntryCache() {
         TTLCache<String, Entry> theCache = synthEntryCache;
         if (theCache == null) {
@@ -615,9 +501,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     */
     @Override
     public void clearCache() {
         super.clearCache();
@@ -632,11 +515,6 @@ public class EntryManager extends RepositoryManager {
         getEntryUtil().clearCache();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
     public void cacheSynthEntry(Entry entry) {
 	if(!entry.getCacheOk()) return;
         synchronized (MUTEX_ENTRY) {
@@ -644,12 +522,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
     public void cacheEntry(Entry entry) {
 	if(!entry.getCacheOk()) return;
         synchronized (MUTEX_ENTRY) {
@@ -664,26 +536,10 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     *
-     * @return _more_
-     */
     public Entry getEntryFromCache(String entryId) {
         return getEntryFromCache(entryId, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     * @param isId _more_
-     *
-     * @return _more_
-     */
     public Entry getEntryFromCache(String entryId, boolean isId) {
 	//	if(true) return null;
         synchronized (MUTEX_ENTRY) {
@@ -696,11 +552,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     protected void removeFromCache(String id) {
         synchronized (MUTEX_ENTRY) {
 	    //Check if its the root. if it is then clear the root cache
@@ -716,27 +567,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
     public void removeFromCache(Entry entry) {
         removeFromCache(entry.getId());
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urlArg _more_
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntryFromRequest(Request request, String urlArg,
                                      RequestUrl requestUrl, boolean nullOk)
 	throws Exception {
@@ -1079,18 +914,6 @@ public class EntryManager extends RepositoryManager {
 	return result;
     }
     
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryShow(Request request) throws Exception {
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
@@ -1192,15 +1015,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryTypes(Request request) throws Exception {
         String            output       = request.getString(ARG_OUTPUT, "");
 	boolean asHtml = request.getRequestPath().endsWith(".html");
@@ -1482,15 +1296,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryDump(Request request) throws Exception {
         OutputStream os = request.getHttpServletResponse().getOutputStream();
         final PrintWriter pw = new PrintWriter(os);
@@ -1519,17 +1324,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param result _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result addEntryHeader(Request request, Entry entry, Result result)
 	throws Exception {
 
@@ -1628,14 +1422,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void printRequest(Request request, Entry entry) throws Exception {
         if (true) {
             return;
@@ -1649,16 +1435,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryShow(Request request, Entry entry)
 	throws Exception {
 	Result result = null;
@@ -1708,18 +1484,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputHandler _more_
-     * @param outputType _more_
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processGroupShow(Request request,
 				    OutputHandler outputHandler,
 				    OutputType outputType, Entry group)
@@ -1781,14 +1545,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private OutputType getDefaultOutputType(Request request, Entry entry,
                                             List<Entry> children) {
         if ( !request.defined(ARG_OUTPUT)) {
@@ -1810,30 +1566,12 @@ public class EntryManager extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryAccess(Request request) throws Exception {
         Entry entry = getEntry(request);
 
         return entry.getTypeHandler().processEntryAccess(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryTypeAction(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -1905,15 +1643,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryForm(Request request) throws Exception {
         Entry entry = null;
 
@@ -1943,17 +1672,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry addEntryForm(Request request, Entry entry, Appendable sb)
 	throws Exception {
 
@@ -2152,14 +1870,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param type _more_
-     *
-     * @throws Exception _more_
-     */
     public void addSessionType(Request request, String type)
 	throws Exception {
         if (type == null) {
@@ -2185,15 +1895,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getSessionEntries(Request request) throws Exception {
         List<String> list =
             (List<String>) getSessionManager().getSessionProperty(request,
@@ -2212,14 +1913,6 @@ public class EntryManager extends RepositoryManager {
         return entries;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void addSessionEntry(Request request, Entry entry)
 	throws Exception {
         if (request.isAnonymous()) {
@@ -2244,34 +1937,12 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private String getEntryTimestamp(Entry entry) {
         long changeDate = entry.getChangeDate();
 
         return "" + changeDate;
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryChange(final Request request) throws Exception {
         boolean download = request.get(ARG_RESOURCE_DOWNLOAD, false);
         getAuthManager().ensureAuthToken(request);
@@ -2409,30 +2080,12 @@ public class EntryManager extends RepositoryManager {
     }
 
     
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryListName(Request request, Entry entry) {
         return entry.getTypeHandler().getEntryListName(request, entry);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
         return getRepository().getAccessManager().canDoNew(request,    parent);
 
@@ -2453,16 +2106,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canBeCreatedBy(Request request, TypeHandler typeHandler)
 	throws Exception {
         if ( !typeHandler.canBeCreatedBy(request)) {
@@ -2528,17 +2171,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param forUpload _more_
-     * @param actionId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result doProcessEntryChangeInner(Request request, boolean forUpload,
 					     Object actionId, Entry parentEntry, Entry entry)
 	throws Exception {
@@ -3384,15 +3016,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getEntryDescription(Request request, Entry entry) throws Exception {
         boolean isWiki      = request.get(ARG_ISWIKI, false);
 	boolean isDescriptionWiki= entry==null?false: entry.getTypeHandler().isDescriptionWiki(entry);
@@ -3416,18 +3039,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param url _more_
-     * @param actionId _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private File downloadUrl(Request request, String url, Object actionId,
                              Entry entry)
 	throws Exception {
@@ -3473,15 +3084,6 @@ public class EntryManager extends RepositoryManager {
     List<TypeHandler> sortedTypeHandlers;
 
 
-    /**
-     * _more_
-     *
-     * @param theResource _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TypeHandler findDefaultTypeHandler(String theResource)
 	throws Exception {
 	return findDefaultTypeHandler(null,  theResource, false);
@@ -3574,14 +3176,6 @@ public class EntryManager extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param template _more_
-     *
-     * @return _more_
-     */
     public String replaceMacros(Entry entry, String template) {
         Date createDate = new Date(entry.getCreateDate());
         Date fromDate   = new Date(entry.getStartDate());
@@ -3616,16 +3210,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param template _more_
-     * @param createDate _more_
-     * @param fromDate _more_
-     * @param toDate _more_
-     *
-     * @return _more_
-     */
     public String replaceMacros(String template, Date createDate,
                                 Date fromDate, Date toDate) {
         GregorianCalendar fromCal =
@@ -3699,13 +3283,6 @@ public class EntryManager extends RepositoryManager {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     private String padZero(int v) {
         return ((v < 10)
                 ? "0"
@@ -3714,16 +3291,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     private void setEntryState(Request request, Entry entry, Entry parent,
                                boolean newEntry)
 	throws Exception {
@@ -3829,15 +3396,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryDelete(Request request) throws Exception {
         Entry         entry = getEntry(request);
         if (!okToDelete(request, entry)) {
@@ -3915,15 +3473,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryListDelete(Request request) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         for (String id :
@@ -3946,16 +3495,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryListDelete(Request request, List<Entry> entries)
 	throws Exception {
         StringBuilder sb = new StringBuilder();
@@ -4071,14 +3610,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public Result asynchDeleteEntries(Request request,
                                       final List<Entry> entries) {
         final Request        theRequest = request;
@@ -4106,18 +3637,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result makeEntryEditResult(Request request, Entry entry,
                                       String title, Appendable sb)
 	throws Exception {
@@ -4129,14 +3648,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void deleteEntry(Request request, Entry entry) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
@@ -4145,15 +3656,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param asynchId _more_
-     *
-     * @throws Exception _more_
-     */
     public void deleteEntries(Request request, List<Entry> entries,
                               Object asynchId)
 	throws Exception {
@@ -4171,19 +3673,8 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /** _more_ */
     int delCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param connection _more_
-     * @param actionId _more_
-     *
-     * @throws Exception _more_
-     */
     private void deleteEntriesInner(final Request request, List<Entry> entries,
                                     Connection connection, Object actionId)
 	throws Exception {
@@ -4353,17 +3844,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryUploadOk(Request request) throws Exception {
         StringBuilder sb    = new StringBuilder();
         Entry         entry = getEntry(request);
@@ -4375,18 +3855,9 @@ public class EntryManager extends RepositoryManager {
                                            entry));
     }
 
-    /** _more_ */
+
     public final static String CATEGORY_UPLOAD = "upload";
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void publishAnonymousEntry(Request request, Entry entry)
 	throws Exception {
         List<Metadata> metadataList =
@@ -4417,27 +3888,11 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+
     public boolean isAnonymousUpload(Entry entry) {
         return Misc.equals(entry.getCategory(), CATEGORY_UPLOAD);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parentEntry _more_
-     *
-     * @throws Exception _more_
-     */
     private void initUploadedEntry(Request request, Entry entry,
                                    Entry parentEntry)
 	throws Exception {
@@ -4611,15 +4066,7 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public Result processEntryNew(Request request) throws Exception {
 
         Entry         group = findGroup(request);
@@ -4681,16 +4128,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryGetByFilename(Request request)
 	throws Exception {
         if (request.getCheckingAuthMethod()) {
@@ -4713,15 +4150,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryShowPath(Request request) throws Exception {
         List<String> toks = Utils.split(request.getRequestPath(), "/",
 					true, true);
@@ -4738,16 +4166,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryLinks(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -4785,15 +4203,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryGet(Request request) throws Exception {
 
         if (request.getCheckingAuthMethod()) {
@@ -4807,16 +4216,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryGet(Request request, Entry entry)
 	throws Exception {
         if (entry == null) {
@@ -4949,14 +4348,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param filename _more_
-     *
-     * @return _more_
-     */
     public File getCacheFile(Entry entry, String filename) {
         File f = getStorageManager().getCacheFile(entry.getId() + "_"
 						  + entry.getChangeDate() + "_" + filename, false);
@@ -4986,29 +4377,11 @@ public class EntryManager extends RepositoryManager {
         return f;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getFileForEntry(Entry entry) throws Exception {
         return entry.getTypeHandler().getFileForEntry(entry);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processGetEntries(Request request) throws Exception {
         List<Entry> entries    = new ArrayList();
         boolean     doAll      = request.defined("getall");
@@ -5078,15 +4451,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryCopy(Request request) throws Exception {
 
         Entry parent = getEntryFromRequest(request, ARG_ENTRYID,
@@ -5370,17 +4734,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param toGroup _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryCopy(final Request request,
                                    final Entry toGroup,
 				   final String pathTemplate,
@@ -5403,19 +4756,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param toGroup _more_
-     * @param entries _more_
-     * @param actionId _more_
-     * @param link _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public List<Entry> processEntryCopyAsynch(final Request request,
 					      final Entry toGroup, final String pathTemplate,
 					      final List<Entry> entries, Object actionId,
@@ -5548,17 +4888,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param toGroup _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processEntryMove(Request request, Entry toGroup,
                                     List<Entry> entries)
 	throws Exception {
@@ -5597,13 +4926,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void setEntryBounds(Entry entry) throws Exception {
         Connection connection = getDatabaseManager().getConnection();
         try {
@@ -5631,25 +4953,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param col _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     private String columnSet(String col, double value) {
         return SqlUtil.unDot(col) + " = " + value;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param children _more_
-     */
     public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
         try {
             Rectangle2D.Double rect = getEntryUtil().getBounds(children);
@@ -5662,14 +4970,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param fromEntry _more_
-     * @param toEntry _more_
-     *
-     * @return _more_
-     */
     protected boolean okToMove(Entry fromEntry, Entry toEntry) {
         if ( !toEntry.isGroup()) {
             return false;
@@ -5688,15 +4988,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryXmlCreate(Request request) throws Exception {
         try {
 	    //true implies just check the session id
@@ -5716,15 +5007,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryPublish(Request request) throws Exception {
         try {
             //TODO: check for auth token
@@ -5744,15 +5026,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processEntryPublishInner(Request request)
 	throws Exception {
 
@@ -5973,15 +5246,6 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryExport(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -6001,15 +5265,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryImport(Request request) throws Exception {
         Entry group = findGroup(request);
         if ( !getAccessManager().canDoNew(request, group)) {
@@ -6078,15 +5333,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processEntryXmlCreateInner(Request request)
 	throws Exception {
 
@@ -6320,18 +5566,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     * @param parent _more_
-     * @param origFileToStorage _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> processEntryXml(Request request, Element root,
                                        Entry parent,
                                        Hashtable<String,File> origFileToStorage,
@@ -6984,29 +6218,10 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String getEntryLink(Request request, Entry entry, String hrefAttrs, String... args) {
         return getEntryLink(request, entry, false, hrefAttrs, args);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param addIcon _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String getEntryLink(Request request, Entry entry, boolean addIcon, String hrefAttrs,
                                String... args) {
         try {
@@ -7021,15 +6236,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String getEntryURL(Request request, Entry entry, String... args) {
 	try {
 	    if(request==null) request = getRepository().getTmpRequest();
@@ -7071,53 +6277,16 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public EntryLink getAjaxLink(Request request, Entry entry, String linkText)
 	throws Exception {
         return getAjaxLink(request, entry, linkText, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url)
 	throws Exception {
         return getAjaxLink(request, entry, linkText, url, request.get(ARG_DECORATE, true), request.get("showIcon", true));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     * @param url _more_
-     * @param textBeforeEntryLink _more_
-     * @param decorateMetadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public EntryLink getAjaxLink(Request request, Entry entry, String linkText, String url,  boolean decorateMetadata, boolean showIcon)
 	throws Exception {
 
@@ -7262,18 +6431,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param linkText _more_
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getTooltipLink(Request request, Entry entry,
                                  String linkText, String url)
 	throws Exception {
@@ -7298,17 +6455,6 @@ public class EntryManager extends RepositoryManager {
 		       HU.id(linkId) + targetAttr);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Link> getEntryLinks(Request request, Entry entry)
 	throws Exception {
         List<Link>          links = new ArrayList<Link>();
@@ -7331,15 +6477,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param file _more_
-     * @param andInsert _more_
-     *
-     * @throws Exception _more_
-     */
     public void addAttachment(Request request,Entry entry, File file, boolean andInsert)
 	throws Exception {
         String theFile = getStorageManager().moveToEntryDir(entry,
@@ -7355,17 +6492,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param typeMask _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryActionsTable(Request request, Entry entry, int typeMask)
 	throws Exception {
         List<Link> links = getEntryLinks(request, entry);
@@ -7373,18 +6499,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param typeMask _more_
-     * @param links _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links)
 	throws Exception {
@@ -7392,20 +6506,6 @@ public class EntryManager extends RepositoryManager {
                                     null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param typeMask _more_
-     * @param links _more_
-     * @param returnNullIfNoneMatch _more_
-     * @param header _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryActionsTable(Request request, Entry entry,
                                        int typeMask, List<Link> links,
                                        boolean returnNullIfNoneMatch,
@@ -7567,38 +6667,11 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-
-
-
-
-
-
-    /**
-     *     _more_
-     *
-     *     @param request _more_
-     *     @param entry _more_
-     *
-     *     @return _more_
-     *
-     *     @throws Exception _more_
-     */
     public Entry getParent(Request request, Entry entry) throws Exception {
         return getParent(request, entry, true);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param checkAccess _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getParent(Request request, Entry entry, boolean checkAccess)
 	throws Exception {
 
@@ -7617,62 +6690,21 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entryId _more_
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntry(Request request, String entryId) throws Exception {
         return getEntry(request, entryId, true);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     * @param request _more_
-     * @param andFilter _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntry(Request request, String entryId, boolean andFilter)
 	throws Exception {
         return getEntry(request, entryId, andFilter, false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntry(Request request) throws Exception {
         return getEntryFromArg(request, ARG_ENTRYID);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param urlArg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntryFromArg(Request request, String urlArg)
 	throws Exception {
         String entryId = request.getString(urlArg, (String) null);
@@ -7705,27 +6737,12 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param server _more_
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public String getRemoteEntryId(String server, String id) {
         return ID_PREFIX_REMOTE + Utils.encodeBase64(server)
 	    + TypeHandler.ID_DELIMITER + id;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public String[] getRemoteEntryInfo(String id) {
         if (id.length() == 0) {
             return new String[] { "", "" };
@@ -7742,17 +6759,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param server _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getRemoteEntry(Request request, String server, String id)
 	throws Exception {
         String remoteUrl = server + getRepository().URL_ENTRY_SHOW.getPath();
@@ -7809,18 +6815,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     * @param request _more_
-     * @param andFilter _more_
-     * @param abbreviated _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getEntry(Request request, String entryId, boolean andFilter,
                           boolean abbreviated)
 	throws Exception {
@@ -7924,15 +6918,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TypeHandler getSynthTypeHandler(String id) throws Exception {
         //For backwards compatability
         if (id.equals("process")) {
@@ -7972,16 +6957,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entryId _more_
-     * @param abbreviated _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry createEntryFromDatabase(String entryId, boolean abbreviated)
 	throws Exception {
         Entry entry = null;
@@ -8014,31 +6989,12 @@ public class EntryManager extends RepositoryManager {
     private static final boolean LUCENE_OK = true;
     private static final boolean LUCENE_NOTOK = false;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> searchEntries(Request request)
 	throws Exception {
         return searchEntries(request, (List<Clause>)null);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param extraClauses _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> searchEntries(Request request, List<Clause> extraClauses)
 	throws Exception {
         List<Clause> clauses = getClauses(request);
@@ -8247,24 +7203,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public boolean isSynthEntry(String id) {
         return id.startsWith(ID_PREFIX_SYNTH);
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public String[] getSynthId(String id) {
         id = id.substring(ID_PREFIX_SYNTH.length());
         String[] pair = Utils.split(id, TypeHandler.ID_DELIMITER, 2);
@@ -8277,14 +7219,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param subId _more_
-     *
-     * @return _more_
-     */
     public String createSynthId(Entry parentEntry, String subId) {
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId()
 	    + TypeHandler.ID_DELIMITER + subId;
@@ -8293,9 +7227,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     */
     public void clearSeenResources() {
         seenResources = new HashSet();
     }
@@ -8303,23 +7234,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /** _more_ */
     private HashSet seenResources = new HashSet();
 
 
 
-    /**
-     * _more_
-     *
-     * @param harvester _more_
-     * @param typeHandler _more_
-     * @param entries _more_
-     * @param makeThemUnique _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean processEntries(Harvester harvester,
                                   TypeHandler typeHandler,
                                   List<Entry> entries, boolean makeThemUnique)
@@ -8335,40 +7253,12 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param newFile _more_
-     * @param group _more_
-     * @param name _more_
-     * @param user _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry addFileEntry(Request request, File newFile, Entry group,String pathTemplate,
                               String name, String desc, User user)
 	throws Exception {
         return addFileEntry(request, newFile, group, pathTemplate, name, desc, user, null, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param newFile _more_
-     * @param group _more_
-     * @param name _more_
-     * @param user _more_
-     * @param typeHandler _more_
-     * @param initializer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry addFileEntry(Request request, File newFile, Entry parentEntry, String pathTemplate,
                               String name, String desc, User user,
                               TypeHandler typeHandler,
@@ -8401,22 +7291,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param resource _more_
-     * @param group _more_
-     * @param name _more_
-     * @param description _more_
-     * @param user _more_
-     * @param typeHandler _more_
-     * @param initializer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeEntry(Request request, Resource resource, Entry group,
                            String name, String description, User user,
                            TypeHandler typeHandler,
@@ -8448,19 +7322,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param file _more_
-     * @param entry _more_
-     * @param associatedEntry _more_
-     * @param associationType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryPublish(Request request, File file,
                                       Entry entry, Entry associatedEntry,
                                       String associationType)
@@ -8531,15 +7392,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     * @param columnSize _more_
-     *
-     * @throws IllegalArgumentException _more_
-     */
     public void checkColumnSize(String name, String value, int columnSize)
 	throws IllegalArgumentException {
         if (value.length() > columnSize) {
@@ -8550,16 +7402,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param statement _more_
-     * @param isNew _more_
-     * @param typeHandler _more_
-     *
-     * @throws Exception _more_
-     */
     private void setStatement(Entry entry, PreparedStatement statement,
                               boolean isNew, TypeHandler typeHandler)
 	throws Exception {
@@ -8634,14 +7476,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void updateEntry(Request request, Entry entry) throws Exception {
         List<Entry> tmp = new ArrayList<Entry>();
         tmp.add(entry);
@@ -8650,15 +7484,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_b
-     */
     public void addNewEntry(Request request, Entry entry) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
@@ -8666,28 +7491,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
     public void addNewEntries(Request request, List<Entry> entries)
 	throws Exception {
         addNewEntries(request, entries, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     public void addNewEntries(Request request, List<Entry> entries,
                               boolean fromImport)
 	throws Exception {
@@ -8698,14 +7506,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
     public void updateEntries(Request request, List<Entry> entries)
 	throws Exception {
 	updateEntries(request, entries, true);
@@ -8718,17 +7518,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param isNew _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     public void insertEntries(Request request, final List<Entry> entries,
                                boolean isNew, boolean fromImport)
 	throws Exception {
@@ -8814,15 +7603,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param connection _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
     private void insertEntriesInner(final Request request, final List<Entry> entries,
                                     Connection connection, boolean isNew, boolean callCheckModified)
 	throws Exception {
@@ -9002,39 +7782,18 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /** _more_ */
     long totalTime = 0;
 
-    /** _more_ */
     int totalEntries = 0;
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getUniqueEntries(List<Entry> entries)
 	throws Exception {
         return getUniqueEntries(entries, new ArrayList<Entry>());
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param nonUniqueOnes _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-
+    
     public List<Entry> getUniqueEntries(List<Entry> entries,
                                         List<Entry> nonUniqueOnes)
 	throws Exception {
@@ -9120,29 +7879,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryResourceUrl(Request request, Entry entry) {
         return getEntryResourceUrl(request, entry, ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_DFLT,false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param full _more_
-     * @param addPath _more_
-     *
-     * @return _more_
-     */
     public String getEntryResourceUrl(Request request, Entry entry,boolean inline,
 				      boolean full, boolean addPath) {
 
@@ -9181,26 +7922,10 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getDummyGroup() throws Exception {
         return getDummyGroup("Results");
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getDummyGroup(String name) throws Exception {
         Entry dummyGroup = new Entry(getRepository().getTypeHandler("type_dummy"),
                                      true, name);
@@ -9213,16 +7938,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getChildrenGroups(Request request, Entry group)
 	throws Exception {
         List<Entry> result = new ArrayList<Entry>();
@@ -9238,16 +7953,6 @@ public class EntryManager extends RepositoryManager {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getChildrenEntries(Request request, Entry group)
 	throws Exception {
         List<Entry> result = new ArrayList<Entry>();
@@ -9265,14 +7970,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param entry _more_
-     * @param flag _more_
-     * @param orNot _more_
-     */
     public void orNot(List<Entry> entries, Entry entry, boolean flag,
 		      boolean orNot) {
         if (orNot) {
@@ -9286,18 +7983,6 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * Get the entries that are images
-     *
-     *
-     * @param request the request
-     * @param entries  the list of entries
-     * @param useAttachment _more_
-     *
-     * @return  the list of entries that are images
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getImageEntries(Request request, List<Entry> entries,
                                        boolean useAttachment)
 	throws Exception {
@@ -9306,19 +7991,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entry _more_
-     * @param filter _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> applyFilter(Request request, Entry entry, SelectInfo select)
 	throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
@@ -9393,18 +8065,6 @@ public class EntryManager extends RepositoryManager {
 	return entries;
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entries _more_
-     * @param filter _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> applyFilter(Request request, List<Entry> entries, String filter)
 	throws Exception {
         if (filter == null) {
@@ -9503,19 +8163,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request the request
-     * @param entries _more_
-     * @param orNot _more_
-     * @param useAttachment _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getImageEntriesOrNot(Request request,
                                             List<Entry> entries,
                                             boolean orNot,
@@ -9535,17 +8182,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param select _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getChildrenAll(Request request, Entry parentEntry,
                                       SelectInfo select)
 	throws Exception {
@@ -9600,16 +8236,6 @@ public class EntryManager extends RepositoryManager {
 	return applyFilter(request,children,select);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getChildren(Request request, Entry parentEntry, SelectInfo...selects)
 	throws Exception {
         List<Entry> children = new ArrayList<Entry>();
@@ -9662,17 +8288,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param select _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<String> getChildIds(Request request, Entry group,
                                     SelectInfo select)
 	throws Exception {
@@ -9734,17 +8349,6 @@ public class EntryManager extends RepositoryManager {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param select _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<String> getChildIdsFromDatabase(Request request, Entry group,
 						SelectInfo select)
 	throws Exception {
@@ -9816,16 +8420,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result publishEntries(Request request, List<Entry> entries)
 	throws Exception {
         StringBuilder sb               = new StringBuilder();
@@ -9864,17 +8458,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param shortForm _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result addInitialMetadataToEntries(Request request,
 					      List<Entry> entries, boolean shortForm)
 	throws Exception {
@@ -9899,18 +8482,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param newEntries _more_
-     * @param shortForm _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public List<Entry> addInitialMetadata(Request request,
                                           List<Entry> entries,
                                           boolean newEntries,
@@ -9961,16 +8532,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param xmlFile _more_
-     * @param internal _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> parseEntryXml(File xmlFile, INTERNAL isInternal, TEMPLATE isTemplate,
 				     Hashtable<String,Entry> entriesMap,
 				     Hashtable<String,File> filesMap)
@@ -10031,15 +8592,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     *  This writes
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
     public void writeEntryXmlFile(Request request, Entry entry, File file)
 	throws Exception {
         IOUtil.writeFile(
@@ -10049,42 +8601,16 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void writeEntryXmlFile(Request request, Entry entry)
 	throws Exception {
         writeEntryXmlFile(request, entry, getEntryXmlFile(entry));
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getEntryXmlFile(Entry entry) throws Exception {
         return getEntryXmlFile(entry.getFile());
     }
 
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getEntryXmlFile(File file) throws Exception {
         File   parent  = file.getParentFile();
         String name    = file.getName();
@@ -10093,15 +8619,6 @@ public class EntryManager extends RepositoryManager {
         return new File(IOUtil.joinDir(parent, newName));
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getTemplateEntry(File file,Hashtable<String,Entry> entriesMap,
 				  Hashtable<String,File> filesMap) throws Exception {
         try {
@@ -10150,17 +8667,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param s _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryText(Request request, Entry entry, String s)
 	throws Exception {
         //<attachment name>
@@ -10180,17 +8686,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findGroup(Request request, String id) throws Exception {
         if ((id == null) || (id.length() == 0)) {
             return null;
@@ -10225,18 +8720,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param name _more_
-     * @param user _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findGroupUnder(Request request, Entry group, String name,
                                 User user)
 	throws Exception {
@@ -10271,17 +8754,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findEntryFromPath(Request request, Entry parent, String path)
 	throws Exception {
         Entry currentEntry = parent;
@@ -10319,18 +8791,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findEntryWithName(Request request, Entry parent, String name)
 	throws Exception {
 
@@ -10366,18 +8826,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> findEntriesWithName(Request request, Entry parent,
                                            String name)
 	throws Exception {
@@ -10407,17 +8855,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] findEntryIdsWithName(Request request, Entry parent,
                                          String name)
 	throws Exception {
@@ -10447,17 +8884,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param resource _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] findEntryIdsWithResource(Request request, Entry parent,
                                              String resource)
 	throws Exception {
@@ -10477,17 +8903,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> findDescendants(Request request, Entry parent,
                                        String name)
 	throws Exception {
@@ -10535,37 +8950,12 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param user _more_
-     * @param createIfNeeded _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findEntryFromName(Request request, Entry baseEntry, String name)
 	throws Exception {
         return findEntryFromName(request, baseEntry, name, false, null,null,null);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param name _more_
-     * @param createIfNeeded _more_
-     * @param lastGroupType _more_
-     * @param templateEntry _more_
-     * @param initializer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findEntryFromName(Request request, Entry baseEntry, String name, 
                                    boolean createIfNeeded,
                                    String lastGroupType, Entry templateEntry,
@@ -10673,17 +9063,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param name _more_
-     * @param user _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeNewGroup(Request request,Entry parent, String name, User user)
 	throws Exception {
         return makeNewGroup(request,parent, name, user, null);
@@ -10691,18 +9070,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param name _more_
-     * @param user _more_
-     * @param template _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template)
 	throws Exception {
@@ -10715,39 +9082,12 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param name _more_
-     * @param user _more_
-     * @param template _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template, String type)
 	throws Exception {
         return makeNewGroup(request,parent, name, user, template, type, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param name _more_
-     * @param user _more_
-     * @param template _more_
-     * @param type _more_
-     * @param initializer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeNewGroup(Request request,Entry parent, String name, User user,
                               Entry template, String type,
                               EntryInitializer initializer)
@@ -10785,15 +9125,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getGroupId(Entry parent) throws Exception {
         //FOr now just use regular ids for groups
         if (true) {
@@ -10835,18 +9166,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     *
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getGroups(Request request, Clause clause)
 	throws Exception {
 
@@ -10867,13 +9186,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     public List<Entry> getGroups(List<Entry> entries) {
         List<Entry> groupList = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -10885,18 +9197,6 @@ public class EntryManager extends RepositoryManager {
         return groupList;
     }
 
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param request _more_
-     * @param groupIds _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getGroups(Request request, String[] groupIds)
 	throws Exception {
         List<Entry> groupList = new ArrayList<Entry>();
@@ -10918,15 +9218,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Entry> readEntries(Statement statement) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         try {
@@ -10958,25 +9249,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     */
     public void addStatusInfo(StringBuffer sb) {
         HU.formEntry(sb,msgLabel("Entry Cache"),
 		     getEntryCache().size() / 2 + "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry findGroup(Request request) throws Exception {
         String groupNameOrId = (String) request.getString(ARG_GROUP,
 							  (String) null);
@@ -11013,20 +9290,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param connection _more_
-     * @param firstCall _more_
-     * @param ignoreSynth _more_
-     * @param actionId _more_
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     protected List<Descendent> getDescendents(Request request,
 					      List<Entry> entries,
 					      Connection connection,
@@ -11159,25 +9422,15 @@ public class EntryManager extends RepositoryManager {
 
     }
 
-    /** _more_ */
     private ProcessFileTypeHandler processFileTypeHandler;
 
-    /** _more_ */
     private Entry processEntry;
 
 
-    /** _more_ */
     private Hashtable<String, TypeHandler> synthEntryHandlers =
         new Hashtable<String, TypeHandler>();
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ProcessFileTypeHandler getProcessFileTypeHandler()
 	throws Exception {
         if (processFileTypeHandler == null) {
@@ -11190,24 +9443,10 @@ public class EntryManager extends RepositoryManager {
         return processFileTypeHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getProcessEntry() throws Exception {
         return getRepository().getProcessFileTypeHandler().getSynthTopLevelEntry();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean handleEntryAsGroup(Entry entry) {
         if ( !entry.isGroup()) {
             return false;
@@ -11222,10 +9461,8 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /** _more_ */
     private HashSet missingResources = new HashSet();
 
-    /** _more_ */
     public static final String PROP_DELETE_ENTRY_FILE_IS_MISSING =
         "ramadda.delete_entry_when_file_is_missing";
 
@@ -11293,17 +9530,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param pattern _more_
-     * @param to _more_
-     * @param html _more_
-     * @param doit _more_
-     *
-     * @throws Exception _more_
-     */
     public void changeResourcePaths(Request request, String pattern,
                                     String to, Appendable html, boolean doit)
 	throws Exception {
@@ -11361,16 +9587,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param addOrderBy _more_
-     * @param forEntry _more_
-     * @param select _more_
-     *
-     * @return _more_
-     */
     private String getQueryOrderAndLimit(Request request, boolean addOrderBy,
 					 Entry forEntry, SelectInfo select) {
 
@@ -11421,18 +9637,6 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param base _more_
-     * @param current _more_
-     * @param dir _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getRelativeEntry(Request request, Entry base, Entry current,
                                   String dir)
 	throws Exception {
@@ -11489,15 +9693,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param text _more_
-     *
-     * @throws Exception _more_
-     */
     public void appendText(Request request, Entry entry, String text)
 	throws Exception {
         if (entry.getTypeHandler().getType().equals("wikipage")) {
@@ -11515,18 +9710,11 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /** _more_ */
     private String rightArrowIcon;
 
-    /** _more_ */
     private String downArrowIcon;
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getRightArrowIcon() {
         if (rightArrowIcon == null) {
             rightArrowIcon =
@@ -11537,11 +9725,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDownArrowIcon() {
         if (downArrowIcon == null) {
             downArrowIcon = getRepository().getIconUrl(ICON_TOGGLEARROWDOWN);
@@ -11550,15 +9733,6 @@ public class EntryManager extends RepositoryManager {
         return downArrowIcon;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry getParentEntry(Request request) throws Exception {
         Entry parent = getEntryFromArg(request, ARG_TO + "_hidden");
         if (request.defined(ARG_GROUP)) {
@@ -11586,18 +9760,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param baseArg _more_
-     * @param value _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryFormSelect(Request request, Entry entry,
                                      String baseArg, String value,String...type)
 	throws Exception {
@@ -11630,14 +9792,6 @@ public class EntryManager extends RepositoryManager {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryUrl(Request request, Entry entry) {
 	return getEntryUrl(request, entry, true);
     }
