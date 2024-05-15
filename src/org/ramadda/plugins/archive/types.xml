@@ -1,0 +1,20 @@
+<types 	priority="1" supercategory="General" category="Information">
+  <type name="type_archive_document"  foruser="false"  description="PDF, Word, PPT, etc"  
+	handler="org.ramadda.repository.type.GenericTypeHandler"  
+	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+    <property name="icon" value="/icons/page.png"/>
+    <property name="form.ark.show" value="true"/>    
+    <action name="applyllm" label="Apply LLM" canedit="true"
+	    icon="fas fa-font" foruser="true" category="edit"/>
+    <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+    <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{information showTitle="false" details="true"}}
+-section
+]]>
+</wiki>
+</type>
+
+
+</types>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../" default="plugin">
+    <target name="plugin">
+      <property name="plugin" value="archive"/>
+      <property name="plugin_group" value="coreplugins"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build" />
+    </target>
+</project>
