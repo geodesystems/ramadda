@@ -327,6 +327,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
+	{p:'replaceNanWithZero'},
 	{p:'maxColumns',d:-1},
 	{p:'interpolateNulls',d:true,ex:'true'},
 	{p:'animateChart',ex:true},
@@ -1222,6 +1223,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
 	    if(debug) console.log(selectedFields.map(f=>{return f.getId()+'-'+f.getLabel()}));
+	    let replaceNanWithZero = this.getReplaceNanWithZero();
+
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
@@ -1558,6 +1561,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    }
 			    if(formatNumbers) {
 				value = {v:value,f:String(this.formatNumber(value))};
+				if(replaceNanWithZero && isNaN(value.v)) value.v=0
 			    }
 			}  else if(type=="boolean") {
 			    value = String(value);
