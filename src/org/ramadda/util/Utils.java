@@ -1745,7 +1745,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static List makeList(Hashtable properties) {
+    public static List makeListFromDictionary(Dictionary properties) {
         List l = new ArrayList();
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
             Object key = keys.nextElement();
@@ -1852,12 +1852,12 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static Hashtable getProperties(String s) {
+    public static Hashtable<String,String> getProperties(String s) {
 	return getProperties(s,false);
     }
 
-    public static Hashtable getProperties(String s, boolean trimValues) {
-        Hashtable p = new Hashtable();
+    public static Hashtable<String,String> getProperties(String s, boolean trimValues) {
+        Hashtable<String,String> p = new Hashtable<String,String>();
         for (String line : Utils.split(s, "\n")) {
             if (line.startsWith("#")) {
                 continue;
@@ -4002,7 +4002,7 @@ public class Utils extends IO {
      *
      * @return _more_
      */
-    public static List makeList(Object... args) {
+    public static List makeListFromValues(Object... args) {
         List h = new ArrayList();
         for (Object arg : args) {
             h.add(arg);
