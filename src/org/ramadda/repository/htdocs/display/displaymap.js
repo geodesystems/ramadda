@@ -2971,12 +2971,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.getProperty("locations","").split(",").forEach(url=>{
 		url  =url.trim();
 		if(url.length==0) return;
+		let show = url.startsWith("show:");
+		if(show) url = url.substring("show:".length);
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = RamaddaUtil.getCdnUrl("/resources/" +url);			
+		}
+		if(url.endsWith('geojson')) {
+		    this.map.addGeoJsonLayer('location layer', url, false, null, null, {}, null);
+		    return;
 		}
 		let success = (data) =>{
 		    data=JSON.parse(data);
 		    this.addLocationMenu(url, data);
+		    if(show) {
+			let attrs = {
+			    pointRadius:this.getProperty('locationRadius',4),
+			    fillColor:this.getProperty('locationFillColor','blue'),
+			    strokeWidth:this.getProperty('locationStrokeWidth',0),
+			    strokeColor:this.getProperty('locationStrokeColor','blue'),			    
+			}
+
+			data.locations.forEach(loc=>{
+			    let point = MapUtils.createLonLat(loc.longitude, loc.latitude);
+			    this.map.addPoint('', point,attrs,loc.name);
+			});
+		    }
 		};
 		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
 		Utils.doFetch(url, success,fail,null);	    
@@ -5348,6 +5367,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let longitude = record.getLongitude();
                 if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
                 let point = MapUtils.createLonLat(longitude, latitude);
+
+
+
                 let marker = this.myMarkers[source];
                 if (marker != null) {
                     this.map.removeMarker(marker);
