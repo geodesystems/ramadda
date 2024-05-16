@@ -24,6 +24,7 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.net.*;
 
+import java.util.Enumeration;
 import java.security.MessageDigest;
 import java.security.*;
 import java.text.DecimalFormat;
@@ -2050,6 +2051,23 @@ public abstract class Converter extends Processor {
          */
         public HeaderMaker(Seesv seesv, Dictionary<String, String> props) {
             this.props = new PatternProps(props);
+	    try {
+		for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+		    String key =(String) keys.nextElement(); 
+		    String value = props.get(key);
+		    if(key.equals("file") || key.equals("file1") || key.equals("file2") || key.equals("file3")) {
+			String c = seesv.readFile(value);
+			Hashtable<String,String> h = Utils.getProperties(c);
+			this.props.putAll(h,true);
+		    }
+		}
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
+
+
+
+
             defaultType = Seesv.getDbProp(props, "default", "type",
 					  defaultType);
             defaultTypeFromProperties = Seesv.getDbProp(props, "default",

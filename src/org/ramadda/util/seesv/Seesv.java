@@ -3218,8 +3218,8 @@ public class Seesv implements SeesvCommands {
                     pw.println(",");
                 }
                 if (c.category) {
-                    pw.println(JsonUtil.mapAndQuote(Utils.makeList("isCategory", "true",
-								   "label",c.cmd)));
+                    pw.println(JsonUtil.mapAndQuote(Utils.makeListFromValues("isCategory", "true",
+									     "label",c.cmd)));
 
                 } else {
                     String argList = "[]";
@@ -3247,7 +3247,7 @@ public class Seesv implements SeesvCommands {
                         }
                         argList = JsonUtil.list(tmp);
                     }
-                    pw.println(JsonUtil.map(Utils.makeList(
+                    pw.println(JsonUtil.map(Utils.makeListFromValues(
 							   "command", JsonUtil.quote(c.cmd),
 							   "label", (c.label != null)
 							   ? JsonUtil.quote(c.label)

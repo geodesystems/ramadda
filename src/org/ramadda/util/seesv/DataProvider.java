@@ -1123,7 +1123,7 @@ public abstract class DataProvider extends SeesvOperator {
                             ? Clause.and(clauses)
                             : null;
             this.statement = SqlUtil.select(connection, what,
-                                            Utils.makeList(table), clause,
+                                            Utils.makeListFromValues(table), clause,
                                             "");
             this.iter = SqlUtil.getIterator(this.statement);
 
