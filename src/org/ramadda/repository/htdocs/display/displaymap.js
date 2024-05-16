@@ -115,7 +115,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showLayers',d:true,ex:'false',tt:'Connect points with map vectors'},
 	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'baseLayerSelectLabel',d:null},
-	{p:'locations',ex:'usairports.json,usstates.json'},
+	{p:'locations',ex:'countries.json,usstates.json,uscities.json,usairports.json'},
 	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',
 	 tt:'Use "match" to match the features opacity'},		
@@ -662,7 +662,78 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 
 
-//extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
+	    if(extras.length) {
+		setTimeout(()=>{
+		    this.addExtraLayers(extras);
+		},1000);
+	    }
+
+            if (this.getShowLayers()) {
+		//do this later so the map displays its initial location OK
+		setTimeout(()=>{
+		    let match = true;
+		    let getId=id=>{
+			match = true;
+			if(id.startsWith('true:')) {
+			    id =id.substring('true:'.length);
+			    match=true;
+			} else if(id.startsWith('false:')) {
+			    id =id.substring('false:'.length);
+			    match = false;
+			}
+			return id;
+		    }
+                    if (this.getProperty("shapefileLayer")) {
+			let ids = Utils.split(this.getProperty('shapefileLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label,true,match);
+			});
+                    }
+                    if (this.getProperty('kmlLayer')) {
+			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label, true,match);
+			});
+                    }
+                    if (this.getProperty('geojsonLayer')) {
+			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label, false,match);
+			});
+                    }
+		    let mapLayers = this.getProperty('mapLayers');
+		    //Check to make sure it is an array
+		    if(mapLayers && mapLayers.forEach) {
+			let process=(layer)=>{
+			    let url
+			    if(layer.type=='shapefile')
+				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
+			    else 
+				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
+			};
+			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
+			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
+		    }
+
+		},500);
+            }
+        },
+
+	addExtraLayers:function(extras) {
+	    //extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
 	    extras.forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		tuple = tuple.replace(/https:/g,'https_semicolon_');
@@ -748,72 +819,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    console.log("Unknown map type:" + type)
 		}
 	    });
+	},
 
 
-
-            if (this.getShowLayers()) {
-		//do this later so the map displays its initial location OK
-		setTimeout(()=>{
-		    let match = true;
-		    let getId=id=>{
-			match = true;
-			if(id.startsWith('true:')) {
-			    id =id.substring('true:'.length);
-			    match=true;
-			} else if(id.startsWith('false:')) {
-			    id =id.substring('false:'.length);
-			    match = false;
-			}
-			return id;
-		    }
-                    if (this.getProperty("shapefileLayer")) {
-			let ids = Utils.split(this.getProperty('shapefileLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label,true,match);
-			});
-                    }
-                    if (this.getProperty('kmlLayer')) {
-			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label, true,match);
-			});
-                    }
-                    if (this.getProperty('geojsonLayer')) {
-			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label, false,match);
-			});
-                    }
-		    let mapLayers = this.getProperty('mapLayers');
-		    //Check to make sure it is an array
-		    if(mapLayers && mapLayers.forEach) {
-			let process=(layer)=>{
-			    let url
-			    if(layer.type=='shapefile')
-				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
-			    else 
-				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
-			};
-			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
-			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
-		    }
-
-		},500);
-            }
-        },
         handleKeyUp:function(event) {
 	},
         handleKeyDown:function(event) {
