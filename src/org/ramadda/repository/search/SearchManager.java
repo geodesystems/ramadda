@@ -661,9 +661,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    doc.add(new SortedNumericDocValuesField(field+"_sort", (Integer)v));
 			}
 		    } else {
-			corpus.append(v.toString());
+			String s = v.toString().toLowerCase();
+			corpus.append(s);
 			corpus.append(" ");
-			doc.add(new TextField(field, v.toString(),Field.Store.NO));
+			System.err.println("FIELD:" + field +" value:" + s);
+			doc.add(new TextField(field, s,Field.Store.NO));
 			if(column.getCanSort())
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
 		    }
@@ -1400,7 +1402,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			v = v.toLowerCase();
-			term = new WildcardQuery(new Term(field, v));
+			if(v.indexOf(" ")>=0) {
+			    PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
+			    for(String tok: Utils.split(v," ",true,true)) {
+				phraseBuilder.add(new Term(field, tok));
+			    }
+			    term =  phraseBuilder.build();
+			} else {
+			    term = new WildcardQuery(new Term(field, v));
+			}
+			//			System.err.println("query field:" + field +" value:" + v);
 		    }
 		    cnt++;
 		    if(term!=null) {
