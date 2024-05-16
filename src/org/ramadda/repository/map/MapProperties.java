@@ -53,7 +53,7 @@ public class MapProperties {
     }
 
     public MapProperties(String props) {
-	this.props=(List<String>)Utils.makeList(Utils.getProperties(props));
+	this.props=(List<String>)Utils.makeListFromDictionary(Utils.getProperties(props));
 
     }
 
