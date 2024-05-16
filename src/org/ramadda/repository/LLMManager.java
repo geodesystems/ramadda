@@ -72,7 +72,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
     public static final String ARG_EXTRACT_TITLE = "extract_title";	        
-
+    public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
 
 
     public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
@@ -155,6 +155,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    if(a.equals("title")) request.put(LLMManager.ARG_EXTRACT_TITLE,"true");
 	    else if(a.equals("summary")) request.put(LLMManager.ARG_EXTRACT_SUMMARY,"true");
 	    else if(a.equals("authors")) request.put(LLMManager.ARG_EXTRACT_AUTHORS,"true");
+	    else if(a.equals("locations")) request.put(LLMManager.ARG_EXTRACT_LOCATIONS,"true");	    
 	    else if(a.equals("keywords")) request.put(LLMManager.ARG_EXTRACT_KEYWORDS,"true");
 	    else if(a.equals("debug")) request.put("debug","true");
 	    else if(a.startsWith("model:")) {
@@ -248,6 +249,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"","Extract authors");
+	sb.append(space);
+	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract locations");	
 	sb.append("<br>");
 
 	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
@@ -746,9 +749,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
-	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);	
-	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors)) return false;
-	//	System.err.println(extractKeywords + " " + extractSummary +" " + extractTitle +" " + extractAuthors);
+	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);
+	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);		
+	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations)) return false;
 	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
@@ -775,13 +778,19 @@ public class LLMManager extends  AdminHandlerImpl {
 	    schema.add("\"summary\":\"<the summary>\"");
 	}
 	if(extractKeywords) {
-	    jsonPrompt+="You must include a list of keywords extracted from the document. The keywords should not include anyone's name and should accurately capture the important details of the document. Furthermore, each keyword should not contain more than 3 separate words. The keywords must be returned as a valid JSON list of strings. There should be no more than 8 keywords in the list. ";
+	    jsonPrompt+="You must include a list of keywords extracted from the document. The keywords should not include anyone's name and should accurately capture the important details of the document. Furthermore, each keyword should not contain more than 3 separate words. The keywords must be returned as a valid JSON list of strings. There should be no more than 4 keywords in the list. ";
 	    schema.add("\"keywords\":[<keywords>]");
 	}
 	if(extractAuthors) {
 	    jsonPrompt+="You should include a list of authors of the text. The authors should be a valid JSON list of strings. ";
 	    schema.add("\"authors\":[<authors>]");
 	}
+	if(extractLocations) {
+	    jsonPrompt+="You should also include a list of geographic locations that the text mentions. This list should be a valid JSON list of strings. There should be no more than 4 geographic locations extracted ";
+	    schema.add("\"locations\":[<locations>]");
+	}
+
+
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
 	if(debug) System.err.println("Prompt:" + jsonPrompt);
 
@@ -799,7 +808,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		int idx = json.indexOf("{");
 		if(idx>=0) {
 		    json = json.substring(idx);
-		    System.err.println(json);
 		}
 	    }
 	    JSONObject obj = new JSONObject(json);
@@ -844,6 +852,17 @@ public class LLMManager extends  AdminHandlerImpl {
 		    }
 		}
 	    }
+	    if(extractLocations) {
+		JSONArray array = obj.optJSONArray("locations");
+		if(array!=null) {
+		    for (int i = 0; i < array.length(); i++) {
+			if(i>=10) break;
+			getMetadataManager().addMetadata(request, entry,
+							 "content.location", MetadataManager.CHECK_UNIQUE_TRUE,
+							 array.getString(i));
+		    }
+		}
+	    }
 	    return true;
 	} catch(Exception exc) {
 	    getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
@@ -851,7 +870,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	    exc.printStackTrace();
 	}
 	return false;
-
 
     }
 
