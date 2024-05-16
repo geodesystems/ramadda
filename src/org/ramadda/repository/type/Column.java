@@ -3126,7 +3126,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 				   urlArg, enums, value,
 				   HU.cssClass("column-select")) + "  or:  "
                     + HU.input(
-			       urlArg + "_plus", "", HU.SIZE_20);
+			       urlArg + "_plus", "", HU.attr("size",""+columns));
 	    } else {
 		widget = HU.input(urlArg, value,HU.attr("size",""+ columns));
 	    }
