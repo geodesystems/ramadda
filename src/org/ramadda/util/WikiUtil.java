@@ -1727,7 +1727,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 			continue;
 		    }
 		    slidesProps.remove(ATTR_STYLE);
-		    List<String> args = Utils.makeStringList(Utils.makeList(slidesProps));
+		    List<String> args = Utils.makeStringList(Utils.makeListFromValues(slidesProps));
 		    String slidesArgs = JsonUtil.mapAndGuessType(args);
 		    boolean anyTitles = false;
 		    for(String title: slideTitles)
@@ -3628,7 +3628,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		String icon = HU.span(HU.getIconImage("fa-align-right"),HU.attrs("id",id,ATTR_CLASS,"ramadda-nav-popup-link",ATTR_TITLE,"Click to view table of contents"));
 		String container = HU.div(icon +p, HU.attrs(ATTR_CLASS,"ramadda-nav-popup-container"));
                 String align = Utils.getProperty(headingsProps, "align", "left");
-		String args = JsonUtil.map(Utils.makeList("align",JsonUtil.quote(align)));
+		String args = JsonUtil.map(Utils.makeListFromValues("align",JsonUtil.quote(align)));
 		container += HU.script(JQuery.ready("HtmlUtils.initNavPopup('" + id+"',"+ args+");"));
                 s = s.replace("${" + headingsNav + "}",container);
 

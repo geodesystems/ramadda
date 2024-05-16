@@ -6621,7 +6621,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         String compId         = "menu_" + HtmlUtils.blockCnt++;
         String linkId         = "menulink_" + HtmlUtils.blockCnt++;
         String linkAttributes = "";
-        List<String> attrs = (List<String>) Utils.makeList("contentId",
+        List<String> attrs = (List<String>) Utils.makeListFromValues("contentId",
                                  HtmlUtils.squote(compId), "anchor",
                                  HtmlUtils.squote(linkId));
         boolean seenAnimate = false;

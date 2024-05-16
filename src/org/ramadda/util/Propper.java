@@ -152,7 +152,7 @@ public class Propper {
         this.props = props;
         if ( !exact) {
             values = new ArrayList<Value>();
-            List tmp = Utils.makeList(props);
+            List tmp = Utils.makeListFromDictionary(props);
             for (int i = 0; i < tmp.size(); i += 2) {
                 values.add(new Value(tmp.get(i).toString(), tmp.get(i + 1)));
             }

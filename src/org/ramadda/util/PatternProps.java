@@ -58,6 +58,16 @@ public class PatternProps {
 	return "props:" + props +"  patterns:" + patterns +" strings:" + strings;
     }
 
+    public void putAll(Dictionary<String,String> props,boolean toLower) {
+	List l = Utils.makeListFromDictionary(props);
+	for(int i=0;i<l.size();i+=2) {
+	    String k = (String)l.get(i);
+	    String v = (String)l.get(i+1);	    
+	    if(toLower) k = k.toLowerCase();
+	    this.props.put(k,v);
+	}
+    }
+
     /**
      *
      * @param key _more_
