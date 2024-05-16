@@ -236,7 +236,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	    props.put("canEdit","false");
 	}
 
-	List params = Utils.makeListFromValues(props);
+	List params = Utils.makeListFromDictionary(props);
 	String jsparams = JsonUtil.mapAndQuote(params);
         HU.script(sb,
 		  "var convertParams = " + jsparams +";\n" +

@@ -1727,7 +1727,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 			continue;
 		    }
 		    slidesProps.remove(ATTR_STYLE);
-		    List<String> args = Utils.makeStringList(Utils.makeListFromValues(slidesProps));
+		    List<String> args = Utils.makeStringList(Utils.makeListFromDictionary(slidesProps));
 		    String slidesArgs = JsonUtil.mapAndGuessType(args);
 		    boolean anyTitles = false;
 		    for(String title: slideTitles)

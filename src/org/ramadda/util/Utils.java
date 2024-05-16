@@ -3991,9 +3991,11 @@ public class Utils extends IO {
      */
     public static boolean isUrl(String s) {
         s = s.toLowerCase();
-
         return s.startsWith("https:") || s.startsWith("http:");
     }
+
+
+
 
     /**
      * _more_
