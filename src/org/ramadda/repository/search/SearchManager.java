@@ -983,7 +983,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
 	for(Entry entry:  getEntryManager().searchEntries(request)) {
-	    String obj = JsonUtil.map(Utils.makeList("name", JsonUtil.quote(entry.getName()), "id",
+	    String obj = JsonUtil.map(Utils.makeListFromValues("name", JsonUtil.quote(entry.getName()), "id",
 						     JsonUtil.quote(entry.getId()),
 						     "type",JsonUtil.quote(entry.getTypeHandler().getType()),
 						     "typeName",JsonUtil.quote(entry.getTypeHandler().getLabel()),
@@ -991,7 +991,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 						     JsonUtil.quote(entry.getTypeHandler().getTypeIconUrl())));
 	    names.add(obj);
 	}
-	String json = JsonUtil.map(Utils.makeList("values", JsonUtil.list(names)));
+	String json = JsonUtil.map(Utils.makeListFromValues("values", JsonUtil.list(names)));
 	return new Result("", new StringBuilder(json), "text/json");
     }
 

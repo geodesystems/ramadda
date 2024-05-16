@@ -119,7 +119,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
             if (request.get("makehillshade", false)) {
                 File tmp = getStorageManager().getTmpFile(request, "tmp.tif");
                 results =
-                    job.executeCommand((List<String>) Utils.makeList(gdalDem,
+                    job.executeCommand((List<String>) Utils.makeListFromValues(gdalDem,
                         "hillshade", "-of", "GTiff", srcTiff.toString(),
                         tmp.toString()), work);
                 srcTiff = tmp;
@@ -138,11 +138,11 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                 request,
                 IOUtil.stripExtension(getStorageManager().getFileTail(entry))
                 + ".png");
-            commands = (List<String>) Utils.makeList(gdalTranslate, "-of",
+            commands = (List<String>) Utils.makeListFromValues(gdalTranslate, "-of",
                     "PNG", tmpTiff.toString(), imageFile.toString());
             results = job.executeCommand(commands, work);
             results =
-                job.executeCommand((List<String>) Utils.makeList(gdalInfo,
+                job.executeCommand((List<String>) Utils.makeListFromValues(gdalInfo,
                     imageFile.toString()), work);
             Bounds bounds = GeoUtils.parseGdalInfo(results.getStdoutMsg());
             if (bounds != null) {

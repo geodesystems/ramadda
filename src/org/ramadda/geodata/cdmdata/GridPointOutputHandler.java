@@ -337,7 +337,7 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
                     }
                     //                    exc.printStackTrace();
                     StringBuffer json = new StringBuffer();
-                    json.append(JsonUtil.map(Utils.makeList("error",
+                    json.append(JsonUtil.map(Utils.makeListFromValues("error",
                             JsonUtil.quote(message), "errorcode",
                             JsonUtil.quote(code))));
                     Result result = new Result("", json, JsonUtil.MIMETYPE);

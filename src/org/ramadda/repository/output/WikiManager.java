@@ -1714,9 +1714,9 @@ public class WikiManager extends RepositoryManager
                 WikiTags.WikiTag      tag = cat.tags[tagIdx];
                 List<String> tmp = new ArrayList<String>();
 		String label = Utils.makeLabel(tag.label) + " properties";
-                tmp.add(JU.map(Utils.makeList("label",JU.quote(label))));
+                tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(JU.map(Utils.makeList("p",JU.quote(tag.attrsList.get(j)),"ex",
+                    tmp.add(JU.map(Utils.makeListFromValues("p",JU.quote(tag.attrsList.get(j)),"ex",
 							JU.quote(tag.attrsList.get(j + 1)))));
                 }
                 tags.add(tag.tag);
@@ -5496,7 +5496,7 @@ public class WikiManager extends RepositoryManager
 	List<String> argProps = new ArrayList<String>();
 	List<String> actions = new ArrayList<String>();
 	for(HtmlUtils.Selector selector: tfos) {
-	    actions.add(JU.mapAndQuote(Utils.makeList("id",selector.getId(),"label",selector.getLabel())));
+	    actions.add(JU.mapAndQuote(Utils.makeListFromValues("id",selector.getId(),"label",selector.getLabel())));
 	}
 
 
@@ -6481,7 +6481,7 @@ public class WikiManager extends RepositoryManager
         Entry         entry = getEntryManager().getEntry(request);
 	StringBuilder sb = new StringBuilder();
 	if(entry==null) {
-	    sb.append(JU.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    sb.append(JU.mapAndQuote(Utils.makeListFromValues("error", "Could not find entry")));
 	    return new Result("", sb, JU.MIMETYPE);
 	}
 	Hashtable<String,String> props = new Hashtable<String,String>();
@@ -6490,7 +6490,7 @@ public class WikiManager extends RepositoryManager
 	String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
 							      entry, request.getString("tag",WikiConstants.WIKI_TAG_DISPLAY), props,null);
 	jsonUrl = request.getAbsoluteUrl(jsonUrl);
-	sb.append(JU.map(Utils.makeList("url", JU.quote(jsonUrl))));
+	sb.append(JU.map(Utils.makeListFromValues("url", JU.quote(jsonUrl))));
 	return new Result("", sb, JU.MIMETYPE);
     }
 
@@ -9114,7 +9114,7 @@ public class WikiManager extends RepositoryManager
                                 icon = "${root}/icons/magnifier.png";
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
-			    String v =JU.map(Utils.makeList("id",JU.quote(searchProvider.getId()),
+			    String v =JU.map(Utils.makeListFromValues("id",JU.quote(searchProvider.getId()),
 								  "type",JU.quote(searchProvider.getType()),
 								  "name",JU.quote(searchProvider.getName()),
 								  "capabilities",JU.quote(searchProvider.getCapabilities()),					       
@@ -9155,7 +9155,7 @@ public class WikiManager extends RepositoryManager
 		    if (subToks.size() > 2) {
 			icon = subToks.get(2);
 		    }
-		    String v =JU.map(Utils.makeList("id",JU.quote(id),
+		    String v =JU.map(Utils.makeListFromValues("id",JU.quote(id),
 							  "type",JU.quote(searchProvider.getType()),
 							  "name",JU.quote(label),
 							  "capabilities",JU.quote(searchProvider.getCapabilities()),					       

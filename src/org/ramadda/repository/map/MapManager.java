@@ -427,7 +427,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         List<String> regions = new ArrayList<String>();
         for (MapRegion region : getPageHandler().getMapRegions()) {
             List<String> values = new ArrayList<String>();
-            regions.add(JsonUtil.map(Utils.makeList("name",
+            regions.add(JsonUtil.map(Utils.makeListFromValues("name",
 						    JsonUtil.quote(region.getName()), "group",
 						    JsonUtil.quote(region.getGroup()), "north",
 						    region.getNorth() + "", "west", region.getWest() + "",
@@ -498,7 +498,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             Place place1 = GeoUtils.getLocationFromAddress(q, bounds);
             if (place1 != null) {
                 seen.add(place1.getName());
-                objs.add(JsonUtil.map(Utils.makeList("name",
+                objs.add(JsonUtil.map(Utils.makeListFromValues("name",
 						     JsonUtil.quote(place1.getName()), "latitude",
 						     "" + place1.getLatitude(), "longitude",
 						     "" + place1.getLongitude())));
@@ -511,7 +511,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                     continue;
                 }
                 seen.add(place.getName());
-                objs.add(JsonUtil.map(Utils.makeList("name",
+                objs.add(JsonUtil.map(Utils.makeListFromValues("name",
 						     JsonUtil.quote(place.getName()), "latitude",
 						     "" + place.getLatitude(), "longitude",
 						     "" + place.getLongitude())));
@@ -564,7 +564,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                         if (icon != null) {
                             icon = getRepository().getUrlBase() + icon;
                         }
-                        objs.add(JsonUtil.map(Utils.makeList("name",
+                        objs.add(JsonUtil.map(Utils.makeListFromValues("name",
 							     JsonUtil.quote(name + " (" + fclass + ") "
 									    + county + ", " + state), "icon",
 							     ((icon != null)
@@ -580,7 +580,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        sb.append(JsonUtil.map(Utils.makeList("result",
+        sb.append(JsonUtil.map(Utils.makeListFromValues("result",
 					      JsonUtil.list(objs))));
 
         return new Result("", sb, JsonUtil.MIMETYPE);
@@ -603,7 +603,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 					      request.get("longitude", 0.0));
             if (address != null) {
                 int idx = 0;
-                results.add(JsonUtil.mapAndQuote(Utils.makeList("address",
+                results.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("address",
 								address.getAddress(), "city", address.getCity(),
 								"county", address.getCounty(), "state",
 								address.getState(), "zip", address.getPostalCode(),

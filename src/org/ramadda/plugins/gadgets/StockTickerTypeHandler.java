@@ -82,7 +82,7 @@ public class StockTickerTypeHandler extends GenericTypeHandler {
 
         for (String line : StringUtil.split(symbols, "\n", true, true)) {
             js.append("new TradingView.widget(");
-            js.append(JsonUtil.mapAndQuote(Utils.makeList("symbol", line, "width", width,
+            js.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("symbol", line, "width", width,
                                        "height", height, "interval",
                                        interval, "timezone", "exchange",
                                        "theme", "White", "style", "2",

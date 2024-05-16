@@ -1300,7 +1300,7 @@ public class GpsOutputHandler extends OutputHandler {
                            getRepository().getTmpRequest(),
                            IOUtil.getFileTail(
                                IOUtil.stripExtension(inputFile)) + ".dat");
-	List<String> commands = (List<String>)Utils.makeList(runPkrPath, "-d", "-g",inputFile, datFile.toString());
+	List<String> commands = (List<String>)Utils.makeListFromValues(runPkrPath, "-d", "-g",inputFile, datFile.toString());
 	ProcessBuilder pb1 = getRepository().makeProcessBuilder(commands);
         Process process1 = pb1.start();
         String errorMsg =
@@ -1340,7 +1340,7 @@ public class GpsOutputHandler extends OutputHandler {
             return "none";
         }
 
-	List<String> commands = (List<String>)Utils.makeList(teqcPath, flag,inputFile);
+	List<String> commands = (List<String>)Utils.makeListFromValues(teqcPath, flag,inputFile);
 	ProcessBuilder pb      = getRepository().makeProcessBuilder(commands);
         Process        process = pb.start();
         String errorMsg =

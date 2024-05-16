@@ -249,7 +249,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
             pw = getThePrintWriter();
             String       code = "nodata";
             StringBuffer json = new StringBuffer();
-            pw.append(JsonUtil.map(Utils.makeList("warning", JsonUtil.quote("No data available"),
+            pw.append(JsonUtil.map(Utils.makeListFromValues("warning", JsonUtil.quote("No data available"),
 						  "errorcode", JsonUtil.quote(code))));
 
         }

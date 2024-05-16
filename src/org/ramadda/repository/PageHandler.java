@@ -1702,7 +1702,7 @@ public class PageHandler extends RepositoryManager {
 
         //Have to hard code these 
         String pre = "/org/ramadda/repository/resources/geo/";
-        mapRegionFiles.addAll(Utils.makeList(pre + "mapregions.csv",
+        mapRegionFiles.addAll(Utils.makeListFromValues(pre + "mapregions.csv",
                                              pre + "countrymapregions.csv",
                                              pre + "statesmapregions.csv",
                                              pre + "citiesmapregions.csv"));

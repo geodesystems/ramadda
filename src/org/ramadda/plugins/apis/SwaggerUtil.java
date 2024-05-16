@@ -377,7 +377,7 @@ public class SwaggerUtil {
         mapItems.add(JsonUtil.quote("query"));
         if (values != null) {
             mapItems.add(ATTR_ALLOWABLEVALUES);
-            mapItems.add(JsonUtil.map(Utils.makeList("valueType",
+            mapItems.add(JsonUtil.map(Utils.makeListFromValues("valueType",
                     JsonUtil.quote("LIST"), "values",
                     JsonUtil.list(values, true))));
         }

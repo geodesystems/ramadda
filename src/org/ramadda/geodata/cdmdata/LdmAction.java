@@ -263,7 +263,7 @@ public class LdmAction extends MonitorAction {
         if (productId.length() > 0) {
             productId = " -p \"" + productId + "\" ";
         }
-	List<String> commands = (List<String>) Utils.makeList(pqinsert, productId,"-f",feed, "-q",
+	List<String> commands = (List<String>) Utils.makeListFromValues(pqinsert, productId,"-f",feed, "-q",
 							      queue, file);
         //        System.err.println("Executing:" + command);
 	

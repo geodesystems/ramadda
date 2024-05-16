@@ -1043,7 +1043,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             String id = HtmlUtils.getUniqueId("divid_");
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
-            return JsonUtil.mapAndQuote(Utils.makeList("entryId", entry.getId(), "chartType",
+            return JsonUtil.mapAndQuote(Utils.makeListFromValues("entryId", entry.getId(), "chartType",
                                     chartType, "chartArgs", chartArgs,
                                     "fields", chartField, "divId", id,
                                     "title", "", "text", sb.toString(),

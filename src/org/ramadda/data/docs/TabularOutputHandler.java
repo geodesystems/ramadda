@@ -147,7 +147,7 @@ public class TabularOutputHandler extends OutputHandler {
     private Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
-        s = JsonUtil.mapAndQuote(Utils.makeList("html", s));
+        s = JsonUtil.mapAndQuote(Utils.makeListFromValues("html", s));
 
         return new Result(s, "application/json");
     }

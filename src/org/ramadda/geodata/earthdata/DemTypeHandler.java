@@ -83,7 +83,7 @@ public class DemTypeHandler extends GdalTypeHandler {
         if ( !cachedFile.exists()) {
             try {
                 List<String> commands =
-                    (List<String>) Utils.makeList(convert,
+                    (List<String>) Utils.makeListFromValues(convert,
 						  "hillshade",
 						  getStorageManager().getEntryResourcePath(entry),
 						  cachedFile.toString());

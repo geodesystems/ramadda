@@ -839,7 +839,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         if (returnjson) {
                             StringBuilder data = new StringBuilder();
                             data.append(
-                                JsonUtil.mapAndQuote(Utils.makeList("Error",
+                                JsonUtil.mapAndQuote(Utils.makeListFromValues("Error",
                                         "You need to select all fields")));
 
                             return new Result("", data, JsonUtil.MIMETYPE);
@@ -900,7 +900,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
                         data.append(
-                            JsonUtil.mapAndQuote(Utils.makeList("Error",
+                            JsonUtil.mapAndQuote(Utils.makeListFromValues("Error",
                                     "You need to select a time series")));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
@@ -952,7 +952,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     if (returnjson) {
                         StringBuilder data = new StringBuilder();
                         data.append(
-                            JsonUtil.mapAndQuote(Utils.makeList("error",
+                            JsonUtil.mapAndQuote(Utils.makeListFromValues("error",
                                     exc.getMessage())));
 
                         return new Result("", data, JsonUtil.MIMETYPE);
@@ -965,7 +965,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             } else {
                 if (returnjson) {
                     StringBuilder data = new StringBuilder();
-                    data.append(JsonUtil.map(Utils.makeList("error",
+                    data.append(JsonUtil.map(Utils.makeListFromValues("error",
                             "No fields selected.")));
 
                     return new Result("", data, JsonUtil.MIMETYPE);

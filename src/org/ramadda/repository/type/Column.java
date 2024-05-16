@@ -1114,7 +1114,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             if (values != null) {
                 for (TwoFacedObject tfo : values) {
-                    enums.add(JsonUtil.map(Utils.makeList("value",
+                    enums.add(JsonUtil.map(Utils.makeListFromValues("value",
                             JsonUtil.quote(tfo.getId().toString()), "label",
                             JsonUtil.quote(tfo.getLabel().toString()))));
                 }

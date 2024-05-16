@@ -1395,7 +1395,7 @@ public class MapInfo {
     public void addCircle(String id, double lat, double lon, int radius,
                           int strokeWidth, String strokeColor,
                           String fillColor, String info) {
-        String attrs = JsonUtil.map(Utils.makeList("pointRadius",
+        String attrs = JsonUtil.map(Utils.makeListFromValues("pointRadius",
                            "" + radius, "strokeWidth", "" + strokeWidth,
                            "fillColor", JsonUtil.quote(fillColor),
                            "strokeColor", JsonUtil.quote(strokeColor)));

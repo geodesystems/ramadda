@@ -236,7 +236,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
 	    props.put("canEdit","false");
 	}
 
-	List params = Utils.makeList(props);
+	List params = Utils.makeListFromValues(props);
 	String jsparams = JsonUtil.mapAndQuote(params);
         HU.script(sb,
 		  "var convertParams = " + jsparams +";\n" +
@@ -258,7 +258,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
     protected Result makeHtmlResult(Request request, String s)
             throws Exception {
         s = new String(Utils.encodeBase64(s));
-        s = JsonUtil.mapAndQuote(Utils.makeList("html", s));
+        s = JsonUtil.mapAndQuote(Utils.makeListFromValues("html", s));
 
         return new Result(s, "application/json");
     }
@@ -362,7 +362,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
             if (csvUtil != null) {
                 csvUtil.stopRunning();
             }
-            String s = JsonUtil.mapAndQuote(Utils.makeList("message", "ok"));
+            String s = JsonUtil.mapAndQuote(Utils.makeListFromValues("message", "ok"));
 
             return new Result(s, "application/json");
         }
@@ -514,7 +514,7 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 if ( !csvUtil.getOkToRun()) {
                     String r = "stopped";
                     String s = new String(Utils.encodeBase64(r));
-                    s = JsonUtil.mapAndQuote(Utils.makeList("result", s));
+                    s = JsonUtil.mapAndQuote(Utils.makeListFromValues("result", s));
                     return new Result(s, "application/json");
                 }
 
@@ -582,14 +582,14 @@ public class ConvertibleOutputHandler extends OutputHandler {
 		    html.append(HU.formTableClose());
 
 		    String shtml = HU.insetDiv(html, 0,20,0,0);
-		    String s = JsonUtil.mapAndQuote(Utils.makeList("url",shtml.replaceAll("\"", "\\\"")));
+		    String s = JsonUtil.mapAndQuote(Utils.makeListFromValues("url",shtml.replaceAll("\"", "\\\"")));
                     return new Result(s, "application/json");
                 }
             }
             String s = new String(Utils.encodeBase64((lastResult == null)
                     ? ""
                     : lastResult));
-            s = JsonUtil.mapAndQuote(Utils.makeList("result", s));
+            s = JsonUtil.mapAndQuote(Utils.makeListFromValues("result", s));
 
             return new Result(s, "application/json");
 
@@ -609,12 +609,12 @@ public class ConvertibleOutputHandler extends OutputHandler {
                 s = "Error: " + inner;
             }
             s = new String(Utils.encodeBase64(s));
-            s = JsonUtil.mapAndQuote(Utils.makeList("error", s));
+            s = JsonUtil.mapAndQuote(Utils.makeListFromValues("error", s));
             if (inner instanceof SeesvException) {
                 s          = ((SeesvException) inner).getFullMessage();
                 printStack = false;
                 s          = new String(Utils.encodeBase64(s));
-                s          = JsonUtil.mapAndQuote(Utils.makeList("message", s));
+                s          = JsonUtil.mapAndQuote(Utils.makeListFromValues("message", s));
             }
             if (printStack) {
                 inner.printStackTrace();

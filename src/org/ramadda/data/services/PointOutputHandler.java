@@ -757,7 +757,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 inner.printStackTrace();
                 String       code = "error";
                 StringBuffer json = new StringBuffer();
-                json.append(JsonUtil.map(Utils.makeList("error", JsonUtil.quote(message),
+                json.append(JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote(message),
 							"errorcode", JsonUtil.quote(code))));
                 Result errorResult = new Result("", json, JsonUtil.MIMETYPE);
 

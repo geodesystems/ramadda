@@ -281,12 +281,12 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
 		*/
                 List<String> commands;
 		if(Utils.stringDefined(translate))
-                    commands = (List<String>) Utils.makeList(translate,"-of","PNG",
+                    commands = (List<String>) Utils.makeListFromValues(translate,"-of","PNG",
 							     getStorageManager().getEntryResourcePath(entry),
 							     cachedFile.toString());
 		else 		    
 		    commands =
-			(List<String>) Utils.makeList(convert,
+			(List<String>) Utils.makeListFromValues(convert,
 						      getStorageManager().getEntryResourcePath(entry),
 						      cachedFile.toString());
 		//		System.err.println("geotiff-4:" + Utils.join(commands," "));

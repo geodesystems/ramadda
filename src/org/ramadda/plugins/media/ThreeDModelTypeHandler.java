@@ -318,7 +318,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		    + entry.getId() + "/" + modelFile;
 		file = modelFile;
 	    }
-	    List attrs = Utils.makeList("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
+	    List attrs = Utils.makeListFromValues("url",JsonUtil.quote(url),"id",JsonUtil.quote(entry.getId()),
 					"name",JsonUtil.quote(entry.getName()));
 	    String tmp;
 	    
@@ -436,7 +436,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	}
 
 	Utils.add(jsonProps,"width",width,"height",height);
-	List tmp = Utils.makeList(props);
+	List tmp = Utils.makeListFromDictionary(props);
 	for(int i=0;i<tmp.size();i+=2) {
 	    Utils.add(jsonProps,tmp.get(i),
 		      JsonUtil.quoteType(tmp.get(i+1)));

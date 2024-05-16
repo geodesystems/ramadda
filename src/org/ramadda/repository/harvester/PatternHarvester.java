@@ -525,7 +525,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						     getTypeHandler())));
 
         sb.append(HU.formEntry(msgLabel("Last Group Type"),
-			       getRepository().makeTypeSelect(Utils.makeList(new TwoFacedObject("Default","")),
+			       getRepository().makeTypeSelect(Utils.makeListFromValues(new TwoFacedObject("Default","")),
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
 							      false, null,true)));
 

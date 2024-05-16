@@ -4365,7 +4365,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(sanitize.length==0 || sanitize[0])
 	    msg = HU.strictSanitizeString(msg);
         if (request.responseAsJson()) {
-            return JsonUtil.mapAndQuote(Utils.makeList("error", msg));
+            return JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
         } else if (request.responseAsXml()) {
             return XU.tag(TAG_RESPONSE,
                                XU.attr(ATTR_CODE, CODE_ERROR), msg);
@@ -4391,7 +4391,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String makeOkResponse(Request request, String msg) {
         if (request.responseAsJson()) {
-            return JsonUtil.mapAndQuote(Utils.makeList("ok", msg));
+            return JsonUtil.mapAndQuote(Utils.makeListFromValues("ok", msg));
         } else if (request.responseAsXml()) {
             return XU.tag(TAG_RESPONSE,
                                XU.attr(ATTR_CODE, CODE_OK), msg);

@@ -744,7 +744,7 @@ public abstract class Harvester extends RepositoryManager {
 	String uid = HU.getUniqueId("select_");
 	String textid = HU.getUniqueId("text_");	
 	String attrs =HU.style("max-width:200px;") + HU.id(uid);
-	List items = Utils.makeList(new TwoFacedObject("Add type",""));
+	List items = Utils.makeListFromValues(new TwoFacedObject("Add type",""));
 	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
 						       false,"",false,null,false);
 	String textArea = HtmlUtils.textArea(ATTR_TYPEPATTERNS, typePatterns, 

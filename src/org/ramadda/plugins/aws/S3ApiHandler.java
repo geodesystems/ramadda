@@ -32,7 +32,7 @@ public class S3ApiHandler extends RepositoryManager implements RequestHandler {
         sb.append(HU.formTable());
         sb.append(HU.form(base + "/aws/s3/list"));
 	sb.append(HU.formEntry("S3 Bucket:",HU.input("bucket",request.getString("bucket"),HU.SIZE_80)));
-	sb.append(HU.formEntry("Level:",HU.select("level",Utils.makeList("1","2","3","4","5"),
+	sb.append(HU.formEntry("Level:",HU.select("level",Utils.makeListFromValues("1","2","3","4","5"),
 						  request.getString("level","2"))));
 
         sb.append(HU.formEntry("", HU.submit("List Bucket", "")));

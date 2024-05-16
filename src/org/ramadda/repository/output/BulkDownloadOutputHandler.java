@@ -178,7 +178,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         request.setReturnFilename("download.sh");
 
         return outputGroup(request, outputType, null,
-                           (List<Entry>) Utils.makeList(entry));
+                           (List<Entry>) Utils.makeListFromValues(entry));
     }
 
 

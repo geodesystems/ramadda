@@ -306,13 +306,13 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
             List<String> args = new ArrayList<String>();
             if (dataUrl != null) {
                 if (dataUrl.endsWith("json")) {
-                    args.addAll((List<String>) Utils.makeList("-json", "",
+                    args.addAll((List<String>) Utils.makeListFromValues("-json", "",
                             "", "-addheader", "", "-print"));
                 } else if (dataUrl.endsWith("csv")) {
-                    args.addAll((List<String>) Utils.makeList("-addheader",
+                    args.addAll((List<String>) Utils.makeListFromValues("-addheader",
                             "", "-print"));
                 } else if (dataUrl.endsWith("tsv")) {
-                    args.addAll((List<String>) Utils.makeList("-tab",
+                    args.addAll((List<String>) Utils.makeListFromValues("-tab",
                             "-addheader", "", "-print"));
                 } else {
                     System.err.println("Unknown url in vega file:" + dataUrl);
@@ -320,7 +320,7 @@ public class VegaTypeHandler extends ConvertibleTypeHandler {
                     return null;
                 }
             } else if (haveData) {
-                args.addAll((List<String>) Utils.makeList("-json",
+                args.addAll((List<String>) Utils.makeListFromValues("-json",
                         "data.values", "*", "-addheader", "", "-print"));
             } else {
                 System.err.println("Unknown data");

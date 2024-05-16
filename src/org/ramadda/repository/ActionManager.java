@@ -93,7 +93,7 @@ public class ActionManager extends RepositoryManager {
                              StringBuffer sb, boolean json)
             throws Exception {
         if (json) {
-            String result = JsonUtil.map(Utils.makeList("status",
+            String result = JsonUtil.map(Utils.makeListFromValues("status",
                                 JsonUtil.quote(status), "message",
                                 JsonUtil.quote(sb.toString())));
 
@@ -359,7 +359,7 @@ public class ActionManager extends RepositoryManager {
                                String name, String continueHtml,
                                Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
-        String json = JsonUtil.map(Utils.makeList("actionid",
+        String json = JsonUtil.map(Utils.makeListFromValues("actionid",
                           JsonUtil.quote(actionId.toString())));
 
         return new Result(json, Result.TYPE_JSON);

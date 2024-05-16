@@ -91,7 +91,7 @@ public class CensusApiHandler extends RepositoryManager implements RequestHandle
         if (asJson) {
             List<String> objs = new ArrayList<String>();
             for (CensusVariable var : matches) {
-                objs.add(JsonUtil.mapAndQuote(Utils.makeList("id", var.getId(), "label",
+                objs.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("id", var.getId(), "label",
 							     var.getLabel(), "concept",
 							     var.getConcept())));
                 if (cnt++ > 500) {

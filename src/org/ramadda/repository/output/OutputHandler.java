@@ -1180,7 +1180,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         name = name.replace("'", "\\'");
 	
 
-	List attrs = Utils.makeList(
+	List attrs = Utils.makeListFromValues(
                                 "entryType",
                                 HU.squote(entry.getTypeHandler().getType()),
 				"entryName",JsonUtil.quote(entry.getName()),

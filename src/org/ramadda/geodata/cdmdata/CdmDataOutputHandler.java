@@ -1548,27 +1548,27 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 writer.println("\"fields\":");
                 List<String> fields = new ArrayList<String>();
                 int          index  = 0;
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote(field), "label",
                         JsonUtil.quote(fieldLabel), "index", "" + (index++),
                         "type", JsonUtil.quote("double"), "chartable",
                         "true", "unit", JsonUtil.quote(getUnit(unit)))));
                 //todo: check for times
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("date"), "label",
                         JsonUtil.quote("Date"), "index", "" + (index++),
                         "type", JsonUtil.quote("date"))));
                 if (finalZRange.length() > 1) {
-                    fields.add(JsonUtil.map(Utils.makeList("id",
+                    fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                             JsonUtil.quote("level"), "label",
                             JsonUtil.quote("Level"), "index", "" + (index++),
                             "type", JsonUtil.quote("double"))));
                 }
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("latitude"), "label",
                         JsonUtil.quote("Latitude"), "index", "" + (index++),
                         "type", JsonUtil.quote("double"))));
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("longitude"), "label",
                         JsonUtil.quote("Longitude"), "index", "" + (index++),
                         "type", JsonUtil.quote("double"))));
@@ -1853,27 +1853,27 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
                 writer.println("\"fields\":");
                 List<String> fields = new ArrayList<String>();
                 int          index  = 0;
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote(field), "label",
                         JsonUtil.quote(fieldLabel), "index", "" + (index++),
                         "type", JsonUtil.quote("double"), "chartable",
                         "true", "unit", JsonUtil.quote(getUnit(unit)))));
                 //todo: check for times
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("date"), "label",
                         JsonUtil.quote("Date"), "index", "" + (index++),
                         "type", JsonUtil.quote("date"))));
                 if (finalZRange.length() > 1) {
-                    fields.add(JsonUtil.map(Utils.makeList("id",
+                    fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                             JsonUtil.quote("level"), "label",
                             JsonUtil.quote("Level"), "index", "" + (index++),
                             "type", JsonUtil.quote("double"))));
                 }
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("latitude"), "label",
                         JsonUtil.quote("Latitude"), "index", "" + (index++),
                         "type", JsonUtil.quote("double"))));
-                fields.add(JsonUtil.map(Utils.makeList("id",
+                fields.add(JsonUtil.map(Utils.makeListFromValues("id",
                         JsonUtil.quote("longitude"), "label",
                         JsonUtil.quote("Longitude"), "index", "" + (index++),
                         "type", JsonUtil.quote("double"))));

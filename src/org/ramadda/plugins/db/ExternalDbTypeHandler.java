@@ -105,7 +105,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                     String table = entry.getStringValue(IDX_TABLE, (String) null);
                     Statement stmt = SqlUtil.select(connection,
                                          SqlUtil.distinct(name),
-                                         Utils.makeList(table), null, null,
+                                         Utils.makeListFromValues(table), null, null,
                                          1000, 0);
 
                     String[] values =
@@ -310,7 +310,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
             return null;
         }
-        List tableList = Utils.makeList(table);
+        List tableList = Utils.makeListFromValues(table);
         Hashtable recordProps =
             Utils.getProperties(entry.getStringValue(IDX_PROPERTIES, (String) ""));
         String join = Utils.getProperty(recordProps, "jointables",

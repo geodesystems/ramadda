@@ -228,7 +228,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
 
 
     private Result makeJsonError(String msg) {
-	String s =  JsonUtil.mapAndQuote(Utils.makeList("error", msg));
+	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
 

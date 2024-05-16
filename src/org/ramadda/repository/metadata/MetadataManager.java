@@ -625,11 +625,11 @@ public class MetadataManager extends RepositoryManager {
             if (entry.hasAreaDefined()) {
                 String box = entry.getSouth() + " " + entry.getWest() + " "
                              + entry.getNorth() + " " + entry.getEast();
-                geo.add(JsonUtil.map(Utils.makeList("@type",
+                geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
                         JsonUtil.quote("GeoShape"), "box",
                         JsonUtil.quote(box))));
             } else {
-                geo.add(JsonUtil.map(Utils.makeList("@type",
+                geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
                         JsonUtil.quote("GeoCoordinates"), "latitude",
                         JsonUtil.quote("" + entry.getLatitude()),
                         "longitude",
@@ -643,7 +643,7 @@ public class MetadataManager extends RepositoryManager {
             top.add("distribution");
 	    String mimeType = getRepository().getMimeTypeFromSuffix(
 								    IO.getFileExtension(entry.getResource().getPath()));
-            top.add(JsonUtil.mapAndQuote(Utils.makeList("@type","DataDownload",
+            top.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("@type","DataDownload",
 							"encodingFormat",mimeType,
 							"contentUrl",
                     getEntryManager().getEntryResourceUrl(request, entry,
@@ -678,7 +678,7 @@ public class MetadataManager extends RepositoryManager {
                 ctor.add("url");
                 ctor.add(JsonUtil.quote(md.getAttr4()));
                 ctor.add("contactPoint");
-                ctor.add(JsonUtil.mapAndQuote(Utils.makeList("@type",
+                ctor.add(JsonUtil.mapAndQuote(Utils.makeListFromValues("@type",
                         "ContactPoint", "email", md.getAttr3())));
                 top.add("creator");
                 top.add(JsonUtil.map(ctor));
@@ -2186,7 +2186,7 @@ public class MetadataManager extends RepositoryManager {
                     if (label == null) {
                         label = value;
                     }
-                    maps.add(JsonUtil.map(Utils.makeList("count",
+                    maps.add(JsonUtil.map(Utils.makeListFromValues("count",
                             tuple[0].toString(), "value",
                             JsonUtil.quote(value), "label",
                             JsonUtil.quote(label))));

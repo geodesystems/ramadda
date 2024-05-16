@@ -579,7 +579,7 @@ public class JsonOutputHandler extends OutputHandler {
         /**
          *  Don't get the typeJson as it takes a *long* time for DbTypes
          * String      typeJson = type.getJson(request);
-         * typeJson = JsonUtil.mapAndQuote(Utils.makeList("id", type.getType(), "name", type.getLabel()));
+         * typeJson = JsonUtil.mapAndQuote(Utils.makeListFromValues("id", type.getType(), "name", type.getLabel()));
          */
         JsonUtil.attr(items, "type", JsonUtil.quote(type.getType()));
         JsonUtil.attr(items, "typeName", JsonUtil.quote(type.getLabel()));
@@ -618,7 +618,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (entry.getIsRemoteEntry()) {
             JsonUtil.attr(items, "isRemote", "true");
             JsonUtil.attr(items, "remoteRepository",
-                          JsonUtil.map(Utils.makeList("url",
+                          JsonUtil.map(Utils.makeListFromValues("url",
                               JsonUtil.quote(server.getUrl()), "name",
                               JsonUtil.quote(server.getLabel()))));
             JsonUtil.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
@@ -677,7 +677,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (entry.hasAreaDefined()) {
             double[] center = entry.getCenter();
             JsonUtil.attr(items, "geometry",
-                          JsonUtil.map(Utils.makeList("type",
+                          JsonUtil.map(Utils.makeListFromValues("type",
                               JsonUtil.quote("Point"), "coordinates",
                               JsonUtil.list("" + center[1],
                                             "" + center[0]))));
@@ -688,7 +688,7 @@ public class JsonOutputHandler extends OutputHandler {
                                         "" + entry.getNorth()));
         } else if (entry.hasLocationDefined()) {
             JsonUtil.attr(items, "geometry",
-                          JsonUtil.map(Utils.makeList("type",
+                          JsonUtil.map(Utils.makeListFromValues("type",
                               JsonUtil.quote("Point"), "coordinates",
                               JsonUtil.list("" + entry.getLongitude(),
                                             "" + entry.getLatitude()))));
@@ -717,7 +717,7 @@ public class JsonOutputHandler extends OutputHandler {
             typeHandler.getServiceInfos(request, entry, services);
             List<String> jsonServiceInfos = new ArrayList<String>();
             for (ServiceInfo service : services) {
-                jsonServiceInfos.add(JsonUtil.map(Utils.makeList("url",
+                jsonServiceInfos.add(JsonUtil.map(Utils.makeListFromValues("url",
                         JsonUtil.quote(service.getUrl()), "relType",
                         JsonUtil.quote(service.getType()), "name",
                         JsonUtil.quote(service.getName()), "mimeType",
@@ -788,10 +788,10 @@ public class JsonOutputHandler extends OutputHandler {
 			columnNames.add(columnName);
 			columnLabels.add(column.getLabel());
 			//                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
-			extraColumns.add(JsonUtil.map(Utils.makeList(columnName,
+			extraColumns.add(JsonUtil.map(Utils.makeListFromValues(columnName,
 								     JsonUtil.quote(value))));
 			ids.add(columnName);
-			attrs.add(JsonUtil.map(Utils.makeList("id",
+			attrs.add(JsonUtil.map(Utils.makeListFromValues("id",
 							      JsonUtil.quote(columnName), "type",
 							      JsonUtil.quote("attribute"), "label",
 							      JsonUtil.quote(column.getLabel()), "value",
@@ -811,7 +811,7 @@ public class JsonOutputHandler extends OutputHandler {
                     repository.getEntryManager().getEntryLinks(request,
                         entry)) {
                 OutputType outputType = link.getOutputType();
-                links.add(JsonUtil.map(Utils.makeList("label",
+                links.add(JsonUtil.map(Utils.makeListFromValues("label",
                         JsonUtil.quote(link.getLabel()), "type",
                         (outputType == null)
                         ? "unknown"

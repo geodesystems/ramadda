@@ -1968,10 +1968,10 @@ public class ImageOutputHandler extends OutputHandler {
         List<String> commands              = new ArrayList<String>();
         commands.add(getRepository().getScriptPath("service.imagemagick")
                      + "/convert");
-        commands.addAll(Utils.makeList("-loop", loopCount + "", "-delay",
+        commands.addAll(Utils.makeListFromValues("-loop", loopCount + "", "-delay",
                                        delay + "", "-dispose", "Background"));
         commands.addAll(files);
-        commands.addAll(Utils.makeList("-coalesce"));
+        commands.addAll(Utils.makeListFromValues("-coalesce"));
         commands.add(file.toString());
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands,

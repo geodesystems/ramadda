@@ -297,7 +297,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
                 String title = XmlUtil.getGrandChildText(point, "title", "");
                 List attrs =
                     JsonUtil.quoteList(
-                        Utils.makeList(
+                        Utils.makeListFromValues(
                             "time", time, "title", title, "transcript",
                             XmlUtil.getGrandChildText(
                                 point, "partial_transcript", ""), "synopsis",
@@ -393,7 +393,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
                 String title = XmlUtil.getGrandChildText(point, "title", "");
                 List attrs =
                     JsonUtil.quoteList(
-                        Utils.makeList(
+                        Utils.makeListFromValues(
                             "time", time, "title", title, "transcript",
                             XmlUtil.getGrandChildText(
                                 point, "partial_transcript", ""), "synopsis",

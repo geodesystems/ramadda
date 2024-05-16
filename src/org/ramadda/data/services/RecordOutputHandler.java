@@ -440,7 +440,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
             StringBuilder json = new StringBuilder();
-	    JsonUtil.map(json,Utils.makeList(
+	    JsonUtil.map(json,Utils.makeListFromValues(
 					     "error", JsonUtil.quote("Unauthorized access to file")));
             Result result = new Result("", json, JsonUtil.MIMETYPE);
             result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);

@@ -864,7 +864,7 @@ public class EntryManager extends RepositoryManager {
 	} catch(Exception exc) {
 	    getLogManager().logError("Error processing data",exc);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(JsonUtil.map(Utils.makeList("error",JsonUtil.quote("Error:" + exc))));
+	    sb.append(JsonUtil.map(Utils.makeListFromValues("error",JsonUtil.quote("Error:" + exc))));
 	    Result result  = new Result("", sb, JsonUtil.MIMETYPE);
 	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
 	    return result;
@@ -1077,7 +1077,7 @@ public class EntryManager extends RepositoryManager {
 	for(String id: ids) {
 	    Entry entry = getEntry(request, id);
 	    if(entry!=null) {
-		names.add(JsonUtil.map(JsonUtil.quoteList(Utils.makeList("id",id,"name",entry.getName(),"icon",getPageHandler().getIconUrl(request, entry)))));
+		names.add(JsonUtil.map(JsonUtil.quoteList(Utils.makeListFromValues("id",id,"name",entry.getName(),"icon",getPageHandler().getIconUrl(request, entry)))));
 	    }
 	}
         StringBuilder sb = new StringBuilder(JsonUtil.list(names));
@@ -1239,12 +1239,12 @@ public class EntryManager extends RepositoryManager {
 	} catch(Exception exc) {
 	    exc.printStackTrace();
 	    return new Result("",
-			      new StringBuilder(JsonUtil.mapAndQuote(Utils.makeList("status","error","message",exc.getMessage()))), 
+			      new StringBuilder(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message",exc.getMessage()))), 
 			      JsonUtil.MIMETYPE);
 	}
 	
 	if(!tmpFile.exists()) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Unable to write file:" + fileName)));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","Unable to write file:" + fileName)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	return  processEntryAddFile(request, tmpFile,fileName,request.getString("description",""));
@@ -1255,7 +1255,7 @@ public class EntryManager extends RepositoryManager {
 	try {
 	    Entry group = findGroup(request);
 	    if ( !getAccessManager().canDoNew(request, group)) {
-		sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","You do not have permission to add a file")));
+		sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","You do not have permission to add a file")));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 
@@ -1284,13 +1284,13 @@ public class EntryManager extends RepositoryManager {
 					  typeHandler, null);
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,false);
 
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"type",newEntry.getTypeHandler().getType(), "geturl",
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"type",newEntry.getTypeHandler().getType(), "geturl",
 							  url)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
 	    exc.printStackTrace();
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("status","error","message","Error:" + exc)));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","Error:" + exc)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
     }
@@ -1588,7 +1588,7 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Could not find entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	
@@ -1632,7 +1632,7 @@ public class EntryManager extends RepositoryManager {
 		keyObj.put(vote,keyObj.optInt(vote,0)+1);
 		json = obj.toString();
 		IOUtil.writeFile(f,json);
-		sb.append(JsonUtil.map(Utils.makeList("ok", "true")));
+		sb.append(JsonUtil.map(Utils.makeListFromValues("ok", "true")));
 		if(!request.get("returnvotes",false))
 		    return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
@@ -1988,11 +1988,11 @@ public class EntryManager extends RepositoryManager {
 	    getLogManager().logError("Processing entryChangeField",exc);
 	}
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Could not find entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	if ( !getAccessManager().canDoEdit(request, entry)) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No permission to edit entry")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "No permission to edit entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
@@ -2003,15 +2003,15 @@ public class EntryManager extends RepositoryManager {
 	    } else  if(what.equals("name")) {
 		entry.setName(request.getString("value",entry.getName()));		
 	    }   else {
-		sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Unknown field:" +what)));
+		sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Unknown field:" +what)));
 		return new Result("", sb, JsonUtil.MIMETYPE);
 	    }
 	} catch(Exception exc) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "An error has occurred:" + exc)));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "An error has occurred:" + exc)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	updateEntry(request, entry);
-	sb.append(JsonUtil.mapAndQuote(Utils.makeList("message", "OK, field has changed")));
+	sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("message", "OK, field has changed")));
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -2020,11 +2020,11 @@ public class EntryManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
         Entry         entry = getEntry(request);
 	if(entry==null) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Could not find entry")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Could not find entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	if ( !getAccessManager().canDoEdit(request, entry)) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No permision to edit entry")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "No permision to edit entry")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 	String contents = request.getString("file",(String)null);
@@ -2036,13 +2036,13 @@ public class EntryManager extends RepositoryManager {
 	}
 	
 	if(contents==null) {
-	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "No file contents given")));
+	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "No file contents given")));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
         if (!entry.isFile()) {
 	    //Probably don't need/want this check
-	    //	    sb.append(JsonUtil.mapAndQuote(Utils.makeList("error", "Entry is not a file")));
+	    //	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Entry is not a file")));
 	    //	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
@@ -2075,7 +2075,7 @@ public class EntryManager extends RepositoryManager {
 
 
 	updateEntry(request, entry);
-	sb.append(JsonUtil.mapAndQuote(Utils.makeList("message", "OK, file has been saved")));
+	sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("message", "OK, file has been saved")));
 	return new Result("", sb, JsonUtil.MIMETYPE);
     }
 
@@ -2853,7 +2853,7 @@ public class EntryManager extends RepositoryManager {
 		ids.add(JsonUtil.quote(e.getId()));
 	    }
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(JsonUtil.map(Utils.makeList("entries",JsonUtil.list(ids))));
+	    sb.append(JsonUtil.map(Utils.makeListFromValues("entries",JsonUtil.list(ids))));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 

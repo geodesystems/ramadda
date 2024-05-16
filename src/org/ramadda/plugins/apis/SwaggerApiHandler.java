@@ -114,20 +114,20 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
         int          cnt  = 0;
         apis.add(
             JsonUtil.map(
-                Utils.makeList(
+                Utils.makeListFromValues(
                     SU.ATTR_PATH, JsonUtil.quote("/point"),
                     SU.ATTR_DESCRIPTION, JsonUtil.quote("Point data API"))));
 
         apis.add(
             JsonUtil.map(
-                Utils.makeList(
+                Utils.makeListFromValues(
                     SU.ATTR_PATH, JsonUtil.quote("/gridaspoint"),
                     SU.ATTR_DESCRIPTION,
                     JsonUtil.quote("Grid point data API"))));
 
         apis.add(
             JsonUtil.map(
-                Utils.makeList(
+                Utils.makeListFromValues(
                     SU.ATTR_PATH, JsonUtil.quote("/gridsubset"),
                     SU.ATTR_DESCRIPTION, JsonUtil.quote("Grid subset API"))));
 
@@ -143,7 +143,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
             }
 
             String url = "/service/" + service.getId();
-            apis.add(JsonUtil.map(Utils.makeList(SU.ATTR_PATH,
+            apis.add(JsonUtil.map(Utils.makeListFromValues(SU.ATTR_PATH,
                     JsonUtil.quote(url), SU.ATTR_DESCRIPTION,
                     JsonUtil.quote(" API for " + service.getLabel()))));
 
@@ -162,7 +162,7 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
                 continue;
             }
             String url = "/type/" + typeHandler.getType();
-            apis.add(JsonUtil.map(Utils.makeList(SU.ATTR_PATH,
+            apis.add(JsonUtil.map(Utils.makeListFromValues(SU.ATTR_PATH,
                     JsonUtil.quote(url), SU.ATTR_DESCRIPTION,
                     JsonUtil.quote("Search API for '"
                                    + typeHandler.getLabel()

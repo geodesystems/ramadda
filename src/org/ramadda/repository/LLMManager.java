@@ -262,7 +262,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public Result processLLM(Request request)  throws Exception {
 	try {
 	    if(request.isAnonymous()) {
-		String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
+		String json = JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote("You must be logged in to use the rewrite service")));
 		return new Result("", new StringBuilder(json), "text/json");
 	    }
 
@@ -271,7 +271,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						    "Rewrite the following text as college level material:");
 	    String promptSuffix = request.getString("promptsuffix", "");
 	    text = callLLM(request, promptPrefix,promptSuffix,text,1000,false,new PromptInfo() );
-	    String json = JsonUtil.map(Utils.makeList("result", JsonUtil.quote(text)));
+	    String json = JsonUtil.map(Utils.makeListFromValues("result", JsonUtil.quote(text)));
 	    return new Result("", new StringBuilder(json), "text/json");
 	} catch(Throwable exc) {
 	    throw new RuntimeException(exc);
@@ -299,7 +299,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
     private Result makeJsonErrorResult(String error) {
-	String json = JsonUtil.map(Utils.makeList("error", JsonUtil.quote(error)));
+	String json = JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote(error)));
 	return new Result("", new StringBuilder(json), "text/json");
     }
 
@@ -388,7 +388,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	//	synchronized(MUTEX_OPENAI) {
 	boolean useGpt4 = model.equals(MODEL_GPT_4);
 	if(useGpt4 && !isGPT4Enabled()) return null;
-	List<String> args =  Utils.makeList("temperature", "0",
+	List<String> args =  Utils.makeListFromValues("temperature", "0",
 					    "max_tokens" ,""+ maxReturnTokens,
 					    "top_p", "1.0");
 	for(int i=0;i<extraArgs.length;i+=2) {
@@ -694,7 +694,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 
 
-	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeList("results", JsonUtil.quote(text))));
+	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeListFromValues("results", JsonUtil.quote(text))));
 	    return new Result("", sb, "text/json");
 	}
 	if(json.has("error")) {
@@ -905,7 +905,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		if(r==null) {
 		    return makeJsonError("Could not process request");
 		} else {
-		    s =  JsonUtil.map(Utils.makeList("offset",info.offset,
+		    s =  JsonUtil.map(Utils.makeListFromValues("offset",info.offset,
 						     "corpusLength",info.corpusLength,
 						     "segmentLength",info.segmentLength,
 						     "tokenCount",info.tokenLimit,
@@ -959,7 +959,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
     private Result makeJsonError(String msg) {
-	String s =  JsonUtil.mapAndQuote(Utils.makeList("error", msg));
+	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
 

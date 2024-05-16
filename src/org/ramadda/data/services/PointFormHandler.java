@@ -964,7 +964,7 @@ public class PointFormHandler extends RecordFormHandler {
                                     4)));
 
             if (recordEntry.isCapable(PointFile.ACTION_DECIMATE)) {
-		List<String> skips = Utils.makeList(new TwoFacedObject("None",""),"1","2","3","4","5",
+		List<String> skips = Utils.makeListFromValues(new TwoFacedObject("None",""),"1","2","3","4","5",
 						    "6","7","8","9","10","15","20","30","40","50","75","100","200","300","400","500","1000");
 						   
 						   
