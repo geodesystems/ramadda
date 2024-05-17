@@ -124,7 +124,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         }
 
 	getPageHandler().entrySectionOpen(request, parentEntry, sb, "Bibliography Import");
-        entries = process(request, parentEntry.getId(), biblioText, files,
+        entries = process(request, parentEntry, biblioText, files,
                           sb);
 
         for (Entry entry : entries) {
@@ -178,6 +178,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         sb.append("</ul> ");
 	getPageHandler().entrySectionClose(request, parentEntry, sb);
 	getEntryManager().parentageChanged(parentEntry);
+        getSearchManager().entriesCreated(request, entries);	
         return getEntryManager().addEntryHeader(request, parentEntry,
                 new Result("", sb));
     }
@@ -229,7 +230,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
      *
      * @throws Exception _more_
      */
-    private List<Entry> process(Request request, String parentId, String s,
+    private List<Entry> process(Request request, Entry parentEntry, String s,
                                 List<File> files, StringBuffer sb)
             throws Exception {
 
@@ -291,7 +292,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     entry = getRepository().getTypeHandler(
                         TYPE_BIBLIO).createEntry(getRepository().getGUID());
 		    entry.setCreateDate(new Date().getTime());
-                    entry.setParentEntryId(parentId);
+                    entry.setParentEntry(parentEntry);
                     values = entry.getTypeHandler().getEntryValues(entry);
                 }
                 lastLineBlank = false;
@@ -390,7 +391,6 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
             File theFile = null;
             entry = entryInfo.entry;
             if (entryInfo.file != null) {
-                System.err.println("looking for:" + entryInfo.file + ":");
                 for (File f : files) {
                     String filename = getStorageManager().getOriginalFilename(
                                           f.getName()).toLowerCase().trim();
@@ -505,28 +505,6 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
         return entries;
 
-    }
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        BiblioImporter importer = new BiblioImporter(null);
-        for (String file : args) {
-            List<File>   files = new ArrayList<File>();
-            StringBuffer sb    = new StringBuffer();
-            importer.process(null, "parent",
-                             IOUtil.readContents(file, (String) null), files,
-                             sb);
-        }
     }
 
 }
