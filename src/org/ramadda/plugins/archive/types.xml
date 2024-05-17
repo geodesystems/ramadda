@@ -37,8 +37,8 @@ orderBy=createdate_ascending
 +row
 +col-8
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="" headingClass="formgroupheader"
-layout="tabs|linear|accordion"  includeTitle="true"  separator=""  decorate="false" 
+{{properties  message=""  metadata.types="!content.alias,!content.thumbnail" headingClass="formgroupheader"
+layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -col
 +col-4
