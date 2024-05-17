@@ -66,7 +66,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
         super.addImportTypes(importTypes, formBuffer);
-        importTypes.add(new TwoFacedObject("Bibliography Import",
+        importTypes.add(new TwoFacedObject("Bibliography bibtex format",
                                            TYPE_BIBLIO));
     }
 
@@ -114,7 +114,6 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         }
 
         StringBuffer sb = new StringBuffer();
-
         if (biblioText == null) {
             sb.append(
                 getPageHandler().showDialogError(
@@ -124,6 +123,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     new Result("", sb));
         }
 
+	getPageHandler().entrySectionOpen(request, parentEntry, sb, "Bibliography Import");
         entries = process(request, parentEntry.getId(), biblioText, files,
                           sb);
 
@@ -176,7 +176,8 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
         }
 
         sb.append("</ul> ");
-
+	getPageHandler().entrySectionClose(request, parentEntry, sb);
+	getEntryManager().parentageChanged(parentEntry);
         return getEntryManager().addEntryHeader(request, parentEntry,
                 new Result("", sb));
     }
@@ -289,6 +290,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                     filenameFromBiblio = null;
                     entry = getRepository().getTypeHandler(
                         TYPE_BIBLIO).createEntry(getRepository().getGUID());
+		    entry.setCreateDate(new Date().getTime());
                     entry.setParentEntryId(parentId);
                     values = entry.getTypeHandler().getEntryValues(entry);
                 }
@@ -495,8 +497,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
                             Resource.TYPE_STOREDFILE));
                 } else {
                     if (attempt == 2) {
-                        System.out.println("not found: " + entry.getName()
-                                           + " name=" + entryInfo.author);
+			//                        System.out.println("not found: " + entry.getName() + " name=" + entryInfo.author);
                     }
                 }
             }

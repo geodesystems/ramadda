@@ -122,23 +122,12 @@ public class BiblioTypeHandler extends GenericTypeHandler {
      * @return _more_
      */
     private String formatAuthors(String primary, String others) {
-        return primary + ", " + others;
+	if(stringDefined(primary) && stringDefined(others))
+	    return primary + ", " + others;
+	else if(stringDefined(others))
+	    return others;
+	return primary;
     }
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -164,9 +153,7 @@ public class BiblioTypeHandler extends GenericTypeHandler {
             String pages       = Utils.toString(values[idx++]);
             String doi         = Utils.toString(values[idx++]);
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV));
-
-            sb.append(authors);
-            sb.append(", ");
+	    append(sb,authors);
             sb.append(cal.get(GregorianCalendar.YEAR));
             sb.append(": ");
             sb.append(title);
@@ -174,18 +161,18 @@ public class BiblioTypeHandler extends GenericTypeHandler {
                 sb.append(".");
             }
             sb.append(" ");
-            sb.append(HtmlUtils.italics(pub));
-            sb.append(", ");
-            if (volume != null) {
+	    if(stringDefined(pub)) {
+		append(sb,HU.italics(pub));
+	    }
+            if (stringDefined(volume)) {
                 sb.append(HtmlUtils.bold(volume));
+		sb.append(", ");
             }
-            // TODO: deal with issues
-            sb.append(", ");
-            if (pages != null) {
+            if (stringDefined(pages)) {
                 sb.append(pages);
-                sb.append(".");
+                sb.append(". ");
             }
-            if (doi != null) {
+            if (stringDefined(doi)) {
                 sb.append(" doi: ");
                 if ( !doi.startsWith("http")) {
                     doi = "https://doi.org/" + doi;
@@ -200,5 +187,12 @@ public class BiblioTypeHandler extends GenericTypeHandler {
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
                                     tag, props);
     }
+
+    private void append(StringBuilder sb, String s) {
+	if(stringDefined(s)) {
+	    sb.append(s);
+            sb.append(", ");
+	}
+    }	
 
 }

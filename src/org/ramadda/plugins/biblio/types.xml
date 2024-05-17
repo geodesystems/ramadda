@@ -1,6 +1,20 @@
 <types>
 
-<type  name="biblio"  description="Bibliographic Entry"  handler="org.ramadda.plugins.biblio.BiblioTypeHandler" category="Information"><property  name="search.synthetic.authors.label"  value="All Authors" /><property  name="search.tabs"  value="list" /><property  name="search.synthetic.authors.fields"  value="primary_author,other_authors" /><property  name="html.type.show"  value="false" /><property  name="form.todate.show"  value="false" /><property  name="form.description.label"  value="Abstract" /><property  name="form.name.label"  value="Title" /><property  name="search.synthetic.fields"  value="authors" /><property  name="icon"  value="/biblio/book.png" /><property  name="form.location.show"  value="false" /><property  name="search.form.area.show"  value="false" /><property  name="form.fromdate.label"  value="Date" /><property  name="search.label"  value="Search for Bibliographic entries" />
+  <type  name="biblio"  description="Bibliographic Entry"  handler="org.ramadda.plugins.biblio.BiblioTypeHandler" category="Information">
+    <property  name="search.synthetic.authors.label"  value="All Authors" />
+    <property  name="search.tabs"  value="list" />
+    <property  name="search.synthetic.authors.fields"  value="primary_author,other_authors" />
+    <property  name="html.type.show"  value="false" />
+    <property  name="form.todate.show"  value="false" />
+    <property  name="form.area.show"  value="false" />
+    <property  name="form.tags.show"  value="false" />
+    <property  name="form.description.label"  value="Abstract" />
+    <property  name="form.name.label"  value="Title" />
+    <property  name="search.synthetic.fields"  value="authors" />
+    <property  name="icon"  value="/biblio/book.png" />
+    <property  name="form.location.show"  value="false" />
+    <property  name="form.fromdate.label"  value="Date" />
+    <property  name="search.label"  value="Search for Bibliographic entries" />
 
   <column  name="primary_author"  label="Primary Author"  type="string"  cansearch="true"  size="500" ></column>
   <column  name="type"  label="Publication Type"  type="enumerationplus"  cansearch="true" >
