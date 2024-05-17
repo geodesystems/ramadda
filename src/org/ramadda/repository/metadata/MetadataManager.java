@@ -911,10 +911,10 @@ public class MetadataManager extends RepositoryManager {
 
 
     public  List<String> getThumbnailUrls(Request request, Entry entry,
-					  List<String> urls)
+					  List<String> urls,boolean...inherited)
             throws Exception {
 	List<String[]> tmp = new ArrayList<String[]>();
-	getFullThumbnailUrls(request, entry, tmp);
+	getFullThumbnailUrls(request, entry, tmp,inherited);
 	if(urls==null) urls = new ArrayList<String>();
 	for(String[]tuple: tmp) {
 	    urls.add(tuple[0]);
@@ -932,12 +932,20 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void getFullThumbnailUrls(Request request, Entry entry,
-                                 List<String[]> urls)
+				     List<String[]> urls,boolean...inherited)
             throws Exception {
+	int size = urls.size();
         for (Metadata metadata : getMetadata(request,entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.getThumbnailUrls(request, entry, urls, metadata);
         }
+	if(inherited.length>0 && size==urls.size()) {
+	    Entry parent = entry.getParentEntry();
+	    if(parent!=null) {
+		getFullThumbnailUrls(request, parent, urls,inherited);
+	    }
+	}	    
+	       
     }
 
 
@@ -951,10 +959,10 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getThumbnailUrl(Request request, Entry entry)
+    public String getThumbnailUrl(Request request, Entry entry,boolean...inherited)
             throws Exception {
         List<String[]> urls = new ArrayList<String[]>();
-        getFullThumbnailUrls(request, entry, urls);
+        getFullThumbnailUrls(request, entry, urls,inherited);
         if (urls.size() > 0) {
             return urls.get(0)[0];
         }

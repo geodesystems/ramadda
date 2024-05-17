@@ -1145,13 +1145,13 @@ public class WikiManager extends RepositoryManager
             }
         }
         String style  = getProperty(wikiUtil, props, ATTR_STYLE, "");
-        String        maxWidth = getProperty(wikiUtil, props, "maxWidth", null);        if (maxWidth != null) {
+        String        maxWidth = getProperty(wikiUtil, props, "maxWidth", null);
+	if (maxWidth != null) {
             style+= "max-width:" + HU.makeDim(maxWidth,"px")+";";
         }	
 
         String    border = getProperty(wikiUtil, props, ATTR_BORDER, null);
-        String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,
-                                         "#ccc");
+        String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,null);
 
         if (border!=null || bordercolor!=null) {
 	    if(border==null) border="1px solid ";
@@ -1383,8 +1383,9 @@ public class WikiManager extends RepositoryManager
 	if(entry==null) {
 	    return getMessage(wikiUtil, props, msg("No image entry"));
 	}
+	boolean inherited = getProperty(wikiUtil, props,"inherited",false);
         if (!stringDefined(src) && getProperty(wikiUtil,props,"useThumbnail",false)) {
-	    String imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+	    String imageUrl = getMetadataManager().getThumbnailUrl(request, entry,inherited);
 	    if(imageUrl!=null) {
 		return getWikiImage(wikiUtil, request, imageUrl,entry,props);
 	    }
@@ -6396,7 +6397,7 @@ public class WikiManager extends RepositoryManager
         for (TwoFacedObject tfo :
 		 getRepository().getHtmlOutputHandler().getMetadataHtml(
 									request, entry, onlyTheseTypes, notTheseTypes,
-									includeTitle, separator, decorate,stripe,inherited)) {
+									includeTitle, separator, decorate,stripe,inherited,props)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }

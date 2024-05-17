@@ -704,11 +704,12 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-            List<String> onlyTheseTypes, List<String> notTheseTypes,
-            boolean showTitle, String separator, boolean decorate,
-						boolean stripe,boolean inherited)
+						List<String> onlyTheseTypes, List<String> notTheseTypes,
+						boolean showTitle, String separator, boolean decorate,
+						boolean stripe,boolean inherited,Hashtable props)
             throws Exception {
 
+	String headingClass=Utils.getProperty(props,"headingClass","ramadda-lheading");
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
         boolean              tags   = request.get("tags", false);
@@ -772,7 +773,7 @@ public class HtmlOutputHandler extends OutputHandler {
             String group = type.getDisplayGroup();
             StringBuilder sb =
                 cb.get(type.getPriority(),
-                       HU.div(group, HU.cssClass("ramadda-lheading")));
+                       HU.div(group, HU.cssClass(headingClass)));
             Boolean rowFlag = typeRow.get(group);
             if (rowFlag == null) {
                 rowFlag = Boolean.TRUE;
@@ -1309,9 +1310,8 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-
 		 getMetadataHtml(request, entry, null, null, true, null,
-                                false, true,false)) {
+				 false, true,false,props)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
         }
