@@ -191,9 +191,9 @@ ${Personnel}
 
     <type
        name="Instrument"
-       searchable="false"
+       searchable="true"
        id="dif.instrument">
-      <element name="Short Name"/>
+      <element name="Short Name" datatype="enumerationplus"/>
       <element name="Long Name"/>
       <template type="dif"><![CDATA[<Sensor_Name>
 <Short_Name>${Short_Name}</Short_Name>
