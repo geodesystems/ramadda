@@ -664,7 +664,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			String s = v.toString().toLowerCase();
 			corpus.append(s);
 			corpus.append(" ");
-			System.err.println("FIELD:" + field +" value:" + s);
 			doc.add(new TextField(field, s,Field.Store.NO));
 			if(column.getCanSort())
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
