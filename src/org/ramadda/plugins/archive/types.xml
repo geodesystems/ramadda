@@ -1,4 +1,57 @@
 <types 	priority="1" supercategory="General" category="Information">
+  <type name="type_archive_portfolio"  description="Research Portfolio"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	newfields="name,description,author,institution,_default"
+	editfields="name,description,author,institution,_default"	
+	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/portfolio.png"/>
+    <property  name="html.type.show"  value="false" />
+    <property name="form.ark.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.owner.show" value="false"/>                
+    <property name="form.resource.show" value="false"/>
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>
+<children><![CDATA[
+<entries>
+<entry  name="Publications"  type="type_document_collection" entryorder="10"/>
+<entry  name="Documents"  type="type_document_collection" entryorder="20"/>
+<entry  name="Data"  type="group" entryorder="30"/>
+</entries>
+]]>
+</children>
+<wiki><![CDATA[
++section # title="Portfolio: {{name}}"
+{{description wikify="true"}}
+:heading Information
++row
++col-8
+{{information  showDetails="true"  showTitle="false"   }} 
+{{properties  message=""  metadata.types="" headingClass="formgroupheader"
+layout="tabs|linear|accordion"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+-col
++col-4
++center
+{{ark short=true}}
+:rem Logo
+{{image  message="" width="200px" style="margin-bottom:10px;" inherited="true" useThumbnail="true"}}
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+:vspace 1em
+----
+:vspace 1em
+:heading Contents
+{{tabletree  message=""}} 
+-section
+]]>
+</wiki>
+</type>
+
   <type name="type_archive_document"  foruser="false"  description="PDF, Word, PPT, etc"  
 	handler="org.ramadda.repository.type.GenericTypeHandler"  
 	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
@@ -7,10 +60,19 @@
     <action name="applyllm" label="Apply LLM" canedit="true"
 	    icon="fas fa-font" foruser="true" category="edit"/>
     <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+<children><![CDATA[
+<entries>
+<entry  name="Publications"  type="type_document_collection" entryorder="10"/>
+<entry  name="Documents"  type="type_document_collection" entryorder="20"/>
+<entry  name="Data"  type="group" entryorder="30"/>
+</entries>
+]]>
+</children>
     <wiki><![CDATA[
 +section # title="{{name}}"
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
+{{tabletree  message=""}} 
 -section
 ]]>
 </wiki>
