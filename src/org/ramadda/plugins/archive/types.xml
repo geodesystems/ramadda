@@ -25,6 +25,13 @@
 </children>
 <wiki><![CDATA[
 +section # title="Portfolio: {{name}}"
++center
+{{display_simplesearch width=200px  inputSize=100% 
+ancestor=this 
+placeholder="Search in portfolio"
+orderBy=createdate_ascending 
+}}
+-center
 {{description wikify="true"}}
 :heading Information
 +row
