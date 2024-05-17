@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun May 12 20:18:09 MDT 2024";
+var build_date="RAMADDA build date: Fri May 17 05:24:40 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -19385,6 +19385,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToPan',d:false},	
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
+	{p:'replaceNanWithZero'},
 	{p:'maxColumns',d:-1},
 	{p:'interpolateNulls',d:true,ex:'true'},
 	{p:'animateChart',ex:true},
@@ -20280,6 +20281,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
 	    if(debug) console.log(selectedFields.map(f=>{return f.getId()+'-'+f.getLabel()}));
+	    let replaceNanWithZero = this.getReplaceNanWithZero();
+
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
 	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
@@ -20616,6 +20619,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    }
 			    if(formatNumbers) {
 				value = {v:value,f:String(this.formatNumber(value))};
+				if(replaceNanWithZero && isNaN(value.v)) value.v=0
 			    }
 			}  else if(type=="boolean") {
 			    value = String(value);
@@ -37351,7 +37355,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'showLayers',d:true,ex:'false',tt:'Connect points with map vectors'},
 	{p:'showBaseLayersSelect',ex:true,d:false},
 	{p:'baseLayerSelectLabel',d:null},
-	{p:'locations',ex:'usairports.json,usstates.json'},
+	{p:'locations',ex:'countries.json,usstates.json,uscities.json,usairports.json'},
 	{p:'highlightColor',d:'blue',ex:'#ccc',tt:''},
 	{p:'highlightFillColor',ex:'#ccc',
 	 tt:'Use "match" to match the features opacity'},		
@@ -37898,7 +37902,78 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	    }
 
 
-//extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
+	    if(extras.length) {
+		setTimeout(()=>{
+		    this.addExtraLayers(extras);
+		},1000);
+	    }
+
+            if (this.getShowLayers()) {
+		//do this later so the map displays its initial location OK
+		setTimeout(()=>{
+		    let match = true;
+		    let getId=id=>{
+			match = true;
+			if(id.startsWith('true:')) {
+			    id =id.substring('true:'.length);
+			    match=true;
+			} else if(id.startsWith('false:')) {
+			    id =id.substring('false:'.length);
+			    match = false;
+			}
+			return id;
+		    }
+                    if (this.getProperty("shapefileLayer")) {
+			let ids = Utils.split(this.getProperty('shapefileLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label,true,match);
+			});
+                    }
+                    if (this.getProperty('kmlLayer')) {
+			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label, true,match);
+			});
+                    }
+                    if (this.getProperty('geojsonLayer')) {
+			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
+			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
+			ids.forEach((id,idx)=>{
+			    id = getId(id);
+			    let url = this.getRamadda().getEntryDownloadUrl(id);
+			    let label = labels[idx]??'Map';
+			    this.addBaseMapLayer(url, label, false,match);
+			});
+                    }
+		    let mapLayers = this.getProperty('mapLayers');
+		    //Check to make sure it is an array
+		    if(mapLayers && mapLayers.forEach) {
+			let process=(layer)=>{
+			    let url
+			    if(layer.type=='shapefile')
+				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
+			    else 
+				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
+			};
+			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
+			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
+		    }
+
+		},500);
+            }
+        },
+
+	addExtraLayers:function(extras) {
+	    //extraLayers="baselayer:nexrad,geojson:US States:resources/usmap.json:fillColor:transparent"
 	    extras.forEach(tuple=>{
 		if(tuple.trim().length==0) return;
 		tuple = tuple.replace(/https:/g,'https_semicolon_');
@@ -37984,72 +38059,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    console.log("Unknown map type:" + type)
 		}
 	    });
+	},
 
 
-
-            if (this.getShowLayers()) {
-		//do this later so the map displays its initial location OK
-		setTimeout(()=>{
-		    let match = true;
-		    let getId=id=>{
-			match = true;
-			if(id.startsWith('true:')) {
-			    id =id.substring('true:'.length);
-			    match=true;
-			} else if(id.startsWith('false:')) {
-			    id =id.substring('false:'.length);
-			    match = false;
-			}
-			return id;
-		    }
-                    if (this.getProperty("shapefileLayer")) {
-			let ids = Utils.split(this.getProperty('shapefileLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('shapefileLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label,true,match);
-			});
-                    }
-                    if (this.getProperty('kmlLayer')) {
-			let ids = Utils.split(this.getProperty('kmlLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('kmlLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label, true,match);
-			});
-                    }
-                    if (this.getProperty('geojsonLayer')) {
-			let ids = Utils.split(this.getProperty('geojsonLayer',''),',',true,true);
-			let labels = Utils.split(this.getProperty('geojsonLayerName',''),',',true,true);
-			ids.forEach((id,idx)=>{
-			    id = getId(id);
-			    let url = this.getRamadda().getEntryDownloadUrl(id);
-			    let label = labels[idx]??'Map';
-			    this.addBaseMapLayer(url, label, false,match);
-			});
-                    }
-		    let mapLayers = this.getProperty('mapLayers');
-		    //Check to make sure it is an array
-		    if(mapLayers && mapLayers.forEach) {
-			let process=(layer)=>{
-			    let url
-			    if(layer.type=='shapefile')
-				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
-			    else 
-				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
-			};
-			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
-			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
-		    }
-
-		},500);
-            }
-        },
         handleKeyUp:function(event) {
 	},
         handleKeyDown:function(event) {
@@ -38291,7 +38303,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'isPath',ex:'true',tt:'Make a path from the points'},
 	{p:'isPathThreshold',ex:'1000',tt:'Make path from the points if # records<threshold'},
 	{p:'groupByField',tt:'Field id to group the paths'},	
-	{p:'pathWidth',ex:'2'},
+	{p:'pathWidth',d:'1'},
 	{p:'pathColor',ex:'red'},	
 	{p:'pathWindowTime',tt:'Show leading dots',ex:'1 day'},
 	{p:'pathWindowSize',tt:'Number of records to show as leading dots'},
@@ -40207,12 +40219,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    this.getProperty("locations","").split(",").forEach(url=>{
 		url  =url.trim();
 		if(url.length==0) return;
+		let show = url.startsWith("show:");
+		if(show) url = url.substring("show:".length);
 		if(!url.startsWith("/") && !url.startsWith("http")) {
 		    url = RamaddaUtil.getCdnUrl("/resources/" +url);			
+		}
+		if(url.endsWith('geojson')) {
+		    this.map.addGeoJsonLayer('location layer', url, false, null, null, {}, null);
+		    return;
 		}
 		let success = (data) =>{
 		    data=JSON.parse(data);
 		    this.addLocationMenu(url, data);
+		    if(show) {
+			let attrs = {
+			    pointRadius:this.getProperty('locationRadius',4),
+			    fillColor:this.getProperty('locationFillColor','blue'),
+			    strokeWidth:this.getProperty('locationStrokeWidth',0),
+			    strokeColor:this.getProperty('locationStrokeColor','blue'),			    
+			}
+
+			data.locations.forEach(loc=>{
+			    let point = MapUtils.createLonLat(loc.longitude, loc.latitude);
+			    this.map.addPoint('', point,attrs,loc.name);
+			});
+		    }
 		};
 		let fail = err=>{console.log("Error loading location json:" + url+"\n" + err);}
 		Utils.doFetch(url, success,fail,null);	    
@@ -41582,7 +41613,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let lastPoint;
 	    let pathAttrs ={
 		strokeColor: this.getProperty("pathColor",lineColor),
-		strokeWidth: this.getProperty("pathWidth",1)
+		strokeWidth: this.getPathWidth()
 	    };
 
 	    let fillColor = this.getFillColor();
@@ -42584,6 +42615,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 let longitude = record.getLongitude();
                 if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
                 let point = MapUtils.createLonLat(longitude, latitude);
+
+
+
                 let marker = this.myMarkers[source];
                 if (marker != null) {
                     this.map.removeMarker(marker);
