@@ -7,6 +7,7 @@
 
     <property name="icon" value="/archive/portfolio.png"/>
     <property  name="html.type.show"  value="false" />
+    <property  name="html.date.show"  value="false" />    
     <property name="form.ark.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
