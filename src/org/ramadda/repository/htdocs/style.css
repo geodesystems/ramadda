@@ -3373,16 +3373,19 @@ pre {
 }
 
 .metadata-row-even {
-    margin-left: 20px;
     margin-bottom:2px;
     background-color:#ffffff;
 }
 
 .metadata-row-odd {
-    margin-left: 20px;
     margin-bottom:2px;
     background-color:#f8f8f8;    
 }
+
+.metadata-group .metadata-row {
+    margin-left: 20px;
+}
+
 
 .metadata-search-link {
     text-decoration:none;
@@ -5654,7 +5657,6 @@ g.wiki-tocheader {
     font-weight: bold;
 }
 .wiki-h3 { font-size: 130%; }
-.wiki-h4 { color: #888;}
 .wiki-h5 { }
 .wiki-h6 { }
 
