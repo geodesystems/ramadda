@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="Miscellaneous" >
+  <handler category="Missing Persons" >
 
     <type id="missing_ethnicity" name="Other Ethnicity"  displaygroup="Other Ethnicities">
       <element id="ethnicity" name="Ethnicity" datatype="enumerationplus"
