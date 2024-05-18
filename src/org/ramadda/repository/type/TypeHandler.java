@@ -3369,56 +3369,7 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
-        if (getAccessManager().canDoExport(request, entry)) {
-            links.add(
-                new Link(
-                    HU.url(
-                        getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IO.stripExtension(
-                            Entry.encodeName(
-                                getEntryName(
-                                    entry))) + ".zip", new String[] {
-                                        ARG_ENTRYID,
-                                        entry.getId() }), ICON_EXPORT,
-                                        "Export", OutputType.TYPE_FILE));
-
-
-        }
-
-        //Add an import link if they have the right privileges
-        if (canDoNew) {
-            links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-                        entry.getId()), ICON_IMPORT, "Import",
-                                        OutputType.TYPE_FILE));
-            links.add(makeHRLink(OutputType.TYPE_FILE));
-        }
-
-
-
-
-        if (canDoNew) {
-            List<String> pastTypes =
-                (List<String>) getSessionManager().getSessionProperty(
-                    request, ARG_TYPE);
-            HashSet seen   = new HashSet();
-            boolean didone = addTypes(request, entry, links, childTypes,
-                                      seen);
-            didone |= addTypes(request, entry, links, pastTypes, seen);
-
-            didone |= addTypesFromEntries(request, entry, links,
-                                          entry.getChildren(), seen);
-
-
-            if (didone) {
-                links.add(makeHRLink(OutputType.TYPE_FILE));
-            }
-        }
-
-
+	addImportExportLinks(request, entry,links,canDoNew);
 
         links.add(
             new Link(
@@ -3578,6 +3529,34 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    private void addImportExportLinks(Request request, Entry entry,List<Link>links, boolean canDoNew)  throws Exception {
+        if (getAccessManager().canDoExport(request, entry)) {
+            links.add(
+                new Link(
+                    HU.url(
+                        getRepository().URL_ENTRY_EXPORT.toString() + "/"
+                        + IO.stripExtension(
+                            Entry.encodeName(
+                                getEntryName(
+                                    entry))) + ".zip", new String[] {
+                                        ARG_ENTRYID,
+                                        entry.getId() }), ICON_EXPORT,
+                                        "Export", OutputType.TYPE_FILE));
+
+
+        }
+
+        //Add an import link if they have the right privileges
+        if (canDoNew) {
+            links.add(
+                new Link(
+                    request.makeUrl(
+                        getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
+                        entry.getId()), ICON_IMPORT, "Import",
+                                        OutputType.TYPE_FILE));
+            links.add(makeHRLink(OutputType.TYPE_FILE));
+        }
+    }
 
 
 
