@@ -2836,6 +2836,8 @@ public class WikiManager extends RepositoryManager
 					    JU.map(opts)));
 	    }
 	    return  contents;
+        } else if (theTag.equals(WIKI_TAG_TYPENAME)) {
+	    return entry.getTypeHandler().getDescription();
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
         } else if (theTag.equals(WIKI_TAG_CHILDREN_COUNT)) {

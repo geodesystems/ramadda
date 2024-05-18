@@ -644,6 +644,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_NAME = "name";
     public static final String WIKI_TAG_ICON = "icon";    
+    public static final String WIKI_TAG_TYPENAME = "typename";
 
     public static final String WIKI_TAG_ARK = "ark";
     public static final String WIKI_TAG_DISPLAY_IMPORTS = "displayImports";
