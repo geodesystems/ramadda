@@ -1,0 +1,165 @@
+<types 	priority="10" supercategory="General" category="Archive">
+
+  <type name="type_archive_collection"  description="Archive Collection"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	childtypes="type_archive_series"
+	newfields="name,description,_default"
+	editfields="name,description,_default"	
+	metadata="content.keyword,enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/collection.png"/>
+    <property name="date.format" value="yyyy-MM-dd"/>
+    <property name="form.resource.show" value="false"/>
+    <property  name="html.type.show"  value="false" />
+    <property name="form.ark.show" value="false"/>
+<!--
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+
+
+<children><![CDATA[
+<entries>
+<entry  name="Series 1"  type="type_archive_series" id="series1"/>
+<entry  name="File 1"  type="type_archive_file" parent="series1"/>
+</entries>
+]]>
+</children>
+<wiki><![CDATA[
++section  title="Collection: {{name}}"
++center
+{{display_simplesearch width=200px  inputSize=100% 
+ancestor=this 
+placeholder="Search in collection"
+orderBy=createdate_ascending 
+}}
+-center
++toggleopen Details
++row
++col-8
+{{description wikify="true"}}
+{{information  showDetails="true"  showTitle="false"   }} 
+{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+-col
++col-4
++center
+{{ark short=true}}
+{{image  message="" width="150px" style="margin-bottom:10px;" inherited="true" useThumbnail="true"}}
+-center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+:vspace 1em
+-toggle
+----
+:vspace 1em
+:heading Contents
+{{tabletree  message=""}} 
+-section
+]]>
+</wiki>
+
+
+</type>
+
+
+  <type name="type_archive_series"  description="Archive Series"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	childtypes="type_archive_file"
+	newfields="name,description,_default"
+	editfields="name,description,_default"	
+	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/series.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property  name="html.type.show"  value="false" />
+    <property  name="html.date.show"  value="false" />    
+    <property name="form.ark.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.owner.show" value="false"/>                
+<!--
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+
+<children><![CDATA[
+<entries>
+<entry  name="File 1"  type="type_archive_file"/>
+<entry  name="File 2"  type="type_archive_file"/>
+</entries>
+]]>
+</children>
+
+
+</type>
+
+
+  <type name="type_archive_file"  description="Archive File"
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	childtypes="type_archive_item"
+	newfields="name,description,_default"
+	editfields="name,description,_default"	
+	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/file.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property  name="html.type.show"  value="false" />
+    <property  name="html.date.show"  value="false" />    
+    <property name="form.ark.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.owner.show" value="false"/>                
+<!--
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+
+
+</type>
+
+<type name="type_archive_item"  description="Archive Item" foruser="false"
+      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+      newfields="name,description,_default"
+      editfields="name,description,_default"	
+      xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/portfolio.png"/>
+    <property  name="html.type.show"  value="false" />
+    <property  name="html.date.show"  value="false" />    
+    <property name="form.ark.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.owner.show" value="false"/>                
+<!--
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+
+
+</type>
+
+
+<type name="type_archive_item_image"  super="type_archive_item"
+      description="Archive Item Image" 
+      handler="org.ramadda.repository.type.GenericTypeHandler"  
+      newfields="name,description,_default"
+      editfields="name,description,_default"	
+      xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+
+    <property name="icon" value="/archive/picture.png"/>
+    <property  name="html.type.show"  value="false" />
+    <property  name="html.date.show"  value="false" />    
+    <property name="form.ark.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.owner.show" value="false"/>                
+<!--
+    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+</type>
+
+</types>
