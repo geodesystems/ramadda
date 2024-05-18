@@ -25,11 +25,11 @@
 ]]>
 </children>
 <wiki><![CDATA[
-+section  title="Collection: {{name}}"
++section  title="{{typename}}: {{name}}"
 +center
 {{display_simplesearch width=200px  inputSize=100% 
 ancestor=this 
-placeholder="Search in collection"
+placeholder="Search"
 orderBy=createdate_ascending 
 }}
 -center
@@ -48,11 +48,11 @@ inherited="false"  }}
 {{image  message="" width="150px" style="margin-bottom:10px;" inherited="true" useThumbnail="true"}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
 {{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
 xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
-+center
-{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
--center
 -col
 -row
 :vspace 1em
@@ -60,7 +60,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 ----
 :vspace 1em
 :heading Contents
-{{tabletree  message=""}} 
+{{tabletree  message="" showSize="false"}} 
 -section
 ]]>
 </wiki>
