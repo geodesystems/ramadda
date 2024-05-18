@@ -783,11 +783,12 @@ public class HtmlOutputHandler extends OutputHandler {
             typeRow.put(group, Boolean.valueOf( !even));
             //      even=true;
 
-            String  rowClass = !stripe
-                               ? "metadata-row"
-                               : "metadata-row-" + (even
-                    ? "even"
-                    : "odd");
+            String  rowClass = "metadata-row "+
+		(!stripe
+		 ? "metadata-row"
+		 : "metadata-row-" + (even
+				      ? "even"
+				      : "odd"));
 
 
             boolean first    = sb.length() == 0;
@@ -849,10 +850,14 @@ public class HtmlOutputHandler extends OutputHandler {
                 String header = category;
                 if (showTitle) {
                     sb.append(header);
+		    HU.open(sb, "div", HU.cssClass("metadata-group"));
                 }
                 HU.open(sb, "div", HU.cssClass("metadata-block"));
                 sb.append(cb.get(category));
-                HU.close(sb, "div");
+		if (showTitle) {
+		    HU.close(sb, "div");
+		}
+                HU.close(sb, "div");		
             }
             result.add(new TwoFacedObject(cat, sb));
         }
