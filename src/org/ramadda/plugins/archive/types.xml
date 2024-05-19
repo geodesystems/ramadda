@@ -8,6 +8,7 @@
     <property name="icon" value="/archive/portfolio.png"/>
     <property  name="html.type.show"  value="false" />
     <property  name="html.date.show"  value="false" />    
+    <property name="form.description.iswiki" value="true"/>
     <property name="form.ark.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
@@ -15,7 +16,7 @@
     <property name="form.resource.show" value="false"/>
     <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
     <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>
-    <column name="department" type="enumerationplus"  label="DEPARTMENT"
+    <column name="department" type="enumerationplus"  label="Department"
 	    cansearch="true" columns="60"/>    
 <children><![CDATA[
 <entries>
@@ -34,8 +35,8 @@ placeholder="Search in portfolio"
 orderBy=createdate_ascending 
 }}
 -center
++toggleopen Information
 {{description wikify="true"}}
-:heading Information
 +row
 +col-8
 {{information  showDetails="true"  showTitle="false"   }} 
@@ -53,6 +54,7 @@ inherited="false"  }}
 -col
 -row
 :vspace 1em
+-toggle
 ----
 :vspace 1em
 :heading Contents

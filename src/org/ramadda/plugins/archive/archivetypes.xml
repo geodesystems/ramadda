@@ -5,10 +5,11 @@
 	childtypes="type_archive_series"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="content.keyword,enum_tag,metadata_author,metadata_publisher">
+	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
 
     <property name="icon" value="/archive/collection.png"/>
     <property name="date.format" value="yyyy-MM-dd"/>
+    <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
     <property name="form.ark.show" value="false"/>
@@ -74,9 +75,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	childtypes="type_archive_file"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
 
     <property name="icon" value="/archive/series.png"/>
+    <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
     <property  name="html.date.show"  value="false" />    
@@ -102,10 +104,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
   <type name="type_archive_file"  description="Archive File"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-	childtypes="type_archive_item"
+	childtypes="type_archive_item_image"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
 
     <property name="icon" value="/archive/file.png"/>
     <property name="form.resource.show" value="false"/>
@@ -157,9 +159,6 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
-<!--
-    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
 </type>
 
 </types>
