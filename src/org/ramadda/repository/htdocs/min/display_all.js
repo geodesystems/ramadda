@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat May 18 05:36:19 MDT 2024";
+var build_date="RAMADDA build date: Sun May 19 09:41:15 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -49039,13 +49039,13 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
         initDisplay: function(embedded) {
 	    let _this = this;
 	    SUPER.initDisplay.call(this)
-	    this.myLayer = this.map.createFeatureLayer('IMDV Features',false,null,{rendererOptions: {zIndexing: true}});
+	    this.myLayer = this.map.createFeatureLayer('IMDV Features',true,null,{rendererOptions: {zIndexing: true}});
 	    //For now don't have a separate selection layer?
 	    //	    this.selectionLayer = this.map.createFeatureLayer('Selection',false,null,{rendererOptions: {zIndexing: true}});	    
 	    this.selectionLayer = this.myLayer;
 	    this.selectionLayer.setZIndex(1001)
 	    this.myLayer.setZIndex(1000)	    
-	    this.selectionLayer.canSelect = false;
+//	    this.selectionLayer.canSelect = false;
 	    //Always on top
 	    this.myLayer.ramaddaLayerIndex = 1001;
 	    this.icon = '/icons/map/marker-blue.png';
