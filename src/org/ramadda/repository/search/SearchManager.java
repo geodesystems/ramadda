@@ -557,11 +557,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    parentType = parentType.getParent();
 	}
 
+	//	System.err.println("index:" + entry);
 	if(entry.getParentEntryId()!=null) {
 	    doc.add(new StringField(FIELD_PARENT, entry.getParentEntryId(), Field.Store.YES));	
 	    Entry parent = entry;
 	    while(parent!=null) {
-		//		System.err.println("\tancestor:" + parent.getId());
+		//		System.err.println("\tancestor:" + parent.getId() +  " "+ parent.getName());
 		doc.add(new StringField(FIELD_ANCESTOR, parent.getId(), Field.Store.YES));	
 		parent = parent.getParentEntry();
 	    }
