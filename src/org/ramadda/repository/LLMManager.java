@@ -686,7 +686,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(json.has("text")) {
 	    String text = json.getString("text");
 	    if(request.get("sendtochat",false)) {
-		text = callLLM(request, "","",text,200,true,new PromptInfo());
+		text = callLLM(request, "","",text,2000,true,new PromptInfo());
 	    }
 	    if(request.get("addfile",false)) {
 		getEntryManager().processEntryAddFile(request, file,fileName,text);
@@ -715,8 +715,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
-		System.err.println("ERROR:" +exc);
-
 		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 		return false;
 	    } catch(Throwable thr) {
@@ -793,7 +791,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
 	if(debug) System.err.println("Prompt:" + jsonPrompt);
 
-	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,200,true,info);
+	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
 	if(!stringDefined(json)) {
 	    getLogManager().logSpecial("LLMManager:Failed to extract information for entry:" + entry.getName());
 	    return false;
@@ -809,6 +807,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		    json = json.substring(idx);
 		}
 	    }
+	    System.out.println(json);
 	    JSONObject obj = new JSONObject(json);
 	    if(extractTitle) {
 		String title = obj.optString("title",null);
