@@ -196,9 +196,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public boolean applyLLMToEntry(Request request, Entry entry,StringBuilder sb) throws Exception {
 	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
-	//	    String corpus = getSearchManager().extractCorpus(request, entry.getResource().getPath(), null);
 	if(corpus==null) {
-	    sb.append(getPageHandler().showDialogError("No file available."));
+	    sb.append(getPageHandler().showDialogError("No text from file available."));
 	    return false;
 	} else {
 	    applyEntryExtract(request, entry, corpus);
