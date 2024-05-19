@@ -551,16 +551,16 @@ function DisplayManager(argId, argProperties) {
     let _this = this;
     if (targetDiv != null) {
 	targetDiv = targetDiv.replace("${entryid}",this.getProperty("entryId"));
-	if($("#" + targetDiv).length==0) {
-	    console.log("Error: display group could not find targetDiv:" + targetDiv);
-	    targetDiv=null;
-	}
     }
 
     if (targetDiv != null) {
         $(document).ready(function() {
-            $("#" + targetDiv).html(displaysHtml);
-            _this.getLayoutManager().doLayout();
+	    if(jqid(targetDiv).length==0) {
+		console.log("Error: display group could not find targetDiv:" + targetDiv);
+	    } else {
+		$("#" + targetDiv).html(displaysHtml);
+		_this.getLayoutManager().doLayout();
+	    }
 	});
     } else {
         html += displaysHtml;
