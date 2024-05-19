@@ -204,18 +204,15 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 
     @Override
     public String getCorpus(Request request, Entry entry, CorpusType corpusType) throws Exception {
-	boolean forLLM = corpusType==CorpusType.LLM;
 	JSONArray cells = getCells(entry);
 	StringBuilder sb = new StringBuilder();
         for (int i = 0; i < cells.length(); i++) {
             JSONObject    cell     = cells.getJSONObject(i);
             String        cellType = cell.getString("cell_type");
 	    if (cellType.equals("code")) {
-		//		if(forLLM)
-		    sb.append("The following is python code\n");
+		sb.append("The following is python code\n");
 	    } else if (cellType.equals("markdown")) {
-		//		if(forLLM)
-		    sb.append("The following is markdown code\n");
+		sb.append("The following is markdown code\n");
 	    } 
             if (cell.has("source")) {
                 readLines(cell, "source", sb);
@@ -233,8 +230,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 		   String     type   = output.getString("output_type");
 		   if (output.has("text")) {
 		       try {
-			   //			   if(forLLM)
-			       sb.append("The following is the output of the above code\n");
+			   sb.append("The following is the output of the above code\n");
 			   JSONArray text = output.getJSONArray("text");
 			   readLines(text, sb);
 		       } catch (Exception exc) {
