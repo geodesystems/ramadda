@@ -5250,6 +5250,7 @@ RepositoryMap.prototype = {
 	opts = opts||{};
 	opts.style = base_style;
         let layer =  MapUtils.createLayerVector(name||"Markers", opts);
+	layer.canSelect=canSelect;
 	this.externalLayers.push(layer);
         this.addVectorLayer(layer,canSelect);
 	return layer;
