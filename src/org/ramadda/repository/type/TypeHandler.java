@@ -397,6 +397,7 @@ public class TypeHandler extends RepositoryManager {
 
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
+    private boolean canCreate = true;
     private boolean isSynthType = false;    
 
     /**  */
@@ -663,8 +664,8 @@ public class TypeHandler extends RepositoryManager {
 						      "includeInSearch", includeInSearch);
 
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
-                    XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
-                        forUser));
+					      XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
+									   forUser));
             isSynthType = Utils.getAttributeOrTag(node, "issynth",
 						  XmlUtil.getAttributeFromTree(node, "issynth",false));
             adminOnly = Utils.getAttributeOrTag(node, "adminonly",
@@ -1973,6 +1974,7 @@ public class TypeHandler extends RepositoryManager {
      *  @return _more_
      */
     public boolean canCreate(Request request) {
+	if(!canCreate) return false;
         if (adminOnly()) {
             return request.isAdmin();
         }
@@ -8263,6 +8265,10 @@ public class TypeHandler extends RepositoryManager {
             return parent.getSuperCategory();
         }
 
+	if (superCategory.equals("Basic") || superCategory.equals("")) {
+	    return  "General";
+	}
+
         return this.superCategory;
     }
 
@@ -8286,6 +8292,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+
+
+
+    public void setCanCreate(boolean v) {
+        this.canCreate = v;
+    }
 
 
 
