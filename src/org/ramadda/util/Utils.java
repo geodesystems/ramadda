@@ -5645,6 +5645,17 @@ public class Utils extends IO {
         return ((o1 == null) && (o2 == null));
     }
 
+    public static boolean matches(String s, String pattern) {
+	if(s==null) return false;
+	return s.matches(pattern);
+    }
+
+    public static boolean contains(HashSet set, Object o) {
+	if(o==null) return false;
+	return set.contains(o);
+    }
+
+
     /**
      * _more_
      *
