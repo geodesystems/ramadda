@@ -4041,9 +4041,6 @@ public class EntryManager extends RepositoryManager {
 
         for (TypeHandler typeHandler : typeHandlers) {
             String superCat = typeHandler.getSuperCategory();
-            if (superCat.equals("Basic") || superCat.equals("")) {
-                superCat = "General";
-            }
 	    SuperType superType  = superMap.get(superCat);
 	    if(superType == null) {
 		superType  = new SuperType(superCat);
