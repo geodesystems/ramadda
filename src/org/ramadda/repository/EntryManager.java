@@ -4761,6 +4761,7 @@ public class EntryManager extends RepositoryManager {
 					      final List<Entry> entries, Object actionId,
 					      String link)
 	throws Exception {
+	Date now = new Date();
 	boolean deepCopy  = request.get(ARG_COPY_DEEP,false);
 	boolean doMetadata= request.get(ARG_COPY_DO_METADATA,false);
 	EntryUtil.Excluder excluder = new EntryUtil.Excluder(Utils.split(request.getString(ARG_EXCLUDES,""),"\n",true,true),
@@ -4799,6 +4800,8 @@ public class EntryManager extends RepositoryManager {
                     return null;
                 }
                 //Do this instead of addNewEntry so the doFinalEntryInit does *not* get called
+		newEntry.setCreateDate(now.getTime());
+		newEntry.setChangeDate(now.getTime());		
                 List<Entry> tmp = new ArrayList<Entry>();
                 tmp.add(newEntry);
                 insertEntries(request, tmp, true, false);
