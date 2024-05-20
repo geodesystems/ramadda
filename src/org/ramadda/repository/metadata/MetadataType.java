@@ -301,17 +301,22 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                           ATTR_CLASS,
                           "org.ramadda.repository.metadata.MetadataHandler"));
 
+            String          id           = XmlUtil.getAttribute(node, ATTR_ID);
 
 
-            String          id           = XmlUtil.getAttribute(node,
-                                               ATTR_ID);
             MetadataHandler handler      = manager.getHandler(c);
+	    
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.help = Utils.getAttributeOrTag(node, ATTR_HELP, "");
             metadataType.init(node);
+	    //Is this type ok
+	    if(!manager.metadataTypeOk(metadataType)) {
+		continue;
+	    }
+
             handler.addMetadataType(metadataType);
             types.add(metadataType);
-        }
+	}
     }
 
 

@@ -31,6 +31,7 @@ import org.ramadda.util.sql.SqlUtil;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
@@ -165,6 +166,35 @@ public class MetadataManager extends RepositoryManager {
     MetadataHandler dfltMetadataHandler;
 
 
+    private HashSet notTypes;
+    private List<String> notTypesList;
+
+    public synchronized boolean metadataTypeOk(MetadataType type) {
+	if(notTypes==null) {
+	    notTypes=new HashSet();
+	    notTypesList = new ArrayList<String>();
+	    for(String stype: Utils.split(getRepository().getProperty("ramadda.metadata.nottypes",""),",",true,true)) {
+		notTypes.add(stype);
+		if (StringUtil.containsRegExp(stype)) {
+		    notTypesList.add(stype);
+		}
+	    }
+	}
+	if(notTypes.contains(type.getId()) || notTypes.contains("category:" +type.getCategory())) {
+	    return false;
+	}
+	for(String pattern: notTypesList) {
+	    if(pattern.startsWith("category:")) {
+		if(type.getCategory().matches(pattern.substring("category:".length()))) return false;
+	    } else if(type.getId().matches(pattern)) {
+		return false;
+		
+	    }
+
+	}
+	return true;
+
+    } 
 
     private void initializeState() {
 	metadataTypeToTemplate =  new Hashtable<String, Hashtable<String, String>>();
@@ -1633,15 +1663,7 @@ public class MetadataManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
+
     public MetadataHandler findMetadataHandler(String type) throws Exception {
         MetadataHandler handler = handlerMap.get(type);
         if (handler != null) {
