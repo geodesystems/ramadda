@@ -6258,15 +6258,51 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param typeName _more_
-     * @param typeHandler _more_
-     * @param overwrite _more_
-     */
-    public void addTypeHandler(String typeName, TypeHandler typeHandler,
+    private HashSet notTypes;
+    private List<String> notTypesList;
+
+    public synchronized void addTypeHandler(String typeName, TypeHandler typeHandler,
                                boolean overwrite) {
+
+	if(notTypes==null) {
+	    notTypes=new HashSet();
+	    notTypesList = new ArrayList<String>();
+	    for(String stype: Utils.split(getRepository().getProperty("ramadda.entry.nottypes",""),",",true,true)) {
+		notTypes.add(stype);
+		if (StringUtil.containsRegExp(stype)) {
+		    notTypesList.add(stype);
+		}
+	    }
+	}
+	
+	boolean ok = true;
+	if(Utils.contains(notTypes,typeHandler.getType()) ||
+	   Utils.contains(notTypes,typeHandler.getDescription()) ||
+	   Utils.contains(notTypes,"category:" +typeHandler.getCategory()) ||
+	   Utils.contains(notTypes,"category:" +typeHandler.getSuperCategory())) {
+	    ok =false;
+	} else {
+	    for(String pattern: notTypesList) {
+		if(pattern.startsWith("category:")) {
+		    pattern = pattern.substring("category:".length());
+		    if(Utils.matches(typeHandler.getCategory(),pattern) ||
+		       Utils.matches(typeHandler.getSuperCategory(),pattern)) {
+			ok =false;
+		    }			
+		} else {
+		    if(Utils.matches(typeHandler.getType(),pattern) ||
+		       Utils.matches(typeHandler.getDescription(),pattern)) {
+			ok =false;
+		    }
+		}
+	    }
+	}
+
+	if(!ok) {
+	    typeHandler.setForUser(false);
+	    typeHandler.setCanCreate(false);	    
+	}	    
+
         if (typeHandlersMap.containsKey(typeName)) {
             if ( !overwrite) {
                 return;
