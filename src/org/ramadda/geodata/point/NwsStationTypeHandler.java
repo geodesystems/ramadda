@@ -58,6 +58,7 @@ public class NwsStationTypeHandler extends PointTypeHandler {
 	return stations.get(id);
     }
 
+
     public void initializeNewEntry(Request request, Entry entry, String id)
             throws Exception {
 	if(!Utils.stringDefined(id)) return;

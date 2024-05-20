@@ -50,18 +50,8 @@ public class DoradeRadarTypeHandler extends RadarTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,  boolean fromImport)
             throws Exception {
         Object[]   values = entry.getTypeHandler().getEntryValues(entry);
         File       f      = entry.getFile();

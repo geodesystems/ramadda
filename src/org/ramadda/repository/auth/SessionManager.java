@@ -439,6 +439,7 @@ public class SessionManager extends RepositoryManager {
 				   messages);
 	    }
 	    messages.add(message);
+	    getLogManager().logSpecial(message);
 	} catch(Exception ignore) {
 	    getLogManager().logError("Error putting session error message:" + message,ignore);
 	}

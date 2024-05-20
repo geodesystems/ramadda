@@ -50,18 +50,9 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
-            throws Exception {
+    @Override
+    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+	throws Exception {
 
         super.initializeNewEntry(request, entry, fromImport);
         String  path  = entry.getResource().getPath();

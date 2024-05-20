@@ -41,6 +41,7 @@ public class ISLRTypeHandler extends PointTypeHandler {
     }
 
 
+    @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)
 	throws Exception {

@@ -62,6 +62,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     }
 
 
+    @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    boolean fromImport)throws Exception {
         super.initializeNewEntry(request, entry, fromImport);                                      

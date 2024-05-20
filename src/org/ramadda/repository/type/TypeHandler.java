@@ -101,6 +101,12 @@ public class TypeHandler extends RepositoryManager {
 	SEARCH
     }
 
+    public enum NewType {
+	NEW,
+	IMPORT,
+	COPY
+    }    
+
 
     public static boolean debug = false;
 
@@ -4439,6 +4445,7 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
+	System.err.println("init new:" + this);
         if ( !fromImport) {
             //Now run the services
             for (Service service : services) {
@@ -4447,19 +4454,22 @@ public class TypeHandler extends RepositoryManager {
                     continue;
                 }
                 try {
+		    System.err.println("\tservice:" + service);
                     File workDir = getStorageManager().createProcessDir();
                     ServiceInput serviceInput = new ServiceInput(workDir, entry);
                     ServiceOutput output =
                         service.evaluate(getRepository().getAdminRequest(),
                                          serviceInput, null);
 		    if(output==null) {
-			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+" no service output"); 
-			System.err.println("no service output:" + service);
+			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+
+								   " for entry:" + entry.getName() +" id:" + entry.getId() +
+								   " Error: no service output"); 
 			continue;
 		    }
                     if ( !output.isOk()) {
-			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+" service output is not ok"); 
-                        System.err.println("service output not ok");
+			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+
+								   " for entry:" + entry.getName() +" id:" + entry.getId() +
+								   " Error: service output is not ok"); 
                         continue;
                     }
 
