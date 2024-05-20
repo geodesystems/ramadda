@@ -69,7 +69,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
         initializeDocEntry(request, entry);
     }
 

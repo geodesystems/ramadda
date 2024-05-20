@@ -257,9 +257,8 @@ public class GpxTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	if(newType==NewType.NEW) {
-	    extractInfo(request, entry, true);
-	}
+	if(!isNew(newType)) return;
+	extractInfo(request, entry, true);
     }
 
     private static double readElevation(Element trackPoint) {

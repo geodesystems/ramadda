@@ -31,9 +31,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
-        if (newType!=NewType.NEW) {
-            return;
-        }
+	if(!isNew(newType)) return;
 	String caseNumber = (String) entry.getValue("case_number",null);
 	if(stringDefined(caseNumber)) return;
 	int cnt = getEntryUtil().getEntryCount(this);

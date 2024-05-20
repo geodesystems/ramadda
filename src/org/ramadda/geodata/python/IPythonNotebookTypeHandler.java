@@ -73,8 +73,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	try {
 	    initializeNewEntryInner(request, entry);
 	} catch(Exception exc) {

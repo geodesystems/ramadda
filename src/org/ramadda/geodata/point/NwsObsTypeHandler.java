@@ -65,7 +65,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)throws Exception {
         super.initializeNewEntry(request, entry, newType);                                      
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	initializeStation(request, entry,  (String) entry.getStringValue(IDX_SITE_ID, ""));
    }
 

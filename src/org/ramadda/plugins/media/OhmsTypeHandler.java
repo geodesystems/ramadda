@@ -123,9 +123,7 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             throws Exception {
 
         super.initializeNewEntry(request, entry, newType);
-        if (newType!=NewType.NEW) {
-            return;
-        }
+	if(!isNew(newType)) return;
         Element root   = getRoot(entry);
         Element record = XmlUtil.findChild(root, "record");
         //<title>SAMPLE 001: Interview with Georgia Davis Powers, April 26, 2013</title>

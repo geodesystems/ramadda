@@ -503,6 +503,9 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public boolean isNew(NewType newType) {
+	return newType==NewType.NEW;
+    }
 
     /**
      *

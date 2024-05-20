@@ -110,10 +110,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 	
 	boolean addProperties = request.get(ARG_METADATA_ADD,false) ||
 	    request.get("fromharvester",false);
-        //If this is an edit then return
-        if (newType!=NewType.NEW) {
-            return;
-        }
+	if(!isNew(newType)) return;
 
         //If the file for the entry does not exist then return
         if ( !entry.isFile()) {

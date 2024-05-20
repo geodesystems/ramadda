@@ -42,7 +42,7 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
 
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	if(entry.hasLocationDefined()) return;
 	File file = entry.getFile();
 	if(!file.exists()) return;

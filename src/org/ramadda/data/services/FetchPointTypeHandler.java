@@ -203,9 +203,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-        if (newType!=NewType.NEW) {
+	if(!isNew(newType)) {
             super.initializeNewEntry(request, entry, newType);
-
             return;
         }
         File tmpFile = getStorageManager().getTmpFile("csv");

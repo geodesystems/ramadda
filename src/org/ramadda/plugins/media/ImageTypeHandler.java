@@ -91,7 +91,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	if(!request.get(ARG_IMAGE_RESIZE,false) &&
 	   !request.get(ARG_STRIP_METADATA,false)) return;
 	if(!entry.getResource().isStoredFile()) return;

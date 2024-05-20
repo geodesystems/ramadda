@@ -53,7 +53,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry, NewType newType)
 	throws Exception {
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	initializeNewEntryInner(request, entry,null);
 
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);

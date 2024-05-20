@@ -54,8 +54,7 @@ public class RiseTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
-	if(newType!=NewType.NEW) return;
-
+	if(!isNew(newType)) return;
         String id = (String) entry.getStringValue(IDX_RISE_ID, "");
         if ( !Utils.stringDefined(id)) {
             return;

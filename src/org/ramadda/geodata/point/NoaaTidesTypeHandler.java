@@ -47,7 +47,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	if(newType!=NewType.NEW) return;
+	if(!isNew(newType)) return;
 	initializeNewEntryInner(request, entry);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;

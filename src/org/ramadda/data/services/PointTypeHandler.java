@@ -169,7 +169,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
 
-        if (newType!=NewType.NEW) {
+	if(!isNew(newType)) {
             return;
         }
 	addInitialMetadata(request, entry,false);
