@@ -147,8 +147,7 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         //Don't do this since we don't have the table set yet
     }

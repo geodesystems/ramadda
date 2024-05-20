@@ -40,10 +40,9 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
 	if(stringDefined(entry.getName())) return;
         String url = entry.getResource().getPath();
 	if(!url.startsWith("http")) return;

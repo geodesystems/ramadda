@@ -1,14 +1,8 @@
 /**
-* Copyright (c) 2008-2015 Geode Systems LLC
-* This Software is licensed under the Geode Systems RAMADDA License available in the source distribution in the file 
-* ramadda_license.txt. The above copyright notice shall be included in all copies or substantial portions of the Software.
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
-/**
- * Copyright (c) 2008-2015 Geode Systems LLC
- * This Software is licensed under the Geode Systems RAMADDA License available in the source distribution in the file
- * ramadda_license.txt. The above copyright notice shall be included in all copies or substantial portions of the Software.
- */
 package gov.noaa.esrl.psd.repository.data.model;
 
 
@@ -69,9 +63,9 @@ public class CMIP5ModelFileTypeHandler extends ClimateModelFileTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry, NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         Object[] values = getEntryValues(entry);
         if ((values[1] != null) && !values[1].toString().isEmpty()) {
             //System.err.println ("already have  values set");

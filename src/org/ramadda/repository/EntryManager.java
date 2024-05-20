@@ -2226,7 +2226,7 @@ public class EntryManager extends RepositoryManager {
                     publishAnonymousEntry(request, entry);
                     List<Entry> entries = new ArrayList<Entry>();
                     entries.add(entry);
-                    insertEntries(request, entries, newEntry, false);
+                    insertEntries(request, entries, newEntry, TypeHandler.NewType.NEW);
 
                     return new Result(
 				      request.entryUrl(
@@ -2791,7 +2791,7 @@ public class EntryManager extends RepositoryManager {
 
 
 	    if(!testNew) {
-		insertEntries(request, entries, newEntry, false);
+		insertEntries(request, entries, newEntry, newEntry?TypeHandler.NewType.NEW:TypeHandler.NewType.NONE);
 		if (newEntry) {
 		    for (Entry theNewEntry : entries) {
 			theNewEntry.getTypeHandler().doFinalEntryInitialization(
@@ -4804,7 +4804,7 @@ public class EntryManager extends RepositoryManager {
 		newEntry.setChangeDate(now.getTime());		
                 List<Entry> tmp = new ArrayList<Entry>();
                 tmp.add(newEntry);
-                insertEntries(request, tmp, true, false);
+                insertEntries(request, tmp, true, TypeHandler.NewType.COPY);
                 count++;
                 getActionManager().setActionMessage(actionId,
 						    "Copied " + count + "/" + newEntries.size()
@@ -5669,7 +5669,7 @@ public class EntryManager extends RepositoryManager {
             newEntry.getTypeHandler().convertIdsFromImport(newEntry, idList);
         }
 
-        addNewEntries(request, newEntries, true);
+        addNewEntries(request, newEntries, TypeHandler.NewType.IMPORT);
 
 	for(Entry newEntry: newEntries) {
 	    Element permissions = (Element)
@@ -7496,16 +7496,16 @@ public class EntryManager extends RepositoryManager {
 
     public void addNewEntries(Request request, List<Entry> entries)
 	throws Exception {
-        addNewEntries(request, entries, false);
+        addNewEntries(request, entries, TypeHandler.NewType.NEW);
     }
 
     public void addNewEntries(Request request, List<Entry> entries,
-                              boolean fromImport)
+                              TypeHandler.NewType newType)
 	throws Exception {
-        insertEntries(request, entries, true, fromImport);
+        insertEntries(request, entries, true, newType);
         for (Entry theNewEntry : entries) {
             theNewEntry.getTypeHandler().doFinalEntryInitialization(request,
-								    theNewEntry, fromImport);
+								    theNewEntry, newType==TypeHandler.NewType.IMPORT);
         }
     }
 
@@ -7516,19 +7516,19 @@ public class EntryManager extends RepositoryManager {
 
     public void updateEntries(Request request, List<Entry> entries, boolean callCheckModified)
 	throws Exception {
-        insertEntries(request, entries, false, false, callCheckModified);
+        insertEntries(request, entries, false, TypeHandler.NewType.NONE, callCheckModified);
     }
 
 
 
     public void insertEntries(Request request, final List<Entry> entries,
-                               boolean isNew, boolean fromImport)
+                               boolean isNew, TypeHandler.NewType newType)
 	throws Exception {
-	insertEntries(request, entries, isNew, fromImport, true);
+	insertEntries(request, entries, isNew,  newType,true);
     }
 
     private void insertEntries(Request request, final List<Entry> entries,
-                               boolean isNew, boolean fromImport,
+                               boolean isNew, TypeHandler.NewType newType,
 			       boolean callCheckModified)
 	throws Exception {
 
@@ -7549,7 +7549,7 @@ public class EntryManager extends RepositoryManager {
         if (isNew) {
 	    okToInsert= !request.exists(ARG_BULKUPLOAD);
             for (Entry theNewEntry : entries) {
-                theNewEntry.getTypeHandler().initializeNewEntry(request,theNewEntry, fromImport);
+                theNewEntry.getTypeHandler().initializeNewEntry(request,theNewEntry,newType);
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =

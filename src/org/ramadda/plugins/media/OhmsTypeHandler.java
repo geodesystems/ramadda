@@ -119,12 +119,11 @@ public class OhmsTypeHandler extends MediaTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
 
-        super.initializeNewEntry(request, entry, fromImport);
-        if (fromImport) {
+        super.initializeNewEntry(request, entry, newType);
+        if (newType!=NewType.NEW) {
             return;
         }
         Element root   = getRoot(entry);

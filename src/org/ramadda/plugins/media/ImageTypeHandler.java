@@ -88,11 +88,10 @@ public class ImageTypeHandler extends GenericTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
-	if(fromImport) return;
+        super.initializeNewEntry(request, entry, newType);
+	if(newType!=NewType.NEW) return;
 	if(!request.get(ARG_IMAGE_RESIZE,false) &&
 	   !request.get(ARG_STRIP_METADATA,false)) return;
 	if(!entry.getResource().isStoredFile()) return;

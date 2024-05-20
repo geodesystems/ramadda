@@ -59,7 +59,7 @@ public class NwsStationTypeHandler extends PointTypeHandler {
     }
 
 
-    public void initializeNewEntry(Request request, Entry entry, String id)
+    public void initializeStation(Request request, Entry entry, String id)
             throws Exception {
 	if(!Utils.stringDefined(id)) return;
 	JSONObject station = getStation(id);

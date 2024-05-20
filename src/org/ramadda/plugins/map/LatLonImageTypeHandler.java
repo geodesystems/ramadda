@@ -51,10 +51,10 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry, NewType newType)
 	throws Exception {
 
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         String  path  = entry.getResource().getPath();
         String  _path = path.toLowerCase();
         boolean isKmz = _path.endsWith(".kmz");

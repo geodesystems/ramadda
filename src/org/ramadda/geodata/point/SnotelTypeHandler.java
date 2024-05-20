@@ -58,10 +58,9 @@ public class SnotelTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-        if (fromImport) {return;}
+	if(newType!=NewType.NEW) return;
 	initializeNewEntryInner(request, entry);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;

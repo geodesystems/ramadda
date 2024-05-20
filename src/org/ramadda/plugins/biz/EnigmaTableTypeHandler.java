@@ -74,9 +74,9 @@ public class EnigmaTableTypeHandler extends PointTypeHandler {
     }
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,  boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,  NewType newType)
 	throws Exception {
-        //        super.initializeNewEntry(request, entry, fromImport);
+        //        super.initializeNewEntry(request, entry, newType);
         String apiKey = getRepository().getProperty("enigma.api.key",
                             (String) null);
         if (apiKey == null) {

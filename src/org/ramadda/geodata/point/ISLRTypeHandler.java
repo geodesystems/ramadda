@@ -42,10 +42,9 @@ public class ISLRTypeHandler extends PointTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-	if(fromImport) return;
+	if(newType!=NewType.NEW) return;
 	//sl_taskforce_scenarios_psmsl_id_759.csv
 	String id = StringUtil.findPattern(entry.getResource().getPath(),".*_(\\d+)\\..*");
 	if(!stringDefined(id)) return;

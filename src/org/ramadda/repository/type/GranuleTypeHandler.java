@@ -86,9 +86,9 @@ public class GranuleTypeHandler extends GenericTypeHandler {
      */
     @Override
     public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+                                   NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         if ( !entry.isFile()) {
             return;
         }

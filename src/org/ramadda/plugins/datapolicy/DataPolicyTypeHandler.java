@@ -76,15 +76,13 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	System.err.println("new:" + entry);
 	String id = (String) entry.getValue(IDX_ID);
 	if(!Utils.stringDefined(id)) {
 	    entry.setValue(IDX_ID,Utils.makeID(entry.getName(),false,"-"));
 	}
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         getRepository().getAccessManager().updateLocalDataPolicies();
 
     }

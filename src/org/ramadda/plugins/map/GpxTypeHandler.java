@@ -195,7 +195,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
             if (Double.isNaN(distance) || (distance == -1)
                     || (totalTime == -1)) {
-                initializeNewEntry(request, entry, false);
+                initializeNewEntry(request, entry, NewType.NEW);
                 distance = (Double) entry.getDoubleValue(IDX_DISTANCE,
                         Double.valueOf(0));
                 totalTime = (Double) entry.getDoubleValue(IDX_TOTAL_TIME,
@@ -255,10 +255,9 @@ public class GpxTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	if(!fromImport) {
+	if(newType==NewType.NEW) {
 	    extractInfo(request, entry, true);
 	}
     }

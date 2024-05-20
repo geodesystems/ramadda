@@ -74,9 +74,9 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry, NewType newType)
 	throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         if ( !Utils.stringDefined(entry.getDescription())) {
             System.err.println("FredSeries.init");
             initializeSeries(entry);

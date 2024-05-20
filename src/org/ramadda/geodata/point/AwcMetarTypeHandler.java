@@ -119,15 +119,12 @@ STATE (VARCHAR 200)
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
-        if (fromImport) {
-            return;
-        }
+        super.initializeNewEntry(request, entry, newType);
+	if(newType!=NewType.NEW) return;
 	String id = (String) entry.getStringValue(IDX_SITE_ID, "");
-	initializeNewEntry(request, entry,  id);
+	initializeStation(request, entry,  id);
 
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
@@ -135,8 +132,7 @@ STATE (VARCHAR 200)
 	HashSet<String> seen = new HashSet<String>();
 	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_id",seen,"^[^-]+$",null);
 	for(Entry newEntry: entries) {
-	    System.err.println("AwcMetarTypeHandler: bulk entry:" + newEntry.getValue(IDX_SITE_ID));
-	    initializeNewEntry(request,newEntry,(String)newEntry.getValue(IDX_SITE_ID));
+	    initializeStation(request,newEntry,(String)newEntry.getValue(IDX_SITE_ID));
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
 

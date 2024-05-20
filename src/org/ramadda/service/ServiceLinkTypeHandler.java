@@ -126,9 +126,9 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry, boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry, NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
 
         if ( !Utils.stringDefined(entry.getName())) {
             Service service = getService(getRepository().getTmpRequest(),

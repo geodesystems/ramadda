@@ -223,19 +223,8 @@ public class FitsTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         Object[] values = entry.getValues();
         if (values == null) {

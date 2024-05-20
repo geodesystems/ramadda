@@ -200,22 +200,11 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         return IO.readContents(url);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-        if (fromImport) {
-            super.initializeNewEntry(request, entry, fromImport);
+        if (newType!=NewType.NEW) {
+            super.initializeNewEntry(request, entry, newType);
 
             return;
         }
@@ -248,7 +237,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         tmpFile = getStorageManager().moveToStorage(request, tmpFile);
         Resource resource = new Resource(tmpFile, Resource.TYPE_STOREDFILE);
         entry.setResource(resource);
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
 
     }
 

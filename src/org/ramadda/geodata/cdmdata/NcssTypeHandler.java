@@ -227,18 +227,14 @@ public class NcssTypeHandler extends PointTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,  boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,  NewType newType)
             throws Exception {
-        if (fromImport) {
-            return;
-        }
+        if (newType!=NewType.NEW) {return;}
 
-	System.err.println("init-1");
 	if(!checkLatLon(request, entry)) {
-	    System.err.println("init-2");
 	    return;
 	}
-        super.initializeNewEntry(request, entry, fromImport);
+        super.initializeNewEntry(request, entry, newType);
         String url = entry.getResource().getPath();
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");

@@ -104,7 +104,9 @@ public class TypeHandler extends RepositoryManager {
     public enum NewType {
 	NEW,
 	IMPORT,
-	COPY
+	COPY,
+	CHANGETYPE,
+	NONE
     }    
 
 
@@ -2612,7 +2614,7 @@ public class TypeHandler extends RepositoryManager {
         List<Column> columns     = this.getColumns();
         entry = getEntryManager().getEntry(request, entry.getId());
         //Then initialize it, e.g., point data type will read the file and set the entry values, etc.
-        initializeNewEntry(request, entry, false);
+        initializeNewEntry(request, entry, NewType.CHANGETYPE);
         Object[] values = getEntryValues(entry);
         if ((origColumns != null) && (columns != null)) {
             for (int i = 0; i < origColumns.size(); i++) {
@@ -2740,7 +2742,7 @@ public class TypeHandler extends RepositoryManager {
                                              boolean firstCall)
             throws Exception {
         if (firstCall) {
-            initializeNewEntry(request, entry, false);
+            initializeNewEntry(request, entry, NewType.NEW);
         }
         if (this.parent != null) {
             this.parent.initializeEntryFromHarvester(request, entry, false);
@@ -4345,11 +4347,11 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+                                   NewType newType)
             throws Exception {
 
         if (parent != null) {
-            parent.initializeNewEntry(request, entry, fromImport);
+            parent.initializeNewEntry(request, entry, newType);
         }
 
 
@@ -4445,16 +4447,15 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-	System.err.println("init new:" + this);
-        if ( !fromImport) {
+
+        if (newType==NewType.NEW) {
             //Now run the services
             for (Service service : services) {
                 if ( !service.isEnabled()) {
-		    System.err.println("SERVICE NOT ENABLED:" + service);
                     continue;
                 }
                 try {
-		    System.err.println("\tservice:" + service);
+		    //		    System.err.println("service:" + service);
                     File workDir = getStorageManager().createProcessDir();
                     ServiceInput serviceInput = new ServiceInput(workDir, entry);
                     ServiceOutput output =

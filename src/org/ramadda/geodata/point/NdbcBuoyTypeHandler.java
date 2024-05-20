@@ -69,11 +69,10 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 
 
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	super.initializeNewEntry(request, entry, fromImport);
-	if(fromImport) return;
+	super.initializeNewEntry(request, entry, newType);
+	if(newType!=NewType.NEW) return;
 	String type = (String)  entry.getValue(IDX_DATA_TYPE);	
 	initializeNewEntryInner(request, entry,type);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);

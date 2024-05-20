@@ -72,11 +72,10 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-        super.initializeNewEntry(request, entry, fromImport);
-	if(fromImport) return;
+        super.initializeNewEntry(request, entry, newType);
+	if(newType!=NewType.NEW) return;
 	String url = getPathForEntry(request, entry,true);
 	if(!stringDefined(url)) return;
 	IO.Result result = IO.doGetResult(new URL(url));

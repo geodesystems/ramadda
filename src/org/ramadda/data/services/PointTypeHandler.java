@@ -139,8 +139,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @throws Exception On badness
      */
     @Override
-    public void initializeNewEntry(Request request, Entry entry,
-                                   boolean fromImport)
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
 
 	//Check for some of the files that act like CSV but aren't
@@ -164,13 +163,13 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
         if (anySuperTypesOfThisType()) {
-            super.initializeNewEntry(request, entry, fromImport);
+            super.initializeNewEntry(request, entry, newType);
             return;
         }
 
 
 
-        if (fromImport) {
+        if (newType!=NewType.NEW) {
             return;
         }
 	addInitialMetadata(request, entry,false);
