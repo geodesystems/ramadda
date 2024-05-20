@@ -1422,12 +1422,11 @@ public class TypeHandler extends RepositoryManager {
         if (newResource.isFile()) {
             String newFileName =
                 getStorageManager().getFileTail(
-                    oldEntry.getResource().getTheFile().getName());
+						getStorageManager().getOriginalFilename(oldEntry.getResource().getTheFile().getName()));
             String newFile =
                 getStorageManager().copyToStorage(
                     request, oldEntry.getTypeHandler().getResourceInputStream(
-                        oldEntry), getRepository().getGUID() + "_"
-                                   + newFileName).toString();
+                        oldEntry), newFileName).toString();
 	    newResource = new Resource(newFile, Resource.TYPE_STOREDFILE);
         }
 
@@ -4444,6 +4443,7 @@ public class TypeHandler extends RepositoryManager {
             //Now run the services
             for (Service service : services) {
                 if ( !service.isEnabled()) {
+		    System.err.println("SERVICE NOT ENABLED:" + service);
                     continue;
                 }
                 try {
