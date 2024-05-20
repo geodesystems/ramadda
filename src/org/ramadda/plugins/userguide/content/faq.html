@@ -193,6 +193,17 @@ Thumbnails, Page Style, Etc.) menu for the entry or entries.
 </faqitem>
 
 
+<faqitem cat="Administration" id="metadata" q="Disabling selected metadata types" >
+You can configure your RAMADDA to not include certain metadata types. This can be done by the ID of the metadata type
+or its category. Set the following property:  
+<pre>
+#e.g., don't include the enum_tag or any metadata under the cateegory Bio or THREDDS
+#These can either be a specific string or a regexp pattern
+ramadda.metadata.nottypes=enum_tag,category:Bio.*,category:THREDDS                                                                                              
+</pre>
+</faqitem>
+
+
 <faqitem cat="Administration" id="github" q="Enable github embeds" >
 The wiki facility supports embedding github commit history. github rate limites requests so your
 repository can only make a few requests at a time. You can increase this rate limit by creating a github
