@@ -193,6 +193,20 @@ Thumbnails, Page Style, Etc.) menu for the entry or entries.
 </faqitem>
 
 
+<faqitem cat="Administration" id="entrytypes" q="Disabling selected entry types" >
+You can configure your RAMADDA to not include certain entry types. This can be done by the ID or label
+of the entry type or its category. These can either be specific values or regular expression patterns.
+Set the following property:  
+<pre>
+##Comma separated list of entry types and categories to not include
+##can either be a specific value or a regexp pattern or
+##the name or type of an entry
+ramadda.entry.nottypes=category:GIS.*,category:General,PDF.*,media_imageloop
+</pre>
+</faqitem>
+
+
+
 <faqitem cat="Administration" id="metadata" q="Disabling selected metadata types" >
 You can configure your RAMADDA to not include certain metadata types. This can be done by the ID of the metadata type
 or its category. Set the following property:  
