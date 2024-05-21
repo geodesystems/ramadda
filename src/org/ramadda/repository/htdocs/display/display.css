@@ -2050,10 +2050,13 @@ color:rgb(63, 127, 95);
      padding-top:1px;
      padding-bottom:1px;
      width:100%;
+     cursor:pointer;
+     border:1px solid transparent;
 }
 
 .display-notebook-header:hover {
   background:#fafafa;
+  border:var(--basic-border);
 }
 
 .display-notebook-console-toolbar:hover {
@@ -2097,6 +2100,14 @@ color:rgb(63, 127, 95);
 
 .display-notebook-menu .ramadda-link {
 }
+
+.display-notebook-menu-block {
+    padding:4px;
+    padding-left:8px;
+    padding-right:8px;        
+    border-bottom:var(--basic-border);
+}
+
 .display-notebook-input:focus {
     border:1px #888 solid;
 }
@@ -2107,11 +2118,11 @@ color:rgb(63, 127, 95);
   display:inline-block;
 }
 
-
 .display-notebook-menu-button:hover {
    background:#eee;
    cursor:pointer;
 }
+
 
 
 
