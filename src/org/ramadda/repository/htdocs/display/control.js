@@ -295,6 +295,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
 	{p:"selectOne",ex:true},
 	{p:"numericOnly",ex:true},
+	{p:"some_field.color",ex:'red',tt:'add a color block'},
 	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
 	{p: "filterSelectLabel",tt:"Label to use for the button"}	
@@ -393,7 +394,13 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
+		
 		let block  =f.getLabel();
+		let color = this.getProperty(f.getId()+'.color');
+		if(color)
+		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css('background',color)]);
+		block = HU.div([ATTR_STYLE,HU.css('position','relative')],block);
+
 		if(details) {
 		    block+= "<br>" +
 			f.getId() + f.getUnitSuffix()+"<br>" +

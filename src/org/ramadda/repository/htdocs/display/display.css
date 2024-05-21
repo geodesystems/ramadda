@@ -3161,6 +3161,15 @@ table.dataTable tfoot td {
 }
 
 
+.display-fields-field-color {
+    width:10px;
+    height:10px;
+    position:absolute;
+    right:0px;
+    top:50%;
+    transform: translateY(-50%);
+
+}
 
 .display-fields-field {
     display:inline-block;
