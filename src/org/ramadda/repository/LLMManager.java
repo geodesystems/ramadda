@@ -252,7 +252,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract locations");	
 	sb.append("<br>");
 
-	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the <a href=https://openai.com/api/>OpenAI GPT API</a> for processing.<br>There will also be a delay before the results are shown for the new entry.");
+	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the selected LLM (e.g., <a href=https://openai.com/api/>OpenAI GPT API</a>) for processing.<br>There will also be a delay before the results are shown for the new entry.");
 	return sb.toString();
     }
 
@@ -720,6 +720,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    } catch(Throwable thr) {
 		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
+	    } finally {
+		getEntryManager().clearEntryState(entry,"message");
 	    }
 	}
 	    
@@ -749,6 +751,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);		
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations)) return false;
+	getEntryManager().putEntryState(entry,"message","Performing LLM extraction");
+
+
 	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
@@ -807,7 +812,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		    json = json.substring(idx);
 		}
 	    }
-	    System.out.println(json);
 	    JSONObject obj = new JSONObject(json);
 	    if(extractTitle) {
 		String title = obj.optString("title",null);

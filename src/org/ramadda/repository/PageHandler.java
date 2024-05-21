@@ -923,6 +923,13 @@ public class PageHandler extends RepositoryManager {
 	}
 
 	List<String> messages= (List<String>)getSessionManager().getSessionProperty(request, SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
+	Object tmpMessage=getEntryManager().getEntryState(thisEntry,"message");
+	if(tmpMessage!=null) {
+	    if(messages==null) messages=new ArrayList<String>();
+	    messages.add(0,tmpMessage.toString());
+	}
+
+
 	if(messages!=null) {
 	    getSessionManager().removeSessionProperty(request, SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
 	    HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
