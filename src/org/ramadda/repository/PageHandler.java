@@ -2094,7 +2094,7 @@ public class PageHandler extends RepositoryManager {
 							   HU.attrs("class","ramadda-user-menu-image","title","User Settings - "+
 								    request.getUser().getLabel()));
             String userIcon = avatar!=null?avatar:HU.faIcon("fa-user", "title",
-							    "User Settings", "class",
+							    "User Settings - " + request.getUser().getLabel(), "class",
 							    "ramadda-user-menu-image");
 
             String settingsUrl =
