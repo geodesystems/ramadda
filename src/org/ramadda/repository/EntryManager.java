@@ -175,6 +175,8 @@ public class EntryManager extends RepositoryManager {
 	new TTLCache<String,List<Entry.EntryHistory>>(Utils.minutesToMillis(10));
 
 
+    private Hashtable<String,Object> entryState = new Hashtable<String,Object>();
+
     private boolean httpCacheFile = true;
     
 
@@ -375,7 +377,24 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public void putEntryState(Entry entry, String key,Object obj) {
+	if(entry!=null)
+	    entryState.put(entry.getId()+"_"+key,obj);
+    }
+
+    public Object getEntryState(Entry entry,String key) {
+	if(entry==null) return null;
+	return entryState.get(entry.getId()+"_"+key);
+    }
+
+    public void clearEntryState(Entry entry,String key) {
+	if(entry!=null)
+	    entryState.remove(entry.getId()+"_"+key);
+    }
+
+
     public Result processSiteMap(Request request)  throws Exception {
+
 	StringBuilder xml = new StringBuilder();
 	xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
 	List<Entry> entries = getEntriesFromMetadata(request,
