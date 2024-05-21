@@ -5,14 +5,31 @@
 	childtypes="type_archive_series"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
+	metadata="archive_source_contact,content.keyword,enum_tag,property,metadata_author,metadata_publisher">
 
     <property name="icon" value="/archive/collection.png"/>
     <property name="date.format" value="yyyy-MM-dd"/>
-    <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
+    <property name="date.nullok" value="true"/>
     <property  name="html.type.show"  value="false" />
     <property name="form.ark.show" value="false"/>
+    <property name="form.tags.show" value="false"/>    
+    <column name="collection_number" type="string"  label="Collection Number" columns="8"
+	    cansearch="true" group="Collection"/>
+    <column name="oclc_number" type="string"  label="OCLC Number"   cansearch="true" columns="8"/>
+    <column name="accession_number" type="string"  label="Accession Number"   cansearch="true" columns="8"/>
+    <column name="size" type="double"  label="Size" suffix="Linear feet" default="0"/>	    
+        
+    <column name="acquistion" size="2000" type="string"  rows="3" label="Acquisition"   cansearch="true" columns="80"/>
+    <column name="terms" size="2000" type="string"  rows="3" label="Terms" suffix="Terms governing use"  cansearch="true" columns="80"/>
+    <column name="citation" size="2000" type="string"  label="Citation" cansearch="true" columns="80"/>        
+
+    <column name="publication_rights" rows="8" size="5000" type="string"  label="Publication Rights"   cansearch="true" columns="80"/>
+    <column name="creator_sketch" size="5000" rows="8" type="string"  label="Creator Sketch"   cansearch="true" columns="80"/>
+    <column name="scope_and_content_note" size="5000" rows="8" type="string"  label="Scope and Content Note"   cansearch="true" columns="80" />    
+
+
 <!--
     <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
     <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->

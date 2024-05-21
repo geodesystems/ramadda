@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Archive" >
+    <type id="archive_source_contact" name="Source Contact" displaycategory="Source Contact Information">
+      <element id="name" name="Name"/>
+      <element id="address" name="Address" rows="4" />
+      <element id="email" name="Email" datatype="email"/>
+      <element id="phone" name="Phone" />            
+    </type>
+  </handler>
+
+
+</metadata>
