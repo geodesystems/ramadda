@@ -1196,7 +1196,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 	if (column.getShowLabel()) {
 	    String label = tmpSb.toString();
-	    if(column.getCanSearch() && (column.isEnumeration()||column.isString())&& values!=null) {
+	    if(column.getCanSearch() && (column.isEnumeration()/*||column.isString()*/)&& values!=null) {
 		String s = column.getString(values);
 		if(stringDefined(s)) {
 		    String searchUrl = getSearchManager().URL_SEARCH_TYPE + "/"
