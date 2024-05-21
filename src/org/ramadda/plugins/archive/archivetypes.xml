@@ -93,7 +93,6 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 <children><![CDATA[
 <entries>
 <entry  name="File 1"  type="type_archive_file"/>
-<entry  name="File 2"  type="type_archive_file"/>
 </entries>
 ]]>
 </children>
