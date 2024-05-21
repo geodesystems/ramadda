@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun May 19 10:59:50 MDT 2024";
+var build_date="RAMADDA build date: Tue May 21 10:37:29 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -25085,6 +25085,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
 	{p:"selectOne",ex:true},
 	{p:"numericOnly",ex:true},
+	{p:"some_field.color",ex:'red',tt:'add a color block'},
 	{p: "selectLabel",tt:"Label to use for the button"},
 	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
 	{p: "filterSelectLabel",tt:"Label to use for the button"}	
@@ -25183,7 +25184,13 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
+		
 		let block  =f.getLabel();
+		let color = this.getProperty(f.getId()+'.color');
+		if(color)
+		    block+=HU.div([ATTR_CLASS,'display-fields-field-color',ATTR_STYLE,HU.css('background',color)]);
+		block = HU.div([ATTR_STYLE,HU.css('position','relative')],block);
+
 		if(details) {
 		    block+= "<br>" +
 			f.getId() + f.getUnitSuffix()+"<br>" +
@@ -27300,11 +27307,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             if (!at) at = "left top";
             let _this = this;
-            var space = "&nbsp;&nbsp;";
-            var line = "<div style='border-top:1px #ccc solid;margin-top:4px;margin-bottom:4px;'></div>"
-            var menu = "";
+            let space = "&nbsp;&nbsp;";
+            let menu = "";
+	    let open = HU.open('div',[ATTR_CLASS,'display-notebook-menu-block']);
+	    let close = '</div>';
             menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
-            menu += "<br>";
+
+            menu += open;
             menu += "<table  width=100%> ";
             menu += "<tr><td align=right><b>New cell:</b>&nbsp;</td><td>";
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "newabove"], "Above") + space;
@@ -27314,10 +27323,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             menu += HtmlUtils.div(["title", "ctrl-^", "class", "ramadda-link", "what", "moveup"], "Up") + space;
             menu += HtmlUtils.div(["title", "ctrl-v", "class", "ramadda-link", "what", "movedown"], "Down");
             menu += "</td></tr>"
-
             menu += "</table>";
 
-            menu += line;
+	    menu+=close;
+	    menu+=open;
             menu += HtmlUtils.div(["title", "ctrl-return", "class", "ramadda-link", "what", "hideall"], "Hide all inputs");
             menu += "<br>"
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "clearall"], "Clear all outputs");
@@ -27325,26 +27334,27 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
             menu += "<b>Layout:</b> ";
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal") + " Horizontal" + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal","Horizontal") + "<br>";
             //            menu += "Columns: ";
             //            menu += HtmlUtils.input(colId, this.notebook.columns, ["size", "3", "id", _this.getDomId(ID_LAYOUT_COLUMNS)]);
-            menu += line;
+	    menu+=close;
+	    menu+=open;
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [], _this.showOutput,"Output enabled") + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWCONSOLE), [], _this.notebook.showConsole,"Show console") + "<br>";
 
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [], _this.showOutput) + " Output enabled" + "<br>";
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWCONSOLE), [], _this.notebook.showConsole) + " Show console" + "<br>";
-
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_RUNFIRST), [], _this.runFirst) + " Run first" + "<br>";
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [], _this.notebook.runOnLoad) + " Run on load" + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_RUNFIRST), [], _this.runFirst, "Run first") + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [], _this.notebook.runOnLoad,"Run on load") + "<br>";
             menu += HtmlUtils.div(["title", "Don't show the left side and input for anonymous users"], HtmlUtils.checkbox(_this.getDomId(ID_DISPLAY_MODE), [], _this.notebook.displayMode) + " Display mode" + "<br>");
 
-            menu += line;
+	    menu+=close;
+	    menu+=open;
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save notebook") + "<br>";
-            menu += line;
+	    menu+=close;
+	    menu+=open;
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete cell") + "<br>";
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "help"], "Help") + "<br>";
             menu = HtmlUtils.div(["class", "display-notebook-menu"], menu);
-
-
+	    menu+=close;
             var popup = this.getPopup();
             this.dialogShown = true;
             popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
