@@ -544,7 +544,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     int rcnt=0;
     private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
 	throws Exception {
-	//	System.err.println("reindex: " +(rcnt++));
         org.apache.lucene.document.Document doc =
             new org.apache.lucene.document.Document();
 	StringBuilder corpus = new StringBuilder();
