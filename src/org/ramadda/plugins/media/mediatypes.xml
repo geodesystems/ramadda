@@ -123,10 +123,17 @@
      <property name="icon" value="/media/album.png"/>
      <property name="form.resource.show" value="false"/>
      <column name="usethumbnail" type="boolean" label="Use Thumbnail"  default="true" showinhtml="false"/>
+     <column name="show_table" type="boolean"
+	     label="Show Table"  showinhtml="false" default="false"/>
      <wiki><![CDATA[
 +section title="{{name}}" #
 {{description wikify=true}}
 {{gallery columns="3" thumbnail="property:usethumbnail"}}
+:vspace 1em
++if property=show_table
+:heading Table
+{{tabletree message=""}}
+-if
 :vspace 1em
 ----
 :vspace 1em
