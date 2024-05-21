@@ -85,7 +85,11 @@ csvcommands1=-addheader,month_day_hour.type string hours_in_year.type int defaul
 <wiki>
 <![CDATA[
 +section title={{name}}
-{{group}}
+{{group
+2016.color=Red 2017.color=Green 2018.color=Blue 2019.color=darkgoldenrod
+2020.color=Magenta 2021.color=Orange 2022.color=Cyan 2023.color=black
+2024.color=Purple 2024.color=Brown
+}}
 {{description wikify=true}}
 +row
 +col-2
