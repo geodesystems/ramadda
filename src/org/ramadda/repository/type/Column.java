@@ -350,7 +350,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String bulkUploadHelp ="";
 
 
-    private String suffix;    
+    private String suffix;
+    private String displaySuffix;    
 
     /** _more_ */
     private String help;
@@ -552,6 +553,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
                 ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
+        displaySuffix = Utils.getAttributeOrTag(element, "displaysuffix", "");	
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
@@ -691,7 +693,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	}
         lookupDB = getAttributeOrTag(element, ATTR_LOOKUPDB, (String) null);
 
-        String tmp = getAttributeOrTag(element, "numberFormat", null);
+        String tmp = getAttributeOrTag(element, "numberFormat",
+				       getAttributeOrTag(element, "numberformat", null));
         if (tmp != null) {
             numberFormat = new DecimalFormat(tmp);
         }
@@ -1437,6 +1440,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                             SimpleDateFormat sdf, boolean raw)
             throws Exception {
 
+	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
         boolean    csv = Misc.equals(output, OUTPUT_CSV);
         if (csv) {
@@ -1492,10 +1496,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if ((v == dfltDouble) && !getShowEmpty()) {
                     return;
                 }
-                String s = ((numberFormat != null)
-                            ? numberFormat.format(v)
-                            : Utils.formatComma(v));
-                sb.append(s);
+		if(Double.isNaN(v)) {
+		    sb.append("NA");
+		    addSuffix = false;
+		} else {
+		    String s = ((numberFormat != null)
+				? numberFormat.format(v)
+				: Utils.formatComma(v));
+		    sb.append(s);
+		}
             }
         } else if (isType(DATATYPE_DATETIME)) {
             String s;
@@ -1696,6 +1705,10 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(s);
         }
 
+	if(addSuffix && displaySuffix!=null) {
+	    sb.append("&nbsp;");
+	    sb.append(displaySuffix);
+	}
         String s = sb.toString();
 	s = typeHandler.applyMacros(entry,macros,values[offset],s);
         s = typeHandler.decorateValue(null, entry, this, s);
