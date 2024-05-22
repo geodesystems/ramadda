@@ -19,7 +19,8 @@
 	    cansearch="true" group="Collection"/>
     <column name="oclc_number" type="string"  label="OCLC Number"   cansearch="true" columns="8"/>
     <column name="accession_number" type="string"  label="Accession Number"   cansearch="true" columns="8"/>
-    <column name="size" type="double"  label="Size" suffix="Linear feet" default="0"/>	    
+    <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
+	    numberformat="#0.0"/>	    
         
     <column name="acquistion" size="2000" type="string"  rows="3" label="Acquisition"   cansearch="true" columns="80"/>
     <column name="terms" size="2000" type="string"  rows="3" label="Terms" suffix="Terms governing use"  cansearch="true" columns="80"/>
