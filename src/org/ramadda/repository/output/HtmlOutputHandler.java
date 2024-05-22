@@ -391,7 +391,7 @@ public class HtmlOutputHandler extends OutputHandler {
             }
             request.put(WikiConstants.ATTR_SHOWTITLE, "false");
             entry.getTypeHandler().getEntryContent(request, entry,
-						   false, true, null,sb);
+						   false, true, null,false,sb);
             contents = sb.toString();
         }
         StringBuffer xml = new StringBuffer("<content>\n");
@@ -563,7 +563,7 @@ public class HtmlOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, entry, sb, "Entry Information");
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
-            String informationBlock = getInformationTabs(request, entry, false,null,true,null);
+            String informationBlock = getInformationTabs(request, entry, false,null,true,null,true);
             sb.append(informationBlock);
             sb.append(suffix);
             getPageHandler().entrySectionClose(request, entry, sb);
@@ -955,7 +955,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HU.br());
             }
             request.put(WikiConstants.ATTR_SHOWTITLE, "false");
-            parent.getTypeHandler().getEntryContent(request,parent, false, true, null,sb);
+            parent.getTypeHandler().getEntryContent(request,parent, false, true, null,false,sb);
         }
 
         StringBuffer xml = new StringBuffer("<response><content>\n");
@@ -1293,8 +1293,10 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getInformationTabs(Request request, Entry entry,
-                                     boolean includeSnippet, List<LabeledObject>extras,
-				     boolean showResource,Hashtable props)
+                                     boolean includeSnippet,
+				     List<LabeledObject>extras,
+				     boolean showResource,
+				     Hashtable props,boolean ...forOutput)
             throws Exception {
         List         tabTitles   = new ArrayList<String>();
         List         tabContents = new ArrayList<String>();
@@ -1309,7 +1311,9 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         entry.getTypeHandler().getEntryContent(request, entry,
-					       false, showResource, props,basicSB);
+					       false, showResource, props,
+					       forOutput.length>0?forOutput[0]:false,
+					       basicSB);
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
@@ -2274,7 +2278,7 @@ public class HtmlOutputHandler extends OutputHandler {
                         "Entry Information");
                 addDescription(request, group, sb, true, suffix);
                 if ( !doSimpleListing) {
-                    sb.append(getInformationTabs(request, group, false,null,true,null));
+                    sb.append(getInformationTabs(request, group, false,null,true,null,true));
                 }
 
                 StringBuffer metadataSB = new StringBuffer();

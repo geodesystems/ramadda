@@ -711,6 +711,25 @@ public class WikiManager extends RepositoryManager
 
     public Result processGetEntries(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
+	List<Entry> entries = new ArrayList<Entry>();
+	HashSet seen = new HashSet();
+	for(String tok:Utils.split(request.getString("entries",""),",",true,true)) {
+	    if(tok.startsWith("type:")) {
+		tok = tok.substring("type:".length());
+		Request myRequest = request.cloneMe();
+		myRequest.put(ARG_TYPE,tok);
+		for(Entry entry:getEntryManager().searchEntries(myRequest)) {
+		    if(seen.contains(entry.getId())) continue;
+		    entries.add(entry);
+		}
+		continue;
+	    }
+	    Entry entry = getEntryManager().getEntry(request, tok);
+	    if(entry==null) continue;
+	    if(seen.contains(entry.getId())) continue;
+	    entries.add(entry);
+	}
+	getRepository().getJsonOutputHandler().makeJson(request, entries, sb);	
 	return new Result("", sb, JU.MIMETYPE);
     }
 
@@ -2001,7 +2020,7 @@ public class WikiManager extends RepositoryManager
             if ( !details) {
 		StringBuilder tb  = new StringBuilder();
                 entry.getTypeHandler().getEntryContent(myRequest,
-						       entry, false, showResource, props,tb);
+						       entry, false, showResource, props,false,tb);
 		return tb.toString();
             }
 

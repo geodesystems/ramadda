@@ -1043,7 +1043,7 @@ public class ImageOutputHandler extends OutputHandler {
                 request.put(ARG_OUTPUT, OutputHandler.OUTPUT_HTML);
 		StringBuilder tb  = new StringBuilder();
 		entry.getTypeHandler().getEntryContent(request, entry,
-						       true, false, null,tb);
+						       true, false, null,false,tb);
                 request.put(ARG_OUTPUT, output);
 		String title = tb.toString();
                 title = title.replace("\"", "\\\"");
