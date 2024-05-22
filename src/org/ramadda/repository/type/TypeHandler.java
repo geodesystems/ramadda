@@ -3110,10 +3110,11 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public final void getEntryContent(Request request, Entry entry,
-				 boolean showDescription,
-				 boolean showResource,
-				 Hashtable props,
-				 Appendable sb)
+				      boolean showDescription,
+				      boolean showResource,
+				      Hashtable props,
+				      boolean forOutput,
+				      Appendable sb)
             throws Exception {
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
@@ -3164,7 +3165,7 @@ public class TypeHandler extends RepositoryManager {
 		} else if(field.equals("_default")) {
 		    getInnerEntryContent(entry, request, null, output,
 					 showDescription, showResource, true,
-					 props,seen,sb);
+					 props,seen,forOutput,sb);
 		} else {
 		    group = addColumnToHtml(request, typeHandler,entry,field, sb, group);
 		}
@@ -3172,7 +3173,7 @@ public class TypeHandler extends RepositoryManager {
 	} else {
 	    getInnerEntryContent(entry, request, null, output,
 				 showDescription, showResource, true,
-				 props,seen,sb);
+				 props,seen,forOutput,sb);
 	}
         sb.append(HU.formTableClose());
     }
@@ -3848,9 +3849,10 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getInnerEntryContent(Entry entry, Request request,
-					      TypeHandler typeHandler, OutputType output,
-					      boolean showDescription, boolean showResource,
+				     TypeHandler typeHandler, OutputType output,
+				     boolean showDescription, boolean showResource,
 				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
+				     boolean forOutput,
 				     Appendable sb)
             throws Exception {
 
@@ -3861,7 +3863,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             parent.getInnerEntryContent(entry, request, typeHandler,
                     output, showDescription, showResource, linkToDownload,
-					props,seen,sb);
+					props,seen,forOutput,sb);
 	    return;
         }
 
@@ -3923,28 +3925,28 @@ public class TypeHandler extends RepositoryManager {
 	if(!seen.contains("resource"))
 	    addResourceToHtml(request,typeHandler,entry,sb);
 
-	if (!noBasic && typeHandler.okToShowInHtml(entry, ARG_TYPE, true)) {
+	if (!noBasic && (forOutput ||typeHandler.okToShowInHtml(entry, ARG_TYPE, true))) {
 	    if(!seen.contains(ARG_TYPE))
 		addTypeToHtml(request,typeHandler,entry,sb);
 	}
 
-	if(okToShowInForm(entry, "ark", false)) {
+	if(forOutput|| okToShowInForm(entry, "ark", false)) {
 	    if(!seen.contains("ark"))
 		addArkToHtml(request,typeHandler,entry,sb);
 	}
 
-	if (showCreateDate) {
+	if (forOutput||showCreateDate) {
 	    if(!seen.contains("createdate"))
 		addCreateDateToHtml(request,typeHandler,entry,sb);
 	}
 
-	if (showCreated) {
+	if (forOutput||showCreated) {
 	    if(!seen.contains("owner"))
 		addOwnerToHtml(request,typeHandler,entry,sb);
 	}
 	if(justBasic) return;
 
-	if (showDate) {
+	if (forOutput||showDate) {
 	    if(!seen.contains("date"))
 		addDateToHtml(request,typeHandler,entry,sb);
 	}
