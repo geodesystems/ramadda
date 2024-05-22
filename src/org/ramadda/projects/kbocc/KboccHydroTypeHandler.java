@@ -42,7 +42,11 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
 
-	if(!isNew(newType)) return;
+	if(!isNew(newType)) {
+	    return;
+	}
+	super.initializeNewEntry(request, entry, newType);
+
 	if(entry.hasLocationDefined()) return;
 	File file = entry.getFile();
 	if(!file.exists()) return;
@@ -50,18 +54,36 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	    loggers = new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/kbocc/loggers.json"));
 	}
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
-	for(int i=0;i<loggers.length();i++) {
+	String yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d\\d)");
+	if(yearSite==null) yearSite="";
+	List<String> toks = Utils.splitUpTo(yearSite,"-",2);
+	String site = toks.size()==2?toks.get(1):"";
+	JSONObject theLogger=null;
+	//First look for year-site
+	for(int i=0;theLogger==null && i<loggers.length();i++) {
 	    JSONObject logger=loggers.getJSONObject(i);
 	    String id = logger.getString("id").trim();
-	    if(fileName.startsWith(id)) {
-		entry.setLatitude(logger.getDouble("latitude"));
-		entry.setLongitude(logger.getDouble("longitude"));
-		entry.setValue("location",logger.getString("location"));
-		entry.setValue("notes",logger.getString("notes"));		
-		break;
+	    if(fileName.startsWith(id) || id.equals(yearSite)) {
+		theLogger = logger;
+	    }
+	}
+	//next look for site
+	site = site.trim();
+	for(int i=0;theLogger==null && i<loggers.length();i++) {
+	    JSONObject logger=loggers.getJSONObject(i);
+	    if(logger.has("site")) {
+		if(site.equals(logger.getString("site").trim())) {
+		    theLogger = logger;
+		}
 	    }
 	}
 
+	if(theLogger!=null) {
+	    entry.setLatitude(theLogger.getDouble("latitude"));
+	    entry.setLongitude(theLogger.getDouble("longitude"));
+	    entry.setValue("location",theLogger.getString("location"));
+	    entry.setValue("notes",theLogger.getString("notes"));		
+	}
 	
     }
 
