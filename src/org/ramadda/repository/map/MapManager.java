@@ -1359,7 +1359,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		info.append("<table class=\"formtable\">");
 		StringBuilder tb = new StringBuilder();
 		entry.getTypeHandler().getInnerEntryContent(entry,
-							    request, null, OutputHandler.OUTPUT_HTML, true, false,false, null,null,tb);
+							    request, null, OutputHandler.OUTPUT_HTML, true, false,false, null,null,false,tb);
 		info.append(tb.toString());
 
 	    }
