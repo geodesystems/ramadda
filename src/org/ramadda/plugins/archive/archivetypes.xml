@@ -12,7 +12,7 @@
     <property name="form.resource.show" value="false"/>
     <property name="form.time.show" value="false"/>    
     <property name="date.nullok" value="true"/>
-    <property  name="html.type.show"  value="false" />
+    <property name="html.type.show"  value="false" />
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
@@ -97,9 +97,9 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="icon" value="/archive/series.png"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
+    <property name="form.ark.show" value="false"/>
     <property  name="html.type.show"  value="false" />
     <property  name="html.date.show"  value="false" />    
-    <property name="form.ark.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
