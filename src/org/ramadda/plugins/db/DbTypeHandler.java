@@ -1608,12 +1608,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public void  getInnerEntryContent(Entry entry, Request request,
 					      TypeHandler typeHandler, OutputType output,
 					      boolean showDescription, boolean showResource,
-				      boolean linkToDownload, Hashtable props,HashSet<String> seen, Appendable sb)
+				      boolean linkToDownload, Hashtable props,HashSet<String> seen, boolean forOutput,Appendable sb)
             throws Exception {
 	super.getInnerEntryContent(entry, request,
 				   typeHandler, output,
 				   showDescription, showResource,
-				   linkToDownload, props,seen,sb);
+				   linkToDownload, props,seen,forOutput,sb);
 	
 
 
