@@ -1117,7 +1117,8 @@ public class GenericTypeHandler extends TypeHandler {
 				     TypeHandler typeHandler, OutputType output,
 				     boolean showDescription, boolean showResource,
 				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
-				     Appendable sb)
+				     boolean forOutput,
+				     Appendable sb )
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
@@ -1129,7 +1130,7 @@ public class GenericTypeHandler extends TypeHandler {
         boolean justBasic =Utils.getProperty(props,"justBasic",false);
         super.getInnerEntryContent(entry, request,
 				   typeHandler, output, showDescription,
-				   showResource, linkToDownload, props,seen,sb);
+				   showResource, linkToDownload, props,seen,forOutput,sb);
         if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
             return;
         }
