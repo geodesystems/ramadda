@@ -1221,10 +1221,19 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
-	String ancestor = request.getString(ARG_ANCESTOR+"_hidden", request.getString(ARG_ANCESTOR,null));
-	if(Utils.stringDefined(ancestor)) {
-	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
+	List<String> ancestors = request.get(ARG_ANCESTOR+"_hidden", request.get(ARG_ANCESTOR,(List<String>)null));
+	if(ancestors!=null) {
+	    List<Query> ors = new ArrayList<Query>();
+	    for(String ancestor: ancestors) {
+		ors.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
+	    } 
+	    if(ors.size()>1) {
+		queries.add(makeOr(ors));
+	    } else if(ors.size()==1) {
+		queries.add(ors.get(0));
+	    }
 	}
+
         if (request.defined(ARG_GROUP)) {
 	    List<String> toks = Utils.split(request.getString(ARG_GROUP), "|", true,
 					    true);
