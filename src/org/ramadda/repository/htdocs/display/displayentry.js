@@ -36,6 +36,7 @@ var ID_SEARCH_DATE_RANGE = "search_date";
 var ID_SEARCH_DATE_CREATE = "search_createdate";
 var ID_SEARCH_TAGS = "search_tags";
 var ID_SEARCH_ANCESTOR = "search_ancestor";
+var ID_SEARCH_ANCESTORS = "search_ancestors";
 var ID_TREE_LINK = "treelink";
 var ATTR_ENTRYID = "entryid";
 
@@ -435,7 +436,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
+
         {p:'entryTypes',ex:'comma separated list of types - use "any" for any type'},
+        {p:'typesLabel',tt: 'Label to use for the type section'},		
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
@@ -452,6 +455,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showDescription',d: false},		
 	{p:'ancestor',ex:'this',tt:'Constrain search to this tree'},		
         {p:'showAncestor',d: true},
+        {p:'ancestors',tt: 'Comma separated list of entry ids or type:entry_type'},
+        {p:'ancestorsLabel',tt: 'Label to use for the ancestors section'},		
 	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
@@ -1063,6 +1068,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let makeTag=(key,value,label) =>{
 		return  $(HU.div([ATTR_TITLE,'Click to clear search',ATTR_CLASS,"display-search-tag",key,value],label)).appendTo(searchBar);
 	    }
+
 	    this.getContents().find('.display-search-textinput').each(function() {
 		let arg = $(this).attr(ATTR_TEXT_INPUT);
 		if(!arg) return;
@@ -1207,7 +1213,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
-            return jsonUrl;
+
+	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
+		if($(this).is(':checked')) {
+		    let id = $(this).attr('data-entryid');
+		    jsonUrl+='&ancestor='+ id;
+		}
+	    });
+	    
+	    console.log(jsonUrl);
+
+           return jsonUrl;
         },
 	addAreaWidget(areaWidget) {
 	    if(!this.areaWidgets) this.areaWidgets=[];
@@ -1220,6 +1236,26 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    return v;
 	},
 
+        loadAncestorsList: function(entries) {
+	    let html = '';
+	    entries.forEach(entry=>{
+		html+=HU.div([],
+			     HU.checkbox('',[ATTR_ID,'ancestor_'+ entry.getId(),ATTR_CLASS,'ramadda-displayentry-ancestor',
+					     'data-entryid',entry.getId()],false,entry.getName()));
+	    });
+	    this.jq(ID_SEARCH_ANCESTORS).html(html);
+	},
+        loadAncestors: function(ancestors) {
+	    let url = ramaddaBaseUrl+ '/wiki/getentries?entries=' + ancestors;
+            let entryList = new EntryList(this.getRamadda(), url, this, false);
+	    let success=list=>{
+		this.loadAncestorsList(list.getEntries());
+	    }
+	    let fail=err=>{
+		console.log(err);
+	    }
+            entryList.doSearch(null,success,fail);
+	},
         makeSearchForm: function() {
             let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
@@ -1369,6 +1405,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    if(!horizontal)  {
 		extra += HU.formTable();
+	    }
+
+	    let ancestors  = this.getProperty("ancestors");
+	    if(ancestors) {
+		extra+=this.addWidget(this.getProperty('ancestorsLabel','Search Under'),
+				      HU.div([ID,this.domId(ID_SEARCH_ANCESTORS)]),{toggleClose:true});
+		setTimeout(()=>{
+		    this.loadAncestors(ancestors);
+		},1);
 	    }
 
 	    if(this.getShowAncestor()) {
@@ -1790,7 +1835,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(this.entryTypes[0].getId()!='any')
 		    this.writeHtml(ID_TYPE_DIV, HU.hidden(ID_TYPE_FIELD,this.entryTypes[0].getId()));
 	    } else {
-		this.writeHtml(ID_TYPE_DIV, this.addWidget('Types',select));
+		this.writeHtml(ID_TYPE_DIV, this.addWidget(this.getProperty('typesLabel','Types'),select));
 	    }
 	    
             HtmlUtils.initSelect(this.jq(ID_TYPE_FIELD),
