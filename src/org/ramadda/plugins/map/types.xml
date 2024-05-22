@@ -8,13 +8,14 @@
 	isgroup="true"
 	handler="org.ramadda.repository.type.GenericTypeHandler"
 	description="Map Folder">
+     <property name="form.resource.show" value="false"/>
+     <property name="icon" value="/icons/mapfolder.png"/>
     <column name="show_circles" label="Show Circles"
 	    type="boolean" showinhtml="false" default="false"/>
     <column name="map_props" label="Map Style"
 	    type="string" showinhtml="false" default=""
 	    suffix="e.g.: fillColor:red,radius:4,strokeColor:green,strokeWidth:2"
 	    />    
-     <property name="icon" value="/icons/mapfolder.png"/>
      <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
