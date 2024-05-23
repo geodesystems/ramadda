@@ -4733,6 +4733,13 @@ public class WikiManager extends RepositoryManager
 		    if(toks.size()!=2) continue;
 		    url =  toks.get(0);
 		    label = toks.get(1);
+		    //Check if it is an entry id
+		    if(url.indexOf("/")<0 && url.indexOf(":")<0) {
+			Entry e  = getEntryManager().getEntry(request, url);
+			if(e!=null) {
+			    url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, e);
+			}
+		    }
 		} else {
 		    Entry e  = getEntryManager().getEntry(request, link);
 		    if(e==null) continue;
