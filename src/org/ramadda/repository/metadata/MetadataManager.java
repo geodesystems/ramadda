@@ -962,17 +962,18 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void getFullThumbnailUrls(Request request, Entry entry,
-				     List<String[]> urls,boolean...inherited)
+				     List<String[]> urls,boolean...inheritedArg)
             throws Exception {
+	boolean inherited= inheritedArg.length>0?inheritedArg[0]:true;
 	int size = urls.size();
         for (Metadata metadata : getMetadata(request,entry)) {
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.getThumbnailUrls(request, entry, urls, metadata);
         }
-	if(inherited.length>0 && size==urls.size()) {
+	if(inherited && size==urls.size()) {
 	    Entry parent = entry.getParentEntry();
 	    if(parent!=null) {
-		getFullThumbnailUrls(request, parent, urls,inherited);
+		getFullThumbnailUrls(request, parent, urls,inheritedArg);
 	    }
 	}	    
 	       
