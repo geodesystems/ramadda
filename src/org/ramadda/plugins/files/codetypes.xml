@@ -85,6 +85,7 @@
       description="Shell Script" pattern=".*\.sh" >
   <property name="canbeindexed" value="true"/>
   <property name="icon" value="/files/sh.png"/>
+  <property name="llm.prompt.extra" value="The text below is shell script."/>
   <action name="documentchat" label="LLM with script"
 	  icon="fas fa-comments" foruser="true" category="view"/>
   <embedwiki><![CDATA[{{embed maxHeight=400px}}]]></embedwiki>
