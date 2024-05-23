@@ -53,24 +53,24 @@ inherited="false"  }}
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
-	    cansearch="true" group="Collection"/>
-    <column name="oclc_number" type="string"  label="OCLC Number"   cansearch="true" columns="8"/>
-    <column name="accession_number" type="string"  label="Accession Number"   cansearch="true" columns="8"/>
+	    cansearch="false" group="Collection"/>
+    <column name="oclc_number" type="string"  label="OCLC Number"   cansearch="false" columns="8"/>
+    <column name="accession_number" type="string"  label="Accession Number"   cansearch="false" columns="8"/>
     <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
 	    numberformat="#0.0"/>	    
         
-    <column name="acquistion" size="2000" type="string"  rows="3" label="Acquisition"   cansearch="true" columns="80"/>
-    <column name="terms" size="2000" type="string"  rows="3" label="Terms" suffix="Terms governing use"  cansearch="true" columns="80"/>
-    <column name="citation" size="2000" type="string"  label="Citation" cansearch="true" columns="80"/>        
+    <column name="acquistion" size="2000" type="string"  rows="3" label="Acquisition"   cansearch="false" columns="80"/>
+    <column name="terms" size="2000" type="string"  rows="3" label="Terms" suffix="Terms governing use"  cansearch="false" columns="80"/>
+    <column name="citation" size="2000" type="string"  label="Citation" cansearch="false" columns="80"/>        
 
-    <column name="publication_rights" rows="8" size="5000" type="string"  label="Publication Rights"   cansearch="true" columns="80"/>
-    <column name="creator_sketch" size="5000" rows="8" type="string"  label="Creator Sketch"   cansearch="true" columns="80"/>
-    <column name="scope_and_content_note" size="5000" rows="8" type="string"  label="Scope and Content Note"   cansearch="true" columns="80" />    
+    <column name="publication_rights" rows="8" size="5000" type="string"  label="Publication Rights"   cansearch="false" columns="80"/>
+    <column name="creator_sketch" size="5000" rows="8" type="string"  label="Creator Sketch"   cansearch="false" columns="80"/>
+    <column name="scope_and_content_note" size="5000" rows="8" type="string"  label="Scope and Content Note"   cansearch="false" columns="80" />    
 
 
 <!--
-    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
+    <column name="author" type="string"  label="Author" cansearch="false" group="Metadata"/>
+    <column name="institution" type="enumerationplus"  label="Institution" cansearch="false" columns="60"/>-->
 
 
 <children><![CDATA[
