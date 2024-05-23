@@ -5,11 +5,12 @@
     <property name="name.raw" value="true"/>
      <wiki><![CDATA[
 +section title={{name}}
+{{description wikify=true}}
++toggle Information
+{{information details=true}}
+-toggle
 {{resource}}
-{{description wikify="true"}}
 {{code.view wikify=false}}
-:br
-{{information}}
 -section
 ]]>
 </wiki>
@@ -41,6 +42,8 @@
 <type name="type_file_matlab_code" super="type_file_matlab"
       description="Matlab Code File" pattern=".*\.m" >
   <property name="canbeindexed" value="true"/>
+  <action name="documentchat" label="LLM with code"
+	  icon="fas fa-comments" foruser="true" category="view"/>
   <embedwiki><![CDATA[{{embed maxHeight=400px}}]]></embedwiki>
   <wiki_inner><![CDATA[
 +section title={{name}}
@@ -78,6 +81,14 @@
 </wiki_inner>
 </type>
   
+<type name="type_file_shell" super="type_file_code"
+      description="Shell Script" pattern=".*\.sh" >
+  <property name="canbeindexed" value="true"/>
+  <property name="icon" value="/files/sh.png"/>
+  <action name="documentchat" label="LLM with script"
+	  icon="fas fa-comments" foruser="true" category="view"/>
+  <embedwiki><![CDATA[{{embed maxHeight=400px}}]]></embedwiki>
+</type>
 
 
 
