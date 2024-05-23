@@ -64,7 +64,7 @@ inherited="false"  }}
 +col-4
 +center
 {{ark short=true}}
-{{image  message="" width="150px" style="margin-bottom:10px;" inherited="true" useThumbnail="true"}}
+{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
