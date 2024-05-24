@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${cdnpath}/favicon.png"/>
+<properties>
+name=OLC Template
+id=olc
+</properties>
+${imports}
+<style type="text/css">
+  :root {
+      --olc-logo-width:80px;
+      --header-height:100px;
+ }
+
+.olc-pageheader {
+      position:absolute;
+      top:10px;
+      left:50%;    transform: translateX(-50%);
+ }
+.olc-pageheader .ramadda-navbar {
+    padding:4px;
+    border-radius:var(--default-radius);
+    border:var(--basic-border);
+    background:#fff;
+    opacity:1;
+    text-align:center;
+}
+
+.ramadda-logo-image {
+    width:var(--olc-logo-width);
+}
+.ramadda-header {
+    height:var(--header-height);
+    padding: 1px;padding-left: 6px;padding-right: 6px;
+    background-color: #f5e9ce;
+    background-image: url(/olc/olcbg.gif);
+}
+.ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
+.ramadda-user-menu i {color:#888;}
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<div style="position:absolute;left:10px;top:10px;">
+<a href="https://www.olc.edu/">
+<img class="ramadda-logo-image"  src="${root}/olc/olclogo.png" style="width:var(--olc-logo-width);"></a>
+</div>
+<div class="olc-pageheader">${pageheader}</div>
+<div style="position:absolute;left:var(--olc-logo-width);margin-left:20px;bottom:0px;">
+<a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
+Oglala Lakota College Archives</a>
+</div>
+<div style="position:absolute;right:10px;bottom:0px;">${links}</div>
+</div>
+<div style="border-bottom:1px solid #ccc;">${entry.header}</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+${content}
+</div>
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}
+</div>
+${bottom}
+</body>
+</html>
