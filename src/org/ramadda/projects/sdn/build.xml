@@ -6,6 +6,6 @@
       <property name="plugin_dir" value="org/ramadda/projects/${plugin}"/>
       <property name="plugin_group" value="projectplugins"/>
       <ant antfile="${basedir}/build.xml" target="plugin_build"/>
-      <copy overwrite="true" file="${basedir}/dist/plugins/projectplugins/${plugin_jar}" tofile="${basedir}/src/${plugin_dir}/${plugin_jar}"/>
+    <copy overwrite="true" file="${basedir}/dist/plugins/projectplugins/${plugin_jar}" tofile="${basedir}/src/${plugin_dir}/${plugin_jar}"/>
     </target>
 </project>
