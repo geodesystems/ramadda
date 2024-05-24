@@ -1380,6 +1380,7 @@ svg > g > g:last-child { pointer-events: none }
 }
 
 
+
 .display-entry-image {
      max-width: 90%;
 }
@@ -1518,6 +1519,16 @@ svg > g > g:last-child { pointer-events: none }
     padding-right:8px;
     min-height:400px;
 }
+.display-search-ancestors {
+    max-height:200px;
+    overflow-y:auto;
+}
+
+.display-search-ancestors-select  {
+    white-space:nowrap;
+}
+
+
 .display-search-widget .disabledinput {
     background:#eaeaea;
     border-radius: var(--default-radius);

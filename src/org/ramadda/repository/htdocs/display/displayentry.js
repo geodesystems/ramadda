@@ -457,6 +457,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showAncestor',d: true},
         {p:'ancestors',tt: 'Comma separated list of entry ids or type:entry_type'},
         {p:'ancestorsLabel',tt: 'Label to use for the ancestors section'},		
+        {p:'mainAncestor',tt: 'Entry ID to force the search under'},
 	{p:'textRequired',d:false},
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
@@ -1214,6 +1215,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             settings.setExtra(extra);
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
 
+	    if(this.getMainAncestor()) {
+		let main  = this.getMainAncestor();
+		if(main=='this') {
+		    main = this.getProperty('entryId');
+		}
+		jsonUrl+='&mainancestor='+ main;
+	    }
 	    this.getContents().find('.ramadda-displayentry-ancestor').each(function() {
 		if($(this).is(':checked')) {
 		    let id = $(this).attr('data-entryid');
@@ -1239,11 +1247,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         loadAncestorsList: function(entries) {
 	    let html = '';
 	    entries.forEach(entry=>{
-		html+=HU.div([],
+		html+=HU.div([ATTR_CLASS,'display-search-ancestors-select'],
 			     HU.checkbox('',[ATTR_ID,'ancestor_'+ entry.getId(),ATTR_CLASS,'ramadda-displayentry-ancestor',
 					     'data-entryid',entry.getId()],false,entry.getName()));
 	    });
-	    this.jq(ID_SEARCH_ANCESTORS).html(html);
+	    this.jq(ID_SEARCH_ANCESTORS).html(HU.div([ATTR_CLASS,'display-search-ancestors'],html));
 	},
         loadAncestors: function(ancestors) {
 	    let url = ramaddaBaseUrl+ '/wiki/getentries?entries=' + ancestors;

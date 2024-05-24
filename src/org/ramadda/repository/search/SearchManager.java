@@ -1221,6 +1221,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
 
 
+	String mainAncestor = request.getString("mainancestor",null);
+	if(mainAncestor!=null) {
+	    queries.add(new TermQuery(new Term(FIELD_ANCESTOR, mainAncestor)));
+	}
 	List<String> ancestors = request.get(ARG_ANCESTOR+"_hidden", request.get(ARG_ANCESTOR,(List<String>)null));
 	if(ancestors!=null) {
 	    List<Query> ors = new ArrayList<Query>();
@@ -1437,7 +1441,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		queries.add(builder.build());
 	    }
 	}
-	//	System.err.println("queries:"+queries);
+	//System.err.println("queries:"+queries);
 
 
 	Query query = null;
