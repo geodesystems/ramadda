@@ -486,12 +486,20 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
     const SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties);
 
+    this.currentTime = new Date();
     defineDisplay(this, SUPER, myProps, {
         metadataTypeList: [],
 	haveSearched: false,
         haveTypes: false,
         metadata: {},
         metadataLoading: {},
+	addToDocumentUrl:function(key,value) {
+	    //Don't do this right away
+	    let now = new Date();
+	    if(now.getTime()-this.currentTime.getTime()>1000) {
+		HU.addToDocumentUrl(key,value);
+	    }
+	},
 	ctor: function() {
 	    if (this.getShowMetadata() && this.getShowSearchSettings()) {
 		let metadataTypesAttr = this.getMetadataTypes();
@@ -876,14 +884,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    
 	    if(settings.text) {
 		if(Utils.stringDefined(settings.text)) {
-		    HU.addToDocumentUrl(ID_TEXT_FIELD,settings.text);
+		    this.addToDocumentUrl(ID_TEXT_FIELD,settings.text);
 		}
 		if(settings.text.trim()!="") {
 		    if(this.getSearchPrefix())
 			settings.text = this.getSearchPrefix()+ settings.text;
 		}
 	    }  else {
-		//		HU.addToDocumentUrl(ID_TEXT_FIELD,"");
+		//		this.addToDocumentUrl(ID_TEXT_FIELD,"");
 	    }
 
 	    settings.ancestor = this.getAncestor();
@@ -901,9 +909,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
 							settings.entryType);
 		if(settings.entryType && (this.typeList==null || this.typeList.length>1) ) {
-		    HU.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
+		    this.addToDocumentUrl(ID_TYPE_FIELD,settings.entryType);
 		} else {
-		    HU.addToDocumentUrl(ID_TYPE_FIELD,null);
+		    this.addToDocumentUrl(ID_TYPE_FIELD,null);
 		}
             } else if(this.typeList && this.typeList.length==1) {
 		settings.entryType = this.typeList[0];
@@ -916,14 +924,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let ancestor = this.jq(ID_ANCESTOR+"_hidden").val();
 	    if(Utils.stringDefined(ancestor)) {
 		settings.ancestor = ancestor;
-		HU.addToDocumentUrl(ID_ANCESTOR,ancestor);
+		this.addToDocumentUrl(ID_ANCESTOR,ancestor);
 		let name = this.jq(ID_ANCESTOR).val();
 		if(name)
-		    HU.addToDocumentUrl(ID_ANCESTOR_NAME,name);		    
+		    this.addToDocumentUrl(ID_ANCESTOR_NAME,name);		    
 	    } else {
 		//delete it
-		HU.addToDocumentUrl(ID_ANCESTOR,null);
-		HU.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
+		this.addToDocumentUrl(ID_ANCESTOR,null);
+		this.addToDocumentUrl(ID_ANCESTOR_NAME,null);		
 	    }
             if (this.areaWidgets) {
 		this.areaWidgets.forEach(areaWidget=>{
@@ -2137,7 +2145,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             let id = this.jq(ID_PROVIDERS).val();
 	    this.provider = this.providerMap[id];
 	    if(Utils.stringDefined(id) && id!='this') {
-		HU.addToDocumentUrl(ID_PROVIDERS,id);
+		this.addToDocumentUrl(ID_PROVIDERS,id);
 	    }
 	    this.jq(ID_SEARCH_BAR).html("");
 	    let blocks = [ID_SEARCH_AREA, ID_SEARCH_TAGS,ID_SEARCH_ANCESTOR,ID_SEARCH_DATE_CREATE,ID_SEARCH_DATE_RANGE];
