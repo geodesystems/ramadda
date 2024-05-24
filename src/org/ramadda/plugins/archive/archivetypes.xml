@@ -142,6 +142,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+
 <!--
     <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
     <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
