@@ -1290,7 +1290,7 @@ function DisplayThing(argId, argProperties) {
 		    let labelAttrs = [CLASS,"display-record-table-label"]
 		    if(props.labelStyle) labelAttrs.push(ATTR_STYLE,props.labelStyle);
 		    let displayValue = value;
-		    let valueStyle = HU.css('margin-left','5px');
+		    let valueStyle = HU.css('margin-left','5px','max-width','90vw');
 		    if(maxWidth) {
 			valueStyle+=HU.css('max-width',HU.getDimension(maxWidth,'px'));
 		    }
@@ -1719,7 +1719,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
-	{p:'uniqueFields',ex:'',tt:'Show list of field to make data unique'},
+	{p:'selectUniqueFields',ex:'',tt:'Show list of fields to make data unique'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
@@ -4387,9 +4387,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		console.timeEnd('filters');
 	    }
 	    if(debug)   this.logMsg("filterData-6 #records:" + records.length);
-	    //	    let t2=  new Date();
-	    //	    Utils.displayTimes("filterData",[t1,t2]);
-	    records = this.sortRecords(records);
 
 	    if(this.uniqueFields && this.uniqueFields.length>0) {
 		let selected= this.jq('uniquefields').val();
@@ -4408,7 +4405,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		records = this.findUnique(records, ufield);
 	    }
 
+	    
 
+
+	    //	    let t2=  new Date();
+	    //	    Utils.displayTimes("filterData",[t1,t2]);
+	    records = this.sortRecords(records);
 
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -4493,7 +4495,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
+	    if(debug)   this.logMsg("filterData-final #records:" + records.length);
 
             return this.handleResult("filterData",records);
         },
@@ -6784,7 +6786,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    
 	    this.uniqueFields =
-		this.getFieldsByIds(null, this.getProperty("uniqueFields"));
+		this.getFieldsByIds(null, this.getSelectUniqueFields());
 	    if(this.uniqueFields && this.uniqueFields.length>0) {
 		let enums =[];
 		this.uniqueFields.forEach(field=>{
@@ -6795,7 +6797,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		});
 		header2 += HU.span([ATTR_CLASS,filterClass],
 				   this.makeFilterLabel("Unique: ") +
-				   HU.select("",['multiple',true,'size',4,ATTR_ID,this.getDomId("uniquefields")],
+				   HU.select("",['multiple',true,'size',Math.min(this.uniqueFields.length,4),ATTR_ID,this.getDomId("uniquefields")],
 					     enums,null))+SPACE;
 	    }
 
