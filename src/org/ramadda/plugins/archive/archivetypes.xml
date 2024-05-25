@@ -67,9 +67,6 @@ inherited="false"  }}
     <column name="citation" size="2000" type="string"  label="Citation" cansearch="false" columns="80"/>        
 
     <column name="publication_rights" rows="8" size="5000" type="string"  label="Publication Rights"   cansearch="false" columns="80"/>
-    <column name="creator_sketch" size="5000" rows="8" type="string"  label="Creator Sketch"   cansearch="false" columns="80"/>
-    <column name="scope_and_content" size="5000" rows="8" type="string"  label="Scope and Content Note"   cansearch="false" columns="80" />    
-
 
 <!--
     <column name="author" type="string"  label="Author" cansearch="false" group="Metadata"/>
