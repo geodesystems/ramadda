@@ -1243,8 +1243,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 	    });
 	    
-	    console.log(jsonUrl);
-
            return jsonUrl;
         },
 	addAreaWidget(areaWidget) {
@@ -1521,7 +1519,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                                 NONE));
                     }
 		    if(this.getShowTags()) {
-			let block = HU.div([CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ID,this.getMetadataFieldId(type)]));
+			let block = HU.div([ATTR_CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ATTR_ID,this.getMetadataFieldId(type)]));
 			let countId = this.getMetadataFieldId(type)+"_count";
 			let wrapperId = this.getMetadataFieldId(type)+"_wrapper";			
 			let label = type.getLabel();
@@ -1717,7 +1715,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 
 	    let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,label+":" + value,
-				ATTR_STYLE, HU.css("background", Utils.getEnumColor(type)),
+				ATTR_STYLE, '',//HU.css("background", Utils.getEnumColor(type)),
 				ATTR_CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 	    tag.click(function() {
 		$(this).remove();
