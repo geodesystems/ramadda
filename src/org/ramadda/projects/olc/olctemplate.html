@@ -18,7 +18,13 @@ ${imports}
       position:absolute;
       top:10px;
       left:50%;    transform: translateX(-50%);
+      font-size: min(2vw, 100%);
  }
+
+.olc-title {
+    font-size: min(2vw, 120%);
+}
+
 .olc-pageheader .ramadda-navbar {
     padding:4px;
     border-radius:var(--default-radius);
@@ -49,7 +55,7 @@ ${headfinal}
 <img class="ramadda-logo-image"  src="${root}/olc/olclogo.png" style="width:var(--olc-logo-width);"></a>
 </div>
 <div class="olc-pageheader">${pageheader}</div>
-<div style="position:absolute;left:var(--olc-logo-width);margin-left:20px;bottom:0px;">
+<div class="olc-title" style="position:absolute;left:var(--olc-logo-width);margin-left:20px;bottom:0px;">
 <a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
 Oglala Lakota College Archives</a>
 </div>
