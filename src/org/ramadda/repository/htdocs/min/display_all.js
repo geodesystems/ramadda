@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May 24 21:56:19 MDT 2024";
+var build_date="RAMADDA build date: Sat May 25 05:17:22 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33018,6 +33018,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 
 /**
    Copyright 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 
@@ -33058,8 +33059,10 @@ var ID_SEARCH_ANCESTORS = "search_ancestors";
 var ID_TREE_LINK = "treelink";
 var ATTR_ENTRYID = "entryid";
 
+
 var ID_SEARCH = "search";
 var ID_FORM = "form";
+
 var ID_TEXT_FIELD = "textfield";
 var ID_NAME_FIELD = "namefield";
 var ID_DESCRIPTION_FIELD = "descriptionfield";
@@ -33457,6 +33460,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         {p:'entryTypes',ex:'comma separated list of types - use "any" for any type'},
         {p:'typesLabel',tt: 'Label to use for the type section'},		
+	{p:'addAllTypes',tt:'Add the All types to the type list'},
+	{p:'addAnyType',tt:'Add the Any of these types to the type list'},
+	{p:'startWithAny',tt:'Start with the Any of these types'},	
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
@@ -33480,7 +33486,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'searchText',d: '',tt:'Initial search text'},
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
         {p:'showMetadata',d: false},
-	{p:'metadataTypes', d:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
+	{p:'metadataTypes', ex:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
         {p:'showTags',d: true},	
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
@@ -33519,8 +33525,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }
 	},
 	ctor: function() {
-	    if (this.getShowMetadata() && this.getShowSearchSettings()) {
-		let metadataTypesAttr = this.getMetadataTypes();
+	    let metadataTypesAttr = this.getMetadataTypes();
+	    if (Utils.stringDefined(metadataTypesAttr) && this.getShowSearchSettings()) {
 		//look for type:value:label, or type:label,
 		let toks = metadataTypesAttr.split(",");
 		for (let i = 0; i < toks.length; i++) {
@@ -34513,7 +34519,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
-            if (this.getShowMetadata()) {
+
+            if (Utils.stringDefined(this.getMetadataTypes())) {
 		let metadataBlock = "";
                 for (let i = 0; i < this.metadataTypeList.length; i++) {
                     let type = this.metadataTypeList[i];
@@ -34532,12 +34539,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let block = HU.div([CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ID,this.getMetadataFieldId(type)]));
 			let countId = this.getMetadataFieldId(type)+"_count";
 			let wrapperId = this.getMetadataFieldId(type)+"_wrapper";			
-			let label = type.getLabel()+" " + HU.span([ID,countId]);
-			let wrapper = HU.div(['style','max-width:200px;',ID,wrapperId], HU.toggleBlock(label,block,false,{
-			    headerStyle:HU.css("border","1px solid #ccc", "margin-top","6px","background", Utils.getEnumColor(type))}));
-			metadataBlock+=wrapper;
+			let label = type.getLabel();
+			metadataBlock += this.addWidget(label, block,{toggleClose:true});
 		    } else {
-			metadataBlock += this.addWidget(type.getLabel() + ":", metadataSelect);
+			metadataBlock += this.addWidget(type.getLabel(), metadataSelect,{toggleClose:true});
 		    }
                 }
 		extra += HU.div([ID,this.domId(ID_SEARCH_TAGS)], metadataBlock);
@@ -34613,8 +34618,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             let settings = this.getSearchSettings();
             settings.skip = 0;
             settings.setMax(DEFAULT_MAX);
-            settings.entryType = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
+	    let type = this.getFieldValue(this.getDomId(ID_TYPE_FIELD),
 						    settings.entryType);
+	    settings.entryType = type;
+
             settings.clearAndAddType(settings.entryType);
             this.addExtraForm();
             this.submitSearchForm();
@@ -34817,10 +34824,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 						 ATTR_CLASS, "display-typelist",
 						 "onchange", this.getGet() + ".typeChanged();"
             ]);
-            select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""],
-			     this.getEntryTypes()?'Any of these types':'Any type');
+	    if(this.getProperty("addAllTypes")) {
+		select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, VALUE_ANY_TYPE],'Any type');
+	    }
+	    if(this.getProperty("addAnyType",true)) {
+		select += HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""],
+				 this.getEntryTypes()?'Any of these types':'Any type');
+	    }
 	    let hadSelected = false;
 	    let anySelected = false;
+	    let startWithAny=this.getProperty('startWithAny');
 	    let fromUrl = HU.getUrlArgument(ID_TYPE_FIELD);
             this.entryTypes.every(type=>{
                 anySelected = this.getSearchSettings().hasType(type.getId());
@@ -34840,7 +34853,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if(fromUrl)
 			selected = type.getId()==fromUrl;
 		}
-		if(!selected && !anySelected && i==0)  selected=true;
+		if(!selected && !anySelected && i==0 && !startWithAny)  selected=true;
                 if (selected) {
 		    hadSelected = true;
                     optionAttrs.push("selected");
