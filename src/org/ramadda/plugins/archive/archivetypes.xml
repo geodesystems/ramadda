@@ -42,7 +42,8 @@ inherited="false"  }}
 	childtypes="type_archive_series"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="archive_source_contact,content.keyword,enum_tag,property,metadata_author,metadata_publisher">
+	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property"
+	>
 
     <property name="icon" value="/archive/collection.png"/>
     <property name="date.format" value="yyyy-MM-dd"/>
@@ -131,7 +132,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	childtypes="type_archive_file"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
+	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
+
 
     <property name="icon" value="/archive/series.png"/>
     <property name="form.description.iswiki" value="true"/>
@@ -164,7 +166,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	childtypes="type_archive_item_image"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="content.keyword,enum_tag,property,metadata_author,metadata_publisher">
+	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
 
     <property name="icon" value="/archive/file.png"/>
     <property name="form.resource.show" value="false"/>
@@ -185,7 +187,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       newfields="name,description,_default"
       editfields="name,description,_default"	
-      xxxmetadata="enum_tag,metadata_author,metadata_publisher">
+	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
 
     <property name="icon" value="/archive/portfolio.png"/>
     <property  name="html.type.show"  value="false" />
