@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="Archive" >
-    <type id="archive_subject" name="Archive Subject">
+  <handler category="Archive" 	searchable="true" browsable="true">
+    <type id="archive_subject" name="Archive Subject" >
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
 

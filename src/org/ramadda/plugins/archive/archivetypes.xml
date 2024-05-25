@@ -46,6 +46,7 @@ inherited="false"  }}
 	>
 
     <property name="icon" value="/archive/collection.png"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="date.format" value="yyyy-MM-dd"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.time.show" value="false"/>    
@@ -136,6 +137,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
     <property name="icon" value="/archive/series.png"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.ark.show" value="false"/>
@@ -169,6 +171,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
 
     <property name="icon" value="/archive/file.png"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
     <property  name="html.date.show"  value="false" />    
@@ -190,6 +193,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	metadata="archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
 
     <property name="icon" value="/archive/portfolio.png"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property  name="html.type.show"  value="false" />
     <property  name="html.date.show"  value="false" />    
     <property name="form.ark.show" value="false"/>
