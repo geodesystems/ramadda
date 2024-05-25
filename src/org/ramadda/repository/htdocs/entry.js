@@ -9,6 +9,8 @@ var OUTPUT_CSV = "default.csv";
 var OUTPUT_ZIP = "zip.tree";
 var OUTPUT_EXPORT = "zip.export";
 
+var VALUE_ANY_TYPE="_any_";
+
 var DEFAULT_MAX = 100;
 
 var OUTPUTS = [
@@ -434,7 +436,9 @@ function RamaddaRepository(repositoryRoot) {
 	    if(output) url+="&output=" + output;
             for (let i = 0; i < settings.types.length; i++) {
                 let type = settings.types[i];
-                url += "&type=" + type;
+		if(type!=VALUE_ANY_TYPE) {
+                    url += "&type=" + type;
+		}
             }
 
             if (settings.parent != null && settings.parent.length > 0)
