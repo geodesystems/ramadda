@@ -1266,6 +1266,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					     'data-entryid',entry.getId()],false,entry.getName()));
 	    });
 	    this.jq(ID_SEARCH_ANCESTORS).html(HU.div([ATTR_CLASS,'display-search-ancestors'],html));
+	    this.jq(ID_SEARCH_ANCESTORS).find('.ramadda-displayentry-ancestor').change(()=>{
+		this.submitSearchForm();
+	    });
 	},
         loadAncestors: function(ancestors) {
 	    let url = ramaddaBaseUrl+ '/wiki/getentries?entries=' + ancestors;
