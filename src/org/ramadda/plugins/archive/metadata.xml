@@ -17,6 +17,11 @@
       <element id="category" name="Category" datatype="enumerationplus"/>
      </type>        
 
+    <type id="archive_note" name="Archive Note">
+      <element id="note" name="Note" rows="5" columns="60"/>
+    </type>        
+
+
      <type id="archive_source_contact" name="Source Contact"
 	   displaycategory="Source Contact Information">
       <element id="name" name="Name"/>
