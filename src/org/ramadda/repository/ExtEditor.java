@@ -578,11 +578,11 @@ public class ExtEditor extends RepositoryManager {
 						changed = true;
 						entry.getResource().setPath(wrapper.url);
 					    }					    
-					    if(wrapper.startDate!=null) {
+					    if(wrapper.startDateChanged) {
 						changed = true;
 						entry.setStartDate(wrapper.startDate);
 					    }
-					    if(wrapper.endDate!=null) {
+					    if(wrapper.endDateChanged) {
 						changed = true;
 						entry.setEndDate(wrapper.endDate);
 					    }
@@ -1374,6 +1374,8 @@ public class ExtEditor extends RepositoryManager {
 	boolean changed = false;
 	String name;
 	String description;
+	boolean startDateChanged=false;
+	boolean endDateChanged=false;	
 	Date startDate;
 	Date endDate;
 	String url;
@@ -1552,7 +1554,9 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void setStartDate(String date) throws Exception {
-	    this.startDate = Utils.parseDate(date);
+	    if(date==null) this.startDate = null;
+	    else 	    this.startDate = Utils.parseDate(date);
+	    startDateChanged = true;
 	}	
 
 
@@ -1561,7 +1565,9 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void setEndDate(String date) throws Exception {
-	    this.endDate = Utils.parseDate(date);
+	    if(date==null) this.endDate = null;
+	    else this.endDate = Utils.parseDate(date);
+	    endDateChanged = true;
 	}	
 	
 	public String toString() {
