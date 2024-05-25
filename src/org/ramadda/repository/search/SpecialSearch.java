@@ -616,6 +616,19 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		sb.append("\n");
 	    }
 
+	    if(metadataTypes.size()>0) {
+		StringBuilder types=new StringBuilder();
+		List<String> typeList=new ArrayList<String>();
+		for(String type: metadataTypes) {
+		    MetadataType metadataType =
+			getRepository().getMetadataManager().findType(type);
+		    if (metadataType != null) {
+			typeList.add(metadataType.getId()+":"+ metadataType.getLabel());
+		    }
+		}
+		addAttr(sb,"metadataTypes",Utils.join(typeList,","));
+	    }
+
 	    sb.append("}}\n");
 	    formSB.append(getRepository().getWikiManager().wikifyEntry(request,
 								       getEntryManager().getRootEntry(),
