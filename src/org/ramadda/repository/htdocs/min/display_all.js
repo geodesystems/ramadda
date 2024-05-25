@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May 24 05:52:28 MDT 2024";
+var build_date="RAMADDA build date: Fri May 24 21:23:21 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5689,6 +5689,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'sortByFields',ex:'',tt:'Show sort by fields in a menu'},
 	{p:'sortHighlight',ex:true,tt:'Sort based on highlight from the filters'},
 	{p:'reverse',ex:'true',t:'Reverse the records'},
+	{p:'uniqueFields',ex:'',tt:'Show list of field to make data unique'},
 	{p:'doEntries',ex:true,tt:'Make the children entries be data'},
 	{p:'propagateDataReload',ex:'true',tt:'Propagate to other displays when the data is reloaded'},
 	{p:'propagateFilteredTimes',ex:'true',tt:'Propagate to other displays the list of times when we have filtered data. The other displays need to have filteredTimes.accept=true '},
@@ -8023,6 +8024,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.forceUpdateUI();
 	    }
 	},
+	findUnique:function(records, ufield) {
+	    if(!ufield) return records;
+	    let umap = {};
+	    let ulist = [];
+	    for(let i=records.length-1;i>=0;i--) {
+		let record = records[i];
+		let v = record.getValue(ufield.getIndex());
+		if(!Utils.isDefined(umap[v])) {
+		    umap[v] = true;
+		    ulist.push(record);
+		}
+	    }
+	    return ulist;
+	},
 	filterDataInner: function(records, fields, args) {
 	    if(this.propagatedFilteredRecords && this.originalPointData) {
 //		console.log('filter data before',this.propagatedFilteredRecords[0].data);
@@ -8346,20 +8361,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    //	    Utils.displayTimes("filterData",[t1,t2]);
 	    records = this.sortRecords(records);
 
+	    if(this.uniqueFields && this.uniqueFields.length>0) {
+		let selected= this.jq('uniquefields').val();
+		if(selected.length>0) {
+		    let fields=this.uniqueFields.filter(f=>{
+			return selected.includes(f.getId())
+		    });
+		    fields.forEach(ufield=>{
+			records = this.findUnique(records, ufield);
+		    });
+		}
+	    }
+
 	    if(this.getProperty("uniqueField")) {
 		let ufield =  this.getFieldById(null, this.getProperty("uniqueField"));
-		let umap = {};
-		let ulist = [];
-		for(let i=records.length-1;i>=0;i--) {
-		    let record = records[i];
-		    let v = record.getValue(ufield.getIndex());
-		    if(!Utils.isDefined(umap[v])) {
-			umap[v] = true;
-			ulist.push(record);
-		    }
-		}
-		records  = ulist;
+		records = this.findUnique(records, ufield);
 	    }
+
+
 
 	    this.recordToIndex = {};
 	    this.indexToRecord = {};
@@ -10729,9 +10748,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			enums.push([id+"_up",label + " " + suffix1]);
 		    }
 		});
-		header2 += HU.span([CLASS,filterClass],
-				   this.makeFilterLabel("Order: ") + HU.select("",[ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
+		header2 += HU.span([ATTR_CLASS,filterClass],
+				   this.makeFilterLabel("Order: ") + HU.select("",[ATTR_ID,this.getDomId("sortbyselect")],enums,this.getProperty("sortFields","")))+SPACE;
 	    }
+
+	    
+	    this.uniqueFields =
+		this.getFieldsByIds(null, this.getProperty("uniqueFields"));
+	    if(this.uniqueFields && this.uniqueFields.length>0) {
+		let enums =[];
+		this.uniqueFields.forEach(field=>{
+		    if(field.isFieldGeo()) return;
+		    let id = field.getId();
+		    let label = field.getLabel();
+		    enums.push([id,label]);
+		});
+		header2 += HU.span([ATTR_CLASS,filterClass],
+				   this.makeFilterLabel("Unique: ") +
+				   HU.select("",['multiple',true,'size',4,ATTR_ID,this.getDomId("uniquefields")],
+					     enums,null))+SPACE;
+	    }
+
 
 	    if(this.getProperty("showSortDirection")) {
 		header2 +=HU.select("",[ID,this.getDomId("sortdirection")],[["up", "Sort Up"],["down","Sort Down"]],
@@ -11213,6 +11250,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.jq("colorbyselect").change(function(){
 		_this.colorByFieldChanged($(this).val());
 	    });
+	    this.jq('uniquefields').change(()=>{
+		this.callUpdateUI();
+	    });
+
             this.jq("sortbyselect").change(function(){
 		let val = $(this).val();
 		if(val.endsWith("_up")) {
@@ -31252,7 +31293,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    }
 		    let s = template.trim();
 		    let row = this.getDataValues(record);
-		    if(s.startsWith("${default")) {
+		    if(s.trim()=="${default}") {
 			s = this.getRecordHtml(record,fields,s);
 		    } else  if(s.startsWith("${fields")) {
 			s = this.getRecordHtml(record,fields,s);
