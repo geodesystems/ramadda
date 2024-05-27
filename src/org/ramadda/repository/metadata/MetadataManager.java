@@ -2136,17 +2136,32 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param metadataType _more_
-     * @param sb _more_
-     * @param doCloud _more_
-     * @param threshold _more_
-     *
-     * @throws Exception On badness
-     */
+    private String makeElementJson(MetadataElement element,List<String>maps) {
+	List<String>attrs = new ArrayList<String>();
+	Utils.add(attrs,"id",JsonUtil.quote(element.getId()),"name",JsonUtil.quote(element.getLabel()),
+		  "index",""+element.getIndex());
+
+	Utils.add(attrs,"type",JsonUtil.quote(element.isEnumeration()?"enumeration":"string"));
+	if(maps!=null) Utils.add(attrs,"values",JsonUtil.list(maps));
+	return JsonUtil.map(attrs);
+    }
+
+
+    public List<MetadataElement> getSearchableElements(MetadataType type) {
+	List<MetadataElement> searchableElements = new ArrayList<MetadataElement>();
+	for(MetadataElement child:type.getChildren()) {
+	    if(child.getSearchable()) {
+		searchableElements.add(child);
+	    }
+	}
+	//Default to the first one
+	if(searchableElements.size()==0)  {
+	    searchableElements.add(type.getChildren().get(0));
+	}
+	return searchableElements;
+    }
+
+
     public void doMakeTagCloudOrList(Request request, String metadataType,
                                      Appendable sb, boolean doCloud,
                                      int threshold)
@@ -2159,132 +2174,141 @@ public class MetadataManager extends RepositoryManager {
             if (doJson) {
                 sb.append(JsonUtil.list(new ArrayList<String>()));
             }
-
             return;
         }
-        MetadataElement           element    = type.getChildren().get(0);
-        List<HtmlUtils.Selector>      enumValues = element.getValues();
-        Hashtable<String, String> labels     = new Hashtable<String,
-                                                   String>();
-        if (enumValues != null) {
-            for (HtmlUtils.Selector sel: enumValues) {
-		labels.put((String) sel.getId(), (String) sel.getLabel());
-            }
-        }
-        String[] values = getDistinctValues(request, handler, type);
-        int[]    cnt    = new int[values.length];
-        int      max    = -1;
-        int      min    = 10000;
-        for (int i = 0; i < values.length; i++) {
-            String value = values[i];
-            cnt[i] = 0;
-            Statement stmt = getDatabaseManager().select(
-                                 SqlUtil.count("*"), Tables.METADATA.NAME,
-                                 Clause.and(
-                                     Clause.eq(
-                                         Tables.METADATA.COL_TYPE,
-                                         type.getId()), Clause.eq(
-                                             Tables.METADATA.COL_ATTR1,
-                                             value)));
-            ResultSet results = stmt.getResultSet();
-            if ( !results.next()) {
-                continue;
-            }
-            cnt[i] = results.getInt(1);
-            max    = Math.max(cnt[i], max);
-            min    = Math.min(cnt[i], min);
-            getDatabaseManager().closeAndReleaseConnection(stmt);
-        }
-        int    diff         = max - min;
-        double distribution = diff / 5.0;
-        if ( !doCloud) {
-            List tuples = new ArrayList();
-            for (int i = 0; i < values.length; i++) {
-                if (cnt[i] > threshold) {
-                    tuples.add(new Object[] {  Integer.valueOf(cnt[i]),
-                            values[i] });
-                }
-            }
-            tuples = Misc.sortTuples(tuples, false);
+	List<MetadataElement> searchableElements = getSearchableElements(type);
+	List<String> jsonItems = new ArrayList<String>();
 
-            if (doJson) {
-                List<String> maps = new ArrayList<String>();
-                for (int i = 0; i < tuples.size(); i++) {
-                    Object[] tuple = (Object[]) tuples.get(i);
-                    String   value = (String) tuple[1];
+	for(MetadataElement element:searchableElements) {
+	    if(!element.isEnumeration()) {
+		if(doJson) {
+		    jsonItems.add(makeElementJson(element,null));
+		}
+		continue;
+	    }
+	    List<HtmlUtils.Selector>      enumValues = element.getValues();
+	    Hashtable<String, String> labels     = new Hashtable<String,  String>();
+	    if (enumValues != null) {
+		for (HtmlUtils.Selector sel: enumValues) {
+		    labels.put((String) sel.getId(), (String) sel.getLabel());
+		}
+	    }
+	    String[] values = getDistinctValues(request, handler, type,element.getIndex());
+	    int[]    cnt    = new int[values.length];
+	    int      max    = -1;
+	    int      min    = 10000;
+	    for (int i = 0; i < values.length; i++) {
+		String value = values[i];
+		cnt[i] = 0;
+		Statement stmt = getDatabaseManager().select(
+							     SqlUtil.count("*"), Tables.METADATA.NAME,
+							     Clause.and(Clause.eq(Tables.METADATA.COL_TYPE,
+										  type.getId()),
+									Clause.eq(Tables.METADATA.COL_ATTR1,value)));
+		ResultSet results = stmt.getResultSet();
+		if ( !results.next()) {
+		    continue;
+		}
+		cnt[i] = results.getInt(1);
+		max    = Math.max(cnt[i], max);
+		min    = Math.min(cnt[i], min);
+		getDatabaseManager().closeAndReleaseConnection(stmt);
+	    }
+	    int    diff         = max - min;
+	    double distribution = diff / 5.0;
+	    if ( !doCloud) {
+		List tuples = new ArrayList();
+		for (int i = 0; i < values.length; i++) {
+		    if (cnt[i] > threshold) {
+			tuples.add(new Object[] {Integer.valueOf(cnt[i]),values[i] });
+		    }
+		}
+		tuples = Misc.sortTuples(tuples, false);
+		if (doJson) {
+		    List<String> maps = new ArrayList<String>();
+		    for (int i = 0; i < tuples.size(); i++) {
+			Object[] tuple = (Object[]) tuples.get(i);
+			String   value = (String) tuple[1];
+			String   label = labels.get(value);
+			if (label == null) {
+			    label = value;
+			}
+			maps.add(JsonUtil.map(Utils.makeListFromValues("count",
+								       tuple[0].toString(), "value",
+								       JsonUtil.quote(value), "label",
+								       JsonUtil.quote(label))));
+		    }
+		    jsonItems.add(makeElementJson(element,maps));
 
-                    String   label = labels.get(value);
-                    if (label == null) {
-                        label = value;
-                    }
-                    maps.add(JsonUtil.map(Utils.makeListFromValues("count",
-                            tuple[0].toString(), "value",
-                            JsonUtil.quote(value), "label",
-                            JsonUtil.quote(label))));
-                }
-                sb.append(JsonUtil.list(maps));
-            } else {
 
-                List rows = new ArrayList();
-                for (int i = 0; i < tuples.size(); i++) {
-                    Object[] tuple = (Object[]) tuples.get(i);
-                    String   value = (String) tuple[1];
-                    String   label = value;
-                    if (value.trim().length() == 0) {
-                        label = "----";
-                    }
-                    StringBuilder row = new StringBuilder();
-                    row.append("<tr><td>");
-                    row.append(tuple[0].toString());
-                    row.append("</td><td>");
-                    row.append(HU.href(handler.getSearchUrl(request,
-                            type, value), label));
-                    row.append("</td></tr>");
-                    rows.add(row);
-                }
-                List       cols  = new ArrayList();
-                List<List> lists = Utils.splitList(rows, 15);
-                for (List row : lists) {
-                    cols.add(HU.formTable()
-                            + HU
-                            .row(HU.cols(HU.b("# entries"),
-                                HU.b(type
-                                    .getLabel())), "class=ramadda-table-header") + Utils
-                                        .join(row, "") + HU.formTableClose());
-                }
-                sb.append(
-                    Utils.wrap(
-                        cols,
-                        "<div style='vertical-align:top;display:inline-block;margin:15px;'>",
-                        "</div>"));
-            }
+		} else {
 
-        } else {
-            for (int i = 0; i < values.length; i++) {
-                if (cnt[i] <= threshold) {
-                    continue;
-                }
-                double percent = cnt[i] / distribution;
-                int    bin     = (int) (percent * 5);
-                String css     = "font-size:" + (12 + bin * 2);
-                String value   = values[i];
-                String ttValue = value.replace("\"", "'");
-                if (value.length() > 30) {
-                    value = value.substring(0, 29) + "...";
-                }
-                sb.append("<span style=\"" + css + "\">");
-                String extra = XmlUtil.attrs("alt",
-                                             "Count:" + cnt[i] + " "
-                                             + ttValue, "title",
+		    List rows = new ArrayList();
+		    for (int i = 0; i < tuples.size(); i++) {
+			Object[] tuple = (Object[]) tuples.get(i);
+			String   value = (String) tuple[1];
+			String   label = value;
+			if (value.trim().length() == 0) {
+			    label = "----";
+			}
+			StringBuilder row = new StringBuilder();
+			row.append("<tr><td>");
+			row.append(tuple[0].toString());
+			row.append("</td><td>");
+			row.append(HU.href(handler.getSearchUrl(request,
+								type, value), label));
+			row.append("</td></tr>");
+			rows.add(row);
+		    }
+		    List       cols  = new ArrayList();
+		    List<List> lists = Utils.splitList(rows, 15);
+		    for (List row : lists) {
+			cols.add(HU.formTable()
+				 + HU
+				 .row(HU.cols(HU.b("# entries"),
+					      HU.b(type
+						   .getLabel())), "class=ramadda-table-header") + Utils
+				 .join(row, "") + HU.formTableClose());
+		    }
+		    sb.append(
+			      Utils.wrap(
+					 cols,
+					 "<div style='vertical-align:top;display:inline-block;margin:15px;'>",
+					 "</div>"));
+		}
+
+	    } else {
+		for (int i = 0; i < values.length; i++) {
+		    if (cnt[i] <= threshold) {
+			continue;
+		    }
+		    double percent = cnt[i] / distribution;
+		    int    bin     = (int) (percent * 5);
+		    String css     = "font-size:" + (12 + bin * 2);
+		    String value   = values[i];
+		    String ttValue = value.replace("\"", "'");
+		    if (value.length() > 30) {
+			value = value.substring(0, 29) + "...";
+		    }
+		    sb.append("<span style=\"" + css + "\">");
+		    String extra = XmlUtil.attrs("alt",
+						 "Count:" + cnt[i] + " "
+						 + ttValue, "title",
                                                  "Count:" + cnt[i] + " "
                                                  + ttValue);
-                sb.append(HU.href(handler.getSearchUrl(request, type,
-                        values[i]), value, extra));
-                sb.append("</span>");
-                sb.append(" &nbsp; ");
-            }
-        }
-
+		    sb.append(HU.href(handler.getSearchUrl(request, type,
+							   values[i]), value, extra));
+		    sb.append("</span>");
+		    sb.append(" &nbsp; ");
+		}
+	    }
+	}
+	if(doJson) {
+	    List<String> obj = new ArrayList<String>();
+	    Utils.add(obj,"metadataType",JsonUtil.quote(type.getId()),"metadataLabel",JsonUtil.quote(type.getLabel()));
+	    Utils.add(obj,"elements",JsonUtil.list(jsonItems));
+	    sb.append(JsonUtil.map(obj));
+	}
     }
 
 

@@ -121,6 +121,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     private boolean attachment = true;
 
+
     /** _more_ */
     private String id = null;
 
@@ -1156,6 +1157,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return dataType;
     }
 
+    public boolean isEnumeration() {
+	return (dataType.equals(DATATYPE_ENUMERATION)
+		|| dataType.equals(DATATYPE_ENUMERATIONPLUS));
+    }
+
 
     /**
      *  Set the Rows property.
@@ -1266,6 +1272,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public int getIndex() {
         return this.index;
     }
+
 
     /**
      * Set the Searchable property.
