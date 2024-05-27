@@ -17,8 +17,14 @@
       <element id="category" name="Category" datatype="enumerationplus"/>
      </type>        
 
-    <type id="archive_note" name="Archive Note">
-      <element id="note" name="Note" rows="5" columns="60"/>
+    <type id="archive_test" name="Archive Test" searchable="true">
+      <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
+    </type>
+
+    <type id="archive_note" name="Archive Note" searchable="true">
+      <element id="type" name="Note Type" datatype="enumerationplus" searchable="true"/>
+      <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
+      <template type="html"><![CDATA[<b>${attr1}</b><br>${attr2}]]></template>
     </type>        
 
 
