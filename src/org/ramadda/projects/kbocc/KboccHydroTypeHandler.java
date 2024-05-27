@@ -55,6 +55,8 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	}
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
 	String yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d\\d)");
+	if(yearSite==null)
+	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d\\d)");
 	if(yearSite==null) yearSite="";
 	List<String> toks = Utils.splitUpTo(yearSite,"-",2);
 	String site = toks.size()==2?toks.get(1):"";
@@ -83,6 +85,10 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	    entry.setLongitude(theLogger.getDouble("longitude"));
 	    entry.setValue("location",theLogger.getString("location"));
 	    entry.setValue("notes",theLogger.getString("notes"));		
+	} else {
+	    String msg = "could not find site info for file:" + fileName;
+	    getSessionManager().addSessionErrorMessage(request,msg);
+	    System.err.println("could not find site info:" + yearSite +" file:" + fileName);
 	}
 	
     }
