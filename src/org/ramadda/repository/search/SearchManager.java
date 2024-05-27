@@ -756,7 +756,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		System.err.println("MTD:" + metadata.getAttr1().toLowerCase());
 		//		corpus.append(metadata.getAttr1().toLowerCase());
 		//		corpus.append(" ");
-		doc.add(new StringField(getMetadataField(type.getId()), metadata.getAttr1(),Field.Store.NO));
+		for(MetadataElement element: getMetadataManager().getSearchableElements(type)) {
+		    //		    System.err.println("field:" + getMetadataField(type.getId()+"_"+element.getIndex()) +"="+ metadata.getAttr(element.getIndex()));
+		    doc.add(new StringField(getMetadataField(type.getId()+"_"+element.getIndex()), metadata.getAttr(element.getIndex()),Field.Store.NO));
+		}
 	    }
 	}
 
@@ -1251,7 +1254,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
         Hashtable args        = request.getArgs();
-        String metadataPrefix = ARG_METADATA_ATTR1 + "_";
+        String metadataPrefix = ARG_METADATA_ATTR;
 	CategoryList<String> cats = new CategoryList<String>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
@@ -1262,7 +1265,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 continue;
             }
 	    List<String> values = (List<String>) request.get(arg,new ArrayList());
-            String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
+            arg = arg.substring(metadataPrefix.length());
+	    List<String> toks = Utils.splitUpTo(arg,"_",2);
+	    if(toks.size()!=2) continue;
+	    String index = toks.get(0);
+            String type = toks.get(1)+"_"+index;
 	    for(String value: values) {
 		cats.add(type,value);
 	    }
@@ -1273,6 +1280,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String field = getMetadataField(type);
 	    for(String value: cats.get(type)) {
 		Query query = new TermQuery(new Term(field, value));
+		query =  new WildcardQuery(new Term(field, value));
 		builder.add(query,BooleanClause.Occur.SHOULD);		
 	    }
 	    queries.add(builder.build());
@@ -1441,7 +1449,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		queries.add(builder.build());
 	    }
 	}
-	//System.err.println("queries:"+queries);
+	//	System.err.println("queries:"+queries);
 
 
 	Query query = null;
