@@ -2115,10 +2115,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	},
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
-	    let cbxInner = HU.div([STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ID,inputId]);
-	    let contents = HU.div([STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ID,inputId]);
+	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
@@ -2644,7 +2644,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
 		let entryId = this.getProperty("entryId") || this.entryId;
                 if (entryId) {
-                    titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title",  STYLE, titleStyle]);
+                    titleToShow = HU.href(this.getRamadda().getEntryUrl(entryId), titleToShow, [ATTR_CLASS, "display-title",  ATTR_STYLE, titleStyle]);
 		}
 		titleToShow =HU.span([ID,this.domId(ID_TITLE)],titleToShow);
             }
@@ -3041,7 +3041,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(this.useDisplayMessage()) {
 		return SPACE+msg;
 	    } 
-            return HU.div([STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
+            return HU.div([ATTR_STYLE, HU.css("text-align","center")], this.getMessage(SPACE + msg));
         },
 	reloadData: function() {
 	    this.dataLoadFailed = false;
@@ -3256,7 +3256,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
                 if (disabledFields != "") {
-                    html += HU.div([STYLE, HU.css("border-top","1px #888  solid")], "<b>No Data Available</b>" + disabledFields);
+                    html += HU.div([ATTR_STYLE, HU.css("border-top","1px #888  solid")], "<b>No Data Available</b>" + disabledFields);
                 }
                 html += HU.close(TAG_DIV);
             }
@@ -4468,7 +4468,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		header  += HU.span([ID,this.domId(ID_PREVNEXT_LABEL)]);
 		if(header!="") {
-		    header = HU.div([STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
+		    header = HU.div([ATTR_STYLE,HU.css('margin-right','10px', "display","inline-block")],header);
 		    this.jq(ID_HEADER2_PREFIX).html(header);
 		    this.jq(ID_HEADER2).css("text-align","left");
 		}
@@ -4548,7 +4548,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let wiki =  this.assembleWikiText();
 	    HtmlUtils.setPopupObject(HtmlUtils.getTooltip());
 	    wiki = wiki.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-	    wiki = HU.pre([STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
+	    wiki = HU.pre([ATTR_STYLE,HU.css("max-width","500px","max-height","400px","overflow-x","auto","overflow-y","auto")], wiki);
 	    this.showDialog(wiki);
 	},
         copyWikiText: function(type) {

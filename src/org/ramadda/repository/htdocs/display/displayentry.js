@@ -953,8 +953,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    
             settings.metadata = [];
 	    if(!this.getShowTags()) {
-		for (let i = 0; i < this.metadataTypeList.length; i++) {
-                    let metadataType = this.metadataTypeList[i];
+		this.metadataTypeList.forEach(metadataType=>{
                     let value = metadataType.getValue();
                     if (value == null) {
 			value = this.getFieldValues(this.getMetadataFieldId(metadataType), null);
@@ -968,20 +967,42 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    });
 			});
                     }
-		}
+		});
 	    } else {
 		let _this = this;
 		let tags = this.jq(ID_SEARCH_BAR).find(".display-search-tag");
 		tags.each(function() {
 		    let type  = $(this).attr("metadata-type");
+		    let index  = $(this).attr("metadata-index");		    
 		    let value  = $(this).attr("metadata-value");			
 		    if(!type) return;
 		    settings.metadata.push({
 			type: type,
+			index:index,
 			value: value
 		    });
 		});
             }
+	    if(this.metadataList) {
+		this.metadataList.forEach(metadata=>{
+		    if (!metadata.getElements()) {
+			return;
+		    }
+		    metadata.elements.forEach(element=>{
+			if(element.getType()=='string') {
+			    let text = element.getInputText();
+			    if(Utils.stringDefined(text)) {
+				settings.metadata.push({
+				    type: element.getMetadataType(),
+				    index:element.getIndex(),
+				    value: text
+				});
+			    }
+			}
+		    });
+		});
+	    }
+
 	    return settings;
 	},
         submitSearchForm: function() {
@@ -1228,7 +1249,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    settings.setMax(this.jq(ID_SEARCH_MAX).val()??settings.getMax());
             settings.setExtra(extra);
             let jsonUrl = repository.getSearchUrl(settings, OUTPUT_JSON);
-
 	    if(this.getMainAncestor()) {
 		let main  = this.getMainAncestor();
 		if(main=='this') {
@@ -1611,91 +1631,87 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         },
         initMetadata: function() {
             this.metadata = {};
+	    this.metadataList=[];
             this.metadataLoading = {};	    
             for (let i = 0; i < this.metadataTypeList.length; i++) {
                 let type = this.metadataTypeList[i];
                 this.addMetadata(type, null);
             }
 	},
+        makeMetadata: function(metadataType,metadata) {
+	    if(!metadata.getElements)  {
+		metadata=new DisplayEntryMetadata(this,metadataType,metadata);
+		this.metadata[metadataType.getType()] = metadata;
+		this.metadataList.push(metadata);
+	    }
+	    return metadata;
+	},
         addMetadata: function(metadataType, metadata) {
+	    let _this = this;
             if (metadata == null) {
                 metadata = this.metadata[metadataType.getType()];
             }
             if (metadata == null) {
-                let theDisplay = this;
                 if (!this.metadataLoading[metadataType.getType()]) {
                     this.metadataLoading[metadataType.getType()] = true;
                     metadata = this.getRamadda().getMetadataCount(metadataType, function(metadataType, metadata) {
-                        theDisplay.addMetadata(metadataType, metadata);
+                        _this.addMetadata(metadataType, metadata);
                     });
                 }
             }
             if (metadata == null) {
-                return;
+		return;
             }
+	    metadata = this.makeMetadata(metadataType,metadata);
+            if (!metadata.getElements()) {
+                return;
+	    }
 
 	    if(!this.metadataBoxes) this.metadataBoxes={};
 	    this.metadataBoxes[metadataType.getType()] = {};
-            this.metadata[metadataType.getType()] = metadata;
-	    let popupLimit = this.getTagPopupLimit();
-            let select = HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""], NONE);
-	    let cbxs = [];
-            for (let i = 0; i < metadata.length; i++) {
-                let count = metadata[i].count;
-                let value = metadata[i].value;
-                let label = metadata[i].label;
-		let type = metadataType.getType();
-                let optionAttrs = [ATTR_VALUE, value, ATTR_CLASS, "display-metadatalist-item"];
-                let selected = false;
-                if (selected) {
-                    optionAttrs.push("selected");
-                    optionAttrs.push(null);
-                }
-                select += HU.tag(TAG_OPTION, optionAttrs, label + " (" + count + ")");
-		let cbxId = this.getMetadataFieldId(metadataType)+"_checkbox_" + i;
-		this.metadataBoxes[type][value] = cbxId;
-		let cbx = HU.checkbox("",[ID,cbxId,"metadata-type",type,"metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
-		if(metadata.length>popupLimit) {
-		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label,
-				   ATTR_STYLE, HU.css("background", Utils.getEnumColor(metadataType))], cbx);
-		}
-		cbxs.push(cbx);
-	    }
-	    if(!this.getShowTags()) {
-		$("#" + this.getMetadataFieldId(metadataType)).html(select);
-		HtmlUtils.initSelect($("#" + this.getMetadataFieldId(metadataType)));
-	    } else {
-		let countId = this.getMetadataFieldId(metadataType)+"_count";
-		let wrapperId = this.getMetadataFieldId(metadataType)+"_wrapper";		
-		$("#" + countId).html("(" + cbxs.length+")");
-		let cbxInner = HU.div([STYLE,HU.css("margin","5px", "width","800px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
-		let inner = Utils.wrap(cbxs,"","<br>");
-		let clickId = this.getMetadataFieldId(metadataType)+"_popup";
-		let _this = this;
-		let cbxChange = function(){
-		    let value  = $(this).attr("metadata-value");
-		    let type  = $(this).attr("metadata-type");		
-                    let on = $(this).is(':checked');
-		    let cbx = $(this);
-		    if(on) {
-			_this.addMetadataTag(metadataType.getType(), metadataType.getLabel(),value, cbx);
-		    } else {
-			let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +"_" + metadataType.getType() +"_" + value);
-			$("#" + tagId).remove();
-		    }		
-		    _this.submitSearchForm();
-		};
-		if(cbxs.length>popupLimit) {
-		    $("#"+wrapperId).html(HU.div([STYLE, HU.css("border","1px solid #ccc",  "margin-top","6px","background", Utils.getEnumColor(metadataType)), TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +" " +metadataType.getLabel()+" ("+ cbxs.length+")"));
-		    $("#" + clickId).click(()=>{
-			this.createTagDialog(cbxs, $("#" + clickId), cbxChange, metadataType.getType(),metadataType.getLabel());
-		    });
-
+	    let dest =     $("#" + this.getMetadataFieldId(metadataType));
+	    dest.html('');
+	    let cbxChange = function(){
+		let value  = $(this).attr("metadata-value");
+		let type  = $(this).attr("metadata-type");
+		let index  = $(this).attr("metadata-index");				
+		let on = $(this).is(':checked');
+		let cbx = $(this);
+		if(on) {
+		    _this.addMetadataTag(metadataType.getType(), metadataType.getLabel(),value, cbx);
 		} else {
-		    $("#" + this.getMetadataFieldId(metadataType)).html(inner);
+		    let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +"_" + metadataType.getType() +"_" + value);
+		    $("#" + tagId).remove();
+		}		
+		_this.submitSearchForm();
+	    };
+
+
+	    metadata.getElements().forEach((element)=>{
+		if(element.getType()=='string') {
+		    let inputChange = function(){
+			_this.submitSearchForm();
+		    };
+		    let input = dest.append(element.makeInput());
+		    input.change(inputChange);
+		    return;
 		}
-		$("#" + this.getMetadataFieldId(metadataType)).find(":checkbox").change(cbxChange);
-	    }
+		if(!element.getValues()) return;
+		let popupLimit = this.getTagPopupLimit();
+		let cbxs = element.makeCheckboxes();
+		if(!this.getShowTags()) {
+		    if(element.select)
+			HtmlUtils.initSelect(dest.append(element.select));
+		} else {
+		    if(cbxs.length>popupLimit) {
+			dest.append(HU.div([ATTR_CLASS,'ramadda-button ramadda-clickable'],'Select')).button().click(function(){
+			    _this.createTagDialog(cbxs, $(this), cbxChange, metadataType.getType(),metadataType.getLabel());
+			});
+		    } else {
+			dest.append(Utils.wrap(cbxs,"","<br>"));
+		    }
+		}});
+	    dest.find(":checkbox").change(cbxChange);
         },
 
 	metadataTagSelected:function(type, value) {
@@ -1747,8 +1763,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    cbx.click();
 	},
         getMetadataFieldId: function(metadataType) {
-            let id = metadataType.getType();
-            id = id.replace(".", "_");
+            let id = metadataType.getType?metadataType.getType():metadataType;
+            id = id.replace(".", "_"); 
             return this.getDomId(ID_METADATA_FIELD + id);
         },
 
@@ -4281,3 +4297,85 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 }
 
 
+function DisplayEntryMetadata(display,metadataType,metadata) {
+    this.display=display;
+    this.metadata = metadata;
+    this.metadataType = metadataType;
+    if(metadata.elements) 
+	this.elements= metadata.elements.map(element=>{return new DisplayEntryMetadataElement(display,this,element);});
+    $.extend(this,{
+	getType:function() {
+	    return this.metadataType.getType();
+	},
+	getLabel:function() {
+	    return this.metadataType.getLabel();
+	},	
+	getElements:function() {
+	    return this.elements;
+	}
+    });
+}
+
+function DisplayEntryMetadataElement(display,metadata,element) {
+    this.display=display;
+    this.metadata=metadata;
+    this.element = element;
+    $.extend(this,{
+	getMetadataType:function() {
+	    return this.metadata.getType();
+	},
+
+	getType:function() {
+	    return this.element.type;
+	},
+	getName:function() {
+	    return this.element.name;
+	},	
+	getIndex:function() {
+	    return this.element.index;
+	},
+	getValues:function() {
+	    return this.element.values;
+	},
+	getInputText:function() {
+	    return jqid(this.inputId).val();
+	},
+	makeInput:function() {
+	    this.inputId = this.display.getMetadataFieldId(this.metadata.getType())+'_element_' + this.getIndex()+'_input';
+	    let input = HU.input('','',[ATTR_CLASS,
+					'display-simplesearch-input',
+					ATTR_ID,this.inputId,ATTR_STYLE,HU.css('width','100%'),'placeholder',this.getName()]);
+	    return input;
+	},
+
+	makeCheckboxes:function() {
+	    let cbxs=[];
+	    this.select ='';
+	    let popupLimit = this.display.getTagPopupLimit();
+	    this.getValues().forEach((v,i)=>{
+                let count = v.count;
+                let value = v.value;
+                let label = v.label;
+		let type =this.metadata.getType();
+                let optionAttrs = [ATTR_VALUE, value, ATTR_CLASS, "display-metadatalist-item"];
+                let selected = false;
+                if (selected) {
+		    optionAttrs.push("selected");
+		    optionAttrs.push(null);
+                }
+                this.select += HU.tag(TAG_OPTION, optionAttrs, label + " (" + count + ")");
+		let cbxId = this.display.getMetadataFieldId(this.metadata.getType())+"_checkbox_" + this.getIndex()+"_"+i;
+		//TODO this.metadataBoxes[type][value] = cbxId;
+		let cbx = HU.checkbox("",[ATTR_ID,cbxId,"metadata-type",type,
+					  "metadata-index",this.getIndex(),
+					  "metadata-value",value],false) +" " + HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],label +" (" + count+")");
+		if(this.getValues().length>popupLimit) {
+		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label], cbx);
+		}
+		cbxs.push(cbx);
+	    });
+	    return cbxs;
+
+	}
+    });
+}
