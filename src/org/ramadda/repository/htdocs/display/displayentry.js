@@ -988,16 +988,21 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    if (!metadata.getElements()) {
 			return;
 		    }
-		    metadata.elements.forEach(element=>{
-			if(element.getType()=='string') {
-			    let text = element.getInputText();
-			    if(Utils.stringDefined(text)) {
-				settings.metadata.push({
-				    type: element.getMetadataType(),
-				    index:element.getIndex(),
-				    value: text
-				});
-			    }
+		    metadata.getElements().forEach(element=>{
+			let text;
+			if(element.selectId && jqid(element.selectId).length) {
+			    text=jqid(element.selectId).val();
+			} else if(element.getType()=='string') {
+			    text = element.getInputText();
+			}
+
+			
+			if(Utils.stringDefined(text)) {
+			    settings.metadata.push({
+				type: element.getMetadataType(),
+				index:element.getIndex(),
+				value: text
+			    });
 			}
 		    });
 		});
@@ -1686,6 +1691,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		_this.submitSearchForm();
 	    };
 
+	    let hasMultiple = 	    metadata.getElements().length>1;
 
 	    metadata.getElements().forEach((element)=>{
 		if(element.getType()=='string') {
@@ -1699,9 +1705,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(!element.getValues()) return;
 		let popupLimit = this.getTagPopupLimit();
 		let cbxs = element.makeCheckboxes();
-		if(!this.getShowTags()) {
-		    if(element.select)
-			HtmlUtils.initSelect(dest.append(element.select));
+		if(hasMultiple || !this.getShowTags()) {
+		    if(element.select) {
+			let menu = dest.append(element.select);
+			element.menu = menu;
+//			HU.initSelect('#'+element.selectId);
+			menu.change(()=>{
+			    _this.submitSearchForm();
+			});
+		    }
+
 		} else {
 		    if(cbxs.length>popupLimit) {
 			dest.append(HU.div([ATTR_CLASS,'ramadda-button ramadda-clickable'],'Select')).button().click(function(){
@@ -4350,7 +4363,8 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 
 	makeCheckboxes:function() {
 	    let cbxs=[];
-	    this.select ='';
+	    this.selectId = this.display.getMetadataFieldId(this.metadata.getType())+"_select_" + this.getIndex();
+            let select = HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""]);
 	    let popupLimit = this.display.getTagPopupLimit();
 	    this.getValues().forEach((v,i)=>{
                 let count = v.count;
@@ -4363,7 +4377,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		    optionAttrs.push("selected");
 		    optionAttrs.push(null);
                 }
-                this.select += HU.tag(TAG_OPTION, optionAttrs, label + " (" + count + ")");
+                select += HU.tag(TAG_OPTION, optionAttrs, label + " (" + count + ")");
 		let cbxId = this.display.getMetadataFieldId(this.metadata.getType())+"_checkbox_" + this.getIndex()+"_"+i;
 		//TODO this.metadataBoxes[type][value] = cbxId;
 		let cbx = HU.checkbox("",[ATTR_ID,cbxId,"metadata-type",type,
@@ -4374,6 +4388,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		}
 		cbxs.push(cbx);
 	    });
+	    this.select = HU.tag("select", [ATTR_ID,this.selectId],select);
 	    return cbxs;
 
 	}

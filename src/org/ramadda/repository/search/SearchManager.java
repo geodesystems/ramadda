@@ -1232,7 +1232,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(ancestors!=null) {
 	    List<Query> ors = new ArrayList<Query>();
 	    for(String ancestor: ancestors) {
-		ors.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
+		if(stringDefined(ancestor)) {
+		    ors.add(new TermQuery(new Term(FIELD_ANCESTOR, ancestor)));
+		}
 	    } 
 	    if(ors.size()>1) {
 		queries.add(makeOr(ors));
