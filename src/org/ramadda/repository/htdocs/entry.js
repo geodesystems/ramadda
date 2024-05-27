@@ -350,24 +350,24 @@ function RamaddaRepository(repositoryRoot) {
             this.metadataCachePending[key] = true;
 
             let url = this.repositoryRoot + "/metadata/list?metadata_type=" + type.getType() + "&response=json";
-            //                console.log("getMetadata:" + type.getType() + " URL:" + url);
+//            console.log("getMetadata:" + type.getType() + " URL:" + url);
             let _this = this;
             let jqxhr = $.getJSON(url, function(data) {
-                    let callbacks = _this.metadataCacheCallbacks[key];
-                    _this.metadataCachePending[key] = false;
-                    if (GuiUtils.isJsonError(data)) {
-                        return;
+                let callbacks = _this.metadataCacheCallbacks[key];
+                _this.metadataCachePending[key] = false;
+                if (GuiUtils.isJsonError(data)) {
+                    return;
+                }
+                //                        console.log("getMetadata:" + type.getType() +" caching " );
+                _this.metadataCache[key] = data;
+                callback(type, data);
+                if (callbacks) {
+                    //                            console.log("getMetadata: have callbacks");
+                    for (let i = 0; i < callbacks.length; i++) {
+                        callbacks[i](type, data);
                     }
-                    //                        console.log("getMetadata:" + type.getType() +" caching " );
-                    _this.metadataCache[key] = data;
-                    callback(type, data);
-                    if (callbacks) {
-                        //                            console.log("getMetadata: have callbacks");
-                        for (let i = 0; i < callbacks.length; i++) {
-                            callbacks[i](type, data);
-                        }
-                    }
-                })
+                }
+            })
                 .fail(function(jqxhr, textStatus, error) {
                     _this.metadataCachePending[key] = false;
                     let err = textStatus + ", " + error;
@@ -484,7 +484,9 @@ function RamaddaRepository(repositoryRoot) {
 
             for (let i = 0; i < settings.metadata.length; i++) {
                 let metadata = settings.metadata[i];
-                url += "&metadata_attr1_" + metadata.type + "=" + encodeURIComponent(metadata.value);
+		let index = metadata.index;
+		if(!Utils.isDefined(index)) index=1;
+                url += "&metadata_attr" + index+"_" + metadata.type + "=" + encodeURIComponent(metadata.value);
             }
             url += "&max=" + settings.getMax();
             url += "&skip=" + settings.getSkip();
