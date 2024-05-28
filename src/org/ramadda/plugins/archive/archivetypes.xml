@@ -49,13 +49,13 @@ placeholder="Search"
 orderBy=createdate_ascending 
 }}
 -center
-+toggleopen Details
 +row
 +col-8
++toggleopen Details
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
 {{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
-headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 :vspace 1em
 -toggle
