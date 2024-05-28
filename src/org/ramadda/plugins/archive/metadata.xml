@@ -5,6 +5,17 @@
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
 
+    <type id="archive_time_period" name="Time period" cansearch="true" >
+      <element id="period" name="Period" datatype="enumerationplus"
+	       suffix="e.g., 1920s, 1800s, etc."
+	       />
+    </type>
+
+    <type id="archive_language" name="Language" cansearch="true" >
+      <element id="language" name="Language" datatype="enumerationplus"
+	       values="English,Spanish,French"/>
+    </type>    
+
     <type id="archive_area" name="Archive Geographic Area">
       <element id="area" name="Area" datatype="enumerationplus"/>
     </type>        
@@ -30,9 +41,22 @@
     <type id="archive_note" name="Archive Note" searchable="true">
       <element id="type" name="Note Type" datatype="enumerationplus" searchable="true"/>
       <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
-      <template type="html"><![CDATA[<b>${attr1}</b><br>${attr2}]]></template>
+      <template type="html"><![CDATA[<div style='display:table-cell;padding-right:5px;font-weight:bold;'>${attr1}:</div><div style='display:table-cell;'>${attr2}</div>]]></template>
     </type>        
 
+
+    <type id="archive_citation" name="Archive Citation" searchable="true">
+      <element id="citation" name="Citation" rows="5" columns="60" searchable="true"/>
+    </type>        
+
+    <type id="archive_rights" name="Archive Rights" searchable="true">
+      <element id="rights" name="Rights" rows="5" columns="60" searchable="true"/>
+    </type>
+
+    <type id="archive_restrictions" name="Archive Restrictions" searchable="true">
+      <element id="restrictions" name="Restrictions" rows="5" columns="60" searchable="true"/>
+    </type>            
+    
 
      <type id="archive_source_contact" name="Source Contact"
 	   displaycategory="Source Contact Information">

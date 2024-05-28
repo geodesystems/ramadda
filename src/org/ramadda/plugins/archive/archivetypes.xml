@@ -1,4 +1,5 @@
-<types 	priority="10" supercategory="General" category="Archive">
+<types 	priority="10" supercategory="General" category="Archive"
+	metadata="archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
 
 
   <type name="type_archive_section"  description="Archive Section"
@@ -52,7 +53,7 @@ orderBy=createdate_ascending
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  propertyToggleLimit=3 message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
@@ -87,7 +88,6 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	childtypes="type_archive_series"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
-	metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property"
 	>
 
     <property name="icon" value="/archive/collection.png"/>
@@ -127,8 +127,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	childtypes="type_archive_file"
 	newfields="name,description,_default"
-	editfields="name,description,_default"	
-	metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
+	editfields="name,description,_default">
+
 
 
     <property name="icon" value="/archive/series.png"/>
@@ -158,8 +158,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	childtypes="type_archive_item"
 	newfields="name,description,_default"
-	editfields="name,description,_default"	
-	metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
+	editfields="name,description,_default">
+
 
     <property name="icon" value="/archive/file.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
@@ -179,8 +179,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 <type name="type_archive_item"  description="Archive Item" foruser="false"
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       newfields="name,description,_default"
-      editfields="name,description,_default"	
-      metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
+      editfields="name,description,_default">
+
 
     <property name="icon" value="/archive/portfolio.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
