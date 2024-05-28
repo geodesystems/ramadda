@@ -96,9 +96,10 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
      *
      * @throws Exception On badness
      */
-    public void childEntryChanged(Entry entry, boolean isNew)
+    @Override
+    public void childEntryChanged(Request request,Entry entry, boolean isNew)
             throws Exception {
-        super.childEntryChanged(entry, isNew);
+        super.childEntryChanged(request,entry, isNew);
         //for now get out of here to fix an infinite loop problem
         if (true) {
             return;
@@ -113,7 +114,7 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
                                           parent);
         //For good measure
         children.add(entry);
-        getEntryManager().setBoundsOnEntry(parent, children);
+        getEntryManager().setBoundsOnEntry(request,parent, children);
         entryChanged.remove(entry.getId());
     }
 

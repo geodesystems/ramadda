@@ -174,13 +174,13 @@ public class DifOutputHandler extends OutputHandler {
         if (entry.hasAreaDefined()) {
             parent = tag(DifUtil.TAG_Spatial_Coverage, root, null);
             tag(DifUtil.TAG_Northernmost_Latitude, parent,
-                "" + entry.getNorth());
+                "" + entry.getNorth(request));
             tag(DifUtil.TAG_Southernmost_Latitude, parent,
-                "" + entry.getSouth());
+                "" + entry.getSouth(request));
             tag(DifUtil.TAG_Westernmost_Longitude, parent,
-                "" + entry.getWest());
+                "" + entry.getWest(request));
             tag(DifUtil.TAG_Easternmost_Longitude, parent,
-                "" + entry.getEast());
+                "" + entry.getEast(request));
         }
 
 

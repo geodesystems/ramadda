@@ -572,15 +572,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	doc.add(new LongPoint(FIELD_SIZE, entry.getResource().getFileSize()));
 	doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
 	if(entry.hasAreaDefined()) {
-	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth()));
-	    doc.add(new DoublePoint(FIELD_WEST, entry.getWest()));
-	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getSouth()));
-	    doc.add(new DoublePoint(FIELD_EAST, entry.getEast()));
+	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth(request)));
+	    doc.add(new DoublePoint(FIELD_WEST, entry.getWest(request)));
+	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getSouth(request)));
+	    doc.add(new DoublePoint(FIELD_EAST, entry.getEast(request)));
 	} else if(entry.hasLocationDefined()) {
-	    doc.add(new DoublePoint(FIELD_NORTH, entry.getLatitude()));
-	    doc.add(new DoublePoint(FIELD_WEST, entry.getLongitude()));
-	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getLatitude()));
-	    doc.add(new DoublePoint(FIELD_EAST, entry.getLongitude()));
+	    doc.add(new DoublePoint(FIELD_NORTH, entry.getLatitude(request)));
+	    doc.add(new DoublePoint(FIELD_WEST, entry.getLongitude(request)));
+	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getLatitude(request)));
+	    doc.add(new DoublePoint(FIELD_EAST, entry.getLongitude(request)));
 	}
 
         String path = entry.getResource().getPath();

@@ -633,8 +633,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      */
     public Result outputEntryBounds(Request request, Entry entry)
             throws Exception {
-        return new Result(entry.getNorth() + "," + entry.getWest() + ","
-                          + entry.getSouth() + "," + entry.getEast(), "text");
+        return new Result(entry.getNorth(request) + "," + entry.getWest(request) + ","
+                          + entry.getSouth(request) + "," + entry.getEast(request), "text");
     }
 
 

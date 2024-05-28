@@ -5229,8 +5229,8 @@ public class WikiManager extends RepositoryManager
 
 	if(child.hasLocationDefined()) {
 	    compAttrs+=
-		HU.attr("component-latitude",""+child.getLatitude()) +
-		HU.attr("component-longitude",""+child.getLongitude());
+		HU.attr("component-latitude",""+child.getLatitude(request)) +
+		HU.attr("component-longitude",""+child.getLongitude(request));
 
 	}
 	List<Metadata> tagList = 
@@ -9343,9 +9343,9 @@ public class WikiManager extends RepositoryManager
             Utils.add(propList, "bounds", JU.quote(bounds));
         } else if (entry.hasAreaDefined()) {
             Utils.add(propList, "entryBounds",
-                      JU.quote(entry.getNorth() + "," + entry.getWest()
-				     + "," + entry.getSouth() + ","
-				     + entry.getEast()));
+                      JU.quote(entry.getNorth(request) + "," + entry.getWest(request)
+				     + "," + entry.getSouth(request) + ","
+				     + entry.getEast(request)));
         }
 
         topProps.add("defaultMapLayer");

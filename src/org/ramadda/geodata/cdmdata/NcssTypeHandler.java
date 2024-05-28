@@ -348,8 +348,8 @@ public class NcssTypeHandler extends PointTypeHandler {
         String url = entry.getResource().getPath();
 	if(url.indexOf("${latitude")>0) return false;
 	if(entry.hasLocationDefined()) {
-	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude()+"&");
-	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude()+"&");
+	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude(request)+"&");
+	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude(request)+"&");
 	    entry.getResource().setPath(url);
 	}
 	return true;
@@ -386,7 +386,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 			      (String) entry.getStringValue(IDX_END_TIME_OFFSET,
 							    "+10 days"));
 	}
-	url = super.convertPath(entry, url, requestProperties);
+	url = super.convertPath(request,entry, url, requestProperties);
         url = Utils.normalizeTemplateUrl(url);
 	return new IO.Path(url);
     }

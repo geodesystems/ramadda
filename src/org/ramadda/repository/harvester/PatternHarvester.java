@@ -1889,10 +1889,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		ancestor = ancestor.getParentEntry();
 	    }
 	    if(ancestor!=null) {
-		entry.setNorth(ancestor.getNorth());
-		entry.setWest(ancestor.getWest());		
-		entry.setSouth(ancestor.getSouth());
-		entry.setEast(ancestor.getEast());		
+		entry.setNorth(ancestor.getNorth(request));
+		entry.setWest(ancestor.getWest(request));		
+		entry.setSouth(ancestor.getSouth(request));
+		entry.setEast(ancestor.getEast(request));		
 	    }
 	}
 

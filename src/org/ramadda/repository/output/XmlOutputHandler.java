@@ -215,16 +215,16 @@ public class XmlOutputHandler extends OutputHandler {
         }
 
         if (entry.hasNorth()) {
-            node.setAttribute(ATTR_NORTH, "" + entry.getNorth());
+            node.setAttribute(ATTR_NORTH, "" + entry.getNorth(request));
         }
         if (entry.hasSouth()) {
-            node.setAttribute(ATTR_SOUTH, "" + entry.getSouth());
+            node.setAttribute(ATTR_SOUTH, "" + entry.getSouth(request));
         }
         if (entry.hasEast()) {
-            node.setAttribute(ATTR_EAST, "" + entry.getEast());
+            node.setAttribute(ATTR_EAST, "" + entry.getEast(request));
         }
         if (entry.hasWest()) {
-            node.setAttribute(ATTR_WEST, "" + entry.getWest());
+            node.setAttribute(ATTR_WEST, "" + entry.getWest(request));
         }
 
         if (entry.getResource().isDefined()) {

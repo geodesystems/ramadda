@@ -2312,8 +2312,8 @@ public class CdmDataOutputHandler extends CdmOutputHandler implements CdmConstan
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
-        map.addBox(entry, new MapProperties("blue", false, true));
-        map.centerOn(entry);
+        map.addBox(request,entry, new MapProperties("blue", false, true));
+        map.centerOn(request,entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         sb.append(HU.formEntryTop(msgLabel("Location"), llb));
         sb.append(HU.formTableClose());

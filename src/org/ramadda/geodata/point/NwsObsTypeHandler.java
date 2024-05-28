@@ -97,7 +97,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new NwsObsRecordFile(getRepository(), entry,
+        return new NwsObsRecordFile(request,getRepository(), entry,
 				    new IO.Path(getPathForEntry(request, entry,true)));
     }
 
@@ -115,6 +115,8 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
         /** _more_ */
         Repository repository;
 
+	Request request;
+
         /** _more_ */
         Entry entry;
 
@@ -128,11 +130,12 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
          *
          * @throws IOException _more_
          */
-        public NwsObsRecordFile(Repository repository, Entry entry,
+        public NwsObsRecordFile(Request request,Repository repository, Entry entry,
 				IO.Path path)
                 throws IOException {
             super(path);
             this.repository = repository;
+	    this.request=request;
             this.entry      = entry;
         }
 
@@ -163,11 +166,11 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 				    if(j>0) row.append(",");
 				    String f = fieldList.get(j);
 				    if(f.equals("latitude")) {
-					row.append(entry.getLatitude());
+					row.append(entry.getLatitude(request));
 					continue;
 				    }
 				    if(f.equals("longitude")) {
-					row.append(entry.getLongitude());
+					row.append(entry.getLongitude(request));
 					continue;
 				    }		    
 				    if(f.equals("timestamp")) {

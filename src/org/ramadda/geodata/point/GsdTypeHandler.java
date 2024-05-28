@@ -121,7 +121,7 @@ public class GsdTypeHandler extends PointTypeHandler {
         url = url.replace("{lon}", (lon != null)
                                    ? lon
                                    : "-105");
-        url = super.convertPath(entry, url, requestProperties);
+        url = super.convertPath(request,entry, url, requestProperties);
 	//	System.err.println("GSD Sounding URL:" +url);
         return new IO.Path(url);
     }

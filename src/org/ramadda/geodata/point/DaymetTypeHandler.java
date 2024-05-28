@@ -92,8 +92,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	String lon = request.getString("longitude",null);
 	if(!stringDefined(lat) || lat.indexOf("$")>=0) lat= request.getString("defaultLatitude");
 	if(!stringDefined(lon) || lon.indexOf("$")>=0) lon= request.getString("defaultLongitude");	
-	if(!stringDefined(lat)) lat= "" + entry.getLatitude();
-	if(!stringDefined(lon)) lon= "" + entry.getLongitude();
+	if(!stringDefined(lat)) lat= "" + entry.getLatitude(request);
+	if(!stringDefined(lon)) lon= "" + entry.getLongitude(request);
 	return new String[]{lat,lon};
     }
 	

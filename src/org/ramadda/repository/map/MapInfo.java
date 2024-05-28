@@ -987,12 +987,12 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public void addBox(Entry entry, MapProperties properties)
+    public void addBox(Request request,Entry entry, MapProperties properties)
             throws Exception {
         addBox(MapManager.mapEntryId(entry), entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
-							 this,true), properties, entry.getNorth(), entry.getWest(),
-                          entry.getSouth(), entry.getEast());
+							 this,true), properties, entry.getNorth(request), entry.getWest(request),
+                          entry.getSouth(request), entry.getEast(request));
     }
 
     /**
@@ -1285,7 +1285,7 @@ public class MapInfo {
             }
         }
 
-        double[] location = entry.getCenter();
+        double[] location = entry.getCenter(request);
         String   id       = MapManager.mapEntryId(entry);
         String info = repository.getMapManager().makeInfoBubble(request,
 								entry, this,true);
@@ -1353,7 +1353,7 @@ public class MapInfo {
      * @throws Exception _more_
      */
     public void addCircle(Request request, Entry entry,Hashtable props) throws Exception {
-        double[]    location = entry.getCenter();
+        double[]    location = entry.getCenter(request);
         TypeHandler th       = entry.getTypeHandler();
         int         radius   = getValue(entry, "map.circle.radius", Utils.getProperty(props,"radius",8));
         int strokeWidth      = getValue(entry, "map.circle.stroke.width", Utils.getProperty(props,"strokeWidth",0));
@@ -1485,14 +1485,14 @@ public class MapInfo {
      *
      * @param entry  the entry
      */
-    public void centerOn(Entry entry) {
+    public void centerOn(Request request,Entry entry) {
         if (entry == null) {
             center();
             return;
         }
         if (entry.hasAreaDefined()) {
-            centerOn(entry.getNorth(), entry.getWest(), entry.getSouth(),
-                     entry.getEast());
+            centerOn(entry.getNorth(request), entry.getWest(request), entry.getSouth(request),
+                     entry.getEast(request));
         } else {
             center();
         }

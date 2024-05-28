@@ -943,8 +943,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         StringBuffer bounds = new StringBuffer();
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
-        map.addBox(entry, new MapProperties("blue", false));
-        map.centerOn(entry);
+        map.addBox(request,entry, new MapProperties("blue", false));
+        map.centerOn(request,entry);
         String llb = map.makeSelector(ARG_VIEW_BOUNDS, true, null,
                                       htmlCheckbox(request,
                                           ARG_VIEW_JUSTCLIP, false) + " "

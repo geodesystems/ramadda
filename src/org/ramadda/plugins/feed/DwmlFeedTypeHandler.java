@@ -104,7 +104,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	throws Exception {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         if ( !Utils.stringDefined(entry.getName())) {
-            Weather forecast = getForecast(entry);
+            Weather forecast = getForecast(request,entry);
             if ((forecast != null) && (forecast.location != null)) {
                 entry.setName(forecast.location);
             }
@@ -116,7 +116,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new DwmlRecordFile(getRepository(), this, entry);
+        return new DwmlRecordFile(request,getRepository(), this, entry);
     }
 
     /**
@@ -130,6 +130,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
         /** _more_ */
         private Repository repository;
+
+	private Request request;
 
         /** _more_ */
         private String dataUrl;
@@ -149,9 +151,10 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public DwmlRecordFile(Repository repository, DwmlFeedTypeHandler ctx, Entry entry)
+        public DwmlRecordFile(Request request,Repository repository, DwmlFeedTypeHandler ctx, Entry entry)
                 throws IOException {
             super(null, ctx, null);
+	    this.request=request;
 	    typeHandler = ctx;
             this.repository = repository;
             this.entry      = entry;
@@ -175,7 +178,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-	    Weather forecast = typeHandler.getForecast(entry);
+	    Weather forecast = typeHandler.getForecast(request,entry);
 	    StringBuilder sb = new StringBuilder();
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	    if(forecast!=null) {
@@ -210,7 +213,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Weather getWeather(Entry entry, boolean getForecast)
+    private Weather getWeather(Request request,Entry entry, boolean getForecast)
 	throws Exception {
         try {
             if ( !entry.hasLocationDefined()) {
@@ -222,8 +225,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             if ((forecast == null) || (current == null)) {
                 String url =
                     URL.replace("${lat}",
-                                "" + entry.getLatitude()).replace("${lon}",
-								  "" + entry.getLongitude());
+                                "" + entry.getLatitude(request)).replace("${lon}",
+								  "" + entry.getLongitude(request));
                 String  xml  = Utils.readUrl(url);
                 Element root = XmlUtil.getRoot(xml);
                 Element forecastNode =
@@ -265,8 +268,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Weather getForecast(Entry entry) throws Exception {
-        return getWeather(entry, true);
+    private Weather getForecast(Request request,Entry entry) throws Exception {
+        return getWeather(request,entry, true);
     }
 
     /**
@@ -278,8 +281,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Weather getCurrent(Entry entry) throws Exception {
-        return getWeather(entry, false);
+    private Weather getCurrent(Request request,Entry entry) throws Exception {
+        return getWeather(request,entry, false);
     }
 
 
@@ -380,7 +383,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     private void addHazard(Request request, Entry entry, Appendable sb,
                            boolean showHeader)
 	throws Exception {
-        Weather forecast = getForecast(entry);
+        Weather forecast = getForecast(request,entry);
         if (forecast == null) {
             sb.append("No forecast defined");
             return;
@@ -426,7 +429,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
                             boolean showHeader, boolean vertical,
                             boolean showDetails,boolean showLabel, boolean showHazard)
 	throws Exception {
-        Weather current = getCurrent(entry);
+        Weather current = getCurrent(request,entry);
         if ((current == null) || (current.times.size() == 0)) {
             return;
         }
@@ -515,7 +518,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     private void addForecast(Request request, Entry entry, Appendable sb,
                              boolean showHeader, int cnt)
 	throws Exception {
-        Weather forecast = getForecast(entry);
+        Weather forecast = getForecast(request,entry);
         if (forecast == null) {
             sb.append("No forecast defined");
 
@@ -620,7 +623,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     private void addDetails(Request request, Entry entry, Appendable sb,
                             boolean showHeader, int cnt)
 	throws Exception {
-        Weather forecast = getForecast(entry);
+        Weather forecast = getForecast(request,entry);
         if (forecast == null) {
             sb.append("No forecast defined");
 

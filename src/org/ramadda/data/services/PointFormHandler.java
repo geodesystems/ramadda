@@ -682,7 +682,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 
         String initialDegrees = "" + getDefaultRadiusDegrees(request,
-                                    entry.getBounds());
+                                    entry.getBounds(request));
 
         if (request.defined(ARG_GRID_RADIUS_DEGREES)) {
             initialDegrees = request.getString(ARG_GRID_RADIUS_DEGREES, "");
@@ -918,11 +918,11 @@ public class PointFormHandler extends RecordFormHandler {
         List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
         boolean didMetadata = map.addSpatialMetadata(entry, metadataList);
         if ( !didMetadata) {
-            map.addBox(entry,
+            map.addBox(request,entry,
                        new MapProperties(MapInfo.DFLT_BOX_COLOR, false,
                                             true));
         } else {
-            map.centerOn(entry);
+            map.centerOn(request,entry);
         }
 	getMapManager().initMapSelector(request, entry.getTypeHandler(),entry.getParentEntry(), entry, map);
 	String mapSelector = map.makeSelector(ARG_AREA, true, null,   "", "");

@@ -309,7 +309,22 @@ public class Request implements Constants, Cloneable {
         return repository;
     }
 
-
+    Hashtable<String,Boolean> geoOk;
+    public double filterGeo(Entry entry, double v) {
+	if(geoOk==null) geoOk = new Hashtable<String,Boolean>();
+	Boolean ok = geoOk.get(entry.getId());
+	if(ok!=null) {
+	    if(ok.booleanValue()) return v;
+	    return Double.NaN;
+	}
+	if(!repository.getAccessManager().canDoGeo(this, entry)) {
+	    geoOk.put(entry.getId(),Boolean.FALSE);
+	    System.err.println("NON GEO:"+ entry);
+	    return Double.NaN;
+	}
+	geoOk.put(entry.getId(),Boolean.TRUE);
+	return v;
+    }
 
 
     /**

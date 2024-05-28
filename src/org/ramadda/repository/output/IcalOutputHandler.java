@@ -177,9 +177,9 @@ public class IcalOutputHandler extends OutputHandler {
             sb.append("\n");
             double[] loc = null;
             if (entry.hasAreaDefined()) {
-                loc = entry.getLocation();
+                loc = entry.getLocation(request);
             } else if (entry.hasLocationDefined()) {
-                loc = entry.getCenter();
+                loc = entry.getCenter(request);
             }
             if (loc != null) {
                 sb.append("GEO:" + loc[0] + ";" + loc[1] + "\n");

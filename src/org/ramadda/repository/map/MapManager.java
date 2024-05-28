@@ -243,15 +243,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (entry != null) {
             if (entry.hasLocationDefined()) {
                 props.put(PROP_INITIAL_LOCATION,
-                          JsonUtil.list(entry.getLatitude() + "",
-                                        entry.getLongitude() + ""));
+                          JsonUtil.list(entry.getLatitude(request) + "",
+                                        entry.getLongitude(request) + ""));
                 didLoc = true;
             } else if (entry.hasAreaDefined()) {
                 props.put(PROP_INITIAL_BOUNDS,
-                          JsonUtil.list(entry.getNorth() + "",
-                                        entry.getWest() + "",
-                                        entry.getSouth() + "",
-                                        entry.getEast() + ""));
+                          JsonUtil.list(entry.getNorth(request) + "",
+                                        entry.getWest(request) + "",
+                                        entry.getSouth(request) + "",
+                                        entry.getEast(request) + ""));
                 didLoc = true;
             }
         }
@@ -286,17 +286,17 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (entry != null) {
                 if (entry.hasLocationDefined()) {
                     props.put(PROP_INITIAL_LOCATION,
-                              JsonUtil.list(entry.getLatitude() + "",
-                                            entry.getLongitude() + ""));
+                              JsonUtil.list(entry.getLatitude(request) + "",
+                                            entry.getLongitude(request) + ""));
 
 
                     didLoc = true;
                 } else if (entry.hasAreaDefined()) {
                     props.put(PROP_INITIAL_BOUNDS,
-                              JsonUtil.list(entry.getNorth() + "",
-                                            entry.getWest() + "",
-                                            entry.getSouth() + "",
-                                            entry.getEast() + ""));
+                              JsonUtil.list(entry.getNorth(request) + "",
+                                            entry.getWest(request) + "",
+                                            entry.getSouth(request) + "",
+                                            entry.getEast(request) + ""));
                     didLoc = true;
                 }
             }
@@ -1426,7 +1426,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
-            viewBounds = mainEntry.getBoundsString();
+            viewBounds = mainEntry.getBoundsString(request);
         }
         if (request.get("mapsubset", false)) {
             forceBounds = false;
@@ -1556,7 +1556,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         }
         if (bounds == null) {
-            bounds = getEntryUtil().getBounds(entriesToUse);
+            bounds = getEntryUtil().getBounds(request,entriesToUse);
         }
 
 
@@ -1883,9 +1883,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							     metadataList);
                 if (rectOK && entry.hasAreaDefined() && !didMetadata) {
                     if ( !screenBigRects
-			 || (Math.abs(entry.getEast() - entry.getWest())
+			 || (Math.abs(entry.getEast(request) - entry.getWest(request))
 			     < 90)) {
-                        map.addBox(entry, mapProperties);
+                        map.addBox(request,entry, mapProperties);
                     }
                 }
             }
@@ -1894,9 +1894,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 double[] location;
                 if (makeRectangles || !entry.hasAreaDefined()) {
-                    location = entry.getLocation();
+                    location = entry.getLocation(request);
                 } else {
-                    location = entry.getCenter();
+                    location = entry.getCenter(request);
                 }
 
                 if (showCameraDirection) {

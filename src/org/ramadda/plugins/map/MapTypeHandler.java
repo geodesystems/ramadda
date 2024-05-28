@@ -62,16 +62,17 @@ public class MapTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void childEntryChanged(Entry entry, boolean isNew)
+    @Override
+    public void childEntryChanged(Request request,Entry entry, boolean isNew)
             throws Exception {
-        super.childEntryChanged(entry, isNew);
+        super.childEntryChanged(request,entry, isNew);
         Entry parent = entry.getParentEntry();
         List<Entry> children =
             getEntryManager().getChildren(getRepository().getTmpRequest(),
                                           parent);
         //For good measure
         children.add(entry);
-        getEntryManager().setBoundsOnEntry(parent, children);
+        getEntryManager().setBoundsOnEntry(request,parent, children);
     }
 
 

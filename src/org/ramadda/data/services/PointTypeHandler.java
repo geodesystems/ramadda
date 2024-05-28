@@ -893,8 +893,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                                 List<ServiceInfo> services) {
         super.getServiceInfos(request, entry, services);
         String url;
-        String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
-                          + entry.getEast() + "," + entry.getNorth();
+        String dfltBbox = entry.getWest(request) + "," + entry.getSouth(request) + ","
+                          + entry.getEast(request) + "," + entry.getNorth(request);
 
 
         RecordOutputHandler outputHandler = getRecordOutputHandler();

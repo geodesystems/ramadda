@@ -653,17 +653,17 @@ public class MetadataManager extends RepositoryManager {
             geo.add(JsonUtil.quote("Place"));
             geo.add("geo");
             if (entry.hasAreaDefined()) {
-                String box = entry.getSouth() + " " + entry.getWest() + " "
-                             + entry.getNorth() + " " + entry.getEast();
+                String box = entry.getSouth(request) + " " + entry.getWest(request) + " "
+                             + entry.getNorth(request) + " " + entry.getEast(request);
                 geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
                         JsonUtil.quote("GeoShape"), "box",
                         JsonUtil.quote(box))));
             } else {
                 geo.add(JsonUtil.map(Utils.makeListFromValues("@type",
                         JsonUtil.quote("GeoCoordinates"), "latitude",
-                        JsonUtil.quote("" + entry.getLatitude()),
+                        JsonUtil.quote("" + entry.getLatitude(request)),
                         "longitude",
-                        JsonUtil.quote("" + entry.getLongitude()))));
+                        JsonUtil.quote("" + entry.getLongitude(request)))));
             }
             top.add("spatialCoverage");
             top.add(JsonUtil.map(geo));

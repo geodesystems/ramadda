@@ -230,10 +230,10 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                                          HtmlUtils.squote(entry.getName()),
                                          HtmlUtils.squote(desc),
                                          HtmlUtils.squote(url), "" + visible,
-                                         "" + entry.getNorth(),
-                                         "" + entry.getWest(),
-                                         "" + entry.getSouth(),
-                                         "" + entry.getEast(), "400",
+                                         "" + entry.getNorth(request),
+                                         "" + entry.getWest(request),
+                                         "" + entry.getSouth(request),
+                                         "" + entry.getEast(request), "400",
                                          "400")));
 
             map.addJS("\n");
@@ -275,10 +275,10 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                                          HtmlUtils.squote(entry.getName()),
                                          HtmlUtils.squote(""),
                                          HtmlUtils.squote(url), "true",
-                                         "" + entry.getNorth(),
-                                         "" + entry.getWest(),
-                                         "" + entry.getSouth(),
-                                         "" + entry.getEast(), "400", "400",
+                                         "" + entry.getNorth(request),
+                                         "" + entry.getWest(request),
+                                         "" + entry.getSouth(request),
+                                         "" + entry.getEast(request), "400", "400",
 							  "{forSelect:" + mine+"}")));
 
             map.addJS("\n");

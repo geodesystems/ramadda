@@ -1138,11 +1138,11 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public Rectangle2D.Double getBounds(List<Entry> children) {
+    public Rectangle2D.Double getBounds(Request request, List<Entry> children) {
         Rectangle2D.Double rect = null;
 
         for (Entry child : children) {
-	    rect = child.getTypeHandler().getBounds(child,rect);
+	    rect = child.getTypeHandler().getBounds(request,child,rect);
         }
 
         return rect;

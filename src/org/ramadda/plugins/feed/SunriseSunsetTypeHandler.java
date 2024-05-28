@@ -104,7 +104,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
             }
 	    boolean includeDayLength = Utils.getProperty(props,"includeDayLength",true);
 	    boolean vertical = Utils.getProperty(props,"vertical",false);
-            String     key = entry.getLatitude() + "-" + entry.getLongitude()+"_"+ includeDayLength+"_"+ vertical;
+            String     key = entry.getLatitude(request) + "-" + entry.getLongitude(request)+"_"+ includeDayLength+"_"+ vertical;
 
             Appendable sb       = cache.get(key);
             TimeZone   timeZone = getTimeZone(request, entry, 0);
@@ -112,8 +112,8 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
 		List<String> items = new ArrayList<String>();
                 String url =
                     URL.replace("${lat}",
-                                "" + entry.getLatitude()).replace("${lon}",
-                                    "" + entry.getLongitude());
+                                "" + entry.getLatitude(request)).replace("${lon}",
+								  "" + entry.getLongitude(request));
                 String     json = IOUtil.readContents(url, this.getClass());
                 JSONObject jsonObject = new JSONObject(new JSONTokener(json));
                 if ( !Misc.equals(jsonObject.optString("status", ""), "OK")) {

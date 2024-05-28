@@ -339,17 +339,17 @@ public class CsvOutputHandler extends OutputHandler {
                         sb.append(url);
                     } else {}
                 } else if (field.equals("latitude")) {
-                    sb.append(""+entry.getLatitude());
+                    sb.append(""+entry.getLatitude(request));
                 } else if (field.equals("longitude")) {
-                    sb.append(""+entry.getLongitude());
+                    sb.append(""+entry.getLongitude(request));
                 } else if (field.equals("north")) {
-                    sb.append(""+entry.getNorth());
+                    sb.append(""+entry.getNorth(request));
                 } else if (field.equals("south")) {
-                    sb.append(""+entry.getSouth());
+                    sb.append(""+entry.getSouth(request));
                 } else if (field.equals("east")) {
-                    sb.append(""+entry.getEast());
+                    sb.append(""+entry.getEast(request));
                 } else if (field.equals("west")) {
-                    sb.append(""+entry.getWest());
+                    sb.append(""+entry.getWest(request));
                 } else if (field.equals("description")) {
                     sb.append(sanitize(escape, entry.getDescription()));
                 } else if (field.equals("size")) {

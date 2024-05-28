@@ -3724,9 +3724,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                                   ""), };
         }
         if ((entry != null) && entry.hasAreaDefined()) {
-            return new String[] { "" + entry.getNorth(), "" + entry.getWest(),
-                                  "" + entry.getSouth(),
-                                  "" + entry.getEast() };
+            return new String[] { "" + entry.getNorth(request), "" + entry.getWest(request),
+                                  "" + entry.getSouth(request),
+                                  "" + entry.getEast(request) };
 
         }
 

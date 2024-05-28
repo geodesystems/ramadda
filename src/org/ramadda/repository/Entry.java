@@ -442,6 +442,7 @@ public class Entry implements Cloneable {
      * @param clone _more_
      */
     public void initWith(Entry template, boolean clone) {
+	Request request= typeHandler.getRepository().getAdminRequest();
         if (Utils.stringDefined(template.getName())) {
             setName(template.getName());
         }
@@ -473,10 +474,10 @@ public class Entry implements Cloneable {
             setEndDate(template.getEndDate());
         }
 
-        setNorth(template.getNorth());
-        setSouth(template.getSouth());
-        setEast(template.getEast());
-        setWest(template.getWest());
+        setNorth(template.getNorth(request));
+        setSouth(template.getSouth(request));
+        setEast(template.getEast(request));
+        setWest(template.getWest(request));
         this.altitudeTop    = template.altitudeTop;
         this.altitudeBottom = template.altitudeBottom;
 
@@ -512,12 +513,11 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
-    public String getBoundsString() {
+    public String getBoundsString(Request request) {
         if ( !hasAreaDefined()) {
             return null;
         }
-
-        return getNorth() + "," + getWest() + "," + getSouth() + "," + getEast();
+        return getNorth(request) + "," + getWest(request) + "," + getSouth(request) + "," + getEast(request);
     }
 
     /**
@@ -525,10 +525,10 @@ public class Entry implements Cloneable {
      *
      * @return  the bounds
      */
-    public Rectangle2D.Double getBounds() {
-        return new Rectangle2D.Double(cleanLon(getWest()), cleanLat(getSouth()),
-                                      cleanLon(getEast()) - cleanLon(getWest()),
-                                      cleanLat(getNorth()) - cleanLat(getSouth()));
+    public Rectangle2D.Double getBounds(Request request) {
+        return new Rectangle2D.Double(cleanLon(getWest(request)), cleanLat(getSouth(request)),
+                                      cleanLon(getEast(request)) - cleanLon(getWest(request)),
+                                      cleanLat(getNorth(request)) - cleanLat(getSouth(request)));
     }
 
 
@@ -1144,8 +1144,8 @@ public class Entry implements Cloneable {
      *
      * @return the location (lat,lon)
      */
-    public double[] getLocation() {
-        return new double[] { getSouth(), getEast() };
+    public double[] getLocation(Request request) {
+        return new double[] { getSouth(request), getEast(request) };
     }
 
     /**
@@ -1153,8 +1153,8 @@ public class Entry implements Cloneable {
      *
      * @return the latitude of the entry
      */
-    public double getLatitude() {
-        return getSouth();
+    public double getLatitude(Request request) {
+        return getSouth(request);
     }
 
     /**
@@ -1162,8 +1162,8 @@ public class Entry implements Cloneable {
      *
      * @return the longitude of the entry
      */
-    public double getLongitude() {
-        return getEast();
+    public double getLongitude(Request request) {
+        return getEast(request);
     }
 
 
@@ -1172,9 +1172,9 @@ public class Entry implements Cloneable {
      *
      * @return the center of the location - [latitude,longitude]
      */
-    public double[] getCenter() {
-        return new double[] { getSouth() + (getNorth() - getSouth()) / 2,
-			      getEast() + (getWest() - getEast()) / 2 };
+    public double[] getCenter(Request request) {
+        return new double[] { getSouth(request) + (getNorth(request) - getSouth(request)) / 2,
+			      getEast(request) + (getWest(request) - getEast(request)) / 2 };
     }
 
     /**
@@ -1339,10 +1339,10 @@ public class Entry implements Cloneable {
      *
      * @return The South
      */
-    public double getSouth() {
-        return ((south == south)
+    public double getSouth(Request request) {
+        return filterGeo(request,((south == south)
                 ? south
-                : NONGEO);
+			       : NONGEO));
     }
 
     /**
@@ -1372,15 +1372,20 @@ public class Entry implements Cloneable {
         north = value;
     }
 
+    public double filterGeo(Request request, double v) {
+	return request.filterGeo(this,v);
+    }
+
+
     /**
      * Get the North property.
      *
      * @return The North
      */
-    public double getNorth() {
-        return ((north == north)
+    public double getNorth(Request request) {
+        return filterGeo(request,((north == north)
                 ? north
-                : NONGEO);
+			       : NONGEO));
     }
 
     /**
@@ -1542,22 +1547,10 @@ public class Entry implements Cloneable {
      *
      * @return The East
      */
-    public double getEast() {
-        return ((east == east)
-                ? east
-                : NONGEO);
-    }
-
-    /**
-     * Get the lat/lon bounds
-     *
-     * @return  the bounds (NW,NE,SE,SW,NW)
-     */
-    public double[][] getLatLonBounds() {
-        return new double[][] {
-            { getNorth(), getNorth(), getSouth(), getSouth(), getNorth() },
-            { getWest(), getEast(), getEast(), getWest(), getWest() }
-        };
+    public double getEast(Request request) {
+        return filterGeo(request,((east == east)
+			       ? east
+			       : NONGEO));
     }
 
     /**
@@ -1574,10 +1567,10 @@ public class Entry implements Cloneable {
      *
      * @return The West
      */
-    public double getWest() {
-        return ((west == west)
-                ? west
-                : NONGEO);
+    public double getWest(Request request) {
+        return filterGeo(request,((west == west)
+			       ? west
+			       : NONGEO));
     }
 
 

@@ -675,28 +675,28 @@ public class JsonOutputHandler extends OutputHandler {
 
 
         if (entry.hasAreaDefined()) {
-            double[] center = entry.getCenter();
+            double[] center = entry.getCenter(request);
             JsonUtil.attr(items, "geometry",
                           JsonUtil.map(Utils.makeListFromValues("type",
                               JsonUtil.quote("Point"), "coordinates",
                               JsonUtil.list("" + center[1],
                                             "" + center[0]))));
             JsonUtil.attr(items, "bbox",
-                          JsonUtil.list("" + entry.getWest(),
-                                        "" + entry.getSouth(),
-                                        "" + entry.getEast(),
-                                        "" + entry.getNorth()));
+                          JsonUtil.list("" + entry.getWest(request),
+                                        "" + entry.getSouth(request),
+                                        "" + entry.getEast(request),
+                                        "" + entry.getNorth(request)));
         } else if (entry.hasLocationDefined()) {
             JsonUtil.attr(items, "geometry",
                           JsonUtil.map(Utils.makeListFromValues("type",
                               JsonUtil.quote("Point"), "coordinates",
-                              JsonUtil.list("" + entry.getLongitude(),
-                                            "" + entry.getLatitude()))));
+                              JsonUtil.list("" + entry.getLongitude(request),
+                                            "" + entry.getLatitude(request)))));
             JsonUtil.attr(items, "bbox",
-                          JsonUtil.list("" + entry.getLongitude(),
-                                        "" + entry.getLatitude(),
-                                        "" + entry.getLongitude(),
-                                        "" + entry.getLatitude()));
+                          JsonUtil.list("" + entry.getLongitude(request),
+                                        "" + entry.getLatitude(request),
+                                        "" + entry.getLongitude(request),
+                                        "" + entry.getLatitude(request)));
         }
 
         if (entry.hasAltitudeTop()) {
@@ -1035,12 +1035,12 @@ public class JsonOutputHandler extends OutputHandler {
                                        ? request.getAbsoluteUrl(url)
                                        : url));
         }
-        items.add("" + ((entry.getLatitude() == Entry.NONGEO)
+        items.add("" + ((entry.getLatitude(request) == Entry.NONGEO)
                         ? "null"
-                        : entry.getLatitude()));
-        items.add("" + ((entry.getLongitude() == Entry.NONGEO)
+                        : entry.getLatitude(request)));
+        items.add("" + ((entry.getLongitude(request) == Entry.NONGEO)
                         ? "null"
-                        : entry.getLongitude()));
+                        : entry.getLongitude(request)));
         items.add("" + ((entry.getAltitude() == Entry.NONGEO)
                         ? "null"
                         : entry.getAltitude()));

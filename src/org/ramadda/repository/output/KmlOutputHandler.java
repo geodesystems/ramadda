@@ -230,10 +230,10 @@ public class KmlOutputHandler extends OutputHandler {
                 url = request.getAbsoluteUrl(url);
                 myGroundOverlay(parentFolder, entry.getName(),
                                 entry.getDescription(), url,
-                                getLocation(entry.getNorth(), 90),
-                                getLocation(entry.getSouth(), -90),
-                                getLocation(entry.getEast(), 180),
-                                getLocation(entry.getWest(), -180),
+                                getLocation(entry.getNorth(request), 90),
+                                getLocation(entry.getSouth(request), -90),
+                                getLocation(entry.getEast(request), 180),
+                                getLocation(entry.getWest(request), -180),
                                 request.get(ARG_VISIBLE, false));
 
                 continue;
@@ -263,9 +263,9 @@ public class KmlOutputHandler extends OutputHandler {
             } else if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
                 double[] lonlat;
                 if (entry.hasAreaDefined()) {
-                    lonlat = entry.getCenter();
+                    lonlat = entry.getCenter(request);
                 } else {
-                    lonlat = entry.getLocation();
+                    lonlat = entry.getLocation(request);
                 }
                 String link = HtmlUtils.href(
                                   request.getAbsoluteUrl(

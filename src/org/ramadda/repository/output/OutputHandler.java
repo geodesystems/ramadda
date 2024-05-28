@@ -1193,12 +1193,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	if(entry.isGeoreferenced()) {
 	    Utils.add(attrs, "isGeo","true");
 	    if(entry.hasAreaDefined()) {
-		Utils.add(attrs, "north",entry.getNorth(),"west",entry.getWest(),
-			  "south",entry.getSouth(),
-			  "east",entry.getEast());
+		Utils.add(attrs, "north",entry.getNorth(request),"west",entry.getWest(request),
+			  "south",entry.getSouth(request),
+			  "east",entry.getEast(request));
 	    } else if(entry.hasLocationDefined()) {
-		Utils.add(attrs, "latitude",entry.getLatitude(),
-			  "longitude",entry.getLongitude());
+		Utils.add(attrs, "latitude",entry.getLatitude(request),
+			  "longitude",entry.getLongitude(request));
 
 	    }
 	}

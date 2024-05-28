@@ -24,6 +24,10 @@ public class Permission {
     public static final String ACTION_VIEWCHILDREN = "viewchildren";
 
     /** _more_ */
+    public static final String ACTION_GEO = "geo";
+
+
+    /** _more_ */
     public static final String ACTION_EDIT = "edit";
 
     /** _more_ */
@@ -57,7 +61,7 @@ public class Permission {
     /** _more_ */
     public static final String[] ACTIONS = {
         ACTION_VIEW, ACTION_FILE, ACTION_EXPORT, ACTION_EDIT, ACTION_NEW,
-        ACTION_DELETE, ACTION_UPLOAD,
+        ACTION_DELETE, ACTION_UPLOAD, ACTION_GEO,
         //ACTION_COMMENT,
 	ACTION_VIEWCHILDREN, 
 	//	ACTION_TYPE1, ACTION_TYPE2
@@ -65,7 +69,7 @@ public class Permission {
 
     /** _more_ */
     public static final String[] ACTION_NAMES = {
-        "View", "File", "Export", "Edit", "New", "Delete", "Anon. Upload",
+        "View", "File", "Export", "Edit", "New", "Delete", "Anon. Upload","Geo Location",
         //      "Comment",
         "View Children", 
 	//	"Type specific 1", "Type specific 2"

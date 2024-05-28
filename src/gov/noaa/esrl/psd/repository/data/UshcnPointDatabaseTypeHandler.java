@@ -177,7 +177,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
 
 
         createDatabase(entry, metadata, connection);
-        insertData(entry, metadata, dataLines, connection, true, daily);
+        insertData(request,entry, metadata, dataLines, connection, true, daily);
     }
 
     /**
@@ -193,7 +193,7 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void insertData(Entry entry, List<PointDataMetadata> metadata,
+    private void insertData(Request request,Entry entry, List<PointDataMetadata> metadata,
                             List<String> dataLines, Connection connection,
                             boolean newEntry, boolean daily)
             throws Exception {
@@ -259,22 +259,22 @@ public class UshcnPointDatabaseTypeHandler extends PointDatabaseTypeHandler {
                     north = (newEntry
                              ? lat
                              : entry.hasNorth()
-                               ? entry.getNorth()
+                               ? entry.getNorth(request)
                                : lat);
                     south = (newEntry
                              ? lat
                              : entry.hasSouth()
-                               ? entry.getSouth()
+                               ? entry.getSouth(request)
                                : lat);
                     east  = (newEntry
                              ? lon
                              : entry.hasEast()
-                               ? entry.getEast()
+                               ? entry.getEast(request)
                                : lon);
                     west  = (newEntry
                              ? lon
                              : entry.hasWest()
-                               ? entry.getWest()
+                               ? entry.getWest(request)
                                : lon);
                 }
                 didone = true;

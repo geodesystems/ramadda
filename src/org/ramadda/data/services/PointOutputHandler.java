@@ -449,7 +449,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         Rectangle2D.Double queryRect = new Rectangle2D.Double(west, south,
 							      east - west, north - south);
         for (RecordEntry entry : subsetEntries) {
-            Rectangle2D.Double entryBounds = entry.getEntry().getBounds();
+            Rectangle2D.Double entryBounds = entry.getEntry().getBounds(request);
             Rectangle2D intersection =
                 entryBounds.createIntersection(queryRect);
             double percent =
@@ -536,10 +536,10 @@ public class PointOutputHandler extends RecordOutputHandler {
 													  90) - bbox.getSouth(
 															      -90));
                 Rectangle2D.Double entryRect =
-                    new Rectangle2D.Double(entry.getWest(), entry.getSouth(),
-                                           entry.getEast() - entry.getWest(),
-                                           entry.getNorth()
-                                           - entry.getSouth());
+                    new Rectangle2D.Double(entry.getWest(request), entry.getSouth(request),
+                                           entry.getEast(request) - entry.getWest(request),
+                                           entry.getNorth(request)
+                                           - entry.getSouth(request));
                 if (entryRect.intersects(queryRect)
 		    || entryRect.contains(queryRect)
 		    || queryRect.contains(entryRect)) {
@@ -2431,10 +2431,10 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (int i = 0; i < entries.size(); i++) {
             PointEntry pointEntry = entries.get(i);
             Entry      entry      = pointEntry.getEntry();
-            double     tmpnorth   = bbox.getNorth(entry.getNorth());
-            double     tmpsouth   = bbox.getSouth(entry.getSouth());
-            double     tmpeast    = bbox.getEast(entry.getEast());
-            double     tmpwest    = bbox.getWest(entry.getWest());
+            double     tmpnorth   = bbox.getNorth(entry.getNorth(request));
+            double     tmpsouth   = bbox.getSouth(entry.getSouth(request));
+            double     tmpeast    = bbox.getEast(entry.getEast(request));
+            double     tmpwest    = bbox.getWest(entry.getWest(request));
             if (i == 0) {
                 north = tmpnorth;
                 south = tmpsouth;
@@ -2517,8 +2517,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             return;
         }
         String url;
-        String dfltBbox = entry.getWest() + "," + entry.getSouth() + ","
-	    + entry.getEast() + "," + entry.getNorth();
+        String dfltBbox = entry.getWest(request) + "," + entry.getSouth(request) + ","
+	    + entry.getEast(request) + "," + entry.getNorth(request);
 
         String lasProduct = null;
         if (OUTPUT_LAS != null) {

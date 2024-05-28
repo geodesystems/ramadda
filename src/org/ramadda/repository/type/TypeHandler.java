@@ -1447,12 +1447,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public Rectangle2D.Double getBounds(Entry entry, Rectangle2D.Double bounds) {
+    public Rectangle2D.Double getBounds(Request request,Entry entry, Rectangle2D.Double bounds) {
 	if (entry.hasAreaDefined() || entry.hasLocationDefined()) {
 	    if (bounds == null) {
-		bounds = entry.getBounds();
+		bounds = entry.getBounds(request);
 	    } else {
-		bounds.add(entry.getBounds());
+		bounds.add(entry.getBounds(request));
 	    }
 	}
 	List<Column> columns = getColumns();
@@ -1584,7 +1584,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void childEntryChanged(Entry entry, boolean isNew)
+    public void childEntryChanged(Request request,Entry entry, boolean isNew)
 	throws Exception {}
 
     /**
@@ -5063,10 +5063,10 @@ public class TypeHandler extends RepositoryManager {
             String lon = "";
             if (entry != null) {
                 if (entry.hasNorth()) {
-                    lat = "" + entry.getNorth();
+                    lat = "" + entry.getNorth(request);
                 }
                 if (entry.hasWest()) {
-                    lon = "" + entry.getWest();
+                    lon = "" + entry.getWest(request);
                 }
             }
             String locationWidget = msgLabel(getFormLabel(parentEntry,entry, "latitude","Latitude")) + " "
@@ -5157,30 +5157,16 @@ public class TypeHandler extends RepositoryManager {
         if (entry != null) {
             props = getMapManager().getMapProps(request, entry, props);
             nwse  = new String[] { entry.hasNorth()
-                                   ? "" + entry.getNorth()
+                                   ? "" + entry.getNorth(request)
                                    : "", entry.hasWest()
-				   ? "" + entry.getWest()
+				   ? "" + entry.getWest(request)
 				   : "", entry.hasSouth()
-				   ? "" + entry.getSouth()
+				   ? "" + entry.getSouth(request)
 				   : "", entry.hasEast()
-				   ? "" + entry.getEast()
+				   ? "" + entry.getEast(request)
 				   : "", };
 
-        }  /*else if (parentEntry != null) {
-	     don't popuplate the form with the parent location
-	     if (parentEntry.hasAreaDefined()) {
-	     nwse = new String[] { "" + parentEntry.getNorth(),
-	     "" + parentEntry.getWest(),
-	     "" + parentEntry.getSouth(),
-	     "" + parentEntry.getEast() };
-	     } else if (parentEntry.hasLocationDefined()) {
-	     nwse = new String[] { "" + parentEntry.getNorth(),
-	     "" + parentEntry.getWest(),
-	     "" + parentEntry.getSouth(),
-	     "" + parentEntry.getEast() };
-	     }
-	     }
-	   */
+        }  
         String extraMapStuff = "";
         MapInfo map = getRepository().getMapManager().createMap(request,
 								entry, "600", "300", true, props);
@@ -8101,10 +8087,10 @@ public class TypeHandler extends RepositoryManager {
             return "" + entry.getAltitude();
         }
         if (name.equals("latitude")) {
-            return "" + entry.getLatitude();
+            return "" + entry.getLatitude(request);
         }
         if (name.equals("longitude")) {
-            return "" + entry.getLongitude();
+            return "" + entry.getLongitude(request);
         }
 
         //TODO: support name, desc, etc.

@@ -503,10 +503,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             throws Exception {
         Hashtable properties = getRecordProperties(entry);
 	if(entry.hasLocationDefined()) {
-	    properties.put("latitude",""+entry.getLatitude());
-	    properties.put("longitude",""+entry.getLongitude());
+	    properties.put("latitude",""+entry.getLatitude(request));
+	    properties.put("longitude",""+entry.getLongitude(request));
 	} else if(entry.hasAreaDefined()) {
-	    Rectangle2D.Double bounds = entry.getBounds();
+	    Rectangle2D.Double bounds = entry.getBounds(request);
 	    properties.put("latitude",""+bounds.getCenterY());
 	    properties.put("longitude",""+bounds.getCenterX());
 	}
@@ -569,7 +569,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 	if(!stringDefined(thePath)) {
 	    throw new IllegalArgumentException("No file specified:" + entry.getName());
 	}
-        thePath  = convertPath(entry, thePath, requestProperties);
+        thePath  = convertPath(request,entry, thePath, requestProperties);
 	thePath = getRepository().applyPropertyMacros(thePath);
 	IO.Path path = new IO.Path(thePath);
 	List<Metadata> metadataList =
@@ -653,7 +653,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public String convertPath(Entry entry, String path,
+    public String convertPath(Request request, Entry entry, String path,
 			      Hashtable requestProperties)
             throws Exception {
 
@@ -722,18 +722,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                     (String) requestProperties.get("longitude"));
             }
             if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
-                path = path.replace("${latitude}", entry.getLatitude() + "");
+                path = path.replace("${latitude}", entry.getLatitude(request) + "");
                 path = path.replace("${longitude}",
-                                    entry.getLongitude() + "");
+                                    entry.getLongitude(request) + "");
             }
             path = path.replace("${latitude}", "40");
             path = path.replace("${longitude}", "-105.2");
         }
         if (path.indexOf("${north}") >= 0) {
-            path = path.replace("${north}", entry.getNorth() + "");
-            path = path.replace("${west}", entry.getWest() + "");
-            path = path.replace("${south}", entry.getSouth() + "");
-            path = path.replace("${east}", entry.getEast() + "");
+            path = path.replace("${north}", entry.getNorth(request) + "");
+            path = path.replace("${west}", entry.getWest(request) + "");
+            path = path.replace("${south}", entry.getSouth(request) + "");
+            path = path.replace("${east}", entry.getEast(request) + "");
 
         }
 

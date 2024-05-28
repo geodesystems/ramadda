@@ -796,22 +796,22 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 north = (newEntry
                          ? lat
                          : entry.hasNorth()
-                           ? entry.getNorth()
+                           ? entry.getNorth(request)
                            : lat);
                 south = (newEntry
                          ? lat
                          : entry.hasSouth()
-                           ? entry.getSouth()
+                           ? entry.getSouth(request)
                            : lat);
                 east  = (newEntry
                          ? lon
                          : entry.hasEast()
-                           ? entry.getEast()
+                           ? entry.getEast(request)
                            : lon);
                 west  = (newEntry
                          ? lon
                          : entry.hasWest()
-                           ? entry.getWest()
+                           ? entry.getWest(request)
                            : lon);
             }
             didone = true;
@@ -2473,8 +2473,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, true, null);
-        map.addBox(entry, new MapProperties("blue", false));
-        map.centerOn(entry);
+        map.addBox(request,  entry, new MapProperties("blue", false));
+        map.centerOn(request,entry);
 
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);
         basicSB.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));

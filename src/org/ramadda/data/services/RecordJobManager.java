@@ -336,13 +336,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                 newEntry.setBounds(bounds);
                             } else {
                                 newEntry.setNorth(request.get(ARG_AREA_NORTH,
-                                        entry.getNorth()));
+                                        entry.getNorth(request)));
                                 newEntry.setWest(request.get(ARG_AREA_WEST,
-                                        entry.getWest()));
+                                        entry.getWest(request)));
                                 newEntry.setSouth(request.get(ARG_AREA_SOUTH,
-                                        entry.getSouth()));
+                                        entry.getSouth(request)));
                                 newEntry.setEast(request.get(ARG_AREA_EAST,
-                                        entry.getEast()));
+                                        entry.getEast(request)));
                             }
                         }
                     }

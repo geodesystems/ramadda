@@ -870,16 +870,16 @@ public class EntryMonitor implements Constants {
                      okEast  = true,
                      okWest  = true;
             if (bbox[0] != Entry.NONGEO) {
-                okSouth = entry.hasSouth() && (entry.getSouth() >= bbox[0]);
+                okSouth = entry.hasSouth() && (entry.getSouth(request) >= bbox[0]);
             }
             if (bbox[1] != Entry.NONGEO) {
-                okNorth = entry.hasNorth() && (entry.getNorth() <= bbox[1]);
+                okNorth = entry.hasNorth() && (entry.getNorth(request) <= bbox[1]);
             }
             if (bbox[2] != Entry.NONGEO) {
-                okEast = entry.hasEast() && (entry.getEast() <= bbox[2]);
+                okEast = entry.hasEast() && (entry.getEast(request) <= bbox[2]);
             }
             if (bbox[3] != Entry.NONGEO) {
-                okWest = entry.hasWest() && (entry.getWest() >= bbox[3]);
+                okWest = entry.hasWest() && (entry.getWest(request) >= bbox[3]);
             }
             //            System.err.println (okWest +" " + okEast +" " +  okNorth +" " + okSouth);
             ok = okWest && okEast && okNorth && okSouth;

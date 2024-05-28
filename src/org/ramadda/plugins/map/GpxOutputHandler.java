@@ -149,9 +149,9 @@ public class GpxOutputHandler extends OutputHandler {
                 sb.append(XmlUtil.tag(GpxUtil.TAG_WPT,
                                       XmlUtil.attrs(new String[] {
                                           GpxUtil.ATTR_LAT,
-                                          "" + child.getLatitude(),
+                                          "" + child.getLatitude(request),
                                           GpxUtil.ATTR_LON,
-                                          "" + child.getLongitude() })));
+                                          "" + child.getLongitude(request) })));
             }
         }
 

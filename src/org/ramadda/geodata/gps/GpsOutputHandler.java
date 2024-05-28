@@ -1092,10 +1092,10 @@ public class GpsOutputHandler extends OutputHandler {
                         "NA"));
 
                 entryTable.append("</td><td align=right>");
-                entryTable.append("" + entry.getLongitude());
+                entryTable.append("" + entry.getLongitude(request));
                 entryTable.append("</td>");
                 entryTable.append("</td><td align=right>");
-                entryTable.append("" + entry.getLatitude());
+                entryTable.append("" + entry.getLatitude(request));
                 entryTable.append("</td>");
                 entryTable.append("</td><td align=right>");
                 entryTable.append("" + entry.getAltitude());
@@ -1149,10 +1149,10 @@ public class GpsOutputHandler extends OutputHandler {
                 continue;
             }
 
-            maxLat = Math.max(maxLat, solutionEntry.getLatitude());
-            minLat = Math.min(minLat, solutionEntry.getLatitude());
-            maxLon = Math.max(maxLon, solutionEntry.getLongitude());
-            minLon = Math.min(minLon, solutionEntry.getLongitude());
+            maxLat = Math.max(maxLat, solutionEntry.getLatitude(request));
+            minLat = Math.min(minLat, solutionEntry.getLatitude(request));
+            maxLon = Math.max(maxLon, solutionEntry.getLongitude(request));
+            minLon = Math.min(minLon, solutionEntry.getLongitude(request));
 
             solutionEntries.add(solutionEntry);
             anyOK = true;
@@ -1176,9 +1176,9 @@ public class GpsOutputHandler extends OutputHandler {
 
             if (request.get(ARG_COORD_LONLATALT, false)) {
                 buff.append(",");
-                buff.append(solutionEntry.getLongitude());
+                buff.append(solutionEntry.getLongitude(request));
                 buff.append(",");
-                buff.append(solutionEntry.getLatitude());
+                buff.append(solutionEntry.getLatitude(request));
                 buff.append(",");
                 buff.append(solutionEntry.getAltitude());
             }
@@ -2007,8 +2007,8 @@ public class GpsOutputHandler extends OutputHandler {
 
         if (newEntry.hasLocationDefined()) {
             if (canEditRinex) {
-                rinexEntry.setLocation(newEntry.getLatitude(),
-                                       newEntry.getLongitude(),
+                rinexEntry.setLocation(newEntry.getLatitude(request),
+                                       newEntry.getLongitude(request),
                                        newEntry.getAltitude());
                 getEntryManager().updateEntry(request, rinexEntry);
             }
@@ -2022,8 +2022,8 @@ public class GpsOutputHandler extends OutputHandler {
                                     .ASSOCIATION_TYPE_GENERATED_FROM), GpsTypeHandler
                                         .TYPE_RAW)) {
                 if (getAccessManager().canDoEdit(request, rawEntry)) {
-                    rawEntry.setLocation(newEntry.getLatitude(),
-                                         newEntry.getLongitude(),
+                    rawEntry.setLocation(newEntry.getLatitude(request),
+                                         newEntry.getLongitude(request),
                                          newEntry.getAltitude());
                     getEntryManager().updateEntry(request, rawEntry);
                 }

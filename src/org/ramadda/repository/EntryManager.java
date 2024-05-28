@@ -3322,7 +3322,7 @@ public class EntryManager extends RepositoryManager {
 		if(entry.hasLocationDefined()) {
 		    getSessionManager().putSessionProperty(request,
 							   ARG_LOCATION_LATITUDE,
-							   entry.getLatitude() + ";" + entry.getLongitude());
+							   entry.getLatitude(request) + ";" + entry.getLongitude(request));
 		}
 	    } else {
 		entry.setLatitude(Double.NaN);
@@ -3356,8 +3356,10 @@ public class EntryManager extends RepositoryManager {
             }
 	    if(entry.hasAreaDefined()) {
 		getRepository().getSessionManager().setArea(request,
-							    entry.getNorth(), entry.getWest(), entry.getSouth(),
-							    entry.getEast());
+							    entry.getNorth(request),
+							    entry.getWest(request),
+							    entry.getSouth(request),
+							    entry.getEast(request));
 	    }
 
         }
@@ -4945,16 +4947,16 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    public void setEntryBounds(Entry entry) throws Exception {
+    public void setEntryBounds(Request request,Entry entry) throws Exception {
         Connection connection = getDatabaseManager().getConnection();
         try {
             Statement statement = connection.createStatement();
             String sql =
                 "UPDATE  " + Tables.ENTRIES.NAME + " SET "
-                + columnSet(Tables.ENTRIES.COL_NORTH, entry.getNorth()) + ","
-                + columnSet(Tables.ENTRIES.COL_SOUTH, entry.getSouth()) + ","
-                + columnSet(Tables.ENTRIES.COL_EAST, entry.getEast()) + ","
-                + columnSet(Tables.ENTRIES.COL_WEST, entry.getWest()) + ","
+                + columnSet(Tables.ENTRIES.COL_NORTH, entry.getNorth(request)) + ","
+                + columnSet(Tables.ENTRIES.COL_SOUTH, entry.getSouth(request)) + ","
+                + columnSet(Tables.ENTRIES.COL_EAST, entry.getEast(request)) + ","
+                + columnSet(Tables.ENTRIES.COL_WEST, entry.getWest(request)) + ","
                 + columnSet(
 			    Tables.ENTRIES.COL_ALTITUDEBOTTOM,
 			    entry.getAltitudeBottom()) + ","
@@ -4977,12 +4979,12 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public void setBoundsOnEntry(final Entry parent, List<Entry> children) {
+    public void setBoundsOnEntry(Request request,final Entry parent, List<Entry> children) {
         try {
-            Rectangle2D.Double rect = getEntryUtil().getBounds(children);
-            if ((rect != null) && !rect.equals(parent.getBounds())) {
+            Rectangle2D.Double rect = getEntryUtil().getBounds(request,children);
+            if ((rect != null) && !rect.equals(parent.getBounds(request))) {
                 parent.setBounds(rect);
-                setEntryBounds(parent);
+                setEntryBounds(request,parent);
             }
         } catch (Exception exc) {
             logError("Updating parent's bounds", exc);
@@ -6121,18 +6123,20 @@ public class EntryManager extends RepositoryManager {
 
             if ((lat != null) && (lon != null)) {
                 entry.setNorth(GeoUtils.decodeLatLon(lat));
-                entry.setSouth(entry.getNorth());
+                entry.setSouth(entry.getNorth(request));
                 entry.setWest(GeoUtils.decodeLatLon(lon));
-                entry.setEast(entry.getWest());
+                entry.setEast(entry.getWest(request));
             } else {
                 entry.setNorth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								       ATTR_NORTH, entry.getNorth() + "")));
+								       ATTR_NORTH,
+									  entry.getNorth(request) + "")));
                 entry.setSouth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								       ATTR_SOUTH, entry.getSouth() + "")));
+									  ATTR_SOUTH,
+									  entry.getSouth(request) + "")));
                 entry.setEast(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								      ATTR_EAST, entry.getEast() + "")));
+									 ATTR_EAST, entry.getEast(request) + "")));
                 entry.setWest(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								      ATTR_WEST, entry.getWest() + "")));
+								      ATTR_WEST, entry.getWest(request) + "")));
             }
 
             entry.setAltitudeTop(Utils.getAttributeOrTag(node,
@@ -7425,6 +7429,7 @@ public class EntryManager extends RepositoryManager {
     private void setStatement(Entry entry, PreparedStatement statement,
                               boolean isNew, TypeHandler typeHandler)
 	throws Exception {
+	Request request=getRepository().getAdminRequest();
         String description = entry.getDescription();
         checkColumnSize("name", entry.getName(), Entry.MAX_NAME_LENGTH);
         checkColumnSize("description", description, Entry.MAX_DESCRIPTION_LENGTH);
@@ -7469,13 +7474,13 @@ public class EntryManager extends RepositoryManager {
 
 
         //This cleans  up bad double values
-        getDatabaseManager().setDouble(statement, col++, entry.getSouth(),
+        getDatabaseManager().setDouble(statement, col++, entry.getSouth(request),
                                        Entry.NONGEO);
-        getDatabaseManager().setDouble(statement, col++, entry.getNorth(),
+        getDatabaseManager().setDouble(statement, col++, entry.getNorth(request),
                                        Entry.NONGEO);
-        getDatabaseManager().setDouble(statement, col++, entry.getEast(),
+        getDatabaseManager().setDouble(statement, col++, entry.getEast(request),
                                        Entry.NONGEO);
-        getDatabaseManager().setDouble(statement, col++, entry.getWest(),
+        getDatabaseManager().setDouble(statement, col++, entry.getWest(request),
                                        Entry.NONGEO);
         getDatabaseManager().setDouble(statement, col++,
                                        entry.getAltitudeTop(), Entry.NONGEO);
@@ -7767,7 +7772,7 @@ public class EntryManager extends RepositoryManager {
         for (Entry entry : entries) {
             Entry parentEntry = entry.getParentEntry();
             if (parentEntry != null) {
-                parentEntry.getTypeHandler().childEntryChanged(entry, isNew);
+                parentEntry.getTypeHandler().childEntryChanged(request, entry, isNew);
             }
         }
 

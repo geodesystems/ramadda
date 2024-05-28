@@ -777,7 +777,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (isStreetviewEnabled()) {
             String googleUrl =
                 "https://maps.googleapis.com/maps/api/streetview?size=600x300&location={lat},{lon}&heading={heading}&pitch=0&key={key}";
-            double[] ll      = entry.getCenter();
+            double[] ll      = entry.getCenter(request);
             String   heading = request.getString("heading", "0");
             String url =
                 googleUrl.replace("{lat}", "" + ll[0]).replace("{lon}",

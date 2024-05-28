@@ -1143,6 +1143,15 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
 
+    public boolean canDoGeo(Request request, Entry entry)  {
+        //        if(entry.getIsLocalFile()) return false;
+	try {
+	    return canDoAction(request, entry, Permission.ACTION_GEO);
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }    
+
     /**
      *
      * @param request _more_

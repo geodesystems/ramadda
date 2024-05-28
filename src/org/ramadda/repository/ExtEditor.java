@@ -265,10 +265,10 @@ public class ExtEditor extends RepositoryManager {
 
 
                             if (doSpatial) {
-                                Rectangle2D.Double rect = getEntryUtil().getBounds(children);
+                                Rectangle2D.Double rect = getEntryUtil().getBounds(request,children);
                                 if (rect != null) {
                                     if ( !Misc.equals(rect,
-						      entry.getBounds())) {
+						      entry.getBounds(request))) {
                                         entry.setBounds(rect);
                                         changed = true;
                                     }
@@ -1359,7 +1359,7 @@ public class ExtEditor extends RepositoryManager {
         if (entry == null) {
             return;
         }
-        Rectangle2D.Double rect = getEntryUtil().getBounds(getEntryManager().getChildren(request, entry));
+        Rectangle2D.Double rect = getEntryUtil().getBounds(request,getEntryManager().getChildren(request, entry));
         if (rect != null) {
             entry.setBounds(rect);
             getEntryManager().updateEntry(request, entry);

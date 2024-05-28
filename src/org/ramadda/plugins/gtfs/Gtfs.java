@@ -746,8 +746,8 @@ public class Gtfs implements Constants {
             }
             String url =
                 HtmlUtils.url("https://api.uber.com/v1/estimates/time",
-                              "start_latitude", entry.getNorth() + "",
-                              "start_longitude", entry.getWest() + "");
+                              "start_latitude", entry.getNorth(request) + "",
+                              "start_longitude", entry.getWest(request) + "");
             HttpURLConnection huc =
                 (HttpURLConnection) new URL(url).openConnection();
             huc.addRequestProperty("Authorization", "Token " + uberKey);
@@ -771,9 +771,9 @@ public class Gtfs implements Constants {
                 int        seconds = time.getInt("estimate");
                 double     minutes = ((int) (seconds / 60.0 * 10)) / 10.0;
                 String pickup = pickupTemplate.replace("{lat}",
-                                    entry.getLatitude()
+                                    entry.getLatitude(request)
                                     + "").replace("{lon}",
-                                        entry.getLongitude()
+                                        entry.getLongitude(request)
                                         + "").replace("{product}",
                                             time.getString("product_id"));
                 if (i == 0) {
@@ -928,8 +928,8 @@ public class Gtfs implements Constants {
         String json = null;
         try {
             String url = HtmlUtils.url("https://api.lyft.com/v1/eta", "lat",
-                                       entry.getNorth() + "", "lng",
-                                       entry.getWest() + "");
+                                       entry.getNorth(request) + "", "lng",
+                                       entry.getWest(request) + "");
             HttpURLConnection huc =
                 (HttpURLConnection) new URL(url).openConnection();
             huc.addRequestProperty("Authorization", "Bearer " + token);
@@ -961,9 +961,9 @@ public class Gtfs implements Constants {
                 double  minutes = ((int) (seconds / 60.0 * 10)) / 10.0;
                 boolean isValid = time.getBoolean("is_valid_estimate");
                 String pickup = pickupTemplate.replace("{lat}",
-                                    entry.getLatitude()
+                                    entry.getLatitude(request)
                                     + "").replace("{lon}",
-                                        entry.getLongitude()
+                                        entry.getLongitude(request)
                                         + "").replace("{product}",
                                             time.getString("ride_type"));
 
