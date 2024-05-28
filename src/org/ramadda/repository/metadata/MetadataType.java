@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.metadata;
@@ -235,7 +235,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public static List<MetadataType> parse(Element root,
                                            MetadataManager manager)
-            throws Exception {
+	throws Exception {
         List<MetadataType> types = new ArrayList<MetadataType>();
         parse(root, manager, types);
 
@@ -253,11 +253,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     private static void parse(Element root, MetadataManager manager,
                               List<MetadataType> types)
-            throws Exception {
+	throws Exception {
 
         NodeList children = XmlUtil.getElements(root);
         if ((children.getLength() == 0)
-                && root.getTagName().equals(TAG_HANDLER)) {
+	    && root.getTagName().equals(TAG_HANDLER)) {
             Class c = Misc.findClass(XmlUtil.getAttribute(root, ATTR_CLASS));
             MetadataHandler handler = manager.getHandler(c);
         }
@@ -272,13 +272,13 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             if (node.getTagName().equals(TAG_TEMPLATE)) {
                 String templateType = XmlUtil.getAttribute(node, ATTR_TYPE);
                 String metadataType = XmlUtil.getAttribute(node,
-                                          ATTR_METADATATYPE);
+							   ATTR_METADATATYPE);
 
                 if (XmlUtil.hasAttribute(node, ATTR_FILE)) {
                     manager.addTemplate(
-                        metadataType, templateType,
-                        manager.getStorageManager().readSystemResource(
-                            XmlUtil.getAttribute(node, ATTR_FILE)));
+					metadataType, templateType,
+					manager.getStorageManager().readSystemResource(
+										       XmlUtil.getAttribute(node, ATTR_FILE)));
 
                 } else {
                     manager.addTemplate(metadataType, templateType,
@@ -298,8 +298,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
 
             Class c = Misc.findClass(XmlUtil.getAttributeFromTree(node,
-                          ATTR_CLASS,
-                          "org.ramadda.repository.metadata.MetadataHandler"));
+								  ATTR_CLASS,
+								  "org.ramadda.repository.metadata.MetadataHandler"));
 
             String          id           = XmlUtil.getAttribute(node, ATTR_ID);
 
@@ -330,37 +330,37 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public void init(Element node) throws Exception {
         super.init(node);
         setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,
-                false));
+						  false));
 
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
 	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
         entryType = XmlUtil.getAttributeFromTree(node, ATTR_ENTRYTYPE,
-                (String) null);
+						 (String) null);
 
         priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,
-                priority);
+						priority);
 
         setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
-                false));
+						  false));
 
         setDisplayCategory(XmlUtil.getAttributeFromTree(node,
-                ATTR_DISPLAYCATEGORY, "Properties"));
+							ATTR_DISPLAYCATEGORY, "Properties"));
 
 
         setDisplayGroup(XmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
-                (String) null));
+						     (String) null));
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
-                handler.getHandlerGroupName()));
+						 handler.getHandlerGroupName()));
 
         makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
-                ATTR_MAKEDATABASE, false);
+							 ATTR_MAKEDATABASE, false);
 
         /*
-        if makeDatabaseTable) {
-            initDatabase();
-        }
+	  if makeDatabaseTable) {
+	  initDatabase();
+	  }
         */
     }
 
@@ -409,11 +409,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         final String tableName = getDbTableName();
         System.err.println("Making db:" + tableName);
         TypeHandler typeHandler = new TypeHandler(getRepository()) {
-            @Override
-            public String getTableName() {
-                return tableName;
-            }
-        };
+		@Override
+		public String getTableName() {
+		    return tableName;
+		}
+	    };
         String dropTable = "DROP TABLE " + tableName;
         try {
             getDatabaseManager().executeAndClose(dropTable);
@@ -424,9 +424,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
         StringBuffer tableDef = new StringBuffer("CREATE TABLE " + tableName
-                                    + " (\n");
+						 + " (\n");
         tableDef.append(
-            "id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
+			"id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
         System.out.println("Creating metadata table:" + tableName);
         try {
             getDatabaseManager().executeAndClose(tableDef.toString());
@@ -465,7 +465,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
             if (columnName == null) {
                 throw new RuntimeException(
-                    "No name defined for metadata element:" + element);
+					   "No name defined for metadata element:" + element);
             }
             columnName = getDbColumnName(columnName);
             System.out.println("\tcolumn:" + columnName + " type:"
@@ -505,7 +505,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void initNewEntry(Metadata metadata, Entry entry,
                              EntryInitializer initializer)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if (element.getDataType().equals(element.DATATYPE_FILE)) {
                 String fileArg = metadata.getAttr(element.getIndex());
@@ -525,7 +525,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 }
                 if ( !entry.getIsLocalFile()) {
                     fileArg = getStorageManager().copyToEntryDir(entry,
-                            sourceFile).getName();
+								 sourceFile).getName();
                 }
                 metadata.setAttr(element.getIndex(), fileArg);
             }
@@ -535,7 +535,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public boolean processMetadataXml(Entry entry, Element node,
                                       Metadata metadata, Hashtable filesMap,
                                       EntryManager.INTERNAL isInternal)
-            throws Exception {
+	throws Exception {
 
         //don't check internal as I forgot what its intent was and it is keeping us from processing attachments
         //      if(!internal || entry.getIsRemoteEntry()) {
@@ -550,11 +550,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
             String fileArg = null;
             Element attrNode = XmlUtil.findElement(elements,
-                                   Metadata.ATTR_INDEX,
-                                   "" + element.getIndex());
+						   Metadata.ATTR_INDEX,
+						   "" + element.getIndex());
             if (attrNode == null) {
                 fileArg = XmlUtil.getAttribute(node,
-                        "attr" + element.getIndex(), (String) null);
+					       "attr" + element.getIndex(), (String) null);
                 if (fileArg == null) {
                     System.err.println("Could not find attr node:"
                                        + XmlUtil.toString(node));
@@ -563,7 +563,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 }
             } else {
                 fileArg = XmlUtil.getAttribute(attrNode, "fileid",
-                        (String) null);
+					       (String) null);
             }
 
             if (fileArg == null) {
@@ -573,10 +573,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
             if (fileArg == null) {
                 System.err.println(
-                    "Metadata: Could not find file id for entry: "
-                    + entry.getName() + " attr: "
-                    + metadata.getAttr(element.getIndex()) + " files:"
-                    + filesMap);
+				   "Metadata: Could not find file id for entry: "
+				   + entry.getName() + " attr: "
+				   + metadata.getAttr(element.getIndex()) + " files:"
+				   + filesMap);
 
                 continue;
             }
@@ -654,14 +654,14 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public Metadata handleForm(Request request, Entry entry, String id,
                                String suffix, Metadata oldMetadata,
                                boolean newMetadata)
-            throws Exception {
+	throws Exception {
         boolean inherited = request.get(ARG_METADATA_INHERITED + suffix,
                                         false);
         Metadata metadata = new Metadata(id, entry.getId(), getId(),
                                          inherited);
         for (MetadataElement element : getChildren()) {
             String value = element.handleForm(request, entry, metadata,
-                               oldMetadata, suffix);
+					      oldMetadata, suffix);
             metadata.setAttr(element.getIndex(), value);
         }
 
@@ -685,7 +685,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public boolean addMetadataToXml(Request request, String templateType,
                                     Entry entry, Metadata metadata,
                                     Element parent)
-            throws Exception {
+	throws Exception {
 
 	if(!this.getCanView()) return false;
 
@@ -735,7 +735,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink,boolean fileOk)
-            throws Exception {
+	throws Exception {
         decorateEntry(request, entry, sb, metadata, forLink, false,fileOk);
     }
 
@@ -754,7 +754,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink,
                               boolean isThumbnail,boolean fileOk)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
@@ -775,7 +775,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     if ((value != null) && value.startsWith("http")) {
                         sb.append(HU.space(1));
                         sb.append(HU.img(value, "",
-                                HU.attr("loading", "lazy")));
+					 HU.attr("loading", "lazy")));
                         sb.append(HU.space(1));
                     }
                 }
@@ -806,14 +806,14 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void initializeCopiedMetadata(Entry oldEntry, Entry newEntry,
                                          Metadata newMetadata)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
             }
             String oldFileName = newMetadata.getAttr(element.getIndex());
             String newFileName = getStorageManager().copyToEntryDir(oldEntry,
-                                     newEntry, oldFileName);
+								    newEntry, oldFileName);
             newMetadata.setAttr(element.getIndex(), newFileName);
         }
     }
@@ -832,7 +832,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void getThumbnailUrls(Request request, Entry entry,
                                  List<String[]> urls, Metadata metadata)
-            throws Exception {
+	throws Exception {
 	List<MetadataElement> elements =getChildren();
         for (MetadataElement element : elements) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
@@ -879,7 +879,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public String getDisplayImageUrl(Request request, Entry entry,
                                      Metadata metadata, String filter)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
@@ -912,8 +912,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      * @throws Exception _more_
      */
     public MetadataElement getDisplayImageElement(Request request,
-            Entry entry, Metadata metadata, String filter)
-            throws Exception {
+						  Entry entry, Metadata metadata, String filter)
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
                 continue;
@@ -947,7 +947,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      * @throws Exception _more_
      */
     public Result processView(Request request, Entry entry, Metadata metadata)
-            throws Exception {
+	throws Exception {
         int elementIndex = request.get(ARG_ELEMENT, 0) - 1;
         if ((elementIndex < 0) || (elementIndex >= getChildren().size())) {
             return new Result("", "Cannot process view");
@@ -971,7 +971,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public Result processView(Request request, Entry entry,
                               Metadata metadata, MetadataElement element)
-            throws Exception {
+	throws Exception {
         if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
             return new Result("", "Cannot process view");
         }
@@ -992,8 +992,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                     f = thumb;
                 } catch (Exception exc) {
                     getStorageManager().logError(
-                        "Error creating thumbnail from file:" + f + " error:"
-                        + exc, exc);
+						 "Error creating thumbnail from file:" + f + " error:"
+						 + exc, exc);
                 }
             } else {
                 f = thumb;
@@ -1056,8 +1056,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         try {
             return HU
                 .url(request
-                    .makeUrl(handler.getRepository().getSearchManager()
-                        .URL_ENTRY_SEARCH), args);
+		     .makeUrl(handler.getRepository().getSearchManager()
+			      .URL_ENTRY_SEARCH), args);
         } catch (Exception exc) {
             System.err.println("ARGS:" + args);
 
@@ -1076,7 +1076,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      * @throws Exception _more_
      */
     public void getTextCorpus(Entry entry, Appendable sb, Metadata metadata)
-            throws Exception {
+	throws Exception {
         for (MetadataElement element : getChildren()) {
             String value = metadata.getAttr(element.getIndex());
             element.getTextCorpus(value, sb);
@@ -1124,33 +1124,24 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return nameString;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
-            throws Exception {
+	throws Exception {
         if ( !getShowInHtml()) {
             return null;
         }
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
-                                   "").equals(DISPLAY_SMALL);
+						 "").equals(DISPLAY_SMALL);
         String nameString   = getTypeLabel(metadata);
         String searchLink = "";
         String lbl          = smallDisplay
-                              ? msg(nameString)
-                              : msgLabel(nameString);
+	    ? msg(nameString)
+	    : msgLabel(nameString);
 
-	boolean makeSearchLink =  !smallDisplay && getSearchable();
+
+	List<MetadataElement> children = getChildren();
+	boolean makeSearchLink =  !smallDisplay && getSearchable() && children.size()==1;
+	if(makeSearchLink && !children.get(0).isEnumeration()) makeSearchLink=false;
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
         if (html!=null) {
@@ -1161,7 +1152,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         } else {
             int                   cnt      = 1;
             boolean               didOne   = false;
-            List<MetadataElement> children = getChildren();
             content.append(HU.formTable());
 
 
@@ -1181,11 +1171,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
-                            HU.row(
-                                HU.colspan(metadataHtml, 2)));
+				       HU.row(
+					      HU.colspan(metadataHtml, 2)));
                     } else {
                         content.append(HU.formEntry(formInfo.label,
-                                metadataHtml));
+						    metadataHtml));
                     }
                     didOne = true;
                 }
@@ -1202,15 +1192,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param template _more_
-     * @param element _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
+
     @Override
     public String applyMacros(String template, MetadataElement element,
                               String value) {
@@ -1224,35 +1206,15 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return template;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+
     public String getHelp() {
         return help;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param handler _more_
-     * @param request _more_
-     * @param formInfo _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param suffix _more_
-     * @param forEdit _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] getForm(MetadataHandler handler, Request request,
                             FormInfo formInfo, Entry entry,
                             Metadata metadata, String suffix, boolean forEdit)
-            throws Exception {
+	throws Exception {
 
         String lbl = (String) request.getExtraProperty(PROP_METADATA_LABEL);
         String firstValue = null;
@@ -1261,7 +1223,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             lbl = msgLabel(getName());
         }
         String submit = HU.submit("Add" + HU.space(1)
-                                         + getName());
+				  + getName());
         String        cancel = HU.submit(LABEL_CANCEL, ARG_CANCEL);
         StringBuilder sb     = new StringBuilder();
         if (Utils.stringDefined(help)) {
@@ -1294,10 +1256,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
 
             if ((element.getGroup() != null)
-                    && !Misc.equals(element.getGroup(), lastGroup)) {
+		&& !Misc.equals(element.getGroup(), lastGroup)) {
                 lastGroup = element.getGroup();
                 sb.append(HU.row(HU.colspan(header(lastGroup),
-                        2)));
+					    2)));
             }
             String elementLbl = msgLabel(element.getLabel());
             String widget =
@@ -1312,16 +1274,16 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 }
 		suffixLabel = HU.span(suffixLabel,HU.attrs("class","ramadda-metadata-widget-suffix"));
                 sb.append(HU.formEntryTop(elementLbl, HU.span(widget+ suffixLabel,HU.cssClass(clazz))
-));
+					  ));
             }
         }
 
 
         sb.append("\n");
         sb.append( HU.formEntry("",
-				       HU.labeledCheckbox(
-								ARG_METADATA_INHERITED + suffix, "true",
-								metadata.getInherited(),"Inherited")));
+				HU.labeledCheckbox(
+						   ARG_METADATA_INHERITED + suffix, "true",
+						   metadata.getInherited(),"Inherited")));
 
 
 
@@ -1333,8 +1295,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         if ( !forEdit && (entry != null)) {
             sb.append("\n");
             sb.append(HU.formEntry("",
-                                          submit + HU.buttonSpace()
-                                          + cancel));
+				   submit + HU.buttonSpace()
+				   + cancel));
         }
 
         //Only show the value if its simple text
@@ -1354,7 +1316,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
     public List<String> getFiles(Entry entry, Metadata metadata)
-            throws Exception {
+	throws Exception {
 	List<String> files = new ArrayList<String>();
         for (MetadataElement element : getChildren()) {
 	    if(element.isFileType())
@@ -1369,13 +1331,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public boolean isType(String id) {
         return Misc.equals(this.id, id);
     }
