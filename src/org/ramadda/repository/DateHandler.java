@@ -793,15 +793,15 @@ public class DateHandler extends RepositoryManager {
             return null;
         }
         if (parseFormats == null) {
-            parseFormats = new ArrayList<SimpleDateFormat>();
-            parseFormats.add(
-                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss z"));
-            parseFormats.add(
-                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss"));
-            parseFormats.add(
-                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
-            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
-            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
+            List<SimpleDateFormat> tmp = new ArrayList<SimpleDateFormat>();
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss z"));
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss"));
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
+            tmp.add(RepositoryUtil.makeDateFormat("yyyy"));	    
+            parseFormats = tmp;
+	    
         }
 
 
