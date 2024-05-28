@@ -6061,15 +6061,11 @@ public class EntryManager extends RepositoryManager {
                                : createDate);
             //don't use the create and change date from the xml
             createDate = changeDate = now;
-	    Date fromDate = (XmlUtil.hasAttribute(node, ATTR_FROMDATE)
-                             ? getDateHandler().parseDate(
-							  XmlUtil.getAttribute(node, ATTR_FROMDATE))
-                             : createDate);
-            Date toDate = (XmlUtil.hasAttribute(node, ATTR_TODATE)
-                           ? getDateHandler().parseDate(
-							XmlUtil.getAttribute(node, ATTR_TODATE))
-                           : fromDate);
 
+	    String sfromDate = Utils.getAttributeOrTag(node,ATTR_FROMDATE,null);
+	    String stoDate = Utils.getAttributeOrTag(node,ATTR_TODATE,null);	    
+	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): createDate;
+	    Date toDate = stringDefined(sfromDate) ? getDateHandler().parseDate(stoDate): fromDate;	
             String id    = getRepository().getGUID();
             Entry  entry = typeHandler.createEntry(id);
 	    if(remoteServers.length>0) entry.setRemoteServer(remoteServers[0]);
