@@ -1,5 +1,9 @@
 <types 	priority="10" supercategory="General" category="Archive">
 
+
+
+
+
   <type name="type_archive_section"  description="Archive Section"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	childtypes="type_archive_collection">
@@ -114,6 +118,48 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 </type>
 
+<wiki><![CDATA[
++section  title="{{typename}}: {{name}}"
++center
+{{display_simplesearch width=200px  inputSize=100% 
+ancestor=this 
+placeholder="Search"
+orderBy=createdate_ascending 
+}}
+-center
++toggleopen Details
++row
++col-8
+{{description wikify="true"}}
+{{information  showDetails="true"  showTitle="false"   }} 
+{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+-col
++col-4
++center
+{{ark short=true}}
+{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+-center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+:vspace 1em
+-toggle
+----
+:vspace 1em
+:heading Contents
+{{tabletree  message="" showSize="false"}} 
+-section
+]]>
+</wiki>
+
+
 
   <type name="type_archive_series"  description="Archive Series"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
@@ -147,7 +193,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
   <type name="type_archive_file"  description="Archive File"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-	childtypes="type_archive_item_image"
+	childtypes="type_archive_item"
 	newfields="name,description,_default"
 	editfields="name,description,_default"	
 	metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
@@ -168,7 +214,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       newfields="name,description,_default"
       editfields="name,description,_default"	
-	metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
+      metadata="archive_note,archive_subject,archive_area,archive_media_type,archive_category,archive_source_contact,content.keyword,enum_tag,property">
 
     <property name="icon" value="/archive/portfolio.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
@@ -179,23 +225,38 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+    <wiki><![CDATA[
++section  title="{{typename}}: {{name}}"
++row
++col-8
+{{description wikify="true"}}
+{{information  showDetails="true"  showTitle="false"   }} 
+{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
+-col
++col-4
++center
+{{ark short=true}}
+{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+-center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
+:vspace 1em
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+:vspace 1em
+{{tabletree  message="" showSize="true"}} 
+-section
+]]>
+</wiki>
+
+
 </type>
 
 
-<type name="type_archive_item_image"  super="type_archive_item"
-      description="Archive Item Image" 
-      handler="org.ramadda.repository.type.GenericTypeHandler"  
-      newfields="name,description,_default"
-      editfields="name,description,_default"	
-      xxxmetadata="enum_tag,metadata_author,metadata_publisher">
-
-    <property name="icon" value="/archive/picture.png"/>
-    <property  name="html.type.show"  value="false" />
-    <property  name="html.date.show"  value="false" />    
-    <property name="form.ark.show" value="false"/>
-    <property name="html.createdate.show" value="false"/>
-    <property name="html.changedate.show" value="false"/>
-    <property name="html.owner.show" value="false"/>                
-</type>
 
 </types>
