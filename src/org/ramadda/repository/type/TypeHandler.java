@@ -604,7 +604,8 @@ public class TypeHandler extends RepositoryManager {
 
 	    metadataTypes = makeInitialMetadataTypes();
 
-	    for(String mtd: Utils.split(Utils.getAttributeOrTag(node,ATTR_METADATA,""),",",true,true)) {
+
+	    for(String mtd: Utils.split(XmlUtil.getAttributeFromTree(node,ATTR_METADATA,""),",",true,true)) {
 		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
 	    }
 
@@ -3456,6 +3457,7 @@ public class TypeHandler extends RepositoryManager {
 			       OutputType.TYPE_EDIT));
 
             if (metadataTypes.size() > 0) {
+                links.add(makeHRLink(OutputType.TYPE_EDIT));
                 for (String metadataType : metadataTypes) {
 		    String []pair = getMetadataManager().getMetadataAddLink(request, entry, metadataType);
 		    if(pair==null) continue;
