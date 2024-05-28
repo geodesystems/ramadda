@@ -61,7 +61,7 @@ inherited="false"  }}
 ----
 :vspace 1em
 :heading Contents
-{{tabletree  message="" showSize="false"}} 
+{{tabletree  message="" showSize="false" showCreateDate="false"}} 
 -col
 +col-4
 +center
