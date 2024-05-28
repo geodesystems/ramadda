@@ -132,14 +132,14 @@ proc handleDate {date} {
 	regsub -all s $date {} date
 	regsub -all {^\?\-}  $date {} date	
 	if {[regexp {^(\d\d\d\d) *- *(\d\d\d\d)} $date match date1 date2]} {
-	    append ::entries [col startdate $date1]
-	    append ::entries [col enddate $date2]	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    
 	} elseif {[regexp {^(\d\d\d\d)$} $date match date1]} {
-	    append ::entries [col startdate $date1]
-	    append ::entries [col enddate $date1]	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    
 	} else {
 #	    puts stderr "NO: $date"
-	    append ::entries [col startdate $date]
+	    append ::entries [col fromdate $date]
 	}
     }
 }
