@@ -6065,7 +6065,7 @@ public class EntryManager extends RepositoryManager {
 	    String sfromDate = Utils.getAttributeOrTag(node,ATTR_FROMDATE,null);
 	    String stoDate = Utils.getAttributeOrTag(node,ATTR_TODATE,null);	    
 	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): createDate;
-	    Date toDate = stringDefined(sfromDate) ? getDateHandler().parseDate(stoDate): fromDate;	
+	    Date toDate = stringDefined(stoDate) ? getDateHandler().parseDate(stoDate): fromDate;	
             String id    = getRepository().getGUID();
             Entry  entry = typeHandler.createEntry(id);
 	    if(remoteServers.length>0) entry.setRemoteServer(remoteServers[0]);
