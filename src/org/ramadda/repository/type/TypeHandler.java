@@ -619,7 +619,7 @@ public class TypeHandler extends RepositoryManager {
 
 
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
-            wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate));
+            wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true));
 
 	    List macros = XmlUtil.findChildrenRecurseUp(node,"wikimacro");
 	    for (int i = 0; i < macros.size(); i++) {
@@ -3652,6 +3652,9 @@ public class TypeHandler extends RepositoryManager {
             seen.add(type);
             didone = true;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
+	    if(typeHandler==null) {
+		continue;
+	    }
             String      icon        = typeHandler.getIconProperty(null);
             if (icon == null) {
                 icon = ICON_ENTRY_ADD;
