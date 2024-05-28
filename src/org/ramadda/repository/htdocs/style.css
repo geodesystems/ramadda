@@ -3377,6 +3377,11 @@ pre {
     background-color:#ffffff;
 }
 
+.metadata-row {
+    line-height:24px;
+}
+
+
 .metadata-row-odd {
     margin-bottom:2px;
     background-color:#f8f8f8;    
@@ -3395,6 +3400,11 @@ pre {
     max-height:300px;
     overflow-y:auto;
 }
+
+.metadata-full .metadata-block {
+    max-height:600px;
+}
+
 
 .metadata-small-label {
     border-top-left-radius: 8px;

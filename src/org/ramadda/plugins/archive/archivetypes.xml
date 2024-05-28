@@ -51,9 +51,11 @@ orderBy=createdate_ascending
 +toggleopen Details
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
+<div class=metadata-full>
 {{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
+</div>
 :vspace 1em
 -toggle
 ----
