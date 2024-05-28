@@ -12,6 +12,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.LabeledObject;
 import org.ramadda.util.CategoryBuffer;
+import org.ramadda.util.SortedCategoryList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
@@ -712,13 +713,14 @@ public class HtmlOutputHandler extends OutputHandler {
 	String headingClass=Utils.getProperty(props,"headingClass","ramadda-lheading");
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
+        int toggleLimit        = Utils.getProperty(props,"propertyToggleLimit",100);
         boolean              tags   = request.get("tags", false);
         List<Metadata> metadataList = getMetadataManager().findMetadata(request,entry,(String)null,inherited);
         if (metadataList.size() == 0) {
             return result;
         }
 
-        CategoryBuffer catBuff = new CategoryBuffer();
+
         Hashtable      catMap  = new Hashtable();
         List<SortableObject<String>> cats =
             new ArrayList<SortableObject<String>>();
@@ -763,17 +765,16 @@ public class HtmlOutputHandler extends OutputHandler {
                 continue;
             }
             String         cat = type.getDisplayCategory();
-            CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
+            SortedCategoryList cb  = (SortedCategoryList) catMap.get(cat);
             if (cb == null) {
-                cb = new CategoryBuffer();
+                cb = new SortedCategoryList();
                 catMap.put(cat, cb);
                 cats.add(new SortableObject<String>(type.getPriority(), cat));
             }
 
             String group = type.getDisplayGroup();
-            StringBuilder sb =
-                cb.get(type.getPriority(),
-                       HU.div(group, HU.cssClass(headingClass)));
+            List list =
+                cb.get(type.getPriority(),group);
             Boolean rowFlag = typeRow.get(group);
             if (rowFlag == null) {
                 rowFlag = Boolean.TRUE;
@@ -791,7 +792,7 @@ public class HtmlOutputHandler extends OutputHandler {
 				      : "odd"));
 
 
-            boolean first    = sb.length() == 0;
+            boolean first    = list.size() == 0;
             String  label    = html[0];
             String  contents = html[1];
             if (decorate) {
@@ -800,9 +801,11 @@ public class HtmlOutputHandler extends OutputHandler {
                                   + HU.attr("metadata-tag", contents));
             }
             if (tags) {
-                sb.append(HU.tag("div", HU.cssClass("metadata-tag"),
+                list.add(HU.tag("div", HU.cssClass("metadata-tag"),
                                  metadata.getAttr1()));
             } else if (smallDisplay) {
+		StringBuilder sb = new StringBuilder();
+		list.add(sb);
                 HU.open(sb, "tr", HU.attr("valign", "top") + (decorate
                         ? ""
                         : HU.cssClass(rowClass)));
@@ -818,6 +821,8 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(HU.close("td"));
                 sb.append(HU.close("tr"));
             } else {
+		StringBuilder sb = new StringBuilder();
+		list.add(sb);
                 if ( !first) {
                     sb.append("<div class=\"metadata-row-divider\"></div>");
                 }
@@ -828,36 +833,44 @@ public class HtmlOutputHandler extends OutputHandler {
                                       ? ""
                                       : HU.cssClass(rowClass)));
             }
-            sb.append("\n");
         }
 
         java.util.Collections.sort(cats);
 
         for (SortableObject<String> po : cats) {
             String         cat = po.getValue();
-            CategoryBuffer cb  = (CategoryBuffer) catMap.get(cat);
+            SortedCategoryList cb  = (SortedCategoryList) catMap.get(cat);
             StringBuilder  sb  = new StringBuilder();
             for (String category : cb.getCategories()) {
+		List list = cb.get(category);
+		StringBuilder listSB = new StringBuilder();
+		for(Object o:list)
+		    listSB.append(o);		
                 if (tags) {
                     if (showTitle) {
                         sb.append(category);
                     }
-                    sb.append(cb.get(category));
+		    sb.append(listSB);
                     sb.append("<br>");
                     continue;
                 }
-                //                String header = HU.div(category, HU.cssClass("wiki-h2"));
-                String header = category;
-                if (showTitle) {
-                    sb.append(header);
-		    HU.open(sb, "div", HU.cssClass("metadata-group"));
-                }
-                HU.open(sb, "div", HU.cssClass("metadata-block"));
-                sb.append(cb.get(category));
-		if (showTitle) {
-		    HU.close(sb, "div");
+		String block =     HU.div(listSB.toString(),
+					  HU.cssClass("metadata-block"));
+		if(showTitle && list.size()>toggleLimit) {
+		    sb.append(HU.open("div",HU.clazz("metadata-toggle-block")));
+		    sb.append(HU.makeShowHideBlock(category, block, false));
+		    sb.append(HU.close("div"));
+		} else {
+		    category = 	HU.div(category, HU.cssClass(headingClass));
+		    if (showTitle) {
+			sb.append(category);
+			HU.open(sb, "div", HU.cssClass("metadata-group"));
+		    }
+		    sb.append(block);
+		    if (showTitle) {
+			HU.close(sb, "div");
+		    }
 		}
-                HU.close(sb, "div");		
             }
             result.add(new TwoFacedObject(cat, sb));
         }
