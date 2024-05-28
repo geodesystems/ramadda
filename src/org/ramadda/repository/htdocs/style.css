@@ -3378,7 +3378,7 @@ pre {
 }
 
 .metadata-row {
-    line-height:24px;
+    line-height:18px;
 }
 
 
@@ -3397,8 +3397,21 @@ pre {
 }
 
 .metadata-block {
+    margin-top:5px;
     max-height:300px;
     overflow-y:auto;
+}
+
+.hideshowblock .metadata-block {
+    margin-left:15px;
+}
+.metadata-toggle-block {
+    margin-bottom:5px;
+}
+
+.metadata-toggle-block .toggleblocklabel {
+    border-bottom: var(--basic-border);
+    display:block;
 }
 
 .metadata-full .metadata-block {
