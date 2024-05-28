@@ -62,16 +62,6 @@ inherited="false"  }}
     <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
 	    numberformat="#0.0"/>	    
         
-    <column name="acquistion" size="2000" type="string"  rows="3" label="Acquisition"   cansearch="false" columns="80"/>
-    <column name="terms" size="2000" type="string"  rows="3" label="Terms" suffix="Terms governing use"  cansearch="false" columns="80"/>
-    <column name="citation" size="2000" type="string"  label="Citation" cansearch="false" columns="80"/>        
-
-    <column name="publication_rights" rows="8" size="5000" type="string"  label="Publication Rights"   cansearch="false" columns="80"/>
-
-<!--
-    <column name="author" type="string"  label="Author" cansearch="false" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="false" columns="60"/>-->
-
 
 <children><![CDATA[
 <entries>
@@ -144,11 +134,6 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
-
-<!--
-    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
-
 <children><![CDATA[
 <entries>
 <entry  name="File 1"  type="type_archive_file"/>
@@ -176,11 +161,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
-<!--
-    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
-
-
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 </type>
 
 <type name="type_archive_item"  description="Archive Item" foruser="false"
@@ -197,11 +178,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
-<!--
-    <column name="author" type="string"  label="Author" cansearch="true" group="Metadata"/>
-    <column name="institution" type="enumerationplus"  label="Institution" cansearch="true" columns="60"/>-->
-
-
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 </type>
 
 
