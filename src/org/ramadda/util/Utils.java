@@ -1538,20 +1538,13 @@ public class Utils extends IO {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public static String getAttributeOrTag(Element node, String attrOrTag,
-                                           String dflt)
+    public static String getAttributeOrTag(Element node, String attrOrTag, String dflt)
 	throws Exception {
+	return getAttributeOrTag(node, attrOrTag,dflt,false);
+    }
+
+    public static String getAttributeOrTag(Element node, String attrOrTag, String dflt, boolean checkParent)
+	throws Exception {	
         String attrValue = XmlUtil.getAttribute(node, attrOrTag,
 						(String) null);
         if (attrValue == null) {
@@ -1565,6 +1558,13 @@ public class Utils extends IO {
                 }
             }
         }
+        if (attrValue == null && checkParent) {
+	    Node parent = node.getParentNode();
+	    if(parent!=null && parent instanceof Element)
+		return getAttributeOrTag((Element)parent, attrOrTag,dflt, checkParent);
+	}
+
+
         if (attrValue == null) {
             attrValue = dflt;
         }
