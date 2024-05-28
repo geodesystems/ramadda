@@ -1,9 +1,6 @@
 <types 	priority="10" supercategory="General" category="Archive">
 
 
-
-
-
   <type name="type_archive_section"  description="Archive Section"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
 	childtypes="type_archive_collection">
@@ -94,11 +91,14 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
     <property name="icon" value="/archive/collection.png"/>
     <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
-    <property name="date.format" value="yyyy-MM-dd"/>
+    <property name="date.format" value="yyyy"/>
+    <property name="date.nullok" value="true"/>
+    <property name="html.changedate.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.time.show" value="false"/>    
-    <property name="date.nullok" value="true"/>
     <property name="html.type.show"  value="false" />
+    <property name="html.owner.show" value="false"/>                
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
@@ -136,9 +136,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="form.resource.show" value="false"/>
     <property name="form.ark.show" value="false"/>
     <property  name="html.type.show"  value="false" />
-    <property  name="html.date.show"  value="false" />    
+
+    <property name="date.format" value="yyyy"/>
+    <property name="date.nullok" value="true"/>
     <property name="html.createdate.show" value="false"/>
-    <property name="html.changedate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 <children><![CDATA[
@@ -163,10 +164,13 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
-    <property  name="html.date.show"  value="false" />    
     <property name="form.ark.show" value="false"/>
-    <property name="html.createdate.show" value="false"/>
+
+    <property name="date.format" value="yyyy"/>
+    <property name="date.nullok" value="true"/>
     <property name="html.changedate.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+
     <property name="html.owner.show" value="false"/>                
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 </type>
@@ -180,10 +184,11 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="icon" value="/archive/portfolio.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property  name="html.type.show"  value="false" />
-    <property  name="html.date.show"  value="false" />    
-    <property name="form.ark.show" value="false"/>
-    <property name="html.createdate.show" value="false"/>
+    <property name="date.format" value="yyyy"/>
+    <property name="date.nullok" value="true"/>
     <property name="html.changedate.show" value="false"/>
+    <property name="html.createdate.show" value="false"/>
+    <property name="form.ark.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
     <wiki><![CDATA[
