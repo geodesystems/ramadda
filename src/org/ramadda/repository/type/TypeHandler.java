@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2023 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.type;
@@ -283,7 +283,7 @@ public class TypeHandler extends RepositoryManager {
 
     /** _more_ */
     public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject(ALL,
-                                                        ALL);
+								       ALL);
 
     /** _more_ */
     public static final TwoFacedObject NONE_OBJECT =
@@ -528,7 +528,7 @@ public class TypeHandler extends RepositoryManager {
 
         try {
             displayTemplatePath = Utils.getAttributeOrTag(node,
-                    "displaytemplate", displayTemplatePath);
+							  "displaytemplate", displayTemplatePath);
 	    
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
@@ -572,11 +572,11 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
             String tmp = Utils.getAttributeOrTag(node,
-                             PROP_FIELD_FILE_PATTERN, (String) null);
+						 PROP_FIELD_FILE_PATTERN, (String) null);
             if (tmp != null) {
                 this.fieldPatternNames = new ArrayList<String>();
                 this.filePattern = Utils.extractPatternNames(tmp,
-                        fieldPatternNames);
+							     fieldPatternNames);
                 //                System.out.println("File pattern:" + filePattern);
                 this.fieldFilePattern = Pattern.compile(this.filePattern);
             }
@@ -590,9 +590,9 @@ public class TypeHandler extends RepositoryManager {
             for (int i = 0; i < metadataNodes.size(); i++) {
                 Element metadataNode = (Element) metadataNodes.get(i);
                 requiredMetadata.add(new String[] {
-                    XmlUtil.getAttribute(metadataNode, ATTR_ID),
-                    XmlUtil.getAttribute(metadataNode, "label",
-                                         (String) null) });
+			XmlUtil.getAttribute(metadataNode, ATTR_ID),
+			XmlUtil.getAttribute(metadataNode, "label",
+					     (String) null) });
             }
 
             List serviceNodes = XmlUtil.findChildren(node,
@@ -612,8 +612,8 @@ public class TypeHandler extends RepositoryManager {
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
 							     ATTR_CHILDTYPES, ""));
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
-                    ? ""
-                    : type));
+					    ? ""
+					    : type));
             if (getType().indexOf(".") > 0) {
             }
 
@@ -669,14 +669,14 @@ public class TypeHandler extends RepositoryManager {
             isSynthType = Utils.getAttributeOrTag(node, "issynth",
 						  XmlUtil.getAttributeFromTree(node, "issynth",false));
             adminOnly = Utils.getAttributeOrTag(node, "adminonly",
-                    XmlUtil.getAttributeFromTree(node, "adminonly", false));
+						XmlUtil.getAttributeFromTree(node, "adminonly", false));
             isGroup = Utils.getAttributeOrTag(node, "isgroup",
-                    XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
+					      XmlUtil.getAttributeFromTree(node, "isgroup", isGroup));
 
 	    embedWiki = XmlUtil.getGrandChildText(node,"embedwiki",null);
             String tmpCanCache = Utils.getAttributeOrTag(node, "canCache",
-                                     XmlUtil.getAttributeFromTree(node,
-                                         "canCache", (String) null));
+							 XmlUtil.getAttributeFromTree(node,
+										      "canCache", (String) null));
 
             if (tmpCanCache != null) {
                 canCache = Boolean.valueOf(tmpCanCache.equals("tmpCanCache"));
@@ -685,16 +685,16 @@ public class TypeHandler extends RepositoryManager {
             setProperties(node);
             if ( !Utils.stringDefined(description)) {
                 setDescription(Utils.getAttributeOrTag(node,
-                        ATTR_DB_DESCRIPTION, getType()));
+						       ATTR_DB_DESCRIPTION, getType()));
             }
 
             String superType = Utils.getAttributeOrTag(node, ATTR_SUPER,
-                                   (String) null);
+						       (String) null);
             if (superType != null) {
                 parent = getRepository().getTypeHandler(superType);
                 if (parent == null) {
                     throw new IllegalArgumentException(
-                        "Cannot find parent type:" + superType);
+						       "Cannot find parent type:" + superType);
                 }
                 parent.checkAncestorTypes(getType());
                 parent.addChildTypeHandler(this);
@@ -842,7 +842,7 @@ public class TypeHandler extends RepositoryManager {
     private void checkAncestorTypes(String type) {
         if (type.equals(getType())) {
             throw new IllegalStateException(
-                "Detected cycle in type handlers:" + type);
+					    "Detected cycle in type handlers:" + type);
         }
         if (getParent() != null) {
             getParent().checkAncestorTypes(type);
@@ -910,7 +910,7 @@ public class TypeHandler extends RepositoryManager {
      */
 
     public void getTextContents(Entry entry, StringBuilder sb)
-            throws Exception {}
+	throws Exception {}
 
 
     /**
@@ -935,7 +935,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-      * @return _more_
+     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -1002,7 +1002,7 @@ public class TypeHandler extends RepositoryManager {
         items.add(JsonUtil.list(cols));
 
         String icon = request.getAbsoluteUrl(
-                          getIconUrl(getIconProperty(ICON_FOLDER_CLOSED)));
+					     getIconUrl(getIconProperty(ICON_FOLDER_CLOSED)));
         items.add("icon");
         items.add(JsonUtil.quote(icon));
         items.add("category");
@@ -1024,7 +1024,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addToJson(Request request, Entry entry, List<String> items,
                           List<String> attrs)
-            throws Exception {}
+	throws Exception {}
 
 
     /**
@@ -1056,7 +1056,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getWikiTemplate(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if (wikiTemplate != null) {
             return wikiTemplate;
         }
@@ -1068,7 +1068,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String getWikiTemplate(Request request)
-            throws Exception {
+	throws Exception {
         if (wikiTemplate != null) {
             return wikiTemplate;
         }
@@ -1103,7 +1103,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getBubbleTemplate(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
 	return getBubbleTemplate(request, entry, true);
     }
 
@@ -1316,7 +1316,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Comment> getComments(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -1429,7 +1429,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public Resource getResourceForCopy(Request request, Entry oldEntry,
                                        Entry newEntry)
-            throws Exception {
+	throws Exception {
         Resource newResource = new Resource(oldEntry.getResource());
         if (newResource.isFile()) {
             String newFileName =
@@ -1437,8 +1437,8 @@ public class TypeHandler extends RepositoryManager {
 						getStorageManager().getOriginalFilename(oldEntry.getResource().getTheFile().getName()));
             String newFile =
                 getStorageManager().copyToStorage(
-                    request, oldEntry.getTypeHandler().getResourceInputStream(
-                        oldEntry), newFileName).toString();
+						  request, oldEntry.getTypeHandler().getResourceInputStream(
+													    oldEntry), newFileName).toString();
 	    newResource = new Resource(newFile, Resource.TYPE_STOREDFILE);
         }
 
@@ -1447,26 +1447,26 @@ public class TypeHandler extends RepositoryManager {
 
 
     public Rectangle2D.Double getBounds(Entry entry, Rectangle2D.Double bounds) {
-            if (entry.hasAreaDefined() || entry.hasLocationDefined()) {
-		if (bounds == null) {
-		    bounds = entry.getBounds();
-		} else {
-		    bounds.add(entry.getBounds());
+	if (entry.hasAreaDefined() || entry.hasLocationDefined()) {
+	    if (bounds == null) {
+		bounds = entry.getBounds();
+	    } else {
+		bounds.add(entry.getBounds());
+	    }
+	}
+	List<Column> columns = getColumns();
+	if (columns != null) {
+	    for(Column column: columns) {
+		if(!column.isLatLon()) continue;
+		double[] latlon = column.getLatLon(entry.getValues());
+		if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
+		    if(bounds==null)
+			bounds = new Rectangle2D.Double();
+		    bounds.add(latlon[1],latlon[0]);
 		}
 	    }
-	    List<Column> columns = getColumns();
-	    if (columns != null) {
-		for(Column column: columns) {
-		    if(!column.isLatLon()) continue;
-		    double[] latlon = column.getLatLon(entry.getValues());
-		    if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
-			if(bounds==null)
-			    bounds = new Rectangle2D.Double();
-			bounds.add(latlon[1],latlon[0]);
-		    }
-		}
-	    }
-	    return bounds;
+	}
+	return bounds;
     }
 
 
@@ -1482,7 +1482,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean addToMap(Request request, Entry entry, MapInfo map)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.addToMap(request, entry, map);
         }
@@ -1532,7 +1532,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
-            throws Exception {
+	throws Exception {
         return true;
     }
 
@@ -1570,7 +1570,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getTextForWiki(Request request, Entry entry,
                                  Hashtable properties)
-            throws Exception {
+	throws Exception {
         return entry.getDescription();
     }
 
@@ -1584,7 +1584,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void childEntryChanged(Entry entry, boolean isNew)
-            throws Exception {}
+	throws Exception {}
 
     /**
      * _more_
@@ -1595,7 +1595,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void metadataChanged(Request request, Entry entry)
-            throws Exception {}
+	throws Exception {}
 
     /**
      * _more_
@@ -1624,10 +1624,10 @@ public class TypeHandler extends RepositoryManager {
     public void handleNoEntriesHtml(Request request, Entry entry,
                                     Appendable sb) {
         if ( !Utils.stringDefined(entry.getDescription())
-                && getType().equals(TYPE_GROUP)) {
+	     && getType().equals(TYPE_GROUP)) {
             Utils.append(sb,
                          HU.tag(HU.TAG_I, "",
-                                       msg(LABEL_EMPTY_FOLDER)));
+				msg(LABEL_EMPTY_FOLDER)));
         }
     }
 
@@ -1669,7 +1669,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public InputStream getResourceInputStream(Entry entry) throws Exception {
         return new BufferedInputStream(
-            getStorageManager().getFileInputStream(getFileForEntry(entry)));
+				       getStorageManager().getFileInputStream(getFileForEntry(entry)));
     }
 
 
@@ -1684,7 +1684,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result getHtmlDisplay(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.getHtmlDisplay(request, entry);
         }
@@ -1705,7 +1705,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -1720,7 +1720,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryAccess(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return new Result("Error",
                           new StringBuilder("Entry access not defined"));
     }
@@ -1739,7 +1739,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getEntryActionUrl(Request request, Entry entry,
                                     String action)
-            throws Exception {
+	throws Exception {
         return request.makeUrl(getRepository().URL_ENTRY_ACTION, ARG_ENTRYID,
                                entry.getId(), ARG_ACTION, action);
 
@@ -1756,7 +1756,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result processEntryAction(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
 
         String action = request.getString("action", "");
 
@@ -1813,8 +1813,8 @@ public class TypeHandler extends RepositoryManager {
      */
     public boolean isDefaultHtmlOutput(Request request) {
         return Misc.equals(
-            OutputHandler.OUTPUT_HTML.getId(),
-            request.getString(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId()));
+			   OutputHandler.OUTPUT_HTML.getId(),
+			   request.getString(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId()));
     }
 
 
@@ -1896,8 +1896,8 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Result xgetHtmlDisplay(Request request, Entry group,
-                                 List<Entry> children)
-            throws Exception {
+				  List<Entry> children)
+	throws Exception {
 
         if (parent != null) {
             return parent.xgetHtmlDisplay(request, group, children);
@@ -1908,8 +1908,8 @@ public class TypeHandler extends RepositoryManager {
 
     public Result getHtmlDisplay(Request request, Entry group,
                                  Entries children)
-            throws Exception {
-	        if (parent != null) {
+	throws Exception {
+	if (parent != null) {
             return parent.getHtmlDisplay(request, group, children);
         }
 
@@ -1927,7 +1927,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getInlineHtml(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.getInlineHtml(request, entry);
         }
@@ -2037,15 +2037,15 @@ public class TypeHandler extends RepositoryManager {
      */
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry ancestor, String synthId)
-            throws Exception {
+	throws Exception {
 
         if (parent != null) {
             return parent.getSynthIds(request, select, mainEntry, ancestor, synthId);
         }
 
         throw new IllegalArgumentException(
-            "getSynthIds  not implemented for type:" + getType()
-            + " in class:" + getClass().getName());
+					   "getSynthIds  not implemented for type:" + getType()
+					   + " in class:" + getClass().getName());
     }
 
     /**
@@ -2060,15 +2060,15 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.makeSynthEntry(request, parentEntry, id);
         }
 
 	System.err.println("NO SYNTH ENTRY");
         throw new IllegalArgumentException(
-            "makeSynthEntry  not implemented: type=" + getType() + "\nclass:"
-            + getClass().getName());
+					   "makeSynthEntry  not implemented: type=" + getType() + "\nclass:"
+					   + getClass().getName());
     }
 
 
@@ -2101,11 +2101,11 @@ public class TypeHandler extends RepositoryManager {
         //Add metadata to hide the menubar
 
         getMetadataManager().addMetadata(getRepository().getAdminRequest(),
-            parentEntry,
-            new Metadata(
-                getRepository().getGUID(), parentEntry.getId(),
-                ContentMetadataHandler.TYPE_PAGESTYLE, true, "", "true", "",
-                "", ""));
+					 parentEntry,
+					 new Metadata(
+						      getRepository().getGUID(), parentEntry.getId(),
+						      ContentMetadataHandler.TYPE_PAGESTYLE, true, "", "true", "",
+						      "", ""));
 
         parentEntry.putTransientProperty("showinbreadcrumbs", "false");
         parentEntry.setName(getLabel());
@@ -2129,7 +2129,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry,
                                 List<String> entryNames)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.makeSynthEntry(request, parentEntry, entryNames);
         }
@@ -2141,7 +2141,7 @@ public class TypeHandler extends RepositoryManager {
 
     /*
       What is the file cache  time
-     */
+    */
     public int getCacheTime() {
 	return getTypeProperty("file.cache",60*60);
     }
@@ -2435,7 +2435,7 @@ public class TypeHandler extends RepositoryManager {
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
                                        Hashtable<String, File> files)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.initializeEntryFromXml(request, entry, node, files);
         }
@@ -2508,7 +2508,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean convertIdsFromImportInFile(Entry newEntry,
-            List<String[]> idList) {
+					      List<String[]> idList) {
         if (idList.size() == 0) {
             return false;
         }
@@ -2555,7 +2555,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addToEntryNode(Request request, Entry entry,
                                FileWriter fileWriter, Element node)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.addToEntryNode(request, entry, fileWriter, node);
         }
@@ -2701,7 +2701,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public final Entry createEntryFromDatabase(Connection connection,ResultSet results)
-            throws Exception {
+	throws Exception {
         return createEntryFromDatabase(connection,results, false);
     }
 
@@ -2725,10 +2725,10 @@ public class TypeHandler extends RepositoryManager {
      */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
-            throws Exception {
+	throws Exception {
         if (this.parent != null) {
             this.parent.initializeEntryFromForm(request, entry, parent,
-                    newEntry);
+						newEntry);
         }
     }
 
@@ -2745,7 +2745,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
-            throws Exception {
+	throws Exception {
         if (firstCall) {
             initializeNewEntry(request, entry, NewType.NEW);
         }
@@ -2800,7 +2800,7 @@ public class TypeHandler extends RepositoryManager {
                 Element root = XmlUtil.getRoot(defaultChildrenEntries);
                 List<Entry> newEntries =
                     getEntryManager().processEntryXml(request, root, entry,
-                        new Hashtable<String, File>(), new StringBuilder());
+						      new Hashtable<String, File>(), new StringBuilder());
             }
 
 
@@ -2879,7 +2879,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /**
-      * @return _more_
+     * @return _more_
      */
     public String getFilePattern() {
         return filePattern;
@@ -2969,7 +2969,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public final Entry createEntryFromDatabase(Connection connection,
 					       ResultSet results, boolean abbreviated)
-            throws Exception {
+	throws Exception {
         DatabaseManager dbm   = getDatabaseManager();
         String entryId        =
             results.getString(Tables.ENTRIES.COL_NODOT_ID);
@@ -2980,17 +2980,17 @@ public class TypeHandler extends RepositoryManager {
             results.getString(Tables.ENTRIES.COL_NODOT_PARENT_GROUP_ID);
         Resource resource =
             new Resource(getStorageManager()
-                .resourceFromDB(results
-                    .getString(Tables.ENTRIES.COL_NODOT_RESOURCE)), results
-                        .getString(Tables.ENTRIES
-                            .COL_NODOT_RESOURCE_TYPE), results
-                                .getString(Tables.ENTRIES
+			 .resourceFromDB(results
+					 .getString(Tables.ENTRIES.COL_NODOT_RESOURCE)), results
+			 .getString(Tables.ENTRIES
+				    .COL_NODOT_RESOURCE_TYPE), results
+			 .getString(Tables.ENTRIES
                                     .COL_NODOT_MD5), results
-                                        .getLong(Tables.ENTRIES
-                                            .COL_NODOT_FILESIZE));
+			 .getLong(Tables.ENTRIES
+				  .COL_NODOT_FILESIZE));
         User user = getUserManager().findUser(
-                        results.getString(Tables.ENTRIES.COL_NODOT_USER_ID),
-                        true);
+					      results.getString(Tables.ENTRIES.COL_NODOT_USER_ID),
+					      true);
         int order = results.getInt(Tables.ENTRIES.COL_NODOT_ENTRYORDER);
         if (order == 0) {
             order = 999;
@@ -3008,7 +3008,7 @@ public class TypeHandler extends RepositoryManager {
 			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_CHANGEDATE, createDate)),
 			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_FROMDATE,null)),
 			DateHandler.getTime(dbm.getDate(r, Tables.ENTRIES.COL_NODOT_TODATE,null)),
-				    null);
+			null);
 
 	//	DatabaseManager.debug=false;
         entry.setSouth(r.getDouble(Tables.ENTRIES.COL_NODOT_SOUTH));
@@ -3016,9 +3016,9 @@ public class TypeHandler extends RepositoryManager {
         entry.setEast(r.getDouble(Tables.ENTRIES.COL_NODOT_EAST));
         entry.setWest(r.getDouble(Tables.ENTRIES.COL_NODOT_WEST));
         entry.setAltitudeTop(
-            r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
+			     r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDETOP));
         entry.setAltitudeBottom(
-            r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
+				r.getDouble(Tables.ENTRIES.COL_NODOT_ALTITUDEBOTTOM));
 
 	//Close the connection that gave us the above results because we don't want to
 	//call findGroup below and potentially have to get another connection with this
@@ -3064,11 +3064,11 @@ public class TypeHandler extends RepositoryManager {
      */
     public String processDisplayTemplate(Request request, Entry entry,
                                          String html)
-            throws Exception {
+	throws Exception {
         String name      = getEntryName(entry);
         String shortName = (name.length() > 40)
-                           ? name.substring(0, 39) + "..."
-                           : name;
+	    ? name.substring(0, 39) + "..."
+	    : name;
         html = html.replace("${" + ARG_NAME + "}", name);
         html = html.replace("${name.short}", shortName);
         html = html.replace("${" + ARG_LABEL + "}", entry.getLabel());
@@ -3076,19 +3076,19 @@ public class TypeHandler extends RepositoryManager {
                             entry.getDescription());
         html = html.replace("${" + ARG_CREATEDATE + "}",
                             getDateHandler().formatDate(request, entry,
-                                entry.getCreateDate()));
+							entry.getCreateDate()));
         html = html.replace("${" + ARG_CHANGEDATE + "}",
                             getDateHandler().formatDate(request, entry,
-                                entry.getChangeDate()));
+							entry.getChangeDate()));
         html = html.replace("${" + ARG_FROMDATE + "}",
                             getDateHandler().formatDate(request, entry,
-                                entry.getStartDate()));
+							entry.getStartDate()));
         html = html.replace("${" + ARG_DATE + "}",
                             getDateHandler().formatDate(request, entry,
-                                entry.getStartDate()));	
+							entry.getStartDate()));	
         html = html.replace("${" + ARG_TODATE + "}",
                             getDateHandler().formatDate(request, entry,
-                                entry.getEndDate()));
+							entry.getEndDate()));
         html = html.replace("${" + ARG_CREATOR + "}",
                             entry.getUser().getLabel());
 
@@ -3115,7 +3115,7 @@ public class TypeHandler extends RepositoryManager {
 				      Hashtable props,
 				      boolean forOutput,
 				      Appendable sb)
-            throws Exception {
+	throws Exception {
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
@@ -3214,9 +3214,9 @@ public class TypeHandler extends RepositoryManager {
             if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
                 if (debug) {
                     System.err.println(
-                        "\t" + XmlUtil.getAttribute(propertyNode, ATTR_NAME)
-                        + "="
-                        + XmlUtil.getAttribute(propertyNode, ATTR_NAME));
+				       "\t" + XmlUtil.getAttribute(propertyNode, ATTR_NAME)
+				       + "="
+				       + XmlUtil.getAttribute(propertyNode, ATTR_NAME));
                 }
                 putProperty(XmlUtil.getAttribute(propertyNode, ATTR_NAME),
                             XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
@@ -3276,8 +3276,8 @@ public class TypeHandler extends RepositoryManager {
 	throws Exception {
         StringBuilder html = new StringBuilder();
         String url = request.getRequest().getAbsoluteUrl(
-                         getRepository().getHtmlOutputHandler().getImageUrl(
-                             request.getRequest(), entry, false));
+							 getRepository().getHtmlOutputHandler().getImageUrl(
+													    request.getRequest(), entry, false));
         html.append(harvester.getEntryHeader(request, entry));
         if (isImage(entry)) {
             html.append(HU.img(url, ""));
@@ -3347,30 +3347,30 @@ public class TypeHandler extends RepositoryManager {
 
         boolean isGroup = entry.isGroup();
         boolean canDoNew = isGroup
-                           && getAccessManager().canDoNew(request, entry);
+	    && getAccessManager().canDoNew(request, entry);
 
 
         if (canDoNew) {
             links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE,
-                        TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
-                                     OutputType.TYPE_FILE));
+		      new Link(
+			       request.makeUrl(
+					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
+					       entry.getId(), ARG_TYPE,
+					       TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
+			       OutputType.TYPE_FILE));
             links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
-                            "New File", OutputType.TYPE_FILE));
+		      new Link(
+			       request.makeUrl(
+					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
+					       entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
+			       "New File", OutputType.TYPE_FILE));
             links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_NEW,
-                    ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
-                        OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
+					       ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
+			       OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
             links.add(makeHRLink(OutputType.TYPE_FILE));
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
-                    request, ARG_TYPE);
+								      request, ARG_TYPE);
             HashSet seen   = new HashSet();
             boolean didone = addTypes(request, entry, links, childTypes,
                                       seen);
@@ -3385,56 +3385,56 @@ public class TypeHandler extends RepositoryManager {
 	addImportExportLinks(request, entry,links,canDoNew);
 
         links.add(
-            new Link(
-                HU.url(
-                    getRepository().URL_ENTRY_LINKS.toString(),
-                    new String[] { ARG_ENTRYID,
-                                   entry.getId() }), "fa-list",
-                                   "All Actions", OutputType.TYPE_FILE));
+		  new Link(
+			   HU.url(
+				  getRepository().URL_ENTRY_LINKS.toString(),
+				  new String[] { ARG_ENTRYID,
+						 entry.getId() }), "fa-list",
+			   "All Actions", OutputType.TYPE_FILE));
 
         links.add(makeHRLink(OutputType.TYPE_FILE));
 
         if ( !canDoNew && isGroup
-                && getAccessManager().canDoUpload(request, entry)) {
+	     && getAccessManager().canDoUpload(request, entry)) {
             links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_UPLOAD, ARG_GROUP,
-                        entry.getId()), ICON_UPLOAD, "Upload a File",
-                                        OutputType.TYPE_FILE
-                                        | OutputType.TYPE_TOOLBAR));
+		      new Link(
+			       request.makeUrl(
+					       getRepository().URL_ENTRY_UPLOAD, ARG_GROUP,
+					       entry.getId()), ICON_UPLOAD, "Upload a File",
+			       OutputType.TYPE_FILE
+			       | OutputType.TYPE_TOOLBAR));
         }
 
 
         if (getAccessManager().canDoEdit(request, entry)) {
             links.add(
-                new Link(
-                    request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
-                    ICON_EDIT, "Edit " + LABEL_ENTRY,
-                    OutputType.TYPE_EDIT /* | OutputType.TYPE_TOOLBAR*/));
+		      new Link(
+			       request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
+			       ICON_EDIT, "Edit " + LABEL_ENTRY,
+			       OutputType.TYPE_EDIT /* | OutputType.TYPE_TOOLBAR*/));
 
             //NOTE: Don't add the direct link because the auth token is added
             if (false && getEntryManager().isAnonymousUpload(entry)) {
                 links.add(
-                    new Link(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_CHANGE, entry,
-                            ARG_JUSTPUBLISH, "true"), ICON_PUBLISH,
-                                "Make " + LABEL_ENTRY + " Public",
-                                OutputType.TYPE_EDIT
-                /*| OutputType.TYPE_TOOLBAR*/
-                ));
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_ENTRY_CHANGE, entry,
+						    ARG_JUSTPUBLISH, "true"), ICON_PUBLISH,
+				   "Make " + LABEL_ENTRY + " Public",
+				   OutputType.TYPE_EDIT
+				   /*| OutputType.TYPE_TOOLBAR*/
+				   ));
             }
 
 
             if ((request.getUser() != null)
-                    && !request.getUser().getAnonymous()) {
+		&& !request.getUser().getAnonymous()) {
                 links.add(
-                    new Link(
-                        request.entryUrlWithArg(
-                            getRepository().URL_ENTRY_COPY, entry,
-                            ARG_FROM), ICON_MOVE, "Move/Copy/Link",
-                                       OutputType.TYPE_EDIT));
+			  new Link(
+				   request.entryUrlWithArg(
+							   getRepository().URL_ENTRY_COPY, entry,
+							   ARG_FROM), ICON_MOVE, "Move/Copy/Link",
+				   OutputType.TYPE_EDIT));
             }
 
 
@@ -3442,24 +3442,24 @@ public class TypeHandler extends RepositoryManager {
             List<String> metadataTypes =
                 entry.getTypeHandler().getMetadataTypes();
 	    //	    if (metadataTypes.size() > 0) {
-                links.add(makeHRLink(OutputType.TYPE_EDIT));
-		//            }
+	    links.add(makeHRLink(OutputType.TYPE_EDIT));
+	    //            }
 
             links.add(
-                new Link(
-                    request.entryUrl(
-                        getMetadataManager().URL_METADATA_FORM,
-                        entry), ICON_METADATA_EDIT, "Edit Properties",
-                                OutputType.TYPE_EDIT));
+		      new Link(
+			       request.entryUrl(
+						getMetadataManager().URL_METADATA_FORM,
+						entry), ICON_METADATA_EDIT, "Edit Properties",
+			       OutputType.TYPE_EDIT));
 	    
 
 
             links.add(
-                new Link(
-                    request.entryUrl(
-                        getMetadataManager().URL_METADATA_ADDFORM,
-                        entry), ICON_METADATA_ADD, "Add Property...",
-		    OutputType.TYPE_EDIT));
+		      new Link(
+			       request.entryUrl(
+						getMetadataManager().URL_METADATA_ADDFORM,
+						entry), ICON_METADATA_ADD, "Add Property...",
+			       OutputType.TYPE_EDIT));
 
             if (metadataTypes.size() > 0) {
                 for (String metadataType : metadataTypes) {
@@ -3474,41 +3474,41 @@ public class TypeHandler extends RepositoryManager {
 
             if (getAccessManager().canSetAccess(request, entry)) {
                 links.add(
-                    new Link(
-                        request.entryUrl(
-                            getRepository().URL_ACCESS_FORM,
-                            entry), ICON_ACCESS, "Access",
-                                    OutputType.TYPE_EDIT));
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_ACCESS_FORM,
+						    entry), ICON_ACCESS, "Access",
+				   OutputType.TYPE_EDIT));
             }
 
 
             links.add(
-                new Link(
-                    request.entryUrl(
-                        getRepository().URL_ENTRY_EXTEDIT,
-                        entry), "fas fa-sitemap", "Extended Edit",
-                                OutputType.TYPE_EDIT));
+		      new Link(
+			       request.entryUrl(
+						getRepository().URL_ENTRY_EXTEDIT,
+						entry), "fas fa-sitemap", "Extended Edit",
+			       OutputType.TYPE_EDIT));
 
             if (getRepository().getLogActivityToDatabase()) {
                 links.add(
-                    new Link(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_ACTIVITY,
-                            entry), "fas fa-chart-line", "Entry Activity",
-                                    OutputType.TYPE_EDIT));
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_ENTRY_ACTIVITY,
+						    entry), "fas fa-chart-line", "Entry Activity",
+				   OutputType.TYPE_EDIT));
             }
 
         }
 
         if (getEntryManager().okToDelete(request, entry)) {
             links.add(
-                new Link(
-                    request.entryUrl(
-                        getRepository().URL_ENTRY_DELETE,
-                        entry), ICON_DELETE, "Delete " + LABEL_ENTRY,
-                                OutputType.TYPE_EDIT
-            /*| OutputType.TYPE_TOOLBAR*/
-            ));
+		      new Link(
+			       request.entryUrl(
+						getRepository().URL_ENTRY_DELETE,
+						entry), ICON_DELETE, "Delete " + LABEL_ENTRY,
+			       OutputType.TYPE_EDIT
+			       /*| OutputType.TYPE_TOOLBAR*/
+			       ));
 
         }
 
@@ -3521,18 +3521,18 @@ public class TypeHandler extends RepositoryManager {
         if (getRepository().getCommentsEnabled()) {
             if (getRepository().isReadOnly()) {
                 links.add(
-                    new Link(
-                        request.entryUrl(
-                            getRepository().URL_COMMENTS_SHOW,
-                            entry), ICON_COMMENTS, "View Comments",
-                                    OutputType.TYPE_VIEW));
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_COMMENTS_SHOW,
+						    entry), ICON_COMMENTS, "View Comments",
+				   OutputType.TYPE_VIEW));
             } else {
                 links.add(
-                    new Link(
-                        request.entryUrl(
-                            getRepository().URL_COMMENTS_SHOW,
-                            entry), ICON_COMMENTS, "Add/View Comments",
-                                    OutputType.TYPE_TOOLBAR));
+			  new Link(
+				   request.entryUrl(
+						    getRepository().URL_COMMENTS_SHOW,
+						    entry), ICON_COMMENTS, "Add/View Comments",
+				   OutputType.TYPE_TOOLBAR));
             }
         }
 
@@ -3545,16 +3545,16 @@ public class TypeHandler extends RepositoryManager {
     private void addImportExportLinks(Request request, Entry entry,List<Link>links, boolean canDoNew)  throws Exception {
         if (getAccessManager().canDoExport(request, entry)) {
             links.add(
-                new Link(
-                    HU.url(
-                        getRepository().URL_ENTRY_EXPORT.toString() + "/"
-                        + IO.stripExtension(
-                            Entry.encodeName(
-                                getEntryName(
-                                    entry))) + ".zip", new String[] {
-                                        ARG_ENTRYID,
-                                        entry.getId() }), ICON_EXPORT,
-                                        "Export", OutputType.TYPE_FILE));
+		      new Link(
+			       HU.url(
+				      getRepository().URL_ENTRY_EXPORT.toString() + "/"
+				      + IO.stripExtension(
+							  Entry.encodeName(
+									   getEntryName(
+											entry))) + ".zip", new String[] {
+					  ARG_ENTRYID,
+					  entry.getId() }), ICON_EXPORT,
+			       "Export", OutputType.TYPE_FILE));
 
 
         }
@@ -3562,11 +3562,11 @@ public class TypeHandler extends RepositoryManager {
         //Add an import link if they have the right privileges
         if (canDoNew) {
             links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-                        entry.getId()), ICON_IMPORT, "Import",
-                                        OutputType.TYPE_FILE));
+		      new Link(
+			       request.makeUrl(
+					       getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
+					       entry.getId()), ICON_IMPORT, "Import",
+			       OutputType.TYPE_FILE));
             links.add(makeHRLink(OutputType.TYPE_FILE));
         }
     }
@@ -3604,7 +3604,7 @@ public class TypeHandler extends RepositoryManager {
                                         List<Link> links,
                                         List<Entry> entries,
                                         HashSet<String> seen)
-            throws Exception {
+	throws Exception {
         if (entries == null) {
             return false;
         }
@@ -3637,7 +3637,7 @@ public class TypeHandler extends RepositoryManager {
      */
     private boolean addTypes(Request request, Entry entry, List<Link> links,
                              List<String> types, HashSet<String> seen)
-            throws Exception {
+	throws Exception {
         if (types == null) {
             return false;
         }
@@ -3660,12 +3660,12 @@ public class TypeHandler extends RepositoryManager {
                 icon = ICON_ENTRY_ADD;
             }
             links.add(
-                new Link(
-                    request.makeUrl(
-                        getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE, type), icon,
-		    getIconImage("fa-solid fa-plus") +HU.SPACE + typeHandler.getDescription(),
-		    OutputType.TYPE_FILE));
+		      new Link(
+			       request.makeUrl(
+					       getRepository().URL_ENTRY_FORM, ARG_GROUP,
+					       entry.getId(), ARG_TYPE, type), icon,
+			       getIconImage("fa-solid fa-plus") +HU.SPACE + typeHandler.getDescription(),
+			       OutputType.TYPE_FILE));
         }
 
         return didone;
@@ -3718,7 +3718,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public boolean canDownload(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             return parent.canDownload(request, entry);
         }
@@ -3743,7 +3743,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getPathForEntry(Request request, Entry entry,boolean forReading)
-            throws Exception {
+	throws Exception {
         Resource resource = entry.getResource();
 	String path;
 	if(forReading && entry.isFile()) {
@@ -3797,7 +3797,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Link getEntryDownloadLink(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return getEntryDownloadLink(request, entry, "Download File");
     }
 
@@ -3814,21 +3814,21 @@ public class TypeHandler extends RepositoryManager {
      */
     public Link getEntryDownloadLink(Request request, Entry entry,
                                      String label)
-            throws Exception {
+	throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
             return null;
         }
         String size = " ("
-                      + formatFileLength(entry.getResource().getFileSize())
-                      + ")";
+	    + formatFileLength(entry.getResource().getFileSize())
+	    + ")";
 
         String tail = getStorageManager().getFileTail(entry);
         String fileTail = HU.urlEncodeExceptSpace(tail);
 
         Link link  = new Link(getEntryManager().getEntryResourceUrl(request,
-							      entry), ICON_FETCH,
-			msg(label) + size,
-                        OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
+								    entry), ICON_FETCH,
+			      msg(label) + size,
+			      OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
 	link.setTooltip(tail);
 	return link;
     }
@@ -3857,7 +3857,7 @@ public class TypeHandler extends RepositoryManager {
 				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
 				     boolean forOutput,
 				     Appendable sb)
-            throws Exception {
+	throws Exception {
 
 	if(seen==null) seen=new HashSet<String>();
         if (typeHandler == null) {
@@ -3865,7 +3865,7 @@ public class TypeHandler extends RepositoryManager {
         }
         if (parent != null) {
             parent.getInnerEntryContent(entry, request, typeHandler,
-                    output, showDescription, showResource, linkToDownload,
+					output, showDescription, showResource, linkToDownload,
 					props,seen,forOutput,sb);
 	    return;
         }
@@ -3885,7 +3885,7 @@ public class TypeHandler extends RepositoryManager {
         boolean showImage    = false;
         if (showResource && entryIsImage) {
             if (entry.getResource().isFile()
-                    && getAccessManager().canDownload(request, entry)) {
+		&& getAccessManager().canDownload(request, entry)) {
                 showImage = true;
             } else if (entry.getResource().isUrl()) {
                 showImage = true;
@@ -4015,7 +4015,7 @@ public class TypeHandler extends RepositoryManager {
 	    sb.append(formEntry(request, resourceLabel, resourceLink));
 
 	}
-}
+    }
 
 
     public void addDescriptionToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
@@ -4031,31 +4031,31 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void addImageToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
-	    String width = "600";
-	    if (request.isMobile()) {
-		width = "250";
-	    }
-	    String img    = null;
-	    String imgUrl = null;
-	    if (entry.getResource().isFile()
-		&& getAccessManager().canDownload(request, entry)) {
-		imgUrl = getEntryResourceUrl(request, entry,false,true);
+	String width = "600";
+	if (request.isMobile()) {
+	    width = "250";
+	}
+	String img    = null;
+	String imgUrl = null;
+	if (entry.getResource().isFile()
+	    && getAccessManager().canDownload(request, entry)) {
+	    imgUrl = getEntryResourceUrl(request, entry,false,true);
+	    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
+	} else if (entry.getResource().isUrl()) {
+	    try {
+		imgUrl = typeHandler.getPathForEntry(request, entry,false);
 		img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-	    } else if (entry.getResource().isUrl()) {
-		try {
-		    imgUrl = typeHandler.getPathForEntry(request, entry,false);
-		    img    = HU.img(imgUrl, "", HU.attrs("width", width,"style","max-width:100%;","align","center"));
-		} catch (Exception exc) {
-		    sb.append("Error getting path:" + entry.getResource()
-			      + " " + exc);
-		}
+	    } catch (Exception exc) {
+		sb.append("Error getting path:" + entry.getResource()
+			  + " " + exc);
 	    }
-	    if (img != null) {
-		String outer = HU.href(imgUrl, img, HU.cssClass("popup_image"));
-		sb.append(HU.col(outer, " colspan=2 "));
-		getWikiManager().addImagePopupJS(request, null, sb,
-						 new Hashtable());
-	    }
+	}
+	if (img != null) {
+	    String outer = HU.href(imgUrl, img, HU.cssClass("popup_image"));
+	    sb.append(HU.col(outer, " colspan=2 "));
+	    getWikiManager().addImagePopupJS(request, null, sb,
+					     new Hashtable());
+	}
 
     }
 
@@ -4108,34 +4108,24 @@ public class TypeHandler extends RepositoryManager {
 
 	if (entry.getEndDate() != entry.getStartDate()) {
 	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
-	    //getDateHandler().formatDate(request, entry, entry.getStartDate());
 	    String endDate = getDateHandler().formatDate(request,   entry, entry.getEndDate());
-	    String searchUrl =
-		HtmlUtils
-		    .url(request
-			 .makeUrl(getRepository().getSearchManager()
-				  .URL_ENTRY_SEARCH), Misc
-			 .newList(ARG_DATA_DATE + "."
-				  + ARG_FROM, startDate,
-				  ARG_DATA_DATE + "." + ARG_TO,
-				  endDate));
-		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),
-				    startDate));
-		sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),
-				    endDate));
-	    } else {
-		StringBuilder dateSB = new StringBuilder();
-		String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
-		dateSB.append(startDate);
-		if (typeHandler.okToShowInForm(entry, ARG_TODATE)
-		    && (entry.getEndDate() != entry.getStartDate())) {
-		    dateSB.append(" - ");
-		    dateSB.append(getDateHandler().formatDate(request,
-							      entry, entry.getEndDate()));
-		}
-		Entry parentEntry = entry==null?null:entry.getParentEntry();
-		String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
-		sb.append(formEntry(request, formLabel, dateSB.toString()));
+	    //sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),startDate));
+	    //sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),endDate));
+	    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"date","Date")),
+				startDate +" - "+ endDate));
+	} else {
+	    StringBuilder dateSB = new StringBuilder();
+	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
+	    dateSB.append(startDate);
+	    if (typeHandler.okToShowInForm(entry, ARG_TODATE)
+		&& (entry.getEndDate() != entry.getStartDate())) {
+		dateSB.append(" - ");
+		dateSB.append(getDateHandler().formatDate(request,
+							  entry, entry.getEndDate()));
+	    }
+	    Entry parentEntry = entry==null?null:entry.getParentEntry();
+	    String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
+	    sb.append(formEntry(request, formLabel, dateSB.toString()));
 	}
     }
 
@@ -4188,7 +4178,7 @@ public class TypeHandler extends RepositoryManager {
         if (latLonFormat != null) {
             synchronized (latLonFormat) {
                 return latLonFormat.format(lat) + "/"
-                       + latLonFormat.format(lon);
+		    + latLonFormat.format(lon);
             }
         }
 
@@ -4226,33 +4216,33 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getEntryResourceHref(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
             /*
-            if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
-                seenIt.add(entry.getId());
-                getLogManager().logInfoAndPrint("cannot download:" + entry);
-                Resource resource = entry.getResource();
-                getLogManager().logInfoAndPrint("\tresource:" + resource +
-                " type:" + resource.getType() +
-                " exists:" +  resource.getTheFile().exists() +
-                " the file:" + resource.getTheFile());
+	      if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
+	      seenIt.add(entry.getId());
+	      getLogManager().logInfoAndPrint("cannot download:" + entry);
+	      Resource resource = entry.getResource();
+	      getLogManager().logInfoAndPrint("\tresource:" + resource +
+	      " type:" + resource.getType() +
+	      " exists:" +  resource.getTheFile().exists() +
+	      " the file:" + resource.getTheFile());
 
-            }
+	      }
             */
             return null;
         }
         String size = " ("
-                      + formatFileLength(entry.getResource().getFileSize())
-                      + ")";
+	    + formatFileLength(entry.getResource().getFileSize())
+	    + ")";
 
         String fileTail = getStorageManager().getFileTail(entry);
         fileTail = HU.urlEncodeExceptSpace(fileTail);
 
         return HU.href(
-            getEntryManager().getEntryResourceUrl(request, entry),
-            HU.img(getRepository().getIconUrl(ICON_FETCH)) + " "
-            + entry.getName());
+		       getEntryManager().getEntryResourceUrl(request, entry),
+		       HU.img(getRepository().getIconUrl(ICON_FETCH)) + " "
+		       + entry.getName());
     }
 
 
@@ -4268,7 +4258,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return getEntryResourceUrl(request, entry,
                                    EntryManager.ARG_INLINE_FALSE,false);
     }
@@ -4284,13 +4274,13 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean inline)
-            throws Exception {
+	throws Exception {
 	return getEntryResourceUrl(request, entry,inline,false);
     }
 
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean inline,boolean addTimestamp)
-            throws Exception {
+	throws Exception {
 	String url  = getEntryManager().getEntryResourceUrl(request, entry, inline,
 							    EntryManager.ARG_FULL_DFLT, EntryManager.ARG_ADDPATH_DFLT);
 	if(addTimestamp)
@@ -4334,11 +4324,11 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
 	    /*	    getEntryManager().initEntry(entry, "","",parent,
-					request.getUser(),					
-					new Resource(), "", entry.getEntryOrder(),
-					date.getTime(),
-					date.getTime(), date.getTime(),
-					date.getTime(), values);
+		    request.getUser(),					
+		    new Resource(), "", entry.getEntryOrder(),
+		    date.getTime(),
+		    date.getTime(), date.getTime(),
+		    date.getTime(), values);
 	    */
 	    entry.setValue(column, siteId);
 	    entries.add(entry);
@@ -4358,7 +4348,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void initializeNewEntry(Request request, Entry entry,
                                    NewType newType)
-            throws Exception {
+	throws Exception {
 
         if (parent != null) {
             parent.initializeNewEntry(request, entry, newType);
@@ -4367,18 +4357,18 @@ public class TypeHandler extends RepositoryManager {
 
         //Check if we're supposed to extract urls from the file
         if (getTypeProperty(PROP_INGEST_LINKS, "false").equals("true")
-                && entry.getResource().isFile()) {
+	    && entry.getResource().isFile()) {
             String contents = IOUtil.readContents(
-                                  getStorageManager().getFileInputStream(
-                                      entry.getFile()));
+						  getStorageManager().getFileInputStream(
+											 entry.getFile()));
             for (String url :
-                    Utils.extractPatterns(contents,
-                                          "(https?://[^\"' \\),]+)")) {
+		     Utils.extractPatterns(contents,
+					   "(https?://[^\"' \\),]+)")) {
                 getMetadataManager().addMetadata(request,entry,
-                        new Metadata(getRepository().getGUID(),
-                                     entry.getId(),
-                                     ContentMetadataHandler.TYPE_URL, false,
-                                     url, url, "", "", ""));
+						 new Metadata(getRepository().getGUID(),
+							      entry.getId(),
+							      ContentMetadataHandler.TYPE_URL, false,
+							      url, url, "", "", ""));
             }
         }
 
@@ -4438,10 +4428,10 @@ public class TypeHandler extends RepositoryManager {
                 if (month != null) {
                     if (day != null) {
                         date = new SimpleDateFormat("yyyy-MM-dd").parse(year
-                                + "-" + month + "-" + day);
+									+ "-" + month + "-" + day);
                     } else {
                         date = new SimpleDateFormat("yyyy-MM").parse(year
-                                + "-" + month);
+								     + "-" + month);
                     }
                 } else if (julianDay != null) {
                     GregorianCalendar gc = new GregorianCalendar();
@@ -4488,13 +4478,13 @@ public class TypeHandler extends RepositoryManager {
                     //Defer to the entry's type handler
                     //                    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
                     entry.getTypeHandler().handleServiceResults(request,
-                            entry, service, output);
+								entry, service, output);
                 } catch (Exception exc) {
 		    getSessionManager().addSessionErrorMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
 
                     getLogManager().logError(
 					     "ERROR: TypeHandler calling service:" + service.getLabel()
-                        + "\n", exc);
+					     + "\n", exc);
                 }
             }
         }
@@ -4517,7 +4507,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.handleServiceResults(request, entry, service, output);
             return;
@@ -4541,11 +4531,11 @@ public class TypeHandler extends RepositoryManager {
         if (descriptionPattern != null) {
             String results = output.getResults();
             String description = StringUtil.findPattern(results,
-                                     descriptionPattern);
+							descriptionPattern);
             if (description != null) {
                 entry.setDescription(description);
             }
-//            System.err.println("description= " + description);
+	    //            System.err.println("description= " + description);
         }
 
 
@@ -4566,15 +4556,15 @@ public class TypeHandler extends RepositoryManager {
 
             for (Entry serviceEntry : entries) {
                 String fileName = getStorageManager().copyToEntryDir(entry,
-                                      serviceEntry.getFile()).getName();
+								     serviceEntry.getFile()).getName();
 
 
                 String mtype = isImage(serviceEntry)
-                               ? ContentMetadataHandler.TYPE_THUMBNAIL
-                               : ContentMetadataHandler.TYPE_ATTACHMENT;
+		    ? ContentMetadataHandler.TYPE_THUMBNAIL
+		    : ContentMetadataHandler.TYPE_ATTACHMENT;
                 Metadata metadata = new Metadata(getRepository().getGUID(),
-                                        entry.getId(), mtype, false,
-                                        fileName, null, null, null, null);
+						 entry.getId(), mtype, false,
+						 fileName, null, null, null, null);
 		//		getLogManager().logSpecial("service: added attachment:" + metadata);
                 getMetadataManager().addMetadata(request,entry, metadata);
             }
@@ -4584,29 +4574,29 @@ public class TypeHandler extends RepositoryManager {
                 File   f    = serviceEntry.getFile();
                 String name = f.getName();
                 f = getStorageManager().copyToStorage(request, f,
-                        getStorageManager().getStorageFileName(f.getName()));
+						      getStorageManager().getStorageFileName(f.getName()));
 
 
 
                 TypeHandler typeHandler = null;
                 if (service.getTargetType() != null) {
                     typeHandler = getRepository().getTypeHandler(
-                        service.getTargetType());
+								 service.getTargetType());
                 }
                 if (typeHandler == null) {
                     typeHandler = getEntryManager().findDefaultTypeHandler(
-                        f.toString());
+									   f.toString());
                 }
                 Entry parent = target.equals(TARGET_CHILD)
-                               ? entry
-                               : entry.getParentEntry();
+		    ? entry
+		    : entry.getParentEntry();
                 Entry newEntry = getEntryManager().addFileEntry(request, f,
 								parent, null, name, "", request.getUser(),
-                                     typeHandler, null);
+								typeHandler, null);
 
                 getAuthManager().addAuthToken(request);
                 getAssociationManager().addAssociation(request, entry,
-                        newEntry, "derived", "derived");
+						       newEntry, "derived", "derived");
             }
         } else {
             System.err.println("Unknown target:" + target);
@@ -4664,7 +4654,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void initializeCopiedEntry(Entry newEntry, Entry oldEntry)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.initializeCopiedEntry(newEntry, oldEntry);
         }
@@ -4740,7 +4730,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public Statement select(Request request, String what, Clause clause,
                             String extra)
-            throws Exception {
+	throws Exception {
         List<Clause> clauses = new ArrayList<Clause>();
         clauses.add(clause);
 
@@ -4762,7 +4752,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public Statement select(Request request, String what,
                             List<Clause> clauses, String extra)
-            throws Exception {
+	throws Exception {
 
         clauses = new ArrayList<Clause>(clauses);
 
@@ -4775,10 +4765,10 @@ public class TypeHandler extends RepositoryManager {
         getTableNames(myTableNames);
 
         List<String> tableNames = (List<String>) Misc.toList(new String[] {
-                                      Tables.ENTRIES.NAME,
-                                      Tables.METADATA.NAME,
-                                      Tables.USERS.NAME,
-                                      Tables.ASSOCIATIONS.NAME });
+		Tables.ENTRIES.NAME,
+		Tables.METADATA.NAME,
+		Tables.USERS.NAME,
+		Tables.ASSOCIATIONS.NAME });
         tableNames.addAll(myTableNames);
         HashSet seenTables = new HashSet();
 
@@ -4790,8 +4780,8 @@ public class TypeHandler extends RepositoryManager {
         for (String tableName : tableNames) {
             String pattern = ".*[, =\\(]+" + tableName + "\\..*";
             if (Clause.isColumnFromTable(clauses, tableName)
-                    || whatString.matches(pattern)
-                    || (extraString.matches(pattern))) {
+		|| whatString.matches(pattern)
+		|| (extraString.matches(pattern))) {
                 tables.add(tableName);
                 if (tableName.equals(Tables.ENTRIES.NAME)) {
                     didEntries = true;
@@ -4823,7 +4813,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (didEntries) {
             List<String> typeList = (List<String>) request.get(ARG_TYPE,
-                                        new ArrayList());
+							       new ArrayList());
 	    getDatabaseManager().addTypeClause(getRepository(),request, typeList,clauses);
         }
 
@@ -4838,10 +4828,10 @@ public class TypeHandler extends RepositoryManager {
         if (didEntries) {
             for (String otherTableName : myTableNames) {
                 if (seenTables.contains(otherTableName)
-                        && !Tables.ENTRIES.NAME.equalsIgnoreCase(
-                            otherTableName)) {
+		    && !Tables.ENTRIES.NAME.equalsIgnoreCase(
+							     otherTableName)) {
                     clauses.add(0, Clause.join(Tables.ENTRIES.COL_ID,
-                            otherTableName + ".id"));
+					       otherTableName + ".id"));
                 }
             }
         }
@@ -4896,7 +4886,7 @@ public class TypeHandler extends RepositoryManager {
     public void addToEntryForm(Request request, Appendable sb,
                                Entry parentEntry, Entry entry,
                                FormInfo formInfo)
-            throws Exception {
+	throws Exception {
 
         try {
 	    HashSet seen = new HashSet();
@@ -4906,35 +4896,35 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
             if ((entry != null) && request.getUser().getAdmin()
-                    && okToShowInForm(entry, "owner", true)) {
+		&& okToShowInForm(entry, "owner", true)) {
                 String ownerInputId = Utils.getGuid();
                 sb.append(formEntry(request, msgLabel("Owner"),
                                     HU.input(ARG_USER_ID,
-                                        ((entry != null)
-                                         ? entry.getUser().getId()
-                                         : ""), HU.SIZE_20
-                                         + HU.attr("id", ownerInputId)) + " "
-                                             + msg("Optionally specify an owner")));
+					     ((entry != null)
+					      ? entry.getUser().getId()
+					      : ""), HU.SIZE_20
+					     + HU.attr("id", ownerInputId)) + " "
+				    + msg("Optionally specify an owner")));
                 HU.script(
-                    sb,
-                    HU.call(
-                        "HU.initInteractiveInput",
-                        HU.squote(ownerInputId),
-                        HU.squote(
-                            getRepository().getUrlBase() + "/user/search")));
+			  sb,
+			  HU.call(
+				  "HU.initInteractiveInput",
+				  HU.squote(ownerInputId),
+				  HU.squote(
+					    getRepository().getUrlBase() + "/user/search")));
             }
         } catch (Exception exc) {
             StringBuilder tmp = new StringBuilder();
             tmp.append(
-                getPageHandler().showDialogError(
-                    "An error has occurred:" + exc));
+		       getPageHandler().showDialogError(
+							"An error has occurred:" + exc));
 
             if ((request.getUser() != null) && request.getUser().getAdmin()) {
                 Throwable inner = LogUtil.getInnerException(exc);
                 tmp.append(
-                    HU.pre(
-                        HU.entityEncode(LogUtil.getStackTrace(exc)),
-                        "style='max-height:300px;overflow-y:auto;'"));
+			   HU.pre(
+				  HU.entityEncode(LogUtil.getStackTrace(exc)),
+				  "style='max-height:300px;overflow-y:auto;'"));
             }
             sb.append(HU.formEntry("", tmp.toString()));
         }
@@ -4947,14 +4937,14 @@ public class TypeHandler extends RepositoryManager {
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
-            throws Exception {
+	throws Exception {
         boolean hasValue = column.getString(values) != null;
         if ( !column.getShowInForm()) {
             return;
         }
 
         if ( !sourceTypeHandler.okToShowInForm(entry, column.getName(),
-                true)) {
+					       true)) {
             return;
         }
 
@@ -4966,7 +4956,7 @@ public class TypeHandler extends RepositoryManager {
                 column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML,
                                    values, false);
                 formBuffer.append(HU.formEntry(column.getLabel()
-                        + ":", tmpSb.toString()));
+					       + ":", tmpSb.toString()));
             }
         } else if (canEdit) {
             addColumnToEntryForm(request, parentEntry, entry, column, formBuffer, values,
@@ -4980,7 +4970,7 @@ public class TypeHandler extends RepositoryManager {
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
-            throws Exception {
+	throws Exception {
         column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,
                               formInfo, sourceTypeHandler);
     }
@@ -5001,7 +4991,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
-            throws Exception {
+	throws Exception {
         if (true) {
             return widget;
         }
@@ -5022,7 +5012,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getFormHelp(Request request, Entry entry, Column column)
-            throws Exception {
+	throws Exception {
         return HU.inset(column.getSuffix(), 5);
     }
 
@@ -5043,7 +5033,7 @@ public class TypeHandler extends RepositoryManager {
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
                                       TypeHandler sourceTypeHandler,HashSet seen)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.addSpecialToEntryForm(request, sb, parentEntry, entry,
                                          formInfo, sourceTypeHandler, seen);
@@ -5067,11 +5057,11 @@ public class TypeHandler extends RepositoryManager {
     public void addSpatialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo)
-            throws Exception {
+	throws Exception {
 
         MapOutputHandler mapOutputHandler =
             (MapOutputHandler) getRepository().getOutputHandler(
-                MapOutputHandler.OUTPUT_MAP.getId());
+								MapOutputHandler.OUTPUT_MAP.getId());
         if (okToShowInForm(entry, ARG_LOCATION, false)) {
             String lat = "";
             String lon = "";
@@ -5084,24 +5074,24 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
             String locationWidget = msgLabel(getFormLabel(parentEntry,entry, "latitude","Latitude")) + " "
-                                    + HU.input(
-                                        ARG_LOCATION_LATITUDE, lat,
-                                        HU.SIZE_10) + "  "
-                                            + msgLabel(getFormLabel(parentEntry,entry, "longitude","Longitude")) + " "
-                                            + HU.input(
-                                                ARG_LOCATION_LONGITUDE, lon,
-                                                HU.SIZE_10);
+		+ HU.input(
+			   ARG_LOCATION_LATITUDE, lat,
+			   HU.SIZE_10) + "  "
+		+ msgLabel(getFormLabel(parentEntry,entry, "longitude","Longitude")) + " "
+		+ HU.input(
+			   ARG_LOCATION_LONGITUDE, lon,
+			   HU.SIZE_10);
 
             String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
             MapInfo map = getMapManager().createMap(request, entry, true,
-                              getMapManager().getMapProps(request, entry,
-                                  null));
+						    getMapManager().getMapProps(request, entry,
+										null));
 	    getMapManager().initMapSelector(request, this,parentEntry, entry, map);
 
 
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
-                                     "", "");
+						  "", "");
 	    String help = getTypeProperty("form.location.help",null);
 	    if(stringDefined(help)) {
 		sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
@@ -5122,7 +5112,7 @@ public class TypeHandler extends RepositoryManager {
             }
             sb.append(formEntry(request, "Altitude:",
                                 HU.input(ARG_ALTITUDE, altitude,
-                                    HU.SIZE_10)));
+					 HU.SIZE_10)));
         } else if (okToShowInForm(entry, ARG_ALTITUDE_TOP, false)) {
             String altitudeTop    = "";
             String altitudeBottom = "";
@@ -5137,12 +5127,12 @@ public class TypeHandler extends RepositoryManager {
             }
             sb.append(formEntry(request, "Altitude Range:",
                                 HU.input(ARG_ALTITUDE_BOTTOM,
-                                    altitudeBottom,
-                                    HU.SIZE_10) + " - "
-                                        + HU.input(ARG_ALTITUDE_TOP,
-                                            altitudeTop,
-                                            HU.SIZE_10) + " "
-                                                + msg("meters")));
+					 altitudeBottom,
+					 HU.SIZE_10) + " - "
+				+ HU.input(ARG_ALTITUDE_TOP,
+					   altitudeTop,
+					   HU.SIZE_10) + " "
+				+ msg("meters")));
         }
 
 
@@ -5163,7 +5153,7 @@ public class TypeHandler extends RepositoryManager {
     public void addAreaWidget(Request request, Entry parentEntry,
 			      Entry entry, Appendable sb,
                               FormInfo formInfo)
-            throws Exception {
+	throws Exception {
         String[]                  nwse  = null;
         Hashtable<String, String> props = null;
 
@@ -5173,34 +5163,34 @@ public class TypeHandler extends RepositoryManager {
             nwse  = new String[] { entry.hasNorth()
                                    ? "" + entry.getNorth()
                                    : "", entry.hasWest()
-                                         ? "" + entry.getWest()
-                                         : "", entry.hasSouth()
-                    ? "" + entry.getSouth()
-                    : "", entry.hasEast()
-                          ? "" + entry.getEast()
-                          : "", };
+				   ? "" + entry.getWest()
+				   : "", entry.hasSouth()
+				   ? "" + entry.getSouth()
+				   : "", entry.hasEast()
+				   ? "" + entry.getEast()
+				   : "", };
 
         }  /*else if (parentEntry != null) {
-              don't popuplate the form with the parent location
-                if (parentEntry.hasAreaDefined()) {
-                nwse = new String[] { "" + parentEntry.getNorth(),
-                "" + parentEntry.getWest(),
-                "" + parentEntry.getSouth(),
-                "" + parentEntry.getEast() };
-                } else if (parentEntry.hasLocationDefined()) {
-                nwse = new String[] { "" + parentEntry.getNorth(),
-                "" + parentEntry.getWest(),
-                "" + parentEntry.getSouth(),
-                "" + parentEntry.getEast() };
-                }
-         }
-             */
+	     don't popuplate the form with the parent location
+	     if (parentEntry.hasAreaDefined()) {
+	     nwse = new String[] { "" + parentEntry.getNorth(),
+	     "" + parentEntry.getWest(),
+	     "" + parentEntry.getSouth(),
+	     "" + parentEntry.getEast() };
+	     } else if (parentEntry.hasLocationDefined()) {
+	     nwse = new String[] { "" + parentEntry.getNorth(),
+	     "" + parentEntry.getWest(),
+	     "" + parentEntry.getSouth(),
+	     "" + parentEntry.getEast() };
+	     }
+	     }
+	   */
         String extraMapStuff = "";
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, "600", "300", true, props);
+								entry, "600", "300", true, props);
 	getMapManager().initMapSelector(request, this,parentEntry, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
-                             + extraMapStuff;
+	    + extraMapStuff;
 	String help = getTypeProperty("form.location.help",null);
 	if(stringDefined(help)) {
 	    sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
@@ -5223,15 +5213,15 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addDateToEntryForm(Request request, Appendable sb,
                                    Entry parentEntry,Entry entry)
-            throws Exception {
+	throws Exception {
 
         String dateHelp = " (e.g., 2007-12-11 00:00:00)";
         /*        String fromDate = ((entry != null)
-                           ? getDateHandler().formatDate(request,entry,entry.getStartDate())
-                           : BLANK);
-        String toDate = ((entry != null)
-                         ? getDateHandler().formatDate(request, entry, entry.getEndDate())
-                         : BLANK);*/
+		  ? getDateHandler().formatDate(request,entry,entry.getStartDate())
+		  : BLANK);
+		  String toDate = ((entry != null)
+		  ? getDateHandler().formatDate(request, entry, entry.getEndDate())
+		  : BLANK);*/
 
         String  timezone  = ((entry == null)
                              ? null
@@ -5245,12 +5235,12 @@ public class TypeHandler extends RepositoryManager {
         if (okToShowInForm(entry, ARG_DATE)) {
             String setTimeCbx = "";
             /*
-            if (okToShowInForm(entry, "settimerange") && entry != null && entry.isGroup()) {
-                setTimeCbx = HU.checkbox(
-                                                ARG_SETTIMEFROMCHILDREN, "true",
-                                                false) + " "
-                    + msg("Set time range from children");
-            }
+	      if (okToShowInForm(entry, "settimerange") && entry != null && entry.isGroup()) {
+	      setTimeCbx = HU.checkbox(
+	      ARG_SETTIMEFROMCHILDREN, "true",
+	      false) + " "
+	      + msg("Set time range from children");
+	      }
             */
 
 	    String help = getProperty(entry,"form.date.help",null);
@@ -5258,33 +5248,33 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(HU.formEntry("",wrapHelp(help)));
             if ( !okToShowInForm(entry, ARG_TODATE)) {
                 sb.append(
-                    formEntry(
-                        request,
-                        msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date")),
-                        getDateHandler().makeDateInput(
-                            request, ARG_FROMDATE, "entryform", fromDate,
-                            timezone, showTime) + " " + setTimeCbx));
+			  formEntry(
+				    request,
+				    msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date")),
+				    getDateHandler().makeDateInput(
+								   request, ARG_FROMDATE, "entryform", fromDate,
+								   timezone, showTime) + " " + setTimeCbx));
 
             } else {
                 sb.append(
-                    formEntry(
-                        request,
-                        msgLabel(
-                            getFormLabel(parentEntry,
-                                entry, ARG_DATE,
-                                "Date Range")), getDateHandler()
+			  formEntry(
+				    request,
+				    msgLabel(
+					     getFormLabel(parentEntry,
+							  entry, ARG_DATE,
+							  "Date Range")), getDateHandler()
                                     .makeDateInput(
-                                        request, ARG_FROMDATE, "entryform",
-                                        fromDate, timezone,
-                                        showTime) + HU.space(1)
-                                            + HtmlUtils
-                                                .img(getIconUrl(
+						   request, ARG_FROMDATE, "entryform",
+						   fromDate, timezone,
+						   showTime) + HU.space(1)
+				    + HtmlUtils
+				    .img(getIconUrl(
                                                     ICON_RANGE)) + HtmlUtils
-                                                        .space(1) +
-                //                        " <b>--</b> " +
-                getDateHandler().makeDateInput(request, ARG_TODATE,
-                        "entryform", toDate, timezone,
-                        showTime) + HU.space(2) + " " + setTimeCbx));
+				    .space(1) +
+				    //                        " <b>--</b> " +
+				    getDateHandler().makeDateInput(request, ARG_TODATE,
+								   "entryform", toDate, timezone,
+								   showTime) + HU.space(2) + " " + setTimeCbx));
             }
 
         }
@@ -5332,22 +5322,22 @@ public class TypeHandler extends RepositoryManager {
                                     FormInfo formInfo,
                                     TypeHandler sourceTypeHandler,
 				    HashSet seen)
-            throws Exception {
+	throws Exception {
 
         Hashtable state = new Hashtable();
         String theSize = HU.SIZE_70;
 	String size = theSize;
 
         boolean forUpload = (entry == null)
-                            && getType().equals(TYPE_CONTRIBUTION);
+	    && getType().equals(TYPE_CONTRIBUTION);
 
         if (forUpload) {
             sb.append(formEntry(request, msgLabel("Your Name"),
                                 HU.input(ARG_CONTRIBUTION_FROMNAME,
-                                    "", size)));
+					 "", size)));
             sb.append(formEntry(request, msgLabel("Your Email"),
                                 HU.input(ARG_CONTRIBUTION_FROMEMAIL,
-                                    "", size)));
+					 "", size)));
         }
 
 
@@ -5397,9 +5387,9 @@ public class TypeHandler extends RepositoryManager {
 		if(!okToShowInForm(entry, what)) continue;
 		sb.append(formEntry(request, msgLabel("Order"),
 				    HU.input(ARG_ENTRYORDER,
-						    ((entry != null)
-						     ? entry.getEntryOrder()
-						     : 999), HU.SIZE_5) + " 1-N"));
+					     ((entry != null)
+					      ? entry.getEntryOrder()
+					      : 999), HU.SIZE_5) + " 1-N"));
 		continue;
 	    }		
 
@@ -5410,16 +5400,16 @@ public class TypeHandler extends RepositoryManager {
                 StringBuilder tags = new StringBuilder();
                 for (int i = 0; i < 3; i++) {
                     tags.append(
-                        HU.input(
-                            ARG_TAGS, "",
-                            HU.SIZE_15 + HU.cssClass("metadata-tag-input")));
+				HU.input(
+					 ARG_TAGS, "",
+					 HU.SIZE_15 + HU.cssClass("metadata-tag-input")));
                 }
 
                 if (entry != null) {
                     List<Metadata> metadataList =
                         getMetadataManager().findMetadata(request, entry,
-                            new String[] { "enum_tag",
-                                           "content.keyword" }, false);
+							  new String[] { "enum_tag",
+									 "content.keyword" }, false);
                     if ((metadataList != null) && (metadataList.size() > 0)) {
                         for (Metadata metadata : metadataList) {
                             String mtd = metadata.getAttr(1);
@@ -5429,14 +5419,14 @@ public class TypeHandler extends RepositoryManager {
                                    + HU.attr("metadata-id",
                                              metadata.getId()));
                             tags.append(HU.hidden("metadata_state_"
-                                    + metadata.getId(), "true",
-                                        HU.id(metadata.getId())));
+						  + metadata.getId(), "true",
+						  HU.id(metadata.getId())));
                         }
                     }
                 }
                 HU.script(tags,
-                                 "Ramadda.initFormTags("
-                                 + HU.squote(formInfo.getId()) + ");");
+			  "Ramadda.initFormTags("
+			  + HU.squote(formInfo.getId()) + ");");
                 sb.append(formEntry(request, msgLabel("Tags"),
                                     tags.toString()));
 		continue;
@@ -5446,10 +5436,10 @@ public class TypeHandler extends RepositoryManager {
                 if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
                     domId = HU.getUniqueId("entryinput");
                     formInfo.addMaxSizeValidation("Name", domId,
-                            Entry.MAX_NAME_LENGTH);
+						  Entry.MAX_NAME_LENGTH);
                     String nameDefault = request.getString(ARG_NAME,
-                                             getFormDefault(entry, ARG_NAME,
-                                                 ""));
+							   getFormDefault(entry, ARG_NAME,
+									  ""));
 		    boolean showLabel = getProperty(entry,"form.name.showlabel",false);
 		    String label = getFormLabel(parentEntry,entry, FIELD_NAME,"Name");
 		    String input = 
@@ -5467,7 +5457,7 @@ public class TypeHandler extends RepositoryManager {
 		    }
                 } else {
                     String nameDefault = getFormDefault(entry, ARG_NAME,
-                                             null);
+							null);
                     if (nameDefault != null) {
                         sb.append(HU.hidden(ARG_NAME, nameDefault));
                     }
@@ -5480,9 +5470,9 @@ public class TypeHandler extends RepositoryManager {
                 if (okToShowInForm(entry, ARG_DESCRIPTION)) {
                     String desc = "";
                     int rows = getProperty(
-                                   entry, "form.description.rows",
-                                   getRepository().getProperty(
-                                       "ramadda.edit.rows", 8));
+					   entry, "form.description.rows",
+					   getRepository().getProperty(
+								       "ramadda.edit.rows", 8));
                     boolean isWiki = isDescriptionWiki(entry);
                     if (entry != null) {
                         desc = entry.getDescription();
@@ -5508,14 +5498,14 @@ public class TypeHandler extends RepositoryManager {
                         boolean isTextWiki = isWikiText(desc);
                         if (desc.startsWith(WIKI_PREFIX)) {
                             desc = desc.substring(
-                                WIKI_PREFIX.length()).trim();
+						  WIKI_PREFIX.length()).trim();
                         }
                         String        cbxId  = "iswiki";
                         String        textId = ARG_DESCRIPTION;
                         StringBuilder tmpSB  = new StringBuilder();
                         /*
-                        For some reason the FA icon inside the label gets shifted over
-                        So wrap it in a span with margin spacing
+			  For some reason the FA icon inside the label gets shifted over
+			  So wrap it in a span with margin spacing
                         */
 			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
 
@@ -5523,47 +5513,47 @@ public class TypeHandler extends RepositoryManager {
                         if (getTypeProperty("form.description.showwiki",
                                             true)) {
                             String cbx = HU.labeledCheckbox(ARG_ISWIKI,
-                                             "true", isTextWiki,
-								  HU.id(cbxId), img);
+							    "true", isTextWiki,
+							    HU.id(cbxId), img);
                             cbx = HU.span(cbx,
                                           HU.cssClass("ramadda-clickable")
                                           + HU.title("Toggle Wiki Editor"));
 
                             String wikiId = addWikiEditor(request, entry,
-                                                tmpSB, formInfo,
-                                                ARG_WIKITEXT, desc, null,
-                                                false,
-                                                Entry.MAX_DESCRIPTION_LENGTH,
-                                                isTextWiki);
+							  tmpSB, formInfo,
+							  ARG_WIKITEXT, desc, null,
+							  false,
+							  Entry.MAX_DESCRIPTION_LENGTH,
+							  isTextWiki);
                             HU.open(tmpSB, "div",
-                                           HU.attrs("style",
-                                               !isTextWiki
-                                    ? ""
-                                    : "display:none;", "id",
-                                    textId + "_block"));
+				    HU.attrs("style",
+					     !isTextWiki
+					     ? ""
+					     : "display:none;", "id",
+					     textId + "_block"));
                             tmpSB.append(HU.textArea(ARG_DESCRIPTION,
-							    desc, rows, HU.attr("placeholder","Description")+HU.id(textId)));
+						     desc, rows, HU.attr("placeholder","Description")+HU.id(textId)));
                             HU.script(tmpSB,
-                                             "WikiUtil.initWikiEditor("
-                                             + HU.squote((entry
-                                                 == null)
-                                    ? ""
-                                    : entry.getId()) + ","
-                                    + HU.squote(wikiId) + ","
-                                    + HU.squote(textId) + ","
-                                    + HU.squote(cbxId) + ");");
+				      "WikiUtil.initWikiEditor("
+				      + HU.squote((entry
+						   == null)
+						  ? ""
+						  : entry.getId()) + ","
+				      + HU.squote(wikiId) + ","
+				      + HU.squote(textId) + ","
+				      + HU.squote(cbxId) + ");");
 
                             HU.close(tmpSB, "div");
                             prefix = cbx + HU.space(2);
                         } else {
                             tmpSB.append(HU.textArea(ARG_DESCRIPTION,
-                                    desc, rows, HU.id(textId)));
+						     desc, rows, HU.id(textId)));
                         }
 
                         String label =
                             getTypeProperty("form.description.label", "");
                         String edit = prefix + HU.b(label) + "<br>"
-                                      + tmpSB.toString();
+			    + tmpSB.toString();
                         sb.append(HU.row(HU.td(edit, "colspan=2")));
                     }
                 }
@@ -5574,21 +5564,21 @@ public class TypeHandler extends RepositoryManager {
             if (what.equals(ARG_RESOURCE)) {
                 boolean showFile = okToShowInForm(entry, ARG_FILE);
                 boolean showLocalFile = showFile
-                                        && request.getUser().getAdmin()
-                                        && okToShowInForm(entry,
-                                            ARG_SERVERFILE);
+		    && request.getUser().getAdmin()
+		    && okToShowInForm(entry,
+				      ARG_SERVERFILE);
                 boolean showUrl          = (forUpload
                                             ? false
                                             : okToShowInForm(entry, ARG_URL));
 
                 boolean showResourceForm = okToShowInForm(entry,
-                                               ARG_RESOURCE);
+							  ARG_RESOURCE);
 
 
                 if (showResourceForm) {
                     boolean showDownload = showFile
-                                           && okToShowInForm(entry,
-                                               ARG_RESOURCE_DOWNLOAD);
+			&& okToShowInForm(entry,
+					  ARG_RESOURCE_DOWNLOAD);
                     List<String> tabTitles  = new ArrayList<String>();
                     List<String> tabContent = new ArrayList<String>();
                     String urlLabel = getFormLabel(parentEntry,entry, ARG_URL, "URL");
@@ -5597,12 +5587,12 @@ public class TypeHandler extends RepositoryManager {
                         String inputId   = formInfo.getId() + "_fileinput";
                         String fileAttrs = HU.id(inputId) + size;
                         String accept = getTypeProperty("file.accept",
-                                            (String) null);
+							(String) null);
                         if (accept != null) {
                             fileAttrs += HU.attr("accept", accept);
                         }
                         String formContent = HU.fileInput(ARG_FILE,
-                                                 fileAttrs);
+							  fileAttrs);
                         tabTitles.add(msg(fileLabel));
 			boolean showDnd =getTypeProperty("form.dnd.show",true);
                         if (entry == null) {
@@ -5630,14 +5620,14 @@ public class TypeHandler extends RepositoryManager {
                             url = entry.getResource().getPath();
                         }
                         String download = !showDownload
-                                          ? ""
-                                          : HU.space(1)
-                                            + HU.labeledCheckbox(
-								 ARG_RESOURCE_DOWNLOAD,
-								 "true",false,
-								 "Download");
+			    ? ""
+			    : HU.space(1)
+			    + HU.labeledCheckbox(
+						 ARG_RESOURCE_DOWNLOAD,
+						 "true",false,
+						 "Download");
                         String formContent = HU.input(ARG_URL, url,
-                                                  HU.SIZE_90) + "&nbsp;" + download;
+						      HU.SIZE_90) + "&nbsp;" + download;
                         tabTitles.add(urlLabel);
 			//                        tabContent.add(HU.inset(formContent, 8));
                         tabContent.add(formContent);
@@ -5647,17 +5637,17 @@ public class TypeHandler extends RepositoryManager {
                         StringBuilder localFilesSB = new StringBuilder();
                         localFilesSB.append(HU.formTable());
                         localFilesSB.append(
-                            HU.formEntry(
-                                msgLabel("File or directory"),
-                                HU.input(ARG_SERVERFILE, "", size)
-                                + " "
-                                + msg("Note: If a directory then all files will be added")));
+					    HU.formEntry(
+							 msgLabel("File or directory"),
+							 HU.input(ARG_SERVERFILE, "", size)
+							 + " "
+							 + msg("Note: If a directory then all files will be added")));
                         localFilesSB.append(
-                            HU.formEntry(
-                                msgLabel("Pattern"),
-                                HU.input(
-                                    ARG_SERVERFILE_PATTERN, "",
-                                    HU.SIZE_10)));
+					    HU.formEntry(
+							 msgLabel("Pattern"),
+							 HU.input(
+								  ARG_SERVERFILE_PATTERN, "",
+								  HU.SIZE_10)));
                         localFilesSB.append(HU.formTableClose());
                         if (okToShowInForm(entry, "filesonserver", true)) {
                             tabTitles.add(msg("Files on Server"));
@@ -5684,7 +5674,7 @@ public class TypeHandler extends RepositoryManager {
                         if (tabTitles.size() > 1) {
                             HU.formEntry(sb,
                                          OutputHandler.makeTabs(tabTitles,
-                                             tabContent, true) + extra);
+								tabContent, true) + extra);
                         } else if (tabTitles.size() == 1) {
 			    //HU.formEntry(sb, tabTitles.get(0) + ":",tabContent.get(0) + extra);
 			    sb.append("<tr><td colspan=2>");
@@ -5695,11 +5685,11 @@ public class TypeHandler extends RepositoryManager {
                         }
                     } else {
                         if (showFile
-                                && Utils.stringDefined(
-                                    entry.getResource().getPath())) {
+			    && Utils.stringDefined(
+						   entry.getResource().getPath())) {
                             String resource = request.getUser().getAdmin()
-                                    ? entry.getResource().getPath()
-                                    : getStorageManager().getFileTail(entry);
+				? entry.getResource().getPath()
+				: getStorageManager().getFileTail(entry);
                             HU.formEntry(sb, HU.b("Resource: ") + resource);
                             /*
                               sb.append(
@@ -5713,7 +5703,7 @@ public class TypeHandler extends RepositoryManager {
                             HU.formEntry(sb,
                                          HU.b("New Resource:<br>")
                                          + OutputHandler.makeTabs(tabTitles,
-                                             tabContent, true) + extra);
+								  tabContent, true) + extra);
                         } else if (tabTitles.size() == 1) {
                             HU.formEntry(sb,
                                          HU.b(tabTitles.get(0) + ":<br>")
@@ -5721,16 +5711,16 @@ public class TypeHandler extends RepositoryManager {
                         }
 
                         /*
-                        if (tabTitles.size() > 1) {
-                            sb.append(formEntryTop(request,
-                                                   msgLabel("New Resource"),
-                                                   OutputHandler.makeTabs(tabTitles,
-                                                                          tabContent, true) + extra));
-                        } else if (tabTitles.size() == 1) {
-                            sb.append(formEntry(request,
-                                                tabTitles.get(0) + ":",
-                                                tabContent.get(0) + extra));
-                        }
+			  if (tabTitles.size() > 1) {
+			  sb.append(formEntryTop(request,
+			  msgLabel("New Resource"),
+			  OutputHandler.makeTabs(tabTitles,
+			  tabContent, true) + extra));
+			  } else if (tabTitles.size() == 1) {
+			  sb.append(formEntry(request,
+			  tabTitles.get(0) + ":",
+			  tabContent.get(0) + extra));
+			  }
                         */
                     }
 
@@ -5740,7 +5730,7 @@ public class TypeHandler extends RepositoryManager {
                 if (what.equals(ARG_CATEGORY)) {
 
                     if ( !hasDefaultCategory()
-                            && okToShowInForm(entry, ARG_CATEGORY, false)) {
+			 && okToShowInForm(entry, ARG_CATEGORY, false)) {
                         String selected = "";
                         if (entry != null) {
                             selected = entry.getCategory();
@@ -5748,11 +5738,11 @@ public class TypeHandler extends RepositoryManager {
                         List   types  = getRepository().getDefaultCategorys();
                         String widget = ((types.size() > 1)
                                          ? HU.select(
-                                             ARG_CATEGORY_SELECT, types,
-                                             selected) + HU.space(1)
-                                                 + msgLabel("Or")
+						     ARG_CATEGORY_SELECT, types,
+						     selected) + HU.space(1)
+					 + msgLabel("Or")
                                          : "") + HU.input(
-                                             ARG_CATEGORY);
+							  ARG_CATEGORY);
                         sb.append(formEntry(request, msgLabel("Data Type"),
                                             widget));
                     }
@@ -5793,12 +5783,12 @@ public class TypeHandler extends RepositoryManager {
                 if (handler != null) {
                     if (idLabel[1] != null) {
                         request.putExtraProperty(
-                            MetadataType.PROP_METADATA_LABEL, idLabel[1]);
+						 MetadataType.PROP_METADATA_LABEL, idLabel[1]);
                     }
                     handler.makeAddForm(request, null,
                                         handler.findType(idLabel[0]), sb);
                     request.removeExtraProperty(
-                        MetadataType.PROP_METADATA_LABEL);
+						MetadataType.PROP_METADATA_LABEL);
                     sb.append("<tr><td colspan=2><hr></td></tr>");
                 }
             }
@@ -5837,7 +5827,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void getFileExtras(Request request, Entry entry, StringBuilder extras)
-            throws Exception {
+	throws Exception {
 	String space = HU.space(3);
 	String uploadFlags = getTypeProperty("upload.flags",null);
 	if(uploadFlags!=null) {
@@ -5853,7 +5843,7 @@ public class TypeHandler extends RepositoryManager {
             HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")+
 	    space +
             HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
-                                 "Make folders from archive");
+			       "Make folders from archive");
 
         String addMetadata =
             HU.labeledCheckbox(ARG_METADATA_ADD, "true",
@@ -5877,7 +5867,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
         String makeNameWidget = HU.labeledCheckbox(ARG_MAKENAME,
-                                    "true", true, "Make name from filename");
+						   "true", true, "Make name from filename");
 	String dateFormatWidget = HU.hbox(HU.textArea(ARG_DATE_PATTERN,request.getString(ARG_DATE_PATTERN,""),
 						      5,50),
 					  HU.space(1),
@@ -5885,9 +5875,9 @@ public class TypeHandler extends RepositoryManager {
 					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm"));
 
         String deleteFileWidget = ((entry != null) && entry.isFile())
-                                  ? HU.labeledCheckbox(ARG_DELETEFILE,
-                                      "true", false, "Delete file")
-                                  : "";
+	    ? HU.labeledCheckbox(ARG_DELETEFILE,
+				 "true", false, "Delete file")
+	    : "";
 
 
         String extraMore = "";
@@ -5932,7 +5922,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getWikiEditorSidebar(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return "";
     }
 
@@ -5949,7 +5939,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
-            throws Exception {}
+	throws Exception {}
 
 
 
@@ -5978,7 +5968,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addReadOnlyWikiEditor(Request request, Entry entry,
                                       Appendable sb, String text)
-            throws Exception {
+	throws Exception {
         String dummyId = Utils.getGuid();
         addWikiEditor(request, entry, sb, null, dummyId, text, null, true, 0,
                       true);
@@ -6008,7 +5998,7 @@ public class TypeHandler extends RepositoryManager {
                                 FormInfo formInfo, String hiddenId,
                                 String text, String label, boolean readOnly,
                                 int length, boolean visible,String...args)
-            throws Exception {
+	throws Exception {
         String editorId = hiddenId + "_editor";
         if (text.startsWith(WIKI_PREFIX)) {
             if ( !isDescriptionWiki(entry)) {
@@ -6020,18 +6010,18 @@ public class TypeHandler extends RepositoryManager {
             sidebar = getWikiEditorSidebar(request, entry);
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
-                    entry, editorId);
+								 entry, editorId);
             if (stringDefined(label)) {
                 sb.append(HU.b(msgLabel(label)));
                 sb.append(HU.br());
             }
 
             HU.open(sb, "div",
-                           HU.attrs("class", "wiki-editor", "style",
-				    (visible
-                                            ? "display:block;"
-                                            : "display:none;"), "id",
-                                            editorId + "_block"));
+		    HU.attrs("class", "wiki-editor", "style",
+			     (visible
+			      ? "display:block;"
+			      : "display:none;"), "id",
+			     editorId + "_block"));
             sb.append(buttons);
         }
         if ((length > 0) && (formInfo != null)) {
@@ -6050,19 +6040,19 @@ public class TypeHandler extends RepositoryManager {
 	    if(key.equals("height")) height=value;
 	}
         String textWidget = HU.div(text,
-                                          HU.id(editorId)
-                                          + HU.style("height:"+height+";")
-                                          + HU.attr("class",
-                                              "ace_editor"));
+				   HU.id(editorId)
+				   + HU.style("height:"+height+";")
+				   + HU.attr("class",
+					     "ace_editor"));
         sb.append(HU.hidden(hiddenId, "", HU.id(hiddenId)));
         if (Utils.stringDefined(sidebar)) {
             sb.append(
-                HU.table(
-                    HU.row(
-                        HU.cols(
-                            new String[] { HU.td(textWidget),
-                                           HU.td(sidebar,
-                                           " width=10%") }))));
+		      HU.table(
+			       HU.row(
+				      HU.cols(
+					      new String[] { HU.td(textWidget),
+							     HU.td(sidebar,
+								   " width=10%") }))));
         } else {
             sb.append(textWidget);
         }
@@ -6070,7 +6060,7 @@ public class TypeHandler extends RepositoryManager {
         if (getWikiManager().initWikiEditor(request, sb)) {
             if ((formInfo != null) && !readOnly) {
                 formInfo.appendExtraJS(
-                    "WikiUtil.handleWikiEditorSubmit();\n");
+				       "WikiUtil.handleWikiEditorSubmit();\n");
             }
         }
 
@@ -6203,8 +6193,8 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<String> getColumnEnumerationProperties(Column column,
-            String propertyValue, String delimiter)
-            throws Exception {
+						       String propertyValue, String delimiter)
+	throws Exception {
         if (propertyValue.startsWith("resource:")) {
             return getMetadataManager().getTypeResource(
 							propertyValue.substring("resource:".length()));
@@ -6213,9 +6203,9 @@ public class TypeHandler extends RepositoryManager {
         if (propertyValue.startsWith("file:")) {
             //replace any macros {name} is the type id without the leading type_
             propertyValue = propertyValue.replace("${type}",
-                    type).replace("${name}", type.replace("type_", ""));
+						  type).replace("${name}", type.replace("type_", ""));
             propertyValue = getStorageManager().readSystemResource(
-                propertyValue.substring("file:".length()));
+								   propertyValue.substring("file:".length()));
             delimiter = "\n";
         }
         List<String> tmp = Utils.split(propertyValue, delimiter,true,false);
@@ -6236,7 +6226,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public final String getIconUrl(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -6299,7 +6289,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getEntryIconUrl(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
 
         String icon = entry.getIcon();
         if (icon != null) {
@@ -6316,7 +6306,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (entry.isGroup()) {
             if (getAccessManager().hasPermissionSet(entry,
-                    Permission.ACTION_VIEWCHILDREN)) {
+						    Permission.ACTION_VIEWCHILDREN)) {
                 if ( !getAccessManager().canDoViewChildren(request, entry)) {
                     return getIconUrl(ICON_FOLDER_CLOSED_LOCKED);
                 }
@@ -6366,7 +6356,7 @@ public class TypeHandler extends RepositoryManager {
         if (path != null) {
             String suffix = IO.getFileExtension(path.toLowerCase());
             String label  = getRepository().getProperty("file.label"
-                                + suffix);
+							+ suffix);
             if (label != null) {
                 return label;
             }
@@ -6416,40 +6406,40 @@ public class TypeHandler extends RepositoryManager {
             String name           = (String) request.getString(ARG_TEXT, "");
             String searchMetaData = " ";
             /*HU.checkbox(ARG_SEARCHMETADATA,
-                                        "true",
-                                        request.get(ARG_SEARCHMETADATA,
-                                        false)) + " "
-                                        + msg("Search metadata");*/
+	      "true",
+	      request.get(ARG_SEARCHMETADATA,
+	      false)) + " "
+	      + msg("Search metadata");*/
 
             String searchExact = " "
-                                 + HU.labeledCheckbox(ARG_EXACT, "true",
-							     request.get(ARG_EXACT, false),
-							     "Match exactly");
+		+ HU.labeledCheckbox(ARG_EXACT, "true",
+				     request.get(ARG_EXACT, false),
+				     "Match exactly");
             String extra = HU.p() + searchExact + searchMetaData;
             if (getDatabaseManager().supportsRegexp()) {
                 extra = HU.labeledCheckbox(
-						  ARG_ISREGEXP, "true",
-						  request.get(ARG_ISREGEXP, false),
-						  "Use regular expression");
+					   ARG_ISREGEXP, "true",
+					   request.get(ARG_ISREGEXP, false),
+					   "Use regular expression");
 
                 extra = HU.makeToggleInline(msg("More..."), extra,
-                        false);
+					    false);
             } else {
                 extra = "";
             }
 
             sb.append(formEntry(request, msgLabel("Text"),
                                 HU.input(ARG_TEXT, name,
-                                    HU.id("searchinput")
-                                    + HU.SIZE_50
-                                    + " autocomplete='off' autofocus ") + " "
-                                        + extra));
+					 HU.id("searchinput")
+					 + HU.SIZE_50
+					 + " autocomplete='off' autofocus ") + " "
+				+ extra));
             sb.append("<div id=searchpopup class=ramadda-popup></div>");
             sb.append(
-                HU.script(
-                    "Utils.searchSuggestInit('searchinput'," + ((type == null)
-                    ? "null"
-                    : "'" + type + "'") + ");"));
+		      HU.script(
+				"Utils.searchSuggestInit('searchinput'," + ((type == null)
+									    ? "null"
+									    : "'" + type + "'") + ");"));
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -6468,7 +6458,7 @@ public class TypeHandler extends RepositoryManager {
     public void addToSpecialSearchForm(Request request,
                                        Appendable formBuffer,
                                        HashSet<String> fieldsToShow)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.addToSpecialSearchForm(request, formBuffer, fieldsToShow);
         }
@@ -6490,7 +6480,7 @@ public class TypeHandler extends RepositoryManager {
     public void addToSearchForm(Request request, List<String> titles,
                                 List<String> contents, List<Clause> where,
                                 boolean advancedForm, boolean showText)
-            throws Exception {
+	throws Exception {
 
 
         if (parent != null) {
@@ -6512,24 +6502,24 @@ public class TypeHandler extends RepositoryManager {
 
 
         /*
-        if(minDate==null || maxDate == null) {
-            Statement stmt = select(request,
-                                           SqlUtil.comma(
-                                                         SqlUtil.min(Tables.ENTRIES.COL_FROMDATE),
-                                                         SqlUtil.max(
-                                                                     Tables.ENTRIES.COL_TODATE)), where);
+	  if(minDate==null || maxDate == null) {
+	  Statement stmt = select(request,
+	  SqlUtil.comma(
+	  SqlUtil.min(Tables.ENTRIES.COL_FROMDATE),
+	  SqlUtil.max(
+	  Tables.ENTRIES.COL_TODATE)), where);
 
-            ResultSet dateResults = stmt.getResultSet();
-            if (dateResults.next()) {
-                if (dateResults.getDate(1) != null) {
-                    if(minDate == null)
-                        minDate = SqlUtil.getDateString("" + dateResults.getDate(1));
-                    if(maxDate == null)
-                        maxDate = SqlUtil.getDateString("" + dateResults.getDate(2));
-                }
-            }
-            }
-*/
+	  ResultSet dateResults = stmt.getResultSet();
+	  if (dateResults.next()) {
+	  if (dateResults.getDate(1) != null) {
+	  if(minDate == null)
+	  minDate = SqlUtil.getDateString("" + dateResults.getDate(1));
+	  if(maxDate == null)
+	  maxDate = SqlUtil.getDateString("" + dateResults.getDate(2));
+	  }
+	  }
+	  }
+	*/
 
         //        minDate = "";
         //        maxDate = "";
@@ -6562,30 +6552,30 @@ public class TypeHandler extends RepositoryManager {
             typeList.remove(TYPE_ANY);
 
             String typeSelect = HU.select(ARG_TYPE, tmp, typeList,
-                                    (advancedForm
-                                     ? " MULTIPLE SIZE=4 "
-                                     : ""));
+					  (advancedForm
+					   ? " MULTIPLE SIZE=4 "
+					   : ""));
             String groupCbx = (advancedForm
                                ? HU.labeledCheckbox(ARG_TYPE_EXCLUDE, "true",
-							   request.get(ARG_TYPE_EXCLUDE,
-								       false),"Exclude")
+						    request.get(ARG_TYPE_EXCLUDE,
+								false),"Exclude")
                                : "");
 
 
             String submit = HU.submitImage(
-                                getRepository().getIconUrl(ICON_SEARCH),
-                                "submit_type",
-                                "Show search form with this type", "");
+					   getRepository().getIconUrl(ICON_SEARCH),
+					   "submit_type",
+					   "Show search form with this type", "");
             basicSB.append(formEntry(request, msgLabel("Kind"),
                                      typeSelect + HU.SPACE + submit
                                      + HU.SPACE + groupCbx));
         } else if (typeHandlers.size() == 1) {
             basicSB.append(HU.hidden(ARG_TYPE,
-                                            typeHandlers.get(0).getType()));
+				     typeHandlers.get(0).getType()));
             basicSB.append(
-                formEntry(
-                    request, msgLabel("Kind"),
-                    msg(typeHandlers.get(0).getDescription())));
+			   formEntry(
+				     request, msgLabel("Kind"),
+				     msg(typeHandlers.get(0).getDescription())));
         }
 
 
@@ -6603,10 +6593,10 @@ public class TypeHandler extends RepositoryManager {
         if (advancedForm || request.defined(ARG_GROUP)) {
             String groupArg = (String) request.getString(ARG_GROUP, "");
             String searchChildren = " "
-                                    + HU.labeledCheckbox(ARG_GROUP_CHILDREN,
-                                        "true",
-                                        request.get(ARG_GROUP_CHILDREN,
-						    false),"(Search sub-folders)");
+		+ HU.labeledCheckbox(ARG_GROUP_CHILDREN,
+				     "true",
+				     request.get(ARG_GROUP_CHILDREN,
+						 false),"(Search sub-folders)");
             if (groupArg.length() > 0) {
                 basicSB.append(HU.hidden(ARG_GROUP, groupArg));
                 Entry group = getEntryManager().findGroup(request, groupArg);
@@ -6655,10 +6645,10 @@ public class TypeHandler extends RepositoryManager {
             String             radio = getSpatialSearchTypeWidget(request);
             SelectionRectangle bbox  = request.getSelectionBounds();
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              null, true, null);
+								    null, true, null);
 
             String mapSelector = map.makeSelector(ARG_AREA, true,
-                                     bbox.getStringArray(), "", radio);
+						  bbox.getStringArray(), "", radio);
             basicSB.append(formEntry(request, msgLabel("Area"), mapSelector));
             basicSB.append("\n");
             addSearchField(request, ARG_FILESUFFIX, basicSB);
@@ -6668,10 +6658,10 @@ public class TypeHandler extends RepositoryManager {
 
 
         /*
-        if (collection != null) {
-            basicSB.append(formEntry(request,msgLabel("Collection"),
-                    collectionSelect));
-                    }*/
+	  if (collection != null) {
+	  basicSB.append(formEntry(request,msgLabel("Collection"),
+	  collectionSelect));
+	  }*/
 
 
         basicSB.append(HU.formTableClose());
@@ -6702,7 +6692,7 @@ public class TypeHandler extends RepositoryManager {
     public static void addDateSearch(Repository repository, Request request,
                                      Appendable basicSB, DateArgument arg,
                                      boolean showTime)
-            throws Exception {
+	throws Exception {
         List dateTypes = new ArrayList();
         dateTypes.add(new TwoFacedObject(msg("Contained by range"),
                                          DATE_SEARCHMODE_CONTAINEDBY));
@@ -6734,61 +6724,61 @@ public class TypeHandler extends RepositoryManager {
         }
 
         String dateSelectInput = HU.select(arg.getRelative(),
-                                     dateSelect, dateSelectValue);
+					   dateSelect, dateSelectValue);
         String minDate = request.getDateSelect(arg.getFrom(), (String) null);
         String maxDate = request.getDateSelect(arg.getTo(), (String) null);
 
 
         String dateTypeValue = request.getString(arg.getMode(),
-                                   DATE_SEARCHMODE_DEFAULT);
+						 DATE_SEARCHMODE_DEFAULT);
         String dateTypeInput = HU.select(arg.getMode(), dateTypes,
-                                   dateTypeValue);
+					 dateTypeValue);
 
         String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
         String noDateInput = HU.labeledCheckbox(ARG_DATE_NODATAMODE,
-                                 VALUE_NODATAMODE_INCLUDE,
-						       noDataMode.equals(VALUE_NODATAMODE_INCLUDE),
-						       "Include entries with no data times");
+						VALUE_NODATAMODE_INCLUDE,
+						noDataMode.equals(VALUE_NODATAMODE_INCLUDE),
+						"Include entries with no data times");
         String dateExtra;
         if (false && arg.getHasRange()) {
             dateExtra = HU.makeToggleInline(msg("More..."),
-                    HU.br() + HU.formTable(new String[] {
-                msgLabel("Search for data whose time is"), dateTypeInput,
-                msgLabel("Search relative"), dateSelectInput, "",
-                noDateInput
-            }), false);
+					    HU.br() + HU.formTable(new String[] {
+						    msgLabel("Search for data whose time is"), dateTypeInput,
+						    msgLabel("Search relative"), dateSelectInput, "",
+						    noDateInput
+						}), false);
         } else {
-/*
-            dateExtra = HU.makeToggleInline(msg("More..."),
-					    HU.br()+
-					    HU.b(msgLabel("Search relative"))+HU.br()+
-					    dateSelectInput, false);
-*/
+	    /*
+	      dateExtra = HU.makeToggleInline(msg("More..."),
+	      HU.br()+
+	      HU.b(msgLabel("Search relative"))+HU.br()+
+	      dateSelectInput, false);
+	    */
             dateExtra =dateSelectInput;
         }
 
         String fromField = repository.getDateHandler().makeDateInput(request,
-                               arg.getFrom(), "searchform", null, null,
-                               showTime);
+								     arg.getFrom(), "searchform", null, null,
+								     showTime);
         String toField = repository.getDateHandler().makeDateInput(request,
-                             arg.getTo(), "searchform", null, null, showTime);
+								   arg.getTo(), "searchform", null, null, showTime);
         /*
-        basicSB.append(RepositoryManager.formEntryTop(request,
-                                                      msgLabel(arg.getLabel()),
-                                                       + HU.space(1)
-                        + HU.img(repository.getIconUrl(ICON_RANGE))
-                        + HU.space(1)
-                                                      +  + dateExtra));
+	  basicSB.append(RepositoryManager.formEntryTop(request,
+	  msgLabel(arg.getLabel()),
+	  + HU.space(1)
+	  + HU.img(repository.getIconUrl(ICON_RANGE))
+	  + HU.space(1)
+	  +  + dateExtra));
         */
 
         HU.formEntry(basicSB, HU.b(msgLabel(arg.getLabel())));
 
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel("From"), fromField));
+						      msgLabel("From"), fromField));
         basicSB.append(RepositoryManager.formEntryTop(request,
-                msgLabel("To"), toField));
+						      msgLabel("To"), toField));
         basicSB.append(RepositoryManager.formEntryTop(request, "",
-                dateExtra));
+						      dateExtra));
 
     }
 
@@ -6825,7 +6815,7 @@ public class TypeHandler extends RepositoryManager {
             Utils.append(sb,
                          formEntry(request, msgLabel("File Suffix"),
                                    HU.input(ARG_FILESUFFIX, "",
-                                       " size=\"8\" ")));
+					    " size=\"8\" ")));
         }
     }
 
@@ -6855,7 +6845,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public List<Clause> assembleWhereClause(Request request)
-            throws Exception {
+	throws Exception {
         return assembleWhereClause(request, new StringBuilder());
     }
 
@@ -6873,7 +6863,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public List<Clause> assembleWhereClause(Request request,
                                             Appendable searchCriteria)
-            throws Exception {
+	throws Exception {
 
         //        Misc.printStack("Assemble where clause", 10);
 
@@ -6906,14 +6896,14 @@ public class TypeHandler extends RepositoryManager {
             addCriteria(request, searchCriteria, "Category=",
                         request.getString(ARG_CATEGORY, ""));
             DatabaseManager.addOrClause(Tables.ENTRIES.COL_DATATYPE,
-                        request.getString(ARG_CATEGORY, ""), where);
+					request.getString(ARG_CATEGORY, ""), where);
         }
 
         if (request.defined(ARG_USER_ID)) {
             addCriteria(request, searchCriteria, "User=",
                         request.getString(ARG_USER_ID, ""));
             DatabaseManager.addOrClause(Tables.ENTRIES.COL_USER_ID,
-                        request.getString(ARG_USER_ID, ""), where);
+					request.getString(ARG_USER_ID, ""), where);
         }
 
         /**
@@ -6937,9 +6927,9 @@ public class TypeHandler extends RepositoryManager {
                         request.getString(ARG_FILESUFFIX, ""));
             List<Clause> clauses = new ArrayList<Clause>();
             for (String tok :
-                    (List<String>) Utils.split(
-                        request.getString(ARG_FILESUFFIX, ""), ",", true,
-                        true)) {
+		     (List<String>) Utils.split(
+						request.getString(ARG_FILESUFFIX, ""), ",", true,
+						true)) {
                 clauses.add(Clause.like(Tables.ENTRIES.COL_RESOURCE,
                                         "%" + tok));
             }
@@ -6953,7 +6943,7 @@ public class TypeHandler extends RepositoryManager {
 
         if (request.defined(ARG_GROUP)) {
             String  groupId = (String) request.getString(ARG_GROUP,
-                                  "").trim();
+							 "").trim();
 
             boolean doNot   = groupId.startsWith("!");
             if (doNot) {
@@ -6961,7 +6951,7 @@ public class TypeHandler extends RepositoryManager {
             }
             if (groupId.endsWith("%")) {
                 Entry group = getEntryManager().findGroup(request,
-                                  groupId.substring(0, groupId.length() - 1));
+							  groupId.substring(0, groupId.length() - 1));
                 if (group != null) {
                     addCriteria(request, searchCriteria, "Folder=",
                                 group.getName());
@@ -6981,45 +6971,45 @@ public class TypeHandler extends RepositoryManager {
                     Entry group = getEntryManager().findGroup(request);
                     if (group == null) {
                         throw new IllegalArgumentException(
-                            msgLabel("Could not find folder") + groupId);
+							   msgLabel("Could not find folder") + groupId);
                     }
                     addCriteria(request, searchCriteria, "Folder" + (doNot
-                            ? "!="
-                            : "="), group.getName());
+								     ? "!="
+								     : "="), group.getName());
                     String searchChildren =
                         (String) request.getString(ARG_GROUP_CHILDREN,
-                            (String) null);
+						   (String) null);
                     if (Misc.equals(searchChildren, "true")) {
                         Clause sub = (doNot
                                       ? Clause.notLike(
-                                          Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                          group.getId() + Entry.IDDELIMITER
-                                          + "%")
+						       Tables.ENTRIES.COL_PARENT_GROUP_ID,
+						       group.getId() + Entry.IDDELIMITER
+						       + "%")
                                       : Clause.like(
-                                          Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                          group.getId() + Entry.IDDELIMITER
-                                          + "%"));
+						    Tables.ENTRIES.COL_PARENT_GROUP_ID,
+						    group.getId() + Entry.IDDELIMITER
+						    + "%"));
                         Clause equals = (doNot
                                          ? Clause
-                                             .neq(Tables.ENTRIES
-                                                 .COL_PARENT_GROUP_ID, group
-                                                 .getId())
+					 .neq(Tables.ENTRIES
+					      .COL_PARENT_GROUP_ID, group
+					      .getId())
                                          : Clause
-                                             .eq(Tables.ENTRIES
-                                                 .COL_PARENT_GROUP_ID, group
-                                                 .getId()));
+					 .eq(Tables.ENTRIES
+					     .COL_PARENT_GROUP_ID, group
+					     .getId()));
                         where.add(Clause.or(sub, equals));
                     } else {
                         if (doNot) {
                             where.add(
-                                Clause.neq(
-                                    Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                    group.getId()));
+				      Clause.neq(
+						 Tables.ENTRIES.COL_PARENT_GROUP_ID,
+						 group.getId()));
                         } else {
                             where.add(
-                                Clause.eq(
-                                    Tables.ENTRIES.COL_PARENT_GROUP_ID,
-                                    group.getId()));
+				      Clause.eq(
+						Tables.ENTRIES.COL_PARENT_GROUP_ID,
+						group.getId()));
                         }
                     }
                 }
@@ -7030,15 +7020,15 @@ public class TypeHandler extends RepositoryManager {
         List<Clause> dateClauses = new ArrayList<Clause>();
         for (DateArgument arg : getDateArgs()) {
             Date[] dateRange = request.getDateRange(arg.getFrom(),
-                                   arg.getTo(), arg.getRelative(),
-                                   new Date());
+						    arg.getTo(), arg.getRelative(),
+						    new Date());
             if ((dateRange[0] != null) || (dateRange[1] != null)) {
                 Date date1 = dateRange[0];
                 Date date2 = dateRange[1];
                 if (arg.forCreateDate() || arg.forChangeDate()) {
                     String column = arg.forCreateDate()
-                                    ? Tables.ENTRIES.COL_CREATEDATE
-                                    : Tables.ENTRIES.COL_CHANGEDATE;
+			? Tables.ENTRIES.COL_CREATEDATE
+			: Tables.ENTRIES.COL_CHANGEDATE;
                     if (date1 != null) {
                         addCriteria(request, searchCriteria,
                                     msg(arg.getLabel()) + ">=", date1);
@@ -7060,26 +7050,26 @@ public class TypeHandler extends RepositoryManager {
                 }
 
                 String dateSearchMode = request.getString(arg.getMode(),
-                                            DATE_SEARCHMODE_DEFAULT);
+							  DATE_SEARCHMODE_DEFAULT);
                 if (dateSearchMode.equals(DATE_SEARCHMODE_OVERLAPS)) {
                     addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
                                 date1);
                     addCriteria(request, searchCriteria,
                                 "From&nbsp;Date&lt;=", date2);
                     dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
-                            date2));
+					      date2));
                     dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE,
-                            date1));
+					      date1));
                 } else if (dateSearchMode.equals(
-                        DATE_SEARCHMODE_CONTAINEDBY)) {
+						 DATE_SEARCHMODE_CONTAINEDBY)) {
                     addCriteria(request, searchCriteria,
                                 "From&nbsp;Date&gt;=", date1);
                     addCriteria(request, searchCriteria, "To&nbsp;Date&lt;=",
                                 date2);
                     dateClauses.add(Clause.ge(Tables.ENTRIES.COL_FROMDATE,
-                            date1));
+					      date1));
                     dateClauses.add(Clause.le(Tables.ENTRIES.COL_TODATE,
-                            date2));
+					      date2));
                 } else {
                     //DATE_SEARCHMODE_CONTAINS
                     addCriteria(request, searchCriteria,
@@ -7087,25 +7077,25 @@ public class TypeHandler extends RepositoryManager {
                     addCriteria(request, searchCriteria, "To&nbsp;Date&gt;=",
                                 date2);
                     dateClauses.add(Clause.le(Tables.ENTRIES.COL_FROMDATE,
-                            date1));
+					      date1));
                     dateClauses.add(Clause.ge(Tables.ENTRIES.COL_TODATE,
-                            date2));
+					      date2));
                 }
             }
 
 
             String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
             if (noDataMode.equals(VALUE_NODATAMODE_INCLUDE)
-                    && (dateClauses.size() > 0)) {
+		&& (dateClauses.size() > 0)) {
                 Clause dateClause = Clause.and(dateClauses);
                 dateClauses = new ArrayList<Clause>();
                 Clause allEqualClause =
                     Clause.and(
-                        Clause.join(
-                            Tables.ENTRIES.COL_CREATEDATE,
-                            Tables.ENTRIES.COL_FROMDATE), Clause.join(
-                                Tables.ENTRIES.COL_FROMDATE,
-                                Tables.ENTRIES.COL_TODATE));
+			       Clause.join(
+					   Tables.ENTRIES.COL_CREATEDATE,
+					   Tables.ENTRIES.COL_FROMDATE), Clause.join(
+										     Tables.ENTRIES.COL_FROMDATE,
+										     Tables.ENTRIES.COL_TODATE));
 
                 dateClauses.add(allEqualClause);
                 dateClauses.add(Clause.or(dateClause, allEqualClause));
@@ -7125,8 +7115,8 @@ public class TypeHandler extends RepositoryManager {
 
 
         boolean contains = !(request.getString(
-                               ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
-                               VALUE_AREA_OVERLAPS));
+					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
+											  VALUE_AREA_OVERLAPS));
 
         String[] areaCols = { Tables.ENTRIES.COL_NORTH,
                               Tables.ENTRIES.COL_WEST,
@@ -7138,7 +7128,7 @@ public class TypeHandler extends RepositoryManager {
         List<Clause> areaClauses = new ArrayList<Clause>();
         List<SelectionRectangle> rectangles =
             getEntryUtil().getSelectionRectangles(
-                request.getSelectionBounds());
+						  request.getSelectionBounds());
         for (SelectionRectangle rectangle : rectangles) {
             List<Clause> areaExpressions = new ArrayList<Clause>();
 
@@ -7147,34 +7137,34 @@ public class TypeHandler extends RepositoryManager {
                     areaClause = Clause.le(Tables.ENTRIES.COL_SOUTH,
                                            rectangle.getNorth());
                     areaExpressions.add(
-                        Clause.and(
-                            getSpatialDefinedClause(
-                                Tables.ENTRIES.COL_NORTH), areaClause));
+					Clause.and(
+						   getSpatialDefinedClause(
+									   Tables.ENTRIES.COL_NORTH), areaClause));
                 }
                 if (rectangle.hasSouth()) {
                     areaClause = Clause.ge(Tables.ENTRIES.COL_NORTH,
                                            rectangle.getSouth());
                     areaExpressions.add(
-                        Clause.and(
-                            getSpatialDefinedClause(
-                                Tables.ENTRIES.COL_SOUTH), areaClause));
+					Clause.and(
+						   getSpatialDefinedClause(
+									   Tables.ENTRIES.COL_SOUTH), areaClause));
                 }
 
                 if (rectangle.hasWest()) {
                     areaClause = Clause.ge(Tables.ENTRIES.COL_EAST,
                                            rectangle.getWest());
                     areaExpressions.add(
-                        Clause.and(
-                            getSpatialDefinedClause(Tables.ENTRIES.COL_EAST),
-                            areaClause));
+					Clause.and(
+						   getSpatialDefinedClause(Tables.ENTRIES.COL_EAST),
+						   areaClause));
                 }
                 if (rectangle.hasEast()) {
                     areaClause = Clause.le(Tables.ENTRIES.COL_WEST,
                                            rectangle.getEast());
                     areaExpressions.add(
-                        Clause.and(
-                            getSpatialDefinedClause(Tables.ENTRIES.COL_WEST),
-                            areaClause));
+					Clause.and(
+						   getSpatialDefinedClause(Tables.ENTRIES.COL_WEST),
+						   areaClause));
                 }
             } else {
                 double[] values = rectangle.getValues();
@@ -7184,12 +7174,12 @@ public class TypeHandler extends RepositoryManager {
                     }
                     double areaValue = values[i];
                     areaClause = areaLE[i]
-                                 ? Clause.le(areaCols[i], areaValue)
-                                 : Clause.ge(areaCols[i], areaValue);
+			? Clause.le(areaCols[i], areaValue)
+			: Clause.ge(areaCols[i], areaValue);
                     areaExpressions.add(
-                        Clause.and(
-                            getSpatialDefinedClause(areaCols[i]),
-                            areaClause));
+					Clause.and(
+						   getSpatialDefinedClause(areaCols[i]),
+						   areaClause));
                 }
             }
             if (areaExpressions.size() > 0) {
@@ -7212,7 +7202,7 @@ public class TypeHandler extends RepositoryManager {
         Hashtable args        = request.getArgs();
         String metadataPrefix = ARG_METADATA_ATTR1 + "_";
         Hashtable<String, List<Metadata>> typeMap = new Hashtable<String,
-                                                        List<Metadata>>();
+	    List<Metadata>>();
         List<String> types = new ArrayList<String>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
@@ -7224,21 +7214,21 @@ public class TypeHandler extends RepositoryManager {
             }
             String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
             List[] urlArgs = new List[] {
-                                 request.get(ARG_METADATA_ATTR1 + "_" + type,
-                                             new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR2 + "_" + type,
-                                             new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR3 + "_" + type,
-                                             new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR4 + "_" + type,
-                                             new ArrayList<String>()) };
+		request.get(ARG_METADATA_ATTR1 + "_" + type,
+			    new ArrayList<String>()),
+		request.get(ARG_METADATA_ATTR2 + "_" + type,
+			    new ArrayList<String>()),
+		request.get(ARG_METADATA_ATTR3 + "_" + type,
+			    new ArrayList<String>()),
+		request.get(ARG_METADATA_ATTR4 + "_" + type,
+			    new ArrayList<String>()) };
 
             int index = 0;
             while (true) {
                 boolean  ok         = false;
                 String[] valueArray = { "", "", "", "" };
                 for (int valueIdx = 0; valueIdx < urlArgs.length;
-                        valueIdx++) {
+		     valueIdx++) {
                     if (index < urlArgs[valueIdx].size()) {
                         ok = true;
                         valueArray[valueIdx] =
@@ -7251,12 +7241,12 @@ public class TypeHandler extends RepositoryManager {
                 index++;
 
                 Metadata metadata = new Metadata(type, valueArray[0],
-                                        valueArray[1], valueArray[2],
-                                        valueArray[3], "");
+						 valueArray[1], valueArray[2],
+						 valueArray[3], "");
 
 
                 metadata.setInherited(request.get(ARG_METADATA_INHERITED
-                        + "." + type, false));
+						  + "." + type, false));
                 List<Metadata> values = typeMap.get(type);
                 if (values == null) {
                     typeMap.put(type, values = new ArrayList<Metadata>());
@@ -7279,7 +7269,7 @@ public class TypeHandler extends RepositoryManager {
                     String attr = metadata.getAttr(attrIdx);
                     if (attr.trim().length() > 0) {
                         attrAnds.add(Clause.eq(subTable + ".attr" + attrIdx,
-                                attr));
+					       attr));
                         tmp = tmp + ((tmp.length() == 0)
                                      ? ""
                                      : " &amp; ") + attr;
@@ -7290,7 +7280,7 @@ public class TypeHandler extends RepositoryManager {
                 attrOrs.add(attrClause);
                 MetadataHandler handler =
                     getRepository().getMetadataManager().findMetadataHandler(
-                        type);
+									     type);
                 MetadataType metadataType = handler.findType(type);
                 if (metadataType != null) {
                     addCriteria(request, searchCriteria,
@@ -7331,8 +7321,8 @@ public class TypeHandler extends RepositoryManager {
             if ( !request.get(ARG_EXACT, false)) {
                 value = "%" + value + "%";
                 where.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        columns[textIdx], value, false));
+			  getDatabaseManager().makeLikeTextClause(
+								  columns[textIdx], value, false));
             } else {
                 where.add(Clause.eq(columns[textIdx], value, false));
             }
@@ -7375,7 +7365,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void getChildrenEntries(Request request, Entry group,
                                    List<Entry> children, SelectInfo select)
-            throws Exception {
+	throws Exception {
         List<String> ids = getEntryManager().getChildIds(request, group, select);
         List<Entry> myEntries   = new ArrayList<Entry>();
         for (String id : ids) {
@@ -7400,7 +7390,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public List<Entry> postProcessEntries(Request request,
                                           List<Entry> entries)
-            throws Exception {
+	throws Exception {
         return entries;
     }
 
@@ -7418,7 +7408,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void addTextDbSearch(Request request, String textToSearch,
                                 Appendable searchCriteria, List<Clause> where)
-            throws Exception {
+	throws Exception {
         boolean doName = true;
         boolean doDesc = true;
         boolean doFile = true;
@@ -7459,13 +7449,13 @@ public class TypeHandler extends RepositoryManager {
                                 Appendable searchCriteria,
                                 List<Clause> where, boolean doName,
                                 boolean doDesc, boolean doFile)
-            throws Exception {
+	throws Exception {
 
         DatabaseManager dbm = getDatabaseManager();
         textToSearch = textToSearch.replaceAll("%20", " ");
         List<Clause> textOrs = new ArrayList<Clause>();
         for (String textTok :
-                (List<String>) Utils.split(textToSearch, ",", true, true)) {
+		 (List<String>) Utils.split(textToSearch, ",", true, true)) {
             boolean doLike   = false;
             boolean doRegexp = false;
             if (request.get(ARG_ISREGEXP, false)) {
@@ -7485,9 +7475,9 @@ public class TypeHandler extends RepositoryManager {
             boolean searchMetadata = request.get(ARG_SEARCHMETADATA, false);
             searchMetadata = false;
             String[]     attrCols = { Tables.METADATA.COL_ATTR1  /*,
-                                        Tables.METADATA.COL_ATTR2,
-                                        Tables.METADATA.COL_ATTR3,
-                                        Tables.METADATA.COL_ATTR4*/
+								   Tables.METADATA.COL_ATTR2,
+								   Tables.METADATA.COL_ATTR3,
+								   Tables.METADATA.COL_ATTR4*/
             };
             List<String> nameToks = Utils.splitWithQuotes(textTok);
             for (String nameTok : nameToks) {
@@ -7511,11 +7501,11 @@ public class TypeHandler extends RepositoryManager {
                 if (columns != null) {
                     for (Column column : columns) {
                         if (column.getCanSearch()
-                                && column.getCanSearchText()
-                                && column.isString()) {
+			    && column.getCanSearchText()
+			    && column.isString()) {
                             ors.add(
-                                dbm.makeLikeTextClause(
-                                    column.getFullName(), nameTok, doNot));
+				    dbm.makeLikeTextClause(
+							   column.getFullName(), nameTok, doNot));
                         }
                     }
                 }
@@ -7525,56 +7515,56 @@ public class TypeHandler extends RepositoryManager {
                     for (String attrCol : attrCols) {
                         if (doRegexp) {
                             metadataOrs.add(
-                                getDatabaseManager().makeRegexpClause(
-                                    attrCol, nameTok, doNot));
+					    getDatabaseManager().makeRegexpClause(
+										  attrCol, nameTok, doNot));
                         } else if (nameDoLike) {
                             metadataOrs.add(dbm.makeLikeTextClause(attrCol,
-                                    nameTok, doNot));
+								   nameTok, doNot));
                         } else {
                             metadataOrs.add(Clause.eq(attrCol, nameTok,
-                                    doNot));
+						      doNot));
                         }
                     }
                     ors.add(
-                        Clause.and(
-                            Clause.or(metadataOrs),
-                            Clause.join(
-                                Tables.METADATA.COL_ENTRY_ID,
-                                Tables.ENTRIES.COL_ID)));
+			    Clause.and(
+				       Clause.or(metadataOrs),
+				       Clause.join(
+						   Tables.METADATA.COL_ENTRY_ID,
+						   Tables.ENTRIES.COL_ID)));
                 }
                 if (doRegexp) {
                     if (doName) {
                         ors.add(
-                            getDatabaseManager().makeRegexpClause(
-                                Tables.ENTRIES.COL_NAME, nameTok, doNot));
+				getDatabaseManager().makeRegexpClause(
+								      Tables.ENTRIES.COL_NAME, nameTok, doNot));
                     }
                     if (doDesc) {
                         ors.add(
-                            getDatabaseManager().makeRegexpClause(
-                                Tables.ENTRIES.COL_DESCRIPTION, nameTok,
-                                doNot));
+				getDatabaseManager().makeRegexpClause(
+								      Tables.ENTRIES.COL_DESCRIPTION, nameTok,
+								      doNot));
                     }
                     if (doFile) {
                         ors.add(
-                            getDatabaseManager().makeRegexpClause(
-                                Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+				getDatabaseManager().makeRegexpClause(
+								      Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
                     }
                 } else if (nameDoLike) {
                     if (doName) {
                         ors.add(
-                            dbm.makeLikeTextClause(
-                                Tables.ENTRIES.COL_NAME, nameTok, doNot));
+				dbm.makeLikeTextClause(
+						       Tables.ENTRIES.COL_NAME, nameTok, doNot));
                     }
                     if (doDesc) {
                         ors.add(
-                            dbm.makeLikeTextClause(
-                                Tables.ENTRIES.COL_DESCRIPTION, nameTok,
-                                doNot));
+				dbm.makeLikeTextClause(
+						       Tables.ENTRIES.COL_DESCRIPTION, nameTok,
+						       doNot));
                     }
                     if (doFile) {
                         ors.add(
-                            dbm.makeLikeTextClause(
-                                Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+				dbm.makeLikeTextClause(
+						       Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
                     }
                 } else {
                     if (doName) {
@@ -7643,7 +7633,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void setStatement(Entry entry, PreparedStatement stmt,
                              boolean isNew)
-            throws Exception {}
+	throws Exception {}
 
     /**
      * _more_
@@ -7669,7 +7659,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void deleteEntry(Request request, Statement statement, Entry entry)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.deleteEntry(request, statement, entry);
         }
@@ -7689,7 +7679,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parentEntry, Object[] values)
-            throws Exception {
+	throws Exception {
         if (parent != null) {
             parent.deleteEntry(request, statement, id, parentEntry, values);
         }
@@ -7784,7 +7774,7 @@ public class TypeHandler extends RepositoryManager {
     protected boolean addOr(String column, String value, List list,
                             boolean quoteThem) {
         if ((value != null) && (value.trim().length() > 0)
-                && !value.toLowerCase().equals("all")) {
+	    && !value.toLowerCase().equals("all")) {
             list.add("(" + SqlUtil.makeOrSplit(column, value, quoteThem)
                      + ")");
 
@@ -7815,17 +7805,17 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if ( !entry.getTypeHandler().getType().equals(
-                    TypeHandler.TYPE_FILE)) {
+							  TypeHandler.TYPE_FILE)) {
                 String searchUrl =
                     HU.href(
-                        getSearchManager().URL_SEARCH_TYPE + "/"
-                        + entry.getTypeHandler().getType(), desc,
+			    getSearchManager().URL_SEARCH_TYPE + "/"
+			    + entry.getTypeHandler().getType(), desc,
                             HU.cssClass("entry-type-search")
                             + HU.attr(
-                                HU.ATTR_ALT,
-                                "Search for entries of this type") + HU.attr(
-                                    HU.ATTR_TITLE,
-                                    "Search for entries of this type"));
+				      HU.ATTR_ALT,
+				      "Search for entries of this type") + HU.attr(
+										   HU.ATTR_TITLE,
+										   "Search for entries of this type"));
 
                 return searchUrl;
             }
@@ -7840,12 +7830,12 @@ public class TypeHandler extends RepositoryManager {
 
             if ((label == null) && (url != null)) {
                 desc = HU.href(url, desc,
-                                      HU.attr("target", "_help"));
+			       HU.attr("target", "_help"));
             } else if (label != null) {
                 if (url != null) {
                     //                desc = desc  +" (" + HU.href(url, label)+")";
                     desc = HU.href(url, msg(label),
-                                          HU.attr("target", "_help"));
+				   HU.attr("target", "_help"));
                 } else {
                     //                desc = desc  +" (" +label+")";
                     desc = msg(label);
@@ -7874,7 +7864,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getTemplateContent(Request request, Entry entry,
                                      String property, String dflt)
-            throws Exception {
+	throws Exception {
         String template = getTypeProperty(property, (String) null);
         if (template != null) {
             return processDisplayTemplate(request, entry, template);
@@ -7920,7 +7910,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public String getMapInfoBubble(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         return getBubbleTemplate(request, entry);
     }
 
@@ -7937,7 +7927,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getSimpleDisplay(Request request, Hashtable props,
                                    Entry entry)
-            throws Exception {
+	throws Exception {
         if (getParent() != null) {
 	    return getParent().getSimpleDisplay(request, props, entry);
 	}
@@ -8022,7 +8012,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     protected void addEnumValue(Column column, Entry entry, String theValue)
-            throws Exception {
+	throws Exception {
         if ((theValue == null) || (theValue.length() == 0)) {
             return;
         }
@@ -8077,7 +8067,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getFieldHtml(Request request, Entry entry, Hashtable props,
                                String name, boolean raw)
-            throws Exception {
+	throws Exception {
         if (name.equals("startdate")) {
             Date   dttm = new Date(entry.getStartDate());
             String fmt  = props!=null?(String) props.get("format"):null;
@@ -8140,7 +8130,7 @@ public class TypeHandler extends RepositoryManager {
      */
     private HashSet getEnumValuesInner(Request request, Column column,
                                        Entry entry, boolean getFromDatabase)
-            throws Exception {
+	throws Exception {
         Clause clause = getEnumValuesClause(column, entry);
 	boolean didClause= false;
         if (request != null) {
@@ -8181,8 +8171,8 @@ public class TypeHandler extends RepositoryManager {
 
         //Use the clause string as part of the key
         String  key = getEnumValueKey(column, entry) + ((clause == null)
-                ? ""
-                : "_" + clause);
+							? ""
+							: "_" + clause);
         HashSet set = columnEnumValues.get(key);
         if (set != null) {
             return set;
@@ -8190,12 +8180,12 @@ public class TypeHandler extends RepositoryManager {
 
         long t1 = System.currentTimeMillis();
         Statement stmt = getRepository().getDatabaseManager().select(
-                             SqlUtil.distinct(column.getName()),
-                             column.getTableName(), clause);
+								     SqlUtil.distinct(column.getName()),
+								     column.getTableName(), clause);
         long t2 = System.currentTimeMillis();
         String[] values =
             SqlUtil.readString(
-                getRepository().getDatabaseManager().getIterator(stmt), 1);
+			       getRepository().getDatabaseManager().getIterator(stmt), 1);
         long t3 = System.currentTimeMillis();
 	//	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
         set = new HashSet();
@@ -8222,7 +8212,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public Clause getEnumValuesClause(Column column, Entry entry)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -8252,7 +8242,7 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getCategory() {
         if (Misc.equals(this.category, CATEGORY_DEFAULT)
-                && (parent != null)) {
+	    && (parent != null)) {
             return parent.getCategory();
         }
 
@@ -8365,7 +8355,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public TimeZone getTimeZone(Request request, Entry entry, int index)
-            throws Exception {
+	throws Exception {
         TimeZone timeZone = null;
         String   timezone = null;
         if (entry != null) {
@@ -8433,21 +8423,21 @@ public class TypeHandler extends RepositoryManager {
                 tmp.add(arg);
             }
             List<String> from = Utils.split(
-                                    getRepository().getProperty(
-                                        "ramadda.arg.date.from", ""), ",",
+					    getRepository().getProperty(
+									"ramadda.arg.date.from", ""), ",",
                                             true, true);
             List<String> to = Utils.split(
-                                  getRepository().getProperty(
-                                      "ramadda.arg.date.to", ""), ",", true,
+					  getRepository().getProperty(
+								      "ramadda.arg.date.to", ""), ",", true,
                                           true);
             List<String> mode = Utils.split(
-                                    getRepository().getProperty(
-                                        "ramadda.arg.date.mode", ""), ",",
+					    getRepository().getProperty(
+									"ramadda.arg.date.mode", ""), ",",
                                             true, true);
             List<String> relative = Utils.split(
-                                        getRepository().getProperty(
-                                            "ramadda.arg.date.relative",
-                                            ""), ",", true, true);
+						getRepository().getProperty(
+									    "ramadda.arg.date.relative",
+									    ""), ",", true, true);
             for (int i = 0; i < from.size(); i++) {
                 tmp.add(new DateArgument(DateArgument.TYPE_DATA, from.get(i),
                                          to.get(i), mode.get(i),
@@ -8479,7 +8469,7 @@ public class TypeHandler extends RepositoryManager {
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
-            throws Exception {
+	throws Exception {
         return null;
     }
 
@@ -8500,7 +8490,7 @@ public class TypeHandler extends RepositoryManager {
             Utils.append(inner,
                          XmlUtil.tag(TypeHandler.TAG_PROPERTY,
                                      XmlUtil.attrs(ATTR_NAME, arg,
-                                         TypeHandler.ATTR_VALUE, value)));
+						   TypeHandler.ATTR_VALUE, value)));
         }
     }
 
