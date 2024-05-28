@@ -6064,8 +6064,11 @@ public class EntryManager extends RepositoryManager {
 
 	    String sfromDate = Utils.getAttributeOrTag(node,ATTR_FROMDATE,null);
 	    String stoDate = Utils.getAttributeOrTag(node,ATTR_TODATE,null);	    
-	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): createDate;
+	    Date fromDate = stringDefined(sfromDate) ? getDateHandler().parseDate(sfromDate): null;
+	    if(fromDate==null && !typeHandler.nullDateOk()) fromDate = createDate;
 	    Date toDate = stringDefined(stoDate) ? getDateHandler().parseDate(stoDate): fromDate;	
+
+
             String id    = getRepository().getGUID();
             Entry  entry = typeHandler.createEntry(id);
 	    if(remoteServers.length>0) entry.setRemoteServer(remoteServers[0]);
@@ -6090,7 +6093,9 @@ public class EntryManager extends RepositoryManager {
 		      request.getUser(), resource, category,
 		      entryOrder,
 		      createDate.getTime(), changeDate.getTime(),
-		      fromDate.getTime(), toDate.getTime(), null);
+		      fromDate==null?DateHandler.NULL_DATE:fromDate.getTime(),
+		      toDate==null?DateHandler.NULL_DATE:toDate.getTime(),
+		      null);
 
 	    Element permissions  =XmlUtil.findChild(node,AccessManager.TAG_PERMISSIONS);
 	    if(permissions!=null) {

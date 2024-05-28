@@ -2297,18 +2297,12 @@ public class TypeHandler extends RepositoryManager {
         return getProperty(entry, "form." + arg + ".label", dflt);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param arg _more_
-     *
-     * @return _more_
-     */
     public boolean okToShowInForm(Entry entry, String arg) {
         return okToShowInForm(entry, arg, true);
+    }
+
+    public boolean nullDateOk(){
+	return getTypeProperty("date.nullok",false);
     }
 
     /**
