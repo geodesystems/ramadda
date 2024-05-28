@@ -9,10 +9,19 @@
       <element id="area" name="Area" datatype="enumerationplus"/>
     </type>        
 
+
+    <type id="archive_creator" name="Archive Creator">
+      <element id="creator" name="Creator" datatype="enumerationplus"/>
+    </type>        
+    
     <type id="archive_media_type" name="Archive Media Type">
       <element id="type" name="Media Type" datatype="enumerationplus"
 	       values="Photograph,Audio,Video"/>
     </type>
+    <type id="archive_physical_media" name="Archive Physical Media">
+      <element id="physical_description" name="Descriptiond" datatype="enumerationplus"
+	       values="CD Media,Analog,Photograph,Paper Copies,MP4 File,MP3 File,Audio File,Analogue Cassette Tape,Oversized Item"/>
+    </type>    
     <type id="archive_category" name="Archive Category">
       <element id="category" name="Category" datatype="enumerationplus"/>
      </type>        
@@ -20,6 +29,7 @@
     <type id="archive_test" name="Archive Test" searchable="true">
       <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
     </type>
+
 
     <type id="archive_note" name="Archive Note" searchable="true">
       <element id="type" name="Note Type" datatype="enumerationplus" searchable="true"/>
