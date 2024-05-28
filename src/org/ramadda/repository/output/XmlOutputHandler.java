@@ -183,6 +183,7 @@ public class XmlOutputHandler extends OutputHandler {
                                boolean includeParentId)
             throws Exception {
 
+
         Element node = XmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
             ATTR_ID, entry.getId(), ATTR_NAME, entry.getName(), ATTR_PARENT,
             (includeParentId

@@ -454,7 +454,10 @@ public class ZipOutputHandler extends OutputHandler {
                 }
             }
 
-            Request tmpRequest = getRepository().getTmpRequest();
+	    //Not sure why we were using the tmp request as this can block reading lat/lon etc
+	    //since it is an anonymous request
+	    //            Request tmpRequest = getRepository().getTmpRequest();
+            Request tmpRequest = request;
             Element entryNode  = null;
             if (forExport && (entriesRoot != null)) {
                 entryNode = getRepository().getXmlOutputHandler().getEntryTag(

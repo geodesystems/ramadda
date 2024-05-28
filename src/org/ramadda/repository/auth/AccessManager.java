@@ -451,6 +451,7 @@ public class AccessManager extends RepositoryManager {
 		  new Permission(Permission.ACTION_VIEW, Role.ROLE_ANY),
 		  new Permission(Permission.ACTION_VIEWCHILDREN, Role.ROLE_ANY),
 		  new Permission(Permission.ACTION_FILE, Role.ROLE_ANY),
+		  new Permission(Permission.ACTION_GEO, Role.ROLE_ANY),		  
 		  new Permission(Permission.ACTION_EXPORT, Role.ROLE_NONE),
 		  new Permission(Permission.ACTION_EDIT, Role.ROLE_NONE),
 		  new Permission(Permission.ACTION_NEW, Role.ROLE_NONE),
@@ -583,18 +584,6 @@ public class AccessManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param action _more_
-     * @param log _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
 	throws Exception {
@@ -626,18 +615,6 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, requestIp, user, log, entry, action);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param requestIp _more_
-     * @param user _more_
-     * @param log _more_
-     * @param entry _more_
-     * @param action _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean canDoAction(Request request, String requestIp, User user,
                                 boolean log, Entry entry, String action)
 	throws Exception {
@@ -802,6 +779,8 @@ public class AccessManager extends RepositoryManager {
                                      String action)
 	throws Exception {
         if (entry == null) {
+	    //A hack so the default for accessing GEO is true
+	    if(action.equals(Permission.ACTION_GEO))  return true;
             return false;
         }
         List<Role> roles      = getRoles(entry, action);
@@ -880,6 +859,8 @@ public class AccessManager extends RepositoryManager {
         if (parent != null) {
             return canDoAction(request, requestIp, user, log, parent, action);
         }
+	//A hack so the default for accessing GEO is true
+	if(action.equals(Permission.ACTION_GEO))  return true;
 
 
 
