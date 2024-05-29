@@ -131,7 +131,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 
 
 
-	if(!entry.hasLocationDefined()) {
+	if(!entry.hasLocationDefined(request)) {
 	    URL manifestUrl = new URL("https://auth."+ baseUrl+"/manifests/"+ nodeId);
 	    String manifest=IO.doGet(manifestUrl,"Accept","*/*");
 	    JSONObject obj = new JSONObject(manifest);

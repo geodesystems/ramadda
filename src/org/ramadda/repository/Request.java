@@ -319,7 +319,7 @@ public class Request implements Constants, Cloneable {
 	}
 	if(!repository.getAccessManager().canDoGeo(this, entry)) {
 	    geoOk.put(entry.getId(),Boolean.FALSE);
-	    System.err.println("NON GEO:"+ entry);
+	    //	    System.err.println("NON GEO:"+ entry);
 	    return Double.NaN;
 	}
 	geoOk.put(entry.getId(),Boolean.TRUE);

@@ -278,7 +278,7 @@ public class AtomOutputHandler extends OutputHandler {
             }
 
 
-            if (entry.hasAreaDefined()) {
+            if (entry.hasAreaDefined(request)) {
                 extra.append("<georss:box>" + entry.getSouth(request) + " "
                              + entry.getWest(request) + " " + entry.getNorth(request) + " "
                              + entry.getEast(request) + "</georss:box>\n");

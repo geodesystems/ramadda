@@ -523,7 +523,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (RecordEntry recordEntry : goodEntries) {
             Entry entry = recordEntry.getEntry();
 
-            if ( !entry.hasAreaDefined()) {
+            if ( !entry.hasAreaDefined(request)) {
                 continue;
             }
             for (SelectionRectangle bbox : bboxes) {

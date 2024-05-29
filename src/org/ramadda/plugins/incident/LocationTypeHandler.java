@@ -112,7 +112,7 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
      * @param entry _more_
      */
     private void georeferenceEntry(Request request, Entry entry) {
-        if (entry.isGeoreferenced()) {
+        if (entry.isGeoreferenced(request)) {
             return;
         }
         //TODO: if the entry has a location then don't do this?

@@ -3723,7 +3723,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                   request.getString(searchArg + "_east",
                                   ""), };
         }
-        if ((entry != null) && entry.hasAreaDefined()) {
+        if ((entry != null) && entry.hasAreaDefined(request)) {
             return new String[] { "" + entry.getNorth(request), "" + entry.getWest(request),
                                   "" + entry.getSouth(request),
                                   "" + entry.getEast(request) };

@@ -674,7 +674,7 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
 
-        if (entry.hasAreaDefined()) {
+        if (entry.hasAreaDefined(request)) {
             double[] center = entry.getCenter(request);
             JsonUtil.attr(items, "geometry",
                           JsonUtil.map(Utils.makeListFromValues("type",
@@ -686,7 +686,7 @@ public class JsonOutputHandler extends OutputHandler {
                                         "" + entry.getSouth(request),
                                         "" + entry.getEast(request),
                                         "" + entry.getNorth(request)));
-        } else if (entry.hasLocationDefined()) {
+        } else if (entry.hasLocationDefined(request)) {
             JsonUtil.attr(items, "geometry",
                           JsonUtil.map(Utils.makeListFromValues("type",
                               JsonUtil.quote("Point"), "coordinates",

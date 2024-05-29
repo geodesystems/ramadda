@@ -3319,7 +3319,7 @@ public class EntryManager extends RepositoryManager {
 		&& request.defined(ARG_LOCATION_LONGITUDE)) {
 		entry.setLatitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LATITUDE,"")));
 		entry.setLongitude(GeoUtils.decodeLatLon(request.getString(ARG_LOCATION_LONGITUDE,"")));
-		if(entry.hasLocationDefined()) {
+		if(entry.hasLocationDefined(request)) {
 		    getSessionManager().putSessionProperty(request,
 							   ARG_LOCATION_LATITUDE,
 							   entry.getLatitude(request) + ";" + entry.getLongitude(request));
@@ -3354,7 +3354,7 @@ public class EntryManager extends RepositoryManager {
                 entry.setEast(request.getLatOrLonValue(ARG_AREA + "_east",
 						       Entry.NONGEO));
             }
-	    if(entry.hasAreaDefined()) {
+	    if(entry.hasAreaDefined(request)) {
 		getRepository().getSessionManager().setArea(request,
 							    entry.getNorth(request),
 							    entry.getWest(request),
@@ -8113,7 +8113,7 @@ public class EntryManager extends RepositoryManager {
         } else if (filter.equals(FILTER_GEO)) {
             List<Entry> tmp = new ArrayList<Entry>();
             for (Entry child : entries) {
-                orNot(tmp, child, child.isGeoreferenced(), doNot);
+                orNot(tmp, child, child.isGeoreferenced(request), doNot);
             }
             entries = tmp;
         } else if (filter.equals(FILTER_FOLDER)) {
@@ -8527,7 +8527,7 @@ public class EntryManager extends RepositoryManager {
 							extra, shortForm);
 	    long t2= System.currentTimeMillis();
 	    //	    System.err.println("addMetadata:" + theEntry+" time:" + (t2-t1));
-            if ( !theEntry.hasAreaDefined()
+            if ( !theEntry.hasAreaDefined(request)
 		 && (extra.get(ARG_MINLAT) != null)) {
                 theEntry.setSouth(Misc.getProperty(extra, ARG_MINLAT, 0.0));
                 theEntry.setNorth(Misc.getProperty(extra, ARG_MAXLAT, 0.0));

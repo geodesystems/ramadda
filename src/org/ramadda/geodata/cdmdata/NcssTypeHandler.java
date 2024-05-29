@@ -347,7 +347,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 	//Do this before initializeNewEntry since that sets the lat/lon from the URL
         String url = entry.getResource().getPath();
 	if(url.indexOf("${latitude")>0) return false;
-	if(entry.hasLocationDefined()) {
+	if(entry.hasLocationDefined(request)) {
 	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude(request)+"&");
 	    url = url.replaceAll("longitude=[0-9\\.\\-]+\\&","longitude="+entry.getLongitude(request)+"&");
 	    entry.getResource().setPath(url);

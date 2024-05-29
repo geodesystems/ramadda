@@ -1498,7 +1498,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public boolean hasLocationDefined() {
-	    return entry.hasLocationDefined();
+	    return entry.hasLocationDefined(request);
 	}
 
 	public void setLocation(double lat,double lon) {

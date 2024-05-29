@@ -192,7 +192,7 @@ public class StacOutputHandler extends OutputHandler {
 
 	//Add the extent
 	List<String> extents = new ArrayList<String>();
-	if(entry.hasAreaDefined()) {
+	if(entry.hasAreaDefined(request)) {
 	    List<String> bbox = new ArrayList<String>();
 	    Utils.add(bbox,entry.getWest(request),entry.getSouth(request),entry.getEast(request),entry.getNorth(request));
 	    Utils.add(extents,"spatial",JsonUtil.map("bbox",JsonUtil.list(bbox)));

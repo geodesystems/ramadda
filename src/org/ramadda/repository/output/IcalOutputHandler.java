@@ -176,9 +176,9 @@ public class IcalOutputHandler extends OutputHandler {
             sb.append("DESCRIPTION:" + desc);
             sb.append("\n");
             double[] loc = null;
-            if (entry.hasAreaDefined()) {
+            if (entry.hasAreaDefined(request)) {
                 loc = entry.getLocation(request);
-            } else if (entry.hasLocationDefined()) {
+            } else if (entry.hasLocationDefined(request)) {
                 loc = entry.getCenter(request);
             }
             if (loc != null) {

@@ -5227,7 +5227,7 @@ public class WikiManager extends RepositoryManager
 		HU.attr("component-image",imageUrl);
 	}
 
-	if(child.hasLocationDefined()) {
+	if(child.hasLocationDefined(request)) {
 	    compAttrs+=
 		HU.attr("component-latitude",""+child.getLatitude(request)) +
 		HU.attr("component-longitude",""+child.getLongitude(request));
@@ -5724,7 +5724,7 @@ public class WikiManager extends RepositoryManager
 	if(hideIfNoLocations) {
 	    boolean ok  = false;
 	    for(Entry child: children) {
-		ok = child.isGeoreferenced();
+		ok = child.isGeoreferenced(request);
 		if(ok) break;
 	    }
 	    if(!ok) {
@@ -5744,7 +5744,7 @@ public class WikiManager extends RepositoryManager
         } else {
             boolean anyHaveLatLon = false;
             for (Entry child : children) {
-                if (child.hasLocationDefined() || child.hasAreaDefined()) {
+                if (child.hasLocationDefined(request) || child.hasAreaDefined(request)) {
                     anyHaveLatLon = true;
                     break;
                 }
@@ -8910,7 +8910,7 @@ public class WikiManager extends RepositoryManager
 							 "linechart");
                 wiki.append(
 			    "{{display_" + chartType +"   xwidth=600  height=400   layoutHere=false showMenu=true  showTitle=false  row=0  column=0  }}");
-                if (entry.isGeoreferenced()) {
+                if (entry.isGeoreferenced(request)) {
                     String mapLayers = getMapManager().getMapLayers();
                     String layerVar  = "";
                     if (mapLayers != null) {
@@ -9341,7 +9341,7 @@ public class WikiManager extends RepositoryManager
         if (bounds != null) {
             props.remove("bounds");
             Utils.add(propList, "bounds", JU.quote(bounds));
-        } else if (entry.hasAreaDefined()) {
+        } else if (entry.hasAreaDefined(request)) {
             Utils.add(propList, "entryBounds",
                       JU.quote(entry.getNorth(request) + "," + entry.getWest(request)
 				     + "," + entry.getSouth(request) + ","

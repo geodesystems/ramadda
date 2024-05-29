@@ -2005,7 +2005,7 @@ public class GpsOutputHandler extends OutputHandler {
         //If we figured out location from the opus file then set the rinex entry location
 
 
-        if (newEntry.hasLocationDefined()) {
+        if (newEntry.hasLocationDefined(request)) {
             if (canEditRinex) {
                 rinexEntry.setLocation(newEntry.getLatitude(request),
                                        newEntry.getLongitude(request),

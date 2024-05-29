@@ -99,7 +99,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
 
         if (tag.equals("sunrisesunset")) {
 
-            if ( !entry.hasLocationDefined()) {
+            if ( !entry.hasLocationDefined(request)) {
                 return "No location defined";
             }
 	    boolean includeDayLength = Utils.getProperty(props,"includeDayLength",true);

@@ -3212,7 +3212,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         System.err.println("DbTypeHandler.bulkUpload: final stored: "
                            + totalCnt[0]);
 
-        if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
+        if ( !entry.hasAreaDefined(request) && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
         }
 	entryChanged(request, entry);

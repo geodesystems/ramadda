@@ -1448,7 +1448,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     public Rectangle2D.Double getBounds(Request request,Entry entry, Rectangle2D.Double bounds) {
-	if (entry.hasAreaDefined() || entry.hasLocationDefined()) {
+	if (entry.hasAreaDefined(request) || entry.hasLocationDefined(request)) {
 	    if (bounds == null) {
 		bounds = entry.getBounds(request);
 	    } else {

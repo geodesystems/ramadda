@@ -73,7 +73,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
             }
         }
         for (Entry entry : allEntries) {
-            if (entry.isGeoreferenced()) {
+            if (entry.isGeoreferenced(request)) {
                 ok = true;
 
                 break;

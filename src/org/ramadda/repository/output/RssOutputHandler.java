@@ -269,12 +269,12 @@ public class RssOutputHandler extends OutputHandler {
             XmlUtil.appendCdata(sb, content);
 
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
-            if (entry.hasLocationDefined()) {
+            if (entry.hasLocationDefined(request)) {
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "",
                                       "" + entry.getSouth(request)));
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "",
                                       "" + entry.getEast(request)));
-            } else if (entry.hasAreaDefined()) {
+            } else if (entry.hasAreaDefined(request)) {
                 //For now just include the southeast point
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOBOX, "",
                                       entry.getSouth(request) + " "

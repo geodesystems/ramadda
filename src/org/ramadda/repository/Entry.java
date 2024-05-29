@@ -514,7 +514,7 @@ public class Entry implements Cloneable {
      * @return _more_
      */
     public String getBoundsString(Request request) {
-        if ( !hasAreaDefined()) {
+        if ( !hasAreaDefined(request)) {
             return null;
         }
         return getNorth(request) + "," + getWest(request) + "," + getSouth(request) + "," + getEast(request);
@@ -1127,9 +1127,13 @@ public class Entry implements Cloneable {
      *
      * @return true if this entry has a location defined
      */
-    public boolean hasLocationDefined() {
+    public boolean hasLocationDefined(Request request) {
+	double north = getNorth(request);
+	double west = getWest(request);	
+	double south = getSouth(request);
+	double east = getEast(request);		
         if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south)
-	    && Utils.isReal(east) && !hasAreaDefined()) {
+	    && Utils.isReal(east) && !hasAreaDefined(request)) {
             if (Utils.between(east, -180, 180)
 		&& Utils.between(south, -90, 90)) {
                 return true;
@@ -1182,8 +1186,8 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
-    public boolean isGeoreferenced() {
-        return hasAreaDefined() || hasLocationDefined();
+    public boolean isGeoreferenced(Request request) {
+        return hasAreaDefined(request) || hasLocationDefined(request);
     }
 
     /**
@@ -1191,7 +1195,11 @@ public class Entry implements Cloneable {
      *
      * @return true if this entry has an area defined
      */
-    public boolean hasAreaDefined() {
+    public boolean hasAreaDefined(Request request) {
+	double north = getNorth(request);
+	double west = getWest(request);	
+	double south = getSouth(request);
+	double east = getEast(request);		
         if ( !Utils.isReal(south) || !Utils.isReal(east)
 	     || !Utils.isReal(north) || !Utils.isReal(west)) {
             return false;

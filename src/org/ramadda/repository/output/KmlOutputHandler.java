@@ -260,9 +260,9 @@ public class KmlOutputHandler extends OutputHandler {
                 KmlUtil.visible(link, false);
                 KmlUtil.open(link, false);
                 link.setAttribute(KmlUtil.ATTR_ID, entry.getId());
-            } else if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+            } else if (entry.hasLocationDefined(request) || entry.hasAreaDefined(request)) {
                 double[] lonlat;
-                if (entry.hasAreaDefined()) {
+                if (entry.hasAreaDefined(request)) {
                     lonlat = entry.getCenter(request);
                 } else {
                     lonlat = entry.getLocation(request);

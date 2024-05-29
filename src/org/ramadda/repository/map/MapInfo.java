@@ -1490,7 +1490,7 @@ public class MapInfo {
             center();
             return;
         }
-        if (entry.hasAreaDefined()) {
+        if (entry.hasAreaDefined(request)) {
             centerOn(entry.getNorth(request), entry.getWest(request), entry.getSouth(request),
                      entry.getEast(request));
         } else {

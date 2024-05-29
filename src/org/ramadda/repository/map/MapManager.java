@@ -241,12 +241,12 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
         boolean didLoc = false;
         if (entry != null) {
-            if (entry.hasLocationDefined()) {
+            if (entry.hasLocationDefined(request)) {
                 props.put(PROP_INITIAL_LOCATION,
                           JsonUtil.list(entry.getLatitude(request) + "",
                                         entry.getLongitude(request) + ""));
                 didLoc = true;
-            } else if (entry.hasAreaDefined()) {
+            } else if (entry.hasAreaDefined(request)) {
                 props.put(PROP_INITIAL_BOUNDS,
                           JsonUtil.list(entry.getNorth(request) + "",
                                         entry.getWest(request) + "",
@@ -284,14 +284,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if ( !didLoc) {
             entry = getSessionManager().getLastEntry(request);
             if (entry != null) {
-                if (entry.hasLocationDefined()) {
+                if (entry.hasLocationDefined(request)) {
                     props.put(PROP_INITIAL_LOCATION,
                               JsonUtil.list(entry.getLatitude(request) + "",
                                             entry.getLongitude(request) + ""));
 
 
                     didLoc = true;
-                } else if (entry.hasAreaDefined()) {
+                } else if (entry.hasAreaDefined(request)) {
                     props.put(PROP_INITIAL_BOUNDS,
                               JsonUtil.list(entry.getNorth(request) + "",
                                             entry.getWest(request) + "",
@@ -1517,7 +1517,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
 
         if ((entriesToUse.size() == 1)
-	    && !entriesToUse.get(0).hasAreaDefined()) {
+	    && !entriesToUse.get(0).hasAreaDefined(request)) {
 	    String zoomLevel=  mapProps==null?"12":
 		Utils.getProperty(mapProps, "zoomLevel", "12");		
 	    if(zoomLevel!=null && !zoomLevel.equals("default")) 
@@ -1608,7 +1608,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
         for (Entry entry : entriesToUse) {
 	    addMapMarkerMetadata(request, entry, markers);
-            if ( !(entry.hasLocationDefined() || entry.hasAreaDefined())) {
+            if ( !(entry.hasLocationDefined(request) || entry.hasAreaDefined(request))) {
                 continue;
             }
 
@@ -1843,7 +1843,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
 
         for (Entry entry : entriesToUse) {
-            if (entry.hasAreaDefined()) {
+            if (entry.hasAreaDefined(request)) {
                 cnt++;
             }
         }
@@ -1881,7 +1881,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             if (makeRectangles) {
                 boolean didMetadata = map.addSpatialMetadata(entry,
 							     metadataList);
-                if (rectOK && entry.hasAreaDefined() && !didMetadata) {
+                if (rectOK && entry.hasAreaDefined(request) && !didMetadata) {
                     if ( !screenBigRects
 			 || (Math.abs(entry.getEast(request) - entry.getWest(request))
 			     < 90)) {
@@ -1891,9 +1891,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             }
 
 
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+            if (entry.hasAreaDefined(request) || entry.hasLocationDefined(request)) {
                 double[] location;
-                if (makeRectangles || !entry.hasAreaDefined()) {
+                if (makeRectangles || !entry.hasAreaDefined(request)) {
                     location = entry.getLocation(request);
                 } else {
                     location = entry.getCenter(request);

@@ -502,10 +502,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public final RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
         Hashtable properties = getRecordProperties(entry);
-	if(entry.hasLocationDefined()) {
+	if(entry.hasLocationDefined(request)) {
 	    properties.put("latitude",""+entry.getLatitude(request));
 	    properties.put("longitude",""+entry.getLongitude(request));
-	} else if(entry.hasAreaDefined()) {
+	} else if(entry.hasAreaDefined(request)) {
 	    Rectangle2D.Double bounds = entry.getBounds(request);
 	    properties.put("latitude",""+bounds.getCenterY());
 	    properties.put("longitude",""+bounds.getCenterX());
@@ -721,7 +721,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                     "${longitude}",
                     (String) requestProperties.get("longitude"));
             }
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+            if (entry.hasLocationDefined(request) || entry.hasAreaDefined(request)) {
                 path = path.replace("${latitude}", entry.getLatitude(request) + "");
                 path = path.replace("${longitude}",
                                     entry.getLongitude(request) + "");

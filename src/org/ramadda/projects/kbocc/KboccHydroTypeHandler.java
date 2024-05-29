@@ -47,7 +47,7 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	}
 	super.initializeNewEntry(request, entry, newType);
 
-	if(entry.hasLocationDefined()) return;
+	if(entry.hasLocationDefined(request)) return;
 	File file = entry.getFile();
 	if(!file.exists()) return;
 	if(loggers==null) {

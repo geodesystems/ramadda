@@ -1292,7 +1292,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public void initEntry(Entry entry) {
 	try {
 	    if (getAddMetadata() || getAddShortMetadata()) {
-		if(!entry.hasLocationDefined()) {
+		if(!entry.hasLocationDefined(getRequest())) {
 		    //see if the group name is a county, city, state, etc
 		    Place place;
 		    String name =entry.getName();
@@ -1882,10 +1882,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    getEntryManager().parentageChanged(group);
         }
 
-	if(pushGeo && !entry.isGeoreferenced()) {
+	if(pushGeo && !entry.isGeoreferenced(request)) {
 	    Entry ancestor = group;
 	    while(ancestor!=null) {
-		if(ancestor.isGeoreferenced()) break;
+		if(ancestor.isGeoreferenced(request)) break;
 		ancestor = ancestor.getParentEntry();
 	    }
 	    if(ancestor!=null) {

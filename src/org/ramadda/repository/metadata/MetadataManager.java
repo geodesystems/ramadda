@@ -647,12 +647,12 @@ public class MetadataManager extends RepositoryManager {
 	    }
 
         }
-        if (entry.isGeoreferenced()) {
+        if (entry.isGeoreferenced(request)) {
             List<String> geo = new ArrayList<String>();
             geo.add("@type");
             geo.add(JsonUtil.quote("Place"));
             geo.add("geo");
-            if (entry.hasAreaDefined()) {
+            if (entry.hasAreaDefined(request)) {
                 String box = entry.getSouth(request) + " " + entry.getWest(request) + " "
                              + entry.getNorth(request) + " " + entry.getEast(request);
                 geo.add(JsonUtil.map(Utils.makeListFromValues("@type",

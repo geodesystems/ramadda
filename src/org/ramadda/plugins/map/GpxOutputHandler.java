@@ -71,7 +71,7 @@ public class GpxOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         for (Entry entry : state.getAllEntries()) {
-            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+            if (entry.hasLocationDefined(request) || entry.hasAreaDefined(request)) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GPX));
 
                 break;
@@ -141,10 +141,10 @@ public class GpxOutputHandler extends OutputHandler {
                                       "RAMADDA" })));
 
         for (Entry child : entries) {
-            if ( !(child.hasLocationDefined() || child.hasAreaDefined())) {
+            if ( !(child.hasLocationDefined(request) || child.hasAreaDefined(request))) {
                 continue;
             }
-            if (child.hasAreaDefined()) {}
+            if (child.hasAreaDefined(request)) {}
             else {
                 sb.append(XmlUtil.tag(GpxUtil.TAG_WPT,
                                       XmlUtil.attrs(new String[] {

@@ -216,7 +216,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     private Weather getWeather(Request request,Entry entry, boolean getForecast)
 	throws Exception {
         try {
-            if ( !entry.hasLocationDefined()) {
+            if ( !entry.hasLocationDefined(request)) {
                 return null;
             }
             String  key      = entry.getId() + "_" + entry.getChangeDate();

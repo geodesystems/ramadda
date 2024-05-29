@@ -195,7 +195,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         try {
-            if ((entry == null) || !entry.hasAreaDefined()) {
+            if ((entry == null) || !entry.hasAreaDefined(request)) {
                 return false;
             }
 
@@ -264,7 +264,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         if (entry == null) {
             return false;
         }
-        if (entry.hasAreaDefined()) {
+        if (entry.hasAreaDefined(request)) {
             String url =
                 getRepository().getHtmlOutputHandler().getImageUrl(request,
                     entry);

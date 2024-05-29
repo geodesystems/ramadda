@@ -1190,13 +1190,13 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	if(entry.isFile()) {
 	    Utils.add(attrs, "filename",JsonUtil.quote(IO.getFileTail(entry.getResource().getPath())));
 	}
-	if(entry.isGeoreferenced()) {
+	if(entry.isGeoreferenced(request)) {
 	    Utils.add(attrs, "isGeo","true");
-	    if(entry.hasAreaDefined()) {
+	    if(entry.hasAreaDefined(request)) {
 		Utils.add(attrs, "north",entry.getNorth(request),"west",entry.getWest(request),
 			  "south",entry.getSouth(request),
 			  "east",entry.getEast(request));
-	    } else if(entry.hasLocationDefined()) {
+	    } else if(entry.hasLocationDefined(request)) {
 		Utils.add(attrs, "latitude",entry.getLatitude(request),
 			  "longitude",entry.getLongitude(request));
 

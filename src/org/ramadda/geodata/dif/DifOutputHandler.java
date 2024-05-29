@@ -171,7 +171,7 @@ public class DifOutputHandler extends OutputHandler {
             getDateHandler().formatYYYYMMDD(new Date(entry.getStartDate())));
         tag(DifUtil.TAG_Stop_Date, parent,
             getDateHandler().formatYYYYMMDD(new Date(entry.getEndDate())));
-        if (entry.hasAreaDefined()) {
+        if (entry.hasAreaDefined(request)) {
             parent = tag(DifUtil.TAG_Spatial_Coverage, root, null);
             tag(DifUtil.TAG_Northernmost_Latitude, parent,
                 "" + entry.getNorth(request));
