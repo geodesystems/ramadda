@@ -35,13 +35,6 @@
     <column type="enumerationplus" cansearch="true" name="taxon_species" label="Species"/>    
 <wiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
-+center
-{{display_simplesearch width=200px  inputSize=100% 
-ancestor=this 
-placeholder="Search"
-orderBy=createdate_ascending 
-}}
--center
 +row
 +col-8
 +toggleopen Details
