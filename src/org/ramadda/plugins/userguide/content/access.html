@@ -232,6 +232,18 @@ In the Edit page for the uploaded Entry the owner can "bless" the entry to make 
 If you want more people than the owner to receive notification simply add  a "Contact" property to the folder
 that contains the other recipient's email.
 
+<a name="geo"></a>
+<li> Geolocation - This allows limits any access to the geolocation (i.e., its north/west/south/east bounding box)
+of an entry including in displaying in a map, export, JSON listing, etc.
+If the user is searching based on geographic location and they don't have "geo" access then the entries
+won't be shown.
+<p>
+Note: If a data file has geolocation (e.g., a CSV file with Lat/Lon) then this access settings
+has no effect on filtering the lat/lon.
+
+
+
+
 <a name="delete"></a>
 <li> Delete - Can  a user delete an entry.
 
