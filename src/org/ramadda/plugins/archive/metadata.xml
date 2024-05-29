@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Archive" 	searchable="true" browsable="true">
-    <type id="archive_subject" name="Archive Subject" >
+    <type id="archive_subject" name="Archive Subject" displaygroup="Archive Subjects" >
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
 
@@ -33,12 +33,12 @@
       <element id="physical_description" name="Descriptiond" datatype="enumerationplus"
 	       values="CD Media,Analog,Photograph,Paper Copies,MP4 File,MP3 File,Audio File,Analogue Cassette Tape,Oversized Item"/>
     </type>    
+
     <type id="archive_category" name="Archive Category">
       <element id="category" name="Category" datatype="enumerationplus"/>
-     </type>        
+    </type>        
 
-
-    <type id="archive_note" name="Archive Note" searchable="true">
+    <type id="archive_note" name="Archive Note" searchable="true" displaygroup="Archive Notes">
       <element id="type" name="Note Type" datatype="enumerationplus" searchable="true"/>
       <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
       <template type="html"><![CDATA[<div style='display:table-cell;padding-right:5px;font-weight:bold;'>${attr1}:</div><div style='display:table-cell;'>${attr2}</div>]]></template>
