@@ -571,12 +571,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         doc.add(new SortedNumericDocValuesField(FIELD_SIZE, entry.getResource().getFileSize()));
 	doc.add(new LongPoint(FIELD_SIZE, entry.getResource().getFileSize()));
 	doc.add(new SortedNumericDocValuesField(FIELD_ENTRYORDER, entry.getEntryOrder()));
-	if(entry.hasAreaDefined()) {
+	if(entry.hasAreaDefined(request)) {
 	    doc.add(new DoublePoint(FIELD_NORTH, entry.getNorth(request)));
 	    doc.add(new DoublePoint(FIELD_WEST, entry.getWest(request)));
 	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getSouth(request)));
 	    doc.add(new DoublePoint(FIELD_EAST, entry.getEast(request)));
-	} else if(entry.hasLocationDefined()) {
+	} else if(entry.hasLocationDefined(request)) {
 	    doc.add(new DoublePoint(FIELD_NORTH, entry.getLatitude(request)));
 	    doc.add(new DoublePoint(FIELD_WEST, entry.getLongitude(request)));
 	    doc.add(new DoublePoint(FIELD_SOUTH, entry.getLatitude(request)));
@@ -1204,12 +1204,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    */
 	}
 
-
 	List<SelectionRectangle> rectangles = getEntryUtil().getSelectionRectangles(request.getSelectionBounds());
-
 	boolean contains = !(request.getString(ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS));
-	makeAreaQueries(rectangles, queries, contains,FIELD_NORTH,FIELD_WEST,FIELD_SOUTH,FIELD_EAST);
-
+	boolean hasArea = makeAreaQueries(rectangles, queries, contains,FIELD_NORTH,FIELD_WEST,FIELD_SOUTH,FIELD_EAST);
 
 	int sizeMin =  request.get(ARG_SIZE_MIN,-1);
 	int sizeMax =  request.get(ARG_SIZE_MAX,-1);	
@@ -1574,6 +1571,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		getLogManager().logSpecial("SearchManager.processLuceneSearch - unable to find entry from id:" + id);
                 continue;
             }
+	    if(hasArea && !entry.isGeoreferenced(request)) {
+		continue;
+	    }
 	    entries.add(entry);
 	}
 	if(debugSearch)
@@ -1581,10 +1581,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     }
 
-    private void makeAreaQueries(List<SelectionRectangle> rectangles,
-				 List<Query> queries,
-				 boolean contains,
-				 String north,String west,String south, String east) throws Exception {
+    private boolean makeAreaQueries(List<SelectionRectangle> rectangles,
+				    List<Query> queries,
+				    boolean contains,
+				    String north,String west,String south, String east) throws Exception {
 	List<Query> areaQueries = new ArrayList<Query>();
 	for (SelectionRectangle rectangle : rectangles) {
 	    if(!rectangle.anyDefined()) continue;
@@ -1619,8 +1619,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		areaBuilder.add(query, BooleanClause.Occur.MUST);
 	    }
 	    queries.add(areaBuilder.build());
+	    return true;
 	}
-	
+	return false;
 
     }
 
