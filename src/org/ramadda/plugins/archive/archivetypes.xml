@@ -176,7 +176,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 </type>
 
-<type name="type_archive_item"  description="Archive Item" foruser="false"
+<type name="type_archive_item"  description="Archive Item" 
       handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
       newfields="name,description,_default"
       editfields="name,description,_default">
