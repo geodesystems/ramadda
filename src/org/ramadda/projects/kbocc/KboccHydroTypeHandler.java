@@ -58,6 +58,7 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	if(yearSite==null)
 	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d\\d)");
 	if(yearSite==null) yearSite="";
+	yearSite=yearSite.replace("_","-");
 	List<String> toks = Utils.splitUpTo(yearSite,"-",2);
 	String site = toks.size()==2?toks.get(1):"";
 	JSONObject theLogger=null;
