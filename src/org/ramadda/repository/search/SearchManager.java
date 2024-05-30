@@ -237,11 +237,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     /** _more_ */
     private static final String FIELD_NAME = "name";
 
-    private static final String FIELD_CREATOR = "creator";    
+    private static final String FIELD_CREATOR = "entry_creator";    
 
     private static final String FIELD_NAME_SORT = "namesort";    
 
-    private static final String[] SEARCH_FIELDS ={FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
+    private static final String[] SEARCH_FIELDS ={
+	FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
 
 
@@ -1021,7 +1022,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    builder.add(query, BooleanClause.Occur.SHOULD);
 	}
 	return builder.build();
-    }    
+    }
+
+    private Query makeAnd(List<Query>queries) {
+	BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	for(Query query: queries) {
+	    builder.add(query, BooleanClause.Occur.MUST);
+	}
+	return builder.build();
+    }        
     
 
     public Result processEntryList(Request request) throws Exception {
@@ -1057,15 +1066,26 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return new Result("Entry List", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param groups _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
+    private Query makeTextQuery(String field, String s) {
+	s = s.trim().toLowerCase();
+	List<Query> ands = new ArrayList<Query>();
+	List<String> toks = Utils.splitWithQuotes(s);
+	for(String tok:toks) {
+	    List<String> toks2 = Utils.split(tok," ",true,true);
+	    if(toks2.size()==1) {
+		ands.add(new BoostQuery(new WildcardQuery(new Term(field, toks2.get(0))),6));
+	    } else {
+		PhraseQuery.Builder builder = new PhraseQuery.Builder();
+		for(String tok2:toks2) {
+		    builder.add(new Term(field,tok2));
+		}
+		ands.add(builder.build());
+	    }
+	}
+	return makeAnd(ands);
+    }
+
+
     int scnt=0;
     public void processLuceneSearch(Request request, List<Entry> entries)
 	throws Exception {
@@ -1148,16 +1168,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String name = request.getUnsafeString(ARG_NAME,null);
 	if(stringDefined(name)) {
-	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_NAME, name.toLowerCase())),6);
-	    queries.add(query);
+	    queries.add(makeTextQuery(FIELD_NAME,name));
 	}
 	String description = request.getUnsafeString(ARG_DESCRIPTION,null);
 	if(stringDefined(description)) {
-	    Query query = new BoostQuery(new WildcardQuery(new Term(FIELD_DESCRIPTION, description.toLowerCase())),6);
-	    queries.add(query);
+	    queries.add(makeTextQuery(FIELD_DESCRIPTION,description));
 	}	
-
-
 
 	for (DateArgument arg : DateArgument.SEARCH_ARGS) {
 	    long min = Long.MIN_VALUE;
@@ -1418,6 +1434,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 					null,null);
 			continue;
 		    } else {
+
 			String v = request.getUnsafeString(searchArg,null);
 			if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			v = v.toLowerCase();
@@ -1448,8 +1465,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		queries.add(builder.build());
 	    }
 	}
-	//	System.err.println("queries:"+queries);
 
+	//	System.err.println("queries:" + queries);
 
 	Query query = null;
 	if(queries.size()==0) {
