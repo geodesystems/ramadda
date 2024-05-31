@@ -53,6 +53,7 @@ orderBy=createdate_ascending
 {{description wikify="true"}}
 <div class=metadata-full>
 {{properties  propertyToggleLimit=3 message=""  metadata.types="archive_note"
+checkTextLength="true"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>

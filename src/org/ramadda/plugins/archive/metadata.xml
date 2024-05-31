@@ -41,7 +41,7 @@
     <type id="archive_note" name="Archive Note" searchable="true" displaygroup="Archive Notes">
       <element id="type" name="Note Type" datatype="enumerationplus" searchable="true"/>
       <element id="note" name="Note" rows="5" columns="60" searchable="true"/>
-      <template type="html"><![CDATA[<div style='display:table-cell;padding-right:5px;font-weight:bold;'>${attr1}:</div><div style='display:table-cell;'>${attr2}</div>]]></template>
+      <template type="html"><![CDATA[<div style='display:table-cell;padding-right:5px;font-weight:bold;'>${attr1}:</div><div style='display:table-cell;'><div class='ramadda-bigtext'>${attr2}</div></div>]]></template>
     </type>        
 
 
