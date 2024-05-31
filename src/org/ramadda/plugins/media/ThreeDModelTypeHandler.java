@@ -331,9 +331,9 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 		Utils.add(attrs,"thumbnail",JsonUtil.quote(urls.get(0)));
 	    }
 
-	    String thumbnail = getMetadataManager().getThumbnailUrl(request,  entry);
+	    String[] thumbnail = getMetadataManager().getThumbnailUrl(request,  entry);
 	    if(thumbnail!=null)
-		Utils.add(attrs,"thumbnail",JsonUtil.quote(thumbnail));
+		Utils.add(attrs,"thumbnail",JsonUtil.quote(thumbnail[0]));
 
 
 	    String include = getMetadataManager().getMetadataUrl(request, entry,"3dmodel_texture");
