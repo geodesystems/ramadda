@@ -1522,7 +1522,22 @@ a.ramadda-menubar-button:hover {
 .ramadda-card-image {
     border : 1px solid #efefef;
     border : 1px solid rgba(200,200,200,0.2);
-    xmargin-top:4px;
+}
+
+
+.ramadda-imagewrap {
+    overflow: hidden;
+    position: relative;
+}
+
+.ramadda-imagewrap .ramadda-card-image {
+    width: 100%; /* Ensure the image covers the width of the container */
+    height: auto; /* Maintain aspect ratio */
+    position: absolute; /* Optional: position within the container */
+    xtop: 50%; /* Optional: vertically center */
+    xleft: 50%; /* Optional: horizontally center */
+    xtransform: translate(-50%, -50%); /* Optional: adjust position to center */
+    object-fit: cover;
 }
 
 
