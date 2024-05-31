@@ -126,6 +126,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     /** _more_ */
     private int priority = 1000;
 
+    private int textLengthLimit=400;
+
     /** _more_ */
     private boolean makeDatabaseTable = false;
 
@@ -353,6 +355,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         priority = XmlUtil.getAttributeFromTree(node, ATTR_PRIORITY,
 						priority);
 
+	textLengthLimit= XmlUtil.getAttributeFromTree(node, "textLengthLimit",textLengthLimit);
         setBrowsable(XmlUtil.getAttributeFromTree(node, ATTR_BROWSABLE,
 						  false));
 
@@ -1180,6 +1183,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 			metadataHtml = handler.getSearchLink(request, metadata,metadataHtml);
 		    }
 
+		    if(metadataHtml.length()>textLengthLimit) {
+			metadataHtml = HU.div(metadataHtml,HU.cssClass("ramadda-bigtext"));
+		    }
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
 				       HU.row(
