@@ -761,6 +761,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
 		    String fieldValue = metadata.getAttr(element.getIndex());
 		    if(element.isEnumeration()) {
+			System.err.println("enum: " + fieldId +"="+fieldValue); 
 			doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
 		    } else {
 			doc.add(new TextField(fieldId, fieldValue,Field.Store.NO));
@@ -1278,8 +1279,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         Hashtable args        = request.getArgs();
         String metadataPrefix = ARG_METADATA_ATTR;
-	Hashtable<MetadataElement,MetadataElementSearchInfo> mmap =new Hashtable<MetadataElement,MetadataElementSearchInfo>();
-	List<MetadataElementSearchInfo>infos = new ArrayList<MetadataElementSearchInfo>();
+	Hashtable<MetadataType,MetadataTypeSearchInfo> mmap =new Hashtable<MetadataType,MetadataTypeSearchInfo>();
+	List<MetadataTypeSearchInfo>infos = new ArrayList<MetadataTypeSearchInfo>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
             if ( !arg.startsWith(metadataPrefix)) {
@@ -1288,7 +1289,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if ( !request.defined(arg)) {
                 continue;
             }
-	    System.err.println("arg:" + arg);
+	    //xxxx
 	    List<String> values = (List<String>) request.get(arg,new ArrayList());
             arg = arg.substring(metadataPrefix.length());
 	    List<String> toks = Utils.splitUpTo(arg,"_",2);
@@ -1300,37 +1301,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		System.err.println("Search error: could not find metadata type:" + type);
 		continue;
 	    }
+
 	    MetadataElement element = metadataType.getElement(index-1);
 	    if(element==null) {
 		System.err.println("Search error: could not find metadata element:" + type +" index:" + index);
 		continue;
 	    }
 		
-	    MetadataElementSearchInfo info =  mmap.get(element);
-	    if(info==null) {
-		mmap.put(element,info = new MetadataElementSearchInfo(element));
-		infos.add(info);
+	    MetadataTypeSearchInfo typeInfo =  mmap.get(metadataType);
+	    if(typeInfo==null) {
+		mmap.put(metadataType,typeInfo = new MetadataTypeSearchInfo(this,metadataType));
+		infos.add(typeInfo);
 	    }
-	    System.err.println("type:" + type +" index:" + index);
-
+	    MetadataElementSearchInfo info =  typeInfo.get(element);
 	    //            String type = toks.get(1)+"_"+index;
 	    for(String value: values) {
 		info.addValue(value);
 		//		cats.add(type,value);
 	    }
 	}
-	List<Query> metadataQueries = new ArrayList<Query>();
-	for(MetadataElementSearchInfo info: infos) {
-	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-	    String field = getMetadataField(info.getFieldId());
-	    for(String value: info.values) {
-		Query query = new TermQuery(makeTerm(field, value));
-		//Query query =  new WildcardQuery(makeTerm(field, value));
-		//		Query query = makeTextQuery(field,value);
-		System.err.println("metadata:" + field+"=" + value);
-		builder.add(query,BooleanClause.Occur.SHOULD);		
+	for(MetadataTypeSearchInfo typeInfo: infos) {
+	    List<Query> metadataQueries=new ArrayList<Query>();
+	    for(MetadataElementSearchInfo info: typeInfo.elements) {
+		metadataQueries.add(info.makeQuery());
 	    }
-	    queries.add(builder.build());
+	    if(metadataQueries.size()==1) {
+		queries.add(metadataQueries.get(0));
+	    }	 else {
+		queries.add(makeAnd(metadataQueries));
+	    }
 	}
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
@@ -1498,7 +1497,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-//	System.err.println("queries:" + queries);
+	//	System.err.println("queries:" + queries);
 
 	Query query = null;
 	if(queries.size()==0) {
@@ -3278,14 +3277,73 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public static class MetadataTypeSearchInfo {
+	SearchManager manager;
+	MetadataType type;
+	List<MetadataElementSearchInfo> elements= new ArrayList<MetadataElementSearchInfo>();
+	Hashtable<MetadataElement,MetadataElementSearchInfo> mmap =new Hashtable<MetadataElement,MetadataElementSearchInfo>();
+
+	public MetadataTypeSearchInfo(SearchManager manager, MetadataType type) {
+	    this.manager=manager;
+	    this.type = type;
+	}
+
+
+	public MetadataElementSearchInfo get(MetadataElement element) {
+	    MetadataElementSearchInfo info = mmap.get(element);
+	    if(info==null) {
+		mmap.put(element,info  = new MetadataElementSearchInfo(manager,element));
+		elements.add(info);
+	    }
+	    return info;
+	}
+
+	
+	@Override
+	public int hashCode() {
+	    return type.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+	    return type.equals(o);
+	}
+
+
+
+    }
+
+
+
     public static class MetadataElementSearchInfo {
+	SearchManager manager;
 	MetadataElement element;
 	List<String> values= new ArrayList<String>();
-	public MetadataElementSearchInfo(MetadataElement element) {
+	public MetadataElementSearchInfo(SearchManager manager,MetadataElement element) {
+	    this.manager=manager;
 	    this.element=element;
 	}
+	public Query makeQuery() {
+	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
+	    String field = manager.getMetadataField(getFieldId());
+	    for(String value: values) {
+		Query query;
+		if(isEnumeration()) {
+		    query = new TermQuery(new Term(field, value));
+		} else {
+		    query =manager.makeTextQuery(field,value);
+		}
+		builder.add(query,BooleanClause.Occur.SHOULD);		
+	    }
+	    return builder.build();
+	}
+
 	public void addValue(String v) {
 	    values.add(v);
+	}
+
+	public boolean isEnumeration() {
+	    return element.isEnumeration();
 	}
 
 	public String getFieldId() {
