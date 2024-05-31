@@ -197,18 +197,6 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param templateType _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param parent _more_
-     *
-     * @throws Exception _more_
-     */
     protected void checkFileXml(Request request, String templateType,
                                 Entry entry, Metadata metadata,
                                 Element parent)
@@ -242,20 +230,6 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param templateType _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String applyTemplate(Request request, String templateType,
                                 Entry entry, Metadata metadata,
                                 Element parent)
