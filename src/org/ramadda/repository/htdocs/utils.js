@@ -2747,6 +2747,33 @@ var Utils =  {
         return this.pageLoaded;
     },
 
+    initBigText:function(bigText) {
+	let text= bigText.html();
+	let limit = bigText.attr('bigtext-length')??400;
+	if(text.length<limit) return;
+	let moreLabel = bigText.attr('bigtext-label-more')??'Read more...';
+	let lessLabel = bigText.attr('bigtext-label-more')??'Read less...';		
+	let height = bigText.attr('bigtext-height')??'100px';
+	let fadeId = HU.getUniqueId('fade_');
+	bigText.css('padding-bottom','25px').css('max-height',height).css('overflow-y','hidden').css('position','relative');
+	let fade = $(HU.div([ATTR_STYLE,HU.css('height',bigText.attr('bigtext-fade-height')??'50px'),ATTR_ID,fadeId,ATTR_CLASS,'ramadda-bigtext-fade'])).appendTo(bigText);
+	let toggle = HU.div([ATTR_TITLE,'Expand',ATTR_CLASS,'ramadda-clickable ramadda-bigtext-toggle'], moreLabel);
+	toggle = $(toggle).appendTo(bigText);
+	let open=false;
+	toggle.click(function() {
+	    open = !open;
+	    if(open) {
+		fade.hide();
+		toggle.html(lessLabel);
+		bigText.css('max-height','1000px');
+	    } else {
+		toggle.html(moreLabel);
+		bigText.css('max-height',height);
+		fade.show();
+	    }
+	});
+    },
+
     initContent: function(parent) {
         if (!parent) parent = "";
         else parent = parent + " ";
@@ -2760,7 +2787,13 @@ var Utils =  {
             console.log("Error formatting table:" + e);
             console.log(e.stack);
         }
-        var snippets = $(parent + ".ramadda-snippet-hover");
+        let bigText = $(parent + ".ramadda-bigtext");
+	bigText.each(function() {
+	    Utils.initBigText($(this));
+	});
+
+
+        let snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
             let snippet = $(this);
 	    let snippetPopup;
