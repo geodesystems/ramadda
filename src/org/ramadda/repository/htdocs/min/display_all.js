@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 29 22:11:31 MDT 2024";
+var build_date="RAMADDA build date: Thu May 30 20:56:17 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33460,9 +33460,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         {p:'entryTypes',ex:'comma separated list of types - use "any" for any type'},
         {p:'typesLabel',tt: 'Label to use for the type section'},		
-	{p:'addAllTypes',tt:'Add the All types to the type list'},
-	{p:'addAnyType',tt:'Add the Any of these types to the type list'},
-	{p:'startWithAny',tt:'Start with the Any of these types'},	
+	{p:'addAllTypes',ex:'true',tt:'Add the All types to the type list'},
+	{p:'addAnyType',ex:'true',tt:'Add the Any of these types to the type list'},
+	{p:'startWithAny',ex:'true',tt:'Start with the Any of these types'},	
         {p:'doSearch',d: true,tt:'Apply search at initial display'},
 	{p:'searchHeaderLabel',d: 'Search'},
 	{p:'searchOpen',d: true},
