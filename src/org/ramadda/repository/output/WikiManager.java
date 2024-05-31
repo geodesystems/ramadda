@@ -1404,9 +1404,19 @@ public class WikiManager extends RepositoryManager
 	}
 	boolean inherited = getProperty(wikiUtil, props,"inherited",false);
         if (!stringDefined(src) && getProperty(wikiUtil,props,"useThumbnail",false)) {
-	    String imageUrl = getMetadataManager().getThumbnailUrl(request, entry,inherited);
+	    String[] imageUrl = getMetadataManager().getThumbnailUrl(request, entry,inherited);
+	    if(imageUrl==null) {
+		if(getProperty(wikiUtil,props,"showPlaceholderImage",false)) {
+		    imageUrl = new String[]{getPageHandler().makeHtdocsUrl("/images/placeholder.png"),""};
+		}
+	    }
 	    if(imageUrl!=null) {
-		return getWikiImage(wikiUtil, request, imageUrl,entry,props);
+		if(getProperty(wikiUtil,props,"showCaption",false) && stringDefined(imageUrl[1])) {
+		    props.put("caption",imageUrl[1]);
+		}
+		String image= getWikiImage(wikiUtil, request, imageUrl[0],entry,props);
+		return image;
+
 	    }
 	}
 
@@ -2544,11 +2554,13 @@ public class WikiManager extends RepositoryManager
 	    String _path   = path.toLowerCase();
 	    String imageUrl = null;
 	    if(entry.isImage()) {
-		imageUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		imageUrl= entry.getTypeHandler().getEntryResourceUrl(request, entry);
 	    }
 
 	    if(_path.indexOf(".pdf")>=0) {
-		imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+		String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
+		if(tuple!=null) imageUrl  = tuple[0];
+
 		if(full || imageUrl==null) {
 		    String pdfUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
 		    return HU.getPdfEmbed(pdfUrl,props);
@@ -6118,7 +6130,8 @@ public class WikiManager extends RepositoryManager
 
         String imageUrl = null;
         if (useThumbnail) {
-            imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
+	    if(tuple!=null)             imageUrl = tuple[0];
         }
 
         if (imageUrl == null) {
@@ -6126,7 +6139,9 @@ public class WikiManager extends RepositoryManager
                 imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
 									      request, entry);
             } else if ( !useThumbnail) {
-                imageUrl = getMetadataManager().getThumbnailUrl(request, entry);
+		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry);
+		if(tuple!=null)
+		    imageUrl = tuple[0];
             }
 	    if(imageUrl==null && showPlaceholder) {
 		imageUrl = getPageHandler().makeHtdocsUrl("/images/placeholder.png");
@@ -6155,10 +6170,17 @@ public class WikiManager extends RepositoryManager
 	if(wikiText!=null) {
             card.append(wikifyEntry(request, entry, wikiText.replace("\\n","\n")));
 	} else if (imageUrl != null) {
+	    String imageHeight=getProperty(wikiUtil,props,"imageHeight",null);
+	    String imageStyle="width:100%;";
+	    if(imageHeight!=null) {
+		imageStyle+=HU.css("height",imageHeight);
+	    }
+
             String img = HU.img(imageUrl, "",
-				HU.cssClass("ramadda-card-image") 
-                                +HU.attr("loading", "lazy")
-                                + HU.style("width:100%;"));
+				HU.attrs("class","ramadda-card-image",
+					 "style",imageStyle,
+					 "loading", "lazy"));
+
             String  inner;
             boolean popup = getProperty(wikiUtil, props, "popup", true);
             if (popup) {
@@ -6190,12 +6212,7 @@ public class WikiManager extends RepositoryManager
                 inner = HU.href(entryUrl, img, HU.cssClass(""));
 	    }
 	    //	    card.append("<div class='ramadda-flip-card'><div class='ramadda-flip-card-inner'><div class='ramadda-flip-card-front'>");
-	    String imageHeight=getProperty(wikiUtil,props,"imageHeight",null);
-	    String imageStyle="";
-	    if(imageHeight!=null) {
-		imageStyle+=HU.css("height",imageHeight);
-	    }
-            card.append(HU.div(inner, HU.attrs("class","ramadda-imagewrap","style",imageStyle)));
+            card.append(HU.div(inner, HU.attrs("class","ramadda-imagewrap")));
 	    //	    card.append("</div><div class='ramadda-flip-card-back'>");
 	    //	    card.append("The back");
 	    //	    card.append("</div></div></div>");
