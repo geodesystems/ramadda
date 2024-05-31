@@ -253,11 +253,21 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title,ack) {
+    initCopyable: function(selector,title,ack,addLink) {
 	$(selector).each(function(){
-	    $(this).addClass('ramadda-clickable');
 	    $(this).attr('title',title??'Click to copy');
-	    $(this).click(()=>{
+	    let link = $(this);
+	    if(addLink) {
+		let parent = $(this).parent();
+		parent.css('position','relative');
+		link = $(HU.div([ATTR_CLASS,'ramadda-clickable',
+				 ATTR_STYLE,HU.css('position','absolute','top','5px',
+						   'right','5px')],
+				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
+	    } else {
+		$(this).addClass('ramadda-clickable');
+	    }
+	    link.click(()=>{
 		Utils.copyToClipboard($(this).attr('data-copy')??$(this).html());
 		alert($(this).attr('copy-message')??ack??'Text copied to clipboard');
 	    });
@@ -2751,8 +2761,8 @@ var Utils =  {
 	let text= bigText.html();
 	let limit = bigText.attr('bigtext-length')??400;
 	if(text.length<limit) return;
-	let moreLabel = bigText.attr('bigtext-label-more')??'Read more...';
-	let lessLabel = bigText.attr('bigtext-label-less')??'Read less...';		
+	let moreLabel = bigText.attr('bigtext-label-more')??'More...';
+	let lessLabel = bigText.attr('bigtext-label-less')??'Less...';		
 	let height = bigText.attr('bigtext-height')??'100px';
 	let fadeId = HU.getUniqueId('fade_');
 	bigText.css('padding-bottom','25px').css('max-height',height).css('overflow-y','hidden').css('position','relative');

@@ -91,11 +91,13 @@ function DocumentChat(id,entryId,models) {
 	    }
 	    
 	    let qid = 'id_' + (cnt++);
+	    let guid= HU.getUniqueId('');
 	    let out = HU.div([ATTR_STYLE,'font-weight:bold;',ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
-			     q)+r;
+			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
 	    output.prepend(HU.div([],out));
+	    Utils.initCopyable('#'+guid,null,null,true);
 	    this.jq(qid).click(function() {
 		input.val($(this).html()+' ');
 		input.focus();
