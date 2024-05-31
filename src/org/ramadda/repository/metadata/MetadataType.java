@@ -194,6 +194,17 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     }
 
 
+    @Override
+    public int hashCode() {
+	return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+	if(!(o instanceof MetadataType)) return false;
+	return id.equals(((MetadataType)o).id);
+    }    
+
     /**
      * _more_
      *
@@ -1342,6 +1353,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      *
      *  @return The Id
      */
+    @Override
     public String getId() {
         return id;
     }

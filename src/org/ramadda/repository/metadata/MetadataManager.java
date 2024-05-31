@@ -990,12 +990,12 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getThumbnailUrl(Request request, Entry entry,boolean...inherited)
+    public String[] getThumbnailUrl(Request request, Entry entry,boolean...inherited)
             throws Exception {
         List<String[]> urls = new ArrayList<String[]>();
         getFullThumbnailUrls(request, entry, urls,inherited);
         if (urls.size() > 0) {
-            return urls.get(0)[0];
+            return urls.get(0);
         }
 
         return null;

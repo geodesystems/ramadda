@@ -163,6 +163,12 @@ public class MetadataTypeBase extends RepositoryManager {
     }
 
 
+
+    public String getId() {
+        return name;
+    }
+
+
     /**
      *  Set the Handler property.
      *
@@ -531,6 +537,12 @@ public class MetadataTypeBase extends RepositoryManager {
         return children;
     }
 
+
+
+    public MetadataElement getElement(int idx) {
+	if(idx<0 || idx>=children.size()) return null;
+	return children.get(idx);
+    }
 
 
     public MetadataElement getElement(String id) {
