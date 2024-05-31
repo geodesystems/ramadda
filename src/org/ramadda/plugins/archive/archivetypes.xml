@@ -51,9 +51,15 @@ orderBy=createdate_ascending
 +col-8
 +toggleopen Details
 {{description wikify="true"}}
+<div class=metadata-full>
+{{properties  propertyToggleLimit=3 message=""  metadata.types="archive_note"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }} 
+</div>
+<div class=formgroupheader>{{typename}} Information</div>
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-{{properties  propertyToggleLimit=3 message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  propertyToggleLimit=3 message=""  metadata.types="!archive_note,!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
@@ -66,7 +72,8 @@ inherited="false"  }}
 +col-4
 +center
 {{ark short=true}}
-{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image  inherited="true" showCaption=true
+message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true" showPlaceholderImage=true}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
@@ -103,8 +110,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
-	    cansearch="false" group="Collection"/>
-    <column name="oclc_number" type="string"  label="OCLC Number"   cansearch="false" columns="8"/>
+	    cansearch="false" xxxgroup="Collection"/>
     <column name="accession_number" type="string"  label="Accession Number"   cansearch="false" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
     <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
@@ -142,6 +148,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="date.nullok" value="true"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
+    <column name="series_number" type="string"  label="Series Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 <children><![CDATA[
 <entries>
@@ -173,6 +180,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
 
     <property name="html.owner.show" value="false"/>                
+    <column name="file_number" type="string"  label="File Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
 </type>
 
@@ -191,6 +199,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="form.ark.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
+    <column name="item_number" type="string"  label="Item Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
     <wiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
