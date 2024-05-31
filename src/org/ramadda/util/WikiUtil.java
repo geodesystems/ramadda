@@ -2410,6 +2410,35 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
+                if (tline.startsWith("+bigtext")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 2);
+                    Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
+                            ? toks.get(1)
+                            : "");
+		    
+		    buff.append("<div class=ramadda-bigtext ");
+		    String labelMore =(String)props.get("labelMore");
+		    if(labelMore!=null)
+			buff.append(HU.attr("bigtext-label-more",labelMore));
+		    String labelLess =(String)props.get("labelLess");
+		    if(labelLess!=null)
+			buff.append(HU.attr("bigtext-label-less",labelLess));
+		    String height =(String)props.get("height");
+		    if(height!=null)
+			buff.append(HU.attr("bigtext-height",height));
+		    String length =(String)props.get("length");
+		    if(length!=null)
+			buff.append(HU.attr("bigtext-length",length));
+		    buff.append("/>");
+		    continue;
+		}
+
+                if (tline.startsWith("-bigtext")) {
+		    buff.append("</div>");
+		    continue;
+		}		    		
+
+
                 if (tline.startsWith("+section")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
