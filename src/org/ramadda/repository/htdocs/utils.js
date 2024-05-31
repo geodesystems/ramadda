@@ -2752,7 +2752,7 @@ var Utils =  {
 	let limit = bigText.attr('bigtext-length')??400;
 	if(text.length<limit) return;
 	let moreLabel = bigText.attr('bigtext-label-more')??'Read more...';
-	let lessLabel = bigText.attr('bigtext-label-more')??'Read less...';		
+	let lessLabel = bigText.attr('bigtext-label-less')??'Read less...';		
 	let height = bigText.attr('bigtext-height')??'100px';
 	let fadeId = HU.getUniqueId('fade_');
 	bigText.css('padding-bottom','25px').css('max-height',height).css('overflow-y','hidden').css('position','relative');
