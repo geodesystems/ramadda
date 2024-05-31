@@ -758,8 +758,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		corpus.append(metadata.getAttr1().toLowerCase());
 		//		corpus.append(" ");
 		for(MetadataElement element: getMetadataManager().getSearchableElements(type)) {
-		    //		    System.err.println("field:" + getMetadataField(type.getId()+"_"+element.getIndex()) +"="+ metadata.getAttr(element.getIndex()));
-		    doc.add(new StringField(getMetadataField(type.getId()+"_"+element.getIndex()), metadata.getAttr(element.getIndex()),Field.Store.NO));
+
+		    String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
+		    String fieldValue = metadata.getAttr(element.getIndex());
+		    System.err.println("field:" + fieldId+"="+ fieldValue);
+		    if(element.isEnumeration()) {
+			doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
+		    } else {
+			doc.add(new TextField(fieldId, fieldValue,Field.Store.NO));
+		    }
 		}
 	    }
 	}
@@ -1066,6 +1073,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return new Result("Entry List", sb);
     }
 
+    /** Lower case the values */
+    private Term makeTerm(String field, String value) {
+	return new Term(field, value.toLowerCase());
+    }
+
     private Query makeTextQuery(String field, String s) {
 	s = s.trim().toLowerCase();
 	List<Query> ands = new ArrayList<Query>();
@@ -1073,11 +1085,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	for(String tok:toks) {
 	    List<String> toks2 = Utils.split(tok," ",true,true);
 	    if(toks2.size()==1) {
-		ands.add(new BoostQuery(new WildcardQuery(new Term(field, toks2.get(0))),6));
+		ands.add(new BoostQuery(new WildcardQuery(makeTerm(field, toks2.get(0))),6));
 	    } else {
 		PhraseQuery.Builder builder = new PhraseQuery.Builder();
 		for(String tok2:toks2) {
-		    builder.add(new Term(field,tok2));
+		    builder.add(makeTerm(field,tok2));
 		}
 		ands.add(builder.build());
 	    }
@@ -1090,8 +1102,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public void processLuceneSearch(Request request, List<Entry> entries)
 	throws Exception {
         StringBuffer sb = new StringBuffer();
-	//        StandardAnalyzer analyzer =       new StandardAnalyzer();
-	//	QueryBuilder builder = new QueryBuilder(analyzer);
 	String text = request.getUnsafeString(ARG_TEXT,"");
 	String searchField = null;
 	for(String field: SEARCH_FIELDS) {
@@ -1142,11 +1152,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			    if(word.indexOf(" ")>0) {
 				PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
 				for (String pword : Utils.split(word," ",true,true)) {
-				    phraseBuilder.add(new Term(field, pword));
+				    phraseBuilder.add(makeTerm(field, pword));
 				}
 				term = phraseBuilder.build();
 			    } else {
-				term = new WildcardQuery(new Term(field, word));		
+				term = new WildcardQuery(makeTerm(field, word));		
 			    }
 			    if(isName) term = new BoostQuery(term,6);
 			    orBuilder.add(term, BooleanClause.Occur.SHOULD);
@@ -1155,7 +1165,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		    builder.add(multiBuilder.build(),BooleanClause.Occur.SHOULD);
 		} else {
-		    Query term = new WildcardQuery(new Term(field, text));		
+		    Query term = new WildcardQuery(makeTerm(field, text));		
 		    if(isName) {
 			term = new BoostQuery(term,6);
 		    }
@@ -1233,7 +1243,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String user = request.getString(ARG_USER_ID,null);
 	if(Utils.stringDefined(user)) {
-	    queries.add(new TermQuery(new Term(FIELD_CREATOR, user)));
+	    queries.add(new TermQuery(makeTerm(FIELD_CREATOR, user)));
 	}
 
 
@@ -1270,7 +1280,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         Hashtable args        = request.getArgs();
         String metadataPrefix = ARG_METADATA_ATTR;
-	CategoryList<String> cats = new CategoryList<String>();
+	Hashtable<MetadataElement,MetadataElementSearchInfo> mmap =new Hashtable<MetadataElement,MetadataElementSearchInfo>();
+	List<MetadataElementSearchInfo>infos = new ArrayList<MetadataElementSearchInfo>();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
             if ( !arg.startsWith(metadataPrefix)) {
@@ -1279,23 +1290,46 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if ( !request.defined(arg)) {
                 continue;
             }
+	    System.err.println("arg:" + arg);
 	    List<String> values = (List<String>) request.get(arg,new ArrayList());
             arg = arg.substring(metadataPrefix.length());
 	    List<String> toks = Utils.splitUpTo(arg,"_",2);
 	    if(toks.size()!=2) continue;
-	    String index = toks.get(0);
-            String type = toks.get(1)+"_"+index;
+            String type = toks.get(1);
+	    int index = Integer.parseInt(toks.get(0));
+	    MetadataType metadataType=getMetadataManager().findType(type);
+	    if(metadataType==null) {
+		System.err.println("Search error: could not find metadata type:" + type);
+		continue;
+	    }
+	    MetadataElement element = metadataType.getElement(index-1);
+	    if(element==null) {
+		System.err.println("Search error: could not find metadata element:" + type +" index:" + index);
+		continue;
+	    }
+		
+	    MetadataElementSearchInfo info =  mmap.get(element);
+	    if(info==null) {
+		mmap.put(element,info = new MetadataElementSearchInfo(element));
+		infos.add(info);
+	    }
+	    System.err.println("type:" + type +" index:" + index);
+
+	    //            String type = toks.get(1)+"_"+index;
 	    for(String value: values) {
-		cats.add(type,value);
+		info.addValue(value);
+		//		cats.add(type,value);
 	    }
 	}
 	List<Query> metadataQueries = new ArrayList<Query>();
-	for(String type: cats.getCategories()) {
+	for(MetadataElementSearchInfo info: infos) {
 	    BooleanQuery.Builder builder = new BooleanQuery.Builder();
-	    String field = getMetadataField(type);
-	    for(String value: cats.get(type)) {
-		Query query = new TermQuery(new Term(field, value));
-		query =  new WildcardQuery(new Term(field, value));
+	    String field = getMetadataField(info.getFieldId());
+	    for(String value: info.values) {
+		Query query = new TermQuery(makeTerm(field, value));
+		//Query query =  new WildcardQuery(makeTerm(field, value));
+		//		Query query = makeTextQuery(field,value);
+		System.err.println("metadata:" + field+"=" + value);
 		builder.add(query,BooleanClause.Occur.SHOULD);		
 	    }
 	    queries.add(builder.build());
@@ -1324,7 +1358,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			for(String v: values) {
 			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			    if(v.equals("--blank--")) v = "";
-			    ors.add(new TermQuery(new Term(field, v)));
+			    ors.add(new TermQuery(makeTerm(field, v)));
 			}			    
 			if(ors.size()==1) 
 			    term = ors.get(0);
@@ -1441,11 +1475,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			if(v.indexOf(" ")>=0) {
 			    PhraseQuery.Builder phraseBuilder = new PhraseQuery.Builder();
 			    for(String tok: Utils.split(v," ",true,true)) {
-				phraseBuilder.add(new Term(field, tok));
+				phraseBuilder.add(makeTerm(field, tok));
 			    }
 			    term =  phraseBuilder.build();
 			} else {
-			    term = new WildcardQuery(new Term(field, v));
+			    term = new WildcardQuery(makeTerm(field, v));
 			}
 			//			System.err.println("query field:" + field +" value:" + v);
 		    }
@@ -1466,7 +1500,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	}
 
-	//	System.err.println("queries:" + queries);
+//	System.err.println("queries:" + queries);
 
 	Query query = null;
 	if(queries.size()==0) {
@@ -3246,7 +3280,34 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public static class MetadataElementSearchInfo {
+	MetadataElement element;
+	List<String> values= new ArrayList<String>();
+	public MetadataElementSearchInfo(MetadataElement element) {
+	    this.element=element;
+	}
+	public void addValue(String v) {
+	    values.add(v);
+	}
 
+	public String getFieldId() {
+	    return element.getParent().getId()+"_"+element.getIndex();
+
+	}
+	
+	@Override
+	public int hashCode() {
+	    return element.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+	    return element.equals(o);
+	}
+
+
+
+    }
 
 
 }
