@@ -124,5 +124,14 @@ lastRecords="${wikiproperty.cr1000.count default="5000"}"}}
 
 
 
+  <type name="type_point_hobo"  description="HOBO Data Logger File" 
+	pattern="(?i).*\.hobo">
+    <property name="icon" value="/point/hobo.png"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+</type>
+
+
+
 
 </types>
