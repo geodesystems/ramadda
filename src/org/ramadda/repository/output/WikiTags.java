@@ -91,6 +91,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","200", 
 					"width","200px",
+					"#boxHeight","180px",
+					"#imageHeight","150px",					
 					ATTR_SHOWICON, "true",
 					"includeChildren","false",
 					"addTags","false",

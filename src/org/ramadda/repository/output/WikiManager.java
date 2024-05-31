@@ -4297,6 +4297,10 @@ public class WikiManager extends RepositoryManager
                 if (width != null) {
                     boxStyle = HU.css("width", HU.makeDim(width,"px"), "display","inline-block");
                 }
+		String boxHeight=getProperty(wikiUtil,props,"boxHeight",null);
+		if(boxHeight!=null) {
+		    boxStyle+=HU.css("height",boxHeight);
+		}
                 for (int idx = 0; idx < titles.size(); idx++) {
                     Entry child = children.get(idx);
                     if (weights!=null) {
@@ -6186,7 +6190,12 @@ public class WikiManager extends RepositoryManager
                 inner = HU.href(entryUrl, img, HU.cssClass(""));
 	    }
 	    //	    card.append("<div class='ramadda-flip-card'><div class='ramadda-flip-card-inner'><div class='ramadda-flip-card-front'>");
-            card.append(HU.div(inner, HU.cssClass("ramadda-imagewrap")));
+	    String imageHeight=getProperty(wikiUtil,props,"imageHeight",null);
+	    String imageStyle="";
+	    if(imageHeight!=null) {
+		imageStyle+=HU.css("height",imageHeight);
+	    }
+            card.append(HU.div(inner, HU.attrs("class","ramadda-imagewrap","style",imageStyle)));
 	    //	    card.append("</div><div class='ramadda-flip-card-back'>");
 	    //	    card.append("The back");
 	    //	    card.append("</div></div></div>");
