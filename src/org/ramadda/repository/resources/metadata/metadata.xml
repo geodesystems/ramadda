@@ -173,7 +173,7 @@
        name="Thumbnail Image"
        id="content.thumbnail">
       <element name="Thumbnail File" datatype="file" thumbnail="true" istitle="true"/>
-      <element name="Title" datatype="string" />
+      <element name="Caption" datatype="string" />
       <element name="Is primary" datatype="boolean"
 	       suffix="Use this thumbnail for showing in the grid, etc"/>            
     </type>
