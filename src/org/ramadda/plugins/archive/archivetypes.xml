@@ -195,7 +195,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.owner.show" value="false"/>                
     <column name="item_number" type="string"  label="Item Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
-    <wiki><![CDATA[
+    <xwiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 +row
 +col-8
@@ -221,7 +221,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 {{tabletree  message="" showSize="true"}} 
 -section
 ]]>
-</wiki>
+</xwiki>
 
 
 </type>
