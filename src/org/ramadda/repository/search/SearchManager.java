@@ -758,10 +758,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		//		corpus.append(metadata.getAttr1().toLowerCase());
 		//		corpus.append(" ");
 		for(MetadataElement element: getMetadataManager().getSearchableElements(type)) {
-
 		    String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
 		    String fieldValue = metadata.getAttr(element.getIndex());
-		    System.err.println("field:" + fieldId+"="+ fieldValue);
 		    if(element.isEnumeration()) {
 			doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
 		    } else {
