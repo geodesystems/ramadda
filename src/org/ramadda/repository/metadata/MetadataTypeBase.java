@@ -284,18 +284,6 @@ public class MetadataTypeBase extends RepositoryManager {
 	    if(suffix!=null) sb.append(suffix);		
 	}
 	return sb.toString();
-	/*
-        for (MetadataElement element : getChildren()) {
-            String value = element.getValueForXml(request, templateType,
-                               entry, metadata,
-                               metadata.getAttr(element.getIndex()), parent);
-
-            template = applyMacros(template, element, value);
-
-        }
-
-        return template;
-	*/
     }
 
 
