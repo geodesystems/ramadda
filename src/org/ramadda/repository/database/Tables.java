@@ -376,6 +376,8 @@ public abstract class Tables {
         public static final String COL_NODOT_TYPE =   "type";
         public static final String COL_INHERITED =  NAME + ".inherited";
         public static final String COL_NODOT_INHERITED =   "inherited";
+        public static final String COL_ACCESS =  NAME + ".access";
+        public static final String COL_NODOT_ACCESS =   "access";	
         public static final String COL_ATTR1 =  NAME + ".attr1";
         public static final String COL_NODOT_ATTR1 =   "attr1";
         public static final String COL_ATTR2 =  NAME + ".attr2";
@@ -388,7 +390,7 @@ public abstract class Tables {
         public static final String COL_NODOT_EXTRA =   "extra";
 
         public static final String[] ARRAY = new String[] {
-            COL_ID,COL_ENTRY_ID,COL_TYPE,COL_INHERITED,COL_ATTR1,COL_ATTR2,COL_ATTR3,COL_ATTR4,COL_EXTRA
+            COL_ID,COL_ENTRY_ID,COL_TYPE,COL_INHERITED,COL_ACCESS,COL_ATTR1,COL_ATTR2,COL_ATTR3,COL_ATTR4,COL_EXTRA
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
