@@ -10,6 +10,7 @@ import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
@@ -291,7 +292,7 @@ public class Entry implements Cloneable {
 		    values[i] = HU.strictSanitizeString(o.toString());
 	    }
 	}
-	List<Metadata> mtd = getMetadata();
+	List<Metadata> mtd = getMetadata(null);
 	if(mtd!=null) {
 	    for(Metadata m: mtd) {
 		m.sanitize();
@@ -455,9 +456,9 @@ public class Entry implements Cloneable {
             this.resource = new Resource(template.resource);
         }
 
-        if (template.getMetadata() != null) {
+        if (template.getMetadata(null) != null) {
             List<Metadata> thisMetadata = new ArrayList<Metadata>();
-            for (Metadata metadata : template.getMetadata()) {
+            for (Metadata metadata : template.getMetadata(null)) {
                 metadata.setEntryId(getId());
                 thisMetadata.add(metadata);
             }
@@ -2224,7 +2225,27 @@ public class Entry implements Cloneable {
      *
      * @return The Metadata
      */
-    public List<Metadata> getMetadata() {
+    public List<Metadata> getMetadata(Request request) {
+	return getMetadata(request, true);
+
+    }
+
+    public List<Metadata> getMetadata(Request request,boolean checkAccess) {	
+	if(checkAccess && metadata!=null && request!=null) {
+	    List<Metadata> restricted=new ArrayList<Metadata>();
+	    for(Metadata mtd: metadata) {
+		MetadataType type=mtd.getMetadataType();
+		if(type==null) {
+		    System.err.println(this.getName() +" null type:" + mtd);
+		} else if(!type.isPrivate(request,this,mtd)) {
+		    //		    System.err.println(this.getName() +" OK:" +mtd);
+		    restricted.add(mtd);
+		}else {
+		    //System.err.println(this.getName() +" PRIVATE:" + mtd);
+		}
+	    }
+	    return restricted;
+	}
         return metadata;
     }
 
