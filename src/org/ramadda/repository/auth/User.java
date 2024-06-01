@@ -556,6 +556,7 @@ public class User {
 
             return true;
         }
+
         if (role.isRole(Role.ROLE_USER)) {
             if (debug) {
                 System.err.println("\tis logged in");
@@ -594,7 +595,6 @@ public class User {
 
             return false;
         }
-
         if (roles.contains(role)) {
             if (debug) {
                 System.err.println("\tis role");

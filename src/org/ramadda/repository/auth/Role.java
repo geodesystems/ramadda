@@ -60,6 +60,8 @@ public class Role {
     /**  */
     String baseRole;
 
+    String userRole;
+
     Date date;
 
 
@@ -93,6 +95,9 @@ public class Role {
         if (isIp) {
             baseRole = baseRole.substring(3);
         }
+	if(baseRole.startsWith("role:")) {
+	    userRole = baseRole.substring("role:".length());
+	}
 	if(baseRole.startsWith("date:")) {
 	    String dttm  =baseRole.substring("date:".length()).trim();
 	    try {
@@ -164,6 +169,11 @@ public class Role {
 
         //      System.err.println("\t\tISROLE(String):" + this.role +" " + role +" R:" + r);
         return r;
+    }
+
+
+    public String getUserRole() {
+	return userRole;
     }
 
 

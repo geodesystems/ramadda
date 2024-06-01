@@ -58,5 +58,23 @@ You can change any of the values of the properties and press &quot;Change&quot; 
 you can select one or more properties elements and delete them.
 
 
+<name="property_access"></a>
+:heading Property Access
+Access to an individual property can be controlled in the Access field. This takes the form
+of a comma separated list of user IDs or roles. If a property has one or more access settings then the user must match one of the specified roles.
+e.g.:
+<pre>
+admin,user,user:joe,role1
+</pre>
+
+<ul>
+<li> admin - site administrator 
+<li> user - the user is logged in
+<li> user:joe  - the user id "joe"
+<li> role1 - the user has the "role1" role
+</ul>
+
+
+
 
 [ht::foot]
