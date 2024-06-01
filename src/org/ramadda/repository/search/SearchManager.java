@@ -761,7 +761,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
 		    String fieldValue = metadata.getAttr(element.getIndex());
 		    if(element.isEnumeration()) {
-			System.err.println("enum: " + fieldId +"="+fieldValue); 
 			doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
 		    } else {
 			doc.add(new TextField(fieldId, fieldValue,Field.Store.NO));
