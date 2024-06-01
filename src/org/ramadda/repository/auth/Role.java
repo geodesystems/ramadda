@@ -35,6 +35,9 @@ public class Role {
     public static final Role ROLE_USER = new Role("user");
 
     /** _more_ */
+    public static final Role ROLE_ADMIN = new Role("admin");    
+
+    /** _more_ */
     public static final Role ROLE_ANONYMOUS = new Role("anonymous");
 
     /** _more_ */
@@ -143,6 +146,11 @@ public class Role {
         }
 
         return roles;
+    }
+
+
+    public boolean isAdmin() {
+	return equals(ROLE_ADMIN);
     }
 
 
