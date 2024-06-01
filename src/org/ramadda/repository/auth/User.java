@@ -577,6 +577,9 @@ public class User {
 
             return getIsGuest();
         }
+        if (role.isAdmin()) {
+	    return admin;
+	}
         if (role.isRole("user:" + getId())) {
             if (debug) {
                 System.err.println("\tisUserRole");
@@ -605,6 +608,7 @@ public class User {
 
         return false;
     }
+
 
     /**
      * _more_
