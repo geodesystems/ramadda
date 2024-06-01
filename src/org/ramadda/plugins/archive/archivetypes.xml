@@ -1,5 +1,5 @@
 <types 	priority="10" supercategory="General" category="Archive"
-	metadata="archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
+	metadata="archive_internal,archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
 
 
   <type name="type_archive_section"  description="Archive Section"
