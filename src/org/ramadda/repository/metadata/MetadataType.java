@@ -1041,6 +1041,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     }
 
     public boolean isPrivate(Request request, Entry entry,Metadata metadata) {
+	if(request.isAdmin()) return false;
 	if(restrictions.equals(RESTRICTIONS_ADMIN) && !request.isAdmin()) {
 	    //	    System.err.println("OK1:" + metadata.getAttr1());
 	    return false;
