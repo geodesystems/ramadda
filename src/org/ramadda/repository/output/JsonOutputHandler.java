@@ -845,6 +845,9 @@ public class JsonOutputHandler extends OutputHandler {
 		    if(!fileOk && metadataType.hasFile()) {
 			continue;
 		    }
+		    if(metadataType.isPrivate(request, entry,metadata)) {
+			continue;
+		    }
                     List<String> mapItems   = new ArrayList<String>();
                     List<String> valueItems = new ArrayList<String>();
                     JsonUtil.quoteAttr(mapItems, "id", metadata.getId());
