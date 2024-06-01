@@ -1,13 +1,29 @@
 
 set ::entries "<entries>\n";
+array set ::cids {}
+array set ::sids {}
+array set ::fids {}
+
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
 
 proc col {name s} {
+    if {$s==""} {
+	return ""
+    }
     return "<$name>[cdata [clean $s]]</$name>\n"
 }    
 
+
+proc pad {n} {
+    if {[string length $n]==1} {
+	set n "00$n"
+    }   elseif {[string length $n]==2} {
+	set n "0$n"
+    }    
+    set n
+}    
 
 proc clean {s} {
     regsub -all {\[CR\]} $s "\n" s
@@ -83,7 +99,10 @@ proc collection $::cp  {
 	set $p [string trim [set $p]]
     }
 
-    append ::entries [openEntry type_archive_collection [cid $collection_nbr] "" $collection_title]
+    set cid [cid $collection_nbr]
+    set ::cids($cid) 1
+    append ::entries [openEntry type_archive_collection $cid "" $collection_title]
+    append ::entries [col collection_number [pad $collection_nbr]]
     append ::entries [col location $location]
     append ::entries [mtd2 archive_note Note $column1]
     append ::entries [mtd2 archive_note Arrangement $organiz_arrange]
@@ -131,15 +150,18 @@ proc handleDate {date} {
     if {$date!="" && $date!="--"} {
 	regsub -all s $date {} date
 	regsub -all {^\?\-}  $date {} date	
-	if {[regexp {^(\d\d\d\d) *- *(\d\d\d\d)} $date match date1 date2]} {
+	if {[regexp {(\d\d\d\d) *- *(\d\d\d\d)} $date match date1 date2]} {
 	    append ::entries [col fromdate $date1]
 	    append ::entries [col todate $date2]	    
 	} elseif {[regexp {^(\d\d\d\d)$} $date match date1]} {
 	    append ::entries [col fromdate $date1]
 	    append ::entries [col todate $date1]	    
+	} elseif {[regexp {^(\d\d\d\d)(\d\d\d\d)$} $date match date1 date2]} {
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    
 	} else {
-#	    puts stderr "NO: $date"
-	    append ::entries [col fromdate $date]
+	    puts stderr "bad date: $date"
+#	    append ::entries [col fromdate $date]
 	}
     }
 }
@@ -152,7 +174,9 @@ proc series $::sp {
     foreach p $::sp {set $p [string trim [set $p]]}
     set parent [cid $collection_nbr]
     set id [sid $collection_nbr $series_nbr]
+    set ::sids($id) 1
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
+    append ::entries [col series_number [pad $series_nbr]]
     append ::entries [col location $location]
     append ::entries [mtd2 archive_note Scope $scope_content]
     append ::entries [mtd2 archive_note Note $notes]    
@@ -166,61 +190,62 @@ proc series $::sp {
     if {[regexp {.*\d\d\d\d-.*} $name_type]} {
 	handleDate $name_type
     } else {
-	##append ::entries [mtd1 archive_creator $creator]    
+	if {$name_type!=""} {
+##	    puts stderr "name_type:$name_type"
+	}
     }
-
-    if {$bulk_dates!="" && $bulk_dates!="--"} {
-	append ::entries [col startdate $bulk_dates]
-    }
-    append ::entries [col creator_sketch $column1]
     append ::entries "</entry>\n"
 }
 
 set ::fcnt 0
-set ::fp {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
+set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates summary_note notes_prov creator language}
 proc files $::fp {
+    if {$file_unit_nbr==""} return
     incr ::fcnt
-    if {$::fcnt>100} return
+#    if {$::fcnt>100} return
     foreach p $::fp {set $p [string trim [set $p]]}
     set parent [sid $collection_nbr $series_nbr]
+    if {![info exists   ::sids($parent)]} {
+	puts  "file: $file_unit_nbr $title no parent series: $parent "
+    }
     set id [fid $collection_nbr $series_nbr $file_unit_nbr]
+    set ::fids($id) 1
     append ::entries [openEntry type_archive_file $id $parent $title]
+    append ::entries [col file_number [pad $file_unit_nbr]]
     append ::entries [col location $location]
     handlePhysicalDescription $phys_desc 
-
-
-    append ::entries [mtd1 archive_media_type $media_type]
-    append ::entries [mtd1 archive_creator $creator]    
-
-    if {[regexp $category VIDEO]} {
-	set category "VIDEO RECORDING"
-    }
-    append ::entries [mtd1 archive_category $category]    
-    append ::entries [mtd2 archive_note "Family Name" $pers_fam_name]    
-    append ::entries [mtd2 archive_note "Provenance" $notes_prov]
-    append ::entries [mtd2 archive_note "Other Term" $other_terms]        
-    append ::entries [mtd2 archive_note "Summary" $summary_note]        
-
-    foreach tok [split $user_1 ,] {
-	set tok [string trim $tok]
-	if {$tok==""} continue;
-	append ::entries [mtd1 archive_subject $tok]    
-    }
     handleDate  $dates
-    
+    append ::entries [mtd2 archive_note "Summary" $summary_note]        
+    append ::entries [mtd2 archive_note "Provenance" $notes_prov]
+    append ::entries [mtd1 archive_creator $creator]
+    append ::entries [mtd1 archive_language $language]    
     append ::entries "</entry>\n"
 }
 
 set ::icnt 0
 set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
 proc item $::ip {
+    if {[string length $location]>300} {
+#	puts "$collection_nbr $series_nbr $file_unit_nbr $item_nbr length: [string length $location]"
+#	puts "$title $location"
+#	exit
+    }
     incr ::icnt 
-   if {$::icnt>100} return
+#   if {$::icnt>100} return
     foreach p $::ip {set $p [string trim [set $p]]}
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
+    if {![info exists   ::fids($parent)]} {
+#	puts   "no parent for item: $item_nbr $title  parent file: $parent "
+	set ::fids($parent) 1
+	puts   "files $collection_nbr $series_nbr $file_unit_nbr \{File $file_unit_nbr\}  {}  {}  {}  {}  {}  {}  {}"
+	return
+    }
+
+
     set id [iid $collection_nbr $series_nbr $file_unit_nbr $item_nbr]
     append ::entries [openEntry type_archive_item $id $parent $title]
+    append ::entries [col item_number [pad $item_nbr]]
     append ::entries [col location $location]
     handlePhysicalDescription $phys_desc 
     append ::entries [mtd2 archive_note "Provenance" $notes_prov]
@@ -243,6 +268,7 @@ proc item $::ip {
 source collections.tcl
 source series.tcl
 source files.tcl
+source extra.tcl
 source items.tcl
 
 append ::entries "</entries>\n";
