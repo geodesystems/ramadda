@@ -8,6 +8,8 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.auth.Role;
+import org.ramadda.repository.auth.User;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -52,6 +54,11 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataType extends MetadataTypeBase implements Comparable {
 
+    public static final String RESTRICTIONS_NONE = "none";
+    public static final String RESTRICTIONS_ADMIN = "admin";
+    public static final String RESTRICTIONS_USER = "user";
+
+
     /** _more_ */
     public static final String TAG_TYPE = "type";
 
@@ -70,9 +77,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     /** _more_ */
     public static final String ATTR_CLASS = "class";
-
-    /** _more_ */
-    public static final String ATTR_MAKEDATABASE = "makedatabase";
 
 
     /** _more_ */
@@ -119,6 +123,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     /** _more_ */
     public static String ARG_METADATAID = "metadataid";
+    public static String ARG_METADATA_ACCESS = "metadataaccess";    
 
     /** _more_ */
     private String id;
@@ -128,8 +133,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     private int textLengthLimit=400;
 
-    /** _more_ */
-    private boolean makeDatabaseTable = false;
 
     /** _more_ */
     private List<Column> databaseColumns;
@@ -146,6 +149,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     /** _more_ */
     private boolean adminOnly = false;
+
+    private String restrictions;
 
 
     private boolean canView = true;
@@ -342,9 +347,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
      */
     public void init(Element node) throws Exception {
         super.init(node);
-        setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,
-						  false));
-
+        setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
+	restrictions=XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE);
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
 	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
@@ -368,14 +372,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
 						 handler.getHandlerGroupName()));
 
-        makeDatabaseTable = XmlUtil.getAttributeFromTree(node,
-							 ATTR_MAKEDATABASE, false);
 
-        /*
-	  if makeDatabaseTable) {
-	  initDatabase();
-	  }
-        */
     }
 
 
@@ -410,102 +407,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return name;
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
-    private void initDatabase() throws Exception {
-        Statement statement = getDatabaseManager().createStatement();
-        databaseColumns = new ArrayList<Column>();
-        int          cnt       = 0;
-        final String tableName = getDbTableName();
-        System.err.println("Making db:" + tableName);
-        TypeHandler typeHandler = new TypeHandler(getRepository()) {
-		@Override
-		public String getTableName() {
-		    return tableName;
-		}
-	    };
-        String dropTable = "DROP TABLE " + tableName;
-        try {
-            getDatabaseManager().executeAndClose(dropTable);
-        } catch (Throwable exc) {
-            //      System.err.println("Error dropping table:" + exc+"\n"+  dropTable);
-            //      throw new RuntimeException(exc);
-        }
-
-
-        StringBuffer tableDef = new StringBuffer("CREATE TABLE " + tableName
-						 + " (\n");
-        tableDef.append(
-			"id varchar(200), entry_id varchar(200), type varchar(200), inherited int)");
-        System.out.println("Creating metadata table:" + tableName);
-        try {
-            getDatabaseManager().executeAndClose(tableDef.toString());
-        } catch (Throwable exc) {
-            if (exc.toString().indexOf("already exists") < 0) {
-                System.err.println("Error creating metadata db table:" + exc
-                                   + "\n" + tableDef);
-
-                throw new RuntimeException(exc);
-            }
-        }
-
-        StringBuffer indexDef = new StringBuffer();
-        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "id"
-                        + "  ON " + tableName + " (" + "id" + ");\n");
-        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "entry_id"
-                        + "  ON " + tableName + " (" + "entry_id" + ");\n");
-        indexDef.append("CREATE INDEX " + tableName + "_INDEX_" + "type"
-                        + "  ON " + tableName + " (" + "type" + ");\n");
-
-        try {
-            getDatabaseManager().loadSql(indexDef.toString(), true, false);
-        } catch (Throwable exc) {
-            //TODO:
-            System.err.println("Error creating metadata index:" + exc + "\n"
-                               + indexDef);
-
-            throw new RuntimeException(exc);
-        }
-
-        for (MetadataElement element : getChildren()) {
-            String dataType   = element.getDataType();
-            String columnName = element.getId();
-            if (columnName == null) {
-                columnName = element.getName();
-            }
-            if (columnName == null) {
-                throw new RuntimeException(
-					   "No name defined for metadata element:" + element);
-            }
-            columnName = getDbColumnName(columnName);
-            System.out.println("\tcolumn:" + columnName + " type:"
-                               + dataType);
-            int size = XmlUtil.getAttribute(element.getXmlNode(),
-                                            Column.ATTR_SIZE, 1000);
-            if (dataType == null) {
-                dataType = DataTypes.DATATYPE_STRING;
-            }
-
-            Column column = new Column(typeHandler, columnName, dataType,
-                                       cnt);
-            column.setSize(size);
-            //false-> don't ignore errors
-            try {
-                column.createTable(statement, false);
-            } catch (Throwable exc) {
-                System.err.println("Error:" + exc);
-
-                return;
-            }
-            databaseColumns.add(column);
-            cnt++;
-        }
-        getDatabaseManager().closeAndReleaseConnection(statement);
-    }
 
 
     /**
@@ -673,6 +574,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                         false);
         Metadata metadata = new Metadata(id, entry.getId(), getId(),
                                          inherited);
+	metadata.setAccess(request.getString(ARG_METADATA_ACCESS+suffix,""));
         for (MetadataElement element : getChildren()) {
             String value = element.handleForm(request, entry, metadata,
 					      oldMetadata, suffix);
@@ -1138,11 +1040,46 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return nameString;
     }
 
+    public boolean isPrivate(Request request, Entry entry,Metadata metadata) {
+	if(restrictions.equals(RESTRICTIONS_ADMIN) && !request.isAdmin()) {
+	    //	    System.err.println("OK1:" + metadata.getAttr1());
+	    return false;
+	}
+	if(restrictions.equals(RESTRICTIONS_USER) && request.isAnonymous()) {
+	    //	    System.err.println("OK2:" + metadata.getAttr1());
+	    return false;
+	}
+	List<Role> list = metadata.getAccessList();
+	boolean debug = false;
+	//	debug=true;
+	if(list!=null && list.size()>0) {
+	    if(debug)
+		System.err.println("has roles:" + metadata.getAttr1());
+	    User user = request.getUser();
+	    for(Role role: list) {
+		//		if(debug)    System.err.println("\trole:"+ role+" is:" + user.isRole(role));
+		if(user.isRole(role)) {
+		    if(debug)
+			System.err.println("\tis role:" + metadata.getAttr1());
+		    return false;
+		}
+	    }
+	    if(debug)
+		System.err.println("\t***  not ok");
+	    return true;
+	}
+	return false;
+    }
+
+
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
 	throws Exception {
         if ( !getShowInHtml()) {
             return null;
         }
+	if(isPrivate(request, entry,metadata)) {
+	    return null;
+	}
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
 						 "").equals(DISPLAY_SMALL);
@@ -1303,6 +1240,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 						   metadata.getInherited(),"Inherited")));
 
 
+	sb.append(HU.formEntry(msgLabel("Access"),
+			       HU.input(ARG_METADATA_ACCESS+suffix,metadata.getAccess(),HU.attrs("size","40")) +" Comma separated list - e.g.: <i>admin</i>, <i>user</i>, <i>role:userrole</i>"));
 
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
@@ -1501,16 +1440,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public boolean getHasDatabaseTable() {
-        return makeDatabaseTable;
-    }
 
 
 

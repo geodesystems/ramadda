@@ -182,6 +182,13 @@ public class MetadataHandler extends RepositoryManager {
         Metadata metadata = new Metadata(id, entry.getId(), type,
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
+        String access = XmlUtil.getGrandChildText(node, "access", null);
+	if(access!=null) {
+	    metadata.setAccess(access);
+	}
+	System.err.println("import:" + type +" access:" + access);
+	metadata.setMetadataType(getMetadataManager().findType(type));
+
         int attrIndex = Metadata.INDEX_BASE - 1;
         while (true) {
             attrIndex++;
@@ -429,12 +436,15 @@ public class MetadataHandler extends RepositoryManager {
      * @return _more_
      */
     public Metadata makeMetadata(String id, String entryId, String type,
-                                 boolean inherited, String attr1,
+                                 boolean inherited, String access,String attr1,
                                  String attr2, String attr3, String attr4,
                                  String extra) {
+
         MetadataType metadataType = findType(type);
         Metadata metadata = new Metadata(id, entryId, type, inherited, attr1,
                                          attr2, attr3, attr4, extra);
+	metadata.setAccess(access);
+	metadata.setMetadataType(metadataType);	
         if (metadataType != null) {
             metadata.setPriority(metadataType.getPriority());
         }
@@ -515,9 +525,15 @@ public class MetadataHandler extends RepositoryManager {
             "id", metadata.getId(), ATTR_TYPE, metadata.getType(),
             ATTR_INHERITED, "" + metadata.getInherited()
         });
+	String access=metadata.getAccess();
+	if(stringDefined(access)) {
+            Element accessNode = XmlUtil.create(doc, "access", metadataNode);
+	    accessNode.appendChild(XmlUtil.makeCDataNode(doc, access, false));
+	}
+
         for (MetadataElement element : type.getChildren()) {
             int    index = element.getIndex();
-            String value = element.getValueForExport(request, entry, metadata);
+            String value = element.getValueForExport(request, entry, type, metadata);
             if (value == null) {
                 continue;
             }

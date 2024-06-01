@@ -271,9 +271,6 @@ public class MetadataManager extends RepositoryManager {
         metadataTypes.add(type);
         typeMap.put(type.getId(), type);
         handlerMap.put(type.getId(), type.getHandler());
-        if (type.getHasDatabaseTable()) {
-            tableNames.add(type.getDbTableName());
-        }
     }
 
 
@@ -1351,11 +1348,11 @@ public class MetadataManager extends RepositoryManager {
     public List<Metadata> getMetadata(Request request,Entry entry, String type)
             throws Exception {
         if (entry.isDummy()) {
-            return (entry.getMetadata() == null)
+            return (entry.getMetadata(request) == null)
                    ? new ArrayList<Metadata>()
-		: getMetadata(request,entry,entry.getMetadata(), type);
+		: getMetadata(request,entry,entry.getMetadata(request), type);
         }
-        List<Metadata> metadataList = entry.getMetadata();
+        List<Metadata> metadataList = entry.getMetadata(request);
         if (metadataList != null) {
             return getMetadata(request,entry,metadataList, type);
         }
@@ -1363,9 +1360,9 @@ public class MetadataManager extends RepositoryManager {
         final List<Metadata> finalMetadataList = new ArrayList();
         Statement stmt =
             getDatabaseManager().select(
-                Tables.METADATA.COLUMNS, Tables.METADATA.NAME,
-                Clause.eq(Tables.METADATA.COL_ENTRY_ID, entry.getId()),
-                getDatabaseManager().makeOrderBy(Tables.METADATA.COL_TYPE));
+					Tables.METADATA.COLUMNS, Tables.METADATA.NAME,
+					Clause.eq(Tables.METADATA.COL_ENTRY_ID, entry.getId()),
+					getDatabaseManager().makeOrderBy(Tables.METADATA.COL_TYPE));
 
         getDatabaseManager().iterate(stmt, new SqlUtil.ResultsHandler() {
             public boolean handleResults(ResultSet results) throws Exception {
@@ -1373,12 +1370,14 @@ public class MetadataManager extends RepositoryManager {
                 String          type    = results.getString(3);
                 MetadataHandler handler = findMetadataHandler(type);
                 DatabaseManager dbm     = getDatabaseManager();
+		
                 finalMetadataList.add(
                     handler.makeMetadata(
                         dbm.getString(results, col++),
                         dbm.getString(results, col++),
                         dbm.getString(results, col++),
                         results.getInt(col++) == 1,
+                        dbm.getString(results, col++),
                         getAttrString(results, col++),
                         getAttrString(results, col++),
                         getAttrString(results, col++),
@@ -1583,7 +1582,8 @@ public class MetadataManager extends RepositoryManager {
     public boolean addMetadata(Request request, Entry entry, Metadata value,
                                boolean checkUnique)
             throws Exception {
-        List<Metadata> metadata = getMetadata(request,entry);
+	//Pass in result=null so we get the actual list
+        List<Metadata> metadata = getMetadata(null,entry);
         if (checkUnique && metadata.contains(value)) {
             return false;
         }
@@ -2773,16 +2773,18 @@ public class MetadataManager extends RepositoryManager {
         DatabaseManager dbm = getDatabaseManager();
         String          lbl = metadata.getType();
         dbm.executeInsert(Tables.METADATA.INSERT, new Object[] {
-            metadata.getId(), metadata.getEntryId(), metadata.getType(),
+            metadata.getId(),
+	    metadata.getEntryId(),
+	    metadata.getType(),
             Integer.valueOf(metadata.getInherited()
                         ? 1
                         : 0),
+	    metadata.getAccess(),
             dbm.checkString(lbl, metadata.getAttr1(), Metadata.MAX_LENGTH),
             dbm.checkString(lbl, metadata.getAttr2(), Metadata.MAX_LENGTH),
             dbm.checkString(lbl, metadata.getAttr3(), Metadata.MAX_LENGTH),
             dbm.checkString(lbl, metadata.getAttr4(), Metadata.MAX_LENGTH),
-            dbm.checkString(lbl, metadata.getExtra(),
-                            Metadata.MAX_LENGTH_EXTRA),
+            dbm.checkString(lbl, metadata.getExtra(), Metadata.MAX_LENGTH_EXTRA),
         });
     }
 
