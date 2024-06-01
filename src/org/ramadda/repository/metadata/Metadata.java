@@ -7,8 +7,10 @@ package org.ramadda.repository.metadata;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.auth.Role;
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -134,6 +136,8 @@ public class Metadata implements Constants {
 
     /** _more_ */
     private boolean inherited = false;
+    private String access="";
+    private List<Role> accessList;
 
     /** _more_ */
     private Object[] values;
@@ -320,6 +324,8 @@ public class Metadata implements Constants {
         this.entryId   = entryId;
         this.type      = that.type;
         this.inherited = that.inherited;
+	this.access=that.access;
+	this.accessList=that.accessList;	
         this.priority  = that.priority;
         this.attr1     = that.attr1;
         this.attr2     = that.attr2;
@@ -613,6 +619,25 @@ public class Metadata implements Constants {
         return inherited;
     }
 
+
+    public void setAccess (String value) {
+	access = value;
+	accessList=new ArrayList<Role>();
+	if(Utils.stringDefined(value)) {
+	    for(String r:Utils.split(value,",",true,true)) {
+		accessList.add(new Role(r));
+	    }
+	}
+    }
+
+    public List<Role> getAccessList() {
+	return accessList;
+    }
+
+
+    public String getAccess () {
+	return access;
+    }
 
 
 
