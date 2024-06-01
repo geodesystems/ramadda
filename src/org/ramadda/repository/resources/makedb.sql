@@ -93,14 +93,15 @@ DROP TABLE ancestors;
 CREATE TABLE  metadata (id varchar(200),
 			entry_id varchar(200),
                         type varchar(200),
-                	inherited int,
+                     	inherited int,
+			access varchar(500),
                         attr1 ramadda.bigvarchar_orclob,
                         attr2 ramadda.bigvarchar_orclob,
                         attr3 ramadda.bigvarchar_orclob,
                         attr4 ramadda.bigvarchar_orclob,
 		        extra ramadda.bigclob);
 
-
+alter table metadata add column access varchar(500);
 
 
 CREATE INDEX METADATA_INDEX_ID ON metadata (ID);
