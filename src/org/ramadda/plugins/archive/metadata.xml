@@ -20,7 +20,6 @@
       <element id="area" name="Area" datatype="enumerationplus"/>
     </type>        
 
-
     <type id="archive_creator" name="Archive Creator">
       <element id="creator" name="Creator" datatype="enumerationplus"/>
     </type>        

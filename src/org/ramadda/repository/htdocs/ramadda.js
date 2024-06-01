@@ -269,9 +269,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showArrow:dflt,	    
 	    showForm:dflt,
 	    formOpen:false,
-	    inlineEdit:false
+	    inlineEdit:false,
+	    metadataExtra:null
 	}
 	$.extend(props,opts);
+	this.props=props;
 	let entries = json.map((j,idx)=>{
 	    let entry =  new Entry(j);
 	    entryMap[entry.getId()]= entry;
@@ -465,11 +467,79 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     },
 
+    formatMetadata:function(entry,metadataExtra) {
+	let mtd='';
+	metadataExtra.forEach(m=>{
+	    entry.getMetadata().forEach(metadata=>{
+		if(!m.ok(metadata)) {
+		    return;
+		}
+		let html = m.format(metadata);
+		mtd+=HU.div([],html);
+	    });
+	});
+	if(Utils.stringDefined(mtd)) {
+	    mtd = HU.div([ATTR_CLASS,'ramadda-bigtext','bigtext-length','100'], mtd);
+	}
+	return mtd;
+    },
+    makeMetadataExtra:function(props) {
+	if(!props) return null;
+	let mtd=[];
+	Utils.split(props,",",true,true).forEach(prop=>{
+	    let toks = prop.split(":");
+	    if(toks.length==0) return
+	    let check;
+	    let type;
+	    let template='{attr1} {attr2}';
+	    toks.forEach((tok,idx)=>{
+		if(idx==0) {
+		    type=tok;
+		    return
+		} 
+		let subtoks = tok.split('=');
+		if(subtoks.length!=2) return;
+		let key=subtoks[0];
+		let value=subtoks[1];		
+		if(key.startsWith('attr')) {
+		    check=mtd=>{
+			return mtd.value[key]==value;
+		    }
+		} else if(key=='template') {
+		    template=value;
+		}		    
+	    });
+	    let m ={
+		prop:prop,
+		type:type,
+		template:template.replace('_colon_',':','_comma_',','),
+		check:check,
+		ok:function(metadata) {
+		    if(metadata.type!=this.type) return false;
+		    if(this.check) return this.check(metadata);
+		    return true;
+		},
+		format:function(metadata) {
+		    let html=this.template;
+		    let attrs = ['attr1','attr2','attr3','attr4'];
+		    attrs.forEach(attr=>{
+			html=html.replace('{'+ attr+'}',metadata.value[attr]??'');
+		    });
+		    return html;
+		}
+	    }
+	    mtd.push(m);
+	});
+	return mtd;
+    },
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
 	let main = $('#'+ mainId);
 	let html = "";
 	let space = "";
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
+	let metadataExtra = this.makeMetadataExtra(this.props.metadataExtra);
+	let hasMetadata=false;
+
 	entries.forEach((entry,entryIdx)=>{
 	    let line = '';
 	    let rowId = Utils.getUniqueId("row_");
@@ -493,6 +563,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showIcon)
 			v =  icon + SPACE +v;
 		    
+		    if(metadataExtra && metadataExtra.length) {
+			let mtd = this.formatMetadata(entry,metadataExtra);
+			if(Utils.stringDefined(metadataExtra)) {
+			    v +=HU.div([],mtd);
+			    hasMetadata=true;
+			}
+		    }
+
+
 
 		    let tds = [];
 		    //[cbx,space,arrow,icon,thumbnail,v]
