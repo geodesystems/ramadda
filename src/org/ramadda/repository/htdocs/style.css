@@ -463,6 +463,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     text-decoration:none;
 }
 
+
 .ramadda-button:hover {
     border:var(--highlight-border) !important;    
 }
@@ -502,9 +503,8 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     border:1px #e1b07e solid;
 }
 
-.ramadda-button-small {
-    font-size:9pt;
-    line-height:0px;
+.ramadda-button.ramadda-button-small {
+    font-size:80% !important;
     padding:4px;
     padding-top:3px;
     padding-bottom:3px;

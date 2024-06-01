@@ -2070,12 +2070,24 @@ public class WikiManager extends RepositoryManager
 	} else if(theTag.equals(WIKI_TAG_NEW_PROPERTY)) {
 	    if(getAccessManager().canDoEdit(request, entry)) {
 		String style = getProperty(wikiUtil,props,"style","");
-		for(String type: Utils.split(getProperty(wikiUtil,props,"type",""),",",true,true)) {
+		String clazz = getProperty(wikiUtil,props,"class","");		
+		List<String> types= new ArrayList<String>();
+		if(getProperty(wikiUtil,props,"fromEntry",false)) {
+		    types.addAll(entry.getTypeHandler().getMetadataTypes());
+		}		    
+		types.addAll(Utils.split(getProperty(wikiUtil,props,"type",""),",",true,true));
+		String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
+		for(String type: types) {
 		    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
 		    if(link==null) return "Could not find property type:" + type;
 		    String label = getProperty(wikiUtil,props,"label",link[1]);
-		    String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
-		    sb.append(HU.href(link[0],label,  HU.attrs("class","ramadda-button","role","button","style",style))+suffix);
+		    String href = HU.href(link[0],label,  HU.attrs("style",style));
+		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+		    sb.append(href+suffix);
+		}
+		if(getProperty(wikiUtil,props,"showToggle",false)) {
+		    sb.append("<p>");
+		    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
 		}
 		return sb.toString();
 	    } 

@@ -1,5 +1,5 @@
 <types 	priority="10" supercategory="General" category="Archive"
-	metadata="archive_internal,archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
+	metadata="content.thumbnail,archive_internal,archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
 
 
   <type name="type_archive_section"  description="Archive Section"
@@ -74,6 +74,7 @@ metadataExtra="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {a
 }} 
 -col
 +col-4
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"}}
 {{properties  propertyToggleLimit=3 message=""  metadata.types="archive_internal"
 checkTextLength="true"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
