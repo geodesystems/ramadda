@@ -479,7 +479,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	});
 	if(Utils.stringDefined(mtd)) {
-	    mtd = HU.div([ATTR_CLASS,'ramadda-bigtext','bigtext-length','100'], mtd);
+	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length','100'], mtd);
 	}
 	return mtd;
     },
@@ -696,6 +696,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let inlineEdit = 	main.find('.ramadda-entry-inlineedit');
 	let entryOrder = 	main.find('.ramadda-entry-inlineedit-entryorder');
 
+	if(hasMetadata) {
+	    html.find('.ramadda-metadata-bigtext').each(function() {
+		Utils.initBigText($(this));
+	    });
+	}
 
 	let applyEdit = comp=>{
 	    let entryId = comp.attr('entryid');

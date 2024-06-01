@@ -236,6 +236,7 @@ ramadda-heading, .ramadda-page-heading {
 
 
 .ramadda-bigtext-toggle {
+    font-size:80%;
     position:absolute;
     bottom:4px;
     left:50%;
@@ -244,9 +245,15 @@ ramadda-heading, .ramadda-page-heading {
     font-weight:400;
     vertical-align:center;
     border:1px solid #ccc;
+    border-radius:var(--default-radius);
     padding:5px;
     line-height:10px;
 }
+
+.ramadda-bigtext-toggle:hover {
+    background:var(--highlight-background);
+}    
+
 
 .ramadda-bigtext-fade {
     position: absolute;
