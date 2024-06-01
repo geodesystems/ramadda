@@ -349,10 +349,19 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return dataType.equals(DATATYPE_FILE);
     }
 
-    public String getValueForExport(Request request, Entry entry,
+    public boolean isPrivate(Request request, Entry entry,MetadataType type, Metadata metadata) {
+        if (dataType.equals(DATATYPE_API_KEY) || dataType.equals(DATATYPE_PASSWORD)) {
+	    return true;
+	}
+
+	return false;
+    }
+
+
+    public String getValueForExport(Request request, Entry entry,MetadataType type,
 				    Metadata metadata) 
             throws Exception {
-        if (dataType.equals(DATATYPE_API_KEY) || dataType.equals(DATATYPE_PASSWORD)) {
+        if (isPrivate(request,entry,type,metadata)) {
 	    return null;
 	}
 	int    index = this.getIndex();
@@ -362,20 +371,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param type _more_
-     * @param containerMetadata _more_
-     * @param value _more_
-     * @param depth _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public MetadataHtml getHtml(Request request, Entry entry,
                                 MetadataType type,
                                 Metadata containerMetadata, String value,
@@ -386,8 +382,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return null;
         }
 
-        if (dataType.equals(DATATYPE_API_KEY) || dataType.equals(DATATYPE_PASSWORD)) {
-	    //	    boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        if (isPrivate(request,entry,type, containerMetadata)) {
 	    return null;
 	}
 
@@ -858,30 +853,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 						     new File(theFile)).getName();
 
         return theFile;
-    }
-
-    public String getValueForXml(Request request, String templateType,
-                                 Entry entry, Metadata metadata,
-                                 String value, Element parent)
-            throws Exception {
-
-        if ( !dataType.equals(DATATYPE_GROUP)) {
-            //            System.err.println("\traw;" + value);
-            return value;
-        }
-
-        String template = getTemplate(templateType);
-        if (template == null) {
-            return null;
-        }
-        StringBuffer   xml           = new StringBuffer();
-        List<Metadata> groupMetadata = getGroupData(value);
-        for (Metadata subMetadata : groupMetadata) {
-            xml.append(applyTemplate(request, templateType, entry,
-                                     subMetadata, parent));
-        }
-
-        return xml.toString();
     }
 
 
