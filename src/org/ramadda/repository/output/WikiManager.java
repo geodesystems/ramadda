@@ -2071,12 +2071,25 @@ public class WikiManager extends RepositoryManager
 	    if(getAccessManager().canDoEdit(request, entry)) {
 		String style = getProperty(wikiUtil,props,"style","");
 		String clazz = getProperty(wikiUtil,props,"class","");		
+		String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
 		List<String> types= new ArrayList<String>();
+		if(getProperty(wikiUtil,props,"addEditEntryLink",false)) {
+		    String url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
+		    String href = HU.href(url,"Edit Entry",  HU.attrs("style",style));
+		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+		    sb.append(href+suffix);
+		}
+		if(getProperty(wikiUtil,props,"addEditPropertiesLink",false)) {
+		    String url = request.entryUrl(getMetadataManager().URL_METADATA_FORM, entry);
+		    String href = HU.href(url,"Edit Properties",  HU.attrs("style",style));
+		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+		    sb.append(href+suffix);
+		}
+
 		if(getProperty(wikiUtil,props,"fromEntry",false)) {
 		    types.addAll(entry.getTypeHandler().getMetadataTypes());
 		}		    
 		types.addAll(Utils.split(getProperty(wikiUtil,props,"type",""),",",true,true));
-		String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
 		for(String type: types) {
 		    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
 		    if(link==null) return "Could not find property type:" + type;

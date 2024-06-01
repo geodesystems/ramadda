@@ -74,7 +74,7 @@ metadataExtra="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {a
 }} 
 -col
 +col-4
-{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"}}
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small" addEditEntryLink="true" addEditPropertiesLink="true"}}
 {{properties  propertyToggleLimit=3 message=""  metadata.types="archive_internal"
 checkTextLength="true"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
