@@ -7706,7 +7706,6 @@ public class EntryManager extends RepositoryManager {
                     metadataStmt.setString(col++, entry.getId());
                     metadataStmt.setString(col++, metadata.getType());
 		    metadataStmt.setInt(col++, metadata.getInherited()? 1: 0);
-		    System.err.println("STORING:" + metadata.getAccess() +" " + metadata.getAttr1());
                     metadataStmt.setString(col++, metadata.getAccess());
                     String name = metadata.getType() + " " + metadata.getId();
                     dbm.setString(metadataStmt, col++, name,
