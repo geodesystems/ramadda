@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Archive" 	searchable="true" browsable="true">
+    <type id="archive_internal" name="Archive Internal" restrictions="user" rows="4"> 
+      <element id="note" name="Internal note" datatype="string"/>
+    </type>
+
+
     <type id="archive_subject" name="Archive Subject" displaygroup="Archive Subjects" >
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
