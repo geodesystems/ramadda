@@ -414,7 +414,7 @@ public class TypeHandler extends RepositoryManager {
 
 
     /** Default metadata types to show in Edit->Add Property menu */
-    private List<String> metadataTypes;
+    private List<String> metadataTypes=new ArrayList<String>();
 
     /** The default child entry types to show in the File->New menu */
     private List<String> childTypes;
@@ -602,13 +602,14 @@ public class TypeHandler extends RepositoryManager {
                 services.add(new Service(getRepository(), serviceNode));
             }
 
-	    metadataTypes = makeInitialMetadataTypes();
+
 
 
 	    for(String mtd: Utils.split(XmlUtil.getAttributeFromTree(node,ATTR_METADATA,""),",",true,true)) {
 		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
 	    }
-
+	    if(metadataTypes.size()==0)
+		metadataTypes = makeInitialMetadataTypes();
 
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
 							     ATTR_CHILDTYPES, ""));
@@ -862,7 +863,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private List<String> getMetadataTypes() {
+    public List<String> getMetadataTypes() {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
         }
