@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
   <handler category="Archive" 	searchable="true" browsable="true">
-    <type id="archive_internal" name="Archive Internal" restrictions="user" rows="4"> 
-      <element id="note" name="Internal note" datatype="string"/>
+    <type id="archive_internal" name="Archive Internal" restrictions="user" > 
+      <element id="note" name="Internal note" datatype="string" rows="4"/>
     </type>
 
 
