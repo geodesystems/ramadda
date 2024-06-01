@@ -186,7 +186,6 @@ public class MetadataHandler extends RepositoryManager {
 	if(access!=null) {
 	    metadata.setAccess(access);
 	}
-	System.err.println("import:" + type +" access:" + access);
 	metadata.setMetadataType(getMetadataManager().findType(type));
 
         int attrIndex = Metadata.INDEX_BASE - 1;

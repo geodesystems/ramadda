@@ -119,7 +119,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
 	    cansearch="false" xxxgroup="Collection"/>
     <column name="accession_number" type="string"  label="Accession Number"   cansearch="false" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
 	    numberformat="#0.0"/>	    
         
@@ -155,7 +155,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="series_number" type="string"  label="Series Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
 <children><![CDATA[
 <entries>
 <entry  name="File 1"  type="type_archive_file"/>
@@ -185,7 +185,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
     <property name="html.owner.show" value="false"/>                
     <column name="file_number" type="string"  label="File Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
 </type>
 
 <type name="type_archive_item"  description="Archive Item" 
@@ -203,7 +203,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="item_number" type="string"  label="Item Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20"/>
+    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <xwiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 +row
