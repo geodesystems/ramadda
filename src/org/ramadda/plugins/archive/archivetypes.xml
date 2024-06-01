@@ -68,7 +68,7 @@ inherited="false"  }}
 -toggle
 ----
 :vspace 1em
-{{tabletree  message="" prefix="==Contents==" showSize="false" showCreateDate="false"
+{{tabletree  message="" prefix="==Contents==" showSize="false" showCreateDate="false" showDate="false"
 columns=name,date,attachments  showAttachments=true  showThumbnails=false
 metadataExtra="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
 }} 
