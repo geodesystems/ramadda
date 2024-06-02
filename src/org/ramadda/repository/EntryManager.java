@@ -6691,6 +6691,19 @@ public class EntryManager extends RepositoryManager {
 
     }
 
+    public Entry getAncestor(Request request, Entry entry, String type) throws Exception {
+	return getAncestorInner(request, entry,type, true);
+    }
+
+    private Entry getAncestorInner(Request request, Entry entry, String type, boolean first) throws Exception {
+	if(entry==null) return null;
+	if(!first) {
+	    if(entry.getTypeHandler().isType(type)) return entry;
+	}
+	return getAncestorInner(request, entry.getParentEntry(),type, false);
+	
+    }    
+
     public Entry getParent(Request request, Entry entry) throws Exception {
         return getParent(request, entry, true);
     }
