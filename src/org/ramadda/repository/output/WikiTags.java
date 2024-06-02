@@ -79,7 +79,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#maxHeight","500px"),
                             new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree","tt",
 					"Show a tree of entries",
-					"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."),
+					"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","#types","group,file,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","4","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
                             new WikiTag(WIKI_TAG_LINKS, null,
 					"#target","link target"),

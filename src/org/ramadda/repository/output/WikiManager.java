@@ -5575,7 +5575,7 @@ public class WikiManager extends RepositoryManager
 				      "inlineEdit",
 				      "showEntryOrder",
 				      "tableWidth",
-				      "metadataExtra",
+				      "metadataDisplay",
 				      "showTime",
 				      "showDownload",
 				      "showCreator",
