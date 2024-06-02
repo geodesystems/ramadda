@@ -4,6 +4,12 @@ array set ::cids {}
 array set ::sids {}
 array set ::fids {}
 
+set ::ccnt 0
+set ::scnt 0
+set ::fcnt 0
+set ::icnt 0
+array set ::cmap {}
+
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
@@ -27,9 +33,14 @@ proc pad {n} {
 
 proc clean {s} {
     regsub -all {\[CR\]} $s "\n" s
-    regsub -all {â€œ} $s {x} s
-    regsub -all {â€™} $s {x} s
+    regsub -all {â€œ} $s { } s
+    regsub -all {â€™} $s { } s
     regsub -all {â€“} $s {-} s    
+    regsub -all {â€} $s { } s
+    regsub -all {__+} $s { } s
+    regsub -all {dialet} $s {dialect} s
+#    regsub -all {\[} $s {\\[} s
+#    regsub -all {\]} $s {\\]} s    	
     set s [string trim $s]
     set s
 }
@@ -95,11 +106,13 @@ proc  iid {cid sid fid iid} {
 
 set ::cp {collection_title collection_nbr location organiz_arrange scope_content bio_org_history user_1 notes provenance column1 _1 _2 _3}
 proc collection $::cp  {
+    incr ::ccnt
     foreach p $::cp {
 	set $p [string trim [set $p]]
     }
 
     set cid [cid $collection_nbr]
+    set ::cmap($cid) $collection_title
     set ::cids($cid) 1
     append ::entries [openEntry type_archive_collection $cid "" $collection_title]
     append ::entries [col collection_number [pad $collection_nbr]]
@@ -171,8 +184,10 @@ proc handleDate {date} {
 
 set ::sp {collection_nbr series_nbr series_title location scope_content notes user_1 bio_org_history organiz_arrange provenance bulk_dates name_type creator summary column1}
 proc series $::sp {
+    incr ::scnt
     foreach p $::sp {set $p [string trim [set $p]]}
     set parent [cid $collection_nbr]
+##    puts  "parent: $::cmap($parent)"
     set id [sid $collection_nbr $series_nbr]
     set ::sids($id) 1
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
@@ -197,7 +212,7 @@ proc series $::sp {
     append ::entries "</entry>\n"
 }
 
-set ::fcnt 0
+
 set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates summary_note notes_prov creator language}
 proc files $::fp {
     if {$file_unit_nbr==""} return
@@ -222,16 +237,15 @@ proc files $::fp {
     append ::entries "</entry>\n"
 }
 
-set ::icnt 0
+
 set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
 proc item $::ip {
+    incr ::icnt
     if {[string length $location]>300} {
 #	puts "$collection_nbr $series_nbr $file_unit_nbr $item_nbr length: [string length $location]"
 #	puts "$title $location"
 #	exit
     }
-    incr ::icnt 
-#   if {$::icnt>100} return
     foreach p $::ip {set $p [string trim [set $p]]}
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
@@ -275,3 +289,4 @@ append ::entries "</entries>\n";
 
 puts $::entries
 
+puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::icnt"
