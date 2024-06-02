@@ -1,6 +1,7 @@
 <types 	priority="10" supercategory="General" category="Archive"
 	metadata="content.thumbnail,archive_internal,archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
 
+  
 
   <type name="type_archive_section"  description="Archive Section"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
@@ -33,8 +34,6 @@ inherited="false"  }}
 -section
 ]]>
 </wiki>
-
-
 </type>
 
 
@@ -70,10 +69,13 @@ inherited="false"  }}
 :vspace 1em
 {{tabletree  message="" prefix="==Contents==" showSize="false" showCreateDate="false" showDate="false"
 columns=name,date,attachments  showAttachments=true  showThumbnails=false
-metadataExtra="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
+metadataDisplay="archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
 }} 
 -col
 +col-4
++center
+{{archive_finding_aid_link}}
+-center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small" addEditEntryLink="true" addEditPropertiesLink="true"}}
 {{properties  propertyToggleLimit=3 message=""  metadata.types="archive_internal"
 checkTextLength="true"
@@ -97,14 +99,20 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
 
+<type name="type_archive_root"  foruser="false" description="Archive Root"
+      handler="org.ramadda.plugins.archive.ArchiveTypeHandler">
+  <wikimacro name="archive_finding_aid" label="Archive Finding Aid" isoutput="true" icon="/icons/magnifier.png">
+<![CDATA[+section 
+{{archive_finding_aid}}
+-section]]></wikimacro>
+</type>
 
-  <type name="type_archive_collection"  description="Archive Collection"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+
+
+  <type name="type_archive_collection"  description="Archive Collection" super="type_archive_root"
 	childtypes="type_archive_series"
 	newfields="name,description,_default"
-	editfields="name,description,_default"	
-	>
-
+	editfields="name,description,_default">
     <property name="icon" value="/archive/collection.png"/>
     <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="date.format" value="yyyy"/>
@@ -136,20 +144,15 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
 
-  <type name="type_archive_series"  description="Archive Series"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-	childtypes="type_archive_file"
-	newfields="name,description,_default"
-	editfields="name,description,_default">
-
-
-
+<type name="type_archive_series"  description="Archive Series" super="type_archive_root"
+      childtypes="type_archive_file"
+      newfields="name,description,_default"
+      editfields="name,description,_default">
     <property name="icon" value="/archive/series.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
-
     <property name="date.format" value="yyyy"/>
     <property name="date.nullok" value="true"/>
     <property name="html.createdate.show" value="false"/>
@@ -167,8 +170,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 </type>
 
 
-  <type name="type_archive_file"  description="Archive File"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+  <type name="type_archive_file"  description="Archive File" super="type_archive_root"
 	childtypes="type_archive_item"
 	newfields="name,description,_default"
 	editfields="name,description,_default">
@@ -188,8 +190,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
 </type>
 
-<type name="type_archive_item"  description="Archive Item" 
-      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+<type name="type_archive_item"  description="Archive Item" super="type_archive_root"
       newfields="name,description,_default"
       editfields="name,description,_default">
 
