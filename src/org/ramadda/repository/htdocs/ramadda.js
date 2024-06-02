@@ -270,7 +270,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    showForm:dflt,
 	    formOpen:false,
 	    inlineEdit:false,
-	    metadataExtra:null
+	    metadataDisplay:null
 	}
 	$.extend(props,opts);
 	this.props=props;
@@ -467,9 +467,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     },
 
-    formatMetadata:function(entry,metadataExtra) {
+    formatMetadata:function(entry,metadataDisplay) {
 	let mtd='';
-	metadataExtra.forEach(m=>{
+	metadataDisplay.forEach(m=>{
 	    entry.getMetadata().forEach(metadata=>{
 		if(!m.ok(metadata)) {
 		    return;
@@ -483,7 +483,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	return mtd;
     },
-    makeMetadataExtra:function(props) {
+    makeMetadataDisplay:function(props) {
 	if(!props) return null;
 	let mtd=[];
 	Utils.split(props,",",true,true).forEach(prop=>{
@@ -537,7 +537,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	let html = "";
 	let space = "";
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
-	let metadataExtra = this.makeMetadataExtra(this.props.metadataExtra);
+	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.props.metadataDisplay);
 	let hasMetadata=false;
 
 	entries.forEach((entry,entryIdx)=>{
@@ -563,9 +563,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(props.showIcon)
 			v =  icon + SPACE +v;
 		    
-		    if(metadataExtra && metadataExtra.length) {
-			let mtd = this.formatMetadata(entry,metadataExtra);
-			if(Utils.stringDefined(metadataExtra)) {
+		    if(metadataDisplay && metadataDisplay.length) {
+			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
+			if(Utils.stringDefined(mtd)) {
 			    v +=HU.div([],mtd);
 			    hasMetadata=true;
 			}

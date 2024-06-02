@@ -469,6 +469,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
         {p:'showMetadata',d: false},
 	{p:'metadataTypes', ex:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
+	{p:'metadataDisplay',ex:'archive_note:attr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}',
+	 tt:'Add metadata in the toggle. e.g.: type1:template={attr1},type2:attr1=Value:template={attr1}_colon_ {attr2}'},
         {p:'showTags',d: true},	
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
@@ -2420,9 +2422,12 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             }
 
             let entriesHtml = this.makeEntriesDisplay(entries);
-            let html = "";
-            html += entriesHtml;
+	    let html = entriesHtml;
             this.writeEntries(html, entries);
+	    this.jq(ID_ENTRIES).find('.ramadda-metadata-bigtext').each(function() {
+		Utils.initBigText($(this));
+	    });
+
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
 	    if(this.galleryId) {

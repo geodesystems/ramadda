@@ -1937,7 +1937,7 @@ WikiEditor.prototype = {
 	    {p:'sizeWidth',ex:'120'},
 	    {p:'typeWidth',ex:'120'},
 	    {p:'attachmentsWidth',ex:'120'},
-	    {p:'metadataExtra',ex:'archive_note:attr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}',
+	    {p:'metadataDisplay',ex:'archive_note:attr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}',
 	     tt:'Add metadata under the name. e.g.: type1:template={attr1},type2:attr1=Value:template={attr1}_colon_ {attr2}'},
 
 	    {p:'message',ex:''},
