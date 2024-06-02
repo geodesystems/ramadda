@@ -24,9 +24,9 @@
 
 <!--
     <column name="taxon_domain" label="Domain"
-    type="enumerationplus" cansearch="true" values="Archaea,Bacteria,Eukarya"    group="Taxon"/>
+    type="enumerationplus" cansearch="true" values="Archaea,Bacteria,Eukarya"    group="Taxonomy"/>
     -->
-    <column type="enumerationplus" cansearch="true" name="taxon_kingdom" label="Kingdom" group="Taxon"/>
+    <column type="enumerationplus" cansearch="true" name="taxon_kingdom" label="Kingdom" group="Taxonomy"/>
     <column type="enumerationplus" cansearch="true" name="taxon_division" label="Division"/>
     <column type="enumerationplus" cansearch="true" name="taxon_class" label="Class"/>
     <column type="enumerationplus" cansearch="true" name="taxon_order" label="Order"/>

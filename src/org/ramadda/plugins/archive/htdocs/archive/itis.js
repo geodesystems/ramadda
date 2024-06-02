@@ -44,7 +44,7 @@ var Itis = {
 	    alert('No information found');
 	    return
 	}
-	let html=HU.div([ATTR_STYLE,HU.css('text-weight','bold')],'Select an item:');
+	let html=HU.div([ATTR_STYLE,HU.css('text-weight','bold')],'Select an item to set the taxonomy:');
 	this.items = {};
 	data.commonNames.forEach((item,idx)=>{
 	    this.items[idx] = item;
