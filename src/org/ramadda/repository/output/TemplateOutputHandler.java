@@ -7,41 +7,14 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
 import ucar.unidata.xml.XmlUtil;
-
-
 import org.w3c.dom.*;
-import java.io.*;
-import java.io.File;
-import java.net.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 
-
-import java.util.regex.*;
-
-import java.util.zip.*;
-
-
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class TemplateOutputHandler extends OutputHandler {
 
     /** _more_ */
@@ -146,19 +119,9 @@ public class TemplateOutputHandler extends OutputHandler {
         addType(outputType);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
+
         if (state.group != null) {
             if (forGroups) {
                 if (state.getAllEntries().size() > 1) {
@@ -170,11 +133,8 @@ public class TemplateOutputHandler extends OutputHandler {
             }
             for (String type : types) {
                 if (state.group.getTypeHandler().isType(type)) {
-                    if (state.getAllEntries().size() > 1) {
-                        links.add(makeLink(request, state.getEntry(),
-                                           outputType));
-                    }
-
+		    links.add(makeLink(request, state.getEntry(),
+				       outputType));
                     return;
                 }
             }
