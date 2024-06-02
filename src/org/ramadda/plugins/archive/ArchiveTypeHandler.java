@@ -123,7 +123,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 	return info;
     }
-    private static String propWiki = "{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.attachment,!content.thumbnail,!content.license\" checkTextLength=\"false\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
+    private static String propWiki = "{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.attachment,!content.thumbnail,!content.license\" checkTextLength=\"true\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
 
     private void addThumbnails(Request request, StringBuilder sb,Entry entry) throws Exception {
 	List<String[]> thumbs = new ArrayList<String[]>();
