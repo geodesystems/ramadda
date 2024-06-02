@@ -6,8 +6,9 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.plugins.archive;
 
 
+
 import org.ramadda.repository.*;
-import org.ramadda.repository.database.Tables;
+import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
@@ -15,7 +16,8 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.WikiUtil;
-
+import ucar.unidata.util.StringUtil;
+import org.ramadda.util.sql.Clause;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
@@ -30,7 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-
+import java.util.Collections;
 
 
 @SuppressWarnings("unchecked")
@@ -41,8 +43,50 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
+            throws Exception {
+	if(!isNew(newType)) return;
+	String field = getNumberField(request, entry);
+	String num = (String) entry.getValue(field);
+	if(stringDefined(num)) return;
+	List<String> values = getDatabaseManager().selectDistinct(entry.getTypeHandler().getTableName(),
+								  field,null);
+
+	Collections.sort(values);
+	//Look for the 001,002, etc
+	String last=null;
+	//Find the largest 00N
+	for(String v: values) {
+	    v = v.trim();
+	    if(v.matches("^\\d\\d\\d$")) {
+		last =v;
+	    }
+	}
+	if(last==null) last= "000";
+	if(last!=null) {
+	    last=last.replace("^0+","");
+	    int i = last.length()==0?0:Integer.parseInt(last);
+	    i++;
+	    last = StringUtil.padLeft(""+i,3,"0");
+	    entry.setValue(field,last);
+	}
+
+
+    }
+
+
     private void wikify(Request request, Entry entry, StringBuilder sb, String wiki) throws Exception {
 	sb.append(getWikiManager().wikifyEntry(request, entry,wiki));
+    }
+
+
+    private String getNumberField(Request request,Entry entry) {
+	if(entry.getTypeHandler().isType("type_archive_collection")) return "collection_number";
+	if(entry.getTypeHandler().isType("type_archive_series")) return "series_number";
+	if(entry.getTypeHandler().isType("type_archive_file")) return "file_number";
+	if(entry.getTypeHandler().isType("type_archive_item")) return "item_number";
+	return "";
     }
 
     private String getTypeName(Request request,Entry entry) {
@@ -56,19 +100,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
     private String getArchiveNumber(Request request,Entry entry) {
 	String num;
 	String name = getTypeName(request, entry);
-	num = (String) entry.getValue("collection_number");
-	if(stringDefined(num)) {
-	    return HU.b(name+" Number: ")+ num;
-	}
-	num = (String) entry.getValue("series_number");
-	if(stringDefined(num)) {
-	    return HU.b(name+" Number: ")+ num;
-	}	
-	num = (String) entry.getValue("file_number");
-	if(stringDefined(num)) {
-	    return HU.b(name+" Number: ")+ num;
-	}
-	num = (String) entry.getValue("item_number");
+	num = (String) entry.getValue(getNumberField(request, entry));
 	if(stringDefined(num)) {
 	    return HU.b(name+" Number: ")+ num;
 	}
@@ -91,7 +123,26 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	}
 	return info;
     }
-    private static String propWiki = "{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.thumbnail,!content.license\" checkTextLength=\"false\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
+    private static String propWiki = "{{properties  propertyToggleLimit=100 message=\"\"  metadata.types=\"!archive_internal,!content.alias,!content.attachment,!content.thumbnail,!content.license\" checkTextLength=\"false\" headingClass=\"formgroupheader\" layout=\"linear\"  includeTitle=\"true\"  separator=\"\"  decorate=\"false\" inherited=\"false\"  }}";
+
+    private void addThumbnails(Request request, StringBuilder sb,Entry entry) throws Exception {
+	List<String[]> thumbs = new ArrayList<String[]>();
+        getMetadataManager().getFullThumbnailUrls(request, entry, thumbs);
+	if(thumbs.size()>0) {
+	    sb.append("<center>");
+	    for(String[] tuple: thumbs) {
+		String image=HU.img(tuple[0],"",
+				    HU.attrs("width","150px"));
+		if(stringDefined(tuple[1])) {
+		    image =HU.span(HU.div(image,"")+HU.div(tuple[1],HU.attrs("class","caption")),"");
+		}
+		sb.append(HU.div(image,HU.style("padding-right:20px;display:table-cell;")));
+	    }
+	    sb.append("</center>");
+	}
+
+    }
+
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
@@ -115,7 +166,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	if(section!=null) {
 	    wikify(request, section,sb,titleWiki);
 	}
-	sb.append(HU.cssBlock(".metadata-block {max-height:1000px;}\n.archive-findingaid-header {padding:4px;padding-left:12px;font-weight:bold;font-size:110%;background:var(--header-background);}\n.archive-findingaid-block {margin-top:1em;margin-left:40px;}\n"));
+	sb.append(HU.cssBlock(".metadata-block {max-height:1000px;}\n.archive-findingaid-header {border-top-left-radius: var(--default-radius);border-top-right-radius: var(--default-radius);padding:4px;padding-left:12px;font-weight:bold;font-size:110%;background:var(--header-background);}\n.archive-findingaid-block {margin-top:1em;margin-left:40px;}\n"));
 	sb.append(HU.center(HU.italics(HU.div("Finding Aid",HU.cssClass("ramadda-page-title")))));
 	String name = getTypeName(request, entry);
 	if(name!=null) titleWiki=":title " + name +": " + entry.getName()+"";
@@ -130,16 +181,25 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	} else 	if(endDate!=null) {
 	    sb.append(HU.center("\\[ca. " + sdf.format(endDate)+"]"));		      
 	}
+	sb.append("<center>");
+	HU.script(sb,"HtmlUtils.initPageSearch('.archive-findingaid-entry',null,'Search in page')");
+	sb.append("</center>");
+
+	sb.append("<div class=archive-findingaid-entry>");
 	String info = getInfo(request, entry);
 	sb.append(HU.center(info));	
 	wikify(request, entry,sb,"----");
 	if(stringDefined(entry.getDescription())) {
 	    wikify(request, entry,sb,entry.getDescription());
 	}
-	wikify(request, entry,sb,propWiki);
+	addThumbnails(request, sb, entry);
 
+
+
+	wikify(request, entry,sb,propWiki);
 	wikify(request, entry,sb,"----");
 
+	sb.append("</div>");
 	sb.append("<div class=archive-findingaid-block>\n");
 	makeFindingAid(request, entry, sb);
 	sb.append("</div>\n");
@@ -155,14 +215,16 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	 if(entries.size()==0) return;
 	 for(Entry child: entries) {
 	     if(!child.getTypeHandler().isType("type_archive_root")) continue;
-	     HU.div(sb,getTypeName(request, child) +": "+child.getName(),HU.attrs("class","archive-findingaid-header"));
+	     sb.append("<div class=archive-findingaid-entry>");
+	     String label = getTypeName(request, child) +": "+child.getName();
+	     label = HU.href(getEntryManager().getEntryUrl(request, child),label);
+	     HU.div(sb,label,HU.attrs("class","archive-findingaid-header"));
 	     sb.append(getInfo(request, child));
 	     wikify(request, child,sb,propWiki);
+	     sb.append("</div>\n");
 	     sb.append("<div class=archive-findingaid-block>\n");
 	     makeFindingAid(request, child, sb);
 	     sb.append("</div>\n");
-
-
 	 }
     }
 }

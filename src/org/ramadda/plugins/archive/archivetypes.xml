@@ -28,7 +28,7 @@ orderBy=createdate_ascending
 :vspace 1em
 :heading Information
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -section
