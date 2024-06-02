@@ -2236,7 +2236,7 @@ public class Entry implements Cloneable {
 	    for(Metadata mtd: metadata) {
 		MetadataType type=mtd.getMetadataType();
 		if(type==null) {
-		    System.err.println(this.getName() +" null type:" + mtd);
+		    //		    System.err.println(this.getName() +" null type:" + mtd);
 		} else if(!type.isPrivate(request,this,mtd)) {
 		    //		    System.err.println(this.getName() +" OK:" +mtd);
 		    restricted.add(mtd);
