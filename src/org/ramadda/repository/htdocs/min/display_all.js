@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jun  1 08:46:19 MDT 2024";
+var build_date="RAMADDA build date: Sat Jun  1 20:24:46 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8797,6 +8797,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!props) props = {};
 	    let columns = this.getProperty('entryColumns', null);
 	    let showSnippet = this.getProperty('showSnippetInList');
+	    let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.getProperty('metadataDisplay'));
             if (columns != null) {
                 let columnNames = this.getProperty('columnNames', null);
                 if (columnNames != null) {
@@ -8865,6 +8866,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 let icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
                 let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
+
+
+
                 entryName = "";
                 let entryIdForDom = entry.getIdForDom() + domIdSuffix;
                 let entryId = entry.getId();
@@ -8893,12 +8897,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    left+=snippet;
 		    snippet = "";
 		}
+		let extraDetails ='';
+		if(metadataDisplay && metadataDisplay.length) {
+		    let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
+		    if(Utils.stringDefined(mtd)) {
+			extraDetails +=HU.div([],mtd);
+		    }
+		}
+
 		let inner = HU.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], "");
                 let details = HU.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], 
 				     HU.div([ATTR_CLASS, "display-entrylist-details-ancestors", ATTR_ID, this.getDomId(ID_DETAILS_ANCESTORS + entryIdForDom)], "") +
 				     snippet +
 				     HU.div([ATTR_CLASS, "display-entrylist-details-tags", ATTR_ID, this.getDomId(ID_DETAILS_TAGS + entryIdForDom)], "")+
+				     extraDetails+
 				     inner
+
 				    );
 
                 //                    console.log("details:" + details);
@@ -8909,8 +8923,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     line = left;
                 }
                 //                    line = HU.leftRight(left,toolbar,"60%","30%");
-                let mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
+                let mainLine = HU.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom),  ATTR_ENTRYID, entryId], line);
+		//mainline
+                mainLine = HU.div([ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"),
+				   ATTR_ENTRYID, entryId], mainLine);
                 line = HU.div([CLASS, (even ? "ramadda-row-even" : "ramadda-row-odd"), ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
+
+
                 html += HU.div([ATTR_ID,
 				this.getDomId("entry_" + entryIdForDom),
 				ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
@@ -9236,6 +9255,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return;
 	    }
 
+
+
+
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             let link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
@@ -9312,9 +9334,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    details+=HU.div([ATTR_ID,uid+'_contents',ATTR_CLASS,'display-entry-embed']);
 		}
                 detailsInner.html(details);
+
 		if(uid) {
+		    let open = false;
+		    let shown=false;
 		    jqid(uid).button().click(()=>{
+			open=!open;
 			let contents = jqid(uid+'_contents');
+			if(!open) {
+			    contents.hide();
+			    return;
+			}
+			contents.show();
+			if(shown) return;
+			shown=true;
 			contents.html(HU.div([ATTR_CLASS,'ramadda-image-loading']));
 			this.wikify(embedWiki,entry.getId(),
 				    (html)=>{
@@ -33487,6 +33520,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'searchPrefix',ex:'name:, contents:, path:'},
         {p:'showMetadata',d: false},
 	{p:'metadataTypes', ex:'enum_tag:Tag,content.keyword:Keyword,thredds.variable:Variable'},
+	{p:'metadataDisplay',ex:'archive_note:attr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}',
+	 tt:'Add metadata in the toggle. e.g.: type1:template={attr1},type2:attr1=Value:template={attr1}_colon_ {attr2}'},
         {p:'showTags',d: true},	
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
@@ -35438,9 +35473,12 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             }
 
             let entriesHtml = this.makeEntriesDisplay(entries);
-            let html = "";
-            html += entriesHtml;
+	    let html = entriesHtml;
             this.writeEntries(html, entries);
+	    this.jq(ID_ENTRIES).find('.ramadda-metadata-bigtext').each(function() {
+		Utils.initBigText($(this));
+	    });
+
             this.addEntrySelect();
             this.getDisplayManager().handleEventEntriesChanged(this, entries);
 	    if(this.galleryId) {
