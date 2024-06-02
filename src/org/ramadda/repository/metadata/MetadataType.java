@@ -1094,9 +1094,17 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	if(makeSearchLink && !children.get(0).isEnumeration()) makeSearchLink=false;
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
+	Hashtable props =
+	    (Hashtable) request.getExtraProperty("wiki.props");
+	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
         if (html!=null) {
 	    if(makeSearchLink) {
 		html= handler.getSearchLink(request, metadata,html);
+	    }
+	    if(html.length()>lengthLimit) {
+		if(Utils.getProperty(props,"checkTextLength",true)) {
+		    html = HU.div(html,HU.cssClass("ramadda-bigtext"));
+		}
 	    }
             content.append(html);
         } else {
@@ -1119,8 +1127,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 			metadataHtml = handler.getSearchLink(request, metadata,metadataHtml);
 		    }
 
-		    if(metadataHtml.length()>textLengthLimit) {
-			metadataHtml = HU.div(metadataHtml,HU.cssClass("ramadda-bigtext"));
+		    if(metadataHtml.length()>lengthLimit) {
+			if(Utils.getProperty(props,"checkTextLength",true)) {
+			    metadataHtml = HU.div(metadataHtml,HU.cssClass("ramadda-bigtext"));
+			}
 		    }
                     if ( !element.isGroup() && (children.size() == 1)) {
                         content.append(
