@@ -1354,7 +1354,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			for(String v: values) {
 			    if(!Utils.stringDefined(v)||v.equals(TypeHandler.ALL)) continue;
 			    if(v.equals("--blank--")) v = "";
-			    ors.add(new TermQuery(makeTerm(field, v)));
+			    ors.add(new TermQuery(new Term(field, v)));
 			}			    
 			if(ors.size()==1) 
 			    term = ors.get(0);
