@@ -777,7 +777,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
         String header = pointEntry.getRecordFile().getTextHeader();
 	if(debug)
-	    System.err.println("header:" + header);
+	    System.err.println("HEADER:" + header);
         if ((header != null) && (header.length() > 0)
                 && getTypeProperty("point.initialize", true)) {
 
@@ -812,14 +812,22 @@ public class PointTypeHandler extends RecordTypeHandler {
                                     "yyyyMMdd'T'HHmmss Z");
                             SimpleDateFormat sdf =
                                 RepositoryUtil.makeDateFormat(format, null);
+			    System.err.println("FORMAT:" + format);
                             if (time != null) {
                                 value += " " + time;
                             }
 			    //A hack
 			    if(!value.trim().equals("none") && !value.trim().equals("")) {
-				Date date = sdf.parse(value);
+
+				Date date = null;
+				try {
+				     date = sdf.parse(value);
+				} catch(Exception exc){
+				    date=Utils.parseDate(value);
+				}
 				//                      System.err.println("date:" + date);
-				entry.setStartAndEndDate(date.getTime());
+				if(date!=null)
+				    entry.setStartAndEndDate(date.getTime());
 			    }
                         } else {
                             if (columns != null) {
