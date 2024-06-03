@@ -3,18 +3,21 @@
 
 <type name="type_borehole"  foruser="false" description="Borehole Data">
   <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"/>  
+/>  
 </type>
 
 <type name="type_borehole_log"  super="type_point" description="Borehole Log File" xpattern=".*\.las"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="form.properties.show" value="false"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
 <column  name="top"  label="Top" type="double" />
 <column  name="bottom"  label="Bottom" type="double" />
+<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
 <property name="record.patterns" value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
 <property name="record.properties">
 csvcommands1=-skiplines,4,-delimiter,tab,-unitrow
@@ -51,6 +54,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 -col
 +col-4
 <table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
 {{field name="hole"  row.label="Hole:"}}
 {{field name="top"  row.label="Top:"}}
 {{field name="bottom"  row.label="Bottom:"}}
@@ -75,14 +79,21 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="form.properties.show" value="false"/>
 <property name="record.pattern.date.format" value="MM/dd/yy"/>
-<property name="record.patterns" value="top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)"/>
+<property name="record.patterns"
+	  value="field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)"/>
+<column  name="state"  label="State" type="enumerationplus"  cansearch="true"/>
+<column  name="field"  label="Field" type="enumerationplus"  cansearch="true"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
 <column  name="top"  label="Top" type="double" />
 <column  name="bottom"  label="Bottom" type="double" />
+<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	   values="file:/org/ramadda/geodata/geo/tools.txt"/>	   
+
 <property name="record.properties">
 csvcommands1=-start,~A,-delimiter,spaces,-deletecell
-csvcommands2=0,0,-change,0-10,-99999.0,NaN
+csvcommands2=0,0,-change,0-10,-999.*,NaN
 </property>
 <property name="bubble">
 <![CDATA[
@@ -124,6 +135,8 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 -col
 +col-4
 <table class="formtable">
+{{field name="field"  row.label="Field:"}}
+{{field name="tool"  row.label="Tool:"}}
 {{field name="hole"  row.label="Hole:"}}
 {{field name="top"  row.label="Top:"}}
 {{field name="bottom"  row.label="Bottom:"}}
@@ -150,6 +163,51 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
 </type>
+
+<type name="type_borehole_image"   description="Borehole Image"
+      handler="org.ramadda.repository.type.GenericTypeHandler">            
+<property name="icon" value="/geo/drilling-rig.png"/>
+<property name="form.area.show" value="false"/>
+<property name="form.location.show" value="true"/>
+<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
+<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
+<column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
+	 values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+<wiki>
+<![CDATA[
++section title="Borehole image: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+{{image width=90% popup=true}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+<table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
+{{field name="measurement"  row.label="Measurement:"}}
+</table>
+</table>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+]]>
+</wiki>
+
+
+</type>
+
+
 
 
 </types>
