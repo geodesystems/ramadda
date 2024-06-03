@@ -867,6 +867,8 @@ public class TypeHandler extends RepositoryManager {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
         }
+	if(metadataTypes.size()==0)
+            metadataTypes = makeInitialMetadataTypes();
 
         return metadataTypes;
     }
