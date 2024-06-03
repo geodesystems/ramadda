@@ -1506,6 +1506,15 @@ public class ExtEditor extends RepositoryManager {
 	}	
 
 
+	public void setLocationFromParent() {
+	    Entry parent = entry.getParentEntry();
+	    if(parent.hasLocationDefined(request)) {
+		entry.setNorth(parent.getNorth(request));
+		entry.setWest(parent.getWest(request));
+		entry.setSouth(parent.getSouth(request));				
+		entry.setEast(parent.getEast(request));		
+	    }
+	}
 	public void setName(String name) {
 	    this.name = name;
 	}	
