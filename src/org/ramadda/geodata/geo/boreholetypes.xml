@@ -202,6 +202,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 	   values="file:/org/ramadda/geodata/geo/tools.txt"/>	   
 
 <property name="record.properties">
+picky=false
 csvcommands1=-start,~A,-delimiter,spaces,-deletecell
 csvcommands2=0,0,-change,0-10,-999.*,NaN
 </property>
