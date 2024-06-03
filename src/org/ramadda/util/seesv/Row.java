@@ -48,6 +48,8 @@ public class Row {
 
     private Date dateForSort;
 
+    private Row unitRow;
+    
     /**
      * _more_
      */
@@ -459,6 +461,24 @@ public class Row {
 
         }
 
+    }
+
+    /**
+       Set the UnitRow property.
+
+       @param value The new value for UnitRow
+    **/
+    public void setUnitRow (Row value) {
+	unitRow = value;
+    }
+
+    /**
+       Get the UnitRow property.
+
+       @return The UnitRow
+    **/
+    public Row getUnitRow () {
+	return unitRow;
     }
 
 
