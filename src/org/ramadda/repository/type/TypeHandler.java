@@ -4463,9 +4463,10 @@ public class TypeHandler extends RepositoryManager {
 			}
 		    }
 
-		    parent = entry.getParentEntry();
+		    parent = parent.getParentEntry();
 		}
 	    }
+
 
             //Now run the services
             for (Service service : services) {
