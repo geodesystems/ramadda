@@ -744,11 +744,12 @@ public abstract class TextFile extends PointFile {
                 }
                 i++;
             }
+	    /*
             if (headerLines.size() != skipCnt) {
                 throw new IllegalArgumentException(
                     "Bad number of header lines:" + headerLines.size() +" expected:" + skipCnt);
 
-            }
+		    }*/
             if (debug) {
                 System.err.println(
                     "TextFile.prepareToVisit: default header lines="
