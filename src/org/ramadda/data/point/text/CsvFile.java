@@ -183,15 +183,15 @@ public class CsvFile extends TextFile {
 	if(debug)
 	    System.err.println("making Seesv:" + commands);
 	commands = preprocessCsvCommands(commands);
-        Seesv csvUtil = new Seesv(commands,
+        Seesv seesv = new Seesv(commands,
                                       new BufferedOutputStream(fos), null);
 
         RecordFileContext ctx = getRecordFileContext();
         if (ctx != null) {
-            csvUtil.setPropertyProvider(ctx.getPropertyProvider());
+            seesv.setPropertyProvider(ctx.getPropertyProvider());
         }
         //else   System.err.println("No RecordFileContext set");
-        runSeesv(csvUtil, buffered);
+        runSeesv(seesv, buffered);
         fos.flush();
         fos.close();
     }
@@ -323,6 +323,7 @@ public class CsvFile extends TextFile {
 	InputStream inputStream =doMakeInputStream(csvUtil, buffered);
 	csvUtil.setInputStream(inputStream);
 	csvUtil.run(null);
+	setHeaderLines(csvUtil.getHeaderLines());
     }
 
     public List<String>  preprocessCsvCommands(List<String>  commands) throws Exception {
