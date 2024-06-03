@@ -1,0 +1,25 @@
+acoustic waveforms
+borehole acoustic images
+borehole diameter
+borehole electrical images
+borehole optical images
+casing bond
+density
+depth match
+dielectric properties
+electrical conductivity
+flowmeter
+formation testing
+gamma ray
+geochemistry
+inclinometry
+magnetic susceptibility
+nuclear magnetic resonance
+porosity
+pressure
+resistivity
+spontaneous potential
+temperature
+velocity (Vp)
+velocity (Vp and Vs)
+velocity (Vp - Vs - Stoneley)

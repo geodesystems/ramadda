@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Geo" 	searchable="true" browsable="true">
+
+    <type id="geo_project" name="Geo Project"> 
+      <element id="project" name="Project" datatype="enumerationplus" />
+    </type>
+
+
+    <type id="geo_measurement" name="Geo Measurement"> 
+      <element id="measurement" name="Measurement" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+    </type>
+    
+  </handler>
+
+
+</metadata>
