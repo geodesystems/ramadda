@@ -341,7 +341,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 +col-8
 {{group}}
 {{description wikify=true}}
-{{media full=true width=90%}}
+{{media full=true width=100%}}
 :vspace 1em
 ----
 :vspace 1em
