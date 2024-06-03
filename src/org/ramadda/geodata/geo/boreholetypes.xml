@@ -287,6 +287,8 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
 <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
 	 values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+<column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
+
 <wiki>
 <![CDATA[
 +section title="Borehole image: {{name}}"
@@ -295,7 +297,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 +col-8
 {{group}}
 {{description wikify=true}}
-{{image width=90% popup=true}}
+{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"}}
 :vspace 1em
 ----
 :vspace 1em
