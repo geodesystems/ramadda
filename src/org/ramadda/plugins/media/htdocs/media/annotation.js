@@ -12,8 +12,12 @@ function RamaddaAnnotatedImage(attrs,id) {
     anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
+
 function RamaddaZoomableImage(attrs,id) {
     attrs.zoomable = true;
+    if(!attrs.annotationsField)
+	attrs.annotationsField = "media_zoomify_annotations_json";
+
     if(!Utils.isDefined(attrs.showToolbar)) attrs.showToolbar= true;
     let osd =this.osd = OpenSeadragon(attrs);
     if(attrs.doBookmark) {
@@ -26,7 +30,7 @@ function RamaddaZoomableImage(attrs,id) {
 		 };
     let anno =this.annotorius =  OpenSeadragon.Annotorious(osd,aattrs);
     if(attrs.annotations) anno.setAnnotations(attrs.annotations);
-    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_media_zoomify_annotations_json");
+    this.annotator = new  RamaddaAnnotation(anno,id+'_annotations',id+"_top",attrs,"edit_"+attrs.annotationsField);
     anno.formatters=[new RamaddaAnnotationFormatter(this).getFormatter()];
 }
 
