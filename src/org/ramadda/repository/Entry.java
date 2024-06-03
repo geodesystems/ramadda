@@ -1382,6 +1382,7 @@ public class Entry implements Cloneable {
     }
 
     public double filterGeo(Request request, double v) {
+	if(request==null) return v;
 	return request.filterGeo(this,v);
     }
 

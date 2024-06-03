@@ -116,6 +116,7 @@ message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
 
 <type name="type_borehole_log"  super="type_point" description="Borehole Log File" xpattern=".*\.las"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="form.properties.show" value="false"/>
@@ -183,6 +184,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 
 <type name="type_borehole_las"  super="type_point" description="Log ASCII Standard" pattern=".*\.las"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <property name="inheritlocationfromtype" value="true"/>
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
@@ -267,6 +269,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 
 <type name="type_borehole_wcl"  super="type_borehole" description="WellCAD Log File" pattern=".*\.wcl"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="icon" value="/geo/wcl.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
@@ -275,6 +278,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 <type name="type_borehole_image"   description="Borehole Image"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
 <property name="icon" value="/geo/drilling-rig.png"/>
+<property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
@@ -317,6 +321,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 
 <type name="type_borehole_fieldplot"   description="Borehole Field Plot"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
+<property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>

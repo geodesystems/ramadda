@@ -4448,6 +4448,25 @@ public class TypeHandler extends RepositoryManager {
 
 
         if (newType==NewType.NEW) {
+	    String inheritLocation = getTypeProperty("inheritlocationfromtype",null);
+	    if(inheritLocation!=null
+	       && !entry.hasLocationDefined(null)  &&
+	       !entry.hasAreaDefined(null)) {
+		Entry parent = entry.getParentEntry();
+		while(parent!=null) {
+		    if(inheritLocation.equals("*") ||
+		       parent.getTypeHandler().isType(inheritLocation)){
+			if(parent.hasLocationDefined(null) ||
+			   parent.hasAreaDefined(null)) {
+			    entry.setLocation(parent);
+			    break;
+			}
+		    }
+
+		    parent = entry.getParentEntry();
+		}
+	    }
+
             //Now run the services
             for (Service service : services) {
                 if ( !service.isEnabled()) {
