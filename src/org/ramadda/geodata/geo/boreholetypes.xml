@@ -207,6 +207,48 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 
 </type>
 
+<type name="type_borehole_fieldplot"   description="Borehole Field Plot"
+      handler="org.ramadda.repository.type.GenericTypeHandler">            
+<property name="icon" value="/geo/drilling-rig.png"/>
+<property name="form.area.show" value="false"/>
+<property name="form.location.show" value="true"/>
+<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
+<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
+<column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
+	 values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+<wiki>
+<![CDATA[
++section title="Borehole Field Plot: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+{{media width=90%}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+<table class="formtable">
+{{field name="tool"  row.label="Tool:"}}
+{{field name="measurement"  row.label="Measurement:"}}
+</table>
+</table>
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+]]>
+</wiki>
+
+
+</type>
 
 
 
