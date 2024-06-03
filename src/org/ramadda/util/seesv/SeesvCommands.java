@@ -47,6 +47,7 @@ public interface SeesvCommands {
     public static final String CMD_MULTIFILES = "-multifiles";
     public static final String CMD_HEADER="-header";
     public static final String CMD_UNIQUE_HEADER="-uniqueheader";    
+    public static final String CMD_UNITROW="-unitrow";    
     public static final String CMD_JSON="-json";
     public static final String CMD_JSONJOIN="-jsonjoin";    
     public static final String CMD_JSONVALUE="-jsonvalue";
