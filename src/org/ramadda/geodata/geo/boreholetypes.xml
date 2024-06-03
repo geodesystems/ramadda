@@ -326,6 +326,8 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
+<action name="applyllm" label="Apply LLM" canedit="true"
+        icon="fas fa-font" foruser="true" category="edit"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
