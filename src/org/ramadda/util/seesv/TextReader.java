@@ -997,9 +997,11 @@ public class TextReader implements Cloneable {
 	//	System.err.println("\tlineOk: " +line +" seen:" + seenStartPattern);
 	if(!seenStartPattern && (startPattern!=null || _startPattern!=null)) {
 	    if (startPattern !=null && !startPattern.matcher(line).find()) {
+		addHeaderLine(line);
 		return false;
 	    }
 	    if (_startPattern !=null && !line.startsWith(_startPattern)) {
+		addHeaderLine(line);
 		return false;
 	    }	    
 	    seenStartPattern = true;
@@ -1010,6 +1012,7 @@ public class TextReader implements Cloneable {
         if (lineFilters != null) {
             for (String f : lineFilters) {
                 if (line.indexOf(f) >= 0) {
+		    addHeaderLine(line);
                     return false;
                 }
             }

@@ -256,6 +256,11 @@ public class Seesv implements SeesvCommands {
     }
 
 
+     public List<String> getHeaderLines() {
+        return myTextReader.getHeaderLines();
+    }
+
+
     /**
      * _more_
      *
@@ -3538,6 +3543,9 @@ public class Seesv implements SeesvCommands {
 
     private void makeFunctions() {
 
+
+
+
 	defineFunction(new String[]{CMD_SKIPROWS,"-skip"},1,(ctx,args,i) -> {
 		ctx.setSkipRows(parseInt(args.get(++i)));
 		return i;
@@ -3554,6 +3562,11 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction("-pass",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Pass(ctx));
+		return i;
+	    });
+
+	defineFunction(CMD_UNITROW,0,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.UnitRow());
 		return i;
 	    });
 

@@ -558,6 +558,34 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
+    public static class UnitRow extends Processor {
+	Row headerRow;
+	Row unitRow;	
+
+        public UnitRow() {
+	}
+
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) throws Exception {
+	    rowCnt++;
+	    if(rowCnt==1) {
+		headerRow = row;
+		return row;
+	    }
+	    if(rowCnt==2) {
+		unitRow = row;
+		headerRow.setUnitRow(unitRow);
+		return null;
+	    }
+            return row;
+        }
+
+    }
+
+
+
     /**
      * Class description
      *

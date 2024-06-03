@@ -2129,6 +2129,7 @@ public abstract class Converter extends Processor {
 					      null);
             boolean dfltSearchable = Seesv.getDbProp(props, "default", "searchable",false);
 
+	    Row unitRow = firstRow.getUnitRow();
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String   col = (String) firstRow.getValues().get(i);
                 String[] toks;
@@ -2219,6 +2220,7 @@ public abstract class Converter extends Processor {
 
                 String unit = StringUtil.findPattern(col,
 						     ".*?\\(([^\\)]+)\\).*");
+		if(unitRow!=null) unit=(String)unitRow.get(i);
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
 								    " ").replaceAll("<p>", " ");
@@ -3274,7 +3276,7 @@ public abstract class Converter extends Processor {
                     s       = s.replaceFirst(pattern, value);
                 } else {
                     String tmp = s.replaceAll(pattern, value);
-		    //		    System.err.println("P:" + pattern +" V:" + value +" S:" + s +" R:" + tmp);
+		    //		    System.out.println(rowCnt + " V:" + value +" string:" + s +" to:" + tmp);
 		    s = tmp;
                 }
                 //              System.out.println("\tchange:" + s);
