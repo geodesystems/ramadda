@@ -177,7 +177,6 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 {{field name="top"  row.label="Top:"}}
 {{field name="bottom"  row.label="Bottom:"}}
 </table>
-</table>
 +center
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
