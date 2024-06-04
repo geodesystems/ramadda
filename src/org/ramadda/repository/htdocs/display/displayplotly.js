@@ -1161,8 +1161,10 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	{p:'chart.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'chartArea.fill',d:'rgb(254, 247, 234)',ex:'color'},
 	{p:'xAxis2Title',d:'Conductivity',ex:''},
-	{p:'lineColor',d:'rgba(0,0,0,0.2)'},
+	{p:'lineColor',d:'blue'},
 	{p:'lineWidth',d:1},
+	{p:'markerLineColor',d:'rgba(0,0,0,0.2)'},
+	{p:'markerLineWidth',d:1},
 	{p:'markerSize',d:16},
 	{p:'symbol',d:'circle',ex:'circle|square|diamond|cross|x|triangle-up|triangle-down|pentagon|hexagon|hexagram|star|hash'},
 	{p:'yAxisReverse',ex:true},
@@ -1237,11 +1239,15 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    type: 'scatter',
 		    mode: this.getProfileMode(),
                     name: field.getLabel(),
+		    line: {
+                        color: this.getProperty("lineColor"+(idx+1)),
+                        width: this.getLineWidth(),
+		    },
                     marker: {
 			color:colors,
                         line: {
-                            color: this.getLineColor(),
-                            width: this.getLineWidth(),
+                            color: this.getMarkerLineColor(),
+                            width: this.getMarkerLineWidth(),
                         },
                         symbol: this.getProperty('symbol'+ (idx+1),this.getSymbol()),
                         size: this.getMarkerSize()
@@ -1281,10 +1287,10 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     tickcolor: 'rgb(102, 102, 102)'
 		},
                 margin: {
-                    l: this.getMarginLeft(60),
-                    r: this.getMarginRight(100),
-                    b: this.getMarginBottom(50),
-                    t: this.getMarginTop(100),
+                    l: +this.getMarginLeft(60),
+                    r: +this.getMarginRight(100),
+                    b: +this.getMarginBottom(50),
+                    t: +this.getMarginTop(100),
                 },
                 legend: {
                     font: {
