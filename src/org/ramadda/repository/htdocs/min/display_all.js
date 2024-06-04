@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun  4 10:58:14 MDT 2024";
+var build_date="RAMADDA build date: Tue Jun  4 11:11:58 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -63291,12 +63291,13 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    }			
 		}
 
+
 		let trace =   {
 		    y: index,
 		    x: x,
 		    type: 'scatter',
 		    mode: this.getProfileMode(),
-                    name: field.getLabel(),
+                    name: field.getUnitLabel(),
 		    line: {
                         color: this.getProperty("lineColor"+(idx+1)),
                         width: this.getLineWidth(),
@@ -63326,7 +63327,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                 },
                 xaxis: {
 		    range: range,
-                    title: this.getXAxisTitle(fields[0].getLabel()),
+                    title: this.getXAxisTitle(fields[0].getUnitLabel()),
                     showgrid: this.getXAxisShowGrid(true),
                     showline: this.getXAxisShowLine(true),
                     linecolor: 'rgb(102, 102, 102)',
