@@ -60,5 +60,30 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 
     }
 
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+	throws Exception {
+        if (tag.equals("borehole_profiles")) {
+	    StringBuilder sb = new StringBuilder();
+	    String fields=(String) entry.getValue("fields_to_show");
+	    if(!stringDefined(fields)) fields="#2";
+	    List<String> ids = Utils.split(fields,",",true,true);
+	    sb.append("+row\n");
+	    String template = "{{display_profile showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=25  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
+	    for(int i=0;i<ids.size();i++) {
+		String id = ids.get(i);
+		String extra = i>0?"lineColor1=\"#FF7F0E\" marginLeft=0 yAxisTitle=\"\" ":"";
+		sb.append("+col-"+ Math.round((12/ids.size()))+"\n");
+		sb.append(template.replace("{field}",id).replace("{extra}",extra));
+		sb.append("-col-"+ Math.round((12/ids.size()))+"\n");
+	    }
+	    sb.append("-row\n");
+	    return getWikiManager().wikifyEntry(request, entry,sb.toString());
+	}
 
+	return super.getWikiInclude(wikiUtil,request, originalEntry, entry,tag,props);
+
+    }
 }

@@ -114,20 +114,29 @@ message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
 />  
 </type>
 
-<type name="type_borehole_log"  super="type_point" description="Borehole Log File" xpattern=".*\.las"
+<type name="type_borehole_point"  super="type_point" description="Borehole Log File"  foruser="false"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
   <property name="inheritlocationfromtype" value="type_geo_site"/>
-<property name="icon" value="/geo/drilling-rig.png"/>
-<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property name="form.properties.show" value="false"/>
-<property name="form.area.show" value="false"/>
-<property name="form.location.show" value="true"/>
-<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-<column  name="top"  label="Top" type="double" />
-<column  name="bottom"  label="Bottom" type="double" />
-<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
-<property name="record.patterns" value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
+  <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
+	   suffix="Comma separated list of fields, e.g., #2,#3"
+	   showinhtml="false"   candisplay="false" canlist="false"/>     
+</type>
+
+
+<type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
+      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"
+/>
+  <column  name="top"  label="Top" type="double" />
+  <column  name="bottom"  label="Bottom" type="double" />
+  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+	   values="file:/org/ramadda/geodata/geo/tools.txt"/>
+  <property name="record.patterns" value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
 <property name="record.properties">
 csvcommands1=-skiplines,4,-delimiter,tab,-unitrow
 csvcommands2=-addheader,
@@ -149,7 +158,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 {{group}}
 {{description wikify=true}}
 :heading Chart
-{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
 profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}         
 
 :heading Table
@@ -182,9 +191,8 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 </type>
 
 
-<type name="type_borehole_las"  super="type_point" description="Log ASCII Standard" pattern=".*\.las"
+<type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" pattern=".*\.las"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
-  <property name="inheritlocationfromtype" value="true"/>
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
@@ -193,13 +201,13 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 <property name="record.pattern.date.format" value="MM/dd/yy"/>
 <property name="record.patterns"
 	  value="field:FLD \.\s*([^\s]+)\s+,hole:WELL.\s*([^\s]+)\s*:WELL,state:STAT.\s*([^\s]+)\s*:STAT,top:STRT.FT\s*([\d.]+)\s+,bottom:STOP.FT\s*([\d.]+)\s+,date:DATE.\s*(\d\d/\d\d/\d\d)"/>
-<column  name="state"  label="State" type="enumerationplus"  cansearch="true"/>
-<column  name="field"  label="Field" type="enumerationplus"  cansearch="true"/>
-<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
+<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"/>
 <column  name="top"  label="Top" type="double" />
 <column  name="bottom"  label="Bottom" type="double" />
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	   values="file:/org/ramadda/geodata/geo/tools.txt"/>	   
+<column  name="state"  label="State" type="enumerationplus"  cansearch="true" />
+<column  name="field"  label="Field" type="enumerationplus"  cansearch="true"/>
 
 <property name="record.properties">
 picky=false
@@ -232,7 +240,7 @@ requestFieldsShow=false
 loadingMessage="icon_progress"
 showMenu=false requestFieldsShow=true
 noDataMessage="No data available"}}
-{{display_profile showMenu=true yAxisReverse=true marginTop=25  
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  
 profileMode="lines" indexField=".*depth.*"  fields="#2"}}         
 
 :heading Table
