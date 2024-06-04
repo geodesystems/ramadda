@@ -219,6 +219,10 @@ public abstract class EntryVisitor implements Constants {
             System.err.println("EntryVisitor:No children");
             return true;
         }
+        if ( !processEntry(entry, children)) {
+            return false;
+        }
+
         if (recurse) {
             for (Entry child : children) {
                 if ((actionId != null)
@@ -232,9 +236,6 @@ public abstract class EntryVisitor implements Constants {
             }
         }
 
-        if ( !processEntry(entry, children)) {
-            return false;
-        }
         return true;
     }
 
