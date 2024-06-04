@@ -3361,7 +3361,7 @@ public class WikiManager extends RepositoryManager
 		sb.append(HU.div(getWikiImage(wikiUtil, request, imageEntry, props),HU.cssClass("ramadda-bgimage")));
 	    }
 	    return sb.toString();
-	}else if(theTag.equals("zoomify")) {
+	}else if(theTag.equals(WIKI_TAG_ZOOMIFY)) {
 	    String id = getWikiManager().makeZoomifyLayout(request, entry,sb,props);
 	    List<String> jsonProps =  getWikiManager().getZoomifyProperties(request, entry,props);	
 	    Utils.add(jsonProps, "id", JsonUtil.quote(id));
@@ -9766,13 +9766,12 @@ public class WikiManager extends RepositoryManager
 	String field = (String) props.get("annotationsField");
 	if(field!=null)
 	    Utils.add(jsonProps,  "annotationsField",JU.quote(field));
-        Utils.add(jsonProps,  "showNavigator",
-                  "true", "maxZoomLevel", "18", "prefixUrl",
-                  JsonUtil.quote(getRepository().getUrlBase()
-                                 + WikiManager.OSD_PATH+"/images/"));
-        Utils.add(jsonProps, "showRotationControl", "true",
-                  "gestureSettingsTouch",
-                  JsonUtil.map(Utils.add(null, "pinchRotate", "true")));
+        Utils.add(jsonProps,
+		  "showNavigator", Utils.getProperty(props,"showNavigator","true"),
+		  "maxZoomLevel",Utils.getProperty(props,"maxZoomLevel", "18"),
+		  "prefixUrl", JU.quote(getRepository().getUrlBase() + WikiManager.OSD_PATH+"/images/"),
+		  "showRotationControl", "true",
+                  "gestureSettingsTouch",  JU.map(Utils.add(null, "pinchRotate", "true")));
 
         //If its a file then we did the tiling ourselves
         if (entry.isFile()) {
@@ -9783,7 +9782,7 @@ public class WikiManager extends RepositoryManager
 				 "url",JU.quote(url)));
 	    } else {
 		Utils.add(jsonProps, "tileSources",
-			  JsonUtil.quote(getRepository().getUrlBase()
+			  JU.quote(getRepository().getUrlBase()
 					 + "/entryfile/" + entry.getId()
 					 + "/images.dzi"));
 	    }
@@ -9793,16 +9792,16 @@ public class WikiManager extends RepositoryManager
 	    if(width==null) width="800px";
 	    String        height  = Utils.getProperty(props, "height", (String)entry.getValue("image_height"));
 	    if(height==null) height="600px";	    
-            Utils.add(tiles, "type", JsonUtil.quote("zoomifytileservice"),
-                      "tilesUrl", JsonUtil.quote(entry.getValue(2)));
+            Utils.add(tiles, "type", JU.quote("zoomifytileservice"),
+                      "tilesUrl", JU.quote(entry.getValue(2)));
             Utils.add(tiles, "width", width, "height", height);
-            Utils.add(jsonProps, "tileSources", JsonUtil.map(tiles));
+            Utils.add(jsonProps, "tileSources", JU.map(tiles));
         } else {
             throw new IllegalArgumentException(
 					       "No image tile source defined");
         }
         String        doBookmark  = Utils.getProperty(props, "doBookmark", "false");
-	Utils.add(jsonProps, "doBookmark", JsonUtil.quoteType(doBookmark));
+	Utils.add(jsonProps, "doBookmark", JU.quoteType(doBookmark));
 
         String annotations = (String) entry.getValue("annotations_json");
 	if(!Utils.stringDefined(annotations)) {

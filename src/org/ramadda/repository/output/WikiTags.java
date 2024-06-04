@@ -194,6 +194,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"frontStyle","",
 					"backStyle",""),					
 
+                            new WikiTag(WIKI_TAG_ZOOMIFY,"Zoomify Image",
+					"#singleFile","true",
+					"#maxZoomLevel","18",
+					"#showRotationControl","false"), 
+
                             new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
                             new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 

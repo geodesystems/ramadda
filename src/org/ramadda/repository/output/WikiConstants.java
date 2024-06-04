@@ -302,6 +302,7 @@ public interface WikiConstants {
     public static final String ATTR_IMAGES = "images";
 
 
+
     /** thumbnail attribute */
     public static final String ATTR_USE_THUMBNAIL = "useThumbnail";
 
@@ -631,6 +632,7 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_IMAGE = "image";
+    public static final String WIKI_TAG_ZOOMIFY = "zoomify";
 
     public static final String WIKI_TAG_FA = "fa";    
 
