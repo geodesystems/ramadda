@@ -9,8 +9,15 @@
 
     <type id="geo_measurement" name="Geo Measurement"> 
       <element id="measurement" name="Measurement" datatype="enumerationplus"
-	       values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+	       values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
     </type>
+
+    <type id="geo_stratigraphy" name="Geo Stratigraphy"> 
+      <element id="top" name="Top Unit" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/resources/stratigraphy.txt"/>
+      <element id="bottom" name="Bottom Unit" datatype="enumerationplus"
+	       values="file:/org/ramadda/geodata/geo/resources/stratigraphy.txt"/>      
+    </type>    
     
   </handler>
 

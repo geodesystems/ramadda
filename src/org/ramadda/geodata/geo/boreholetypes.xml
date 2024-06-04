@@ -135,7 +135,7 @@ message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
   <column  name="top"  label="Top" type="double" />
   <column  name="bottom"  label="Bottom" type="double" />
   <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	   values="file:/org/ramadda/geodata/geo/tools.txt"/>
+	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
   <property name="record.patterns" value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
 <property name="record.properties">
 csvcommands1=-skiplines,4,-delimiter,tab,-unitrow
@@ -205,7 +205,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 <column  name="top"  label="Top" type="double" />
 <column  name="bottom"  label="Bottom" type="double" />
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	   values="file:/org/ramadda/geodata/geo/tools.txt"/>	   
+	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>	   
 <column  name="state"  label="State" type="enumerationplus"  cansearch="true" />
 <column  name="field"  label="Field" type="enumerationplus"  cansearch="true"/>
 
@@ -292,9 +292,9 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 <property name="form.location.show" value="true"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
+	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
 <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+	 values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
 <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
 
 <wiki>
@@ -340,9 +340,9 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
         icon="fas fa-font" foruser="true" category="edit"/>
 <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
 <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/tools.txt"/>
+	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
 <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/measurements.txt"/>
+	 values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
 <wiki>
 <![CDATA[
 +section title="Borehole Field Plot: {{name}}"

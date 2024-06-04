@@ -1,563 +1,563 @@
-BSMT=basement
-CAMB=Cambrian undifferentiated
-CEBT=Bonneterre Formation
-CECR=Eau Claire Formation
-CEMS=Eau Claire-Mt.Simon
-CJDN=Jordan Sandstone
-CJDW=Jordan-Wonewoc
-CJEC=Jordan-Eau Claire
-CJMS=Jordan-Mt.Simon
-CJSL=Jordan-St.Lawrence
-CJTC=Jordan-Tunnel City
-CLBK=Lone Rock/Birkmose Mbr
-CLRE=Lone Rock/Reno Mbr
-CLTM=Lone Rock/Tomah Mbr
-CMFL=Mt.Simon-Fond du lac
-CMRC=Mt.Simon-Red Clastics
-CMSH=Mt.Simon-Hinckley
-CMTS=Mt.Simon Sandstone
-CSLT=St.Lawrence-Tunnel City
-CSLW=St.Lawrence-Wonewoc
-CSTL=St.Lawrence Formation
-CTCD=Tunnel City/Davis Fm
-CTCE=Tunnel City-Eau Claire
-CTCG=Tunnel City Group
-CTCM=Tunnel City-Mt.Simon
-CTCW=Tunnel City-Wonewoc
-CTLR=Tunnel CIty/Lone Rock Fm
-CTMZ=Tunnel City/Mazomanie Fm
-CWEC=Wonewoc-Eau Claire
-CWMS=Wonewoc-Mt.Simon
-CWOC=Wonewoc Sandstone
-DCGZ=Coralville/Gizzard Crk Mbr
-DCLC=Chickasaw Shale
-DCLP=L.Cedar Valley-Pinicon Ridg
-DCLS=L.Cedar Valley-Spillville
-DCOG=Cedar Valley-Galena
-DCOM=Cedar Valley-Maquoketa
-DCUM=Coralville Fm+Hinckle Mbr
-DCUU=Lithograph City Fm
-DCVA=Cedar Valley Group
-DCVL=Lower Cedar Valley
-DCVU=Upper Cedar Valley
-DEVO=Devonian, undifferentiated
-DPOG=Pinicon Ridge-Galena
-DPOM=Pinicon Ridge-Maquoketa
-DPSC=Pinicn-Stwrtvlle-Cmmngsvlle
-DSOG=Spillville-Galena
-DSOM=Spillville-Maquoketa
-DSPL=Wapsipinicon/Spillville Fm
-DWAP=Wapsipinicon Group
-DWPR=Wapsipinicon/Pinicon Ridge
-INDT=indeterminate
-JURA=Jurassic-Hallock Redbeds
-KCBH=Carlile/Blue Hill Mbr
-KCCD=Carlile/Codell Sandstone Mb
-KCFP=Carlile/Fairport Mbr
-KCLR=Coleraine
-KCRL=Carlile Shale
-KDKT=Dakota Sandstone
-KDNB=Dakota/Nishnabotna Mbr
-KDWB=Dakota/Woodbury Mbr
-KGRN=Greenhorn
-KGRS=Ganeros Shale
-KNBR=Niobrara
-KPRR=Pierre Shale
-KREG=Cretaceous regolith
-KRET=Cretaceous undiff.
-KSRC=Split Rock Creek
-KWIH=Windrow/Iron Hill Mbr
-KWND=Windrow
-KWOS=Windrow/Ostrander Mbr
-NRCD=no record
-ODCA=Decorah/Carimona Mbr
-ODCR=Decorah Shale
-ODGL=Dubuque-Cummingsville
-ODPG=Decorah-Platteville-Glenwd
-ODPL=Decorah-Platteville
-ODUB=Dubuque Fm
-OGAP=Galena-St. Peter
-OGCD=Cummingsville-Decorah
-OGCM=Galena/Cummingsville Fm
-OGDP=Galena-Decorah-Platteville
-OGGP=Galena Group
-OGPC=Prosser-Cummingsville
-OGPD=Galena/Prosser-Decorah
-OGPR=Galena/Prosser Fm
-OGSC=Stewartville-Cummingsville
-OGSD=Stewartville-Decorah
-OGSP=Glenwood-St.Peter
-OGSV=Galena/Stewartville Fm
-OGVP=Stewartville-Prosser
-OGWD=Glenwood Formation
-OMAQ=Maquoketa Formation
-OMQD=Maquoketa-Dubuque
-OMQG=Maquoketa-Galena
-OOCV=Oneota/Coon Valley Mbr
-OOHC=Oneota/Hager City Mbr
-OPCJ=Prairie Du Chien-Jordan
-OPCM=Prairie Du Chien-Mt.Simon
-OPCS=Prairie du Chien-StLawrence
-OPCT=Pr.du Chien-Tunnel City
-OPCW=Prairie du Chien-Wonewoc
-OPDC=Prairie Du Chien Group
-OPGW=Platteville-Glenwood
-OPHF=Platteville/Hidden Falls Mb
-OPMA=Platteville/Magnolia Mbr
-OPMG=Platteville/McGregor Mbr
-OPMI=Platteville/Mifflin Mbr
-OPNR=Shakopee/New Richmond Mbr
-OPOD=Prairie Du Chien/Oneota Fm
-OPPE=Platteville/Pecatonica Mbr
-OPSH=Pr.du Chien/Shakopee Fm
-OPSP=Platteville-St.Peter
-OPVJ=Platteville-Jordan
-OPVL=Platteville Formation
-OPWR=Shakopee/Willow River Mbr
-ORDO=Ordovician undiff.
-ORRV=Red River Formation
-ORWN=Red River-Winnipeg
-OSCJ=St.Peter-Jordan
-OSCM=St.Peter-Mt.Simon
-OSCS=St.Peter-St.Lawrence
-OSCT=St.Peter-Tunnel City
-OSPC=St.Peter-Prairie Du Chien
-OSPE=St.Peter/Pigs Eye Mbr
-OSTM=Stoney Mountain Fm
-OSTN=St.Peter/Tonti Mbr
-OSTP=St.Peter Sandstone
-OSTW=Stonewall Formation
-OWIN=Winnipeg Formation
-PAAR=Argo Gneiss
-PAAU=Algoman granites und.
-PABG=Becker terrane-gran. gneiss
-PABL=Bellingham Granite
-PABR=Burntside Gneiss
-PADL=Deer Lake Complex
-PAES=Soudan Iron-Formation
-PAEY=Ely Greenstone
-PAFR=Fort Ridgley Granite
-PAFV=intermed.-felsic volc. rx
-PAGF=Granite Falls Gneiss
-PAGR=Giants Range Granite und.
-PAGU=Archean granitoid pluton
-PAIF=Archean iron formation und.
-PAKG=Knife Lake Group
-PALL=Lac La Croix Granite
-PALV=Lake Vermilion Formation
-PAMB=metabasalt/metavolcanic
-PAMC=Mcgrath Gneiss
-PAMG=MN River Valley Gneiss
-PAMI=mafic-intermed.volc.rocks
-PAMP=Archean metaplutonic rocks
-PAMR=Morton Gneiss
-PAMS=metasedimentary rocks
-PAMU=mafic-ultmafic intr. undif
-PAMV=Montevideo Gneiss
-PANL=Newton Lake Formation
-PAOD=Odessa Granite
-PAOG=Archean orthogneiss
-PAOR=Ortonville Granite
-PAPG=Archean paragneiss
-PASF=Seaforth Gneiss
-PASG=Saganaga Tonalite
-PASH=Sacred Heart Granite
-PASR=Sauk Rapids Meta. Complex
-PAST=Sartell Gneiss
-PAUD=Archean rocks undivided
-PAVC=Vermilion Granitic Complex
-PCCR=Precambrian crystaline rcks
-PCMU=Precamb.mafic/ultramafic
-PCRG=Pre-Croixan regolith
-PCUU=Precambrian rocks undiff.
-PEAG=Animikie Group
-PEAL=Ann Lake Granodiorite
-PEBC=Bradbury Creek Grnodiorte
-PEBI=Biwabik Iron-Formation
-PECM=Cedar Mountain Complex
-PECS=Biwabik/UCherty-LSlaty
-PEDN=Denham Formation
-PEDQ=Dam Lake Quartzite
-PEFG=Foley Granite
-PEFH=Freedhem Granodiorite
-PEFM=Foley Granite magnetic
-PEGD=E. Prot. granodiorite
-PEGI=Gunflint Iron-Formation
-PEGP=Glendorado Pluton
-PEGT=Glen Township Formation
-PEGU=E.Prot. granite pluton
-PEHL=Hillman Tonalite
-PEIF=Early Proterozoic iron fm
-PEIL=Isle Granite
-PELC=Biwabik/Lower Cherty
-PELF=Little Falls Formation
-PELR=Little Rock Pluton
-PELS=Biwabik/Lower Slaty
-PEML=Mille Lacs Group
-PEMN=Mahnomen Formation
-PEMS=E.Prot. metasedimentary
-PEMU=E.Prot. mafic intr.undif.
-PEPG=Philbrook Diorite/Gabbro
-PEPK=Pokegama Quartzite
-PEPP=mafic plug-like plutons
-PEPZ=Pierz Granite
-PERB=Rabbit Lake Formation
-PERD=Randall Formation
-PERE=Rabbit Lk.Fm-Emily Mbr
-PERF=Reformatory Granite
-PERG=Richmond Granite
-PERK=Rockville Granite
-PERL=Rabbit Lk.Fm-lower mbr
-PERU=Rabbit Lk.Fm-upper mbr
-PERV=Rove Formation
-PESC=St.Cloud Granite
-PESG=schist-granitic+volcanic
-PEST=Stearns Granitic Complex
-PESW=St. Wendel Gabbronorite
-PESX=Sioux Quartzite
-PETL=Trout Lake Formation
-PETM=Thomson Formation
-PETR=Trommald Formation
-PEUC=Biwabik/Upper Cherty
-PEUD=E.Proterozoic rocks und.
-PEUM=E.Prot.ultramafic intrusn
-PEUS=Biwabik/Upper Slaty
-PEVR=Virginia Formation
-PEWR=Warman Granite
-PEWS=WI Mag.terrane-metased
-PEWT=Watab Diorite
-PEWV=WI Mag.terrane-metavolc
-PEYV=Proterozoic basalt dikes
-PITT=pitt
-PMBB=Beaver Bay/related intrus.
-PMBE=Bald Eagle intrusion
-PMBF=Beaver Bay felsic intr.
-PMBI=Beaver Bay intermed.intr.
-PMBL=Lester River sill
-PMBM=Beaver Bay mafic intrusives
-PMBR=Beaver River diabase
-PMBS=Sonju Lake Intrusion
-PMCF=Clam Falls volcanics
-PMCR=Congdon Park Rhyolite
-PMCV=Chengwatana m-i volcanics
-PMCX=St Croix Horst volcanics
-PMDA=Duluth Cplx-anorth.series
-PMDC=Duluth Complex
-PMDE=Duluth Cplx-early gabbro se
-PMDF=Duluth Cplx-felsic series
-PMDL=Duluth Cplx-layered series
-PMFL=Fond du Lac Formation
-PMGI=Mid.Prot.gabbro intrusions
-PMGL=Greenwood Lake intrusion
-PMHF=Hinckley-Fond du Lac
-PMHN=Hinckley Sandstone
-PMIU=Mid.Prot.intrusions und.
-PMLG=Logan intrusions
-PMMU=M.Prot.mafic intr.undif.
-PMMV=Minong volcanics
-PMNB=North Branch volcanics
-PMND=North Shore interflow ss
-PMNF=North Shore fels. volcanics
-PMNI=North Shore intermed.volc
-PMNM=North Shore mafic volcanics
-PMNP=Nopeming Sandstone
-PMNS=North Shore Volcanic Grp.
-PMPA=Partridge River intrusion
-PMPK=Puckwunge Formation
-PMPR=Pigeon River Intrusions
-PMRC=Red Clastic Series
-PMSC=Solor Church Formation
-PMSK=South Kawishiwi intrusion
-PMSU=Mid.Prot. sed. undivided
-PMUD=Mid. Proterozoic rocks und.
-PMVU=Keweenawan volcanics und.
-PMWL=Whitefish Lake granophyre
-PUDF=Phanerozoic undiff.
-PUSZ=shear zone
-PVMT=pavement
-QBCB=boulder-calc.brown
-QBCG=boulder-calc.gray
-QBCU=boulder-calcareous
-QBCY=boulder-calc.yellow
-QBNU=boulders-unsorted
-QBUB=boulder or boulders-brown
-QBUG=boulder or boulders-gray
-QBUK=boulder or boulders-black
-QBUL=boulder or boulders-green
-QBUO=boulder or boulders-orange
-QBUR=boulder or boulders-red
-QBUU=boulder or boulders
-QBUW=boulder or boulders-white
-QBUY=boulder or boulders-yellow
-QCCB=calcareous clay-brown
-QCCG=calcareous clay-gray
-QCCU=calcareous clay
-QCDG=silty clay-mod.sorted-gray
-QCDU=silty clay-mod.sorted
-QCUB=clay-brown
-QCUG=clay-gray
-QCUK=clay-black
-QCUL=clay-green
-QCUO=clay-orange
-QCUR=clay-red
-QCUU=clay
-QCUW=clay-white
-QCUY=clay-yellow
-QFCB=sand w calc.pebbles-brown
-QFCG=sand w calc.pebbles-gray
-QFCR=sand w calc.pebbles-red
-QFCU=sand w calc.pebbles
-QFDB=sand-mod. sorted-brown
-QFDG=sand-mod. sorted-gray
-QFDU=sand-mod. sorted
-QFDY=sand-mod. sorted-yellow
-QFOB=sand-poorly sorted-brown
-QFPB=sand w PC pebbles-brown
-QFPG=sand w PC pebbles-gray
-QFPR=sand w PC pebbles-red
-QFPU=sand w PC pebbles
-QFSG=sand w shale pebbles-gray
-QFSU=sand w shale pebbles
-QFUB=sand-brown
-QFUG=sand-gray
-QFUK=sand-black
-QFUL=sand-green
-QFUO=sand-orange
-QFUR=sand-red
-QFUU=sand
-QFUW=sand-white
-QFUY=sand-yellow
-QFWB=sand-well sorted-brown
-QFWG=sand-well sorted-gray
-QFWU=sand-well sorted
-QGCB=gravel w/calc. pebbles
-QGCU=gravel w/calc. pebbles
-QGCY=gravel w/calc. pebbles
-QGDG=gravel-mod.sorted-gray
-QGDU=gravel-moderately sorted
-QGPB=gravel w/Precamb. pebbles
-QGSB=gravel w/shale pebbles
-QGSU=gravel w/shale pebbles
-QGUB=gravel (+larger)-brown
-QGUG=gravel (+larger)-gray
-QGUK=gravel (+larger)-black
-QGUL=gravel (+larger)-green
-QGUO=gravel (+larger)-orange
-QGUR=gravel (+larger)-red
-QGUU=gravel (+larger)
-QGUW=gravel (+larger)-white
-QGUY=gravel (+larger)-yellow
-QGWU=gravel-well sorted
-QHCB=sand +larger w/calc.pebbls
-QHCG=sand +larger w/calc.pebbls
-QHCU=sand +larger w/calc.pebbls
-QHDG=sand +larger-mod.sort-gry
-QHDU=sand +larger-mod.sorted
-QHPB=sand+lrgr w/Prec.peb-brn
-QHSG=sand+lrgr w/shle.peb-gry
-QHSU=sand+lrgr w/shale pebbls
-QHUB=sand +larger-brown
-QHUG=sand +larger-gray
-QHUK=sand +larger-black
-QHUL=sand +larger-green
-QHUO=sand +larger-orange
-QHUR=sand +larger-red
-QHUU=sand +larger
-QHUW=sand +larger-white
-QHUY=sand +larger-yellow
-QICB=calcareous silt-brown
-QICU=calcareous silt
-QIUB=silt-brown
-QIUG=silt-gray
-QIUK=silt-black
-QIUL=silt-green
-QIUR=silt-red
-QIUU=silt
-QIUW=silt-white
-QIUY=silt-yellow
-QJCB=calc.silty clay-brown
-QJCG=calc.silty clay-gray
-QJCL=calc.silty clay-green
-QJCU=calcareous clayey silt
-QJDG=silt+clay-mod.srtd-gry
-QJUB=silt+clay-brown
-QJUG=silt+clay-gray
-QJUK=silt+clay-black
-QJUL=silt+clay-green
-QJUR=silt+clay-red
-QJUU=silt+clay
-QJUW=silt+clay-white
-QJUY=silt+clay-yellow
-QLCB=calc.sandy clay-brown
-QLCG=calc.sandy clay-gray
-QLCU=calcareous sandy clay
-QLDB=clay+sand-mod.sort-brn
-QLDG=clay+sand-mod.sort-gry
-QLDK=clay+sand-mod.sort-blk
-QLDU=clay+sand-mod.sorted
-QLDY=clay+sand-mod.sort-yel
-QLPB=sandy clay w PC mat.-brown
-QLPR=sandy clay w PC peb.-red
-QLUB=clay+sand-brown
-QLUG=clay+sand-gray
-QLUK=clay+sand-black
-QLUL=clay+sand-green
-QLUO=clay+sand-orange
-QLUR=clay+sand-red
-QLUU=clay+sand
-QLUW=clay+sand-white
-QLUY=clay+sand-yellow
-QNCB=clayless sediment-calc-brn
-QNCG=clayless sediment-calc-gray
-QNCU=clayless sediment-calc.
-QNDB=sand+silt-mod.srtd-brn
-QNDG=sand+silt-mod.srtd-gry
-QNDR=sand+silt-mod.srtd-red
-QNDU=sand+silt-mod.sorted
-QNUB=sand+silt-brown
-QNUG=sand+silt-gray
-QNUK=sand+silt-black
-QNUL=sand+silt-green
-QNUO=sand+silt-orange
-QNUR=sand+silt-red
-QNUU=sand+silt
-QNUW=sand+silt-white
-QNUY=sand+silt-yellow
-QNWG=sand+silt-well srtd-gry
-QPCB=pebbly sand/silt/clay-calc.
-QPCG=pebbly sand/silt/clay-calc.
-QPCR=pebbly sand/silt/clay-calc.
-QPCU=pebbly sand/silt/clay-calc.
-QPDB=pebbly sand/silt/clay-mod.
-QPDC=pebbly sand/silt/clay-mod.
-QPDG=pebbly sand/silt/clay-mod.
-QPDU=pebbly sand/silt/clay-mod.
-QPPB=peb.sand/silt/clay-PC-brn
-QPSG=peb.sand/silt/clay-shl-gry
-QPSU=peb.sand/silt/clay-shale
-QPUB=pebbly sand/silt/clay-brown
-QPUG=pebbly sand/silt/clay-gray
-QPUK=pebbly sand/silt/clay-black
-QPUL=pebbly sand/silt/clay-green
-QPUO=pebbly sand/silt/clay
-QPUR=pebbly sand/silt/clay-red
-QPUU=pebbly sand/silt/clay
-QPUW=pebbly sand/silt/clay-white
-QPUY=pebbly sand/silt/clay
-QPWL=peb.snd/silt/clay-w.srt.grn
-QRUB=sand+gravel+broken rk-brn
-QRUG=sand+gravel+broken rk-gry
-QRUK=sand+gravel+broken rk-blk
-QRUR=sand+gravel+broken rk-red
-QRUU=sand+gravel+broken rock
-QRUW=sand+gravel+broken rk-wht
-QRUY=sand+gravel+broken rk-yel
-QSDB=peat-mod. sorted-blk
-QSNK=peat-unsorted-black
-QSOB=peat-poorly sorted-brown
-QSOK=peat-poorly sorted-black
-QSUB=peat-brown
-QSUG=peat-gray
-QSUK=peat-black
-QSUR=peat-red
-QSUU=peat,muck
-QSUW=peat-white
-QTCB=till w/calc.pebbles-brn
-QTCG=till w/calc.pebbles-gry
-QTCK=till w/calc.pebbles-blk
-QTCR=till w/calc.pebbles-red
-QTCU=till w/calc.pebbles
-QTPB=till w/Precam.pebbles-brn
-QTPG=till w/Precam.pebbles-gry
-QTPR=till w/Precam.pebbles-red
-QTPU=till w/Precam.pebbles
-QTSB=till w/shale pebbles-brn
-QTSG=till w/shale pebbles-gry
-QTUB=till-brown
-QTUG=till-gray
-QTUK=till-black
-QTUL=till-green
-QTUR=till-red
-QTUU=till
-QTUW=till-white
-QTUY=till-yellow
-QUCB=calcareous sediment-brown
-QUCG=calcareous sediment-gray
-QUCR=calcareous sediment-red
-QUCU=calcareous sediment
-QUDB=Quat.depos.-mod.sort-brn
-QUDG=Quat.depos.-mod.sort-gry
-QUDU=Quat.depos.-mod.sort
-QUPB=sed.w PC pebbles-brown
-QUPR=sediment w PC pebbles-red
-QUPU=sediment w PC pebbles
-QUSG=sed.w shale peb.-gray
-QUSU=sediment w shale pebbles
-QUUB=Quat. deposit-brown
-QUUG=Quat. deposit-gray
-QUUK=Quat. deposit-black
-QUUL=Quat. deposit-green
-QUUR=Quat. deposit-red
-QUUU=Quaternary deposit
-QUUW=Quat. deposit-white
-QUUY=Quat. deposit-yellow
-QWCB=clay+sand+silt-calc-brown
-QWCG=clay+sand+silt-calc-gray
-QWCU=clay+sand+silt-calc
-QWDB=cly/snd/slt-no pb-m.srt-brn
-QWDG=cly/snd/slt-no pb-m.srt-gry
-QWDU=cly/snd/slt-no pb-m.srt
-QWDY=cly/snd/slt-no pb-m.srt-yel
-QWUB=cly/snd/slt-no peb.-brn
-QWUG=cly/snd/slt-no peb.-gry
-QWUK=cly/snd/slt-no peb.-blk
-QWUL=cly/snd/slt-no peb.-grn
-QWUR=cly/snd/slt-no peb.-red
-QWUU=clay/sand/silt-no peb.
-QWUW=cly/snd/slt-no peb.-wht
-QWUY=clay/sand/silt-no peb.-yel
-RCUB=Recent clay w/org-brn
-RCUK=Recent clay w/org-blk
-RFUB=Recent sand-brown
-RFUK=Recent sand-black
-RIUK=Recent silt-black
-RJUG=Recent silty clay-gray
-RJUU=Recent silty clay
-RMMF=man-made fill
-RSUB=Recent peat, muck-brown
-RSUK=Recent peat, muck-black
-RSUU=Recent peat, muck
-RUDK=Recent dep.-mod sorted-blk
-RUUB=Recent deposit-brown
-RUUG=Recent deposit-gray
-RUUK=Recent deposit-black
-RUUL=Recent deposit-green
-RUUR=Recent deposit-red
-RUUU=Recent undiff.
-RUUY=Recent deposit-yellow
-UREG=weathering residuum unc.age
-WFUB=Wisc.sand-brown
-WFUG=Wisc.sand-gray
-WFUR=Wisc.sand-red
-WFUU=Wisconsinan sand
-WFUY=Wisc.sand-yellow
-WHPB=Wisc.sand+grvl-Prec.peb-brn
-WHUB=Wisc.sand+grvl-brown
-WLUB=Wisc.clay+sand-brown
-WLUG=Wisc.clay+sand-gray
-WLUU=Wisc.clay+sand
-WNNB=Wisc.silt+lrgr-unsrt-brown
-WPCR=Wisc.cly+snd+slt-calc-red
-WPUR=Wisc.cly+snd+slt-peb-red
-WPUU=Wisc.cly+snd+slt-peb
-WTPB=Wisc.till-PC pebbles-brn
-WTPR=Wisc.till-PC pebbles-red
-WTSB=Wisc.till-shale pebbles-brn
-WTSG=Wisc.till-shale pebbles-gry
-WTSU=Wisc.till-shale pebbles
-WTUB=Wisc.till-brown
-WTUR=Wisc.till-red
-WTUU=Wisconsinan till
-WUUB=Wisc. deposit-brown
-WUUG=Wisc. deposit-gray
-WUUR=Wisc. deposit-red
+BSMT:basement
+CAMB:Cambrian undifferentiated
+CEBT:Bonneterre Formation
+CECR:Eau Claire Formation
+CEMS:Eau Claire-Mt.Simon
+CJDN:Jordan Sandstone
+CJDW:Jordan-Wonewoc
+CJEC:Jordan-Eau Claire
+CJMS:Jordan-Mt.Simon
+CJSL:Jordan-St.Lawrence
+CJTC:Jordan-Tunnel City
+CLBK:Lone Rock/Birkmose Mbr
+CLRE:Lone Rock/Reno Mbr
+CLTM:Lone Rock/Tomah Mbr
+CMFL:Mt.Simon-Fond du lac
+CMRC:Mt.Simon-Red Clastics
+CMSH:Mt.Simon-Hinckley
+CMTS:Mt.Simon Sandstone
+CSLT:St.Lawrence-Tunnel City
+CSLW:St.Lawrence-Wonewoc
+CSTL:St.Lawrence Formation
+CTCD:Tunnel City/Davis Fm
+CTCE:Tunnel City-Eau Claire
+CTCG:Tunnel City Group
+CTCM:Tunnel City-Mt.Simon
+CTCW:Tunnel City-Wonewoc
+CTLR:Tunnel CIty/Lone Rock Fm
+CTMZ:Tunnel City/Mazomanie Fm
+CWEC:Wonewoc-Eau Claire
+CWMS:Wonewoc-Mt.Simon
+CWOC:Wonewoc Sandstone
+DCGZ:Coralville/Gizzard Crk Mbr
+DCLC:Chickasaw Shale
+DCLP:L.Cedar Valley-Pinicon Ridg
+DCLS:L.Cedar Valley-Spillville
+DCOG:Cedar Valley-Galena
+DCOM:Cedar Valley-Maquoketa
+DCUM:Coralville Fm+Hinckle Mbr
+DCUU:Lithograph City Fm
+DCVA:Cedar Valley Group
+DCVL:Lower Cedar Valley
+DCVU:Upper Cedar Valley
+DEVO:Devonian, undifferentiated
+DPOG:Pinicon Ridge-Galena
+DPOM:Pinicon Ridge-Maquoketa
+DPSC:Pinicn-Stwrtvlle-Cmmngsvlle
+DSOG:Spillville-Galena
+DSOM:Spillville-Maquoketa
+DSPL:Wapsipinicon/Spillville Fm
+DWAP:Wapsipinicon Group
+DWPR:Wapsipinicon/Pinicon Ridge
+INDT:indeterminate
+JURA:Jurassic-Hallock Redbeds
+KCBH:Carlile/Blue Hill Mbr
+KCCD:Carlile/Codell Sandstone Mb
+KCFP:Carlile/Fairport Mbr
+KCLR:Coleraine
+KCRL:Carlile Shale
+KDKT:Dakota Sandstone
+KDNB:Dakota/Nishnabotna Mbr
+KDWB:Dakota/Woodbury Mbr
+KGRN:Greenhorn
+KGRS:Ganeros Shale
+KNBR:Niobrara
+KPRR:Pierre Shale
+KREG:Cretaceous regolith
+KRET:Cretaceous undiff.
+KSRC:Split Rock Creek
+KWIH:Windrow/Iron Hill Mbr
+KWND:Windrow
+KWOS:Windrow/Ostrander Mbr
+NRCD:no record
+ODCA:Decorah/Carimona Mbr
+ODCR:Decorah Shale
+ODGL:Dubuque-Cummingsville
+ODPG:Decorah-Platteville-Glenwd
+ODPL:Decorah-Platteville
+ODUB:Dubuque Fm
+OGAP:Galena-St. Peter
+OGCD:Cummingsville-Decorah
+OGCM:Galena/Cummingsville Fm
+OGDP:Galena-Decorah-Platteville
+OGGP:Galena Group
+OGPC:Prosser-Cummingsville
+OGPD:Galena/Prosser-Decorah
+OGPR:Galena/Prosser Fm
+OGSC:Stewartville-Cummingsville
+OGSD:Stewartville-Decorah
+OGSP:Glenwood-St.Peter
+OGSV:Galena/Stewartville Fm
+OGVP:Stewartville-Prosser
+OGWD:Glenwood Formation
+OMAQ:Maquoketa Formation
+OMQD:Maquoketa-Dubuque
+OMQG:Maquoketa-Galena
+OOCV:Oneota/Coon Valley Mbr
+OOHC:Oneota/Hager City Mbr
+OPCJ:Prairie Du Chien-Jordan
+OPCM:Prairie Du Chien-Mt.Simon
+OPCS:Prairie du Chien-StLawrence
+OPCT:Pr.du Chien-Tunnel City
+OPCW:Prairie du Chien-Wonewoc
+OPDC:Prairie Du Chien Group
+OPGW:Platteville-Glenwood
+OPHF:Platteville/Hidden Falls Mb
+OPMA:Platteville/Magnolia Mbr
+OPMG:Platteville/McGregor Mbr
+OPMI:Platteville/Mifflin Mbr
+OPNR:Shakopee/New Richmond Mbr
+OPOD:Prairie Du Chien/Oneota Fm
+OPPE:Platteville/Pecatonica Mbr
+OPSH:Pr.du Chien/Shakopee Fm
+OPSP:Platteville-St.Peter
+OPVJ:Platteville-Jordan
+OPVL:Platteville Formation
+OPWR:Shakopee/Willow River Mbr
+ORDO:Ordovician undiff.
+ORRV:Red River Formation
+ORWN:Red River-Winnipeg
+OSCJ:St.Peter-Jordan
+OSCM:St.Peter-Mt.Simon
+OSCS:St.Peter-St.Lawrence
+OSCT:St.Peter-Tunnel City
+OSPC:St.Peter-Prairie Du Chien
+OSPE:St.Peter/Pigs Eye Mbr
+OSTM:Stoney Mountain Fm
+OSTN:St.Peter/Tonti Mbr
+OSTP:St.Peter Sandstone
+OSTW:Stonewall Formation
+OWIN:Winnipeg Formation
+PAAR:Argo Gneiss
+PAAU:Algoman granites und.
+PABG:Becker terrane-gran. gneiss
+PABL:Bellingham Granite
+PABR:Burntside Gneiss
+PADL:Deer Lake Complex
+PAES:Soudan Iron-Formation
+PAEY:Ely Greenstone
+PAFR:Fort Ridgley Granite
+PAFV:intermed.-felsic volc. rx
+PAGF:Granite Falls Gneiss
+PAGR:Giants Range Granite und.
+PAGU:Archean granitoid pluton
+PAIF:Archean iron formation und.
+PAKG:Knife Lake Group
+PALL:Lac La Croix Granite
+PALV:Lake Vermilion Formation
+PAMB:metabasalt/metavolcanic
+PAMC:Mcgrath Gneiss
+PAMG:MN River Valley Gneiss
+PAMI:mafic-intermed.volc.rocks
+PAMP:Archean metaplutonic rocks
+PAMR:Morton Gneiss
+PAMS:metasedimentary rocks
+PAMU:mafic-ultmafic intr. undif
+PAMV:Montevideo Gneiss
+PANL:Newton Lake Formation
+PAOD:Odessa Granite
+PAOG:Archean orthogneiss
+PAOR:Ortonville Granite
+PAPG:Archean paragneiss
+PASF:Seaforth Gneiss
+PASG:Saganaga Tonalite
+PASH:Sacred Heart Granite
+PASR:Sauk Rapids Meta. Complex
+PAST:Sartell Gneiss
+PAUD:Archean rocks undivided
+PAVC:Vermilion Granitic Complex
+PCCR:Precambrian crystaline rcks
+PCMU:Precamb.mafic/ultramafic
+PCRG:Pre-Croixan regolith
+PCUU:Precambrian rocks undiff.
+PEAG:Animikie Group
+PEAL:Ann Lake Granodiorite
+PEBC:Bradbury Creek Grnodiorte
+PEBI:Biwabik Iron-Formation
+PECM:Cedar Mountain Complex
+PECS:Biwabik/UCherty-LSlaty
+PEDN:Denham Formation
+PEDQ:Dam Lake Quartzite
+PEFG:Foley Granite
+PEFH:Freedhem Granodiorite
+PEFM:Foley Granite magnetic
+PEGD:E. Prot. granodiorite
+PEGI:Gunflint Iron-Formation
+PEGP:Glendorado Pluton
+PEGT:Glen Township Formation
+PEGU:E.Prot. granite pluton
+PEHL:Hillman Tonalite
+PEIF:Early Proterozoic iron fm
+PEIL:Isle Granite
+PELC:Biwabik/Lower Cherty
+PELF:Little Falls Formation
+PELR:Little Rock Pluton
+PELS:Biwabik/Lower Slaty
+PEML:Mille Lacs Group
+PEMN:Mahnomen Formation
+PEMS:E.Prot. metasedimentary
+PEMU:E.Prot. mafic intr.undif.
+PEPG:Philbrook Diorite/Gabbro
+PEPK:Pokegama Quartzite
+PEPP:mafic plug-like plutons
+PEPZ:Pierz Granite
+PERB:Rabbit Lake Formation
+PERD:Randall Formation
+PERE:Rabbit Lk.Fm-Emily Mbr
+PERF:Reformatory Granite
+PERG:Richmond Granite
+PERK:Rockville Granite
+PERL:Rabbit Lk.Fm-lower mbr
+PERU:Rabbit Lk.Fm-upper mbr
+PERV:Rove Formation
+PESC:St.Cloud Granite
+PESG:schist-granitic+volcanic
+PEST:Stearns Granitic Complex
+PESW:St. Wendel Gabbronorite
+PESX:Sioux Quartzite
+PETL:Trout Lake Formation
+PETM:Thomson Formation
+PETR:Trommald Formation
+PEUC:Biwabik/Upper Cherty
+PEUD:E.Proterozoic rocks und.
+PEUM:E.Prot.ultramafic intrusn
+PEUS:Biwabik/Upper Slaty
+PEVR:Virginia Formation
+PEWR:Warman Granite
+PEWS:WI Mag.terrane-metased
+PEWT:Watab Diorite
+PEWV:WI Mag.terrane-metavolc
+PEYV:Proterozoic basalt dikes
+PITT:pitt
+PMBB:Beaver Bay/related intrus.
+PMBE:Bald Eagle intrusion
+PMBF:Beaver Bay felsic intr.
+PMBI:Beaver Bay intermed.intr.
+PMBL:Lester River sill
+PMBM:Beaver Bay mafic intrusives
+PMBR:Beaver River diabase
+PMBS:Sonju Lake Intrusion
+PMCF:Clam Falls volcanics
+PMCR:Congdon Park Rhyolite
+PMCV:Chengwatana m-i volcanics
+PMCX:St Croix Horst volcanics
+PMDA:Duluth Cplx-anorth.series
+PMDC:Duluth Complex
+PMDE:Duluth Cplx-early gabbro se
+PMDF:Duluth Cplx-felsic series
+PMDL:Duluth Cplx-layered series
+PMFL:Fond du Lac Formation
+PMGI:Mid.Prot.gabbro intrusions
+PMGL:Greenwood Lake intrusion
+PMHF:Hinckley-Fond du Lac
+PMHN:Hinckley Sandstone
+PMIU:Mid.Prot.intrusions und.
+PMLG:Logan intrusions
+PMMU:M.Prot.mafic intr.undif.
+PMMV:Minong volcanics
+PMNB:North Branch volcanics
+PMND:North Shore interflow ss
+PMNF:North Shore fels. volcanics
+PMNI:North Shore intermed.volc
+PMNM:North Shore mafic volcanics
+PMNP:Nopeming Sandstone
+PMNS:North Shore Volcanic Grp.
+PMPA:Partridge River intrusion
+PMPK:Puckwunge Formation
+PMPR:Pigeon River Intrusions
+PMRC:Red Clastic Series
+PMSC:Solor Church Formation
+PMSK:South Kawishiwi intrusion
+PMSU:Mid.Prot. sed. undivided
+PMUD:Mid. Proterozoic rocks und.
+PMVU:Keweenawan volcanics und.
+PMWL:Whitefish Lake granophyre
+PUDF:Phanerozoic undiff.
+PUSZ:shear zone
+PVMT:pavement
+QBCB:boulder-calc.brown
+QBCG:boulder-calc.gray
+QBCU:boulder-calcareous
+QBCY:boulder-calc.yellow
+QBNU:boulders-unsorted
+QBUB:boulder or boulders-brown
+QBUG:boulder or boulders-gray
+QBUK:boulder or boulders-black
+QBUL:boulder or boulders-green
+QBUO:boulder or boulders-orange
+QBUR:boulder or boulders-red
+QBUU:boulder or boulders
+QBUW:boulder or boulders-white
+QBUY:boulder or boulders-yellow
+QCCB:calcareous clay-brown
+QCCG:calcareous clay-gray
+QCCU:calcareous clay
+QCDG:silty clay-mod.sorted-gray
+QCDU:silty clay-mod.sorted
+QCUB:clay-brown
+QCUG:clay-gray
+QCUK:clay-black
+QCUL:clay-green
+QCUO:clay-orange
+QCUR:clay-red
+QCUU:clay
+QCUW:clay-white
+QCUY:clay-yellow
+QFCB:sand w calc.pebbles-brown
+QFCG:sand w calc.pebbles-gray
+QFCR:sand w calc.pebbles-red
+QFCU:sand w calc.pebbles
+QFDB:sand-mod. sorted-brown
+QFDG:sand-mod. sorted-gray
+QFDU:sand-mod. sorted
+QFDY:sand-mod. sorted-yellow
+QFOB:sand-poorly sorted-brown
+QFPB:sand w PC pebbles-brown
+QFPG:sand w PC pebbles-gray
+QFPR:sand w PC pebbles-red
+QFPU:sand w PC pebbles
+QFSG:sand w shale pebbles-gray
+QFSU:sand w shale pebbles
+QFUB:sand-brown
+QFUG:sand-gray
+QFUK:sand-black
+QFUL:sand-green
+QFUO:sand-orange
+QFUR:sand-red
+QFUU:sand
+QFUW:sand-white
+QFUY:sand-yellow
+QFWB:sand-well sorted-brown
+QFWG:sand-well sorted-gray
+QFWU:sand-well sorted
+QGCB:gravel w/calc. pebbles
+QGCU:gravel w/calc. pebbles
+QGCY:gravel w/calc. pebbles
+QGDG:gravel-mod.sorted-gray
+QGDU:gravel-moderately sorted
+QGPB:gravel w/Precamb. pebbles
+QGSB:gravel w/shale pebbles
+QGSU:gravel w/shale pebbles
+QGUB:gravel (+larger)-brown
+QGUG:gravel (+larger)-gray
+QGUK:gravel (+larger)-black
+QGUL:gravel (+larger)-green
+QGUO:gravel (+larger)-orange
+QGUR:gravel (+larger)-red
+QGUU:gravel (+larger)
+QGUW:gravel (+larger)-white
+QGUY:gravel (+larger)-yellow
+QGWU:gravel-well sorted
+QHCB:sand +larger w/calc.pebbls
+QHCG:sand +larger w/calc.pebbls
+QHCU:sand +larger w/calc.pebbls
+QHDG:sand +larger-mod.sort-gry
+QHDU:sand +larger-mod.sorted
+QHPB:sand+lrgr w/Prec.peb-brn
+QHSG:sand+lrgr w/shle.peb-gry
+QHSU:sand+lrgr w/shale pebbls
+QHUB:sand +larger-brown
+QHUG:sand +larger-gray
+QHUK:sand +larger-black
+QHUL:sand +larger-green
+QHUO:sand +larger-orange
+QHUR:sand +larger-red
+QHUU:sand +larger
+QHUW:sand +larger-white
+QHUY:sand +larger-yellow
+QICB:calcareous silt-brown
+QICU:calcareous silt
+QIUB:silt-brown
+QIUG:silt-gray
+QIUK:silt-black
+QIUL:silt-green
+QIUR:silt-red
+QIUU:silt
+QIUW:silt-white
+QIUY:silt-yellow
+QJCB:calc.silty clay-brown
+QJCG:calc.silty clay-gray
+QJCL:calc.silty clay-green
+QJCU:calcareous clayey silt
+QJDG:silt+clay-mod.srtd-gry
+QJUB:silt+clay-brown
+QJUG:silt+clay-gray
+QJUK:silt+clay-black
+QJUL:silt+clay-green
+QJUR:silt+clay-red
+QJUU:silt+clay
+QJUW:silt+clay-white
+QJUY:silt+clay-yellow
+QLCB:calc.sandy clay-brown
+QLCG:calc.sandy clay-gray
+QLCU:calcareous sandy clay
+QLDB:clay+sand-mod.sort-brn
+QLDG:clay+sand-mod.sort-gry
+QLDK:clay+sand-mod.sort-blk
+QLDU:clay+sand-mod.sorted
+QLDY:clay+sand-mod.sort-yel
+QLPB:sandy clay w PC mat.-brown
+QLPR:sandy clay w PC peb.-red
+QLUB:clay+sand-brown
+QLUG:clay+sand-gray
+QLUK:clay+sand-black
+QLUL:clay+sand-green
+QLUO:clay+sand-orange
+QLUR:clay+sand-red
+QLUU:clay+sand
+QLUW:clay+sand-white
+QLUY:clay+sand-yellow
+QNCB:clayless sediment-calc-brn
+QNCG:clayless sediment-calc-gray
+QNCU:clayless sediment-calc.
+QNDB:sand+silt-mod.srtd-brn
+QNDG:sand+silt-mod.srtd-gry
+QNDR:sand+silt-mod.srtd-red
+QNDU:sand+silt-mod.sorted
+QNUB:sand+silt-brown
+QNUG:sand+silt-gray
+QNUK:sand+silt-black
+QNUL:sand+silt-green
+QNUO:sand+silt-orange
+QNUR:sand+silt-red
+QNUU:sand+silt
+QNUW:sand+silt-white
+QNUY:sand+silt-yellow
+QNWG:sand+silt-well srtd-gry
+QPCB:pebbly sand/silt/clay-calc.
+QPCG:pebbly sand/silt/clay-calc.
+QPCR:pebbly sand/silt/clay-calc.
+QPCU:pebbly sand/silt/clay-calc.
+QPDB:pebbly sand/silt/clay-mod.
+QPDC:pebbly sand/silt/clay-mod.
+QPDG:pebbly sand/silt/clay-mod.
+QPDU:pebbly sand/silt/clay-mod.
+QPPB:peb.sand/silt/clay-PC-brn
+QPSG:peb.sand/silt/clay-shl-gry
+QPSU:peb.sand/silt/clay-shale
+QPUB:pebbly sand/silt/clay-brown
+QPUG:pebbly sand/silt/clay-gray
+QPUK:pebbly sand/silt/clay-black
+QPUL:pebbly sand/silt/clay-green
+QPUO:pebbly sand/silt/clay
+QPUR:pebbly sand/silt/clay-red
+QPUU:pebbly sand/silt/clay
+QPUW:pebbly sand/silt/clay-white
+QPUY:pebbly sand/silt/clay
+QPWL:peb.snd/silt/clay-w.srt.grn
+QRUB:sand+gravel+broken rk-brn
+QRUG:sand+gravel+broken rk-gry
+QRUK:sand+gravel+broken rk-blk
+QRUR:sand+gravel+broken rk-red
+QRUU:sand+gravel+broken rock
+QRUW:sand+gravel+broken rk-wht
+QRUY:sand+gravel+broken rk-yel
+QSDB:peat-mod. sorted-blk
+QSNK:peat-unsorted-black
+QSOB:peat-poorly sorted-brown
+QSOK:peat-poorly sorted-black
+QSUB:peat-brown
+QSUG:peat-gray
+QSUK:peat-black
+QSUR:peat-red
+QSUU:peat,muck
+QSUW:peat-white
+QTCB:till w/calc.pebbles-brn
+QTCG:till w/calc.pebbles-gry
+QTCK:till w/calc.pebbles-blk
+QTCR:till w/calc.pebbles-red
+QTCU:till w/calc.pebbles
+QTPB:till w/Precam.pebbles-brn
+QTPG:till w/Precam.pebbles-gry
+QTPR:till w/Precam.pebbles-red
+QTPU:till w/Precam.pebbles
+QTSB:till w/shale pebbles-brn
+QTSG:till w/shale pebbles-gry
+QTUB:till-brown
+QTUG:till-gray
+QTUK:till-black
+QTUL:till-green
+QTUR:till-red
+QTUU:till
+QTUW:till-white
+QTUY:till-yellow
+QUCB:calcareous sediment-brown
+QUCG:calcareous sediment-gray
+QUCR:calcareous sediment-red
+QUCU:calcareous sediment
+QUDB:Quat.depos.-mod.sort-brn
+QUDG:Quat.depos.-mod.sort-gry
+QUDU:Quat.depos.-mod.sort
+QUPB:sed.w PC pebbles-brown
+QUPR:sediment w PC pebbles-red
+QUPU:sediment w PC pebbles
+QUSG:sed.w shale peb.-gray
+QUSU:sediment w shale pebbles
+QUUB:Quat. deposit-brown
+QUUG:Quat. deposit-gray
+QUUK:Quat. deposit-black
+QUUL:Quat. deposit-green
+QUUR:Quat. deposit-red
+QUUU:Quaternary deposit
+QUUW:Quat. deposit-white
+QUUY:Quat. deposit-yellow
+QWCB:clay+sand+silt-calc-brown
+QWCG:clay+sand+silt-calc-gray
+QWCU:clay+sand+silt-calc
+QWDB:cly/snd/slt-no pb-m.srt-brn
+QWDG:cly/snd/slt-no pb-m.srt-gry
+QWDU:cly/snd/slt-no pb-m.srt
+QWDY:cly/snd/slt-no pb-m.srt-yel
+QWUB:cly/snd/slt-no peb.-brn
+QWUG:cly/snd/slt-no peb.-gry
+QWUK:cly/snd/slt-no peb.-blk
+QWUL:cly/snd/slt-no peb.-grn
+QWUR:cly/snd/slt-no peb.-red
+QWUU:clay/sand/silt-no peb.
+QWUW:cly/snd/slt-no peb.-wht
+QWUY:clay/sand/silt-no peb.-yel
+RCUB:Recent clay w/org-brn
+RCUK:Recent clay w/org-blk
+RFUB:Recent sand-brown
+RFUK:Recent sand-black
+RIUK:Recent silt-black
+RJUG:Recent silty clay-gray
+RJUU:Recent silty clay
+RMMF:man-made fill
+RSUB:Recent peat, muck-brown
+RSUK:Recent peat, muck-black
+RSUU:Recent peat, muck
+RUDK:Recent dep.-mod sorted-blk
+RUUB:Recent deposit-brown
+RUUG:Recent deposit-gray
+RUUK:Recent deposit-black
+RUUL:Recent deposit-green
+RUUR:Recent deposit-red
+RUUU:Recent undiff.
+RUUY:Recent deposit-yellow
+UREG:weathering residuum unc.age
+WFUB:Wisc.sand-brown
+WFUG:Wisc.sand-gray
+WFUR:Wisc.sand-red
+WFUU:Wisconsinan sand
+WFUY:Wisc.sand-yellow
+WHPB:Wisc.sand+grvl-Prec.peb-brn
+WHUB:Wisc.sand+grvl-brown
+WLUB:Wisc.clay+sand-brown
+WLUG:Wisc.clay+sand-gray
+WLUU:Wisc.clay+sand
+WNNB:Wisc.silt+lrgr-unsrt-brown
+WPCR:Wisc.cly+snd+slt-calc-red
+WPUR:Wisc.cly+snd+slt-peb-red
+WPUU:Wisc.cly+snd+slt-peb
+WTPB:Wisc.till-PC pebbles-brn
+WTPR:Wisc.till-PC pebbles-red
+WTSB:Wisc.till-shale pebbles-brn
+WTSG:Wisc.till-shale pebbles-gry
+WTSU:Wisc.till-shale pebbles
+WTUB:Wisc.till-brown
+WTUR:Wisc.till-red
+WTUU:Wisconsinan till
+WUUB:Wisc. deposit-brown
+WUUG:Wisc. deposit-gray
+WUUR:Wisc. deposit-red

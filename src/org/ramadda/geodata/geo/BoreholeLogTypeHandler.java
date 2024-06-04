@@ -71,7 +71,7 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	    if(!stringDefined(fields)) fields="#2";
 	    List<String> ids = Utils.split(fields,",",true,true);
 	    sb.append("+row\n");
-	    String template = "{{display_profile height=500px showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=25  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
+	    String template = "{{display_profile width=100% height=500px showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=25  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
 	    for(int i=0;i<ids.size();i++) {
 		String id = ids.get(i);
 		String extra = i>0?" marginLeft=0 yAxisTitle=\"\" ":"";
@@ -82,6 +82,7 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 		sb.append("-col-"+ Math.round((12/ids.size()))+"\n");
 	    }
 	    sb.append("-row\n");
+	    //	    System.err.println(sb);
 	    return getWikiManager().wikifyEntry(request, entry,sb.toString());
 	}
 
