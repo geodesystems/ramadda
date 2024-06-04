@@ -74,7 +74,9 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	    String template = "{{display_profile showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=25  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
 	    for(int i=0;i<ids.size();i++) {
 		String id = ids.get(i);
-		String extra = i>0?"lineColor1=\"#FF7F0E\" marginLeft=0 yAxisTitle=\"\" ":"";
+		String extra = i>0?" marginLeft=0 yAxisTitle=\"\" ":"";
+		if(i % 2 != 0)
+		    extra += " lineColor1=\"#FF7F0E\" ";
 		sb.append("+col-"+ Math.round((12/ids.size()))+"\n");
 		sb.append(template.replace("{field}",id).replace("{extra}",extra));
 		sb.append("-col-"+ Math.round((12/ids.size()))+"\n");
