@@ -2587,7 +2587,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         setContents: function(contents,dontWrap) {
             this.clearDisplayMessage();
             if(!dontWrap)
-		contents = HU.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
+		contents = HU.div([ATTR_STYLE,this.getProperty("displayInnerStyle",""),ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
