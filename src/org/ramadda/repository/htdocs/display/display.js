@@ -4921,9 +4921,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
-		let snippet = "";
-		snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)], entry.getSnippet()||"");
-		if(showSnippet) {
+		let snippet = entry.getSnippet()??'';
+		if(showSnippet && Utils.stringDefined(snippet)) {
+		    snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)],snippet);
 		    left+=snippet;
 		    snippet = "";
 		}
