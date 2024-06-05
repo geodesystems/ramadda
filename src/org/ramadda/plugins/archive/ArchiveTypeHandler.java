@@ -9,6 +9,7 @@ package org.ramadda.plugins.archive;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.DatabaseManager;
+import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
@@ -28,6 +29,7 @@ import ucar.unidata.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.HashSet;
 import java.util.List;
 import java.text.DecimalFormat;
@@ -50,8 +52,20 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	String field = getNumberField(request, entry);
 	String num = (String) entry.getValue(field);
 	if(stringDefined(num)) return;
-	List<String> values = getDatabaseManager().selectDistinct(entry.getTypeHandler().getTableName(),
-								  field,null);
+	Entry parent = entry.getParentEntry();
+	List<String> values= new ArrayList<String>();
+	HashSet<String> seen = new HashSet<String>();
+	for(Entry child: getEntryManager().getChildren(request,parent)) {
+	    if(child.getTypeHandler().equals(entry.getTypeHandler())) {
+		String value = (String) child.getValue(field);
+		if(value==null) continue;
+		if(!seen.contains(value)) {
+		    seen.add(value);
+		    values.add(value);
+		}
+	    }
+	}
+	//	List<String> values = getDatabaseManager().selectDistinct(entry.getTypeHandler().getTableName(), field,clause);
 
 	Collections.sort(values);
 	//Look for the 001,002, etc
