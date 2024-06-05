@@ -48,6 +48,7 @@
    --header-z-index:100;
    --image-edit-z-index:1000;
    --embed-link-background:rgba(229, 150, 55, 0.95);
+   --embed-link-background:#4E8696;
    --embed-link-color:#fff;   
    --embed-link-background-hover:#569098;
 }
@@ -1519,15 +1520,20 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-gridbox .ramadda-subheading-embed {
     border-bottom-left-radius:var(--default-radius);
+    border-bottom-right-radius:var(--default-radius);
     position:absolute;
-    left:-1px;
+    left:0px;
     bottom:-1px;
-    max-width: 90%;
-    font-size:18px;
+    width:100%;
+    max-width: 100%;
+    font-size:16px;
     max-height:60px;
     background:var(--embed-link-background);
+/*    background: linear-gradient(to right, #4E8696 90%, #ccc 100%);*/
     text-align:left;
-    padding:5px;
+    padding:6px;
+    padding-top:4px;
+    padding-bottom:4px;    
     white-space: normal;
     margin:0px;
 }
