@@ -253,7 +253,7 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title,ack,addLink) {
+    initCopyable: function(selector,title,ack,addLink,removeTags) {
 	$(selector).each(function(){
 	    $(this).attr('title',title??'Click to copy');
 	    let link = $(this);
@@ -268,7 +268,11 @@ var Utils =  {
 		$(this).addClass('ramadda-clickable');
 	    }
 	    link.click(()=>{
-		Utils.copyToClipboard($(this).attr('data-copy')??$(this).html());
+		let text = $(this).attr('data-copy')??$(this).html();
+		if(removeTags) {
+		    text = text.replace(/<br>/g,'\n').replace(/<p>/g,'\n\n').replace(/<[^>]+>/g,'');
+		}
+		Utils.copyToClipboard(text)
 		alert($(this).attr('copy-message')??ack??'Text copied to clipboard');
 	    });
 	});

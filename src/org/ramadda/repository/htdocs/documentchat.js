@@ -97,7 +97,7 @@ function DocumentChat(id,entryId,models) {
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
 	    output.prepend(HU.div([],out));
-	    Utils.initCopyable('#'+guid,null,null,true);
+	    Utils.initCopyable('#'+guid,null,null,true,true);
 	    this.jq(qid).click(function() {
 		input.val($(this).html()+' ');
 		input.focus();
