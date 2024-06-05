@@ -818,7 +818,7 @@ public class TypeHandler extends RepositoryManager {
     public String getEmbedWiki(Request request, Entry entry) {
 	if(embedWiki!=null) return embedWiki;
         if (getParent() != null) return getParent().getEmbedWiki(request, entry);
-	return "{{information details=true}}";
+	return "{{information details=true}} {{tabletree  message=\"\"}}";
     }
 
     public String getSearchDisplayText(Request request, Entry entry) throws Exception {
