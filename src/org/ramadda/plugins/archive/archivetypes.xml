@@ -105,6 +105,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 <![CDATA[+section 
 {{archive_finding_aid}}
 -section]]></wikimacro>
+<embedwiki><![CDATA[{{tabletree message="No children"}}]]></embedwiki>
 </type>
 
 
@@ -205,6 +206,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.owner.show" value="false"/>                
     <column name="item_number" type="string"  label="Item Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <xwiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 +row
