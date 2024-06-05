@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun  5 04:37:12 MDT 2024";
+var build_date="RAMADDA build date: Wed Jun  5 05:07:25 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8891,9 +8891,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
-		let snippet = "";
-		snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)], entry.getSnippet()||"");
-		if(showSnippet) {
+		let snippet = entry.getSnippet()??'';
+		if(showSnippet && Utils.stringDefined(snippet)) {
+		    snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)],snippet);
 		    left+=snippet;
 		    snippet = "";
 		}
@@ -9256,9 +9256,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
-
-            //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
+//            console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             let link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
             let id = ID_DETAILS + entry.getIdForDom() + suffix;
@@ -9449,7 +9447,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 detailsInner.html(details);
             } else {
                 let entriesHtml = details;
-                if (this.showDetailsForGroup) {
+                if (this.getProperty('showDetailsForGroup')) {
                     entriesHtml += details;
                 }
                 entriesHtml += this.getEntriesTree(entries, {
