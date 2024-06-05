@@ -1037,19 +1037,9 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryTypes(Request request) throws Exception {
         String            output       = request.getString(ARG_OUTPUT, "");
 	boolean asHtml = request.getRequestPath().endsWith(".html");
-        List<String>      types        = new ArrayList<String>();
         List<TypeHandler> typeHandlers = asHtml?
 	    getRepository().getTypeHandlers():
 	    getRepository().getTypeHandlersForDisplay(false);
-        boolean           checkCnt     = request.get("checkcount", true);
-	HashSet only = null;
-	String typesList = request.getString("types",null);
-	if(typesList!=null) {
-	    only = new HashSet();
-	    for(String type: Utils.split(typesList,",")) {
-		only.add(type);
-	    }
-	}
 	if(asHtml) {
 	    StringBuilder sb = new StringBuilder();
 	    getPageHandler().sectionOpen(request, sb,"Entry Type",false);
@@ -1067,14 +1057,26 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("Entry Types",sb);
 	}
 
-
-        for (TypeHandler typeHandler : typeHandlers) {
-	    if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
-                continue;
-            }
-	    if(only!=null &&!only.contains(typeHandler.getType())) {
-		continue;
+        List<String>      types        = new ArrayList<String>();
+        boolean           checkCnt     = request.get("checkcount", true);
+        List<TypeHandler>    theTypeHandlers = new ArrayList<TypeHandler>();
+	String typesList = request.getString("types",null);
+	if(typesList!=null) {
+	    for(String type: Utils.split(typesList,",")) {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		if(typeHandler!=null) theTypeHandlers.add(typeHandler);
 	    }
+	} else {
+	    for (TypeHandler typeHandler : theTypeHandlers) {
+		if (!typeHandler.getIncludeInSearch() &&  !typeHandler.getForUser()) {
+		    continue;
+		}
+		theTypeHandlers.add(typeHandler);
+	    }
+	}	    
+
+
+        for (TypeHandler typeHandler : theTypeHandlers) {
             if (checkCnt) {
                 int cnt = getEntryUtil().getEntryCount(typeHandler);
                 if (!typeHandler.getIncludeInSearch() && cnt == 0) {
