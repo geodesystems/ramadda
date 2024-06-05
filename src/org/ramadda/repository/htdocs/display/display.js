@@ -4790,8 +4790,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let columns = entry.getAttributes();
 
             if (entry.getFilesize() > 0) {
-                html += HU.formEntry("File:", entry.getFilename() + " " +
-				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
+		let link =  entry.getFilename() + " " +HU.getIconImage('fas fa-download');
+                html += HU.formEntry("File:", 
+				     HU.href(entry.getResourceUrl(), link,["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
 
