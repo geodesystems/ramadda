@@ -5286,9 +5286,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 
-
-
-            //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
+//            console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             let link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
             let id = ID_DETAILS + entry.getIdForDom() + suffix;
@@ -5479,7 +5477,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 detailsInner.html(details);
             } else {
                 let entriesHtml = details;
-                if (this.showDetailsForGroup) {
+                if (this.getProperty('showDetailsForGroup')) {
                     entriesHtml += details;
                 }
                 entriesHtml += this.getEntriesTree(entries, {
