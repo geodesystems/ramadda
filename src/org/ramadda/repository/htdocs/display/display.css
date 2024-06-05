@@ -1348,11 +1348,7 @@ svg > g > g:last-child { pointer-events: none }
     overflow-y:auto;
     overflow-x:auto;
     background:#fff;
-    margin-top:6px;
-    margin-bottom:6px;    
-    padding-left:10px;
-    padding-right:10px;
-    border:var(--basic-border);
+    margin-bottom:10px;    
 }
 
 .display-entry-description {
@@ -1647,6 +1643,10 @@ svg > g > g:last-child { pointer-events: none }
 .display-entrylist-details {
     display: none;
     padding: 0px;
+    padding-left:24px;
+    padding-bottom:4px;
+    background:#fff;
+    border-bottom:var(--basic-border);
 }
 
 
@@ -1661,7 +1661,6 @@ svg > g > g:last-child { pointer-events: none }
 
 .display-entrylist-details-snippet   {
     background:#fff;
-    margin-left:30px;
     margin-right:5px;
     margin-bottom:5px;
     border:var(--basic-border);
@@ -1669,7 +1668,6 @@ svg > g > g:last-child { pointer-events: none }
 }
 .display-entrylist-details-ancestors, .display-entrylist-details-tags {
     padding-left:5px;
-    margin-left: 24px;
 }
 
 .display-entrylist-details-ancestors {
