@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun  5 05:07:25 MDT 2024";
+var build_date="RAMADDA build date: Wed Jun  5 12:25:44 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8760,8 +8760,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let columns = entry.getAttributes();
 
             if (entry.getFilesize() > 0) {
-                html += HU.formEntry("File:", entry.getFilename() + " " +
-				     HU.href(entry.getResourceUrl(), HU.image(RamaddaUtil.getCdnUrl("/icons/download.png")),["download",null]) + " " +
+		let link =  entry.getFilename() + " " +HU.getIconImage('fas fa-download');
+                html += HU.formEntry("File:", 
+				     HU.href(entry.getResourceUrl(), link,["download",null]) + " " +
 				     entry.getFormattedFilesize());
             }
 
