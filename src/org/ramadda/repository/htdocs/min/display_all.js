@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun  4 23:15:35 MDT 2024";
+var build_date="RAMADDA build date: Wed Jun  5 04:37:12 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -34883,6 +34883,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             }
 
 
+	    let addTypeCategory=this.getProperty('addTypeCategory');
             let cats = [];
             let catMap = {};
             let select = HU.openTag(TAG_SELECT, [ATTR_ID, this.getDomId(ID_TYPE_FIELD),
@@ -34931,7 +34932,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 let option = HU.tag(TAG_OPTION, optionAttrs, label);
                 let map = catMap[type.getCategory()];
                 if (map == null) {
-                    catMap[type.getCategory()] = HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
+		    if(addTypeCategory) 
+			catMap[type.getCategory()] = HU.tag(TAG_OPTION, [ATTR_CLASS, "display-typelist-category", ATTR_TITLE, "", ATTR_VALUE, ""], type.getCategory());
                     cats.push(type.getCategory());
                 }
                 catMap[type.getCategory()] += option;
