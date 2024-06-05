@@ -4204,12 +4204,18 @@ label {
     padding-right: 0px;
 }
 
+
 .ramadda-breadcrumbs-menu-button {
     display:block;
     padding:2px;
     margin:0px;
     border: 1px #ddd solid;
     background-color:#fff;    
+    transition: transform .3s ease-in-out;
+}
+
+.ramadda-breadcrumbs-menu-button:hover {
+    transform: scale(1.25);
 }
 
 .ramadda-breadcrumbs-menu-button i {
@@ -4348,10 +4354,15 @@ td .ramadda-role {
 }
 
 .ramadda-page-link {
+    transition: transform .3s ease-in-out;
     padding-right:5px;
     display:inline-block;
     display: table-cell;
     vertical-align: middle;
+}
+
+.ramadda-page-link:hover {
+    transform: scale(1.25);
 }
 
 .ramadda-user-menu-image {
