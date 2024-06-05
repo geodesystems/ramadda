@@ -61,6 +61,11 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
     }
 
     @Override
+    public void handleHeaderPatternValue(Request request, Entry entry,Hashtable state, String field, String value) throws Exception {
+	super.handleHeaderPatternValue(request, entry, state,  field, value);
+    }
+
+    @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
