@@ -38,7 +38,7 @@
 -col
 +col-4
 +center
-{{image  inherited="true" showCaption=true
+{{image  inherited="false" showCaption=true
 message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
 -center
 :vspace 1em
@@ -90,7 +90,7 @@ includeNonImages=false
 -col
 +col-4
 +center
-{{image  inherited="true" showCaption=true
+{{image  inherited="false" showCaption=true
 message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
 :vspace 1em
 {{mapentry hideIfNoLocations=true width="100%" height="200px"}}
