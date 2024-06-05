@@ -118,6 +118,7 @@ message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="date.nullok" value="true"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.properties.show" value="false"/>
   <property name="form.area.show" value="false"/>
@@ -278,23 +279,25 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 <type name="type_borehole_wcl"  super="type_borehole" description="WellCAD Log File" pattern=".*\.wcl"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
   <property name="inheritlocationfromtype" value="type_geo_site"/>
-<property name="icon" value="/geo/wcl.png"/>
-<property name="form.area.show" value="false"/>
-<property name="form.location.show" value="true"/>
+  <property name="icon" value="/geo/wcl.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
 </type>
 
 <type name="type_borehole_image"   description="Borehole Image"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
-<property name="icon" value="/geo/drilling-rig.png"/>
-<property name="inheritlocationfromtype" value="type_geo_site"/>
-<property name="form.area.show" value="false"/>
-<property name="form.location.show" value="true"/>
-<column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
-<column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
+  <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
+  <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
-<column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
-<column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
+  <column  name="measurement"  label="Measurement" type="enumerationplus"  cansearch="true"
+	   values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
+  <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"   candisplay="false" editable="false" canlist="false"/>     
 
 <wiki>
 <![CDATA[

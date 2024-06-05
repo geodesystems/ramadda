@@ -76,7 +76,7 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	    if(!stringDefined(fields)) fields="#2";
 	    List<String> ids = Utils.split(fields,",",true,true);
 	    sb.append("+row tight=true\n");
-	    String template = "{{display_profile width=100% height=500px displayInnerStyle=\"border-right:1px solid #000;\" showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=0  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
+	    String template = "{{display_profile loadingMessage=\"\" width=100% height=500px displayInnerStyle=\"border-right:1px solid #000;\" showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=0  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
 	    String height=Utils.getProperty(props,"height",null);
 	    for(int i=0;i<ids.size();i++) {
 		String id = ids.get(i);
