@@ -6141,6 +6141,7 @@ public class Seesv implements SeesvCommands {
     }
 
     public static List<StringBuilder> tokenizeCommands(String commandString) {
+	commandString = commandString.replace("\\t","\t");
         StringBuilder tmp = new StringBuilder();
         for (String line : StringUtil.split(commandString, "\n")) {
             String tline = line.trim();

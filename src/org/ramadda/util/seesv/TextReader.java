@@ -976,6 +976,7 @@ public class TextReader implements Cloneable {
         lineFilters = f;
     }
     public void setStartPattern(String start) {
+	start=start.replace("\\t","\t").replace("_tab_","\t");
 	if(StringUtil.containsRegExp(start)) {
 	    startPattern = Pattern.compile(start);
 	} else {
