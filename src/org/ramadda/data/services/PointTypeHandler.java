@@ -786,7 +786,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 
             if (patterns != null) {
                 List<String> toks = StringUtil.split(patterns, ",");
-                String       time = null;
+		Hashtable state = new Hashtable();
                 for (String tok : toks) {
                     List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
                     if (toks2.size() != 2) {
@@ -798,56 +798,60 @@ public class PointTypeHandler extends RecordTypeHandler {
 		    if(debug)
 			System.err.println("\t" +field +" p:" + pattern.trim() +" v:" +value);
                     if (Utils.stringDefined(value)) {
-                        if (field.equals("latitude")) {
-                            entry.setLatitude(decode(value));
-                        } else if (field.equals("longitude")) {
-                            entry.setLongitude(decode(value));
-                        } else if (field.equals("elevation") || field.equals("altitude")) {
-                            entry.setAltitude(Double.parseDouble(value));
-                        } else if (field.equals("time")) {
-                            time = value;
-                        } else if (field.equals("date")) {
-                            String format =
-                                getTypeProperty("record.pattern.date.format",
-                                    "yyyyMMdd'T'HHmmss Z");
-                            SimpleDateFormat sdf =
-                                RepositoryUtil.makeDateFormat(format, null);
-			    System.err.println("FORMAT:" + format);
-                            if (time != null) {
-                                value += " " + time;
-                            }
-			    //A hack
-			    if(!value.trim().equals("none") && !value.trim().equals("")) {
-
-				Date date = null;
-				try {
-				     date = sdf.parse(value);
-				} catch(Exception exc){
-				    date=Utils.parseDate(value);
-				}
-				//                      System.err.println("date:" + date);
-				if(date!=null)
-				    entry.setStartAndEndDate(date.getTime());
-			    }
-                        } else {
-                            if (columns != null) {
-                                for (Column c : columns) {
-                                    if (c.getName().equals(field)) {
-                                        Object[] v = getEntryValues(entry);
-                                        c.setValue(entry, v, value);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+			handleHeaderPatternValue(request, entry,state,field,value);
+		    }
+		}
 
             }
         }
+   }
 
 
-
+    public void handleHeaderPatternValue(Request request, Entry entry,Hashtable state, String field, String value) throws Exception {
+	if (field.equals("latitude")) {
+	    entry.setLatitude(decode(value));
+	} else if (field.equals("longitude")) {
+	    entry.setLongitude(decode(value));
+	} else if (field.equals("elevation") || field.equals("altitude")) {
+	    entry.setAltitude(Double.parseDouble(value));
+	} else if (field.equals("time")) {
+	    state.put("time",value);
+	} else if (field.equals("date")) {
+	    String format =
+		getTypeProperty("record.pattern.date.format",
+				"yyyyMMdd'T'HHmmss Z");
+	    SimpleDateFormat sdf =
+		RepositoryUtil.makeDateFormat(format, null);
+	    String time = (String) state.get("time");
+	    if (time != null) {
+		value += " " + time;
+	    }
+	    //A hack
+	    if(!value.trim().equals("none") && !value.trim().equals("")) {
+		Date date = null;
+		try {
+		    date = sdf.parse(value);
+		} catch(Exception exc){
+		    date=Utils.parseDate(value);
+		}
+		//                      System.err.println("date:" + date);
+		if(date!=null)
+		    entry.setStartAndEndDate(date.getTime());
+	    }
+	} else {
+	    List<Column> columns = getColumns();
+	    if (columns != null) {
+		for (Column c : columns) {
+		    if (c.getName().equals(field)) {
+			Object[] v = getEntryValues(entry);
+			c.setValue(entry, v, value);
+		    }
+		}
+	    }
+	}
     }
+
+    
 
     private double decode(String lls) {
 	lls = lls.trim();
