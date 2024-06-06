@@ -4,6 +4,7 @@
  */
 
 package org.ramadda.repository.output;
+import  org.ramadda.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,11 @@ public class WikiMacro {
     private String icon;
     private String wikiText;
     private String properties;
+    private List<String> tags;
     private boolean isOutput=false;
     public WikiMacro(Element node) {
 	name = XmlUtil.getAttribute(node,"name","name");
+	tags  =Utils.split(XmlUtil.getAttribute(node,"tags",""),",",true,true);
 	icon = XmlUtil.getAttribute(node,"icon",(String)null);
 	label = XmlUtil.getAttribute(node,"label",name);
 	isOutput = XmlUtil.getAttribute(node,"isoutput",false);
@@ -32,6 +35,10 @@ public class WikiMacro {
 	this.name  = name;
 	if(wikiText!=null) wikiText = wikiText.trim();
 	this.wikiText = wikiText;
+    }
+
+    public boolean hasTag(String tag) {
+	return tags.contains(tag);
     }
 
     public boolean isOutput() {
