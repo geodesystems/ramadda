@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun  5 23:18:39 MDT 2024";
+var build_date="RAMADDA build date: Thu Jun  6 00:22:36 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8799,6 +8799,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let columns = this.getProperty('entryColumns', null);
 	    let showSnippet = this.getProperty('showSnippetInList');
 	    let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.getProperty('metadataDisplay'));
+	    let mainMetadataDisplay = RamaddaUtil.makeMetadataDisplay(this.getProperty('mainMetadataDisplay'));	    
+	    let nameStyle = this.getProperty('nameStyle','font-size:120%;color:#2178B5;');
+	    let showIcon = this.getProperty('showIcon',true);
+	    let showToggle = this.getProperty('showToggle',true);
+	    let showThumbnail = this.getProperty('showThumbnail',false);	    	    
             if (columns != null) {
                 let columnNames = this.getProperty('columnNames', null);
                 if (columnNames != null) {
@@ -8865,12 +8870,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (entryName.length > 100) {
                     entryName = entryName.substring(0, 99) + "...";
                 }
-                let icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-                let link = HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
-
-
-
-                entryName = "";
+                let icon = showIcon?entry.getIconImage([ATTR_TITLE, "View entry"]):'';
+		entryName = HU.span([ATTR_STYLE,nameStyle],entryName);
                 let entryIdForDom = entry.getIdForDom() + domIdSuffix;
                 let entryId = entry.getId();
                 let arrow = HU.image(icon_tree_closed, [ATTR_BORDER, "0",
@@ -8879,8 +8880,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 							this.getDomId(ID_TREE_LINK + entryIdForDom)
 						       ]);
                 let toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
-                let toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
-                let open = HU.onClick(toggleCall, arrow);
+                let toggleCall2 = showToggle?this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ":'';
+                let open = showToggle?HU.onClick(toggleCall, arrow):'';
                 let extra = "";
 
                 if (showIndex) {
@@ -8890,8 +8891,26 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
 
+		entryName = icon + " " + entryName;
+                let link = showToggle?HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entryName):entryName;
+		let main = entryMenuButton + " " + open + " " + extra + link;
+                let left = HU.div([ATTR_CLASS, "display-entrylist-name"], main);
+		if(mainMetadataDisplay && mainMetadataDisplay.length) {
+		    let mtd = RamaddaUtil.formatMetadata(entry,mainMetadataDisplay,{doBigText:false,wrapInDiv:false});
+		    if(Utils.stringDefined(mtd)) {
+			left +=HU.div([],mtd);
+		    }
+		}
 
-                let left = HU.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
+		if(showThumbnail) {
+		    let thumb = entry.getThumbnail();
+		    if(!thumb) thumb = RamaddaUtils.getCdnUrl('/images/placeholder.png');
+		    if(thumb) left = HU.table(HU.tr(['valign','top'],HU.td(HU.image(thumb,['width','80px',ATTR_STYLE,'margin-right:5px;'])) +HU.td(left)));;
+		}
+
+		if(!showToggle) {
+		    left= HU.href(entry.getEntryUrl(),left);
+		}
 		let snippet = entry.getSnippet()??'';
 		if(showSnippet && Utils.stringDefined(snippet)) {
 		    snippet = HU.div([ATTR_CLASS, "display-entrylist-details-snippet", ATTR_ID, this.getDomId(ID_DETAILS_SNIPPET + entryIdForDom)],snippet);
@@ -33522,6 +33541,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'metadataDisplay',ex:'archive_note:attr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}',
 	 tt:'Add metadata in the toggle. e.g.: type1:template={attr1},type2:attr1=Value:template={attr1}_colon_ {attr2}'},
         {p:'showTags',d: true},	
+	{p:'mainMetadataDisplay'},
+	{p:'nameStyle'},
+	{p:'showIcon'},
+	{p:'showToggle'},
+	{p:'showThumbnail'},
 	{p:'tagPopupLimit',d: 25,tt:'When do we show the tag popup' },		
 	{p:'showSearchLabels',d:true},
 	{p:'comparators',d:'<=,>=,=,between',tt:'comparators for numeric search'},
