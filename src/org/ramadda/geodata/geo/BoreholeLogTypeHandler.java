@@ -74,11 +74,17 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	    StringBuilder sb = new StringBuilder();
 	    String fields=(String) entry.getValue("fields_to_show");
 	    if(!stringDefined(fields)) {
+		//Hacky way to get the number of fields since the metadata can be edited/changed
 		List<Metadata> metadata= getMetadataManager().findMetadata(request, entry, "thredds.variable",false);
 		if(metadata!=null) {
 		    fields="";
+		    HashSet<String> seen = new HashSet<String>();
 		    for(int i=1;i<metadata.size();i++) {
-			if(i>1) fields+=",";
+			Metadata mtd =metadata.get(i);
+			if(Utils.equals(Utils.toLowerCase(mtd.getAttr1()),"depth")) continue;
+			if(seen.contains(mtd.getAttr1())) continue;
+			seen.add(mtd.getAttr1());
+			if(fields.length()>0) fields+=",";
 			fields+="#"+ (i+1);
 		    }
 		}		    
