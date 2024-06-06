@@ -130,6 +130,7 @@ message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" }}
 
 
 <type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
+      metadata="geo_stratigraphy,geo_measurement"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
   <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"
 />
@@ -182,6 +183,10 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 {{field name="top"  row.label="Top:"}}
 {{field name="bottom"  row.label="Bottom:"}}
 </table>
+:vspace 1em
+{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
 +center
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
@@ -196,6 +201,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 
 
 <type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" pattern=".*\.las"
+      metadata="geo_stratigraphy,geo_measurement"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
