@@ -4834,6 +4834,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let showIcon = this.getProperty('showIcon',true);
 	    let showToggle = this.getProperty('showToggle',true);
 	    let showThumbnail = this.getProperty('showThumbnail',false);	    	    
+	    let showEntryType = this.getProperty('showEntryType',false);	    	    
 	    let placeholderImage = this.getProperty('placeholderImage',RamaddaUtils.getCdnUrl('/images/placeholder.png'));
 	    
             if (columns != null) {
@@ -4915,7 +4916,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let toggleCall2 = showToggle?this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ":'';
                 let open = showToggle?HU.onClick(toggleCall, arrow):'';
                 let extra = "";
-
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
                 }
@@ -4927,6 +4927,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 let link = showToggle?HU.tag(TAG_A, ["target","_entries",ATTR_HREF, entry.getEntryUrl()], entryName):entryName;
 		let main = entryMenuButton + " " + open + " " + extra + link;
                 let left = HU.div([ATTR_CLASS, "display-entrylist-name"], main);
+		if(showEntryType) {
+		    left =  HU.leftRightTable(left,HU.span([ATTR_STYLE,'font-style:italic;'],entry.getTypeName()));
+		}
+
 		if(mainMetadataDisplay && mainMetadataDisplay.length) {
 		    let mtd = RamaddaUtil.formatMetadata(entry,mainMetadataDisplay,{doBigText:false,wrapInDiv:false});
 		    if(Utils.stringDefined(mtd)) {
@@ -4937,7 +4941,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(showThumbnail) {
 		    let thumb = entry.getThumbnail();
 		    if(!thumb) thumb = placeholderImage;
-		    if(thumb) left = HU.table(HU.tr(['valign','top'],HU.td(HU.image(thumb,['width','80px',ATTR_STYLE,'margin-right:5px;'])) +HU.td(left)));;
+		    if(thumb) left = HU.table(['width','100%'],
+					      HU.tr(['valign','top'],
+						    HU.td(['width','80px'],HU.image(thumb,['width','80px',ATTR_STYLE,'margin-right:5px;'])) +HU.td(left)));
 		}
 
 		if(!showToggle) {
