@@ -482,6 +482,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let typeInfo = types[metadata.type];
 		if(!typeInfo) {
 		    typeInfo = types[metadata.type]  = {
+			display:m,
 			contents:[]
 		    }
 		}
@@ -493,20 +494,27 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(opts.wrapInDiv) {
 	    Object.keys(types).forEach(type=>{
 		let info = types[type];
-		info.contents.forEach(html=>{
-		    mtd+=HU.div([],html);
-		});
+		if(info.display.delimiter) {
+		    mtd+='<div>';
+		    if(info.display.header) mtd+=HU.b(info.display.header+':')+' ';
+		    mtd+=Utils.join(info.contents,info.display.delimiter+' ');
+		    mtd+='</div>';
+		} else {
+		    if(info.display.header) mtd+=HU.b(info.display.header+':')+' ';
+		    info.contents.forEach(html=>{
+			mtd+=HU.div([],html);
+		    });
+		}
 	    });
 	} else {
 	    Object.keys(types).forEach(type=>{
 		let info = types[type];
 		mtd+='<div>';
+		if(info.display.header) mtd+=HU.b(info.display.header+':')+' ';
 		mtd+=Utils.join(info.contents,'; ');
 		mtd+='</div>';
 	    });
 	}
-
-
 
 	if(Utils.stringDefined(mtd) && opts.doBigText) {
 	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length','100'], mtd);
@@ -519,6 +527,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	Utils.split(props,",",true,true).forEach(prop=>{
 	    let toks = prop.split(":");
 	    if(toks.length==0) return
+	    let header;
+	    let delimiter;
 	    let check;
 	    let type;
 	    let template='{attr1} {attr2}';
@@ -537,11 +547,17 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    }
 		} else if(key=='template') {
 		    template=value;
+		} else if(key=='delimiter') {
+		    delimiter=value;
+		} else if(key=='header') {
+		    header=value;		    
 		}		    
 	    });
 	    let m ={
 		prop:prop,
 		type:type,
+		delimiter:delimiter,
+		header:header,
 		template:template.replace('_colon_',':','_comma_',','),
 		check:check,
 		ok:function(metadata) {
