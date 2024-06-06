@@ -37,26 +37,8 @@ public class AudioTypeHandler extends MediaTypeHandler {
         super(repository, entryNode);
     }
 
-    @Override
-    public String getHeight(Request request, Entry entry, Hashtable props) {
-	return Utils.getProperty(props,"height",AUDIO_HEIGHT);
-    }
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,

@@ -87,6 +87,7 @@
 	super="type_media"
         pattern=".*(\.wav|\.m4a|\.webm)">
      <property name="icon" value="/media/audio-new.png"/>
+     <property name="media.height" value="40"/>
      <wikimacro name="embed_audio" label="Embed Audio">
      <![CDATA[{{audio #entry="${entry}"}}]]></wikimacro>
      <wiki><![CDATA[

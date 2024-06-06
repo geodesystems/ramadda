@@ -407,12 +407,8 @@ public class OhmsTypeHandler extends MediaTypeHandler {
             }
         }
 
-        String mediaUrl = XmlUtil.getGrandChildText(record, "media_url",
-                              null);
+        String mediaUrl = XmlUtil.getGrandChildText(record, "media_url",  null);
         String embed     = XmlUtil.getGrandChildText(record, "kembed", null);
-
-
-
 	return  addMedia(request, entry, props, mediaType,  embed, mediaUrl,  points);
     }
 

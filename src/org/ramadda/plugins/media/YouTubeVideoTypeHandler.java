@@ -9,6 +9,7 @@ package org.ramadda.plugins.media;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.output.WikiManager;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -70,10 +71,7 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
         super(repository, entryNode);
     }
 
-    @Override
-    public String getMediaType(Request request, Entry entry) {
-	return  MEDIA_YOUTUBE;
-    }
+
 
 
 

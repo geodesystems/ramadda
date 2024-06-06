@@ -7,6 +7,7 @@ package org.ramadda.plugins.media;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
@@ -53,33 +54,7 @@ public class TikTokTypeHandler extends MediaTypeHandler {
         super(repository, entryNode);
     }
 
-    @Override
-    public String getMediaType(Request request, Entry entry) {
-	return  MEDIA_TIKTOK;
-    }
 
-
-
-
-    @Override
-    public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
-                               String mediaUrl) {
-	return "XX";
-    }
-
-    /**
-     *
-     * @param sb _more_
-     * @param id _more_
-     * @param width _more_
-     * @param height _more_
-     * @param start _more_
-     * @param end _more_
-     * @param autoPlay _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String embedPlayer(Appendable sb, String id, String width,
                                      String height, double start, double end,
                                      boolean autoPlay)

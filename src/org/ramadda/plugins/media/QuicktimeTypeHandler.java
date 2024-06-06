@@ -9,7 +9,7 @@ package org.ramadda.plugins.media;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-
+import org.ramadda.repository.output.WikiManager;
 
 import org.ramadda.service.*;
 
@@ -47,20 +47,10 @@ public class QuicktimeTypeHandler extends MediaTypeHandler {
     public static final int IDX_AUTOPLAY = IDX++;
 
 
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public QuicktimeTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    public String getMediaType(Request request, Entry entry) {
-	return  MEDIA_OTHER;
-    }
+
 }

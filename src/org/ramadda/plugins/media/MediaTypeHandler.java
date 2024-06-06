@@ -7,6 +7,7 @@ package org.ramadda.plugins.media;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.output.WikiManager;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
@@ -45,50 +46,16 @@ public class MediaTypeHandler extends GenericTypeHandler {
     /**  */
     public static final int IDX_LAST = IDX - 1;
 
-    //These need to match up with what is used in media.js
-    
-    /**  */
-    public static final String MEDIA_VIMEO = "vimeo";
 
-    /**  */
-    public static final String MEDIA_YOUTUBE = "youtube";
-
-    public static final String MEDIA_TIKTOK = "tiktok";
-
-    /**  */
-    public static final String MEDIA_SOUNDCLOUD = "soundcloud";
-
-    /**  */
-    public static final String MEDIA_OTHER = "other";
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public MediaTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
 
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
+
+
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -96,7 +63,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
             throws Exception {
 	if(tag.equals("embedmedia")) {
 	    StringBuilder sb = new StringBuilder();
-	    String mediaType = getMediaType(request, entry);
+	    String mediaType = getWikiManager().getMediaType(request, entry);
 	    String mediaUrl    = entry.getResource().getPath();
 	    if (entry.getResource().isFile()) {
 		mediaUrl = getEntryManager().getEntryResourceUrl(request, entry);
@@ -153,37 +120,19 @@ public class MediaTypeHandler extends GenericTypeHandler {
                               Appendable sb)
             throws Exception {
         String url    = entry.getResource().getPath();
-        String width  = entry.getStringValue(IDX_WIDTH, "640");
-        String height = entry.getStringValue(IDX_HEIGHT, "390");
-        if (width.equals("0")) {
-            width = "640";
-        }
-        if (height.equals("0")) {
-            height = "390";
-        }
         if (entry.getResource().isFile()) {
            url = getEntryManager().getEntryResourceUrl(request, entry);
         }
-
-
-
         String embed = addMedia(request, entry, props,
-                                getMediaType(request, entry), null, url,
+                                getWikiManager().getMediaType(request, entry), null, url,
                                 null);
         sb.append(embed);
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-      * @return _more_
-     */
-    public String getWidth(Request request, Entry entry, Hashtable props) {
+    public String getMediaWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
-                                         entry.getStringValue(IDX_WIDTH, "640"));
+                                         entry.getStringValue("media_width", "640"));
         if (!Utils.stringDefined(width) || width.equals("0")) {
             width = "640";
         }
@@ -191,36 +140,18 @@ public class MediaTypeHandler extends GenericTypeHandler {
         return width;
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-      * @return _more_
-     */
-    public String getHeight(Request request, Entry entry, Hashtable props) {
+
+    public String getMediaHeight(Request request, Entry entry, Hashtable props) {
         String height = Utils.getProperty(props, "height",
-                                          entry.getStringValue(IDX_HEIGHT, "360"));
+                                          entry.getStringValue("media_height", null));
+
+	if(height==null) height=entry.getTypeHandler().getTypeProperty("media.height",null);
         if (!Utils.stringDefined(height) || height.equals("0")) {
             height = "360";
         }
-
         return height;
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param mediaType _more_
-     * @param embed _more_
-     * @param mediaUrl _more_
-     * @param points _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String addMedia(Request request, Entry entry, Hashtable props,
                            String mediaType, String embed, String mediaUrl,
                            List<String> points)
@@ -259,8 +190,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
         if (Utils.stringDefined(mediaUrl)) {
             Utils.add(attrs, "mediaUrl", JU.quote(mediaUrl));
         }
-        String width  = getWidth(request, entry, props);
-        String height = getHeight(request, entry, props);
+        String width  = getMediaWidth(request, entry, props);
+        String height = getMediaHeight(request, entry, props);
 	boolean vertical = Utils.getProperty(props,"vertical",false);
         Utils.add(attrs, "width", JU.quote(width), "height", JU.quote(height));
 
@@ -306,13 +237,13 @@ public class MediaTypeHandler extends GenericTypeHandler {
 				 Hashtable props, StringBuilder sb,
 				 List<String> attrs,String embed, String mediaType,
 				 String mediaUrl) {
-        if (mediaType.equalsIgnoreCase(MEDIA_VIMEO)) {
+        if (mediaType.equalsIgnoreCase(WikiManager.MEDIA_VIMEO)) {
             return  embedVimeo(request, entry, props, sb, attrs, embed, mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_YOUTUBE)) {
+        } else if (mediaType.equalsIgnoreCase(WikiManager.MEDIA_YOUTUBE)) {
             return embedYoutube(request, entry, props, sb, attrs, mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_SOUNDCLOUD)) {
+        } else if (mediaType.equalsIgnoreCase(WikiManager.MEDIA_SOUNDCLOUD)) {
             return embedSoundcloud(request, entry, props, sb, attrs, mediaUrl);
-        } else if (mediaType.equalsIgnoreCase(MEDIA_OTHER)) {
+        } else if (mediaType.equalsIgnoreCase(WikiManager.MEDIA_OTHER)) {
 	    return embedMedia(request, entry, props, sb, attrs, embed, mediaUrl);
         } 
 	return null;    
@@ -340,28 +271,11 @@ public class MediaTypeHandler extends GenericTypeHandler {
      */
     public String getTranscriptions(Request request, Entry entry)
             throws Exception {
-        return (String) entry.getValue(IDX_TRANSCRIPTIONS);
+        return (String) entry.getValue("transcriptions_json");
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-      * @return _more_
-     */
-    public String getMediaType(Request request, Entry entry) {
-        String _path = entry.getResource().getPath().toLowerCase();
-        //https://soundcloud.com/the-wisdom-project/004-martin-luther-king-jr-malcolm-x-and-robert-penn-warren
-        if (_path.indexOf("soundcloud.com") >= 0) {
-            return MEDIA_SOUNDCLOUD;
-        }
-        if (_path.indexOf("vimeo.com") >= 0) {
-            return MEDIA_VIMEO;
-        }
 
-        return MEDIA_OTHER;
-    }
 
     /**
      *
@@ -463,18 +377,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param sb _more_
-     * @param attrs _more_
-     * @param embed _more_
-     * @param mediaUrl _more_
-     *  @return _more_
-     */
+
     public String embedMedia(Request request, Entry entry, Hashtable props,
                              StringBuilder sb, List attrs, String embed,
                              String mediaUrl) {
@@ -484,8 +387,8 @@ public class MediaTypeHandler extends GenericTypeHandler {
             player = embed;
         } else if (Utils.stringDefined(mediaUrl)) {
 	    String _mediaUrl = mediaUrl.toLowerCase();
-            String width   = getWidth(request, entry, props);
-            String height  = getHeight(request, entry, props);
+            String width   = getMediaWidth(request, entry, props);
+            String height  = getMediaHeight(request, entry, props);
             String mediaId = HtmlUtils.getUniqueId("media_");
             Utils.add(attrs, "mediaId", JU.quote(mediaId));
             if (_mediaUrl.endsWith(".mp3") || _path.endsWith(".mp3") ||
