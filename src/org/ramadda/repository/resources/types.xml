@@ -376,7 +376,9 @@ template="${name}"
 {{display_entrytitle showMenu=false message="" setEntry.acceptGroup=file entry=child:}} 
 -center                                                                                            
 ----
+<div style="min-height:500px;">
 {{display_entrywiki showMenu=false message="" setEntry.acceptGroup=file entry=child: }}     
+</div>
 ----
 :heading Entries
 {{tabletree}}
