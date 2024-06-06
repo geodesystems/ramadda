@@ -803,6 +803,18 @@ public class TypeHandler extends RepositoryManager {
 	return null;
     }
 
+    public WikiMacro getWikiMacroTag(Entry entry, String tag) {
+	if(wikiMacros!=null) {
+	    for(WikiMacro macro: wikiMacros) {
+		if(macro.hasTag(tag)) return macro;
+	    }
+
+	}
+	if(this.parent!=null) return this.parent.getWikiMacroTag(entry, tag);
+	return null;
+    }
+
+
     public boolean hasSearchDisplayText(Request request, Entry entry) throws Exception {
 	String name = getTypeProperty("search.wikimacro",null);
 	if(name!=null) {
