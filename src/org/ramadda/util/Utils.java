@@ -4827,7 +4827,10 @@ public class Utils extends IO {
 
 
 
-
+    public static String toLowerCase(String s) {
+	if(s==null) return null;
+	return s.toLowerCase();
+    }
 
     /**
      * Encode the input string
