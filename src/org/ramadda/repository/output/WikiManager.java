@@ -403,9 +403,6 @@ public class WikiManager extends RepositoryManager
             }
 
             String entryId = getProperty(wikiUtil, props, ATTR_ENTRY, null);
-
-
-
             if (Utils.stringDefined(entryId)) {
                 theEntry = findEntryFromId(request, entry, wikiUtil, props,
                                            entryId.trim());
@@ -426,7 +423,15 @@ public class WikiManager extends RepositoryManager
             }
 
 
-
+	    String macroTag = Utils.getProperty(props,"macro",null);
+	    if(macroTag!=null) {
+		WikiMacro macro = theEntry.getTypeHandler().getWikiMacroTag(theEntry,macroTag);
+		System.err.println(macroTag +" " + macro);
+		if(macro!=null) {
+		    String text=macro.getWikiText().trim();
+		    return wikifyEntry(request, theEntry, text);
+		}
+	    }
             String propertyKey = null;
             //TODO: figure out a way to look for infinte loops
             if (tag.startsWith(TAG_DESCRIPTION)) {
