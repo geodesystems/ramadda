@@ -6,6 +6,12 @@
     </type>
 
 
+    <type id="archive_keyword" name="Archive Keyword" displaygroup="Archive Keywords"  >
+      <element id="keyword" name="Keyword" datatype="enumerationplus"/>
+    </type>
+
+
+
     <type id="archive_subject" name="Archive Subject" displaygroup="Archive Subjects" >
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
