@@ -4834,6 +4834,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let showIcon = this.getProperty('showIcon',true);
 	    let showToggle = this.getProperty('showToggle',true);
 	    let showThumbnail = this.getProperty('showThumbnail',false);	    	    
+	    let placeholderImage = this.getProperty('placeholderImage',RamaddaUtils.getCdnUrl('/images/placeholder.png'));
+	    
             if (columns != null) {
                 let columnNames = this.getProperty('columnNames', null);
                 if (columnNames != null) {
@@ -4934,7 +4936,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 		if(showThumbnail) {
 		    let thumb = entry.getThumbnail();
-		    if(!thumb) thumb = RamaddaUtils.getCdnUrl('/images/placeholder.png');
+		    if(!thumb) thumb = placeholderImage;
 		    if(thumb) left = HU.table(HU.tr(['valign','top'],HU.td(HU.image(thumb,['width','80px',ATTR_STYLE,'margin-right:5px;'])) +HU.td(left)));;
 		}
 
