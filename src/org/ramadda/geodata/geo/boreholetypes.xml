@@ -285,6 +285,17 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
   <property name="form.location.show" value="true"/>
 </type>
 
+<type name="type_borehole_dlis"  super="type_borehole"
+      description="Digital Log Interchange Standard" pattern=".*\.dlis"
+      handler="org.ramadda.repository.type.GenericTypeHandler">            
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
+  <property name="icon" value="/geo/dlis.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+</type>
+
+
 <type name="type_borehole_image"   description="Borehole Image"
       handler="org.ramadda.repository.type.GenericTypeHandler">            
   <property name="icon" value="/geo/drilling-rig.png"/>
