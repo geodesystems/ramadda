@@ -2411,8 +2411,12 @@ public class MetadataManager extends RepositoryManager {
 
 
         List<Metadata> metadataList = getMetadata(request,entry);
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Edit Properties");
+        getPageHandler().entrySectionOpen(request, entry, sb, null);
+        if (metadataList.size() != 0) {
+	    sb.append(getWikiManager().getNewPropertyLinks(request,  entry,Utils.makeMap("fromEntry","true","showToggle","true","class","ramadda-button-small")));
+	}
+	sb.append("<div class=ramadda-heading>Edit Properties</div>");
+
         if (metadataList.size() == 0) {
             sb.append(
                 getPageHandler().showDialogNote(

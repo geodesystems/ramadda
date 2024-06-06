@@ -961,7 +961,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HU.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
-            boolean contains = HtmlUtils.Selector.contains(values, value);
 	    MetadataType mtdType = getMetadataManager().findType(metadata.getType());
             String[] va = getMetadataManager().getDistinctValues(request,
 								 mtdType.getHandler(), mtdType,index);
@@ -976,6 +975,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		    }
 		}
 	    }
+            boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
             return HU.select(arg, valuesToUse, value) + HU.space(2)
                    + msgLabel("Or")
                    + HU.input(arg + "_input", (contains
