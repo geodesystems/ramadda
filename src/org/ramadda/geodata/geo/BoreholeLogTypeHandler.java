@@ -73,6 +73,16 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
         if (tag.equals("borehole_profiles")) {
 	    StringBuilder sb = new StringBuilder();
 	    String fields=(String) entry.getValue("fields_to_show");
+	    if(!stringDefined(fields)) {
+		List<Metadata> metadata= getMetadataManager().findMetadata(request, entry, "thredds.variable",false);
+		if(metadata!=null) {
+		    fields="";
+		    for(int i=1;i<metadata.size();i++) {
+			if(i>1) fields+=",";
+			fields+="#"+ (i+1);
+		    }
+		}		    
+	    }
 	    if(!stringDefined(fields)) fields="#2";
 	    List<String> ids = Utils.split(fields,",",true,true);
 	    sb.append("+row tight=true\n");
