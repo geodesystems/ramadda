@@ -467,18 +467,48 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
     },
 
-    formatMetadata:function(entry,metadataDisplay) {
-	let mtd='';
+    formatMetadata:function(entry,metadataDisplay,args) {
+	let opts = {
+	    doBigText:true,
+	    wrapInDiv:true
+	}
+	if(args) opts = $.extend(opts, args);
+	let types = {};
 	metadataDisplay.forEach(m=>{
 	    entry.getMetadata().forEach(metadata=>{
 		if(!m.ok(metadata)) {
 		    return;
 		}
-		let html = m.format(metadata);
-		mtd+=HU.div([],html);
+		let typeInfo = types[metadata.type];
+		if(!typeInfo) {
+		    typeInfo = types[metadata.type]  = {
+			contents:[]
+		    }
+		}
+		typeInfo.contents.push(m.format(metadata).trim());
 	    });
 	});
-	if(Utils.stringDefined(mtd)) {
+
+	let mtd='';
+	if(opts.wrapInDiv) {
+	    Object.keys(types).forEach(type=>{
+		let info = types[type];
+		info.contents.forEach(html=>{
+		    mtd+=HU.div([],html);
+		});
+	    });
+	} else {
+	    Object.keys(types).forEach(type=>{
+		let info = types[type];
+		mtd+='<div>';
+		mtd+=Utils.join(info.contents,'; ');
+		mtd+='</div>';
+	    });
+	}
+
+
+
+	if(Utils.stringDefined(mtd) && opts.doBigText) {
 	    mtd = HU.div([ATTR_CLASS,'ramadda-metadata-bigtext','bigtext-length','100'], mtd);
 	}
 	return mtd;
