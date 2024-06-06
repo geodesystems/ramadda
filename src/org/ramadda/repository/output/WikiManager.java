@@ -9752,12 +9752,12 @@ public class WikiManager extends RepositoryManager
     public void initZoomifyImports(Request request, StringBuilder sb) throws Exception {
         if (request.getExtraProperty("seadragon_added") == null) {
 	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"),
-		       getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.css","/media/annotation.css"));
+		       getHtdocsPath("/media/annotation.css"));
             HU.importJS(sb,getHtdocsPath(OSD_PATH+"/openseadragon.min.js"),
 			getHtdocsPath(OSD_PATH+"/openseadragon-bookmark-url.js"),
 			getHtdocsPath(ANN_PATH+"/openseadragon-annotorious.min.js"),
 			getHtdocsPath(ANN_PATH+"/annotorious-toolbar.min.js"),
-			getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.js", "/media/annotation.js"));
+			getHtdocsPath("/media/annotation.js"));
             request.putExtraProperty("seadragon_added", "true");
         }
     }	
