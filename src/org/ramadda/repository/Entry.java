@@ -961,6 +961,19 @@ public class Entry implements Cloneable {
 	return value;
     }
 
+    public String getStringValue(String col,String dflt) {
+	Column column = getTypeHandler().findColumn(col);
+	if(column == null) {
+	    return dflt;
+	}
+        Object  value = getValue(column.getOffset());
+	if(value==null) return dflt;
+	return value.toString();
+    }
+
+
+
+
     /**
      * Get the string value of the values index
      *
