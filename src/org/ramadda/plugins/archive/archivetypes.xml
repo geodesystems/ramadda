@@ -102,6 +102,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 <type name="type_archive_root"  foruser="false" description="Archive Root"
       handler="org.ramadda.plugins.archive.ArchiveTypeHandler">
+    <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_type,archive_category"/>
   <wikimacro name="archive_finding_aid" label="Archive Finding Aid" isoutput="true" icon="/icons/magnifier.png">
 <![CDATA[+section 
 {{archive_finding_aid}}
@@ -116,7 +117,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 	newfields="name,description,_default"
 	editfields="name,description,_default">
     <property name="icon" value="/archive/collection.png"/>
-    <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_type,archive_category"/>
     <property name="date.format" value="yyyy"/>
     <property name="date.nullok" value="true"/>
     <property name="html.changedate.show" value="false"/>
@@ -151,7 +152,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
       newfields="name,description,_default"
       editfields="name,description,_default">
     <property name="icon" value="/archive/series.png"/>
-    <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
+    <property name="search.metadatatypes" value="archive_subject,archive_keyword,archive_note,archive_area,archive_media_type,archive_category"/>
     <property name="form.description.iswiki" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property  name="html.type.show"  value="false" />
