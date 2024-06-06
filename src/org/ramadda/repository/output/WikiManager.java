@@ -103,6 +103,24 @@ public class WikiManager extends RepositoryManager
 								"", ICON_WIKI);
 
 
+    /**  */
+    public static final String MEDIA_VIMEO = "vimeo";
+
+    /**  */
+    public static final String MEDIA_YOUTUBE = "youtube";
+
+    public static final String MEDIA_TIKTOK = "tiktok";
+
+    /**  */
+    public static final String MEDIA_SOUNDCLOUD = "soundcloud";
+
+    /**  */
+    public static final String MEDIA_OTHER = "other";
+
+
+
+
+
 
     //max number of entries in fulltree/menutree
     private static final int ENTRY_TREE_MAX_COUNT = 1000;
@@ -1890,6 +1908,48 @@ public class WikiManager extends RepositoryManager
         }
     }
 
+    public String getNewPropertyLinks(Request request, Entry entry,Hashtable props) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	String style = Utils.getProperty(props,"style","");
+	String clazz = Utils.getProperty(props,"class","");		
+	String suffix=Utils.getProperty(props,"addBreak",false)?"<br>":"";
+
+	if(Utils.getProperty(props,"addEditEntryLink",false)) {
+	    String url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
+	    String href = HU.href(url,"Edit Entry",  HU.attrs("style",style));
+	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    sb.append(href+suffix);
+	}
+	if(Utils.getProperty(props,"addEditPropertiesLink",false)) {
+	    String url = request.entryUrl(getMetadataManager().URL_METADATA_FORM, entry);
+	    String href = HU.href(url,"Edit Properties",  HU.attrs("style",style));
+	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    sb.append(href+suffix);
+	}
+
+	List<String> types= new ArrayList<String>();
+	if(Utils.getProperty(props,"fromEntry",false)) {
+	    types.addAll(entry.getTypeHandler().getMetadataTypes());
+	}		    
+	types.addAll(Utils.split(Utils.getProperty(props,"type",""),",",true,true));
+	for(String type: types) {
+	    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
+	    if(link==null) return "Could not find property type:" + type;
+	    String label = Utils.getProperty(props,"label",link[1]);
+	    String href = HU.href(link[0],label,  HU.attrs("style",style));
+	    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
+	    sb.append(href+suffix);
+	}
+	if(Utils.getProperty(props,"showToggle",false)) {
+	    sb.append("<p>");
+	    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
+	}
+
+
+	return sb.toString();
+    }
+
+
     /**
      * _more_
      *
@@ -2069,40 +2129,7 @@ public class WikiManager extends RepositoryManager
 	    return getProperty(wikiUtil,props,"message","");
 	} else if(theTag.equals(WIKI_TAG_NEW_PROPERTY)) {
 	    if(getAccessManager().canDoEdit(request, entry)) {
-		String style = getProperty(wikiUtil,props,"style","");
-		String clazz = getProperty(wikiUtil,props,"class","");		
-		String suffix=getProperty(wikiUtil,props,"addBreak",false)?"<br>":"";
-		List<String> types= new ArrayList<String>();
-		if(getProperty(wikiUtil,props,"addEditEntryLink",false)) {
-		    String url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
-		    String href = HU.href(url,"Edit Entry",  HU.attrs("style",style));
-		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
-		    sb.append(href+suffix);
-		}
-		if(getProperty(wikiUtil,props,"addEditPropertiesLink",false)) {
-		    String url = request.entryUrl(getMetadataManager().URL_METADATA_FORM, entry);
-		    String href = HU.href(url,"Edit Properties",  HU.attrs("style",style));
-		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
-		    sb.append(href+suffix);
-		}
-
-		if(getProperty(wikiUtil,props,"fromEntry",false)) {
-		    types.addAll(entry.getTypeHandler().getMetadataTypes());
-		}		    
-		types.addAll(Utils.split(getProperty(wikiUtil,props,"type",""),",",true,true));
-		for(String type: types) {
-		    String[] link =getMetadataManager().getMetadataAddLink( request, entry, type);
-		    if(link==null) return "Could not find property type:" + type;
-		    String label = getProperty(wikiUtil,props,"label",link[1]);
-		    String href = HU.href(link[0],label,  HU.attrs("style",style));
-		    href = HU.span(href,HU.attrs("class","ramadda-clickable ramadda-button " + clazz,"role","button"));
-		    sb.append(href+suffix);
-		}
-		if(getProperty(wikiUtil,props,"showToggle",false)) {
-		    sb.append("<p>");
-		    return HU.makeShowHideBlock("Add Property", sb.toString(), false);
-		}
-		return sb.toString();
+		return getNewPropertyLinks(request, entry,props);
 	    } 
 
 	    return getProperty(wikiUtil,props,"message","");
@@ -9697,6 +9724,27 @@ public class WikiManager extends RepositoryManager
         wikiUtil.appendJavascript(js.toString());
 
     }
+
+    public String getMediaType(Request request, Entry entry) {
+        String _path = entry.getResource().getPath().toLowerCase();
+        //https://soundcloud.com/the-wisdom-project/004-martin-luther-king-jr-malcolm-x-and-robert-penn-warren
+        if (_path.indexOf("soundcloud.com") >= 0) {
+            return MEDIA_SOUNDCLOUD;
+        }
+        if (_path.indexOf("vimeo.com") >= 0) {
+            return MEDIA_VIMEO;
+        }
+        if (_path.indexOf("youtube.com") >= 0) {
+            return MEDIA_YOUTUBE;
+        }	
+        if (_path.indexOf("tiktok.com") >= 0) {
+            return MEDIA_TIKTOK;
+        }	
+
+        return MEDIA_OTHER;
+    }
+
+
 
     public static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
     public static final String ANN_PATH = "/lib/annotorius";
