@@ -2958,7 +2958,7 @@ public class WikiManager extends RepositoryManager
 	    return HU.img(url, "", HU.attr("width", width));
         } else if (theTag.equals(WIKI_TAG_MACRO)) {
 	    if(entry==null) return "NULL ENTRY";
-	    String name = getProperty(wikiUtil,props,"name","");
+	    String name = getProperty(wikiUtil,props,"name",getProperty(wikiUtil,props,"id",""));
 	    WikiMacro macro = entry.getTypeHandler().getWikiMacro(entry,name);
 	    if(macro==null) return "Could not find macro:" + name;
 	    String text=macro.getWikiText().trim();
@@ -5622,6 +5622,11 @@ public class WikiManager extends RepositoryManager
 				      "showDownload",
 				      "showCreator",
 				      "showDate",
+				      "headerStyle",
+				      "textClass",
+				      "textStyle",
+				      "iconWidth",
+				      "toggleStyle",
 				      "showCreateDate",
 				      "showSize",
 				      "showChangeDate",
