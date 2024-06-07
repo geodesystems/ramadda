@@ -32,7 +32,7 @@
 +row 
 +col-8
 :heading Sites
-{{map entry="child:type:type_map_folder"}}
+{{map listentries="true" entry="child:type:type_map_folder"}}
 :heading Contents
 {{tabletree  message=""  simple="false"  #maxHeight="500px"  }} 
 -col
