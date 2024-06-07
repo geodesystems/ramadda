@@ -2137,7 +2137,9 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return getProperty(wikiUtil,props,"message","");
 	} else if(theTag.equals(WIKI_TAG_ACCESS_STATUS)) {
+	    //Only do this if it is an owner or an admin
 	    if(request.isAnonymous()) return "";
+	    if(!request.isAdmin() && !request.getUser().equals(entry.getUser())) return "";
 	    Request anon = getRepository().getAnonymousRequest();
 	    boolean canView = getAccessManager().canDoView(anon,entry);
 	    boolean canGeo = getAccessManager().canDoGeo(anon,entry);
