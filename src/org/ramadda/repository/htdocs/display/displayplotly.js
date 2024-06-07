@@ -1219,6 +1219,18 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
   
             fields.forEach((field,idx)=>{
 		let x = this.getColumnValues(records, field).values;
+		if(fields.length==1) {
+		    let nindex=[];		let nx=[];
+		    x.forEach((v,idx)=>{
+			if(!isNaN(v)) {
+			    nindex.push(index[idx]);
+			    nx.push(v);
+			}
+		    });
+		    index=nindex;
+		    x =nx;
+		}
+
 		let colors=null;
 		let colorTable = this.getProperty(field.getId()+'.colorTable',  this.getProperty('colorTable'));
 		if(colorTable) {
@@ -1258,6 +1270,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    trace.xaxis="x2";
 		data.push(trace);
 	    });
+
 
 	    let labelName = indexField.getLabel();
             let layout = {
