@@ -42,7 +42,7 @@
 message="" width="80%"  useThumbnail="true" }}
 -center
 :vspace 1em
-{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{properties message="" inherited="true" metadata.types="project_pi,content.license" includeTitle=false}}
 -center
 -col
 -row
@@ -61,7 +61,7 @@ includeNonImages=false
 
 
 :heading Project Information
-{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }} 
+{{information showDetails="true"  showTitle="false"}} 
 -section
 ]]></wiki>
 
