@@ -240,6 +240,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     initEntryTable:function(id,opts,json) {
+	let _this=this;
 	opts = opts||{};
 	let entryMap = {};
 	if(Utils.isDefined(opts.details) && opts.details==false) {
@@ -335,6 +336,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		attrs.push('style',HU.css('padding-left',col.paddingLeft??'0px'))
 		attrs = Utils.mergeLists(attrs,['orderby',col.id=='download'?'size':col.id,'title','Sort by '+ (col.id=='download'?'Size':col.label)]);
 		let v = col.label;
+		v=HU.span([ATTR_STYLE,this.props.headerStyle??''], v);
 		if(col.id==props.orderby || (props.orderby=='size' && col.id=='download')) {
 		    if(Utils.isDefined(props.ascending)) {
 			if(props.ascending)
@@ -578,17 +580,24 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 	return mtd;
     },
+    getToggleIcon:function(open) {
+	if(!open) {
+	    return HU.getIconImage('fas fa-caret-right',null,[ATTR_STYLE,this.props.toggleStyle||'']);
+	} else {
+	    return HU.getIconImage('fas fa-caret-down',null,[ATTR_STYLE,this.props.toggleStyle||'']);
+	}
+    },
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
 	let main = $('#'+ mainId);
-	let html = "";
-	let space = "";
+	let html = '';
+	let space = '';
 	let rowClass  = props.simple?'entry-list-simple-row':'entry-list-row entry-list-row-data';
 	let metadataDisplay = RamaddaUtil.makeMetadataDisplay(this.props.metadataDisplay);
 	let hasMetadata=false;
 
 	entries.forEach((entry,entryIdx)=>{
 	    let line = '';
-	    let rowId = Utils.getUniqueId("row_");
+	    let rowId = Utils.getUniqueId('row_');
 	    let innerId = Utils.getUniqueId();
 	    cols.forEach((col,idx)=> {
 		let last = idx==cols.length-1;
@@ -596,11 +605,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let v = entry.getProperty(col.id,{},props.inlineEdit)??'';
 		let _v = v;
 		let title = null;
-		v  = HU.span([],v);
-		if(col.id=="name") {
+		v  = HU.span([ATTR_CLASS,this.props.textClass??'',ATTR_STYLE,this.props.textStyle??''],v);
+		if(col.id=='name') {
 		    let icon = '';
 		    if(props.showIcon) {
-			icon = entry.getLink(entry.getIconImage());
+			icon = entry.getLink(entry.getIconImage([ATTR_WIDTH,this.props.iconWidth??ramaddaGlobals.iconWidth]));
 		    }
 		    if(!props.inlineEdit) {
 			v = entry.getLink(v);
@@ -623,15 +632,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    //[cbx,space,arrow,icon,thumbnail,v]
 		    let cbxId = Utils.getUniqueId('entry_');
 		    if(props.showForm)
-			tds.push(HU.hidden("allentry",entry.getId()) +
+			tds.push(HU.hidden('allentry',entry.getId()) +
 				 HU.checkbox(cbxId,['rowid',rowId,'name','selentry','value', entry.getId(),ATTR_CLASS,'entry-form-select','style',HU.css('margin-right','2px','display','none')],false));
 
-		    tds.push(HU.div(['style',HU.css('margin-right','2px','min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents',ATTR_CLASS,'entry-arrow ramadda-clickable' ], HU.getIconImage("fas fa-caret-right")));
+		    tds.push(HU.div(['style',HU.css('margin-right','2px','min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents',ATTR_CLASS,'entry-arrow ramadda-clickable' ], this.getToggleIcon(false)));
 
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
-			v = HU.span(['id','breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, 'title','Show breadcrumbs',ATTR_CLASS,'ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage("fas fa-plus-square")) +SPACE2
-			    + HU.span(['style',HU.css('display','none'),'id',crumbId], entry.breadcrumbs+"&nbsp;&raquo;&nbsp;") +v;
+			v = HU.span(['id','breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, 'title','Show breadcrumbs',ATTR_CLASS,'ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage('fas fa-plus-square')) +SPACE2
+			    + HU.span(['style',HU.css('display','none'),'id',crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;') +v;
 		    }
 
 		    if(props.showThumbnails && entry.getThumbnail()) {
@@ -648,7 +657,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    tds.push(v);
 		    v =  HU.table([],HU.tr(['valign','top'],HU.tds([],tds)));
 		} else {
-		    if(col.id=="attachments") {
+		    if(col.id=='attachments') {
 			v='';
 			entry.getMetadata().forEach(m=>{
 			    if(m.type=='content.thumbnail' || m.type=='content.attachment') {
@@ -678,16 +687,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			if(v!='') v  =HU.div(['style',HU.css('max-width',
 							     HU.getDimension(col.width),'overflow-x','auto')], v);
 
-		    } else  if(col.id=="type") {
-			v = HU.href(RamaddaUtil.getUrl("/search/type/" + entry.getType().id),v,["title","Search for entries of type " + _v]);
+		    } else  if(col.id=='type') {
+			v = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),v,['title','Search for entries of type ' + _v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
 		    v = HU.div(['style',HU.css('padding-left',col.paddingLeft??'5px','white-space','nowrap','width',HU.getDimension(col.width),'text-align',col.align??'right','max-width',HU.getDimension(maxWidth),'overflow-x','hidden')+(last?HU.css('padding-right','4px'):'')],v);
-		    attrs.push("align",col.align??"right");
+		    attrs.push('align',col.align??'right');
 		}
 		if(Utils.isDefined(col.width)) {
-		    attrs.push("width",HU.getDimension(col.width));
+		    attrs.push('width',HU.getDimension(col.width));
 		}
 		if(title) {
 //		    attrs.push('title',title);
@@ -724,10 +733,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	    row+=HU.open('tr',rowAttrs);
 	    row+=line;
-	    row+="</tr></table>";
-	    row+="</div>"
+	    row+='</tr></table>';
+	    row+='</div>'
 	    row+=HU.div(['id',innerId,'style',HU.css('margin-left','20px')]);
-	    row+="</div>";
+	    row+='</div>';
 	    html+=row;
 	});
 	html+=HU.close('div');
@@ -865,19 +874,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    }
 	});
 
+	let _this=this;
 	container.find('.entry-arrow').click(function() {
 	    let entryId = $(this).attr('entryid');
 	    let innerId = $(this).attr('innerid');	    
 	    let inner = $("#"+innerId);
 	    let filled = $(this).attr("filled");
 	    let open = $(this).attr("open");
-	    if(open) {
-		$(this).html(HU.getIconImage("fas fa-caret-right"));
-	    } else {
-		$(this).html(HU.getIconImage("fas fa-caret-down"));
-	    }
+	    $(this).html(_this.getToggleIcon(!open));
 	    if(filled) {
-
 		if(open) {
 		    inner.hide();
 		    $(this).attr('open',false);	    
