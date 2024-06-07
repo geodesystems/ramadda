@@ -1898,6 +1898,8 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_STOP, "End at pattern in source file",
                 new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
 
+        new Cmd(CMD_TRIMLINE, "Trim the input line"),
+
         new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
@@ -4061,6 +4063,10 @@ public class Seesv implements SeesvCommands {
 		ctx.setDelimiter(delimiter = "tab");
 		return i;
 	    });
+	defineFunction(CMD_TRIMLINE,0,(ctx,args,i) -> {
+		ctx.setTrimLine(true);
+		return i;
+	    });	
 
 	defineFunction(CMD_DELIMITER,1,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = args.get(++i));

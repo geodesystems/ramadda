@@ -117,6 +117,7 @@ public class TextReader implements Cloneable {
 
     private boolean uniqueHeader  =false;
 
+    private boolean trimLine = false;
     
     /** _more_ */
     private String delimiter = ",";
@@ -423,6 +424,25 @@ public class TextReader implements Cloneable {
     public boolean getVerbose() {
         return verbose;
     }
+
+    /**
+       Set the TrimLine property.
+
+       @param value The new value for TrimLine
+    **/
+    public void setTrimLine (boolean value) {
+	trimLine = value;
+    }
+
+    /**
+       Get the TrimLine property.
+
+       @return The TrimLine
+    **/
+    public boolean getTrimLine () {
+	return trimLine;
+    }
+
 
     /*
       print out the message if verbose=true
@@ -1064,7 +1084,9 @@ public class TextReader implements Cloneable {
                     return line;
                 }
             }
-            return getReader().readLine();
+	    String line =  getReader().readLine();
+	    if(trimLine && line!=null) line= line.trim();
+	    return line;
         }
 
 
@@ -1215,9 +1237,9 @@ public class TextReader implements Cloneable {
             System.out.println(sb);
         }
 
-        return lb.toString();
-
-
+	String line =  lb.toString();
+	if(trimLine && line!=null) line= line.trim();
+	return line;
     }
 
     /**
