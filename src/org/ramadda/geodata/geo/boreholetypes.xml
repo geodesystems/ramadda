@@ -3,6 +3,7 @@
 
   <type name="type_geo_project"  description="Geo Project" 
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	metadata="content.thumbnail,project_pi,project_funding,project_person,dif.usecontraints,content.citation"
 	>
     <property name="icon" value="/geo/project.png"/>
     <property name="search.metadatatypes"      value=""/>
@@ -32,9 +33,9 @@
 +row 
 +col-8
 :heading Sites
-{{map listentries="true" entry="child:type:type_map_folder"}}
+{{map listentries="true" entry="child:type:type_map_folder" orderby=name}}
 :heading Contents
-{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false}} 
+{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false orderby=entryorder ascending=true}} 
 -col
 +col-4
 +center
@@ -69,10 +70,9 @@ includeNonImages=false
 
 </type>
 
-  <type name="type_geo_site"  description="Geo Site" 
-	childtypes="type_archive_series"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
-	>
+<type name="type_geo_site"  description="Geo Site" 
+      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+      >
     <property name="icon" value="/geo/site.png"/>
     <property name="form.area.show" value="false"/>
     <property name="form.location.show" value="true"/>    

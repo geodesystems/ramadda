@@ -8,8 +8,9 @@
 	isgroup="true"
 	handler="org.ramadda.repository.type.GenericTypeHandler"
 	description="Map Folder">
-     <property name="form.resource.show" value="false"/>
-     <property name="icon" value="/icons/mapfolder.png"/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="icon" value="/icons/mapfolder.png"/>
     <column name="show_circles" label="Show Circles"
 	    type="boolean" showinhtml="false" default="false"/>
     <column name="map_props" label="Map Style"
