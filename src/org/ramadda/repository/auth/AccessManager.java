@@ -1124,6 +1124,7 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
 
+
     public boolean canDoGeo(Request request, Entry entry)  {
         //        if(entry.getIsLocalFile()) return false;
 	try {
@@ -1812,6 +1813,7 @@ public class AccessManager extends RepositoryManager {
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append("<p>");
         sb.append(HtmlUtils.submit("Change Access"));
+	sb.append(getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         sb.append("<p>");
         if (dataPolicies.size() > 0) {
             List         items    = new ArrayList();

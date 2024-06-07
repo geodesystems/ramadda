@@ -46,6 +46,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_NEW_PROPERTY,null,"type","metadata type to create",
 					"#label","","#message","Show when cannot new","addBreak","true",
 					"style","margin-bottom:4px;"), 			    			    			    
+                            new WikiTag(WIKI_TAG_ACCESS_STATUS,"Show access"),
                             new WikiTag(WIKI_TAG_ANCESTOR,"Ancestor ID","tt","ID of ancestor","#type","entry type"), 			    
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),

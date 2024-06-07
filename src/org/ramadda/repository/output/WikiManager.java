@@ -2136,6 +2136,35 @@ public class WikiManager extends RepositoryManager
 			       " class='ramadda-button' role='button'");
 	    }
 	    return getProperty(wikiUtil,props,"message","");
+	} else if(theTag.equals(WIKI_TAG_ACCESS_STATUS)) {
+	    if(request.isAnonymous()) return "";
+	    Request anon = getRepository().getAnonymousRequest();
+	    boolean canView = getAccessManager().canDoView(anon,entry);
+	    boolean canGeo = getAccessManager().canDoGeo(anon,entry);
+	    boolean canFile = getAccessManager().canDoGeo(anon,entry);
+	    boolean canExport = getAccessManager().canDoExport(anon,entry);	    	    	    
+	    String yes= HU.span("yes"," style='color:green;font-weight:bold;' ");
+	    String no = HU.span("no"," style='color:red;font-weight:bold;' ");
+	    sb.append("Anonymous user can: ");
+	    sb.append(" view entry: " + (canView?yes:no));
+	    sb.append(" access file:" + (canFile?yes:no));
+	    sb.append(" access location:" + (canGeo?yes:no));
+	    sb.append(" export:" + (canExport?yes:no));	    
+	    String bad="";
+	    if(getAccessManager().canDoNew(anon,entry)) {
+		bad+=" do new entry. ";
+	    }
+	    if(getAccessManager().canDoEdit(anon,entry)) {
+		bad+= " edit entry. ";
+	    }
+	    if(getAccessManager().canDoDelete(anon,entry)) {
+		bad+= " delete entry. ";
+	    }	    	    
+	    if(stringDefined(bad)) {
+		sb.append("<br>");
+		HU.span(sb,"Anonymous user can: "+bad, HU.style("background:red;padding:2px;border:1px solid #000;display:inline-block;"));
+	    }
+	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_NEW_PROPERTY)) {
 	    if(getAccessManager().canDoEdit(request, entry)) {
 		return getNewPropertyLinks(request, entry,props);

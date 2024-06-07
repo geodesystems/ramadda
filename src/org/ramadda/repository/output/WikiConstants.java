@@ -536,6 +536,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_BOOTSTRAP = "bootstrap";
 
+    public static final String WIKI_TAG_ACCESS_STATUS = "access_status";
     public static final String WIKI_TAG_EDITBUTTON = "editbutton";
     public static final String WIKI_TAG_NEWBUTTON = "newbutton";
     public static final String WIKI_TAG_NEW_TYPE = "new_type";
