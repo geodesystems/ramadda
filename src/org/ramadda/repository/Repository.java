@@ -7314,6 +7314,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
     }
 
+    public Request getAnonymousRequest()  {
+	try {
+	    User    user    = getUserManager().getAnonymousUser();
+	    Request request = new Request(getRepository(), "", new Hashtable());
+	    request.setUser(user);
+	    request.setSessionId(getGUID());
+	    return request;
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
+
+
     /**
      * _more_
      *
