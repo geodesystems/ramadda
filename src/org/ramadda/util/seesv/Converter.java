@@ -2220,7 +2220,7 @@ public abstract class Converter extends Processor {
 
                 String unit = StringUtil.findPattern(col,
 						     ".*?\\(([^\\)]+)\\).*");
-		if(unitRow!=null) unit=(String)unitRow.get(i);
+		if(unitRow!=null && unitRow.indexOk(i)) unit=(String)unitRow.get(i);
                 if (label != null) {
                     label = label.replaceAll(",", "%2C").replaceAll("<br>",
 								    " ").replaceAll("<p>", " ");
