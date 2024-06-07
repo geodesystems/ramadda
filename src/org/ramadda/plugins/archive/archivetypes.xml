@@ -1,7 +1,17 @@
 <types 	priority="10" supercategory="General" category="Archive"
 	metadata="archive_subject,archive_keyword,content.thumbnail,archive_category,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media,archive_internal">
 
+
   
+  <wikimacro name="archive_table" label="Archive Table" >
+    <![CDATA[
+{{tabletree  message="" showSize="false" showCreateDate="false" showDate="false"
+headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
+columns=name,date,attachments  showAttachments=true  showThumbnails=false
+metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:header=Subjects:delimiter=;,archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"}}
+]]></wikimacro>
+
+
 
   <type name="type_archive_section"  description="Archive Section"
 	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
@@ -22,7 +32,12 @@ orderBy=createdate_ascending
 }}
 -center
 {{description wikify="true"}}
-{{tabletree  message="" showSize="false"}} 
+{{macro id=archive_table}}
++skip
+{{tabletree  message="" showSize="false"
+headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
+}}
+-skip
 :vspace 1em
 ----
 :vspace 1em
@@ -68,10 +83,14 @@ inherited="false"  }}
 -toggle
 ----
 :vspace 1em
+{{macro id=archive_table}}
++skip
 {{tabletree  message="" showSize="false" showCreateDate="false" showDate="false"
+headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
 columns=name,date,attachments  showAttachments=true  showThumbnails=false
 metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:header=Subjects:delimiter=;,archive_note:xattr1=Arrangement:template=<b>{attr1}_colon_</b> {attr2}"
 }} 
+-skip
 -col
 +col-4
 +center
@@ -232,7 +251,9 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 -col
 -row
 :vspace 1em
-{{tabletree  message="" showSize="true"}} 
+{{tabletree  message="" showSize="true"
+headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  toggleStyle="font-size:22px;"
+}} 
 -section
 ]]>
 </xwiki>
