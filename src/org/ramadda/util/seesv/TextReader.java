@@ -121,6 +121,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    private List<String> delimiters;
+
     private boolean delimiterGuess  =false;
 
     /**  */
@@ -1825,7 +1827,14 @@ public class TextReader implements Cloneable {
     public void setDelimiter(String value) {
         delimiter = value;
         if (delimiter != null) {
-            if (delimiter.equals("?")) {
+            if (delimiter.indexOf(">")>=0) {
+		delimiters= new ArrayList<String>();
+		for(String tok: Utils.split(delimiter,">",false,false)) {
+		    if(tok.equals("tab")) tok = "\t";
+		    else  if(tok.equals("space")) tok = " ";
+		    delimiters.add(tok);
+		}
+	    } else if (delimiter.equals("?")) {
 		delimiterGuess=true;
 		delimiter="";
 	    } else  if (delimiter.equals("tab")) {
@@ -1855,6 +1864,10 @@ public class TextReader implements Cloneable {
      */
     public String getDelimiter() {
         return delimiter;
+    }
+
+    public List<String> getDelimiters() {
+	return delimiters;
     }
 
     /**

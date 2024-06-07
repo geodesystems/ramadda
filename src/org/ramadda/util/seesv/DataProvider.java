@@ -1938,7 +1938,7 @@ public abstract class DataProvider extends SeesvOperator {
 	private boolean doingSpaces = false;
 
 	private boolean guessDelimiter = false;	
-
+	private List<String> delimiters;
 	
         /**
          * _more_
@@ -1964,6 +1964,7 @@ public abstract class DataProvider extends SeesvOperator {
             if (tokenizer == null) {
                 tokenizer = StringTokenizer.getCSVInstance();
                 tokenizer.setEmptyTokenAsNull(true);
+		delimiters=ctx.getDelimiters();
                 if ( !ctx.getDelimiter().equals(",")) {
 		    guessDelimiter = ctx.getDelimiterGuess();
 		    String delim = ctx.getDelimiter();
@@ -2066,11 +2067,31 @@ public abstract class DataProvider extends SeesvOperator {
 		    StringTokenizer tokenizer = getTokenizer(ctx);
 		    if(doingSpaces) {
 			line = line.replaceAll("  *"," ").trim();
+		    } else if(delimiters!=null) {
+			int minIndex=-1;
+			String minDelimiter=",";
+			for(String delimiter: delimiters) {
+			    int index;
+			    if(delimiter.equals("spaces"))
+				index = line.indexOf(" ");
+			    else
+				index = line.indexOf(delimiter);
+			    if(index<0) continue;
+			    if(minIndex<0 || index<minIndex) {
+				minIndex = index;
+				minDelimiter=delimiter;
+			    }
+			}
+			if(minDelimiter.equals("spaces")) {
+			    line = line.replaceAll("  *"," ").trim();
+			    minDelimiter=" ";
+			}
+			tokenizer.setDelimiterString(minDelimiter);
 		    } else if(guessDelimiter) {
 			int tabIndex = line.indexOf("\t");
 			int commaIndex = line.indexOf(",");
 			String delim=",";
-			if(tabIndex>=0 && tabIndex<commaIndex) {
+			if(tabIndex>=0 && (commaIndex<0 || tabIndex<commaIndex)) {
 			    delim="\t";
 			}
 			tokenizer.setDelimiterString(delim);

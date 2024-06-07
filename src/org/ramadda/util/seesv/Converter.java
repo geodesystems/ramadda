@@ -2155,7 +2155,7 @@ public abstract class Converter extends Processor {
                 }
 
 
-                Object osample = row.getValues().get(i);
+                Object osample = row.indexOk(i)?row.getValues().get(i):null;
                 if (osample == null) {
 		    osample = "";
                 }
