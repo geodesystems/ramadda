@@ -513,7 +513,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 }
             }
         } else if (dataType.equals(DATATYPE_EMAIL)) {
-            html = HU.href("mailto:" + value, value);
+	    if(stringDefined(value))
+		html = HU.href("mailto:" + value, value);
         } else if (dataType.equals(DATATYPE_URL)) {
             if (Utils.stringDefined(value)) {
                 html = HU.href(value, value);

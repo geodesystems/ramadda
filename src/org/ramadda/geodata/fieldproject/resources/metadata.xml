@@ -26,13 +26,12 @@
 
 
 
-    <type id="project_pi" name="Principal Investigator" searchable="true" priority="20"  displaygroup="Project Lead">
+    <type id="project_pi" name="Principal Investigator" searchable="true" priority="20"  displaygroup="Project Leads">
       <element id="name" name="Name"/>
       <element id="institution" name="Institution"/>
       <element id="email" name="Email" datatype="email"/>
       <element id="url" datatype="url" name="URL"/>
       <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
-      <template type="html"><![CDATA[${name}<br>${email}<br><a href="${url}">${institution}</a>]]></template>
     </type>
 
 

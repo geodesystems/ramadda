@@ -1119,7 +1119,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                                     metadata.getAttr(cnt), 0);
                 if (formInfo != null) {
                     String metadataHtml = formInfo.content;
-                    if ((cnt > 1) && !Utils.stringDefined(metadataHtml)) {
+		    if ((cnt > 1) && !Utils.stringDefined(metadataHtml)) {
                         cnt++;
                         continue;
                     }
