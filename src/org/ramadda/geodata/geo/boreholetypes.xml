@@ -42,7 +42,8 @@
 message="" width="80%"  useThumbnail="true" }}
 -center
 :vspace 1em
-{{properties message="" inherited="true" metadata.types="project_pi,content.license" includeTitle=false}}
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{properties message="" inherited="true" metadata.types="project_pi" includeTitle=true}}
 -center
 -col
 -row
@@ -61,7 +62,7 @@ includeNonImages=false
 
 
 :heading Project Information
-{{information showDetails="true"  showTitle="false"}} 
+{{information showDetails="true"  showTitle="false" details="true"}} 
 -section
 ]]></wiki>
 
