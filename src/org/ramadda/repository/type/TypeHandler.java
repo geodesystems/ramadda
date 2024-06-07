@@ -3555,17 +3555,17 @@ public class TypeHandler extends RepositoryManager {
 
     private void addImportExportLinks(Request request, Entry entry,List<Link>links, boolean canDoNew)  throws Exception {
         if (getAccessManager().canDoExport(request, entry)) {
-            links.add(
-		      new Link(
-			       HU.url(
-				      getRepository().URL_ENTRY_EXPORT.toString() + "/"
-				      + IO.stripExtension(
-							  Entry.encodeName(
-									   getEntryName(
-											entry))) + ".zip", new String[] {
+            links.add(new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
+				      + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
 					  ARG_ENTRYID,
 					  entry.getId() }), ICON_EXPORT,
 			       "Export", OutputType.TYPE_FILE));
+            links.add(new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
+				      + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
+					  ARG_SHALLOW,"true",
+					  ARG_ENTRYID,
+					  entry.getId() }), ICON_EXPORT,
+			       "Shallow Export", OutputType.TYPE_FILE));	    
 
 
         }

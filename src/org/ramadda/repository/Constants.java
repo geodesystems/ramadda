@@ -363,6 +363,8 @@ public interface Constants {
     public static final String ARG_SERVICEID = "serviceid";
 
 
+    public static final String ARG_SHALLOW = "shallow";
+
     /** _more_ */
     public static final String PROP_INSTALL_PASSWORD =
         "ramadda.install.password";

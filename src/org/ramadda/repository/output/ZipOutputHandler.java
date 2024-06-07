@@ -15,6 +15,7 @@ import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -89,6 +90,12 @@ public class ZipOutputHandler extends OutputHandler {
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
                        "fa-file-export");
 
+    /** _more_ */
+    public static final OutputType OUTPUT_EXPORT_SHALLOW =
+        new OutputType("Shallow Export", "zip.export.shallow",
+                       OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
+                       "fa-file-export");    
+
 
     /**
      * _more_
@@ -105,6 +112,7 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_ZIPTREE);
         addType(OUTPUT_THUMBNAILS);
         addType(OUTPUT_EXPORT);
+        addType(OUTPUT_EXPORT_SHALLOW);	
     }
 
 
@@ -149,6 +157,7 @@ public class ZipOutputHandler extends OutputHandler {
         if ((state.group != null) && state.group.isDummy()) {
             if ( !request.isAnonymous()) {
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
+                links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));		
             }
         }
 
@@ -234,6 +243,8 @@ public class ZipOutputHandler extends OutputHandler {
         }	
         if (output.equals(OUTPUT_EXPORT)) {
             return toZip(request, group.getName(), children, true, true,false);
+	} else  if (output.equals(OUTPUT_EXPORT_SHALLOW)) {
+	    return toZip(request, group.getName(), children, false, true,false);
         } else {
             return toZip(request, group.getName(), children, false, false,false);
         }
