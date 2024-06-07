@@ -32,7 +32,7 @@
       <element id="email" name="Email" datatype="email"/>
       <element id="url" datatype="url" name="URL"/>
       <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
-      <template type="html"><![CDATA[<a href="mailto:${email}">${name}</a> <a href="${url}">${institution}</a>]]></template>
+      <template type="xhtml"><![CDATA[<a href="mailto:${email}">${name}</a> <a href="${url}">${institution}</a>]]></template>
     </type>
 
 
