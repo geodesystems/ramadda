@@ -232,6 +232,11 @@ csvcommands2=0,0,-change,0-10,-999.*,NaN
 profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}         
 ]]></property>
 
+<wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
+   <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}]]></wikimacro>
+
+
 <wiki>
 <![CDATA[
 +section title="Log ASCII: {{name}}"
