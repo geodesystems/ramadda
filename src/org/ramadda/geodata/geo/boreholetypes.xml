@@ -141,7 +141,7 @@ message="" width="80%"  useThumbnail="true" }}
 	   values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
   <property name="record.patterns" value="hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)"/>
 <property name="record.properties">
-csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-unitrow,-change,0-10,-999.*,NaN
+csvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
 csvcommands2=-addheader,
 </property>
 <property name="bubble">
