@@ -179,7 +179,7 @@ proc processSubjectsAndKeywords {v} {
 
 	if {![info exists ::seen($tok)]} {
 	    set ::seen($tok) 1
-	    puts "$_what: $tok"
+#	    puts "$_what: $tok"
 	    if {$_what=="KEYWORD"} {
 #		puts "name {$tok}"
 	    }
