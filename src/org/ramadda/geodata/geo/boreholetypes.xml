@@ -15,7 +15,7 @@
 <entries>
 <entry  name="Sites"  type="type_map_folder" entryorder="10"/>
 <entry  name="Documents"  type="type_document_collection" entryorder="20"/>
-<entry  name="Private"  type="group" entryorder="30">
+<entry  name="Private"  type="group" entryorder="30" description="{{access_status}}">
 <permissions>
 <permission action="view">
 <role role="none"/>
