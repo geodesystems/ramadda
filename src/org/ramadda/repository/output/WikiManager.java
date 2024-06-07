@@ -1183,7 +1183,7 @@ public class WikiManager extends RepositoryManager
             if (imageClass != null) {
                 HU.cssClass(extra, imageClass);
             } else {
-                HU.cssClass(extra, "wiki-image");
+		//                HU.cssClass(extra, "wiki-image");
             }
         }
         String style  = getProperty(wikiUtil, props, ATTR_STYLE, "");
@@ -1277,8 +1277,7 @@ public class WikiManager extends RepositoryManager
 					      : "") + " display:inline-block;text-align:center");
         }
         if (caption != null && captionPosition.equals("top")) {
-            HU.span(sb, caption, HU.cssClass("wiki-image-caption"));
-            sb.append(HU.br());
+            HU.div(sb, caption, HU.cssClass("wiki-image-caption"));
 	}
 
 
@@ -1294,8 +1293,7 @@ public class WikiManager extends RepositoryManager
 
 
         if (caption != null && captionPosition.equals("bottom")) {
-            sb.append(HU.br());
-            HU.span(sb, caption, HU.cssClass("wiki-image-caption"));
+            HU.div(sb, caption, HU.cssClass("wiki-image-caption"));
         }
         HU.close(sb, HU.TAG_DIV);
         if (js != null) {
@@ -1427,20 +1425,26 @@ public class WikiManager extends RepositoryManager
 	}
 	boolean inherited = getProperty(wikiUtil, props,"inherited",false);
         if (!stringDefined(src) && getProperty(wikiUtil,props,"useThumbnail",false)) {
-	    String[] imageUrl = getMetadataManager().getThumbnailUrl(request, entry,inherited);
-	    if(imageUrl==null) {
+	    List<String[]> urls = new ArrayList<String[]>();
+	    getMetadataManager().getFullThumbnailUrls(request, entry, urls,inherited);
+	    //	    String[] imageUrl = getMetadataManager().getThumbnailUrl(request, entry,inherited);
+	    if(urls.size()==0) {
 		if(getProperty(wikiUtil,props,"showPlaceholderImage",false)) {
-		    imageUrl = new String[]{getPageHandler().makeHtdocsUrl("/images/placeholder.png"),""};
+		    urls.add(new String[]{getPageHandler().makeHtdocsUrl("/images/placeholder.png"),""});
 		}
 	    }
-	    if(imageUrl!=null) {
+	    boolean multiples = getProperty(wikiUtil,props,"multiples",false);
+	    String images="";
+	    for(String[]imageUrl: urls) {
 		if(getProperty(wikiUtil,props,"showCaption",false) && stringDefined(imageUrl[1])) {
 		    props.put("caption",imageUrl[1]);
+		} else {
+		    props.put("caption","");
 		}
-		String image= getWikiImage(wikiUtil, request, imageUrl[0],entry,props);
-		return image;
-
+		images+= getWikiImage(wikiUtil, request, imageUrl[0],entry,props);
+		if(!multiples) break;
 	    }
+	    return images;
 	}
 
         if (!stringDefined(src)) {
