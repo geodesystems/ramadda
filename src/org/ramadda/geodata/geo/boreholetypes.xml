@@ -34,11 +34,11 @@
 :heading Sites
 {{map listentries="true" entry="child:type:type_map_folder"}}
 :heading Contents
-{{tabletree  message=""  simple="false"  #maxHeight="500px"  }} 
+{{tabletree  message=""  simple="false"  #maxHeight="500px"  showSize=false}} 
 -col
 +col-4
 +center
-{{image  inherited="false" showCaption=true multiples=true
+{{image  inherited="false" showCaption=true multiples=true popup=true
 message="" width="80%"  useThumbnail="true" }}
 -center
 :vspace 1em
@@ -86,11 +86,11 @@ includeNonImages=false
 +col-8
 {{description wikify="true"}}
 :heading Data
-{{tabletree  message="No entries" orderby=name ascending=true}}
+{{tabletree  message="No entries" orderby=name ascending=true showType=false showSize=false}}
 -col
 +col-4
 +center
-{{image  inherited="false" showCaption=true multiples="true"
+{{image  inherited="false" showCaption=true multiples="true" popup=true
 message="" width="80%"  useThumbnail="true" }}
 :vspace 1em
 {{mapentry hideIfNoLocations=true width="100%" height="200px"}}
