@@ -202,7 +202,7 @@ inherited="false"  }}
 
 <type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" pattern=".*\.las"
       metadata="geo_stratigraphy,geo_measurement"
-      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+      handler="org.ramadda.geodata.geo.LasTypeHandler">      
 <property name="icon" value="/geo/drilling-rig.png"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
