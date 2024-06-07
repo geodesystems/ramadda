@@ -2939,6 +2939,7 @@ public class EntryManager extends RepositoryManager {
 			       String resource,
 			       String datePattern,
 			       boolean testNew,List<String>testLog ) throws Exception {
+	String pattern = request.getString(ARG_ZIP_PATTERN,"");
 	Hashtable<String, Entry> nameToGroup = new Hashtable<String,  Entry>();
 	InputStream fis =
 	    getStorageManager().getFileInputStream(resource);
@@ -2953,6 +2954,9 @@ public class EntryManager extends RepositoryManager {
 		}
 		String path = ze.getName();
 		String name = IO.getFileTail(path);
+		if(stringDefined(pattern)) {
+		    if(!name.matches(pattern)) continue;
+		}
 		if (name.equals("MANIFEST.MF")) {
 		    continue;
 		}

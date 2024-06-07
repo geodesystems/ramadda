@@ -5862,6 +5862,7 @@ public class TypeHandler extends RepositoryManager {
             HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
 			       "Make folders from archive");
 
+	unzipWidget+="<br>"+HU.b("Match pattern: ") + HU.input(ARG_ZIP_PATTERN,"");
         String addMetadata =
             HU.labeledCheckbox(ARG_METADATA_ADD, "true",
 			       Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),

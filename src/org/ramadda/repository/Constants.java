@@ -889,6 +889,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_FILE_UNZIP = "file.unzip";
+    public static final String ARG_ZIP_PATTERN = "zippattern";    
 
     public static final String ARG_STRIPEXIF = "stripexif";    
 
