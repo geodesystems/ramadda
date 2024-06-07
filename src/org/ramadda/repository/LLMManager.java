@@ -798,7 +798,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
 	if(!stringDefined(json)) {
-	    getLogManager().logSpecial("LLMManager:Failed to extract information for entry:" + entry.getName());
+	    String msg = "Failed to extract information for entry:" + entry.getName();
+	    getSessionManager().addSessionErrorMessage(request,msg);
 	    return false;
 	}
 
