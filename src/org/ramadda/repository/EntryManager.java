@@ -7586,7 +7586,15 @@ public class EntryManager extends RepositoryManager {
         if (isNew) {
 	    okToInsert= !request.exists(ARG_BULKUPLOAD);
             for (Entry theNewEntry : entries) {
-                theNewEntry.getTypeHandler().initializeNewEntry(request,theNewEntry,newType);
+		try {
+		    theNewEntry.getTypeHandler().initializeNewEntry(request,theNewEntry,newType);
+		} catch(Exception exc) {
+		    String msg = "Error initializing entry:" + theNewEntry.getName();
+		    String fileTail = getStorageManager().getFileTail(theNewEntry);
+		    msg+="<br>File:" + fileTail;
+		    getSessionManager().addSessionErrorMessage(request,msg);
+		    throw exc;
+		}
                 String name = theNewEntry.getName();
                 if (name.trim().length() == 0) {
                     String nameTemplate =
