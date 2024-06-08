@@ -1214,7 +1214,14 @@ public class WikiManager extends RepositoryManager
 	    style+="display:none;";
 	}
 
-
+        String        cropHeight = getProperty(wikiUtil, props, "cropHeight", null);
+	if(cropHeight!=null) {
+	    style+=HU.css("height",cropHeight,"object-fit","cover");
+	}
+        String        position = getProperty(wikiUtil, props, "position", null);
+	if(position!=null) {
+	    style+=HU.css("object-position",position);
+	}	
         if (style.length() > 0) {
             HU.attr(extra,"style", style);
         }
@@ -1232,9 +1239,6 @@ public class WikiManager extends RepositoryManager
             extra.append(" usemap='#" + mapId + "' ");
         }
         String  img  = HU.img(url, alt, extra.toString());
-
-
-
         boolean link = getProperty(wikiUtil, props, ATTR_LINK, false);
         String  iurl = getProperty(wikiUtil, props, "url", (String) null);
         boolean linkResource = getProperty(wikiUtil, props,
