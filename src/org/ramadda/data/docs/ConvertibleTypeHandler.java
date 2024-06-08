@@ -81,6 +81,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
             }
         }
 
+	if(commands==null) return null;
 
         List<StringBuilder> toks = Seesv.tokenizeCommands(commands);
         List<String>        args = new ArrayList<String>();
