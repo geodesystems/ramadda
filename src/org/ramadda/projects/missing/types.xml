@@ -189,8 +189,10 @@ For Example Only<br>
 +if canedit=true
 +toggle Add Properties
 {{new_property  type="missing_agency,missing_ethnicity,missing_note,missing_clothing,missing_sighting,missing_vehicle"  
-style="margin-bottom:4px;min-width:250px;"
-#message="Show when cannot new" addBreak=true }}
+class="ramadda-button-small"
+ addEditPropertiesLink="true"
+xstyle="margin-bottom:4px;min-width:250px;"
+xaddBreak=true }}
 -toggle
 -if
 
