@@ -419,7 +419,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean canDisplay;
 
     /** _more_ */
-    private List<TwoFacedObject> enumValues;
+    private List<HtmlUtils.Selector> enumValues;
 
     private List<String> icons;
 
@@ -713,7 +713,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
             if (enumValues == null) {
-                enumValues = new ArrayList<TwoFacedObject>();
+                enumValues = new ArrayList<HtmlUtils.Selector>();
             }
         }
 
@@ -919,7 +919,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             throws Exception {
         List<String> tmp = typeHandler.getColumnEnumerationProperties(this,
 								      valueString, delimiter);
-        enumValues = new ArrayList<TwoFacedObject>();
+        enumValues = new ArrayList<HtmlUtils.Selector>();
         for (String tok : tmp) {
 	    tok  =tok.trim();
             if (tok.startsWith("#")) {
@@ -932,18 +932,23 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (tok.equals("_blank_")) tok = "";
 
             String label = tok;
-            String value = tok;
+            String value = null;
+	    int margin = 0;
             if (tok.indexOf(":") >= 0) {
                 List<String> toks = Utils.splitUpTo(tok, ":", 2);
                 value = toks.get(0);
                 label = toks.get(1);
             } else if (tok.indexOf("=") >= 0) {
                 List<String> toks = Utils.splitUpTo(tok, "=", 2);
-
                 value = toks.get(0);
                 label = toks.get(1);
             }
-            enumValues.add(new TwoFacedObject(label, value));
+	    while(label.startsWith(">")) {
+		margin+=5;
+		label = label.substring(1);
+	    }
+	    if(value==null) value=label;
+            enumValues.add(new HtmlUtils.Selector(label, value,null,margin));
             enumMap.put(value, label);
         }
     }
@@ -1107,7 +1112,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (isEnumeration()) {
 	    boolean forSearch = request.get("forsearch",false);
             List<String>         enums  = new ArrayList<String>();
-            List<TwoFacedObject> values = null;
+            List<HtmlUtils.Selector> values = null;
             if (isType(DATATYPE_ENUMERATION) || isMultiEnumeration()) {
                 values = enumValues;
             }
@@ -1116,7 +1121,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 values = typeHandler.getEnumValues(request, this, null);
             }
             if (values != null) {
-                for (TwoFacedObject tfo : values) {
+                for (HtmlUtils.Selector tfo : values) {
                     enums.add(JsonUtil.map(Utils.makeListFromValues("value",
                             JsonUtil.quote(tfo.getId().toString()), "label",
                             JsonUtil.quote(tfo.getLabel().toString()))));
@@ -1705,7 +1710,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             sb.append(s);
         }
 
-	if(addSuffix && displaySuffix!=null) {
+	if(addSuffix && Utils.stringDefined(displaySuffix)) {
 	    sb.append("&nbsp;");
 	    sb.append(displaySuffix);
 	}
@@ -3135,8 +3140,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    if(!TwoFacedObject.contains(enums,""))
 			enums.add(0,new TwoFacedObject("&lt;blank&gt;",""));
 		}
-		widget = HU.select(
-				   urlArg, enums, value,
+		widget = HU.select(urlArg, enums, value,
 				   HU.cssClass("column-select")) + "  or:  "
                     + HU.input(
 			       urlArg + "_plus", "", HU.attr("size",""+columns));
@@ -3305,14 +3309,14 @@ public class Column implements DataTypes, Constants, Cloneable {
      */
     private List getEnumPlusValues(Request request, Entry entry)
             throws Exception {
-        List<TwoFacedObject> enums = typeHandler.getEnumValues(request, this,
-                                         entry);
+        List<HtmlUtils.Selector> enums = typeHandler.getEnumValues(request, this,
+							       entry);
         //TODO: Check for Strings vs TwoFacedObjects
         if (enumValues != null) {
             List tmp = new ArrayList();
             for (Object o : enums) {
-                if ( !(o instanceof TwoFacedObject)) {
-                    o = new TwoFacedObject(o);
+                if ( !(o instanceof HtmlUtils.Selector)) {
+                    o = new HtmlUtils.Selector(o.toString(),o.toString());
                 }
                 //                if ( !TwoFacedObject.contains(enumValues, o)) {
                 if ( !enumValues.contains(o)) {
@@ -3845,18 +3849,18 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             }
-            List<TwoFacedObject> values = typeHandler.getEnumValues(request, this, entry);
+            List<HtmlUtils.Selector> values = typeHandler.getEnumValues(request, this, entry);
 
-            for (TwoFacedObject o : values) {
-                TwoFacedObject tfo = null;
+            for (HtmlUtils.Selector o : values) {
+                HtmlUtils.Selector tfo = null;
                 if (enumValues != null) {
-                    tfo = TwoFacedObject.findId(o.getId(), enumValues);
+                    tfo = HtmlUtils.Selector.findId(o.getId(), enumValues);
                 }
                 if (tfo != null) {
                     tmpValues.add(tfo);
                 } else {
                     String label = getEnumLabel("" + o, false);
-                    tmpValues.add(new TwoFacedObject(label, o));
+                    tmpValues.add(new HtmlUtils.Selector(label, o.toString()));
                 }
             }
 
@@ -3890,7 +3894,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    selectedValues.add("DUMMYVALUE");
 	    int i=0;
 	    if(enumerationShowCheckboxes) {
-		for(TwoFacedObject tfo:values) {
+		for(HtmlUtils.Selector tfo:values) {
 		    tmpb.append(HU.labeledCheckbox(searchArg,
 						   tfo.getId().toString(),
 						   selectedValues.contains(tfo.getId()),
@@ -4526,7 +4530,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @param value The new value for Values
      */
-    public void setValues(List<TwoFacedObject> value) {
+    public void setValues(List<HtmlUtils.Selector> value) {
         enumValues = value;
     }
 
@@ -4535,7 +4539,7 @@ public class Column implements DataTypes, Constants, Cloneable {
      *
      * @return The Values
      */
-    public List<TwoFacedObject> getValues() {
+    public List<HtmlUtils.Selector> getValues() {
         return enumValues;
     }
 

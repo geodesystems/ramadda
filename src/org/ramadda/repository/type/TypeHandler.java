@@ -8041,19 +8041,19 @@ public class TypeHandler extends RepositoryManager {
 	    //????
 	}
     }
-    public List<TwoFacedObject> getEnumValues(Request request, Column column, Entry entry)
+    public List<HtmlUtils.Selector> getEnumValues(Request request, Column column, Entry entry)
 	throws Exception {
         HashSet              set  = getEnumValuesInner(request, column,  entry,request.get("forsearch",false));
 
 	//If we get back null then the column should have values
 	if(set==null) {
-	    List<TwoFacedObject> tmp = column.getValues();
+	    List<HtmlUtils.Selector> tmp = column.getValues();
 	    if(tmp!=null) {
 		return tmp;
 	    }
 	}
 
-        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        List<HtmlUtils.Selector> tfos = new ArrayList<HtmlUtils.Selector>();
         List                 tmp  = new ArrayList();
         tmp.addAll(set);
 
@@ -8064,7 +8064,7 @@ public class TypeHandler extends RepositoryManager {
             } else {
 		label = column.getEnumLabel(label);
 	    }
-            tfos.add(new TwoFacedObject(label, s));
+            tfos.add(new HtmlUtils.Selector(label, s));
         }
 
         return tfos;
@@ -8180,7 +8180,7 @@ public class TypeHandler extends RepositoryManager {
 	//If we have no other clauses and the column has values defined then pass back null
 	//this tells the caller to get the values from the column
 	if(!getFromDatabase && !didClause) {
-	    List<TwoFacedObject> tmp = column.getValues();
+	    List<HtmlUtils.Selector> tmp = column.getValues();
 	    if(tmp!=null && tmp.size()>0) {
 		return null;
 	    }

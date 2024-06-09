@@ -1190,8 +1190,6 @@ public class GenericTypeHandler extends TypeHandler {
 	    formatColumnHtmlValue(request, entry, column, tmpSb, values);
 	}
 	if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
-	    System.err.println("EMPTY:" + column);
-
 	    return;
 	}
 
