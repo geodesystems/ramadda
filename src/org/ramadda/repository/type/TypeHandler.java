@@ -8043,7 +8043,7 @@ public class TypeHandler extends RepositoryManager {
     }
     public List<HtmlUtils.Selector> getEnumValues(Request request, Column column, Entry entry)
 	throws Exception {
-        HashSet              set  = getEnumValuesInner(request, column,  entry,request.get("forsearch",false));
+        HashSet   set  = getEnumValuesInner(request, column,  entry,request.get("forsearch",false)|| true);
 
 	//If we get back null then the column should have values
 	if(set==null) {
@@ -8070,19 +8070,6 @@ public class TypeHandler extends RepositoryManager {
         return tfos;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param props _more_
-     * @param name _more_
-     * @param raw _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getFieldHtml(Request request, Entry entry, Hashtable props,
                                String name, boolean raw)
 	throws Exception {
@@ -8133,19 +8120,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param column _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private HashSet getEnumValuesInner(Request request, Column column,
                                        Entry entry, boolean getFromDatabase)
 	throws Exception {

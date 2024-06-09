@@ -727,6 +727,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         dateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
     }
 
+    public void debug(Object o) {
+    }
+
     public TypeHandler getTypeHandler() {
 	return typeHandler;
     }
@@ -3137,13 +3140,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    if(showEnumerationMenu) {
 		List enums = getEnumPlusValues(request, entry);
 		if(addBlankToEnumerationMenu) {
-		    if(!TwoFacedObject.contains(enums,""))
-			enums.add(0,new TwoFacedObject("&lt;blank&gt;",""));
+		    if(!HtmlUtils.Selector.contains(enums,""))
+			enums.add(0,new HtmlUtils.Selector("&lt;blank&gt;",""));
 		}
-		widget = HU.select(urlArg, enums, value,
-				   HU.cssClass("column-select")) + "  or:  "
-                    + HU.input(
-			       urlArg + "_plus", "", HU.attr("size",""+columns));
+		widget = HU.select(urlArg, enums, value, HU.cssClass("column-select")) +
+		    "  or:  "  +
+		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
 	    } else {
 		widget = HU.input(urlArg, value,HU.attr("size",""+ columns));
 	    }
@@ -3311,7 +3313,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             throws Exception {
         List<HtmlUtils.Selector> enums = typeHandler.getEnumValues(request, this,
 							       entry);
-        //TODO: Check for Strings vs TwoFacedObjects
+        //TODO: Check for Strings vs Selector
         if (enumValues != null) {
             List tmp = new ArrayList();
             for (Object o : enums) {
@@ -3504,17 +3506,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String theValue = "";
+	    boolean debug = urlArg.indexOf("tribe")>=0;
             if (request.defined(urlArg + "_plus")) {
                 theValue = request.getAnonymousEncodedString(urlArg
                         + "_plus", ((dflt != null)
                                     ? dflt
                                     : ""));
-            } else if (request.defined(urlArg)) {
+            } else if (request.exists(urlArg)) {
                 theValue = request.getAnonymousEncodedString(urlArg,
                         ((dflt != null)
                          ? dflt
                          : ""));
-
             } else {
                 theValue = (String)Utils.getNonNull(values[offset],dflt);
             }
