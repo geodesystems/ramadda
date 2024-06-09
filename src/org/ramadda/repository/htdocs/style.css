@@ -212,6 +212,13 @@ ramadda-heading, .ramadda-page-heading {
     font-weight:bold;
 }
 
+.ramadda-access-status {
+    border-radius:var(--default-radius);
+    padding:4px;
+    display:inline-block;
+    border: var(--basic-border);
+}
+
 .ramadda-llm-chat .container {
     width:100%;
 }
