@@ -1925,7 +1925,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 iconMap = new Hashtable<String, String>();
             }
             StringBuilder        sb   = new StringBuilder("");
-            List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
+            List<HtmlUtils.Selector> tfos = getEnumValues(request, entry, col);
             if ((tfos != null) && (tfos.size() < 150) && (tfos.size() > 0)) {
                 formBuffer.append(
                     HU.row(
@@ -1934,7 +1934,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 msg("Settings for") + " " + col.getLabel(),
                                 HU.cssClass("formgroupheader")), 2)));
 
-                for (TwoFacedObject tfo : tfos) {
+                for (HtmlUtils.Selector tfo : tfos) {
                     String value        = tfo.getId().toString();
                     String currentColor = colorMap.get(value);
                     String currentIcon  = iconMap.get(value);
@@ -2075,10 +2075,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (iconMap == null) {
                 iconMap = new Hashtable<String, String>();
             }
-            List<TwoFacedObject> enumValues = getEnumValues(request, entry,
+            List<HtmlUtils.Selector> enumValues = getEnumValues(request, entry,
                                                   col);
             if (enumValues != null) {
-                for (TwoFacedObject tfo : enumValues) {
+                for (HtmlUtils.Selector tfo : enumValues) {
                     String value     = tfo.getId().toString();
                     String iconArg   = iconID + "." + value;
                     String iconValue = request.defined(iconArg + "_custom")
@@ -2092,7 +2092,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                 }
 
-                for (TwoFacedObject tfo : enumValues) {
+                for (HtmlUtils.Selector tfo : enumValues) {
                     String value      = tfo.getId().toString();
                     String colorArg   = colorID + "." + value;
                     String colorValue = request.getString(colorArg, "");
@@ -5559,9 +5559,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     props, displayProps);
             if (column.isEnumeration()) {
                 String enums = "_all_:All";
-                List<TwoFacedObject> tfos = getEnumValues(request, entry,
+                List<HtmlUtils.Selector> tfos = getEnumValues(request, entry,
                                                 column);
-                for (TwoFacedObject tfo : tfos) {
+                for (HtmlUtils.Selector tfo : tfos) {
                     if (enums != null) {
                         enums += ",";
                     } else {
@@ -5695,16 +5695,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    protected List<TwoFacedObject> getEnumValues(Request request,
+    protected List<HtmlUtils.Selector> getEnumValues(Request request,
             Entry entry, Column column) {
         try {
             if (column.getType().equals(Column.DATATYPE_ENUMERATION)) {
-                List<TwoFacedObject> enums = column.getValues();
+                List<HtmlUtils.Selector> enums = column.getValues();
                 if (enums.size() > 0) {
                     return enums;
                 }
             }
-            List<TwoFacedObject> enums = tableHandler.getEnumValues(request,
+            List<HtmlUtils.Selector> enums = tableHandler.getEnumValues(request,
                                              column, entry);
 
             return enums;

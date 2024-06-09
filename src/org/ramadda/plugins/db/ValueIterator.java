@@ -1923,7 +1923,7 @@ public abstract class ValueIterator implements DbConstants {
     public static class GridIterator extends HtmlIterator {
 
         Column           gridColumn = null;
-	List<TwoFacedObject> enumValues;
+	List<HtmlUtils.Selector> enumValues;
 
         /**
          * _more_
@@ -1978,7 +1978,7 @@ public abstract class ValueIterator implements DbConstants {
 	    db.makeTableHeader(sb, "&nbsp;",
 			       HU.attr(HU.ATTR_WIDTH, width + "%"));
 	    String key = db.getTableHandler().getTableName() + "." + gridColumn.getName();
-	    for (TwoFacedObject tfo : enumValues) {
+	    for (HtmlUtils.Selector tfo : enumValues) {
 		String value = tfo.getId().toString();
 		String searchUrl =
 		    HU.url(
@@ -2022,7 +2022,7 @@ public abstract class ValueIterator implements DbConstants {
                                     HU.id(rowId) + event
                                     + HU.cssClass("dbcategoryrow")));
             String rowValue = (String) values[gridColumn.getOffset()];
-            for (TwoFacedObject tfo : enumValues) {
+            for (HtmlUtils.Selector tfo : enumValues) {
                 String value = tfo.getId().toString();
                 if (Misc.equals(value, rowValue)) {
                     sb.append(HU.col("&nbsp;",
