@@ -3364,81 +3364,27 @@ public class HtmlUtils implements HtmlUtilsConstants {
         /**  */
         private String tooltip;
 
-        /**
-         *
-         *
-         * @param label _more_
-         * @param id _more_
-         */
         public Selector(String label, String id) {
-            this(label, id, null, 3, false);
+            this(label, id, null, 0, false);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param id _more_
-         * @param icon _more_
-         */
         public Selector(String label, String id, String icon) {
-            this(label, id, icon, 3, false);
+            this(label, id, icon, 0, false);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param id _more_
-         * @param icon _more_
-         * @param margin _more_
-         */
         public Selector(String label, String id, String icon, int margin) {
             this(label, id, icon, margin, false);
         }
 
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param id _more_
-         * @param icon _more_
-         * @param margin _more_
-         * @param isHeader _more_
-         */
-        public Selector(String label, String id, String icon, int margin,
-                        boolean isHeader) {
+        public Selector(String label, String id, String icon, int margin, boolean isHeader) {
             this(label, id, icon, margin, 20, isHeader);
         }
 
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param id _more_
-         * @param icon _more_
-         * @param margin _more_
-         * @param padding _more_
-         * @param isHeader _more_
-         */
-        public Selector(String label, String id, String icon, int margin,
-                        int padding, boolean isHeader) {
+
+        public Selector(String label, String id, String icon, int margin, int padding, boolean isHeader) {
             this(label, id, null, icon, margin, padding, isHeader);
         }
 
-        /**
-         *
-         *
-         * @param label _more_
-         * @param id _more_
-         * @param tooltip _more_
-         * @param icon _more_
-         * @param margin _more_
-         * @param padding _more_
-         * @param isHeader _more_
-         */
         public Selector(String label, String id, String tooltip, String icon,
                         int margin, int padding, boolean isHeader) {
             this.label    = label;
@@ -3493,7 +3439,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
          * @return _more_
          */
         public String toString() {
-            return this.label;
+            return "id:" + id +" label:"+this.label+":";
         }
 
         /**
@@ -3628,6 +3574,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                         extraAttr = attrs("isheader", "true", "label-class",
                                           "ramadda-select-header");
                     }
+
                 } else if (selector.isHeader) {
                     extraAttr = style(
                         "font-weight:bold;background: #ddd;padding:6px;");
@@ -3648,7 +3595,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 sb.append(hr());
                 continue;
             }
-
             sb.append("<option ");
             if (extraAttr != null) {
                 sb.append(" ");
@@ -3674,6 +3620,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             sb.append(">");
             sb.append(label);
             sb.append("</option>");
+	    //	    if(debug) System.err.println("SEL: value:" + value+" label:" + label);
         }
         sb.append("</select>");
         sb.append("\n");
