@@ -3451,6 +3451,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
 
 
+
+
+
+	public static Selector findId(Object id, List l) {
+	    for (int i = 0; i < l.size(); i++) {
+		Selector tfo = (Selector) l.get(i);
+		if (Misc.equals(id, tfo.getId())) {
+		    return tfo;
+		}
+	    }
+	    return null;
+	}
+
 	public boolean equals(Object o) {
 	    if(!(o instanceof Selector)) return false;
 	    return this.id.equals(((Selector)o).id);
@@ -3563,6 +3576,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         if (extra == null) {
             extra = "";
         }
+	boolean decorated = false;
         if (extra.indexOf(ATTR_CLASS) >= 0) {
             attrs = attrs(ATTR_NAME, name);
         } else {
@@ -3572,6 +3586,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
             } else if ((values != null) && !values.isEmpty()
                        && (values.get(0) instanceof HtmlUtils.Selector)) {
                 cssClass = "ramadda-pulldown-with-icons";
+		decorated = true;
             } else {
                 cssClass = "ramadda-pulldown";
             }
@@ -3616,7 +3631,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 } else if (selector.isHeader) {
                     extraAttr = style(
                         "font-weight:bold;background: #ddd;padding:6px;");
-                }
+                } else {
+		    if(!decorated && selector.margin>0 ) {
+                        String style = "margin-left:" + selector.margin + "px;";
+			String prefix="";
+			for(int j=0;j<selector.margin;j++) {
+			    prefix+= "&nbsp;";
+			}			    
+			label = prefix+label;
+		    }
+		}
             } else {
                 value = label = obj.toString();
             }
