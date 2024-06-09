@@ -69,16 +69,19 @@ var Itis = {
 		return;
 	    }
 	    let map = {};
+//	    console.dir(item);	    console.dir(data);
+	    console.log(this.getInput('tsn_number',true).length);
+	    this.getInput('tsn_number',true).val(data.tsn);
 	    data.hierarchyList.forEach(h=>{
 		let rank = h.rankName.toLowerCase();
 //		console.log(rank+'='+h.taxonName +' '+this.getInput(rank).length);
-		this.getInput(rank).val(h.taxonName??'');
+		this.getInput('taxon_'+rank).val(h.taxonName??'');
 	    });
 	};
 	this.fetch(url,success);
     },
-    getInput:function(taxa) {
-	let name = 'edit_type_archive_bio_taxon_'+ taxa+'_plus';
+    getInput:function(taxa,plain) {
+	let name = 'edit_type_archive_bio_'+ taxa+(plain?'':'_plus');
 	return $('[name="'+ name+'"]');
     }
 }

@@ -7,7 +7,7 @@
 	xchildtypes="type_archive_collection">
 
     <property name="icon" value="/archive/leaf.png"/>
-    <property name="form.resource.show" value="false"/>
+    <property name="form.description.rows" value="5"/>
     <property name="form.date.show" value="false"/>    
     <property name="form.area.show" value="true"/>    
     <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
@@ -32,7 +32,20 @@
     <column type="enumerationplus" cansearch="true" name="taxon_order" label="Order"/>
     <column type="enumerationplus" cansearch="true" name="taxon_family" label="Family"/>
     <column type="enumerationplus" cansearch="true" name="taxon_genus" label="Genus"/>
-    <column type="enumerationplus" cansearch="true" name="taxon_species" label="Species"/>    
+    <column type="enumerationplus" cansearch="true" name="taxon_species" label="Species"/>
+    <column type="string" cansearch="true" name="tsn_number" label="TSN Number" columns="8"/>
+
+    <column group="Object" name="handling" label="Handling" type="enumerationplus" cansearch="true" />
+    <column name="object_status" label="Object Status" type="enumerationplus" cansearch="true"
+	    values="file:/org/ramadda/plugins/archive/resources/objectstatus.txt"/>
+  
+    <column name="item_count" label="Item Count" default="0" type="int" cansearch="false"/>
+    <column name="quantity" label="Quantity" default="0" type="int" cansearch="false"/>      
+    <column name="storage_unit" label="Storage Unit" type="enumerationplus" cansearch="true"/>
+    <column group="Biology" name="habitat" label="Habitat" type="enumerationplus" cansearch="true"
+	    values="file:/org/ramadda/plugins/archive/resources/habitats.txt"/>
+
+
 <wiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 +row
