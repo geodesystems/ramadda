@@ -3568,16 +3568,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                         style += "margin-left:" + selector.margin + "px;";
                     }
                     extraAttr = attrs("data-class", "ramadda-select-icon",
-                                      "data-style", style, "img-src",
-                                      selector.icon);
+                                      "data-style", style, "img-src",  selector.icon);
                     if (selector.isHeader) {
                         extraAttr = attrs("isheader", "true", "label-class",
                                           "ramadda-select-header");
                     }
-
                 } else if (selector.isHeader) {
-                    extraAttr = style(
-                        "font-weight:bold;background: #ddd;padding:6px;");
+		    //                    extraAttr = style("font-weight:bold;background: #ddd;padding:6px;");
+		    extraAttr = attrs("isheader", "true", "label-class",
+				      "ramadda-select-header");
                 } else {
 		    if(!decorated && selector.margin>0 ) {
                         String style = "margin-left:" + selector.margin + "px;";
@@ -3596,6 +3595,8 @@ public class HtmlUtils implements HtmlUtilsConstants {
                 continue;
             }
             sb.append("<option ");
+	    //	    System.out.println(label+" " + extraAttr);
+
             if (extraAttr != null) {
                 sb.append(" ");
                 sb.append(extraAttr);
