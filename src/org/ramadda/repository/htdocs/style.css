@@ -2554,9 +2554,7 @@ thin_hr,.ramadda-thin-hr {
 }
 
 
-
 .ui-menu .ui-state-active {
-    border:1px solid transparent;
     background:#eee;
 }
 
@@ -3743,7 +3741,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-modal-strict {
-    background-color: rgba(180,180,180,0.98); 
+    background-color: rgba(180,180,180,1);
 }
 
 .ramadda-modal-contents {
@@ -3873,11 +3871,14 @@ a.btn-primary:link, a.btn-primary  {
 .ramadda-select-header {
     padding-left:4px;
     display:inline-block;
-    background:var(--header-background);
+    background:#E0FFFF;
+    border-top:1px solid #aaa;
+    border-bottom:1px solid #aaa;    
     font-weight:bold;
 }
 
 .ramadda-select-icon {
+    background:none !important;
 }
 
 

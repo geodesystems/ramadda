@@ -2886,9 +2886,9 @@ var Utils =  {
           $(".ramadda-pulldown").selectBoxIt({});
         */
         /* for select menus with icons */
-//        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
 	//iconmenu
-        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu({xxxwidth:300}).addClass("ui-menu-icons ramadda-select-icon");	
+	let menu =      $(parent + ".ramadda-pulldown-with-icons").iconselectmenu({xxxwidth:300});
+	menu.addClass("ui-menu-icons ramadda-select-icon");	
     },
     searchLastInput:"",
     searchAscending:false,
@@ -6086,18 +6086,17 @@ function confirmExit() {
 
 $.widget("custom.iconselectmenu", $.ui.selectmenu, {
     _renderItem: function(ul, item) {
-        var li = $("<li>"),
-            //wrapper = $( "<div>", { text: item.label } );
-            wrapper = $("<span>");
+        let li = $("<li>");
+        let wrapper = $("<span>");
 
         if (item.disabled) {
             li.addClass("ui-state-disabled");
         }
 
-
         let label = item.label;
         let img = item.element.attr("img-src");
         let title = item.element.attr("title");	
+	if(label=='<blank>') label='&lt;blank&gt;';
         if(img) {
             if(img.startsWith("fa")) {
                 img = HU.getIconImage(img);
@@ -6112,7 +6111,12 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 	if(!item.element.attr("isheader")) {
             label = HU.span(['title',label,STYLE,HU.css('display','inline-block','width','100%',
 							'margin-left',img?'32px':'4px','white-space','nowrap')], label);
-        }
+        } else {
+	    wrapper.css('padding-left','0px').css('pointer-events','none');
+	    li.css('pointer-events','none');
+
+	}
+
         let labelClass = item.element.attr("label-class");
         if(labelClass) {
             label = HU.div([STYLE,HU.css('width','100%'), 'class', labelClass],label);
