@@ -14,6 +14,7 @@ import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
+import org.ramadda.util.GroupedBuffers;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -1322,23 +1323,8 @@ public class GenericTypeHandler extends TypeHandler {
         return typeName;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception on badness
-     */
     @Override
-    public void addSpecialToEntryForm(Request request, Appendable formBuffer,
+    public void addSpecialToEntryForm(Request request, GroupedBuffers formBuffer,
                                       Entry parentEntry,Entry entry,
                                       FormInfo formInfo,
                                       TypeHandler sourceTypeHandler,HashSet seen)

@@ -14,6 +14,8 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.GroupedBuffers;
+
 
 import org.w3c.dom.*;
 
@@ -57,7 +59,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void addSpecialToEntryForm(Request request, Appendable sb,
+    public void addSpecialToEntryForm(Request request, GroupedBuffers sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
                                       TypeHandler baseTypeHandler, HashSet seen)

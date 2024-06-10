@@ -32,6 +32,8 @@ import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.GroupedBuffers;
+
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
@@ -4904,21 +4906,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToEntryForm(Request request, Appendable sb,
                                Entry parentEntry, Entry entry,
                                FormInfo formInfo)
@@ -4926,15 +4913,17 @@ public class TypeHandler extends RepositoryManager {
 
         try {
 	    HashSet seen = new HashSet();
-            addBasicToEntryForm(request, sb, parentEntry, entry, formInfo, this,seen);
+	    GroupedBuffers buffers = new GroupedBuffers("Basic");
+            addBasicToEntryForm(request, buffers, parentEntry, entry, formInfo, this,seen);
 	    if(!seen.contains(FIELD_COLUMNS)) {
-		addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,this, seen);
+		addSpecialToEntryForm(request, buffers, parentEntry, entry, formInfo,this, seen);
 	    }
 
             if ((entry != null) && request.getUser().getAdmin()
 		&& okToShowInForm(entry, "owner", true)) {
                 String ownerInputId = Utils.getGuid();
-                sb.append(formEntry(request, msgLabel("Owner"),
+		buffers.setGroup("Admin");
+                buffers.append(formEntry(request, msgLabel("Owner"),
                                     HU.input(ARG_USER_ID,
 					     ((entry != null)
 					      ? entry.getUser().getId()
@@ -4942,13 +4931,41 @@ public class TypeHandler extends RepositoryManager {
 					     + HU.attr("id", ownerInputId)) + " "
 				    + msg("Optionally specify an owner")));
                 HU.script(
-			  sb,
+			  buffers,
 			  HU.call(
 				  "HU.initInteractiveInput",
 				  HU.squote(ownerInputId),
 				  HU.squote(
 					    getRepository().getUrlBase() + "/user/search")));
             }
+	    
+	    List<Appendable>contents = buffers.getBuffers();
+	    List<String>groups = buffers.getGroups();
+	    if(getTypeProperty("form.tabs",false)) {
+		sb.append(HU.formTableClose());
+		List<Appendable> tabContents = new ArrayList<Appendable>();
+		for(Appendable a: contents) {
+		    StringBuilder tmp = new StringBuilder();
+		    tmp.append(HU.formTable("ramadda-entry-edit",true));
+		    tmp.append(a);
+		    tmp.append(HU.formTableClose());
+		    tabContents.add(tmp);
+		}
+		HU.makeTabs(sb,groups,tabContents);
+		sb.append(HU.formTable("ramadda-entry-edit",true));
+	    } else {
+		for(int i=0;i<contents.size();i++) {
+		    String group = groups.get(i);
+		    if(i>0 &&stringDefined(group))  {
+			sb.append(HU.row(HU.colspan(
+						    HU.div(group, " class=\"formgroupheader\" "),
+						    2)));
+		    }
+		    sb.append(contents.get(i).toString());
+		}
+	    }
+
+
         } catch (Exception exc) {
             StringBuilder tmp = new StringBuilder();
             tmp.append(
@@ -4986,12 +5003,16 @@ public class TypeHandler extends RepositoryManager {
 
 	String group = column.getGroup();
         if ((group != null) && (state.get(group) == null)) {
-            formBuffer.append(
-                HU.row(
-                    HU.colspan(
-                        HU.div(group, " class=\"formgroupheader\" "),
-                        2)));
-            state.put(group, group);
+	    if(formBuffer instanceof GroupedBuffers) {
+		((GroupedBuffers)formBuffer).setGroup(group);
+	    } else {
+		formBuffer.append(
+				  HU.row(
+					 HU.colspan(
+						    HU.div(group, " class=\"formgroupheader\" "),
+						    2)));
+	    }
+	    state.put(group, group);
         }
 	if(group!=null && geoPosition!=null && Utils.equals("group:"+group, geoPosition)) {
 	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
@@ -5068,20 +5089,7 @@ public class TypeHandler extends RepositoryManager {
         return HU.inset(column.getSuffix(), 5);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addSpecialToEntryForm(Request request, Appendable sb,
+    public void addSpecialToEntryForm(Request request, GroupedBuffers sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
                                       TypeHandler sourceTypeHandler,HashSet seen)
@@ -5095,17 +5103,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     *
-     * @throws Exception _more_
-     */
     public void addSpatialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo)
@@ -5340,22 +5337,7 @@ public class TypeHandler extends RepositoryManager {
         return new Date[] { fromDate, toDate };
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
-    public void addBasicToEntryForm(Request request, Appendable sb,
+    public void addBasicToEntryForm(Request request, GroupedBuffers sb,
                                     Entry parentEntry, Entry entry,
                                     FormInfo formInfo,
                                     TypeHandler sourceTypeHandler,
@@ -5365,7 +5347,6 @@ public class TypeHandler extends RepositoryManager {
         Hashtable state = new Hashtable();
         String theSize = HU.SIZE_70;
 	String size = theSize;
-
         boolean forUpload = (entry == null)
 	    && getType().equals(TYPE_CONTRIBUTION);
 
@@ -5405,8 +5386,7 @@ public class TypeHandler extends RepositoryManager {
 	    seen.add(what);
 	    size = getProperty(entry, "form." + what+".size",theSize);
             if (what.equals(FIELD_COLUMNS)) {
-		addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
-				      this,seen);
+		addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo, this,seen);
 		continue;
 	    }
 
@@ -5792,7 +5772,6 @@ public class TypeHandler extends RepositoryManager {
 
             if (what.equals(ARG_DATE)) {
                 addDateToEntryForm(request, sb, parentEntry,entry);
-
                 continue;
             }
             if (what.equals(ARG_LOCATION)) {

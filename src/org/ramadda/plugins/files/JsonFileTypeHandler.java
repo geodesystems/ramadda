@@ -19,6 +19,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.HtmlUtils;
 
+import org.ramadda.util.GroupedBuffers;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -66,7 +67,7 @@ public class JsonFileTypeHandler extends ConvertibleTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void addSpecialToEntryForm(Request request, Appendable sb,
+    public void addSpecialToEntryForm(Request request, GroupedBuffers      sb,
                                       Entry parentEntry, Entry entry,
                                       FormInfo formInfo,
                                       TypeHandler baseTypeHandler, HashSet seen)

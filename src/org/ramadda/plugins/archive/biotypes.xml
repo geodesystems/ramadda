@@ -9,6 +9,7 @@
     
 
     <property name="icon" value="/archive/leaf.png"/>
+    <property name="form.tabs" value="true"/>    
     <property name="form.description.rows" value="5"/>
     <property name="form.date.show" value="false"/>    
     <property name="form.area.show" value="true"/>    
