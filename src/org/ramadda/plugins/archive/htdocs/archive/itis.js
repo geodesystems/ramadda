@@ -1,6 +1,11 @@
 
+//docs:https://www.itis.gov/ws_tsnApiDescription.html
 var Itis = {
     spacer:'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+    getUrl:function(service) {
+        return  'https://www.itis.gov/ITISWebService/jsonservice/ITISService/' + service;
+    },
+
     init:function() {
 	let name = 'edit_type_archive_bio_common_name';
 	this.input= $('[name="'+ name+'"]');
@@ -17,7 +22,7 @@ var Itis = {
             event.preventDefault(); 
 	    let v = this.input.val();
 	    if(!Utils.stringDefined(v)) return;
-            let url = 'https://www.itis.gov/ITISWebService/jsonservice/ITISService/searchByCommonName?srchKey=' + encodeURIComponent(v);
+            let url = this.getUrl('searchByCommonName?srchKey=' + encodeURIComponent(v));
 	    let success=(data)=>{
 		_this.showNamesPopup(data);
 	    };
@@ -62,23 +67,29 @@ var Itis = {
 	});
     },
     loadTsn:function(item) {
-	let url = 'https://www.itis.gov/ITISWebService/jsonservice/ITISService/getFullHierarchyFromTSN?tsn='+ item.tsn;
-	let success=(data)=>{
+
+	let url1 = this.getUrl('getFullHierarchyFromTSN?tsn='+ item.tsn);
+	let url2 = this.getUrl('getScientificNameFromTSN?tsn=' + item.tsn);
+	let success1=(data)=>{
 	    if(!data.hierarchyList) {
 		alert('No results');
 		return;
 	    }
 	    let map = {};
-//	    console.dir(item);	    console.dir(data);
-	    console.log(this.getInput('tsn_number',true).length);
+//	    console.dir(item);
+//	    console.dir(data);
 	    this.getInput('tsn_number',true).val(data.tsn);
 	    data.hierarchyList.forEach(h=>{
 		let rank = h.rankName.toLowerCase();
-//		console.log(rank+'='+h.taxonName +' '+this.getInput(rank).length);
 		this.getInput('taxon_'+rank).val(h.taxonName??'');
 	    });
 	};
-	this.fetch(url,success);
+	let success2=(data)=>{
+	    if(data.combinedName)
+		this.getInput('scientific_name',true).val(data.combinedName);
+	};
+	this.fetch(url1,success1);
+	this.fetch(url2,success2);    
     },
     getInput:function(taxa,plain) {
 	let name = 'edit_type_archive_bio_'+ taxa+(plain?'':'_plus');

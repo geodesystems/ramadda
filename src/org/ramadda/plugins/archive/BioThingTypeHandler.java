@@ -68,7 +68,7 @@ public class BioThingTypeHandler extends ExtensibleGroupTypeHandler {
 	StringBuilder sb = new StringBuilder();
 	//	sb.append(HU.input("","",HU.attrs("placeholder","Enter name and press return to search",
 	//					  "size","40","id",uid)));
-	HU.importJS(sb,getRepository().getUrlBase()+"/archive/itis.js");
+	HU.importJS(sb,getRepository().getHtdocsUrl("/archive/itis.js"));
 	HU.script(sb,HU.call("Itis.init"));
 	formBuffer.append(sb.toString());
     }
