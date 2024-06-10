@@ -340,6 +340,7 @@ public class TypeHandler extends RepositoryManager {
     Hashtable<String,Column> columnMap;
 
 
+
     /** _more_ */
     private String category;
 
@@ -360,6 +361,9 @@ public class TypeHandler extends RepositoryManager {
     private String filePattern;
 
     private String fileNotPattern;    
+
+    private String geoPosition;
+
 
     /**
      *   the field_file_pattern attribute in types.xml. Used when trying to figure out what entry type
@@ -739,6 +743,7 @@ public class TypeHandler extends RepositoryManager {
 		endDateMacros = Utils.splitMacros(endDateTemplate);
 	    }	    
 
+	    geoPosition = getTypeProperty("form.geoposition",null);
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -4979,6 +4984,20 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 
+	String group = column.getGroup();
+        if ((group != null) && (state.get(group) == null)) {
+            formBuffer.append(
+                HU.row(
+                    HU.colspan(
+                        HU.div(group, " class=\"formgroupheader\" "),
+                        2)));
+            state.put(group, group);
+        }
+	if(group!=null && geoPosition!=null && Utils.equals("group:"+group, geoPosition)) {
+	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
+	}
+
+
         boolean canEdit    = sourceTypeHandler.getEditable(column);
         boolean canDisplay = sourceTypeHandler.getCanDisplay(column);
         if ((entry != null) && hasValue && !canEdit) {
@@ -4993,6 +5012,8 @@ public class TypeHandler extends RepositoryManager {
             addColumnToEntryForm(request, parentEntry, entry, column, formBuffer, values,
                                  state, formInfo, sourceTypeHandler);
         }
+
+
     }
 
 
@@ -5364,7 +5385,6 @@ public class TypeHandler extends RepositoryManager {
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
 
         String   domId;
-
         for (String what : whatList) {
             if (what.equals("quit")) {
 		seen.add(FIELD_COLUMNS);
@@ -5776,9 +5796,8 @@ public class TypeHandler extends RepositoryManager {
                 continue;
             }
             if (what.equals(ARG_LOCATION)) {
-                addSpatialToEntryForm(request, sb, parentEntry, entry,
-                                      formInfo);
-
+                if(geoPosition==null)
+		    addSpatialToEntryForm(request, sb, parentEntry, entry, formInfo);
                 continue;
             }
 

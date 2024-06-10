@@ -12,8 +12,7 @@
     <property name="form.description.rows" value="5"/>
     <property name="form.date.show" value="false"/>    
     <property name="form.area.show" value="true"/>    
-    <property name="form.area.showingroup"
-	      value="Collection Site"/>
+    <property name="form.geoposition"      value="group:Collection Site"/>
     <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
