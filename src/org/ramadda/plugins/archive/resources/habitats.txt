@@ -1,0 +1,126 @@
+Forest
+>Forest – Boreal
+>Forest - Subarctic
+>Forest – Subantarctic
+>Forest – Temperate
+>Forest – Subtropical/tropical dry
+>Forest – Subtropical/tropical moist lowland
+>Forest – Subtropical/tropical mangrove vegetation above high tide level
+>Forest – Subtropical/tropical swamp
+>Forest – Subtropical/tropical moist montane
+Savanna
+>Savanna - Dry
+>Savanna - Moist
+Shrubland
+>Shrubland – Subarctic
+>Shrubland – Subantarctic
+>Shrubland – Boreal
+>Shrubland –Temperate
+>Shrubland – Subtropical/tropical dry
+>Shrubland – Subtropical/tropical moist
+>Shrubland – Subtropical/tropical high altitude
+>Shrubland – Mediterranean-type shrubby vegetation
+Grassland
+>Grassland – Tundra
+>Grassland – Subarctic
+>Grassland – Subantarctic
+>Grassland – Temperate
+>Grassland – Subtropical/tropical dry
+>Grassland – Subtropical/tropical seasonally wet/flooded
+>Grassland – Subtropical/tropical high altitude
+Wetlands (inland)
+>Wetlands (inland) – Permanent rivers/streams/creeks (includes waterfalls)
+>Wetlands (inland) – Seasonal/intermittent/irregular rivers/streams/creeks
+>Wetlands (inland) – Shrub dominated wetlands
+>Wetlands (inland) – Bogs, marshes, swamps, fens, peatlands
+>Wetlands (inland) – Permanent freshwater lakes (over 8 ha)
+>Wetlands (inland) – Seasonal/intermittent freshwater lakes (over 8 ha)
+>Wetlands (inland) – Permanent freshwater marshes/pools (under 8 ha)
+>Wetlands (inland) – Seasonal/intermittent freshwater marshes/pools (under 8 ha)
+>Wetlands (inland) – Freshwater springs and oases
+>Wetlands (inland) – Tundra wetlands (inc. pools and temporary waters from snowmelt)
+>Wetlands (inland) – Alpine wetlands (inc. temporary waters from snowmelt)
+>Wetlands (inland) – Geothermal wetlands
+>Wetlands (inland) – Permanent inland deltas
+>Wetlands (inland) – Permanent saline, brackish or alkaline lakes
+>Wetlands (inland) – Seasonal/intermittent saline, brackish or alkaline lakes and flats
+>Wetlands (inland) – Permanent saline, brackish or alkaline marshes/pools
+>Wetlands (inland) – Seasonal/intermittent saline, brackish or alkaline marshes/pools
+>Wetlands (inland) – Karst and other subterranean hydrological systems (inland)
+Rocky Areas (e.g., inland cliffs, mountain peaks)
+Caves & Subterranean Habitats (non-aquatic)
+>Caves and Subterranean Habitats (non-aquatic) – Caves
+>Caves and Subterranean Habitats (non-aquatic) – Other subterranean habitats
+Desert
+>Desert – Hot
+>Desert – Temperate
+>Desert – Cold
+Marine Neritic
+>Marine Neritic – Pelagic
+>Marine Neritic – Subtidal rock and rocky reefs
+>Marine Neritic – Subtidal loose rock/pebble/gravel
+>Marine Neritic – Subtidal sandy
+>Marine Neritic – Subtidal sandy-mud
+>Marine Neritic – Subtidal muddy
+>Marine Neritic – Macroalgal/kelp
+>Marine Neritic – Coral Reef
+>>Outer reef channel
+>>Back slope
+>>Foreslope (outer reef slope)
+>>Lagoon
+>>Inter-reef soft substrate
+>>Inter-reef rubble substrate
+>Seagrass (Submerged)
+>Estuaries
+Marine Oceanic
+>Epipelagic (0–200 m)
+>Mesopelagic (200–1,000 m)
+>Bathypelagic (1,000–4,000 m)
+>Abyssopelagic (4,000–6,000 m)
+Marine Deep Ocean Floor (Benthic and Demersal)
+>Continental Slope/Bathyl Zone (200–4,000 m)
+>>Hard Substrate
+>>Soft Substrate
+>Abyssal Plain (4,000–6,000 m)
+>Abyssal Mountain/Hills (4,000–6,000 m)
+>Hadal/Deep Sea Trench (>6,000 m)
+>Seamount
+>Deep Sea Vents (Rifts/Seeps)
+Marine Intertidal
+>Rocky Shoreline
+>Sandy Shoreline and/or Beaches, Sand Bars, Spits, etc.
+>Shingle and/or Pebble Shoreline and/or Beaches
+>Mud Shoreline and Intertidal Mud Flats
+>Salt Marshes (Emergent Grasses)
+>Tidepools
+>Mangrove Submerged Roots
+Marine Coastal/Supratidal
+>Sea Cliffs and Rocky Offshore Islands
+>Coastal Caves/Karst
+>Coastal Sand Dunes
+>Coastal Brackish/Saline Lagoons/Marine Lakes
+>Coastal Freshwater Lakes
+Artificial - Terrestrial
+>Arable Land
+>Pastureland
+>Plantations
+>Rural Gardens
+>Urban Areas
+>Subtropical/Tropical Heavily Degraded Former Forest
+Artificial - Aquatic
+>Water Storage Areas [over 8 ha]
+>Ponds [below 8 ha]
+>Aquaculture Ponds
+>Salt Exploitation Sites
+>Excavations (open)
+>Wastewater Treatment Areas
+>Irrigated Land [includes irrigation channels]
+>Seasonally Flooded Agricultural Land
+>Canals and Drainage Channels, Ditches
+>Karst and Other Subterranean Hydrological Systems [human-made]
+>Marine Anthropogenic Structures
+>Mariculture Cages
+>Mari/Brackish-culture Ponds
+Introduced Vegetation
+Other
+Unknown
