@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.type;
-
 
 import org.json.*;
 
@@ -54,77 +53,30 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 
-/**
- */
 
 @SuppressWarnings("unchecked")
 public class Column implements DataTypes, Constants, Cloneable {
+    static int xcnt;
+    public String myid = "column-" + (xcnt++);
 
-    /** _more_ */
     public static final HtmlUtils HU = null;
-
     public static final boolean DEBUG_TIME=false;
     public static final boolean DEBUG=false;
 
-    
-
-    /** _more_ */
-    static int xcnt;
-
-    /** _more_ */
-    public String myid = "column-" + (xcnt++);
 
 
-    /** _more_ */
     public static final String ARG_EDIT_PREFIX = "edit_";
-
-    /** _more_ */
     public static final String ARG_SEARCH_PREFIX = "search.";
-
-    /** _more_ */
     public static final String OUTPUT_HTML = "html";
-
-    /** _more_ */
     public static final String OUTPUT_CSV = "csv";
 
-    /** _more_ */
-    private SimpleDateFormat dateTimeFormat =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
-
-    /** _more_ */
-    private SimpleDateFormat fullDateTimeFormat =
-        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-
-    /** _more_ */
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-    private SimpleDateFormat displayFormat = null;
-
-    /** _more_ */
-    private SimpleDateFormat dateParser = null;
-
-    /** _more_ */
-    private boolean importDateIsEpoch = false;
-
-    /** _more_ */
     public static final String EXPR_EQUALS = "=";
-
-    /** _more_ */
     public static final String EXPR_LE = "<=";
-
-    /** _more_ */
     public static final String EXPR_LT = "<";
-
-    /** _more_ */
     public static final String EXPR_GT = ">";
-
-    /** _more_ */
     public static final String EXPR_GE = ">=";
-
-    /** _more_ */
     public static final String EXPR_BETWEEN = "between";
-
-    /** _more_ */
+    
     public static final List EXPR_ITEMS =
         Misc.newList(new TwoFacedObject("", ""),
                      new TwoFacedObject("=", EXPR_EQUALS),
@@ -132,414 +84,168 @@ public class Column implements DataTypes, Constants, Cloneable {
                      new TwoFacedObject(">=", EXPR_GE),
                      new TwoFacedObject("range", EXPR_BETWEEN));
 
-    /** _more_ */
     public static final String EXPR_PATTERN = EXPR_EQUALS + "|" + EXPR_LE
-                                              + "|" + EXPR_GE + "|"
-                                              + EXPR_BETWEEN;
+	+ "|" + EXPR_GE + "|"
+	+ EXPR_BETWEEN;
 
-    /** _more_ */
+    
     public static final String SEARCHTYPE_TEXT = "text";
-
-    /** _more_ */
     public static final String SEARCHTYPE_SELECT = "select";
-
-
-    /** _more_ */
     public static final String TAG_COLUMN = "column";
-
-    /** _more_ */
     public static final String ATTR_NAME = "name";
-
-    /** _more_ */
     public static final String ATTR_FORMAT = "format";
-
-    /** _more_ */
     public static final String ATTR_CHANGETYPE = "changetype";
-
-    /** _more_ */
     public static final String ATTR_SHOWINFORM = "showinform";
-
-    /** _more_ */
     public static final String ATTR_GROUP = "group";
-
-    /** _more_ */
     public static final String ATTR_UNIT = "unit";
-
-    /** _more_ */
     public static final String ATTR_OLDNAMES = "oldnames";
-
-    /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
-
-
-    /** _more_ */
     public static final String ATTR_LOOKUPDB = "lookupdb";
-
-    /** _more_ */
     public static final String ATTR_HELP = "help";
     public static final String ATTR_POSTFIX = "postfix";    
-
-    /** _more_ */
     public static final String ATTR_SORT_ORDER = "sortOrder";
-
-    /** _more_ */
     public static final String ATTR_PROPERTIES = "properties";
-
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
-
-    /** _more_ */
     public static final String ATTR_DESCRIPTION = "description";
-
-    /** _more_ */
     public static final String ATTR_TYPE = "type";
-
-    /** _more_ */
     public static final String ATTR_ISINDEX = "isindex";
-
-    /** _more_ */
     public static final String ATTR_ISCATEGORY = "iscategory";
-
-    /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
-
-    /** _more_ */
     public static final String ATTR_CANSORT = "cansort";
-
-    /** _more_ */
     public static final String ATTR_SEARCHROWS = "searchrows";
-
-    /** _more_ */
     public static final String ATTR_CANSEARCHTEXT = "cansearchtext";
-
-    /** _more_ */
     public static final String ATTR_ADVANCED = "advanced";
-
-    /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
-
-    /** _more_ */
     public static final String ATTR_CANDISPLAY = "candisplay";
-
-    /** _more_ */
     public static final String ATTR_EDITABLE = "editable";
-
-    /** _more_ */
     public static final String ATTR_VALUES = "values";
-
-    /** _more_ */
     public static final String ATTR_DEFAULT = "default";
-
-    /** _more_ */
     public static final String ATTR_SIZE = "size";
-
-    /** _more_ */
     public static final String ATTR_MIN = "min";
-
-    /** _more_ */
     public static final String ATTR_MAX = "max";
-
-    /** _more_ */
     public static final String ATTR_REQUIRED = "required";
-
-    /** _more_ */
     public static final String ATTR_ROWS = "rows";
-
-    /** _more_ */
     public static final String ATTR_COLUMNS = "columns";
-
-    /** _more_ */
     public static final String ATTR_SEARCHTYPE = "searchtype";
-
-    /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
-
-
-    /** _more_ */
     public static final String ATTR_SHOWLABEL = "showlabel";
-
-    /** _more_ */
     public static final String ATTR_CANEXPORT = "canexport";
 
+    private SimpleDateFormat dateTimeFormat =
+        new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
+    
+    private SimpleDateFormat fullDateTimeFormat =
+        new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    private SimpleDateFormat displayFormat = null;
+    private SimpleDateFormat dateParser = null;
+    private boolean importDateIsEpoch = false;
 
 
     /** Lat/Lon format */
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
-
-
-    /** _more_ */
     private DecimalFormat numberFormat;
-
-
-    /** _more_ */
     private DecimalFormat intFormat = new DecimalFormat("#0");
-
-
-    /** _more_ */
     private TypeHandler typeHandler;
-
-    /** _more_ */
     private Element xmlElement;
-
-    /** _more_ */
     private String name;
-
-    /** _more_ */
     private String fullName;
-
-    /** _more_ */
     private String group;
-
-    /** _more_ */
     private List oldNames;
-
-    /** _more_ */
     private String label;
-
     private String searchLabel;    
-
-    /** _more_ */
     private String description;
-
-    /** _more_ */
     private String htmlTemplate;
-
     private List<Utils.Macro> macros;
-
-    /** _more_ */
     private String displayTemplate;
-
-    /** _more_ */
     private String displayPatternFrom;
-
-    /** _more_ */
     private String displayPatternTo;
-
-    /** _more_ */
     private String type;
-
-    /** _more_ */
     private String unit;
-
     private String delimiter;
-
     private boolean addRawInput;
-
-
-    /** _more_ */
     private boolean changeType = false;
-
-    /** _more_ */
     private boolean showEmpty = true;
-
     private boolean showInFormFirst = false;
-
-    /** _more_ */
     private boolean addNot = false;
-
     private boolean doPolygonSearch  = false;
-
-    /** _more_ */
     private boolean addFileToSearch = false;
-
-    /**  */
     private boolean isMediaUrl = false;
-
     private boolean addBulkUpload = false;
     private String bulkUploadHelp ="";
-
-
     private String suffix;
     private String displaySuffix;    
-
-    /** _more_ */
     private String help;
     private String postFix;    
-
     private String searchHelp;
-
-
-    /** _more_ */
     private String placeholder;
-
-    /** _more_ */
     private String placeholderMin;
-
-    /** _more_ */
     private String placeholderMax;
-
-
-    /** _more_ */
     private int sortOrder = 1000;
-
-    /** _more_ */
     private String searchType = SEARCHTYPE_TEXT;
-
-    /** _more_ */
     private boolean isIndex;
-
-    /** _more_ */
     private boolean doStats = false;
-
-    /** _more_ */
     private boolean isWiki;
-
-    /** _more_ */
     private boolean isCategory;
-
-    /** _more_ */
     private boolean canSearch;
-
-    /** _more_ */
     private boolean canSort;
-
     private boolean showEnumerationMenu = true;
     private boolean addBlankToEnumerationMenu = true;
     private boolean enumerationSearchMultiples = false;
     private boolean enumerationShowCheckboxes= false;
-
-    /** _more_ */
     private int searchRows;
-
-    /** _more_ */
     private boolean canSearchText;
-
-
-    /** _more_ */
     private boolean advancedSearch;
-
-    /** _more_ */
     private boolean editable;
-
-    /** _more_ */
     private boolean canList;
-
-    /** _more_ */
     private boolean canDisplay;
-
-    /** _more_ */
     private List<HtmlUtils.Selector> enumValues;
-
     private List<String> icons;
-
-    /** _more_ */
     private List<TwoFacedObject> jsonValues;
-
-    /** _more_ */
     private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,
-                                                        String>();
+	String>();
 
-    /** _more_ */
     private List<Display> displays = new ArrayList<Display>();
-
-
-    /** _more_ */
     private String alias;
-
-
-
-    /** _more_ */
     private String dflt;
-
-    /** _more_ */
     private String databaseDflt;
-
-    /** _more_ */
     private double databaseDfltNum = Double.NaN;
-
-    /** _more_ */
     private String databaseDefaultPropertyName;
-
-
-    /** _more_ */
     private double dfltDouble = Double.NaN;
-
-    /** _more_ */
     private int size = 200;
-
     private String entryType;
-
-    /** _more_ */
     private double min = Double.NaN;
-
-    /** _more_ */
     private double max = Double.NaN;
-
-    /** _more_ */
     private boolean required = false;
-
-    /** _more_ */
     private int rows = 1;
-
-
-    /** _more_ */
     private int columns = 40;
-
-    /** _more_ */
     private String propertiesFile;
-
-    /** _more_ */
     private int columnIndex;
-
-    /** _more_ */
     private int offset;
-
-
-    /** _more_ */
     private boolean canShow = true;
-
-
-    /** _more_ */
     private boolean showLabel = true;
-
-    /** _more_ */
     private boolean canExport = true;
-
-
-    /** _more_ */
     private boolean showInForm = true;
-
-    /** _more_ */
     private String lookupDB;
 
-    /** _more_ */
     private Hashtable<String, String> properties = new Hashtable<String,
-                                                       String>();
+	String>();
 
     private List<Column> groupedColumns;
 
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     * @param name _more_
-     * @param type _more_
-     * @param offset _more_
-     *
-     * @throws Exception _more_
-     */
     public Column(TypeHandler typeHandler, String name, String type,
                   int offset)
-            throws Exception {
+	throws Exception {
         this.typeHandler = typeHandler;
         this.name        = name;
         this.type        = type;
         this.offset      = offset;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     * @param element _more_
-     * @param offset _more_
-     *
-     * @throws Exception _more_
-     */
     public Column(TypeHandler typeHandler, Element element, int offset)
-            throws Exception {
+	throws Exception {
 
         this.xmlElement  = element;
         this.typeHandler = typeHandler;
@@ -551,7 +257,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         unit = XmlUtil.getAttribute(element, ATTR_UNIT, (String) null);
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
-                ""), ",", true, true);
+						    ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         displaySuffix = Utils.getAttributeOrTag(element, "displaysuffix", "");	
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
@@ -564,18 +270,18 @@ public class Column implements DataTypes, Constants, Cloneable {
 	//	    System.err.println(typeHandler +" " +name + " suffix:" + Utils.clip(suffix,20,"...").replaceAll("\n"," "));	
 
         placeholder = Utils.getAttributeOrTag(element, "placeholder",
-                (String) null);
+					      (String) null);
         placeholderMin = Utils.getAttributeOrTag(element, "placeholderMin",
-                placeholder);
+						 placeholder);
         placeholderMax = Utils.getAttributeOrTag(element, "placeholderMax",
-                placeholder);
+						 placeholder);
 
         sortOrder = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
             suffix =
                 typeHandler.getRepository().getPageHandler().applyBaseMacros(
-                    suffix);
+									     suffix);
         }
 
         label = Utils.getAttributeOrTag(element, ATTR_LABEL, name);
@@ -584,10 +290,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         searchType = XmlUtil.getAttribute(element, ATTR_SEARCHTYPE,
                                           searchType);
         propertiesFile = XmlUtil.getAttribute(element, ATTR_PROPERTIES,
-                (String) null);
+					      (String) null);
 
         String dttmFormat = XmlUtil.getAttribute(element, ATTR_FORMAT,
-                                (String) null);
+						 (String) null);
         if (dttmFormat != null) {
             if (dttmFormat.equals("epoch")) {
                 importDateIsEpoch = true;
@@ -597,7 +303,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
         dttmFormat = XmlUtil.getAttribute(element, "displayFormat",
-                                (String) null);
+					  (String) null);
         if (dttmFormat != null) {
 	    displayFormat = new SimpleDateFormat(dttmFormat);
         }
@@ -620,15 +326,15 @@ public class Column implements DataTypes, Constants, Cloneable {
         description = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
 
         displayPatternFrom = Utils.getAttributeOrTag(element,
-                "displayPatternFrom", (String) null);
+						     "displayPatternFrom", (String) null);
         displayPatternTo = Utils.getAttributeOrTag(element,
-                "displayPatternTo", (String) null);
+						   "displayPatternTo", (String) null);
 
         displayTemplate = Utils.getAttributeOrTag(element, "displayTemplate",
-                (String) null);
+						  (String) null);
 
         htmlTemplate = Utils.getAttributeOrTag(element, "htmlTemplate",
-                (String) null);
+					       (String) null);
 
 	if(htmlTemplate!=null) {
 	    macros  =Utils.splitMacros(htmlTemplate);
@@ -702,12 +408,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
-                                     (String) null);
+						      (String) null);
             if (valueString != null) {
                 setEnums(valueString, ",");
             } else {
                 valueString = XmlUtil.getGrandChildText(element, ATTR_VALUES,
-                        (String) null);
+							(String) null);
                 if (valueString != null) {
                     setEnums(valueString, "\n");
                 }
@@ -734,14 +440,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return typeHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @param attr _more_
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public String getDisplayAttribute(String attr, Object v) {
         Display d = getDisplay(v);
         if (d == null) {
@@ -753,13 +451,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public Display getDisplay(Object v) {
         if (displays.size() == 0) {
             return null;
@@ -804,13 +495,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param v
-     *
-     * @return _more_
-     */
     public String decorate(String v) {
         Display d = getDisplay(v);
         if (d == null) {
@@ -824,26 +508,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return d.decorate(v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
     public Column cloneColumn() throws CloneNotSupportedException {
         Column column = (Column) this.clone();
         return column;
     }
 
-    /**
-     * _more_
-     *
-     * @param columns _more_
-     *
-     * @return _more_
-     */
     public static List<String> getNames(List<Column> columns) {
         List<String> names = new ArrayList<String>();
         for (Column c : columns) {
@@ -854,13 +523,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param columns _more_
-     *
-     * @return _more_
-     */
     public static Object[] makeValueArray(List<Column> columns) {
         int size = 0;
         for (Column c : columns) {
@@ -879,47 +541,30 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param columns _more_
-     *
-     * @return _more_
-     */
     public static List<Column> sortColumns(List<Column> columns) {
         List<Column> tmp = new ArrayList<Column>();
         tmp.addAll(columns);
         Comparator comp = new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Column c1 = (Column) o1;
-                Column c2 = (Column) o2;
-                if (c1.sortOrder < c2.sortOrder) {
-                    return -1;
-                }
-                if (c1.sortOrder > c2.sortOrder) {
-                    return 1;
-                }
+		public int compare(Object o1, Object o2) {
+		    Column c1 = (Column) o1;
+		    Column c2 = (Column) o2;
+		    if (c1.sortOrder < c2.sortOrder) {
+			return -1;
+		    }
+		    if (c1.sortOrder > c2.sortOrder) {
+			return 1;
+		    }
 
-                return 0;
-            }
-        };
+		    return 0;
+		}
+	    };
         Collections.sort(tmp, comp);
 
         return tmp;
     }
 
-    /**
-     * _more_
-     *
-     * @param valueString _more_
-     * @param delimiter _more_
-     *
-     * @throws Exception _more_
-     */
     private void setEnums(String valueString, String delimiter)
-            throws Exception {
+	throws Exception {
         List<String> tmp = typeHandler.getColumnEnumerationProperties(this,
 								      valueString, delimiter);
         enumValues = new ArrayList<HtmlUtils.Selector>();
@@ -968,14 +613,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param t _more_
-     *
-     * @return _more_
-     */
     public boolean isType(String t) {
         return type.equals(t);
     }
@@ -984,25 +621,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return showInFormFirst;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public String getProperty(String key) {
         return getProperty(key, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getProperty(String key, String dflt) {
         String prop = properties.get(key);
         if ((prop == null) && (xmlElement != null)) {
@@ -1016,76 +638,39 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
+    
     public void putProperty(String key, String value) {
         properties.put(key, value);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Hashtable getProperties() {
         return properties;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String msg(String s) {
         return typeHandler.msg(s);
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String msgLabel(String s) {
         return typeHandler.msgLabel(s);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Repository getRepository() {
         return typeHandler.getRepository();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public DatabaseManager getDatabaseManager() {
         return getRepository().getDatabaseManager();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getJson(Request request) throws Exception {
         List<String> col = new ArrayList<String>();
         col.add("name");
@@ -1137,8 +722,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values != null) {
                 for (HtmlUtils.Selector tfo : values) {
                     enums.add(JsonUtil.map(Utils.makeListFromValues("value",
-                            JsonUtil.quote(tfo.getId().toString()), "label",
-                            JsonUtil.quote(tfo.getLabel().toString()))));
+								    JsonUtil.quote(tfo.getId().toString()), "label",
+								    JsonUtil.quote(tfo.getLabel().toString()))));
                 }
             }
             col.add("values");
@@ -1151,11 +736,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isNumeric() {
         return isInteger() || isDouble();
     }
@@ -1169,20 +750,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_SYNTHETIC);
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isPrivate() {
         return isType(DATATYPE_PASSWORD);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isBoolean() {
         return isType(DATATYPE_BOOLEAN);
     }
@@ -1195,11 +768,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return isType(DATATYPE_LATLON);
     }
     
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isEnumeration() {
         return isType(DATATYPE_ENUMERATION)
 	    || isType(DATATYPE_ENUMERATIONPLUS)
@@ -1210,30 +779,18 @@ public class Column implements DataTypes, Constants, Cloneable {
         return  isType(DATATYPE_MULTIENUMERATION);
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isDate() {
         return isType(DATATYPE_DATETIME) || isType(DATATYPE_DATE);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isDouble() {
         return isType(DATATYPE_DOUBLE) || isType(DATATYPE_PERCENTAGE);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isString() {
         return isType(DATATYPE_STRING) || isEnumeration()
 	    || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
@@ -1242,29 +799,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    || isType(DATATYPE_LIST);
     }
 
-    /**
-      * @return _more_
-     */
+    
     public boolean isMediaUrl() {
         return isMediaUrl;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isRequired() {
         return required;
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public Object getObject(Object[] values) {
         if (values == null) {
             return null;
@@ -1281,13 +826,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public String getString(Object[] values) {
         if (values == null) {
             return null;
@@ -1307,13 +846,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public double getDouble(Object[] values) {
         Object o = getObject(values);
         if (o == null) {
@@ -1325,24 +858,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     *
-     * @param values _more_
-     *  @return _more_
-     */
+    
     public String toString(Object[] values) {
         return toString(values, offset);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     * @param idx _more_
-     *
-     * @return _more_
-     */
+    
     public String toString(Object[] values, int idx) {
         if (values == null) {
             return ((dflt != null)
@@ -1359,15 +881,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     * @param idx _more_
-     * @param raw _more_
-     *
-     * @return _more_
-     */
+    
     private String toLatLonString(Object[] values, int idx, boolean raw) {
         if (values == null) {
             return ((dflt != null)
@@ -1390,14 +904,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return latLonFormat.format(d);
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     * @param idx _more_
-     *
-     * @return _more_
-     */
+    
     private boolean toBoolean(Object[] values, int idx) {
         if (values[idx] == null) {
             if (Utils.stringDefined(dflt)) {
@@ -1412,52 +919,26 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     public String formatValue(Request request, Entry entry,  Object[] values)
-            throws Exception {
+	throws Exception {
 	StringBuilder sb = new StringBuilder();
         formatValue(request, entry, sb, null, values, null, false);
 	return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param output _more_
-     * @param values _more_
-     * @param raw _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void formatValue(Request request, Entry entry, Appendable sb,
                             String output, Object[] values, boolean raw)
-            throws Exception {
+	throws Exception {
         formatValue(request, entry, sb, output, values, null, raw);
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param result _more_
-     * @param output _more_
-     * @param values _more_
-     * @param sdf _more_
-     * @param raw _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void formatValue(Request request, Entry entry,
 			    Appendable result,
                             String output, Object[] values,
                             SimpleDateFormat sdf, boolean raw)
-            throws Exception {
+	throws Exception {
 
 	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
@@ -1466,8 +947,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             raw = true;
         }
         String delimiter = csv
-                           ? "|"
-                           : ",";
+	    ? "|"
+	    : ",";
         //I think we always want to use ',' as the delimiter
         delimiter = ",";
         //      System.err.println("COL:" + this+" " + getType());
@@ -1560,7 +1041,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 try {
                     theEntry =
                         getRepository().getEntryManager().getEntry(null,
-                            entryId);
+								   entryId);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
@@ -1572,8 +1053,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                     try {
                         String link =
                             getRepository().getEntryManager().getAjaxLink(
-                                request, theEntry,
-                                theEntry.getName()).toString();
+									  request, theEntry,
+									  theEntry.getName()).toString();
                         sb.append(link);
                     } catch (Exception exc) {
                         throw new RuntimeException(exc);
@@ -1644,7 +1125,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                 continue;
                             }
                             sb.append(
-                                "<tr><td align=right  style=\"   font-weight: bold;border:0px;\">");
+				      "<tr><td align=right  style=\"   font-weight: bold;border:0px;\">");
                             sb.append(name);
                             sb.append(":");
                             sb.append("</td><td style=\"border:0px;\">");
@@ -1695,7 +1176,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(request,
-                        entry, s, false, null);
+								 entry, s, false, null);
             } else if (isEnumeration() && !raw) {
 		if(isMultiEnumeration()) {
 		    String group="";
@@ -1735,11 +1216,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public LinkedHashMap<String, String> getEnumTable() {
         return enumMap;
     }
@@ -1756,14 +1233,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return getEnumLabel(value, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     * @param forDisplay _more_
-     *
-     * @return _more_
-     */
+    
     public String getEnumLabel(String value, boolean forDisplay) {
         String label = getEnumLabelInner(value);
         if ( !forDisplay && (label.length() == 0)) {
@@ -1773,13 +1243,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return label;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
+    
     private String getEnumLabelInner(String value) {
         if (value == null) {
             return "null";
@@ -1812,13 +1276,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param label _more_
-     *
-     * @return _more_
-     */
+    
     public String getEnumValue(String label) {
         if (label == null) {
             return null;
@@ -1833,64 +1291,36 @@ public class Column implements DataTypes, Constants, Cloneable {
         return label;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getOffset() {
         return offset;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     */
+    
     public void setOffset(int o) {
         offset = o;
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param values _more_
-     * @param statementIdx _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected int setValues(PreparedStatement statement, Object[] values,
                             int statementIdx)
-            throws Exception {
+	throws Exception {
 
         try {
             return setValuesInner(statement, values, statementIdx);
         } catch (Exception exc) {
             String msg = "Error setting value. Column:" + getName()
-                         + " value:" + values[offset];
+		+ " value:" + values[offset];
             System.err.println(msg);
 
             throw new RuntimeException(msg, exc);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param values _more_
-     * @param statementIdx _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private int setValuesInner(PreparedStatement statement, Object[] values,
                                int statementIdx)
-            throws Exception {
+	throws Exception {
 
         if (offset >= values.length) {
             return 0;
@@ -1917,15 +1347,15 @@ public class Column implements DataTypes, Constants, Cloneable {
                     if ( !Double.isNaN(min)) {
                         if (value < min) {
                             throw new IllegalArgumentException(
-                                "Invalid value for " + getLabel() + " "
-                                + value + " < " + min);
+							       "Invalid value for " + getLabel() + " "
+							       + value + " < " + min);
                         }
                     }
                     if ( !Double.isNaN(max)) {
                         if (value > max) {
                             throw new IllegalArgumentException(
-                                "Invalid value for " + getLabel() + " "
-                                + value + " > " + max);
+							       "Invalid value for " + getLabel() + " "
+							       + value + " > " + max);
                         }
                     }
                 }
@@ -1951,14 +1381,14 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (values[offset] != null) {
                 boolean v = ((Boolean) values[offset]).booleanValue();
                 statement.setInt(statementIdx, (v
-                        ? 1
-                        : 0));
+						? 1
+						: 0));
             } else {
                 int value = 0;
                 if (Utils.stringDefined(dflt)) {
                     value = dflt.equals("true")
-                            ? 1
-                            : 0;
+			? 1
+			: 0;
                 }
                 statement.setInt(statementIdx, value);
             }
@@ -1990,8 +1420,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             for (int i = 0; i < 4; i++) {
                 if (values[offset + i] != null) {
                     statement.setDouble(
-                        statementIdx++,
-                        ((Double) values[offset + i]).doubleValue());
+					statementIdx++,
+					((Double) values[offset + i]).doubleValue());
                 } else {
                     statement.setDouble(statementIdx++, Entry.NONGEO);
                 }
@@ -1999,7 +1429,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_PASSWORD)) {
             if (values[offset] != null) {
                 String value = new String(Utils.encodeBase64(toString(values,
-                                   offset)).getBytes());
+								      offset)).getBytes());
                 statement.setString(statementIdx, value);
             } else {
                 statement.setString(statementIdx, null);
@@ -2013,7 +1443,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (required) {
                     if (value.trim().length() == 0) {
                         throw new IllegalArgumentException("Value "
-                                + getLabel() + " is required");
+							   + getLabel() + " is required");
                     }
                 }
 		boolean isClob= isType(DATATYPE_CLOB);
@@ -2030,17 +1460,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param values _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToEntryNode(Entry entry, Object[] values, Element node)
-            throws Exception {
+	throws Exception {
         if (values[offset] == null) {
             return;
         }
@@ -2055,7 +1477,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             stringValue = values[offset] + ";" + values[offset + 1];
         } else if (isType(DATATYPE_LATLONBBOX)) {
             stringValue = values[offset] + ";" + values[offset + 1] + ";"
-                          + values[offset + 2] + ";" + values[offset + 3];
+		+ values[offset + 2] + ";" + values[offset + 3];
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
             stringValue = fullDateTimeFormat.format((Date) values[offset]);
@@ -2067,26 +1489,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         node.appendChild(valueNode);
         valueNode.setAttribute("encoded", "" + encode);
         valueNode.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
-                stringValue, encode));
+						    stringValue, encode));
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param results _more_
-     * @param values _more_
-     * @param valueIdx _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public int readValues(Entry entry, ResultSet results, Object[] values,
                           int valueIdx)
-            throws Exception {
+	throws Exception {
 	if(isSynthetic()) {
 	    //noop
 	} else  if (isType(DATATYPE_INT)) {
@@ -2167,10 +1577,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                 } else {
                     if (databaseDefaultPropertyName == null) {
                         databaseDefaultPropertyName = getName()
-                                + ".databaseDefault";
+			    + ".databaseDefault";
                     }
                     s = entry.getTypeHandler().getTypeProperty(
-                        databaseDefaultPropertyName, s);
+							       databaseDefaultPropertyName, s);
                 }
             }
             values[offset] = s;
@@ -2181,61 +1591,38 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param name _more_
-     * @param type _more_
-     * @param ignoreErrors _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void defineColumn(Statement statement, String name, String type,
                               boolean ignoreErrors)
-            throws Exception {
+	throws Exception {
 
         String sql = "alter table " + getTableName() + " add column " + name
-                     + " " + type;
+	    + " " + type;
         SqlUtil.loadSql(sql, statement, ignoreErrors, null);
 
         if (changeType) {
             sql = getDatabaseManager().getAlterTableSql(getTableName(), name,
-                    type);
+							type);
             //            System.err.println("altering table: " + sql);
             SqlUtil.loadSql(sql, statement, ignoreErrors, null);
         }
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param statement _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void createTable(Statement statement) throws Exception {
         createTable(statement, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param statement _more_
-     * @param ignoreErrors _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void createTable(Statement statement, boolean ignoreErrors)
-            throws Exception {
+	throws Exception {
 	if (isSynthetic()) {
 	    return;
 	} else  if (isType(DATATYPE_STRING) || isType(DATATYPE_PASSWORD)
-                || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
-                || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
-                || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST)) {
+		    || isType(DATATYPE_EMAIL) || isType(DATATYPE_URL)
+		    || isType(DATATYPE_JSONLIST) || isType(DATATYPE_FILE)
+		    || isType(DATATYPE_ENTRY) || isType(DATATYPE_ENTRY_LIST)) {
             defineColumn(statement, name, "varchar(" + size + ") ",
                          ignoreErrors);
         } else if (isType(DATATYPE_WIKI)) {
@@ -2288,17 +1675,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         } else {
             throw new IllegalArgumentException("Unknown column type:" + type
-                    + " for " + name);
+					       + " for " + name);
         }
 
 
         if (oldNames != null) {
             for (int i = 0; i < oldNames.size(); i++) {
                 String sql = "update " + getTableName() + " set " + name
-                             + " = " + oldNames.get(i);
+		    + " = " + oldNames.get(i);
                 SqlUtil.loadSql(sql, statement, ignoreErrors, null);
                 sql = "alter table " + getTableName() + " drop "
-                      + oldNames.get(i);
+		    + oldNames.get(i);
                 SqlUtil.loadSql(sql, statement, true, null);
             }
         }
@@ -2312,13 +1699,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
+    
     public Object convert(String value) {
 	if(isSynthetic()) {
 	    //noop
@@ -2342,31 +1723,17 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTableName() {
         return typeHandler.getTableName();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getUnit() {
         return unit;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
+    
     private boolean latLonOk(Object o) {
         if (o == null) {
             return false;
@@ -2376,22 +1743,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         return latLonOk(d.doubleValue());
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
+    
     private boolean latLonOk(double v) {
         return ((v == v) && (v != Entry.NONGEO));
     }
 
-    /**
-     * _more_
-     *
-     * @param clauses _more_
-     */
+    
     public void addGeoExclusion(List<Clause> clauses) {
         if (isLatLon()) {
             String id = getFullName();
@@ -2416,23 +1773,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param where _more_
-     * @param searchCriteria _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void assembleWhereClause(Request request, List<Clause> where,  Appendable searchCriteria)
-            throws Exception {
+	throws Exception {
 	assembleWhereClause(request, where, searchCriteria,getSearchArg());
     }
 
     private void assembleWhereClause(Request request, List<Clause> where,
 				     Appendable searchCriteria,String searchArg)
-            throws Exception {	
+	throws Exception {	
 
 	if(isSynthetic()) {
 	    List<Clause> ors = new ArrayList<Clause>();
@@ -2457,8 +1806,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             String file = request.getUploadedFile(searchArg + "_file");
             if (file != null) {
                 values = StringUtil.split(
-                    getRepository().getStorageManager().readFile(file), "\n",
-                    true, true);
+					  getRepository().getStorageManager().readFile(file), "\n",
+					  true, true);
             }
         }
 
@@ -2536,7 +1885,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
             getRepository().getSessionManager().setArea(request, north, west,
-                    south, east);
+							south, east);
         } else if (isType(DATATYPE_LATLONBBOX)) {
             double north = request.get(searchArg + "_north",
                                        request.get("north", Double.NaN));
@@ -2560,7 +1909,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 where.add(Clause.le(columnName + "_east", east));
             }
             getRepository().getSessionManager().setArea(request, north, west,
-                    south, east);
+							south, east);
 
         } else if (isNumeric()) {
 
@@ -2606,20 +1955,20 @@ public class Column implements DataTypes, Constants, Cloneable {
 			where.add(Clause.le(getFullName(), to));
                 } else if (expr.length() > 0) {
                     throw new IllegalArgumentException("Unknown expression:"
-                            + expr);
+						       + expr);
                 }
 	    }
         } else if (isType(DATATYPE_BOOLEAN)) {
             if (request.defined(searchArg)) {
                 where.add(Clause.eq(columnName, (request.get(searchArg, true)
-                        ? 1
-                        : 0)));
+						 ? 1
+						 : 0)));
             }
         } else if (isDate()) {
             String relativeArg = searchArg + "_relative";
             Date[] dateRange = request.getDateRange(searchArg + "_fromdate",
-                                   searchArg + "_todate", relativeArg,
-                                   null /*new Date()*/);
+						    searchArg + "_todate", relativeArg,
+						    null /*new Date()*/);
 
             Clause tmp;
             if (dateRange[0] != null) {
@@ -2661,7 +2010,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                         if ( !hadFile) {
                             //Not sure we should do this for enums
                             subs.add(dbm.makeLikeTextClause(columnName,
-                                    "%" + v + "%", false));
+							    "%" + v + "%", false));
                         }
                     }
                 }
@@ -2672,11 +2021,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 	} else if(isMultiEnumeration()) {
-	//public static Clause like(String column, Object value, boolean not) {
-	//	.eq || like "value,%" || like "%,value,%" || like "%,value"
-	//110020155623,"4952,2082,2084"
-	//110009841154,4952
-	//110039185789,4952
+	    //public static Clause like(String column, Object value, boolean not) {
+	    //	.eq || like "value,%" || like "%,value,%" || like "%,value"
+	    //110020155623,"4952,2082,2084"
+	    //110009841154,4952
+	    //110039185789,4952
 	    List<Clause> subClauses = new ArrayList<Clause>();
             if (values == null) {
                 values = getSearchValues(request,searchArg);
@@ -2719,10 +2068,10 @@ public class Column implements DataTypes, Constants, Cloneable {
                     }
                     if (value.startsWith("!")) {
                         subClauses.add(Clause.neq(columnName,
-                                value.substring(1), doNegate));
+						  value.substring(1), doNegate));
                     } else {
                         subClauses.add(Clause.eq(columnName, value,
-                                doNegate));
+						 doNegate));
                     }
                 }
             }
@@ -2778,13 +2127,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param text _more_
-     * @param where _more_
-     * @param doNegate _more_
-     */
+    
     public void addTextSearch(String text, List<Clause> where,
                               boolean doNegate) {
         String       DELIM_AND = " AND ";
@@ -2792,8 +2135,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         List<Clause> clauses   = new ArrayList<Clause>();
         text = text.replace("_comma_", ",").replace("_space_", " ");
         String       delimiter = (text.indexOf(DELIM_AND) >= 0)
-                                 ? DELIM_AND
-                                 : DELIM_OR;
+	    ? DELIM_AND
+	    : DELIM_OR;
         List<String> andToks   = Utils.split(text, delimiter);
         if (andToks.size() == 0) {
             andToks.add("");
@@ -2816,22 +2159,22 @@ public class Column implements DataTypes, Constants, Cloneable {
                     subClauses.add(Clause.neq(getFullName(), "", doNegate));
                 } else {
                     subClauses.add(Clause.notLike(getFullName(),
-                            "%" + value + "%"));
+						  "%" + value + "%"));
                 }
             } else if (trimmed.startsWith("=")) {
                 value = trimmed.substring(1);
                 subClauses.add(Clause.eq(getFullName(), value, doNegate));
             } else if ( !trimmed.startsWith("%") && trimmed.endsWith("%")) {
                 subClauses.add(
-                    getDatabaseManager().makeLikeTextClause(
-                        getFullName(), value, doNegate));
+			       getDatabaseManager().makeLikeTextClause(
+								       getFullName(), value, doNegate));
             } else {
                 if (trimmed.length() == 0) {
                     subClauses.add(Clause.eq(getFullName(), "", doNegate));
                 } else {
                     subClauses.add(
-                        getDatabaseManager().makeLikeTextClause(
-                            getFullName(), "%" + value + "%", doNegate));
+				   getDatabaseManager().makeLikeTextClause(
+									   getFullName(), "%" + value + "%", doNegate));
                 }
             }
         }
@@ -2850,14 +2193,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     private String getSearchValue(Request request) {
         String dflt      = null;
         String searchArg = getSearchArg();
@@ -2869,15 +2205,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private List<String> getSearchValues(Request request, String searchArg) throws Exception {
         List<String> result    = new ArrayList<String>();
 	for (Object arg : request.get(searchArg,  new ArrayList())) {
@@ -2887,15 +2215,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param value _more_
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public int matchValue(String arg, Object value, Object[] values) {
         if (isLatLon()) {
             //TODO:
@@ -2924,41 +2244,23 @@ public class Column implements DataTypes, Constants, Cloneable {
         return TypeHandler.MATCH_UNKNOWN;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToEntryForm(Request request, Entry parentEntry,
 			       Entry entry,
                                Appendable formBuffer, Object[] values,
                                Hashtable state, FormInfo formInfo,
                                TypeHandler sourceTypeHandler)
-            throws Exception {
+	throws Exception {
         if ( !showInForm) {
             return;
         }
         String widget = getFormWidget(request, entry, values, formInfo);
         widget = sourceTypeHandler.getFormWidget(request, entry, this, widget);
-
-
         if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
 						    getRepository().getPageHandler().applyBaseMacros(TypeHandler.wrapHelp(help))));
         }
 
-
 	typeHandler.addWidgetHelp(request,entry,formBuffer,this,values);
-
 
 	if(Utils.stringDefined(suffix)) {
 	    widget = HU.hbox(widget, suffix);
@@ -2970,16 +2272,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 						 false),"");
 	}	
 
-
 	String label = sourceTypeHandler.getFormLabel(parentEntry, entry, getName(),getLabel());
 	if(sourceTypeHandler.getTypeProperty("form." + getName() + ".vertical",false)) {
             HU.formEntry(formBuffer,HU.b(label) + ":<br>"+ widget);
 	} else  if (rows > 1) {
-            formBuffer.append(typeHandler.formEntryTop(request,
-						       label + ":", widget));
+            formBuffer.append(typeHandler.formEntryTop(request,  label + ":", widget));
         } else {
-            formBuffer.append(typeHandler.formEntry(request,
-						    label + ":", widget));
+            formBuffer.append(typeHandler.formEntry(request, label + ":", widget));
         }
 	if(Utils.stringDefined(postFix)) {
 	    formBuffer.append("<tr><td colspan=2>" + postFix+"</td></tr>");
@@ -2992,24 +2291,16 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     //For now just change the edit argument by adding a edit_ prefix
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getEditArg() {
         return ARG_EDIT_PREFIX + getFullName().replace(".", "_");
     }
 
 
-    /** _more_ */
+    
     private String overrideSearchArg;
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     */
+    
     public void setSearchArg(String arg) {
         overrideSearchArg = arg;
     }
@@ -3018,11 +2309,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return arg+"_raw";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getSearchArg() {
         if (overrideSearchArg != null) {
             return overrideSearchArg;
@@ -3031,21 +2318,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param formInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getFormWidget(Request request, Entry entry,
                                 Object[] values, FormInfo formInfo)
-            throws Exception {
+	throws Exception {
 
         String widget = "";
         String urlArg = getEditArg();
@@ -3059,25 +2335,25 @@ public class Column implements DataTypes, Constants, Cloneable {
 								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
                                       new String[] { latLonOk(latlon[0])
-                    ? latlon[0] + ""
-                    : "", latLonOk(latlon[1])
-                          ? latlon[1] + ""
-		    : "" });
+						     ? latlon[0] + ""
+						     : "", latLonOk(latlon[1])
+						     ? latlon[1] + ""
+						     : "" });
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;
             if (values != null) {
                 nwse = new String[] { latLonOk(values[offset + 0])
                                       ? values[offset + 0] + ""
                                       : "", latLonOk(values[offset + 1])
-                                            ? values[offset + 1] + ""
-                                            : "", latLonOk(values[offset + 2])
-                        ? values[offset + 2] + ""
-                        : "", latLonOk(values[offset + 3])
-                              ? values[offset + 3] + ""
-                              : "", };
+				      ? values[offset + 1] + ""
+				      : "", latLonOk(values[offset + 2])
+				      ? values[offset + 2] + ""
+				      : "", latLonOk(values[offset + 3])
+				      ? values[offset + 3] + ""
+				      : "", };
             }
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              entry, true, null);
+								    entry, true, null);
             widget = map.makeSelector(urlArg, true, nwse, "", "");
         } else if (isType(DATATYPE_BOOLEAN)) {
             boolean value = true;
@@ -3095,8 +2371,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             items.add(new TwoFacedObject("Yes", "true"));
             items.add(new TwoFacedObject("No", "false"));
             widget = HU.select(urlArg, items, value
-                    ? "true"
-                    : "false", HU.cssClass("search-select"));
+			       ? "true"
+			       : "false", HU.cssClass("search-select"));
         } else if (isType(DATATYPE_DATETIME)) {
             Date date=null;
             if (values != null) {
@@ -3106,7 +2382,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    date = new Date();
             }
             widget = getRepository().getDateHandler().makeDateInput(request,
-                    urlArg, "", date, null);
+								    urlArg, "", date, null);
         } else if (isType(DATATYPE_DATE)) {
             Date date=null;
             if (values != null) {
@@ -3116,24 +2392,24 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    date = new Date();
             }
             widget = getRepository().getDateHandler().makeDateInput(request,
-                    urlArg, "", date, null, false);
+								    urlArg, "", date, null, false);
         } else if (isType(DATATYPE_ENUMERATION) || isMultiEnumeration()) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
             value = request.getString(urlArg, ((values != null)
-                    ? (String) toString(values, offset)
-                    : value));
+					       ? (String) toString(values, offset)
+					       : value));
             widget = HU.select(urlArg, enumValues, value,
-                                      HU.cssClass("ramadda-pulldown-with-icons"));
+			       HU.cssClass("ramadda-pulldown-with-icons"));
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
             value = request.getString(urlArg, ((values != null)
-                    ? (String) toString(values, offset)
-                    : value));
+					       ? (String) toString(values, offset)
+					       : value));
 	    //This is a hack to fix a problem with changing from an enumeration to a string
 	    //If we do this then lucene has a problem with indexing this column
 	    if(showEnumerationMenu) {
@@ -3172,7 +2448,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 value = "" + toString(values, offset);
             }
             widget = HU.input(urlArg, value,
-                                     HU.SIZE_10 + HU.id(domId));
+			      HU.SIZE_10 + HU.id(domId));
         } else if (isType(DATATYPE_PERCENTAGE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -3187,7 +2463,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             double d          = Double.parseDouble(value);
             int    percentage = (int) (d * 100);
             widget = HU.input(urlArg, percentage + "",
-                                     HU.SIZE_5) + "%";
+			      HU.SIZE_5) + "%";
         } else if (isType(DATATYPE_PASSWORD)) {
             String value = ((dflt != null)
                             ? dflt
@@ -3196,9 +2472,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                 value = "" + toString(values, offset);
             }
             widget = HU.password(urlArg, value,
-                                        HU.attr("size", ((columns > 0)
-                    ? "" + columns
-                    : "10")));
+				 HU.attr("size", ((columns > 0)
+						  ? "" + columns
+						  : "10")));
         } else if (isType(DATATYPE_FILE)) {
             String value = ((dflt != null)
                             ? dflt
@@ -3214,7 +2490,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             widget =
                 getRepository().getEntryManager().getEntryFormSelect(request,
-                    entry, urlArg, value);
+								     entry, urlArg, value);
         } else if (isType(DATATYPE_ENTRY_LIST)) {
 	    //TODO
             String value = "";
@@ -3223,7 +2499,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             widget =
                 getRepository().getEntryManager().getEntryFormSelect(request,
-                    entry, urlArg, value);
+								     entry, urlArg, value);
         } else {
             String value = ((dflt != null)
                             ? dflt
@@ -3239,11 +2515,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                 List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
                 if (props != null) {
                     for (Enumeration keys = props.keys();
-                            keys.hasMoreElements(); ) {
+			 keys.hasMoreElements(); ) {
                         String xid = (String) keys.nextElement();
                         if (xid.endsWith(".label")) {
                             xid = xid.substring(0,
-                                    xid.length() - ".label".length());
+						xid.length() - ".label".length());
                             tfos.add(new TwoFacedObject(getLabel(xid), xid));
                         }
                     }
@@ -3260,23 +2536,23 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if ((rows > 1) || isWiki) {
                     if (isType(DATATYPE_LIST)) {
                         value = StringUtil.join("\n",
-                                Utils.split(value, ",", true, true));
+						Utils.split(value, ",", true, true));
                     }
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
                         typeHandler.addWikiEditor(request, entry, tmp,
-                                formInfo, urlArg, value, null, false, size,
-                                true);
+						  formInfo, urlArg, value, null, false, size,
+						  true);
                         widget = tmp.toString();
                     } else {
                         int areaRows = rows;
                         widget = HU.textArea(urlArg, value, areaRows,
-                                columns, HU.id(domId));
+					     columns, HU.id(domId));
                     }
                 } else {
                     widget = HU.input(urlArg, value,
-                                             HU.id(domId) + " size=\""
-                                             + columns + "\"");
+				      HU.id(domId) + " size=\""
+				      + columns + "\"");
                 }
                 if (size > 0) {
                     formInfo.addMaxSizeValidation(getLabel(), domId, size);
@@ -3289,29 +2565,19 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         if (required) {
             widget = widget + " "
-                     + HU.span(
-                         "* " + msg("required"),
-                         HU.cssClass("ramadda-required-field"));
+		+ HU.span(
+			  "* " + msg("required"),
+			  HU.cssClass("ramadda-required-field"));
         }
 
         return widget;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private List getEnumPlusValues(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         List<HtmlUtils.Selector> enums = typeHandler.getEnumValues(request, this,
-							       entry);
+								   entry);
         //TODO: Check for Strings vs Selector
         if (enumValues != null) {
             List tmp = new ArrayList();
@@ -3332,13 +2598,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return enums;
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public double[] getLatLonBbox(Object[] values) {
         return new double[] { Utils.getDouble(values[offset]),
 			      Utils.getDouble(values[offset + 1]),
@@ -3362,39 +2622,27 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public boolean hasLatLon(Object[] values) {
         if ((values[offset] == null)
-                || ((Double) values[offset]).doubleValue() == Entry.NONGEO) {
+	    || ((Double) values[offset]).doubleValue() == Entry.NONGEO) {
             return false;
         }
         if ((values[offset + 1] == null)
-                || ((Double) values[offset + 1]).doubleValue()
-                   == Entry.NONGEO) {
+	    || ((Double) values[offset + 1]).doubleValue()
+	    == Entry.NONGEO) {
             return false;
         }
 
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
+    
     public boolean hasLatLonBox(Object[] values) {
         for (int i = 0; i < 4; i++) {
             if ((values[offset + i] == null)
-                    || ((Double) values[offset + i]).doubleValue()
-                       == Entry.NONGEO) {
+		|| ((Double) values[offset + i]).doubleValue()
+		== Entry.NONGEO) {
                 return false;
             }
         }
@@ -3403,17 +2651,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void setValue(Request request, Entry entry, Object[] values)
-            throws Exception {
+	throws Exception {
 
 	//        if ( !showInForm || !editable) {
 	//Don't check for editable here as the API call to change a field goes hits this method
@@ -3429,14 +2669,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 	if (isLatLon()) {
             if (request.exists(urlArg + "_latitude")) {
                 values[offset] = Double.parseDouble(request.getString(urlArg
-                        + "_latitude", "0").trim());
+								      + "_latitude", "0").trim());
                 values[offset + 1] = Double.parseDouble(request.getString(urlArg
-                        + "_longitude", "0").trim());
+									  + "_longitude", "0").trim());
             } else if (request.exists(urlArg + ".latitude")) {
                 String latString = request.getString(urlArg + ".latitude",
-                                       "0").trim();
+						     "0").trim();
                 String lonString = request.getString(urlArg + ".longitude",
-                                       "0").trim();
+						     "0").trim();
                 double lat = Entry.NONGEO;
                 double lon = Entry.NONGEO;
                 if (Utils.stringDefined(latString)) {
@@ -3452,23 +2692,23 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isType(DATATYPE_LATLONBBOX)) {
             if (request.exists(urlArg + "_north")) {
                 values[offset] = Double.valueOf(request.get(urlArg + "_north",
-								(Double)Utils.getNonNull(values[offset], Double.valueOf(Entry.NONGEO))));
+							    (Double)Utils.getNonNull(values[offset], Double.valueOf(Entry.NONGEO))));
                 values[offset + 1] = Double.valueOf(request.get(urlArg + "_west",
-								    (Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));
+								(Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));
 		values[offset + 2] = Double.valueOf(request.get(urlArg+ "_south",
 								(Double)Utils.getNonNull(values[offset+2], Double.valueOf(Entry.NONGEO))));							    
 
                 values[offset + 3] = Double.valueOf(request.get(urlArg + "_east",
-								    (Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
+								(Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
 	    } else {
                 values[offset] = Double.valueOf(request.get(urlArg + ".north",
 							    (Double)Utils.getNonNull(values[offset+0], Double.valueOf(Entry.NONGEO))));							    
 		values[offset + 1] = Double.valueOf(request.get(urlArg + ".west",
-							    (Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));							    
+								(Double)Utils.getNonNull(values[offset+1], Double.valueOf(Entry.NONGEO))));							    
 		values[offset + 2] = Double.valueOf(request.get(urlArg  + ".south",
-							    (Double)Utils.getNonNull(values[offset+2], Double.valueOf(Entry.NONGEO))));							    							    
+								(Double)Utils.getNonNull(values[offset+2], Double.valueOf(Entry.NONGEO))));							    							    
 		values[offset + 3] = Double.valueOf(request.get(urlArg + ".east",
-							    (Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
+								(Double)Utils.getNonNull(values[offset+3], Double.valueOf(Entry.NONGEO))));							    
 	    }
         } else if (isDate()) {
 	    Date defaultDate= (Date) Utils.getNonNull(values[offset],new Date());
@@ -3508,14 +2748,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    boolean debug = urlArg.indexOf("tribe")>=0;
             if (request.defined(urlArg + "_plus")) {
                 theValue = request.getAnonymousEncodedString(urlArg
-                        + "_plus", ((dflt != null)
-                                    ? dflt
-                                    : ""));
+							     + "_plus", ((dflt != null)
+									 ? dflt
+									 : ""));
             } else if (request.exists(urlArg)) {
                 theValue = request.getAnonymousEncodedString(urlArg,
-                        ((dflt != null)
-                         ? dflt
-                         : ""));
+							     ((dflt != null)
+							      ? dflt
+							      : ""));
             } else {
                 theValue = (String)Utils.getNonNull(values[offset],dflt);
             }
@@ -3539,7 +2779,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 							 : 0));
             if (request.exists(urlArg)) {
                 values[offset] = Double.valueOf(request.get(urlArg, dfltValue)
-                                            / 100);
+						/ 100);
             } else {
                 values[offset] = dfltValue;
             }
@@ -3586,17 +2826,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return Utils.equals(dflt,"none");
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param values _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void setValue(Entry entry, Object[] values, String value)
-            throws Exception {
+	throws Exception {
 
 	if (isSynthetic()) {
 	    return;
@@ -3661,15 +2893,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private Date parseDate(String value) throws Exception {
         if ( !Utils.stringDefined(value)) {
             return null;
@@ -3686,39 +2910,22 @@ public class Column implements DataTypes, Constants, Cloneable {
                 return dateParser.parse(value);
             } catch (java.text.ParseException pe) {
                 throw new IllegalArgumentException("Column:" + getName()
-                        + " could not parse date:" + value);
+						   + " could not parse date:" + value);
             }
         }
 
         return Utils.parseDate(value);
     }
 
-    /**
-     * _more_
-     *
-     * @param formBuffer _more_
-     * @param request _more_
-     * @param where _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToSearchForm(Request request, Appendable formBuffer,
                                 List<Clause> where,boolean...horizontal)
-            throws Exception {
+	throws Exception {
         addToSearchForm(request, formBuffer, where, null,horizontal);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param searchArg _more_
-     * @param fromEntry _more_
-     *
-     * @return _more_
-     */
+    
     private String[] getNWSE(Request request, Entry entry, String searchArg,
                              boolean fromEntry) {
         if ( !fromEntry && request.defined(searchArg + "_north")) {
@@ -3726,7 +2933,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                   request.getString(searchArg + "_west", ""),
                                   request.getString(searchArg + "_south", ""),
                                   request.getString(searchArg + "_east",
-                                  ""), };
+						    ""), };
         }
         if ((entry != null) && entry.hasAreaDefined(request)) {
             return new String[] { "" + entry.getNorth(request), "" + entry.getWest(request),
@@ -3738,19 +2945,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return new String[] { "", "", "", "" };
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param where _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToSearchForm(Request request, Appendable formBuffer,
                                 List<Clause> where, Entry entry,boolean...horizontal)
-            throws Exception {
+	throws Exception {
 
         if ( !getCanSearch()) {
             return;
@@ -3762,15 +2960,15 @@ public class Column implements DataTypes, Constants, Cloneable {
     private void addToSearchForm(Request request, Appendable formBuffer,
 				 List<Clause> where, Entry entry, String searchArg,
 				 boolean...horizontal)
-            throws Exception {	
+	throws Exception {	
 	boolean vertical = horizontal.length>0?!horizontal[0]:true;
 
 
         String       columnName = getFullName();
 
         List<Clause> tmp        = (where != null)
-                                  ? new ArrayList<Clause>(where)
-                                  : null;
+	    ? new ArrayList<Clause>(where)
+	    : null;
         String       widget     = "";
         String       widgetId   = searchArg.replaceAll("\\.", "_");
 	if (isSynthetic()) {
@@ -3787,14 +2985,14 @@ public class Column implements DataTypes, Constants, Cloneable {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              entry, true, null);
+								    entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "",doPolygonSearch,request.getString(ARG_SEARCH_POLYGON,""));
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
-                              entry, true, null);
+								    entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "",doPolygonSearch,request.getString(ARG_SEARCH_POLYGON,""));
         } else if (isDate()) {
@@ -3802,15 +3000,15 @@ public class Column implements DataTypes, Constants, Cloneable {
             dateSelect.add(new TwoFacedObject(msg("Relative Date"), ""));
             dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
             dateSelect.add(new TwoFacedObject(msg("Last 3 hours"),
-                    "-3 hours"));
+					      "-3 hours"));
             dateSelect.add(new TwoFacedObject(msg("Last 6 hours"),
-                    "-6 hours"));
+					      "-6 hours"));
             dateSelect.add(new TwoFacedObject(msg("Last 12 hours"),
-                    "-12 hours"));
+					      "-12 hours"));
             dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
             dateSelect.add(new TwoFacedObject(msg("Last week"), "-7 days"));
             dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"),
-                    "-14 days"));
+					      "-14 days"));
             dateSelect.add(new TwoFacedObject(msg("Last month"), "-1 month"));
 
             String dateSelectValue;
@@ -3825,24 +3023,24 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             String dateSelectInput =
                 HU.select(searchArg + "_relative", dateSelect,
-                                 dateSelectValue,
-                                 HU.cssClass("search-select"));
+			  dateSelectValue,
+			  HU.cssClass("search-select"));
             widget = getRepository().getDateHandler().makeDateInput(
-                request, searchArg + "_fromdate", "searchform", null, null,
-                isType(DATATYPE_DATETIME)) + HU.space(1)
-                    + HU.img(getRepository().getIconUrl(ICON_RANGE))
-                    + HU.space(1)
-                    + getRepository().getDateHandler().makeDateInput(
-                        request, searchArg + "_todate", "searchform", null,
-                            null, isType(
-					 DATATYPE_DATETIME)) + (vertical?HU.br():HU.space(4))
-                                    + msgLabel("Or") + dateSelectInput;
+								    request, searchArg + "_fromdate", "searchform", null, null,
+								    isType(DATATYPE_DATETIME)) + HU.space(1)
+		+ HU.img(getRepository().getIconUrl(ICON_RANGE))
+		+ HU.space(1)
+		+ getRepository().getDateHandler().makeDateInput(
+								 request, searchArg + "_todate", "searchform", null,
+								 null, isType(
+									      DATATYPE_DATETIME)) + (vertical?HU.br():HU.space(4))
+		+ msgLabel("Or") + dateSelectInput;
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HU.select(
-                searchArg,
-                Misc.newList(TypeHandler.ALL_OBJECT, "true", "false"),
-                request.getSanitizedString(searchArg, ""),
-                HU.cssClass("search-select"));
+			       searchArg,
+			       Misc.newList(TypeHandler.ALL_OBJECT, "true", "false"),
+			       request.getSanitizedString(searchArg, ""),
+			       HU.cssClass("search-select"));
         } else if (isEnumeration()) {
             List tmpValues;
             if (searchRows > 1) {
@@ -3923,23 +3121,23 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else if (isNumeric()) {
             String toId = Utils.makeID(searchArg + "_to");
             String expr = HU.select(
-                              searchArg + "_expr", EXPR_ITEMS,
-                              request.getString(searchArg + "_expr", ""),
-                              HU.attr("to-id", toId)
-                              + HU.cssClass(
-                                  "search-select ramadda-range-select"));
+				    searchArg + "_expr", EXPR_ITEMS,
+				    request.getString(searchArg + "_expr", ""),
+				    HU.attr("to-id", toId)
+				    + HU.cssClass(
+						  "search-select ramadda-range-select"));
 	    String size= "4";
             widget = expr
-                     + HU.input(searchArg + "_from",
-                                       request.getSanitizedString(searchArg + "_from",
-                                           ""), ((placeholderMin != null)
-                    ? HU.attr("placeholder", placeholderMin)
-                    : "") + HU.attr("size", size)) + " "
-                    + HU.input(searchArg + "_to",
-                                      request.getSanitizedString(searchArg + "_to",
-                                          ""), ((placeholderMax != null)
-                    ? HU.attr("placeholder", placeholderMax)
-                    : "") + HU.attr("id", toId) + HU.attr("size", size));
+		+ HU.input(searchArg + "_from",
+			   request.getSanitizedString(searchArg + "_from",
+						      ""), ((placeholderMin != null)
+							    ? HU.attr("placeholder", placeholderMin)
+							    : "") + HU.attr("size", size)) + " "
+		+ HU.input(searchArg + "_to",
+			   request.getSanitizedString(searchArg + "_to",
+						      ""), ((placeholderMax != null)
+							    ? HU.attr("placeholder", placeholderMax)
+							    : "") + HU.attr("id", toId) + HU.attr("size", size));
         } else if (isType(DATATYPE_ENTRY)) {
             String entryId  = request.getString(searchArg + "_hidden", "");
             Entry  theEntry = null;
@@ -3947,7 +3145,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 try {
                     theEntry =
                         getRepository().getEntryManager().getEntry(null,
-                            entryId);
+								   entryId);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
@@ -3955,14 +3153,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
-                    searchArg, "Select", true, null, entry);
+								 searchArg, "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();
             sb.append(HU.hidden(searchArg + "_hidden", entryId,
-                                       HU.id(searchArg + "_hidden")));
+				HU.id(searchArg + "_hidden")));
             sb.append(HU.disabledInput(searchArg, ((theEntry != null)
-                    ? theEntry.getFullName()
-                    : ""), HU.id(searchArg)
-                           + HU.SIZE_60) + select);
+						   ? theEntry.getFullName()
+						   : ""), HU.id(searchArg)
+				       + HU.SIZE_60) + select);
 
             widget = sb.toString();
         } else if (isType(DATATYPE_ENTRY_LIST)) {
@@ -3973,7 +3171,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 try {
                     theEntry =
                         getRepository().getEntryManager().getEntry(null,
-                            entryId);
+								   entryId);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
@@ -3981,26 +3179,26 @@ public class Column implements DataTypes, Constants, Cloneable {
 
             String select =
                 getRepository().getHtmlOutputHandler().getSelect(request,
-                    searchArg, "Select", true, null, entry);
+								 searchArg, "Select", true, null, entry);
             StringBuffer sb = new StringBuffer();
             sb.append(HU.hidden(searchArg + "_hidden", entryId,
-                                       HU.id(searchArg + "_hidden")));
+				HU.id(searchArg + "_hidden")));
             sb.append(HU.disabledInput(searchArg, ((theEntry != null)
-                    ? theEntry.getFullName()
-                    : ""), HU.id(searchArg)
-                           + HU.SIZE_60) + select);
+						   ? theEntry.getFullName()
+						   : ""), HU.id(searchArg)
+				       + HU.SIZE_60) + select);
 
             widget = sb.toString();
         } else {
             if (searchType.equals(SEARCHTYPE_SELECT)) {
                 long t1 = System.currentTimeMillis();
                 Statement statement = typeHandler.select(request,
-                                          SqlUtil.distinct(columnName), tmp,
-                                          "");
+							 SqlUtil.distinct(columnName), tmp,
+							 "");
                 long t2 = System.currentTimeMillis();
                 String[] values = SqlUtil.readString(
-                                      getDatabaseManager().getIterator(
-                                          statement), 1);
+						     getDatabaseManager().getIterator(
+										      statement), 1);
                 long t3 = System.currentTimeMillis();
                 //                System.err.println("TIME:" + (t2 - t1) + " " + (t3 - t2));
 
@@ -4010,7 +3208,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                         continue;
                     }
                     list.add(new TwoFacedObject(getLabel(values[i]),
-                            values[i]));
+						values[i]));
                 }
 
                 List sorted = Misc.sort(list);
@@ -4018,8 +3216,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                 list.addAll(sorted);
                 if (list.size() == 1) {
                     widget = HU.hidden(searchArg,
-                            (String) list.get(0).getId()) + " "
-                                + list.get(0).toString();
+				       (String) list.get(0).getId()) + " "
+			+ list.get(0).toString();
                 } else {
                     list.add(0, TypeHandler.ALL_OBJECT);
                     widget = HU.select(searchArg, list);
@@ -4039,7 +3237,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
                 if (isList) {
                     widget = HU.textArea(searchArg, text, 5, 20,
-                            attrs);
+					 attrs);
                 } else {
 		    StringBuilder tmpSB = new StringBuilder();
 		    List<String> searchValues = new ArrayList<String>();
@@ -4053,7 +3251,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 			s = s.replaceAll("\"", "&quot;");
 			s = HU.sanitizeString(s);
 			tmpSB.append(HU.input(searchArg, s,
-						     HU.SIZE_20 + attrs));
+					      HU.SIZE_20 + attrs));
 			tmpSB.append("&nbsp;");
 		    }
 		    widget = HU.div(tmpSB.toString(), HU.cssClass("ramadda-widgets-text"));
@@ -4063,26 +3261,26 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         if (addNot) {
             widget += " "
-                      + HU.labeledCheckbox(searchArg + "_not", "true",
-                                           request.get(searchArg + "_not",
-                                               false), "Not");
+		+ HU.labeledCheckbox(searchArg + "_not", "true",
+				     request.get(searchArg + "_not",
+						 false), "Not");
         }
         if (lookupDB != null) {
             //This uses the plugins/db plugin
             List<String> toks       = StringUtil.splitUpTo(lookupDB, ":", 2);
             String       otherTable = toks.get(0);
             String       otherCol   = (toks.size() == 2)
-                                      ? toks.get(1)
-                                      : getName();
+		? toks.get(1)
+		: getName();
             String extraLink = "DB.doDbSearch(" + HU.squote(entry.getName())
-                               + "," + HU.squote(this.getName()) + ","
-                               + HU.squote(widgetId) + ","
-                               + HU.squote(otherTable) + ","
-                               + HU.squote(otherCol) + ");";
+		+ "," + HU.squote(this.getName()) + ","
+		+ HU.squote(widgetId) + ","
+		+ HU.squote(otherTable) + ","
+		+ HU.squote(otherCol) + ");";
             //              System.err.println(extraLink);
             widget += " "
-                      + HU.href("javascript:" + extraLink,
-                                "Lookup " + getName());
+		+ HU.href("javascript:" + extraLink,
+			  "Lookup " + getName());
         }
 
         if (addFileToSearch) {
@@ -4127,18 +3325,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return groupedColumns;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected String getLabel(String value) throws Exception {
         String desc = getRepository().getFieldDescription(value + ".label",
-                          propertiesFile);
+							  propertiesFile);
         if (desc == null) {
             desc = value;
         } else {
@@ -4151,11 +3341,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getFullName() {
         if (fullName == null) {
             fullName = getTableName() + "." + name;
@@ -4164,21 +3350,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * Set the Name property.
-     *
-     * @param value The new value for Name
-     */
+    
     public void setName(String value) {
         name = value;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getColumnNames() {
         List<String> names = null;
         if (names == null) {
@@ -4201,11 +3379,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return names;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getSortByColumn() {
         if (isLatLon()) {
             return name + "_lat";
@@ -4218,48 +3392,28 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * Get the Name property.
-     *
-     * @return The Name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getGroup() {
         return group;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertiesFile() {
         return propertiesFile;
     }
 
-    /**
-     * Set the Label property.
-     *
-     * @param value The new value for Label
-     */
+    
     public void setLabel(String value) {
         label = value;
     }
 
-    /**
-     * Get the Label property.
-     *
-     * @return The Label
-     */
+    
     public String getLabel() {
         return label;
     }
@@ -4268,117 +3422,67 @@ public class Column implements DataTypes, Constants, Cloneable {
         return searchLabel;
     }    
 
-    /**
-     * Set the Description property.
-     *
-     * @param value The new value for Description
-     */
+    
     public void setDescription(String value) {
         description = value;
     }
 
-    /**
-     * Get the Description property.
-     *
-     * @return The Description
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Set the Type property.
-     *
-     * @param value The new value for Type
-     */
+    
     public void setType(String value) {
         type = value;
     }
 
-    /**
-     * Get the Type property.
-     *
-     * @return The Type
-     */
+    
     public String getType() {
         return type;
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isField(String name) {
         return Misc.equals(this.name, name) || Misc.equals(this.label, name);
     }
 
-    /**
-     * Set the IsIndex property.
-     *
-     * @param value The new value for IsIndex
-     */
+    
     public void setIsIndex(boolean value) {
         isIndex = value;
     }
 
-    /**
-     * Get the IsIndex property.
-     *
-     * @return The IsIndex
-     */
+    
     public boolean getIsIndex() {
         return isIndex;
     }
 
 
 
-    /**
-     * Set the IsCategory property.
-     *
-     * @param value The new value for IsCategory
-     */
+    
     public void setIsCategory(boolean value) {
         isCategory = value;
     }
 
-    /**
-     * Get the IsCategory property.
-     *
-     * @return The IsCategory
-     */
+    
     public boolean getIsCategory() {
         return isCategory;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getShowEmpty() {
         return showEmpty;
     }
 
 
 
-    /**
-     *  Set the CanShow property.
-     *
-     *  @param value The new value for CanShow
-     */
+    
     public void setCanShow(boolean value) {
         canShow = value;
     }
 
-    /**
-     *  Get the CanShow property.
-     *
-     *  @return The CanShow
-     */
+    
     public boolean getCanShow() {
         if (isType(DATATYPE_PASSWORD)) {
             return false;
@@ -4391,65 +3495,38 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getCanExport() {
         return canExport;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getShowLabel() {
         return showLabel;
     }
 
 
-    /**
-     * Set the IsSearchable property.
-     *
-     * @param value The new value for IsSearchable
-     */
+    
     public void setCanSearch(boolean value) {
         canSearch = value;
     }
 
-    /**
-     * Get the IsSearchable property.
-     *
-     * @return The IsSearchable
-     */
+    
     public boolean getCanSearch() {
         return canSearch;
     }
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public boolean getCanSort() {
         return canSort;
     }
 
-    /**
-     * Set the SearchRows property.
-     *
-     * @param value The new value for SearchRows
-     */
+    
     public void setSearchRows(int value) {
         searchRows = value;
     }
 
-    /**
-     * Get the SearchRows property.
-     *
-     * @return The SearchRows
-     */
+    
     public int getSearchRows() {
         return searchRows;
     }
@@ -4457,29 +3534,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * Set the IsSearchable property.
-     *
-     * @param value The new value for IsSearchable
-     */
+    
     public void setCanSearchText(boolean value) {
         canSearchText = value;
     }
 
-    /**
-     * Get the IsSearchable property.
-     *
-     * @return The IsSearchable
-     */
+    
     public boolean getCanSearchText() {
         return canSearchText;
     }
 
-    /**
-     * Get the IsSearchable property.
-     *
-     * @return The IsSearchable
-     */
+    
     public boolean getAdvancedSearch() {
         return advancedSearch;
     }
@@ -4487,159 +3552,91 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * Set the IsListable property.
-     *
-     * @param value The new value for IsListable
-     */
+    
     public void setCanList(boolean value) {
         canList = value;
     }
 
-    /**
-     * Get the IsListable property.
-     *
-     * @return The IsListable
-     */
+    
     public boolean getCanList() {
         return canList;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
+    
     public void setCanDisplay(boolean value) {
         canDisplay = value;
     }
 
-    /**
-     * Get the IsDisplayable property.
-     *
-     * @return The IsDisplayable
-     */
+    
     public boolean getCanDisplay() {
         return canDisplay;
     }
 
 
 
-    /**
-     * Set the Values property.
-     *
-     * @param value The new value for Values
-     */
+    
     public void setValues(List<HtmlUtils.Selector> value) {
         enumValues = value;
     }
 
-    /**
-     * Get the Values property.
-     *
-     * @return The Values
-     */
+    
     public List<HtmlUtils.Selector> getValues() {
         return enumValues;
     }
 
-    /**
-     * Set the Dflt property.
-     *
-     * @param value The new value for Dflt
-     */
+    
     public void setDflt(String value) {
         dflt = value;
     }
 
-    /**
-     * Get the Dflt property.
-     *
-     * @return The Dflt
-     */
+    
     public String getDflt() {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String toString() {
         return name+" type:" + type +" offset:" + offset;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getRows() {
         return rows;
     }
 
-    /**
-     *  Set the Size property.
-     *
-     *  @param value The new value for Size
-     */
+    
     public void setSize(int value) {
         size = value;
     }
 
-    /**
-     *  Get the Size property.
-     *
-     *  @return The Size
-     */
+    
     public int getSize() {
         return size;
     }
 
 
-    /**
-     *  Set the Editable property.
-     *
-     *  @param value The new value for Editable
-     */
+    
     public void setEditable(boolean value) {
         editable = value;
     }
 
-    /**
-     *  Get the Editable property.
-     *
-     *  @return The Editable
-     */
+    
     public boolean getEditable() {
         return editable;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getShowInForm() {
         return showInForm;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getSuffix() {
         return suffix;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getHelp() {
         return help;
     }
@@ -4650,22 +3647,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getAttributeOrTag(Element node, String attrOrTag,
                                     String dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = Utils.getAttributeOrTag(node, attrOrTag,
-                               (String) null);
+						   (String) null);
         if (attrValue == null) {
             attrValue = XmlUtil.getAttributeFromTree(node, attrOrTag);
         }
@@ -4679,20 +3666,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getAttributeOrTagOrFromType(Element node, String attrOrTag,
-            String dflt)
-            throws Exception {
+					      String dflt)
+	throws Exception {
         String s = getAttributeOrTag(node, attrOrTag, (String) null);
         if (s == null) {
             s = typeHandler.getTypeProperty(getName() + "." + attrOrTag,
@@ -4710,20 +3687,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private boolean getAttributeOrTag(Element node, String attrOrTag,
                                       boolean dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -4733,19 +3700,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private int getAttributeOrTag(Element node, String attrOrTag, int dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -4755,20 +3712,10 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param attrOrTag _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public double getAttributeOrTag(Element node, String attrOrTag,
                                     double dflt)
-            throws Exception {
+	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
         if (attrValue == null) {
             return dflt;
@@ -4777,125 +3724,67 @@ public class Column implements DataTypes, Constants, Cloneable {
         return Double.parseDouble(attrValue);
     }
 
-    /**
-     * Set the ColumnIndex property.
-     *
-     * @param value The new value for ColumnIndex
-     */
+    
     public void setColumnIndex(int value) {
         columnIndex = value;
     }
 
-    /**
-     * Get the ColumnIndex property.
-     *
-     * @return The ColumnIndex
-     */
+    
     public int getColumnIndex() {
         return columnIndex;
     }
 
 
-    /**
-     *  Set the Alias property.
-     *
-     *  @param value The new value for Alias
-     */
+    
     public void setAlias(String value) {
         alias = value;
     }
 
-    /**
-     *  Get the Alias property.
-     *
-     *  @return The Alias
-     */
+    
     public String getAlias() {
         return alias;
     }
 
-    /**
-     * Set the DoStats property.
-     *
-     * @param value The new value for DoStats
-     */
+    
     public void setDoStats(boolean value) {
         doStats = value;
     }
 
-    /**
-     * Get the DoStats property.
-     *
-     * @return The DoStats
-     */
+    
     public boolean getDoStats() {
         return doStats;
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 29, '20
-     * @author         Enter your name here...
-     */
+    
     public static class Display {
-
-        /** _more_ */
         String value;
-
-        /** _more_ */
         String background;
-
-
-
-        /** _more_ */
         String color;
-
-        /** _more_ */
         String mapFillColor;
-
-        /** _more_ */
         String template;
-
-        /** _more_ */
         String icon;
-
-        /** _more_ */
         double min;
-
-        /** _more_ */
         double max;
 
-        /**
-         * _more_
-         *
-         * @param element _more_
-         */
+
         public Display(Element element) {
             value = XmlUtil.getAttribute(element, "value", "");
             background = XmlUtil.getAttribute(element, "background",
-                    (String) null);
+					      (String) null);
             color = XmlUtil.getAttribute(element, "color", (String) null);
             mapFillColor = XmlUtil.getAttribute(element, "mapFillColor",
-                    (String) null);
+						(String) null);
             template = XmlUtil.getAttribute(element, "template",
                                             (String) null);
             icon = XmlUtil.getAttribute(element, "icon", (String) null);
             min  = XmlUtil.getAttribute(element, "min", Double.NaN);
             max  = XmlUtil.getAttribute(element, "max", Double.isNaN(min)
-                    ? Double.NaN
-                    : Double.MAX_VALUE);
+					? Double.NaN
+					: Double.MAX_VALUE);
         }
 
-        /**
-         * _more_
-         *
-         * @param attr _more_
-         *
-         * @return _more_
-         */
+        
         public String getAttribute(String attr) {
             if (attr.equals("mapFillColor")) {
                 return mapFillColor;
@@ -4911,13 +3800,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param v _more_
-         *
-         * @return _more_
-         */
+        
         public String decorate(String v) {
             String style = "";
             if (background != null) {
@@ -4941,11 +3824,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-    /**
-     *  Get the Lookupdb property.
-     *
-     *  @return The Lookupdb
-     */
+    
     public String getLookupDB() {
         return lookupDB;
     }

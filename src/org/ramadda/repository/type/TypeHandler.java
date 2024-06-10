@@ -4941,7 +4941,7 @@ public class TypeHandler extends RepositoryManager {
 	    
 	    List<Appendable>contents = buffers.getBuffers();
 	    List<String>groups = buffers.getGroups();
-	    if(getTypeProperty("form.tabs",false)) {
+	    if(getTypeProperty("form.tabs",false) && contents.size()>1) {
 		sb.append(HU.formTableClose());
 		List<Appendable> tabContents = new ArrayList<Appendable>();
 		for(Appendable a: contents) {
@@ -4996,8 +4996,7 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 
-        if ( !sourceTypeHandler.okToShowInForm(entry, column.getName(),
-					       true)) {
+        if ( !sourceTypeHandler.okToShowInForm(entry, column.getName(), true)) {
             return;
         }
 
@@ -5049,19 +5048,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param widget _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
 	throws Exception {
@@ -5073,17 +5059,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getFormHelp(Request request, Entry entry, Column column)
 	throws Exception {
         return HU.inset(column.getSuffix(), 5);
@@ -5189,16 +5164,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param sb _more_
-     * @param formInfo _more_
-     *
-     * @throws Exception _more_
-     */
     public void addAreaWidget(Request request, Entry parentEntry,
 			      Entry entry, Appendable sb,
                               FormInfo formInfo)
@@ -5237,15 +5202,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void addDateToEntryForm(Request request, Appendable sb,
                                    Entry parentEntry,Entry entry)
 	throws Exception {
@@ -5313,19 +5269,9 @@ public class TypeHandler extends RepositoryManager {
             }
 
         }
-
-
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public Date[] getDefaultDateRange(Request request, Entry entry) {
         Date fromDate = ((entry != null)
                          ? new Date(entry.getStartDate())
@@ -5829,18 +5775,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public void getFileExtras(Request request, Entry entry, StringBuilder extras)
 	throws Exception {
 	String space = HU.space(3);
@@ -5927,61 +5861,21 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiEditorSidebar(Request request, Entry entry)
 	throws Exception {
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param type _more_
-     * @param target _more_
-     *
-     * @throws Exception _more_
-     */
+
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
 	throws Exception {}
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param buttons _more_
-     * @param textAreaId _more_
-     */
     public void addToWikiToolbar(Request request, Entry entry,
                                  StringBuilder buttons, String textAreaId) {}
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param text _more_
-     *
-     * @throws Exception _more_
-     */
     public void addReadOnlyWikiEditor(Request request, Entry entry,
                                       Appendable sb, String text)
 	throws Exception {
@@ -5991,25 +5885,6 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param formInfo _more_
-     * @param editorId _more_
-     * @param hiddenId _more_
-     * @param text _more_
-     * @param label _more_
-     * @param readOnly _more_
-     * @param length _more_
-     * @param visible _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public String addWikiEditor(Request request, Entry entry, Appendable sb,
                                 FormInfo formInfo, String hiddenId,
                                 String text, String label, boolean readOnly,
@@ -6101,11 +5976,6 @@ public class TypeHandler extends RepositoryManager {
         return editorId;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Column> getColumns() {
         return null;
     }
