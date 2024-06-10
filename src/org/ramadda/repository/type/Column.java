@@ -923,7 +923,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         List<String> tmp = typeHandler.getColumnEnumerationProperties(this,
 								      valueString, delimiter);
         enumValues = new ArrayList<HtmlUtils.Selector>();
-        for (String tok : tmp) {
+
+	String icon = null;
+	
+	int cnt = 0;
+	for (String tok : tmp) {
 	    tok  =tok.trim();
             if (tok.startsWith("#")) {
                 continue;
@@ -934,9 +938,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             if (tok.equals("_blank_")) tok = "";
 
+	    int margin = 0;
+	    if(tok.startsWith("heading:")) {
+		tok = tok.substring("heading:".length());
+		enumValues.add(new HtmlUtils.Selector(tok,"",null,0,true));
+		//Force the icon so the menu is indented
+		//icon = getRepository().getPageHandler().getIconUrl("/icons/blank16.png");
+		continue;
+	    }
             String label = tok;
             String value = null;
-	    int margin = 0;
             if (tok.indexOf(":") >= 0) {
                 List<String> toks = Utils.splitUpTo(tok, ":", 2);
                 value = toks.get(0);
@@ -951,7 +962,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		label = label.substring(1);
 	    }
 	    if(value==null) value=label;
-            enumValues.add(new HtmlUtils.Selector(label, value,null,margin));
+            enumValues.add(new HtmlUtils.Selector(label, value,icon,icon!=null?0:margin));
             enumMap.put(value, label);
         }
     }
@@ -2937,20 +2948,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             return;
         }
         String widget = getFormWidget(request, entry, values, formInfo);
-        widget = sourceTypeHandler.getFormWidget(request, entry, this,
-						 widget);
+        widget = sourceTypeHandler.getFormWidget(request, entry, this, widget);
 
-        //        String rightSide = sourceTypeHandler.getFormHelp(request, entry, this);
-        //        formBuffer.append(HU.formEntry(getLabel() + ":",
-        //                                             HU.hbox(widget, rightSide)));
-        if ((group != null) && (state.get(group) == null)) {
-            formBuffer.append(
-                HU.row(
-                    HU.colspan(
-                        HU.div(group, " class=\"formgroupheader\" "),
-                        2)));
-            state.put(group, group);
-        }
 
         if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
@@ -3126,7 +3125,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? (String) toString(values, offset)
                     : value));
             widget = HU.select(urlArg, enumValues, value,
-                                      HU.cssClass("column-select"));
+                                      HU.cssClass("ramadda-pulldown-with-icons"));
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
@@ -3143,7 +3142,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    if(!HtmlUtils.Selector.contains(enums,""))
 			enums.add(0,new HtmlUtils.Selector("&lt;blank&gt;",""));
 		}
-		widget = HU.select(urlArg, enums, value, HU.cssClass("column-select")) +
+		widget = HU.select(urlArg, enums, value, HU.cssClass("ramadda-pulldown-with-icons")) +
 		    "  or:  "  +
 		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
 	    } else {
