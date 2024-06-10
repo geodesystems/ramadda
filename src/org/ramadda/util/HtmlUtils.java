@@ -5682,6 +5682,30 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
 
+    public static void makeTabs(Appendable sb, List titles,
+                                     List contents)
+            throws Exception {
+	String uid = getUniqueId("tab");
+	open(sb,"div",attrs("id",uid));
+	open(sb,"ul","");
+	int cnt = 1;
+	for(Object title: titles) {
+	    tag(sb,"li","",href("#"+uid+"-"+(cnt++),title.toString()));
+	}
+	close(sb,"ul");
+	cnt=1;
+	for(Object c: contents) {
+	    open(sb,"div",attrs("id",uid+"-"+(cnt++)));
+	    sb.append(c.toString());
+	    close(sb,"div");
+	}
+	close(sb,"div");
+	String js = "jQuery(function(){\njQuery('#" + uid
+                            + "').tabs({activate: HtmlUtil.tabLoaded})});\n";
+	sb.append(script(js));
+    }
+
+
     /**
      * _more_
      *
