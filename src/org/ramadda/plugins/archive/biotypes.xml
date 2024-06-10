@@ -2,14 +2,18 @@
 	xmetadata="archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
 
 
-  <type name="type_archive_bio"  description="Archive Bio Thing"
-	handler="org.ramadda.plugins.archive.BioThingTypeHandler"  
+  <type name="type_archive_bio"  description="Archive Bio Record"
+	handler="org.ramadda.plugins.archive.BioRecordTypeHandler"  
 	xchildtypes="type_archive_collection">
+
+    
 
     <property name="icon" value="/archive/leaf.png"/>
     <property name="form.description.rows" value="5"/>
     <property name="form.date.show" value="false"/>    
     <property name="form.area.show" value="true"/>    
+    <property name="form.area.showingroup"
+	      value="Collection Site"/>
     <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
@@ -19,14 +23,16 @@
     <property name="html.owner.show" value="false"/>                
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
-    <column name="common_name" label="Common Name"    type="string" size="500" group="Taxonomy"
+    <column group="Taxonomy"
+	    name="common_name" label="Common Name"    type="string" size="500" 
 	    cansearch="true" suffix="Press return to search for taxa"/>
     <column name="scientific_name" label="Scientific Name"    type="string" size="500" 
 	    cansearch="true" />    
 <!--
-    <column name="taxon_domain" label="Domain"
+   <column name="taxon_domain" label="Domain"
     type="enumerationplus" cansearch="true" values="Archaea,Bacteria,Eukarya"    group="Taxonomy"/>
     -->
+
     <column type="enumerationplus" cansearch="true" name="taxon_kingdom" label="Kingdom" />
     <column type="enumerationplus" cansearch="true" name="taxon_division" label="Division"/>
     <column type="enumerationplus" cansearch="true" name="taxon_class" label="Class"/>
@@ -45,6 +51,21 @@
     <column name="storage_unit" label="Storage Unit" type="enumerationplus" cansearch="true"/>
     <column group="Biology" name="habitat" label="Habitat" type="enumerationplus" cansearch="true"
 	    values="file:/org/ramadda/plugins/archive/resources/habitats.txt"/>
+
+    <column group="Collection Site" name="locality"  label="Locality" 
+	    type="enumerationplus" cansearch="true" />
+    <column name="country"  label="Country" 
+	    type="enumerationplus" cansearch="true"
+	    values="file:/org/ramadda/repository/resources/geo/countrylist.txt"
+	    />
+    <column name="state"  label="State" 
+	    type="enumerationplus" cansearch="true"
+	    values="file:/org/ramadda/repository/resources/geo/statelist.txt"
+	    />
+    <column name="county"  label="County" 
+	    type="enumerationplus" cansearch="true"
+	    values="file:/org/ramadda/repository/resources/geo/countylist.txt"
+	    />            
 
 
 <wiki><![CDATA[
