@@ -265,6 +265,65 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
    </type>
 
 
+  <type name="tribal_datahub"  super="community_thing" description="Tribal Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
+     <property name="icon" value="/community/tribal.png"/>
+     <property name="form.description.iswiki" value="true"/>
+<!--
+     <property name="search.metadatatypes" value="community_service,content.contact"/>
+-->
+<!--
+     <column name="organization_type" type="enumerationplus" label="Type" values="file:/org/ramadda/plugins/community/resources/organizations.txt" showinhtml="true" cansearch="true"/>
+     <column name="address"  type="string" label="Address" cansearch="true"/>
+     <column name="city"  type="enumerationplus" label="City" cansearch="true"/>
+     <column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+-->
+<children><![CDATA[
+<entries>
+<entry  name="Documents"  type="group"/>
+<entry  name="Data"  type="group"/>
+</entries>
+]]>
+</children>
+<property name="bubble"><![CDATA[
+:heading {{link}}
+{{tree message="" details="false"}}
+]]>
+</property>
+<wiki><![CDATA[
++section #
+:title {{name}}
++row
++col-md-8
+{{description wikify="true"}}
+:heading Data
+{{tabletree details="false" message="" sort="name"}}
+-col
++col-md-4
++skip
+{{properties  message="" metadata.types="content.alias" includeTitle="false"}}
+-skip
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry showBounds=false
+addMapLayerFromProperty=true
+zoomLevel=default width="300" message=""}}
+<p>
+<p>
+{{properties   message="" metadata.types="!content.alias,!content.logo,!content.timezone"}}
+-col
+-row
+-section
+:p
+:vspace 100px
+-section
+]]>
+</wiki>
+   </type>
+
+
+
+
+
 <!--
   <type name="community_cityhub"  super="community_datahub" description="City Data Hub" metadata="" >
      <column name="state" type="enumerationplus" label="State"  showinhtml="true" cansearch="true"/>
