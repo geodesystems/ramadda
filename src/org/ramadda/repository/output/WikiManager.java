@@ -28,6 +28,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.metadata.License;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
@@ -5828,6 +5829,8 @@ public class WikiManager extends RepositoryManager
         String  height     = getProperty(wikiUtil, props, ATTR_HEIGHT, "300");
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
                                          false);
+        boolean addMapLayerFromProperty = getProperty(wikiUtil, props, "addMapLayerFromProperty",
+                                         false);	
         boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",
                                          false);
         List<Entry> children;
@@ -5936,6 +5939,21 @@ public class WikiManager extends RepositoryManager
 		mapProps.put(mapArg, JU.quote(v));
 	    }
 	}
+
+	if(addMapLayerFromProperty) {
+	     List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, entry,
+                    ContentMetadataHandler.TYPE_ATTACHMENT, true);
+	     if(metadataList !=null) {
+		 for (Metadata metadata : metadataList) {
+		     if (!metadata.getAttr1().endsWith(".geojson")) continue;
+		     String url = metadata.getMetadataType().getFileUrl(request, entry,metadata,false,null);
+		     props.put("geojson",url);
+		     break;
+		 }
+	     }
+	}
+
 
 	String mapSet = getProperty(wikiUtil, props, "mapSettings",
 				    (String) null);
