@@ -731,7 +731,7 @@ public class GeoJson extends JsonUtil {
 	for(int i=0;i<args.length;i++) {
 	    String arg  =args[i];
 	    if(arg.equals("-bounds")) {
-		System.err.println(getBounds(args[++i]));
+		System.out.println(getBounds(args[++i]));
 		continue;
 	    }
 	    if(arg.equals("-reverse")) {
@@ -802,8 +802,8 @@ public class GeoJson extends JsonUtil {
 	    for(Command command: commands) {
 		obj = command.apply(obj);
 	    }
-	    System.exit(0);
 	}
+	System.exit(0);
     }
 
 
