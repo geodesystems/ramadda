@@ -393,7 +393,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 return null;
             }
 
-            String url = getImageUrl(request, entry, containerMetadata, this,
+            String url = getFileUrl(request, entry, containerMetadata, this,true,
                                      null);
             if (url != null) {
                 return new MetadataHtml(

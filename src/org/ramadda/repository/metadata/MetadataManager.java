@@ -751,7 +751,7 @@ public class MetadataManager extends RepositoryManager {
 		if(!stringDefined(mtdSnippet))
 		    mtdSnippet = m.getAttr(3);
 		if(thumbs.size()==0) {
-		    String url  = getType(m).getImageUrl(request, entry,m,null);
+		    String url  = getType(m).getFileUrl(request, entry,m,true,null);
 		    if(url!=null) {
 			thumbs.add(new String[]{url,null});
 		    }

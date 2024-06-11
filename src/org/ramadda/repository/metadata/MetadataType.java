@@ -758,7 +758,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 continue;
             }
             if (element.getThumbnail()) {
-                String url = getImageUrl(request, entry, metadata, null);
+                String url = getFileUrl(request, entry, metadata, true,null);
                 if (url != null) {
 		    String title = "";
 		    //Look for the string title
@@ -806,7 +806,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             if (element.getThumbnail()) {
                 //???                continue;
             }
-            String url = getImageUrl(request, entry, metadata, filter);
+            String url = getFileUrl(request, entry, metadata, true, filter);
             if (url != null) {
                 return url;
             }
@@ -840,7 +840,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             if (element.getThumbnail()) {
                 //???                continue;
             }
-            String url = getImageUrl(request, entry, metadata, filter);
+            String url = getFileUrl(request, entry, metadata, true, filter);
             if (url != null) {
                 return element;
             }

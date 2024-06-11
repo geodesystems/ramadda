@@ -540,28 +540,14 @@ public class MetadataTypeBase extends RepositoryManager {
         getChildren().add(element);
 	if(element.isFileType()) hasFile = true;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param matchFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getImageUrl(Request request, Entry entry,
-                              Metadata metadata, String matchFile)
+    public String getFileUrl(Request request, Entry entry,
+			     Metadata metadata, boolean checkImage,String matchFile)
             throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.TYPE_FILE)) {
                 continue;
             }
-            String url = getImageUrl(request, entry, metadata, element,
+            String url = getFileUrl(request, entry, metadata, element, checkImage,
                                      matchFile);
             if (url != null) {
                 return url;
@@ -571,23 +557,10 @@ public class MetadataTypeBase extends RepositoryManager {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param element _more_
-     * @param matchFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String getImageUrl(Request request, Entry entry,
-                              Metadata metadata, MetadataElement element,
-                              String matchFile)
+    public String getFileUrl(Request request, Entry entry,
+			     Metadata metadata, MetadataElement element,
+			     boolean checkImage,
+			     String matchFile)
             throws Exception {
 
         File f = getFile(entry, metadata, element);
@@ -613,19 +586,14 @@ public class MetadataTypeBase extends RepositoryManager {
             }
 
         }
-        if (Utils.isImage(f.toString())) {
-            tail = tail.replaceAll(" ", "_");
-            String path =
-                handler.getRepository().getMetadataManager()
-                    .URL_METADATA_VIEW + "/" + tail;
-
-
-            return HU.url(path, ARG_ELEMENT, element.getIndex() + "",
-                                 ARG_ENTRYID, metadata.getEntryId(),
-                                 ARG_METADATA_ID, metadata.getId());
-        }
-
-        return null;
+        if (checkImage && !Utils.isImage(f.toString())) return null;
+	tail = tail.replaceAll(" ", "_");
+	String path =
+	    handler.getRepository().getMetadataManager()
+	    .URL_METADATA_VIEW + "/" + tail;
+	return HU.url(path, ARG_ELEMENT, element.getIndex() + "",
+		      ARG_ENTRYID, metadata.getEntryId(),
+		      ARG_METADATA_ID, metadata.getId());
     }
 
 
