@@ -1419,8 +1419,8 @@ public class EntryManager extends RepositoryManager {
                     result.putProperty(PROP_REPOSITORY_NAME, title);
                 }
                 String imageUrl = getMetadataManager().getType(
-							       metadata).getImageUrl(
-										     request, entry, metadata, null);
+							       metadata).getFileUrl(
+										    request, entry, metadata, true,null);
                 if ((imageUrl != null) && (imageUrl.length() > 0)) {
                     result.putProperty(PROP_LOGO_IMAGE, imageUrl);
                 }
