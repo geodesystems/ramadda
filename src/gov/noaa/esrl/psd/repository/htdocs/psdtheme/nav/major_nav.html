@@ -13,7 +13,6 @@
 
 .dropdown-intranet {
   width: 400px;
-  opacity: 0.95;
 }
 
 .mega-menu a {
@@ -77,10 +76,6 @@
     list-style:none;
     padding-left:0px;
   }
-}
-
-.mega-menu{
-  opacity: 0.95;
 }
 
 .mega-menu div {
@@ -155,6 +150,10 @@
   padding-left: 0px;
 }
 
+.dropdown-menu ul {
+  list-style: none;
+}
+
 </style>
 
 <script>
@@ -185,7 +184,7 @@ $(function() {
 </script>
 
 <nav class="navbar navbar-fixed-top  navbar-inverse" role="navigation" >
-
+<!--#include virtual="/nav/usa_banner.html"-->
   <div class="alert alert-major-nav alert-dismissible small">
     <script>
         $('.alert-major-nav').hide();
@@ -194,7 +193,7 @@ $(function() {
     //    $("body").addClass("body_alert");
     </script>
 <!--
-    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be unavailable <u>between 4pm MDT April 18th and 5pm MDT April 19th</u> due to planned maintenance.</strong>
+    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be unavailable <u>between 9am and noon MDT Tuesday, December 12th</u> due to planned maintenance.</strong>
     <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
       <span aria-hidden="true" style="font-size:22px;color:white;">&times;</span>
     </button>
@@ -208,8 +207,8 @@ $(function() {
     <div class="navbar-header">
       <div class="navbar-brand">
         <div class="hidden-xs" style="float: left;">
-          <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.svg"
-           class="header_logo" style="margin-right: 12px; width: 50px; alt="NOAA Logo" /></a>
+          <a href="https://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.svg"
+           class="header_logo" style="margin-right: 12px; width: 50px;" alt="NOAA Logo" /></a>
         </div>
         <div class="visible-xs" style="float: left;">
           <a href="http://www.noaa.gov" title="Link to NOAA"><img src="/img/logos/noaa-logo.svg"
@@ -243,10 +242,12 @@ $(function() {
                     <!--#endif -->
                   <li><a href="/about/">About Us</a></li>
                   <li><a href="/about/org.html">Organization At-A-Glance</a></li>
+                  <li><a href="/research/divisions/">Research Divisions</a></li>
                   <li><a href="/reviews/">Science Reviews</a></li>
-				  <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
-				  	title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
+				          <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
+				  	            title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
                   <li><a href="https://esrl.noaa.gov/about/visiting.html">Visiting NOAA Boulder</a></li>
+                  <li><a href="/about/opportunities/">Opportunities</a></li>
                   <!--#if expr="$REMOTE_ADDR = /^10\.173\./  ||  $REMOTE_ADDR = /^140\.172\./"-->
                 </ul>
             </li>
@@ -276,9 +277,8 @@ $(function() {
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li> <a href="/about/contacts.html">Contact Us</a></li>
+            <li><a href="/about/contacts.html">Contact Us</a></li>
             <li><a href="/staff/index.html">Staff List</a></li>
-            <li><a href="/staff/spotlight/">Employee Spotlight</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -289,7 +289,7 @@ $(function() {
                 <ul class="">
                   <li class="hidden-xs hidden-sm"><span class="dropdown-header">Research</span></li>
                   <li><a href="/research/">Overview</a></li>
-                  <li><a href="/research/teams/">Teams</a></li>
+                  <li><a href="/research/divisions/">Research Divisions</a></li>
                   <li><a href="/pubs/">Publications</a></li>
                   <li><a href="/assessments/">Assessments</a></li>
                 </ul>
@@ -297,12 +297,14 @@ $(function() {
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Selected Topics</span></li>
-                  <li><a href="/data/20thC_Rean">20th Century Reanalysis</a></li>
-                  <li><a href="/arportal/">Atmospheric Rivers</a></li>
+                  <li><a href="/data/20thC_Rean/">20th Century Reanalysis</a></li>
+                  <li><a href="/arportal/">Atmospheric River Portal</a></li>
                   <li><a href="/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
                   <li><a href="/renewable_energy/">Renewable Energy</a></li>
-                  <li><a href="/csi/">Interpreting Climate Conditions</a></li>
                   <li><a href="/marine-heatwaves/">Marine Heatwaves</a></li>
+                  <li><a href="/mjo/">Madden-Julian Oscilation (MJO)</a></li>
+                  <li><a href="/fire_weather/">Fire Weather</a></li>
+                  <li><a href="/precip/pmp/">Probable Maximum Precipitation</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -318,6 +320,8 @@ $(function() {
                       data-placement="left" title="Multidisciplinary Drifting Observatory for the Study of Arctic Climate">MOSAiC</a></li>
                   <li><a href="/splash/" data-toggle="tooltip"
                       data-placement="left" title="Study of Precipitation, the Lower Atmosphere and Surface for Hydrometeorology">SPLASH</a></li>
+                      <li><a href="/renewable_energy/wfip3/" data-toggle="tooltip"
+                        data-placement="left" title="3rd Wind Forecast Improvement Project">WFIP3</a></li>    
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -338,11 +342,11 @@ $(function() {
             <li><a href="/data/gridded/index.html">Gridded Climate</a></li>
             <li><a href="/data/obs/">Profiler Network Data &amp; Image
                 Library</a></li>
-            <li><a href="/psd3/cruises/">Research Cruises</a></li>
+            <li><a href="/data/cruises/">Research Cruises</a></li>
             <li><a href="/arctic/data/">Arctic</a></li>
             <li><a href="/psd2/coastal/satres/">Satellite</a></li>
             <li><a href="/boulder/">Boulder Climate &amp; Weather</a></li>
-            <li><a href="/data/getpage">Plotting &amp; Analysis Tools</a></li>
+            <li><a href="/data/getpage/">Plotting &amp; Analysis Tools</a></li>
             <li><a href="/data/help/">Help</a></li>
 
           </ul>
@@ -363,6 +367,7 @@ $(function() {
 
             <li><a href="/data/writ/" data-toggle="tooltip"
                 data-placement="left" data-html="true" title="<strong>W</strong>eb-based <strong>R</strong>eanalyses <strong>I</strong>ntercomparison <strong>T</strong>ools">WRIT</a></li>
+                <li><a href="/forecasts/">Forecasts</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -377,9 +382,8 @@ $(function() {
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/outreach/resources/">Research Handouts</a></li>
+            <li><a href="/outreach/resources/">Fact Sheets</a></li>
             <li><a href="/outreach/education/">Education Resources</a></li>
-            <li><a href="/outreach/funtastic-science-talks">Funtastic Science Talks</a></li>
           </ul>
         </li>
         <li class="dropdown hidden-sm hidden-xs">

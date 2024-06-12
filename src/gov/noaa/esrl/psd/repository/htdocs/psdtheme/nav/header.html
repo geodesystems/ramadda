@@ -70,6 +70,8 @@
     hs.dimmingOpacity = .75;
   </script>
 
+<script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+
   <script>
 
   function toggleNav() {
@@ -112,6 +114,23 @@
         $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top-100 }, 500);
     });
   });
+
+  $(function() {
+    if (
+  "IntersectionObserver" in window &&
+  "IntersectionObserverEntry" in window &&
+  "intersectionRatio" in window.IntersectionObserverEntry.prototype
+) {
+let observer = new IntersectionObserver(entries => {
+  if (entries[0].boundingClientRect.y < 0) {
+    document.body.classList.add("header-not-at-top");
+  } else {
+    document.body.classList.remove("header-not-at-top");
+  }
+});
+observer.observe(document.querySelector("#banner"));
+}
+  })
 </script>
 
 	<!--#if expr="$stylesheet" -->
@@ -176,12 +195,55 @@ nav.shrink .navbar-toggle {
   margin: 8px 15px 8px 0;
 }
 
+body.header-not-at-top .navbar-inverse {
+  background: rgba(52, 58, 64, 0.80);
+}
+body.header-not-at-top .navbar-inverse:before {
+  content:"";
+  position: absolute;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  height:72px;
+  width:100%;
+  z-index:-1;
+}
+
+body.header-not-at-top .dropdown-menu {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(52, 58, 64, 0.80);
+  border-bottom: 1px solid rgb(64,64,64);
+}
+
+body.header-not-at-top .navbar-collapse:before {
+  content:"";
+  position: absolute;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  height:100%;
+  width:100%;
+  z-index:-1;
+}
+
+.navbar .container {
+  padding-top: 10px;
+}
+
+
 .mainNewsContainer {
 	margin-top:-50px;
 }
 
 .mainsection {
-	margin-top:-30px;
+	margin-top:-10px;
 }
 
 
@@ -225,20 +287,42 @@ $(function() {
 </head>
 
 <body>
-
 <div id="banner">
-
 	<!--#include virtual="/nav/major_nav.html"-->
 </div><!--/.banner-->
 
 <!-- Page Content -->
 <div class="mainsection" role="main" id="top">
 <div class="container">
+  <div class="row">
 	<!--#if expr="$self"-->
 		<!--#include virtual="/nav/breadcrumbs.html"-->
 	<!--#elif expr="$title"-->
 		<!--#include virtual="/nav/breadcrumbs.html"-->
+  <!--#else -->
+    <div class="col-xs-9 col-sm-9 col-md-12"></div>
 	<!--#endif-->
+  <!--#if expr="$minor_nav" -->
+  <div class="col-xs-3 col-sm-3 hidden-md hidden-lg">
+    <button type="button" class="navbar-toggle align-right" style="padding-right:10px;padding-top:5px;margin-top:35px;"
+    data-toggle="collapse" data-target="#minor-nav-navbar-collapse-1">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar" style="background:black;"></span>
+    <span class="icon-bar" style="background:black;"></span>
+    <span class="icon-bar" style="background:black;"></span>
+  </button>
+  
+  <div class="collapse navbar-collapse minor-nav-collapse" id="minor-nav-navbar-collapse-1">
+      <!--#include virtual="$minor_nav"-->
+  </div>
+  </div>
+
+  <script>
+    $("#minor_nav  a").attr('data-toggle','collapse');
+    $("#minor_nav  a").attr('data-target','#minor-nav-navbar-collapse-1');
+  </script>
+  <!--#endif -->
+  </div>
   <!--#if expr="$warnfilepath" -->
     <!--#include virtual="$warnfilepath"-->
   <!--#endif-->
@@ -246,7 +330,9 @@ $(function() {
 	<div class="row" id="mainWrapper">
 	<!-- minor navigation -->
 	<!--#if expr="$minor_nav" -->
+
 	<div class="col-xs-12 col-sm-12 col-md-9">
+
 	<!--#else -->
     <div class="col-md-12">
     <!--#endif -->
