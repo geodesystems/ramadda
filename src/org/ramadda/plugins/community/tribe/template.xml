@@ -1,0 +1,22 @@
+  <entry type="type_ncss"  changedate="2024-06-08 11:38 UTC" createdate="2024-06-08 11:38 UTC"  latitude="%latitude%" longitude="%longitude%"
+entryorder="999" fromdate="2024-02-03 00:00 UTC" id="05636a72-c3a3-4454-a0cf-03bfc632617e" isgroup="false" name="%tribe% GFS Forecast"  parent="%parent%" 
+todate="2024-03-20 00:00 UTC" 
+url="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/Best?var=Wind_speed_gust_surface&amp;var=Pressure_surface&amp;var=Temperature_surface&amp;var=Precipitable_water_entire_atmosphere_single_layer&amp;var=Total_cloud_cover_entire_atmosphere&amp;latitude=${latitude}&amp;longitude=${longitude}&amp;time_start=${date format=yyyy-MM-dd}&amp;time_end=${date offset=&quot;${endTimeOffset}&quot;}&amp;&amp;&amp;accept=csv" >
+    <properties encoded="true"><![CDATA[c2tpcGxpbmVzPTENCmZpZWxkcz10aW1lW3R5cGU9ZGF0ZSBmb3JtYXQ9Inl5eXktTU0tZGQnVCdI
+SDptbTpzcyJdLHN0YXRpb25bdHlwZT1zdHJpbmddLGxhdGl0dWRlW3VuaXQ9ImRlZ3JlZXNfbm9y
+dGgiXSxsb25naXR1ZGVbdW5pdD0iZGVncmVlc19lYXN0Il0sV2luZF9zcGVlZF9ndXN0X3N1cmZh
+Y2VbbGFiZWw9IldpbmQgU3BlZWQgR3VzdCBTdXJmYWNlIiAgIHVuaXQ9Im0vcyJdLFByZXNzdXJl
+X3N1cmZhY2VbbGFiZWw9IlByZXNzdXJlIFN1cmZhY2UiICAgdW5pdD0iUGEiXSxUZW1wZXJhdHVy
+ZV9zdXJmYWNlW2xhYmVsPSJUZW1wZXJhdHVyZSBTdXJmYWNlIiAgIHVuaXQ9IkMiICAgIG9mZnNl
+dDE9Ii0yNzMuMTUiXSxQcmVjaXBpdGFibGVfd2F0ZXJfZW50aXJlX2F0bW9zcGhlcmVfc2luZ2xl
+X2xheWVyW2xhYmVsPSJQcmVjaXBpdGFibGUgV2F0ZXIgRW50aXJlIEF0bW9zcGhlcmUgU2luZ2xl
+IExheWVyIiAgIHVuaXQ9ImtnLm0tMiJdLFRvdGFsX2Nsb3VkX2NvdmVyX2VudGlyZV9hdG1vc3Bo
+ZXJlW2xhYmVsPSJUb3RhbCBDbG91ZCBDb3ZlciBFbnRpcmUgQXRtb3NwaGVyZSIgICB1bml0PSIl
+Il0NCg==
+]]></properties>
+    <end_date_offset encoded="true"><![CDATA[KzEwIGRheXM=
+]]></end_date_offset>
+    <default_fields encoded="true"><![CDATA[VGVtcGVyYXR1cmVfc3VyZmFjZSwgUHJlc3N1cmVfc3VyZmFjZQ==
+]]></default_fields>
+  </entry>
+
