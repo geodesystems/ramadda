@@ -5941,17 +5941,8 @@ public class WikiManager extends RepositoryManager
 	}
 
 	if(addMapLayerFromProperty) {
-	     List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request, entry,
-                    ContentMetadataHandler.TYPE_ATTACHMENT, true);
-	     if(metadataList !=null) {
-		 for (Metadata metadata : metadataList) {
-		     if (!metadata.getAttr1().endsWith(".geojson")) continue;
-		     String url = metadata.getMetadataType().getFileUrl(request, entry,metadata,false,null);
-		     props.put("geojson",url);
-		     break;
-		 }
-	     }
+	    //	    List<String> urls=getMapManager().findGeoJsonUrls(request, entry);
+	    //	    props.put("geojson",urls);
 	}
 
 
@@ -9633,6 +9624,12 @@ public class WikiManager extends RepositoryManager
             }
 
 	    getMapManager().addMapMarkerMetadata(request, entry, propList);
+
+	    List<String> geojsonUrls=getMapManager().findGeoJsonUrls(request, entry);
+	    for(int i=0;i<geojsonUrls.size();i++) {
+		Utils.add(propList, "geojsonLayer" + i, JU.quote(geojsonUrls.get(i)));
+	    }
+
 
 	}
 
