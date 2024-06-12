@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -44,41 +44,28 @@ import java.util.List;
 import java.util.TimeZone;
 
 
-/**
- */
+
 @SuppressWarnings("unchecked")
 public class DwmlFeedTypeHandler extends PointTypeHandler {
 
-    /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
     private static int IDX_TIMEZONE = IDX++;
 
-
-    /** _more_ */
     private TTLCache<String, Weather> forecastCache = new TTLCache<String,
 	Weather>(5 * 60
 		 * 1000);
 
-    /** _more_ */
     private TTLCache<String, Weather> currentCache = new TTLCache<String,
 	Weather>(5 * 60
 		 * 1000);
 
 
 
-    /** _more_ */
     private static final String URL =
         "https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}&unit=0&lg=english&FcstType=dwml";
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
+
     public DwmlFeedTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
         super(repository, entryNode);
@@ -89,16 +76,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	return  (Utils.stringDefined(s) && !s.equals("NA"));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
 	throws Exception {
@@ -119,38 +96,18 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         return new DwmlRecordFile(request,getRepository(), this, entry);
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class DwmlRecordFile extends CsvFile {
 
-        /** _more_ */
         private Repository repository;
 
 	private Request request;
 
-        /** _more_ */
         private String dataUrl;
 
-        /** _more_ */
         private Entry entry;
 
 	DwmlFeedTypeHandler typeHandler;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param ctx _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
         public DwmlRecordFile(Request request,Repository repository, DwmlFeedTypeHandler ctx, Entry entry)
                 throws IOException {
             super(null, ctx, null);
@@ -167,14 +124,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	    return s;
 	}
 
-        /**
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         *
-         * @throws Exception _more_
-         */
+
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
@@ -188,7 +138,21 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		    sb.append(format(t.min));
 		    sb.append(",");
 		    sb.append(format(t.max));
+		    /*
 		    sb.append(",");
+		    sb.append(format(t.dewpoint));
+		    sb.append(",");
+		    sb.append(format(t.precip));
+		    sb.append(",");
+		    sb.append(format(t.humidity));
+		    sb.append(",");		    		    
+		    sb.append(format(t.pressure));
+		    sb.append(",");		    		    
+		    sb.append(format(t.sustained));
+		    sb.append(",");
+		    sb.append(format(t.gust));
+		    */
+		    sb.append(",");		    		    		    
 		    sb.append(format(t.words));
 		    sb.append(",");
 		    sb.append(format(t.icon));
@@ -202,17 +166,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param getForecast _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Weather getWeather(Request request,Entry entry, boolean getForecast)
 	throws Exception {
         try {
@@ -258,48 +211,16 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Weather getForecast(Request request,Entry entry) throws Exception {
         return getWeather(request,entry, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     private Weather getCurrent(Request request,Entry entry) throws Exception {
         return getWeather(request,entry, false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -368,18 +289,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	//        return HU.div(contents, HU.style("display:inline-block;"));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param showHeader _more_
-     *
-     * @throws Exception _more_
-     */
     private void addHazard(Request request, Entry entry, Appendable sb,
                            boolean showHeader)
 	throws Exception {
@@ -412,19 +321,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         HU.close(sb, "div");
 
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param showHeader _more_
-     * @param vertical _more_
-     * @param showDetails _more_
-     *
-     * @throws Exception _more_
-     */
     private void addCurrent(Request request, Entry entry, Appendable sb,
                             boolean showHeader, boolean vertical,
                             boolean showDetails,boolean showLabel, boolean showHazard)
@@ -504,17 +400,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param showHeader _more_
-     * @param cnt _more_
-     *
-     * @throws Exception _more_
-     */
     private void addForecast(Request request, Entry entry, Appendable sb,
                              boolean showHeader, int cnt)
 	throws Exception {
@@ -608,18 +493,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         HU.close(sb, "div");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param showHeader _more_
-     * @param cnt _more_
-     *
-     * @throws Exception _more_
-     */
     private void addDetails(Request request, Entry entry, Appendable sb,
                             boolean showHeader, int cnt)
 	throws Exception {
@@ -665,17 +538,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         HU.close(sb, "div");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param times _more_
-     * @param node _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void checkTimes(Request request,
                             Hashtable<String, Element> times, Element node,
                             Appendable sb)
@@ -696,38 +558,19 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Nov 16, '18
-     * @author         Enter your name here...
-     */
     private static class Weather {
 
-        /** _more_ */
         String location;
 
-        /** _more_ */
         String moreWeather;
 
-        /** _more_ */
         StringBuilder hazards;
 
-        /** _more_ */
         List<Time> times = new ArrayList<Time>();
 
-        /** _more_ */
         Hashtable<String, List<Time>> keyMap = new Hashtable<String,
 	    List<Time>>();
 
-        /**
-         * _more_
-         *
-         * @param node _more_
-         *
-         * @throws Exception _more_
-         */
         public Weather(Element node) throws Exception {
             moreWeather = XmlUtil.getGrandChildText(node,
 						    "moreWeatherInformation", (String) null);
@@ -743,11 +586,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param hazard _more_
-         */
         public void addHazard(String hazard) {
             if (hazards == null) {
                 hazards = new StringBuilder();
@@ -759,13 +597,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param dataNode _more_
-         *
-         * @throws Exception _more_
-         */
         private void processParams(Element dataNode) throws Exception {
 
             Element params = XmlUtil.getElement(dataNode, "parameters");
@@ -905,14 +736,6 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param dataNode _more_
-         *
-         * @throws Exception _more_
-         */
         private void processTimes(Element dataNode) throws Exception {
             SimpleDateFormat sdf =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
@@ -962,68 +785,37 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
 
 
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Fri, Nov 16, '18
-         * @author         Enter your name here...
-         */
         private class Time implements Comparable {
-
-            /** _more_ */
             Date date;
 
-            /** _more_ */
             String label;
 
-            /** _more_ */
             String icon;
 
-            /** _more_ */
             String words = "";
 
-            /** _more_ */
             String weather;
 
-            /** _more_ */
-            String precip;
 
-            /** _more_ */
             String max;
 
-            /** _more_ */
             String min;
 
-            /** _more_ */
             String apparent;
 
-            /** _more_ */
             String dewpoint;
 
-            /** _more_ */
+            String precip;
             String humidity;
 
-            /** _more_ */
             String direction;
 
-            /** _more_ */
             String pressure;
 
-            /** _more_ */
             String gust;
 
-            /** _more_ */
             String sustained;
 
-
-
-            /**
-             * _more_
-             *
-             * @param date _more_
-             * @param label _more_
-             */
             public Time(Date date, String label) {
                 this.date  = date;
                 this.label = label;
@@ -1053,54 +845,27 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		    HU.formEntry(sb, "Dew&nbsp;Point:", this.dewpoint);
 		}
 
-		/*
-		  sb.append(
-		  HU.formEntry(
-		  "Last&nbsp;Update:",
-		  dateFormat.format(this.date).replaceAll(" ", "&nbsp;")));
-		*/
 		sb.append(HU.formTableClose());
 		return sb.toString();
 	    }
 
-
-
-            /**
-             * _more_
-             *
-             * @param o _more_
-             *
-             * @return _more_
-             */
             public int compareTo(Object o) {
                 Date date2 = ((Time) o).date;
 
                 return -date2.compareTo(date);
             }
 
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
             public String toString() {
                 return "time:" + label + " dttm: " + date;
             }
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         String url =
             "https://forecast.weather.gov/MapClick.php?lat=40.0157&lon=-105.2792&unit=0&lg=english&FcstType=dwml";
         String xml = Utils.readUrl(url);
-        System.err.println(xml);
+        System.out.println(xml);
         Element root = XmlUtil.getRoot(xml);
         Element forecastNode = XmlUtil.findElement(XmlUtil.getElements(root,
 								       "data"), "type", "forecast");

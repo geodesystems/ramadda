@@ -31,7 +31,8 @@
      <wikimacro name="nws.all" label="NWS Forecast All"><![CDATA[{{nws.all showHeader=false}}]]></wikimacro>
      <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
  <property name="record.properties">
-fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],description[type=string],icon[type=image]
+   xxxfields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],dewpoint[type=double],precipitation[type=double],humidity[type=double],pressure[type=double],wind_speed[type=double],wind_gust[type=double],description[type=string],icon[type=image]
+fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],description[type=string],icon[type=image]   
 </property>
      <wiki><![CDATA[
 +section title={{name}}
