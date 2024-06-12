@@ -1079,14 +1079,19 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	if(isPrivate(request, entry,metadata)) {
 	    return null;
 	}
+	Hashtable props =
+	    (Hashtable) request.getExtraProperty("wiki.props");
+
         StringBuffer content = new StringBuffer();
         boolean smallDisplay = request.getString(ARG_DISPLAY,
 						 "").equals(DISPLAY_SMALL);
         String nameString   = getTypeLabel(metadata);
         String searchLink = "";
-        String lbl          = smallDisplay
+        String lbl          = !showLabel?"":
+	    smallDisplay
 	    ? msg(nameString)
 	    : msgLabel(nameString);
+	boolean showLabel = Utils.getProperty(props,"showLabel",true);
 
 
 	List<MetadataElement> children = getChildren();
@@ -1094,8 +1099,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	if(makeSearchLink && !children.get(0).isEnumeration()) makeSearchLink=false;
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
-	Hashtable props =
-	    (Hashtable) request.getExtraProperty("wiki.props");
 	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
         if (html!=null) {
 	    if(makeSearchLink) {
@@ -1132,13 +1135,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 			    metadataHtml = HU.div(metadataHtml,HU.cssClass("ramadda-bigtext"));
 			}
 		    }
-                    if ( !element.isGroup() && (children.size() == 1)) {
-                        content.append(
-				       HU.row(
-					      HU.colspan(metadataHtml, 2)));
+                    if (!showLabel || (!element.isGroup() && (children.size() == 1))) {
+                        content.append(HU.row(HU.colspan(metadataHtml, 2)));
                     } else {
-                        content.append(HU.formEntry(formInfo.label,
-						    metadataHtml));
+                        content.append(HU.formEntry(formInfo.label,  metadataHtml));
                     }
                     didOne = true;
                 }
@@ -1150,7 +1150,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 return null;
             }
         }
-
         return new String[] { lbl, content.toString() };
     }
 
