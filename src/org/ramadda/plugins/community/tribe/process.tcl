@@ -70,12 +70,12 @@ proc tribe {state tribe wiki lat lon} {
 	set lon [expr $west+($east-$west)/2]
 	puts "[attr north $north] [attr west $west] [attr south  $south] [attr east $east]"
 	puts ">"
-	puts "<metadata type=\"content.attachment\">"
-	puts "<attr fileid=\"$file\" index=\"1\" encoded=\"false\"><!\[CDATA\[$file\]\]></attr>"
+	puts "<metadata [attr type map_displaymap_file] [attr inherited true]>"
+	puts "<attr [attr fileid $file] [attr index 1] [attr encoded false]>[cdata $file]</attr>"
 	puts "</metadata>"
     } else {
 	if {$lat!="N/A"} {
-	    puts " latitude=\"$lat\" longitude=\"$lon\" "
+	    puts " [attr latitude $lat] [attr longitude $lon] "
 	}
 	puts ">"
     }
@@ -98,6 +98,15 @@ proc tribe {state tribe wiki lat lon} {
 	append children "<description>[cdata {{{map}}}]</description>"
 	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_usgs_gauge\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	append children "</entry>\n"
+
+
+	set d 2
+	set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
+	append children "<entry [attr type type_virtual] [attr name {NOAA Sea-Level Trends}] [attr parent ${id}_data]>\n"
+	append children "<description>[cdata {{{map}}}]</description>"
+	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_trend\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
+	append children "</entry>\n"
+
     }
 
     if {$lat!="N/A"} {
@@ -109,6 +118,9 @@ proc tribe {state tribe wiki lat lon} {
 	append desc "{{nws.hazards entry=\"${id}_nws\" addHeader=\"false\"}}\n"
 	append desc ":br\n"
 	append desc "{{nws.current [attr entry ${id}_nws] [attr addHeader false] [attr orientation vertical]}}\n";
+	append desc ":br\n"
+	append desc "{{nws.forecast [attr entry ${id}_nws] showHeader=false showDetails=false count=1000}}\n";
+
 	
     }
     puts  "<description><!\[CDATA\[$desc\]\]></description>\n"
