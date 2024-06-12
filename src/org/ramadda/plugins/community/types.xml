@@ -313,6 +313,7 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
 addMapLayerFromProperty=true
 zoomLevel=default width="300" message=""}}
 :vspace 1em
+{{ark short=true}}
 {{properties   message="" metadata.types="content.license" inherited="true"}}
 {{properties   message="" metadata.types="!content.alias,!content.contact,!content.license,!content.url,!content.logo,!content.timezone"}}
 -col
