@@ -308,13 +308,14 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
 {{properties  message="" metadata.types="content.url" includeTitle="true" showLabel="false"}}
 {{properties  message="" metadata.types="content.contact" includeTitle="true" showLabel="false"}}
 {{image src="::*" message="" width="300" multiples="true"}}
-<p>
+:vspace 0.5em
+{{properties   message="" metadata.types="content.license" inherited="true"}}
+:vspace 0.5em
 {{mapentry showBounds=false
 addMapLayerFromProperty=true
 zoomLevel=default width="300" message=""}}
 :vspace 1em
 {{ark short=true}}
-{{properties   message="" metadata.types="content.license" inherited="true"}}
 {{properties   message="" metadata.types="!content.alias,!content.contact,!content.license,!content.url,!content.logo,!content.timezone"}}
 -col
 -row
