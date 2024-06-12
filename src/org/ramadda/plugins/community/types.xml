@@ -265,9 +265,14 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
    </type>
 
 
-  <type name="tribal_datahub"  super="community_thing" description="Tribal Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
+  <type name="tribal_datahub"  super="community_thing" description="Tribal Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="content.url,content.contact,content.license" >
      <property name="icon" value="/community/tribal.png"/>
      <property name="form.description.iswiki" value="true"/>
+     <column name="state"  label="State" 
+	     type="enumerationplus" cansearch="true"
+	     values="file:/org/ramadda/repository/resources/geo/statelist.txt"
+	     />
+
 <!--
      <property name="search.metadatatypes" value="community_service,content.contact"/>
 -->
@@ -299,17 +304,17 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
 {{tabletree details="false" message="" sort="name"}}
 -col
 +col-md-4
-+skip
-{{properties  message="" metadata.types="content.alias" includeTitle="false"}}
--skip
-{{image src="::*" message="" width="300"}}
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
+{{properties  message="" metadata.types="content.url" includeTitle="true" showLabel="false"}}
+{{properties  message="" metadata.types="content.contact" includeTitle="true" showLabel="false"}}
+{{image src="::*" message="" width="300" multiples="true"}}
 <p>
 {{mapentry showBounds=false
 addMapLayerFromProperty=true
 zoomLevel=default width="300" message=""}}
-<p>
-<p>
-{{properties   message="" metadata.types="!content.alias,!content.logo,!content.timezone"}}
+:vspace 1em
+{{properties   message="" metadata.types="content.license" inherited="true"}}
+{{properties   message="" metadata.types="!content.alias,!content.contact,!content.license,!content.url,!content.logo,!content.timezone"}}
 -col
 -row
 -section
