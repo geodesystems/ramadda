@@ -18,6 +18,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
@@ -789,6 +790,18 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         MapInfo mapInfo = new MapInfo(request, getRepository(), props, width,
                                       height, forSelection);
 
+	List<String> geojsonUrls=findGeoJsonUrls(request, entry);
+	for(String geojson: geojsonUrls) {
+	    if(!stringDefined(geojson)) continue;
+	    geojson = entry.getTypeHandler().applyTemplate(entry, geojson, true);
+	    //Check for any macros not added
+	    if(geojson.indexOf("${")<0)  {
+		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
+	    }
+	}
+
+
+
         if (style != null) {
             mapInfo.setStyle(style);
         }
@@ -1447,13 +1460,24 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
+
 	if(props!=null) {
-	    String geojson = (String) props.get("geojson");
-	    if(stringDefined(geojson)) {
-		geojson = mainEntry.getTypeHandler().applyTemplate(mainEntry, geojson, true);
-		//Check for any macros not added
-		if(geojson.indexOf("${")<0)  {
-		    map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
+	    List<String> urls=null;
+	    Object prop = props.get("geojson");
+	    if(prop!=null && (prop instanceof String)) {
+		urls =new ArrayList<String>();
+		urls.add((String) prop);
+	    } else if(prop instanceof List) {
+		urls = (List<String>) prop;
+	    }
+	    if(urls!=null) {
+		for(String geojson: urls) {
+		    if(!stringDefined(geojson)) continue;
+		    geojson = mainEntry.getTypeHandler().applyTemplate(mainEntry, geojson, true);
+		    //Check for any macros not added
+		    if(geojson.indexOf("${")<0)  {
+			map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
+		    }
 		}
 	    }
 	    for(int i=1;true;i++) {
@@ -1503,7 +1527,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 //              System.err.println("skipping:" + skey +" converted:" + converted);
                 continue;
             }
-            String v = (String) props.get(skey);
+            Object o =  props.get(skey);
+	    if(o==null) continue;
+	    String v = o.toString();
             if (v.equals("true") || v.equals("false")) {}
             else {
                 try {
@@ -1935,6 +1961,23 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
     }
 
+
+
+    public List<String> findGeoJsonUrls(Request request, Entry entry) throws Exception {
+	List<String> urls=new ArrayList<String>();
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[]{"map_displaymap_file",ContentMetadataHandler.TYPE_ATTACHMENT}, true);
+	if(metadataList !=null) {
+	    for (Metadata metadata : metadataList) {
+		if (!metadata.getAttr1().endsWith(".geojson")) continue;
+		String url = metadata.getMetadataType().getFileUrl(request, entry,metadata,false,null);
+		urls.add(url);
+	    }
+	}
+	return urls;
+    }
+	
 
 
     public void initMapSelector(Request request, TypeHandler typeHandler,
