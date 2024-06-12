@@ -14,7 +14,7 @@
 
     </type>
 
-    <type id="map_displaymap" name="Extra Map Layer">
+    <type id="map_displaymap" name="Extra Map Layer Entry">
       <help>
 	<![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display]]>
       </help>
@@ -44,6 +44,14 @@
           name="Map Entry"
           suffix="Lat/Lon Image, KML or GeoJSON Entry"/>
     </type>
+
+
+    <type
+       name="Extra Map Layer File"
+       id="map_displaymap_file">
+      <element name="File" datatype="file" thumbnail="false" istitle="true"/>
+    </type>
+
 
 
 

@@ -332,8 +332,6 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
 </type>
 
 
-
-
     <type
        searchable="true" browsable="true"
        name="RAMADDA Alias"
@@ -346,7 +344,7 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
 ]]>
 </help>
       <element name="Alias" />
-      <template type="html"><![CDATA[<b>RAMADDA Alias:</b> <a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
+      <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
 
     <type
