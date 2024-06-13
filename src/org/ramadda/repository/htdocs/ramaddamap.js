@@ -1298,11 +1298,13 @@ RepositoryMap.prototype = {
 	    }
 	}
 
+
 	layer.drawFeature(layer.selectedFeature, style);
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
-                feature.style = feature.originalStyle;
+		//Don't do this now as it mucks up the display
+		//                feature.style = feature.originalStyle;
             }
 	    if(debugPopup) console.log("\thave a selectCallback");
 	    layer.selectCallback(layer.feature,layer,event);
@@ -1327,7 +1329,7 @@ RepositoryMap.prototype = {
 
     unselectFeature: function(feature) {
         if (!feature) return;
-        feature.renderIntent = null;
+	feature.renderIntent = null;
         feature.isSelected = false;
         let layer = feature.layer;
         if (!layer) return;
