@@ -1,0 +1,13 @@
+<entry  isgroup="true" name="Private" parent="%parent%"  type="group">
+    <description encoded="true"><![CDATA[PHdpa2k+CitzZWN0aW9uIHRpdGxlPXt7bmFtZX19DQorY2VudGVyDQp7e2FjY2Vzc19zdGF0dXN9
+fQ0KLWNlbnRlcg0Ke3t0YWJsZXRyZWUgIG1lc3NhZ2U9IiIgIHNpbXBsZT0iZmFsc2UiICAjbWF4
+SGVpZ2h0PSI1MDBweCIgIH19IA0KLXNlY3Rpb24=
+]]></description>
+    <permissions>
+      <permission action="view">
+        <role role="atni"/>
+        <role role="none"/>
+      </permission>
+    </permissions>
+  </entry>
+
