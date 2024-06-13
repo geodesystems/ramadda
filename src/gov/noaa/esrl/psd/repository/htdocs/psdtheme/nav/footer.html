@@ -2,10 +2,8 @@
 
 <!--#if expr="$minor_nav" -->
 <!-- minor navigation -->
-			<div class="col-xs-12 col-sm-12 col-md-3">
-				<nav>
+			<div class="hidden-xs hidden-sm col-md-3">
 <!--#include virtual="$minor_nav"-->
-				</nav>
 			</div>
 <!--#endif -->
 
@@ -19,6 +17,20 @@
 		</div>
 		<!--#endif -->
 
+		<div class="row">
+			<div class="col-md-12 reviewed">
+			<!--#if expr="$last_reviewed"-->
+			<div>
+			Page Last Reviewed: <!--#echo var="last_reviewed" -->
+			</div>
+			<!--#endif-->
+			<!--#if expr="$last_updated"-->
+			<div>
+			Page Last Updated: <!--#echo var="last_updated" -->
+			</div>
+			<!--#endif-->
+			</div>
+		</div>
 	</div> <!--  end main container -->
 </div> <!--  end mainsection -->
 <!-- Footer -->
@@ -34,13 +46,6 @@
 						Boulder, CO 80305-3328
 					</p>
 
-					<h4>Connect with ESRL</h4>
-					<p>
-	                <a aria-label="Facebook" href="https://www.facebook.com/NOAAESRL"><i class="fab fa-facebook-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="Twitter" href="https://twitter.com/NOAA_ESRL"><i class="fab fa-twitter-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="YouTube" href="https://www.youtube.com/user/NOAAESRL"><i class="fab fa-youtube-square fa-2x" aria-hidden="true"></i></a>&nbsp;
-                    <a aria-label="Flickr" href="https://www.flickr.com/photos/noaa_esrl"><i class="fab fa-flickr fa-2x" aria-hidden="true"></i></a>
-                    </p>
 				</div>
 				<div class="col-md-5 col-sm-5">
 				<h4>Physical Sciences Laboratory</h4>
@@ -55,18 +60,20 @@
 					<!--#if expr="$REMOTE_ADDR = /^10\.173\./  ||  $REMOTE_ADDR = /^140\.172\./"-->
 					<p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
 					<!--#endif-->
-					<p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
+					<p><a href="https://www.noaa.gov/protecting-your-privacy">Privacy Policy</a></p>
 					<p><a href="/disclaimer/">Disclaimer</a></p>
-					<p><a href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a></p>
-					<p><a href="http://www.usa.gov/">USA.gov</a></p>
+					<p><a href="https://www.noaa.gov/accessibility">Accessibility</a></p>
+					<p><a href="https://www.usa.gov/">USA.gov</a></p>
 				</div>
 			</div><!--/.row-->
 		</div>
 	</div><!--/.container-->
 	<div class="subFooter">
+
 		<div class="col-md-12">
-			<a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a> &nbsp;|&nbsp; <a href="http://www.esrl.noaa.gov">ESRL</a>
+			<a href="https://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="https://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>
 		</div>
+		
 	</div>
 </footer>
 </body>

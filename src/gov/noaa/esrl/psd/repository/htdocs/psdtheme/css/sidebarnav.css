@@ -1,0 +1,94 @@
+/********** TOGGLED SIDE NAVIGATION ************/
+.sidenav {
+    height: 100%;
+    width: auto;
+    display:none;
+    position: fixed;
+    z-index: 200;
+    top: 0;
+    right: 0;
+    background-color: #41474d;
+    color: white;
+    overflow-x: visible;
+    overflow-y: scroll;
+    padding-top: 60px;
+    box-shadow: -6px 0px 12px 1px rgba(0, 0, 0, 0.175);
+    opacity: 0.95;
+}
+
+.sidenav dl, .sidenav #minor_nav dl {
+    margin:0px 0px 10px 0px;
+}
+
+.sidenav dt, .sidenav #minor_nav dt {
+	font-weight: 500;
+	font-size: 17px;
+	margin: 0 0 10px 0;
+    background: #679b6c;
+    white-space: nowrap;
+    padding: 3px 5px 3px 10px;
+    width:100%;
+}
+
+.sidenav dd, .sidenav #minor_nav dd {
+    font-size: 14px;
+   	font-weight: 400;
+    white-space: nowrap;
+    padding: 2px 8px 2px 20px;
+    margin: 0px 0px 6px 0px;
+    border: none;
+}
+
+.sidenav a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.sidenav dd:hover {
+    background: #888;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.sidenav .closebtn:hover {
+	color: #679b6c;
+}
+
+.sidenav #minor_nav a:link, .sidenav #minor_nav a:visited, .sidenav #minor_nav a:focus {
+    color: #fff;
+    text-decoration: none;
+}
+
+.sidenav #minor_nav dd:hover {
+    background: #888;
+}
+
+.sidenav #minor_nav {
+  margin-top:0px;
+  padding-top:0px;
+  padding-right:0px;
+}
+
+.sidenav #minor_nav dd label {
+    font-weight: 400;
+    margin-bottom:0px;
+}
+
+.sidenav #minor_nav p {
+    border-top: 0px solid #ccc;
+    font-size: 14px;
+    padding: 2px 8px 2px 20px;
+    margin: 0px 0px 6px 0px;
+    overflow-wrap: word-break;
+    max-width:300px;
+}
+
+.sidenav #minor_nav p:hover {
+    background: transparent;
+}

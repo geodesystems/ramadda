@@ -8,8 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="US Department of Commerce, NOAA, Physical Sciences Laboratory">
     <meta name="author" content="PSL Web Team">
-
-	<meta name="keywords" content='Physical Sciences Laboratory, NOAA, ESRL, weather, water, climate, extremes, research, modeling, observations'>
+        <meta name="keywords" content='Physical Sciences Laboratory, NOAA, ESRL, weather, water, climate, extremes, research, modeling, observations'>
 
 <title>${repository_name} - ${title}</title>
 
@@ -130,6 +129,23 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
         $("html, body").animate({ scrollTop: $($(this).attr("href")).offset().top-100 }, 500);
     });
   });
+
+  $(function() {
+    if (
+  "IntersectionObserver" in window &&
+  "IntersectionObserverEntry" in window &&
+  "intersectionRatio" in window.IntersectionObserverEntry.prototype
+) {
+let observer = new IntersectionObserver(entries => {
+  if (entries[0].boundingClientRect.y < 0) {
+    document.body.classList.add("header-not-at-top");
+  } else {
+    document.body.classList.remove("header-not-at-top");
+  }
+});
+observer.observe(document.querySelector("#banner"));
+}
+  })
 </script>
 
 ${headfinal}
@@ -196,12 +212,57 @@ nav.shrink .navbar-toggle {
   margin: 8px 15px 8px 0;
 }
 
+body.header-not-at-top .navbar-inverse {
+  background: rgba(52, 58, 64, 0.80);
+}
+body.header-not-at-top .navbar-inverse:before {
+  content:"";
+  position: absolute;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  height:72px;
+  width:100%;
+  z-index:-1;
+}
+
+body.header-not-at-top .dropdown-menu {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(52, 58, 64, 0.80);
+  border-bottom: 1px solid rgb(64,64,64);
+}
+
+body.header-not-at-top .navbar-collapse:before {
+  content:"";
+  position: absolute;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  height:100%;
+  width:100%;
+  z-index:-1;
+}
+
+<!--
+.navbar .container {
+  padding-top: 10px;
+}
+-->
+
+
 .mainNewsContainer {
         margin-top:-50px;
 }
 
 .mainsection {
-        margin-top:-30px;
+        margin-top:-10px;
 }
 
 
@@ -244,7 +305,6 @@ nav.shrink .navbar-toggle {
 
 .dropdown-intranet {
   width: 400px;
-  opacity: 0.95;
 }
 
 .mega-menu a {
@@ -308,10 +368,6 @@ nav.shrink .navbar-toggle {
     list-style:none;
     padding-left:0px;
   }
-}
-
-.mega-menu{
-  opacity: 0.95;
 }
 
 .mega-menu div {
@@ -386,6 +442,10 @@ nav.shrink .navbar-toggle {
   padding-left: 0px;
 }
 
+.dropdown-menu ul {
+  list-style: none;
+}
+
 </style>
 
 <script>
@@ -417,6 +477,112 @@ $(function() {
 
 <nav class="navbar navbar-fixed-top  navbar-inverse" role="navigation" >
 
+<link rel="stylesheet" href="${root}/psdtheme/css/uswds.css" />
+
+
+<style> 
+    .usa-banner__inner, .usa-banner__header--expanded .usa-banner__inner  {
+        margin-left: 0px;
+    }
+    body.header-not-at-top .usa-banner {
+        display: none;
+    }
+    
+</style>
+<section
+  class="usa-banner"
+  aria-label="Official website of the United States government"
+>
+  <div class="usa-accordion">
+    <header class="usa-banner__header">
+      <div class="usa-banner__inner">
+        <div class="grid-col-auto">
+          <img
+            aria-hidden="true"
+            class="usa-banner__header-flag"
+            src="${root}/psdtheme/img/icons/us_flag_small.png"
+            alt=""
+          />
+        </div>
+        <div class="grid-col-fill tablet:grid-col-auto" aria-hidden="true">
+          <p class="usa-banner__header-text">
+            An official website of the United States government
+          </p>
+          <p class="usa-banner__header-action">Here's how you know</p>
+        </div>
+        <button
+          type="button"
+          class="usa-accordion__button usa-banner__button"
+          aria-expanded="false"
+          aria-controls="gov-banner-default"
+        >
+          <span class="usa-banner__button-text">Here's how you know</span>
+        </button>
+      </div>
+    </header>
+    <div
+      class="usa-banner__content usa-accordion__content"
+      id="gov-banner-default"
+    >
+      <div class="grid-row grid-gap-lg">
+        <div class="usa-banner__guidance tablet:grid-col-6">
+          <img
+            class="usa-banner__icon usa-media-block__img"
+            src="${root}/psdtheme/img/icons/icon-dot-gov.svg"
+            role="img"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="usa-media-block__body">
+            <p>
+              <strong>Official websites use .gov</strong><br />A
+              <strong>.gov</strong> website belongs to an official government
+              organization in the United States.
+            </p>
+          </div>
+        </div>
+        <div class="usa-banner__guidance tablet:grid-col-6">
+          <img
+            class="usa-banner__icon usa-media-block__img"
+            src="${root}/psdtheme/img/icons/icon-https.svg"
+            role="img"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="usa-media-block__body">
+            <p>
+              <strong>Secure .gov websites use HTTPS</strong><br />A
+              <strong>lock</strong> (
+              <span class="icon-lock"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="52"
+                  height="64"
+                  viewBox="0 0 52 64"
+                  class="usa-banner__lock-image"
+                  role="img"
+                  aria-labelledby="banner-lock-description-default"
+                  focusable="false"
+                >
+                  <title id="banner-lock-title-default">Lock</title>
+                  <desc id="banner-lock-description-default">Locked padlock icon</desc>
+                  <path
+                    fill="#000000"
+                    fill-rule="evenodd"
+                    d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
+                  />
+                </svg> </span
+              >) or <strong>https://</strong> means you've safely connected to
+              the .gov website. Share sensitive information only on official,
+              secure websites.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uswds/3.8.0/js/uswds.min.js" integrity="sha512-V/eNPuqU6gTDHwQsFL5X12i0TzX5lwVvON6VuEeTXDoSnAeA5nnc53TUEhiUdT16s0nj4MXo6OcUBAvwhdFOAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <div class="alert alert-major-nav alert-dismissible small">
     <script>
         $('.alert-major-nav').hide();
@@ -425,7 +591,7 @@ $(function() {
     //    $("body").addClass("body_alert");
     </script>
 <!--
-    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be unavailable <u>between 4pm MDT April 18th and 5pm MDT April 19th</u> due to planned maintenance.</strong>
+    <i class="fas fa-exclamation-circle"></i> <strong>OUTAGE NOTICE: The PSL website and data/ftp access will be unavailable <u>between 9am and noon MDT Tuesday, December 12th</u> due to planned maintenance.</strong>
     <button id="close_alert_primary" type="button" class="close" data-dismiss="alert" aria-label="Close" style="padding-right:21px;color:#0056b3;opacity:.8;">
       <span aria-hidden="true" style="font-size:22px;color:white;">&times;</span>
     </button>
@@ -464,29 +630,26 @@ $(function() {
       <ul class="nav navbar-nav">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">About</a>
-          <ul class="dropdown-menu dropdown-intranet dropdown-menu-left row">
-            <li class="col-sm-6">
-              <ul class='about-menu'>
+          
+                <ul class="dropdown-menu dropdown-menu-left">
+                  <li>
                 
                   <li><a href="/about/">About Us</a></li>
                   <li><a href="/about/org.html">Organization At-A-Glance</a></li>
                   <li><a href="/research/divisions/">Research Divisions</a></li>
                   <li><a href="/reviews/">Science Reviews</a></li>
-				          <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
-				  	            title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
+                                          <li><a href="/about/deia/" data-toggle="tooltip" data-placement="left" data-html="true" 
+                                                    title="Diversity, Equity, Inclusion and Accessibility">DEIA</a></li>
                   <li><a href="https://esrl.noaa.gov/about/visiting.html">Visiting NOAA Boulder</a></li>
                   <li><a href="/about/opportunities/">Opportunities</a></li>
                   
-                </ul>
-            </li>
           </ul>
         </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li> <a href="/about/contacts.html">Contact Us</a></li>
+            <li><a href="/about/contacts.html">Contact Us</a></li>
             <li><a href="/staff/index.html">Staff List</a></li>
-            <li><a href="/staff/spotlight/">Employee Spotlight</a></li>
           </ul>
         </li>
         <li class="dropdown">
@@ -501,17 +664,17 @@ $(function() {
                   <li><a href="/pubs/">Publications</a></li>
                   <li><a href="/assessments/">Assessments</a></li>
                 </ul>
-        	  </div>
+                  </div>
               <div class=" col-xs-12 col-md-3">
                 <ul class="">
                   <li><span class="dropdown-header">Selected Topics</span></li>
-                  <li><a href="/data/20thC_Rean/">20th Century Reanalysis</a></li>
                   <li><a href="/arportal/">Atmospheric River Portal</a></li>
                   <li><a href="/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
                   <li><a href="/renewable_energy/">Renewable Energy</a></li>
                   <li><a href="/marine-heatwaves/">Marine Heatwaves</a></li>
                   <li><a href="/mjo/">Madden-Julian Oscilation (MJO)</a></li>
                   <li><a href="/fire_weather/">Fire Weather</a></li>
+                  <li><a href="/precip/pmp/">Probable Maximum Precipitation</a></li>
                 </ul>
               </div>
               <div class=" col-xs-12 col-md-3">
@@ -589,7 +752,7 @@ $(function() {
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn</a>
           <ul class="dropdown-menu dropdown-menu-left">
-            <li><a href="/outreach/resources/">Research Handouts</a></li>
+            <li><a href="/outreach/resources/">Fact Sheets</a></li>
             <li><a href="/outreach/education/">Education Resources</a></li>
           </ul>
         </li>
@@ -666,46 +829,45 @@ $(function() {
 ${bottom}
 <!-- Footer -->
 <footer class="footer">
-	<div class="container">
-		<div style="padding-bottom: 25px;">
-			<div class="row">
-				<div class="col-md-4 col-sm-4">
-					<h4>Mailing Address</h4>
-					<p>
-						NOAA PSL<br />
-						325 Broadway<br />
-						Boulder, CO 80305-3328
-					</p>
+        <div class="container">
+                <div style="padding-bottom: 25px;">
+                        <div class="row">
+                                <div class="col-md-4 col-sm-4">
+                                        <h4>Mailing Address</h4>
+                                        <p>
+                                                NOAA PSL<br />
+                                                325 Broadway<br />
+                                                Boulder, CO 80305-3328
+                                        </p>
 
-				</div>
-				<div class="col-md-5 col-sm-5">
-				<h4>Physical Sciences Laboratory</h4>
-					<p><a href="/about/">About</a></p>
-					<p><a href="/about/contacts.html">Contact Us</a></p>
-					<p><a href="/site_index.html">Site Index</a></p>
-					<p><a href="/survey/">Take Our Survey</a></p>
-					<p><a href="mailto:webmaster.psl&#64;noaa.gov">Webmaster</a></p>
-				</div>
-				<div class="col-md-3 col-sm-3">
-				<h4>More</h4>
-					
-					<p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
-					
-					<p><a href="https://www.noaa.gov/protecting-your-privacy">Privacy Policy</a></p>
-					<p><a href="/disclaimer/">Disclaimer</a></p>
-					<p><a href="https://www.noaa.gov/accessibility">Accessibility</a></p>
-					<p><a href="https://www.usa.gov/">USA.gov</a></p>
-				</div>
-			</div><!--/.row-->
-		</div>
-	</div><!--/.container-->
-	<div class="subFooter">
+                                </div>
+                                <div class="col-md-5 col-sm-5">
+                                <h4>Physical Sciences Laboratory</h4>
+                                        <p><a href="/about/">About</a></p>
+                                        <p><a href="/about/contacts.html">Contact Us</a></p>
+                                        <p><a href="/site_index.html">Site Index</a></p>
+                                        <p><a href="/survey/">Take Our Survey</a></p>
+                                        <p><a href="mailto:webmaster.psl&#64;noaa.gov">Webmaster</a></p>
+                                </div>
+                                <div class="col-md-3 col-sm-3">
+                                <h4>More</h4>
+                                        
+                                        
+                                        <p><a href="https://www.noaa.gov/protecting-your-privacy">Privacy Policy</a></p>
+                                        <p><a href="/disclaimer/">Disclaimer</a></p>
+                                        <p><a href="https://www.noaa.gov/accessibility">Accessibility</a></p>
+                                        <p><a href="https://www.usa.gov/">USA.gov</a></p>
+                                </div>
+                        </div><!--/.row-->
+                </div>
+        </div><!--/.container-->
+        <div class="subFooter">
 
-		<div class="col-md-12">
-			<a href="https://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="https://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>
-		</div>
-		
-	</div>
+                <div class="col-md-12">
+                        <a href="https://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="https://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>
+                </div>
+                
+        </div>
 </footer>
 </body>
 </html>
