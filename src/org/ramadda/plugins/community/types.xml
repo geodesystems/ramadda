@@ -265,7 +265,7 @@ providers="this,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flick
    </type>
 
 
-  <type name="tribal_datahub"  super="community_thing" description="Tribal Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="content.url,content.contact,content.license" >
+  <type name="tribal_datahub"  super="community_thing" description="Tribal Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="content.url,content.contact,content.address,content.license" >
      <property name="icon" value="/community/tribal.png"/>
      <property name="form.description.iswiki" value="true"/>
      <column name="state"  label="State" 
