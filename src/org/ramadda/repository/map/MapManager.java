@@ -790,13 +790,14 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         MapInfo mapInfo = new MapInfo(request, getRepository(), props, width,
                                       height, forSelection);
 
-	List<String> geojsonUrls=findGeoJsonUrls(request, entry);
-	for(String geojson: geojsonUrls) {
+	List<String[]> geojsonUrls=findGeoJsonUrls(request, entry);
+	for(String[]tuple: geojsonUrls) {
+	    String  geojson = tuple[0];
 	    if(!stringDefined(geojson)) continue;
 	    geojson = entry.getTypeHandler().applyTemplate(entry, geojson, true);
 	    //Check for any macros not added
 	    if(geojson.indexOf("${")<0)  {
-		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
+		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, tuple[1]);
 	    }
 	}
 
@@ -1961,10 +1962,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
     }
 
-
-
-    public List<String> findGeoJsonUrls(Request request, Entry entry) throws Exception {
-	List<String> urls=new ArrayList<String>();
+    public List<String[]> findGeoJsonUrls(Request request, Entry entry) throws Exception {
+	List<String[]> urls=new ArrayList<String[]>();
 	List<Metadata> metadataList =
 	    getMetadataManager().findMetadata(request, entry,
 					      new String[]{"map_displaymap_file",ContentMetadataHandler.TYPE_ATTACHMENT}, true);
@@ -1972,7 +1971,16 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    for (Metadata metadata : metadataList) {
 		if (!metadata.getAttr1().endsWith(".geojson")) continue;
 		String url = metadata.getMetadataType().getFileUrl(request, entry,metadata,false,null);
-		urls.add(url);
+		List<String> attrs=new ArrayList<String>();
+		if(stringDefined(metadata.getAttr2()))
+		    Utils.add(attrs,"fillColor",JU.quote(metadata.getAttr2()));
+		if(stringDefined(metadata.getAttr3()))
+		    Utils.add(attrs,"fillOpacity",JU.quote(metadata.getAttr3()));		
+		if(stringDefined(metadata.getAttr4()))
+		    Utils.add(attrs,"strokeColor",JU.quote(metadata.getAttr4()));
+		if(stringDefined(metadata.getAttr(5)))
+		    Utils.add(attrs,"strokeWidth",JU.quote(metadata.getAttr(5)));
+		urls.add(new String[]{url,JU.map(attrs)});
 	    }
 	}
 	return urls;

@@ -9625,9 +9625,10 @@ public class WikiManager extends RepositoryManager
 
 	    getMapManager().addMapMarkerMetadata(request, entry, propList);
 
-	    List<String> geojsonUrls=getMapManager().findGeoJsonUrls(request, entry);
+	    List<String[]> geojsonUrls=getMapManager().findGeoJsonUrls(request, entry);
 	    for(int i=0;i<geojsonUrls.size();i++) {
-		Utils.add(propList, "geojsonLayer" + i, JU.quote(geojsonUrls.get(i)));
+		String[]tuple = geojsonUrls.get(i);
+		Utils.add(propList, "geojsonLayer" + i, JU.quote(tuple[0]));
 	    }
 
 

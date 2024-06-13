@@ -593,6 +593,16 @@ Specify the type and optional body of a URL request for data
 
 
 
+    <type       name="Address"       searchable="true"      id="content.address">
+      <element group="Address" name="Address"         rows="3"/>
+      <element name="City"/>
+      <element name="State or Province" datatype="enumerationplus"
+	       values="file:/org/ramadda/repository/resources/geo/statelist.txt"
+	       />
+      <element name="Postal Code"/>
+      <element name="Country"
+	       values="file:/org/ramadda/repository/resources/geo/countrylist.txt"/>
+    </type>
 
 </handler>
 

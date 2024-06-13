@@ -50,6 +50,10 @@
        name="Extra Map Layer File"
        id="map_displaymap_file">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
+      <element name="Fill Color" />
+      <element name="Fill Opacity" />      
+      <element name="Stroke Color" />
+      <element name="Stroke Width" />            
     </type>
 
 
