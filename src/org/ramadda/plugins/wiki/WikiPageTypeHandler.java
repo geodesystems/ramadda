@@ -475,7 +475,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 	String edit = HU.b("Wiki Text:") + "<br>"+tmpSB.toString();
 	
 	sb.append(HU.row(HU.td(edit,"colspan=2")));
-        addDateToEntryForm(request, sb, parentEntry,entry);
+	//TODO:        addDateToEntryForm(request, sb, parentEntry,entry);
         addAreaWidget(request, parentEntry,entry, sb, formInfo);
         sb.append(formEntry(request, msgLabel("Order"),
                             HU.input(ARG_ENTRYORDER, ((entry != null)
