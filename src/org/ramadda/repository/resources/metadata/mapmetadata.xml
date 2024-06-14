@@ -14,7 +14,7 @@
 
     </type>
 
-    <type id="map_displaymap" name="Extra Map Layer Entry">
+    <type id="map_displaymap" name="Extra Map Layer Entry" >
       <help>
 	<![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display]]>
       </help>
@@ -46,7 +46,7 @@
     </type>
 
 
-    <type
+    <type isgeo="true"
        name="Extra Map Layer File"
        id="map_displaymap_file">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
@@ -141,7 +141,7 @@
 
 
 
-    <type
+    <type isgeo="true"
 	foruser="true"
 	id="spatial.polygon"
 	name="Spatial Polygon Coordinates"
@@ -162,7 +162,7 @@
     </type>
 
 
-    <type
+    <type isgeo="true"
 	foruser="false"
 	id="spatial.kmlpolycoords"
 	name="KML Polygon Coordinates"
@@ -388,7 +388,7 @@ color_map
 
 
 <handler category="Maps" class="org.ramadda.repository.metadata.JpegMetadataHandler">
-  <type id="camera.direction" name="Camera direction">
+    <type id="camera.direction" name="Camera direction">
     <help>
       <![CDATA[This gets draw in maps as a direction indicator.]]>
     </help>
