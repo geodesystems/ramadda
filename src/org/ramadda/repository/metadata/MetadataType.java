@@ -150,6 +150,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     /** _more_ */
     private boolean adminOnly = false;
 
+    private boolean isGeo = false;
     private String restrictions;
 
 
@@ -348,6 +349,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public void init(Element node) throws Exception {
         super.init(node);
         setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
+        isGeo = XmlUtil.getAttributeFromTree(node, "isgeo",false);
 	restrictions=XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE);
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
@@ -1042,6 +1044,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     public boolean isPrivate(Request request, Entry entry,Metadata metadata) {
 	if(request.isAdmin()) return false;
+	if(isGeo && !request.geoOk(entry)) {
+	    return true;
+	}
 	if(restrictions.equals(RESTRICTIONS_ADMIN) && !request.isAdmin()) {
 	    return false;
 	}
