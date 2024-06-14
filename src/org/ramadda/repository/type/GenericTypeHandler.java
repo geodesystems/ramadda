@@ -1151,9 +1151,9 @@ public class GenericTypeHandler extends TypeHandler {
 		if(seen.contains(column.getName())) {
 		    continue;
 		}
-		if ((column.getGroup() != null)
-		    && !Misc.equals(lastGroup, column.getGroup())) {
-		    lastGroup = column.getGroup();
+		if ((column.getDisplayGroup() != null)
+		    && !Misc.equals(lastGroup, column.getDisplayGroup())) {
+		    lastGroup = column.getDisplayGroup();
 		    sb.append(
 				  HU.row(
 						HU.col(
@@ -1173,9 +1173,9 @@ public class GenericTypeHandler extends TypeHandler {
 	Column column =findColumn(columnName);
 	if(column==null) return group;
 	Object[]      values = getEntryValues(entry);
-	if ((column.getGroup() != null)
-	    && !Misc.equals(group, column.getGroup())) {
-	    group = column.getGroup();
+	if ((column.getDisplayGroup() != null)
+	    && !Misc.equals(group, column.getDisplayGroup())) {
+	    group = column.getDisplayGroup();
 	    sb.append(HU.row(HU.col(HU.div(group," class=\"formgroupheader\" "), " colspan=2 ")));
 	}
 	addColumnToTable(request, entry,column,sb);

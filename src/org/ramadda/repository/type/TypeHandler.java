@@ -4913,7 +4913,7 @@ public class TypeHandler extends RepositoryManager {
 
         try {
 	    HashSet seen = new HashSet();
-	    GroupedBuffers buffers = new GroupedBuffers("Basic");
+	    GroupedBuffers buffers = new GroupedBuffers(getTypeProperty("form.basic.group","Basic"));
             addBasicToEntryForm(request, buffers, parentEntry, entry, formInfo, this,seen);
 	    if(!seen.contains(FIELD_COLUMNS)) {
 		addSpecialToEntryForm(request, buffers, parentEntry, entry, formInfo,this, seen);
@@ -5000,7 +5000,7 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 
-	String group = column.getGroup();
+	String group = column.getEditGroup();
         if ((group != null) && (state.get(group) == null)) {
 	    if(formBuffer instanceof GroupedBuffers) {
 		((GroupedBuffers)formBuffer).setGroup(group);
@@ -5202,9 +5202,13 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    public void addDateToEntryForm(Request request, Appendable sb,
+    public void addDateToEntryForm(Request request, GroupedBuffers sb,
                                    Entry parentEntry,Entry entry)
 	throws Exception {
+	String group = getTypeProperty("form.date.group",null);
+	if(group!=null)
+	    sb.setGroup(group);
+
 
         String dateHelp = " (e.g., 2007-12-11 00:00:00)";
         /*        String fromDate = ((entry != null)
@@ -5311,7 +5315,7 @@ public class TypeHandler extends RepositoryManager {
 	if(whatList==null) whatList = editFields;
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
 
-        String   domId;
+
         for (String what : whatList) {
             if (what.equals("quit")) {
 		seen.add(FIELD_COLUMNS);
@@ -5397,7 +5401,7 @@ public class TypeHandler extends RepositoryManager {
 
             if (what.equals(ARG_NAME)) {
                 if ( !forUpload && okToShowInForm(entry, ARG_NAME)) {
-                    domId = HU.getUniqueId("entryinput");
+		    String   domId = "entrynameinput";
                     formInfo.addMaxSizeValidation("Name", domId,
 						  Entry.MAX_NAME_LENGTH);
                     String nameDefault = request.getString(ARG_NAME,
@@ -5414,7 +5418,7 @@ public class TypeHandler extends RepositoryManager {
 				 + HU.id(domId));
 
 		    if(showLabel) {
-			HU.formEntry(sb,  label,input);
+			HU.formEntry(sb,  label+":",input);
 		    } else {
 			HU.formEntry(sb,  input);
 		    }
@@ -5449,6 +5453,10 @@ public class TypeHandler extends RepositoryManager {
                     if (desc.length() > 100) {
                         rows = rows * 2;
                     }
+		    String group = getTypeProperty("form.description.group",null);
+		    if(group!=null)
+			sb.setGroup(group);
+
                     if (isWiki) {
 			sb.append("<tr><td colspan=2>");
                         addWikiEditor(request, entry, sb, formInfo,
@@ -6579,6 +6587,7 @@ public class TypeHandler extends RepositoryManager {
                                      Appendable basicSB, DateArgument arg,
                                      boolean showTime)
 	throws Exception {
+
         List dateTypes = new ArrayList();
         dateTypes.add(new TwoFacedObject(msg("Contained by range"),
                                          DATE_SEARCHMODE_CONTAINEDBY));

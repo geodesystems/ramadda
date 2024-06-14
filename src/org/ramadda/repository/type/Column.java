@@ -152,7 +152,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     private Element xmlElement;
     private String name;
     private String fullName;
-    private String group;
+    private String displayGroup;
+    private String editGroup;    
     private List oldNames;
     private String label;
     private String searchLabel;    
@@ -255,7 +256,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	delimiter= XmlUtil.getAttribute(element, "delimiter",",");
 	addRawInput= XmlUtil.getAttribute(element, "addrawinput",false);
         unit = XmlUtil.getAttribute(element, ATTR_UNIT, (String) null);
-        group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
+
+        String group  = XmlUtil.getAttribute(element, "group",(String)null);
+        displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
+        editGroup = XmlUtil.getAttribute(element, "editgroup", group);
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
 						    ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
@@ -686,9 +690,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         col.add("type");
         col.add(JsonUtil.quote(getType()));
-	if(group!=null) {
+	if(displayGroup!=null) {
 	    col.add("group");
-	    col.add(JsonUtil.quote(group));
+	    col.add(JsonUtil.quote(displayGroup));
 	}
         col.add("namespace");
         col.add(JsonUtil.quote(getTableName()));
@@ -3398,9 +3402,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public String getGroup() {
-        return group;
+    public String getDisplayGroup(){
+        return displayGroup;
     }
+
+    public String getEditGroup(){
+        return editGroup;
+    }    
 
 
     
