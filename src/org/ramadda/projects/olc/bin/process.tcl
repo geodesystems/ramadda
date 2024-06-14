@@ -1,4 +1,5 @@
 
+source lib.tcl
 set ::entries "<entries>\n";
 array set ::cids {}
 array set ::sids {}
@@ -10,61 +11,128 @@ set ::fcnt 0
 set ::icnt 0
 array set ::cmap {}
 
-proc cdata {s} {
-    return "<!\[CDATA\[$s\]\]>"
+array set ::names {}
+proc name {name} {
+    set ::names($name) 1
 }
+source names.tcl
 
-proc col {name s} {
-    if {$s==""} {
-	return ""
+array set ::keywords {}
+proc keyword {keyword} {
+    set ::keywords($keyword) 1
+}
+source keywords.tcl
+
+
+proc processSummary {summary} {
+    set summary [clean $summary]
+    if {[regexp -nocase {Names included in this collection:(.*)$} $summary match names]} {
+	set summary [string map [list $match { }] $summary]
+	regsub -all {\n} $names { } names
+	processSubjectsAndKeywords $names
     }
-    return "<$name>[cdata [clean $s]]</$name>\n"
-}    
-
-
-proc pad {n} {
-    if {[string length $n]==1} {
-	set n "00$n"
-    }   elseif {[string length $n]==2} {
-	set n "0$n"
+    if {[regexp -nocase {Keywords:(.*)$} $summary match keywords]} {
+	set summary [string map [list $match { }] $summary]
+	regsub -all {\n} $keywords { } keywords
+	processSubjectsAndKeywords $keywords
+    }
+    if {[regexp  {Keywords [^:]+:(.*)$} $summary match keywords]} {
+	regsub -all {\([^\)]+\)} $keywords { }  keywords
+	set summary [string map [list $match { }] $summary]
+	regsub -all  $match $summary { } summary
+	regsub -all {\n} $keywords { } keywords
+	processSubjectsAndKeywords $keywords
     }    
-    set n
-}    
 
-proc clean {s} {
-    regsub -all {\[CR\]} $s "\n" s
-    regsub -all {â€œ} $s { } s
-    regsub -all {â€™} $s { } s
-    regsub -all {â€“} $s {-} s    
-    regsub -all {â€} $s { } s
-    regsub -all {__+} $s { } s
-    regsub -all {dialet} $s {dialect} s
-#    regsub -all {\[} $s {\\[} s
-#    regsub -all {\]} $s {\\]} s    	
-    set s [string trim $s]
-    set s
+    return $summary
 }
 
-
-
-proc attrs {args} {
-    set e ""
-    foreach {key value} $args {
-	append e [col $key  $value]
+proc processSubjectsAndKeywords {v} {
+    set v [clean $v]
+    regsub -all {\n} $v { }  v
+    regsub -all {Interview with} $v {, } v
+    regsub -all {Biographical Sketch:} $v { } v
+    regsub -all {Chapters 3 and 4:} $v { } v
+    regsub -all {Ricker Tablets: Touch the Clouds} $v {, Ricker Tablets: Touch the Clouds,} v
+    regsub -all {Soldiers of the Plains:} $v {, Soldiers of the Plains,} v
+    regsub -all {Chapter XXIV: Red Cloud} $v {,Chapter XXIV: Red Cloud, } v
+    regsub -all {Museum of the Fur Trade Quarterly} $v {,Museum of the Fur Trade Quarterly,} v
+    regsub -all {the age at enlistment (not always given)} $v { } v
+    regsub -all {Sioux Fires Burn Again:} $v { } v
+    regsub -all {Keywords tied to this audio for research} $v {,} v
+    regsub -all {A Troublesome Guest:} $v { } v
+    regsub -all {Keywords for entire series} $v Keywords v
+    regsub -all {Keywords +:} $v Keywords: v
+    regsub -all {Keyword *:} $v Keywords: v
+    regsub -all {Interpreters:} $v {, } v
+    regsub -all {Interviewees \(includes transcripts\):} $v { } v
+    regsub -all -nocase {Mrs\.,} $v {Mrs. } v
+    regsub -all -nocase {In addition to names mentioned above:} $v { } v
+    regsub -all -nocase {Names of People.*?:} $v { } v
+    regsub -all -nocase {and many, many other names.} $v { } v
+    regsub -all {  +} $v { } v
+    set interviewer ""
+    if {[regexp {.*Interviewer:(.*) *Names} $v match interviewer]} {
+	regsub "Interviewer:$interviewer" $v {} v
+	set interviewer [string trim $interviewer]
+    } elseif {[regexp {.*Interviewer:(.*) *Keywords} $v match interviewer]} {
+	regsub "Interviewer:$interviewer" $v {} v
+	set interviewer [string trim $interviewer]
+    } elseif {[regexp {.*Interviewer:(.*)$} $v match interviewer]} {
+	regsub "Interviewer:$interviewer" $v {} v
+	set interviewer [string trim $interviewer]
     }
-    set e
-}
-proc attr {key value} {
-    return " $key=\"[clean $value]\" "
+    set v [string trim $v]
+    if {$v==""} return
+    set what KEYWORD
+    if {[regexp -nocase {keywords:} $v]} {
+	set what KEYWORD
+	regsub  -nocase {keywords:} $v {} v
+    } elseif {[regexp -nocase {names mentioned:} $v]} {
+	set what SUBJECT
+	regsub  -nocase {names mentioned:} $v {} v
+    }
+    regsub -all {;} $v {,} v
+    foreach tok [split $v ,] {
+	set _what $what
+	set tok [string trim $tok]
+	if {$tok=="Disc"} {
+	    append ::entries [mtd1 archive_media_type $tok]
+	    continue;
+	}
+	regsub -all {"} $tok {} tok
+	regsub -all {\.$} $tok {} tok
+
+	if {[string length $tok]<=3} {continue}
+	if {[info exists ::names($tok)]} {
+	    set _what SUBJECT
+	} elseif {[info exists ::keywords($tok)] || $tok=="1890"} {
+	    set _what KEYWORD
+	}
+	if {[string length $tok]>40} {
+	    set _what NOTE
+	}
+	if {$_what=="KEYWORD"} {
+	    append ::entries [mtd1 archive_keyword $tok]
+	} elseif {$_what=="SUBJECT"} {
+	    regsub -all "^the" $tok {} tok
+	    regsub -all "^and" $tok {} tok	    
+	    set tok [string trim $tok]
+	    append ::entries [mtd1 archive_subject $tok]
+	} else {
+	    append ::entries [mtd2 archive_note Note $tok]
+	}
+
+	if {![info exists ::seen($tok)]} {
+	    set ::seen($tok) 1
+#	    puts "$_what: $tok"
+	    if {$_what=="KEYWORD"} {
+#		puts "name {$tok}"
+	    }
+	}
+    }
 }
 
-proc openEntry {type id parent name} {
-    set e   "<entry [attr id $id] [attr type $type] ";
-    if {$parent !=""} {append e [attr  parent $parent];}
-    append e ">\n";
-    append e [attrs name $name]
-    set e
-}
 
 proc  mtd1 {type value1} {
     if {$value1==""} {return}
@@ -191,6 +259,7 @@ proc series $::sp {
     set id [sid $collection_nbr $series_nbr]
     set ::sids($id) 1
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
+    set summary [processSummary $summary]
     append ::entries [col series_number [pad $series_nbr]]
     append ::entries [col location $location]
     append ::entries [mtd2 archive_note Scope $scope_content]
@@ -217,15 +286,16 @@ set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates
 proc files $::fp {
     if {$file_unit_nbr==""} return
     incr ::fcnt
-#    if {$::fcnt>100} return
     foreach p $::fp {set $p [string trim [set $p]]}
     set parent [sid $collection_nbr $series_nbr]
     if {![info exists   ::sids($parent)]} {
-	puts  "file: $file_unit_nbr $title no parent series: $parent "
+	puts  stderr "file: $file_unit_nbr $title no parent series: $parent "
     }
     set id [fid $collection_nbr $series_nbr $file_unit_nbr]
     set ::fids($id) 1
     append ::entries [openEntry type_archive_file $id $parent $title]
+    set summary_note [processSummary $summary_note]
+
     append ::entries [col file_number [pad $file_unit_nbr]]
     append ::entries [col location $location]
     handlePhysicalDescription $phys_desc 
@@ -236,6 +306,8 @@ proc files $::fp {
     append ::entries [mtd1 archive_language $language]    
     append ::entries "</entry>\n"
 }
+
+array set ::seen {}
 
 
 set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
@@ -250,9 +322,8 @@ proc item $::ip {
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
     if {![info exists   ::fids($parent)]} {
-#	puts   "no parent for item: $item_nbr $title  parent file: $parent "
 	set ::fids($parent) 1
-	puts   "files $collection_nbr $series_nbr $file_unit_nbr \{File $file_unit_nbr\}  {}  {}  {}  {}  {}  {}  {}"
+	puts   stderr "files $collection_nbr $series_nbr $file_unit_nbr \{File $file_unit_nbr\}  {}  {}  {}  {}  {}  {}  {}"
 	return
     }
 
@@ -270,11 +341,9 @@ proc item $::ip {
     append ::entries [mtd1 archive_creator $creator]    
     append ::entries [mtd1 archive_category $category]    
     handleDate  $dates
-    foreach tok [split $user_1 ,] {
-	set tok [string trim $tok]
-	if {$tok==""} continue;
-	append ::entries [mtd1 archive_subject $tok]    
-    }
+#    puts $user_1
+    processSubjectsAndKeywords $user_1
+    set summary_note [processSummary $summary_note]
     append ::entries [mtd2 archive_note "Summary" $summary_note]        
     append ::entries "</entry>\n"
 }
@@ -286,7 +355,8 @@ source extra.tcl
 source items.tcl
 
 append ::entries "</entries>\n";
-
-puts $::entries
-
+#puts $::entries
 puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::icnt"
+
+
+
