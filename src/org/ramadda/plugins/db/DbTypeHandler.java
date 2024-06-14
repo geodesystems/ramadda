@@ -2252,7 +2252,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if ( !column.getCanSearch()) {
                 continue;
             }
-            String group = column.getGroup();
+            String group = column.getDisplayGroup();
             if (group != null && !Utils.equals(currentGroup,group)) {
 		currentGroup = group;
                 buffers.add(buffer = new DbNamedBuffer(group, formHeader,
