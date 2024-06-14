@@ -1,20 +1,22 @@
-<types 	priority="10" supercategory="General" category="Archive"
-	xmetadata="archive_subject,archive_category,content.keyword,archive_note,archive_citation,archive_rights,archive_restrictions,archive_source_contact,archive_time_period,archive_language,archive_area,archive_creator,archive_media_type,archive_physical_media">
-
-
+<types 	priority="10" supercategory="General" category="Archive">
   <type name="type_archive_bio"  description="Archive Bio Record"
 	handler="org.ramadda.plugins.archive.BioRecordTypeHandler"  
-	xchildtypes="type_archive_collection">
-
-    
-
+	editfields="name,common_name,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default"
+	metadata="archive_bio_alternate_name">
     <property name="icon" value="/archive/leaf.png"/>
     <property name="form.tabs" value="true"/>    
+    <property name="form.basic.group" value="Name and Taxonomy"/>    
+    <property name="form.name.showlabel" value="true"/>
     <property name="form.description.rows" value="5"/>
-    <property name="form.date.show" value="false"/>    
+    <property name="form.description.label" value="Description:"/>
+    <property name="form.description.showwiki" value="false"/>        
+    <property name="form.todate.show" value="false"/>    
+    <property name="date.format" value="yyyy-MM-dd"/>        
+    <property name="form.date.label" value="Status Date"/>
+    <property name="form.description.group" value="Description"/>    
     <property name="form.area.show" value="true"/>    
     <property name="form.geoposition"      value="group:Collection Site"/>
-    <property name="search.metadatatypes" value="archive_note,archive_subject,archive_area,archive_media_type,archive_category"/>
+    <property name="search.metadatatypes" value="archive_bio_alternate_name"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="form.resource.show" value="false"/>
@@ -23,11 +25,14 @@
     <property name="html.owner.show" value="false"/>                
     <property name="form.ark.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
-    <column group="Taxonomy"
-	    name="common_name" label="Common Name"    type="string" size="500" 
-	    cansearch="true" suffix="Press return to search for taxa"/>
+    <column displaygroup="Taxonomy"
+	    name="common_name" label="Common Names" rows="5"   type="list" size="1000" 
+	    cansearch="true" xsuffix="Press return to search for taxa"/>
+
     <column name="scientific_name" label="Scientific Name"    type="string" size="500" 
 	    cansearch="true" />    
+
+
 <!--
    <column name="taxon_domain" label="Domain"
     type="enumerationplus" cansearch="true" values="Archaea,Bacteria,Eukarya"    group="Taxonomy"/>
@@ -39,16 +44,26 @@
     <column type="enumerationplus" cansearch="true" name="taxon_order" label="Order"/>
     <column type="enumerationplus" cansearch="true" name="taxon_family" label="Family"/>
     <column type="enumerationplus" cansearch="true" name="taxon_genus" label="Genus"/>
+
     <column type="enumerationplus" cansearch="true" name="taxon_species" label="Species"/>
+    <column type="enumerationplus" cansearch="true" name="taxon_variety" label="Variety"/>    
     <column type="string" cansearch="true" name="tsn_number" label="TSN Number" columns="8"/>
 
     <column group="Object" name="handling" label="Handling" type="enumerationplus" cansearch="true" />
+    <column name="catalog_number" type="string"  label="Catalog Number" columns="8"
+	    cansearch="false" xxxgroup="Collection"/>
+
+    
     <column name="object_status" label="Object Status" type="enumerationplus" cansearch="true"
 	    values="file:/org/ramadda/plugins/archive/resources/objectstatus.txt"/>
   
+    <column name="condition" label="Condition" type="enumerationplus" cansearch="true" />
+
+    <column name="preparation_material" label="Preparation Material" type="enumerationplus" cansearch="true" />
     <column name="item_count" label="Item Count" default="0" type="int" cansearch="false"/>
     <column name="quantity" label="Quantity" default="0" type="int" cansearch="false"/>      
     <column name="storage_unit" label="Storage Unit" type="enumerationplus" cansearch="true"/>
+
     <column group="Biology" name="habitat" label="Habitat" type="enumerationplus" cansearch="true"
 	    values="file:/org/ramadda/plugins/archive/resources/habitats.txt"/>
 
@@ -72,7 +87,6 @@
 +section  title="{{typename}}: {{name}}"
 +row
 +col-8
-+toggleopen Details
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
@@ -81,7 +95,6 @@ headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator="
 inherited="false"  }} 
 </div>
 :vspace 1em
--toggle
 -col
 +col-4
 +center
