@@ -73,7 +73,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
 	super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String type = (String)  entry.getValue(IDX_DATA_TYPE);	
+	String type = (String)  entry.getValue(request,IDX_DATA_TYPE);	
 	initializeNewEntryInner(request, entry,type);
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
 	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
@@ -88,7 +88,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
     private void initializeNewEntryInner(Request request, Entry entry,String type)
             throws Exception {
 
-	String id = (String)  entry.getValue(IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,IDX_STATION_ID);
 	if(!stringDefined(id)) return;
 	entry.setValue(IDX_DATA_TYPE,type);	
 	String url = "https://www.ndbc.noaa.gov/station_page.php?station=" + id.toLowerCase();
@@ -145,8 +145,8 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
         String url = URL_TEMPLATE;
         url = url.replace("${station_id}",
-                          "" + entry.getValue(IDX_STATION_ID));
-        url = url.replace("${data_type}", "" + entry.getValue(IDX_DATA_TYPE));
+                          "" + entry.getValue(request,IDX_STATION_ID));
+        url = url.replace("${data_type}", "" + entry.getValue(request,IDX_DATA_TYPE));
         return url;
     }
 

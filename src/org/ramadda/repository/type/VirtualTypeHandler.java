@@ -142,7 +142,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> ids = getEntryManager().getChildIdsFromDatabase(request,
 								     mainEntry, null);
 
-        String idString = (String) mainEntry.getStringValue(0, "").replace(",",
+        String idString = (String) mainEntry.getStringValue(request,0, "").replace(",",
 									   "_COMMA_");
         String  by         = request.getString(ARG_ORDERBY, (String) null);
         boolean descending = !request.get(ARG_ASCENDING, false);

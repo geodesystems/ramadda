@@ -188,7 +188,7 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
     public Service getService(Request request, Entry entry) throws Exception {
         Service service = new Service(getRepository(), entry.getId(),
                                       entry.getName());
-        service.setLinkId(entry.getStringValue(IDX_LINK_ID, ""));
+        service.setLinkId(entry.getStringValue(request,IDX_LINK_ID, ""));
 
         if (Utils.stringDefined(entry.getLabel())) {
             service.setLabel(entry.getLabel());

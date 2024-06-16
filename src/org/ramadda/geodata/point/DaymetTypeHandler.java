@@ -76,7 +76,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new DaymetRecordFile(getRepository(), entry,getLocation(request,entry),
+        return new DaymetRecordFile(request,getRepository(), entry,getLocation(request,entry),
                                     new IO.Path(getPathForEntry(request, entry,true)));
     }
 
@@ -145,6 +145,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
      */
     public static class DaymetRecordFile extends CsvFile {
 
+	Request request;
+
         /** _more_ */
         Repository repository;
 
@@ -161,31 +163,23 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	 *
          * @throws IOException _more_
          */
-        public DaymetRecordFile(Repository repository, Entry entry,
+        public DaymetRecordFile(Request request, Repository repository, Entry entry,
 				String[]loc,
                                 IO.Path path)
                 throws IOException {
             super(path);
+	    this.request=request;
             this.repository = repository;
             this.entry      = entry;
 	    this.loc = loc;
         }
 
 
-        /**
-         * _more_
-         *
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         *
-         * @throws Exception _more_
-         */
+
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-	    int                   stride = entry.getIntValue(IDX_STRIDE, 7);
+	    int                   stride = entry.getIntValue(request,IDX_STRIDE, 7);
 	    //The header is taken care of below
 	    String latlon = loc[0]+","+loc[1];
 	    String[]              args   = new String[] {

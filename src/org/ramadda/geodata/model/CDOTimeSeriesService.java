@@ -127,7 +127,7 @@ public class CDOTimeSeriesService extends CDODataService {
             (SimpleUnit.isCompatible(units, "kg m-2 s-1")
              || SimpleUnit.isCompatible(units, "mm/day"));
 
-        boolean     isAnom    = first.getValue(3).toString().equals("anom");
+        boolean     isAnom    = first.getValue(request,3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
         boolean     haveClimo = true;
         if ((climos == null) || climos.isEmpty()) {
@@ -271,7 +271,7 @@ public class CDOTimeSeriesService extends CDODataService {
         String  stat = request.getString(CDOOutputHandler.ARG_CDO_STAT);
         Entry   climEntry     = null;
         Entry   sprdEntry     = null;
-        boolean isAnom        = sample.getValue(3).toString().equals("anom");
+        boolean isAnom        = sample.getValue(request,3).toString().equals("anom");
         String  climFileToUse = null;
         String climstartYear =
             request.getString(

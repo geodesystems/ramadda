@@ -147,9 +147,9 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	if(entry.getTypeHandler().getType().equals("type_usgs_gauge_peak")) {
 	    url = URL_TEMPLATE_PEAK;
 	} else {
-	    url = url.replace("${period}", ("" + entry.getValue("period")).trim());
+	    url = url.replace("${period}", ("" + entry.getValue(request,"period")).trim());
 	}
-	url = url.replace("${station_id}",("" + entry.getValue("station_id")).trim());
+	url = url.replace("${station_id}",("" + entry.getValue(request,"station_id")).trim());
         return url;
     }
 
@@ -165,7 +165,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	int cnt=0;
 	for(Entry newEntry: entries) {
 	    cnt++;
-	    System.err.println("UsgsGaugeTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue("station_id"));
+	    System.err.println("UsgsGaugeTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue(request,"station_id"));
 	    initializeNewEntryInner(request,newEntry);
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
@@ -173,7 +173,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     private    void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
-	String id = ("" + entry.getValue("station_id")).trim();
+	String id = ("" + entry.getValue(request,"station_id")).trim();
 	if(!stringDefined(id)) return;
 	String url = "https://waterdata.usgs.gov/nwis/inventory?site_no="+id;
 	IO.Result result = IO.doGetResult(new URL(url));

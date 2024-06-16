@@ -82,7 +82,7 @@ public class ServiceContainerTypeHandler extends ServiceTypeHandler {
     public Service getService(Request request, Entry entry) throws Exception {
         Service service = new Service(getRepository(), entry);
         service.setDescription(entry.getDescription());
-        service.setSerial(entry.getStringValue(IDX_SERIAL, "true").equals("true"));
+        service.setSerial(entry.getStringValue(request,IDX_SERIAL, "true").equals("true"));
 
         List<Entry> children = getEntryManager().getChildren(request, entry);
         for (Entry child : children) {

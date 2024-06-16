@@ -66,7 +66,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)throws Exception {
         super.initializeNewEntry(request, entry, newType);                                      
 	if(!isNew(newType)) return;
-	initializeStation(request, entry,  (String) entry.getStringValue(IDX_SITE_ID, ""));
+	initializeStation(request, entry,  (String) entry.getStringValue(request,IDX_SITE_ID, ""));
    }
 
 
@@ -88,7 +88,7 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry,forRead);
         }
-        String siteId = entry.getStringValue(IDX_SITE_ID, "");
+        String siteId = entry.getStringValue(request,IDX_SITE_ID, "");
         String url = URL.replace("{station}", siteId);
         return url;
     }

@@ -174,6 +174,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean doPolygonSearch  = false;
     private boolean addFileToSearch = false;
     private boolean isMediaUrl = false;
+    private boolean isGeoAccess=false;
     private boolean addBulkUpload = false;
     private String bulkUploadHelp ="";
     private String suffix;
@@ -347,6 +348,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
+	if(isPrivate()) {
+	    System.err.println("is private:" + typeHandler);
+	}
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
@@ -357,6 +361,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         addNot     = getAttributeOrTag(element, "addnot", isType(DATATYPE_LATLON));
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
+	isGeoAccess= getAttributeOrTag(element, "isgeoaccess", false);
         isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
         dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
         doStats    = getAttributeOrTag(element, "dostats", Utils.getProperty(properties,"dostats",false));
@@ -856,10 +861,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (o == null) {
             return Double.NaN;
         }
-
         return ((Double) o).doubleValue();
     }
-
 
 
     

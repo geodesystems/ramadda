@@ -50,14 +50,14 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
 	if(!isNew(newType)) return;
 	String field = getNumberField(request, entry);
-	String num = (String) entry.getValue(field);
+	String num = (String) entry.getValue(request,field);
 	if(stringDefined(num)) return;
 	Entry parent = entry.getParentEntry();
 	List<String> values= new ArrayList<String>();
 	HashSet<String> seen = new HashSet<String>();
 	for(Entry child: getEntryManager().getChildren(request,parent)) {
 	    if(child.getTypeHandler().equals(entry.getTypeHandler())) {
-		String value = (String) child.getValue(field);
+		String value = (String) child.getValue(request,field);
 		if(value==null) continue;
 		if(!seen.contains(value)) {
 		    seen.add(value);
@@ -114,7 +114,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
     private String getArchiveNumber(Request request,Entry entry) {
 	String num;
 	String name = getTypeName(request, entry);
-	num = (String) entry.getValue(getNumberField(request, entry));
+	num = (String) entry.getValue(request,getNumberField(request, entry));
 	if(stringDefined(num)) {
 	    return HU.b(name+" Number: ")+ num;
 	}
@@ -125,9 +125,9 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	String info="";
 	String num = getArchiveNumber(request,entry);
 	if(num!=null) info+=num;
-	String location = (String) entry.getValue("location");
+	String location = (String) entry.getValue(request,"location");
 	if(stringDefined(location)) info+=HU.space(2) +HU.b("Location: ") +location;
-	Object size= entry.getValue("size");
+	Object size= entry.getValue(request,"size");
 	if(size!=null) {
 	    double s = (Double)size;
 	    if(!Double.isNaN(s) && s!=0) {

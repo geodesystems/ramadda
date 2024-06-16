@@ -132,7 +132,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
     public String getMediaWidth(Request request, Entry entry, Hashtable props) {
         String width = Utils.getProperty(props, "width",
-                                         entry.getStringValue("media_width", "640"));
+                                         entry.getStringValue(request,"media_width", "640"));
         if (!Utils.stringDefined(width) || width.equals("0")) {
             width = "640";
         }
@@ -143,7 +143,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
 
     public String getMediaHeight(Request request, Entry entry, Hashtable props) {
         String height = Utils.getProperty(props, "height",
-                                          entry.getStringValue("media_height", null));
+                                          entry.getStringValue(request,"media_height", null));
 
 	if(height==null) height=entry.getTypeHandler().getTypeProperty("media.height",null);
         if (!Utils.stringDefined(height) || height.equals("0")) {
@@ -271,7 +271,7 @@ public class MediaTypeHandler extends GenericTypeHandler {
      */
     public String getTranscriptions(Request request, Entry entry)
             throws Exception {
-        return (String) entry.getValue("transcriptions_json");
+        return (String) entry.getValue(request,"transcriptions_json");
     }
 
 

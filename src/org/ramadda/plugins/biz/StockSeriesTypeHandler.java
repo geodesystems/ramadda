@@ -94,8 +94,9 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getRecordPropertiesFromType(Entry entry) throws Exception {
-        String datatype = entry.getStringValue(IDX_DATATYPE, "");
+    @Override
+    public String getRecordPropertiesFromType(Request request,Entry entry) throws Exception {
+        String datatype = entry.getStringValue(request,IDX_DATATYPE, "");
         if (datatype.equals("TIME_SERIES_INTRADAY")
                 || datatype.equals("TIME_SERIES_DAILY")
                 || datatype.equals("TIME_SERIES_WEEKLY")
@@ -126,15 +127,15 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
             return null;
         }
 
-        String symbol = entry.getStringValue(IDX_SYMBOL, (String) null);
+        String symbol = entry.getStringValue(request,IDX_SYMBOL, (String) null);
         if ( !Utils.stringDefined(symbol)) {
             return null;
         }
 
         String url      = URL;
-        String datatype = entry.getStringValue(IDX_DATATYPE, "");
+        String datatype = entry.getStringValue(request,IDX_DATATYPE, "");
         if (datatype.equals("TIME_SERIES_INTRADAY")) {
-            url += "&interval=" + entry.getStringValue(IDX_INTERVAL, "");
+            url += "&interval=" + entry.getStringValue(request,IDX_INTERVAL, "");
         }
         url = url.replace("${apikey}", apikey).replace("${symbol}",
                           symbol).replace("${function}", datatype);

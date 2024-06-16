@@ -57,8 +57,8 @@ public class WeatherTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb          = new StringBuffer();
-        String       string      = entry.getStringValue(0, "");
-        String       orientation = entry.getStringValue(1, "horizontal");
+        String       string      = entry.getStringValue(request,0, "");
+        String       orientation = entry.getStringValue(request,1, "horizontal");
 
         String template = getRepository().getResource(
                               "/org/ramadda/plugins/gadgets/weather.html");

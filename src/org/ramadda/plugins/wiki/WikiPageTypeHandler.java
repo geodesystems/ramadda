@@ -103,13 +103,13 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      */
     @Override
     public String getEntryText(Entry entry) {
-        return (String) entry.getValue(0);
+        return (String) entry.getValue(getAdminRequest(),0);
     }
 
 
     @Override
     public String getExtraText(Entry entry) {
-        return (String) entry.getValue(0);
+        return (String) entry.getValue(getAdminRequest(),0);
     }    
 
 
@@ -170,7 +170,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("wikitext")) {
-            return (String) entry.getStringValue(0, "");
+            return (String) entry.getStringValue(request,0, "");
         }
 
         return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
@@ -192,7 +192,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     public String getTextForWiki(Request request, Entry entry,
                                  Hashtable properties)
             throws Exception {
-        return (String) entry.getStringValue(0, "");
+        return (String) entry.getStringValue(request,0, "");
     }
 
 
@@ -356,8 +356,8 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         super.addToInformationTabs(request, entry, tabTitles, tabContents);
         try {
             StringBuilder sb = new StringBuilder();
-            addReadOnlyWikiEditor(request, entry, sb, entry.getStringValue(0, ""));
-            //       sb.append(HU.textArea("dummy", entry.getStringValue(0, ""), 10,   120));
+            addReadOnlyWikiEditor(request, entry, sb, entry.getStringValue(request,0, ""));
+            //       sb.append(HU.textArea("dummy", entry.getStringValue(request,0, ""), 10,   120));
             tabTitles.add("Wiki Text");
             tabContents.add(sb.toString());
         } catch (Exception exc) {

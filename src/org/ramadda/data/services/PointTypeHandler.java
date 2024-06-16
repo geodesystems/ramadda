@@ -765,7 +765,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 		for (Column c : columns) {
 		    String isDefaultName = c.getProperty("is_default_entry_name",null);
 		    if(isDefaultName!=null && isDefaultName.equals("true")) {
-			String name = (String) entry.getValue(c.getOffset());
+			String name = (String) entry.getValue(request,c.getOffset());
 			if(Utils.stringDefined(name)) {
 			    entry.setName(name);
 			}

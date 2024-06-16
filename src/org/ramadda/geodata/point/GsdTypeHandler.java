@@ -109,7 +109,7 @@ public class GsdTypeHandler extends PointTypeHandler {
         String lon   = (String) requestProperties.get("longitude");
         String model = (String) requestProperties.get("model");
         if ((model == null) || model.equals("{model}")) {
-            model = (String) entry.getStringValue(IDX_MODEL, "GFS");
+            model = (String) entry.getStringValue(request,IDX_MODEL, "GFS");
         }
         if (model.length() == 0) {
             model = "GFS";

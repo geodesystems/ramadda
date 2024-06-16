@@ -131,7 +131,7 @@ public class AcsTypeHandler extends PointTypeHandler {
 
 
         tmpSb.append(HtmlUtils.formTable());
-        for (CensusVariable variable : getVariables(entry)) {
+        for (CensusVariable variable : getVariables(request,entry)) {
             tmpSb.append(
                 HtmlUtils.row(
                     HtmlUtils.cols(
@@ -185,7 +185,7 @@ public class AcsTypeHandler extends PointTypeHandler {
                                 + HtmlUtils.cssClass("ramadda-acs-list")));
 
         sb.append(HtmlUtils.formTable());
-        for (CensusVariable variable : getVariables(entry)) {
+        for (CensusVariable variable : getVariables(request,entry)) {
             sb.append(
                 HtmlUtils.rowTop(
                     HtmlUtils.cols(
@@ -215,10 +215,10 @@ public class AcsTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        String               header  = entry.getStringValue(IDX_HEADER, "");
-        boolean includeSpecial = entry.getBooleanValue(IDX_INCLUDE_LOCALES, false);
-        List<CensusVariable> vars    = getVariables(entry);
-        String               pattern = (String) entry.getValue(IDX_PATTERN);
+        String               header  = entry.getStringValue(request,IDX_HEADER, "");
+        boolean includeSpecial = entry.getBooleanValue(request,IDX_INCLUDE_LOCALES, false);
+        List<CensusVariable> vars    = getVariables(request,entry);
+        String               pattern = (String) entry.getValue(request,IDX_PATTERN);
         if ((pattern == null) || (pattern.trim().length() == 0)) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
@@ -246,9 +246,9 @@ public class AcsTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<String> getIndicatorIds(Entry entry) throws Exception {
+    private List<String> getIndicatorIds(Request request,Entry entry) throws Exception {
         List<String> ids = new ArrayList<String>();
-        for (CensusVariable variable : getVariables(entry)) {
+        for (CensusVariable variable : getVariables(request,entry)) {
             ids.add(variable.getId());
         }
 
@@ -265,14 +265,14 @@ public class AcsTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<CensusVariable> getVariables(Entry entry) throws Exception {
+    private List<CensusVariable> getVariables(Request request,Entry entry) throws Exception {
         List<CensusVariable> vars = new ArrayList<CensusVariable>();
         if (entry == null) {
             return vars;
         }
 	Hashtable<String,Integer> indices = new Hashtable<String,Integer>();
 	int cnt=0;
-        for (String id : getFieldLines(entry)) {
+        for (String id : getFieldLines(request,entry)) {
             int     index = CensusVariable.NULL_INDEX;
 	    String alias=null;
             boolean skip  = false;
@@ -327,11 +327,11 @@ public class AcsTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<String> getFieldLines(Entry entry) throws Exception {
+    private List<String> getFieldLines(Request request,Entry entry) throws Exception {
         if (entry == null) {
             return new ArrayList<String>();
         }
-        String       s      = entry.getStringValue(IDX_FIELDS, "").trim();
+        String       s      = entry.getStringValue(request,IDX_FIELDS, "").trim();
         List<String> fields = new ArrayList<String>();
         for (String line : StringUtil.split(s, "\n", true, true)) {
             if (line.startsWith("#")) {
@@ -384,18 +384,18 @@ public class AcsTypeHandler extends PointTypeHandler {
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry, forRead);
         }
-        String getArgValue = StringUtil.join(",", getIndicatorIds(entry));
+        String getArgValue = StringUtil.join(",", getIndicatorIds(request,entry));
 
-        String forType     = entry.getStringValue(IDX_FOR_TYPE, "us");
-        String forValue    = entry.getStringValue(IDX_FOR_VALUE, "");
+        String forType     = entry.getStringValue(request,IDX_FOR_TYPE, "us");
+        String forValue    = entry.getStringValue(request,IDX_FOR_VALUE, "");
         String forArgValue = forType + ":" + (Utils.stringDefined(forValue)
                 ? forValue
                 : "*");
 
-        String inType1     = entry.getStringValue(IDX_IN_TYPE1, "");
-        String inValue1    = entry.getStringValue(IDX_IN_VALUE1, "");
-        String inType2     = entry.getStringValue(IDX_IN_TYPE2, "");
-        String inValue2    = entry.getStringValue(IDX_IN_VALUE2, "");
+        String inType1     = entry.getStringValue(request,IDX_IN_TYPE1, "");
+        String inValue1    = entry.getStringValue(request,IDX_IN_VALUE1, "");
+        String inType2     = entry.getStringValue(request,IDX_IN_TYPE2, "");
+        String inValue2    = entry.getStringValue(request,IDX_IN_VALUE2, "");
         String key = getRepository().getProperty("census.api.key",
                          (String) null);
         //        "http://api.census.gov/data/2013/acs5?get=NAME,B01001_001E&for=county+subdivision:*&in=state:04";
@@ -481,10 +481,10 @@ public class AcsTypeHandler extends PointTypeHandler {
         }
 
 
-        String inValue  = entry.getStringValue(IDX_IN_VALUE1, "");
-        String inType   = entry.getStringValue(IDX_IN_TYPE1, "");
-        String forValue = entry.getStringValue(IDX_FOR_VALUE, "");
-        String forType  = entry.getStringValue(IDX_FOR_TYPE, "");
+        String inValue  = entry.getStringValue(request,IDX_IN_VALUE1, "");
+        String inType   = entry.getStringValue(request,IDX_IN_TYPE1, "");
+        String forValue = entry.getStringValue(request,IDX_FOR_VALUE, "");
+        String forType  = entry.getStringValue(request,IDX_FOR_TYPE, "");
 
         if (Utils.stringDefined(inValue)) {
             Place place = Place.getPlace(inValue);

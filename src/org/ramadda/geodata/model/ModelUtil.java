@@ -382,7 +382,7 @@ public class ModelUtil {
             Entry collection) {
         String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
         if (collection != null) {
-            String sval = collection.getValue(0).toString();
+            String sval = collection.getValue(request,0).toString();
             if ( !sval.toLowerCase().contains("mon")) {
                 frequency = CDOOutputHandler.FREQUENCY_DAILY;
             }

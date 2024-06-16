@@ -96,11 +96,11 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeSeries(Entry entry) throws Exception {
+    public void initializeSeries(Request request,Entry entry) throws Exception {
         EiaCategoryTypeHandler fcth =
             (EiaCategoryTypeHandler) getRepository().getTypeHandler(
                 Eia.TYPE_CATEGORY);
-        String seriesId = (String) entry.getStringValue(IDX_SERIES_ID, null);
+        String seriesId = (String) entry.getStringValue(request,IDX_SERIES_ID, null);
         if (seriesId == null) {
             return;
         }
@@ -143,7 +143,7 @@ public class EiaSeriesTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        String id = entry.getStringValue(IDX_SERIES_ID, (String) null);
+        String id = entry.getStringValue(request,IDX_SERIES_ID, (String) null);
         if (id == null) {
             return null;
         }

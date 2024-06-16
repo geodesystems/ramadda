@@ -182,7 +182,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 		HU.form(sb, getRepository().URL_ENTRY_SHOW.toString());
                 sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
                 sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GEOJSON_FILTER.toString()));
-		String names = (String) entry.getValue(GeoJsonTypeHandler.IDX_COLUMNS);
+		String names = (String) entry.getValue(request,GeoJsonTypeHandler.IDX_COLUMNS);
 		List<String> properties = null;
 		if(stringDefined(names)) properties = Utils.split(names,",",true,true);
 		if(properties==null) {

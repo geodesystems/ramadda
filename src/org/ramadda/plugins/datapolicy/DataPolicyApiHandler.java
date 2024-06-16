@@ -81,7 +81,7 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
             getEntryManager().getEntriesWithType(searchRequest,
                 "type_datapolicy");
         for (Entry entry : entries) {
-            addPolicy(entry, policies);
+            addPolicy(request,entry, policies);
         }
         top.add("policies");
         top.add(JsonUtil.list(policies));
@@ -99,8 +99,8 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         return JsonUtil.quote(v.toString());
     }
 
-    private void addLicense(List<String> licenses, Entry entry,int index) {
-	String license = (String)entry.getValue(index);
+    private void addLicense(Request request,List<String> licenses, Entry entry,int index) {
+	String license = (String)entry.getValue(request,index);
 	if(Utils.stringDefined(license) &&!license.equals("none")) {
 	    licenses.add(qt(license));
 	}
@@ -114,10 +114,10 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
      *
      * @throws Exception _more_
      */
-    private void addPolicy(Entry entry, List<String> policies)
+    private void addPolicy(Request request,Entry entry, List<String> policies)
             throws Exception {
         List<String> policy = new ArrayList<String>();
-        String id = (String) entry.getValue(DataPolicyTypeHandler.IDX_ID);
+        String id = (String) entry.getValue(request,DataPolicyTypeHandler.IDX_ID);
         if ( !Utils.stringDefined(id)) {
             id = Utils.makeID(entry.getName());
         }
@@ -125,16 +125,16 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         Utils.add(policy, DataPolicy.FIELD_NAME, qt(entry.getName()));
         Utils.add(policy, DataPolicy.FIELD_DESCRIPTION, qt(entry.getDescription()));
 	List<String> citations = new ArrayList<String>();
-	String citation = (String) entry.getValue(DataPolicyTypeHandler.IDX_CITATION); 
+	String citation = (String) entry.getValue(request,DataPolicyTypeHandler.IDX_CITATION); 
 	if(Utils.stringDefined(citation)) 
 	    citations.add(qt(citation));
         Utils.add(policy, DataPolicy.FIELD_CITATIONS, JsonUtil.list(citations));
 
 	
 	List<String> licenses = new ArrayList<String>();
-	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE1);
-	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE2);
-	addLicense(licenses, entry,DataPolicyTypeHandler.IDX_LICENSE3);
+	addLicense(request,licenses, entry,DataPolicyTypeHandler.IDX_LICENSE1);
+	addLicense(request,licenses, entry,DataPolicyTypeHandler.IDX_LICENSE2);
+	addLicense(request,licenses, entry,DataPolicyTypeHandler.IDX_LICENSE3);
 	if(licenses.size()>0) {
 	    Utils.add(policy,DataPolicy.FIELD_LICENSES,JsonUtil.list(licenses));
 	}
@@ -145,9 +145,9 @@ public class DataPolicyApiHandler extends RepositoryManager implements RequestHa
         List<String> permissions = new ArrayList<String>();
 
         String viewRoles =
-            (String) entry.getValue(DataPolicyTypeHandler.IDX_VIEW_ROLES);
+            (String) entry.getValue(request,DataPolicyTypeHandler.IDX_VIEW_ROLES);
         String fileRoles =
-            (String) entry.getValue(DataPolicyTypeHandler.IDX_FILE_ROLES);
+            (String) entry.getValue(request,DataPolicyTypeHandler.IDX_FILE_ROLES);
         if (Utils.stringDefined(viewRoles)) {
             permissions.add(JsonUtil.map(Utils.makeListFromValues(DataPolicy.FIELD_ACTION, JsonUtil.quote("view"),
 							DataPolicy.FIELD_ROLES, makeRoles(viewRoles))));

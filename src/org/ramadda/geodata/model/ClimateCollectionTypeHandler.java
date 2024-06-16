@@ -324,7 +324,7 @@ public class ClimateCollectionTypeHandler extends CollectionTypeHandler {
             throw new IllegalArgumentException("Entry: " + entry.getName()
                     + " is not a ClimateCollection");
         }
-        String f = entry.getValue(0).toString();
+        String f = entry.getValue(request,0).toString();
 
         return f;
     }

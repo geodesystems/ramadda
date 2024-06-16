@@ -123,7 +123,7 @@ STATE (VARCHAR 200)
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String id = (String) entry.getStringValue(IDX_SITE_ID, "");
+	String id = (String) entry.getStringValue(request,IDX_SITE_ID, "");
 	initializeStation(request, entry,  id);
 
 	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
@@ -132,7 +132,7 @@ STATE (VARCHAR 200)
 	HashSet<String> seen = new HashSet<String>();
 	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"site_id",seen,"^[^-]+$",null);
 	for(Entry newEntry: entries) {
-	    initializeStation(request,newEntry,(String)newEntry.getValue(IDX_SITE_ID));
+	    initializeStation(request,newEntry,(String)newEntry.getValue(request,IDX_SITE_ID));
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
 
@@ -147,8 +147,8 @@ STATE (VARCHAR 200)
         if (entry.isFile()) {
             return super.getPathForEntry(request, entry, forRead);
         }
-        String siteId = entry.getStringValue(IDX_SITE_ID, "");
-        int    offset = (int) entry.getIntValue(IDX_TIME_OFFSET, 24);
+        String siteId = entry.getStringValue(request,IDX_SITE_ID, "");
+        int    offset = (int) entry.getIntValue(request,IDX_TIME_OFFSET, 24);
         String url = URL.replace("{station}", siteId).replace("{offset}", "" + offset);
         return url;
     }

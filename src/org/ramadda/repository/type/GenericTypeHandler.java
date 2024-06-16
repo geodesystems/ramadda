@@ -329,6 +329,14 @@ public class GenericTypeHandler extends TypeHandler {
         return null;
     }
 
+    @Override
+    public Column findColumn(int index) {
+	List<Column> columns = getColumns();
+	if(index<0 || index>=columns.size()) return null;
+	return columns.get(index);
+    }
+
+
     /**
      * create  the entry value array and populate it with any column values stored in the map argument
      *

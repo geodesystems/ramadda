@@ -283,13 +283,13 @@ public class MailTypeHandler extends GenericTypeHandler {
         StringBuilder sb = new StringBuilder();
         if (tag.equals("mail_header")) {
 	    sb.append(HtmlUtils.formTable());
-	    String subject = clean2(entry.getStringValue(IDX_SUBJECT, ""));
-	    String from = entry.getStringValue(IDX_FROM, "");
+	    String subject = clean2(entry.getStringValue(request,IDX_SUBJECT, ""));
+	    String from = entry.getStringValue(request,IDX_FROM, "");
 	    sb.append(HtmlUtils.formEntry(msgLabel("Subject"), subject));
 	    sb.append(HtmlUtils.formEntry(msgLabel("From"), mailLink(from)));
 	    StringBuilder to = new StringBuilder();
 	    int toCnt = 0;
-	    for(String tom:Utils.split(entry.getStringValue(IDX_TO, ""),"\n",true,true)) {
+	    for(String tom:Utils.split(entry.getStringValue(request,IDX_TO, ""),"\n",true,true)) {
 		to.append(mailLink(tom));
 		to.append(" ");
 		toCnt++;

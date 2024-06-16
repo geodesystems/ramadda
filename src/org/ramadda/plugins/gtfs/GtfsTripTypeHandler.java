@@ -155,18 +155,18 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
 
 
             String headsign =
-                (String) entry.getStringValue(GtfsTripTypeHandler.IDX_HEADSIGN,
+                (String) entry.getStringValue(request,GtfsTripTypeHandler.IDX_HEADSIGN,
                                         (String) null);
             String sked = Gtfs.getWeekString(
                               (boolean[]) getRepository().decodeObject(
-                                  entry.getStringValue(IDX_WEEK, "")));
+                                  entry.getStringValue(request,IDX_WEEK, "")));
             if ( !Utils.stringDefined(sked)) {
                 sked = "No scheduled days";
             }
 
             String label = (Utils.stringDefined(headsign)
                             ? "To " + headsign + " - "
-                            : "") + sked + " - " + Gtfs.getTimeRange(entry);
+                            : "") + sked + " - " + Gtfs.getTimeRange(request,entry);
             HU.div(
                 sb, getPageHandler().getEntryHref(request, entry, label),
                 HU.cssClass("ramadda-page-heading"));
@@ -233,7 +233,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                                                       Entry>();
             for (Entry vehicle : vehicles) {
                 vehicleMap.put(
-                    (String) vehicle.getStringValue(
+                    (String) vehicle.getStringValue(request,
                         GtfsVehicleTypeHandler.IDX_STOP_ID, ""), vehicle);
             }
 
@@ -262,7 +262,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                 sb.append("</tr>");
                 Entry myRoute = entry.getParentEntry();
                 for (Gtfs.StopTime stopTime : stops) {
-                    String stopId = (String) stopTime.entry.getStringValue(
+                    String stopId = (String) stopTime.entry.getStringValue(request,
                                         GtfsStopTypeHandler.IDX_STOP_ID, "");
                     Entry vehicle = vehicleMap.get(stopId);
                     String lbl =
@@ -277,7 +277,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                                     .getTypeIconUrl()) + " "
                                         + vehicle.getName() + " "
                                         + vehicle
-                                            .getStringValue(GtfsVehicleTypeHandler
+                                            .getStringValue(request,GtfsVehicleTypeHandler
                                                 .IDX_STATUS, "")) + "<br>"
                                                     + lbl;
                     }
@@ -341,7 +341,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
     public void showSchedule(Request request, Appendable sb, Entry entry)
             throws Exception {
         boolean[] week =
-            (boolean[]) getRepository().decodeObject(entry.getStringValue(IDX_WEEK,
+            (boolean[]) getRepository().decodeObject(entry.getStringValue(request,IDX_WEEK,
                 ""));
         sb.append(
             "<table class=\"gtfs-table gtfs-schedule\" width=\"100%\">\n");
@@ -390,7 +390,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
         super.initMapAttrs(entry, mapInfo, sb);
         Entry route = entry.getAncestor("type_gtfs_route");
         String color =
-            getColor(route.getStringValue(GtfsRouteTypeHandler.IDX_COLOR,
+            getColor(route.getStringValue(getRepository().getAdminRequest(),GtfsRouteTypeHandler.IDX_COLOR,
                                     "#ff0000"));
         sb.append("'strokeColor':'" + color + "','strokeWidth':4");
     }
@@ -425,7 +425,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.addToMap(request, entry, map);
         //Note: This is a cut-and-paste from GtfsRouteTypeHandler
-        String s = entry.getStringValue(IDX_POINTS, "");
+        String s = entry.getStringValue(request,IDX_POINTS, "");
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();

@@ -71,7 +71,7 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 
     private List<String> getProperties(Request request, Entry entry,Hashtable props) throws Exception {
 	List<String> jsonProps = new ArrayList<String>();
-        String annotations = (String) entry.getValue(IDX_ANNOTATIONS);
+        String annotations = (String) entry.getValue(request,IDX_ANNOTATIONS);
 	if(!Utils.stringDefined(annotations)) {
 	    annotations = "[]";
 	}

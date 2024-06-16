@@ -330,7 +330,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             return;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat();
-        String           timezone   = entry.getStringValue(IDX_TIMEZONE, "");
+        String           timezone   = entry.getStringValue(request,IDX_TIMEZONE, "");
         if ( !Utils.stringDefined(timezone)) {
             timezone = getEntryUtil().getTimezone(request,entry);
         }

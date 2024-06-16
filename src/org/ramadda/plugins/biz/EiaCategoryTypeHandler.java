@@ -205,7 +205,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
                                 Eia.TAG_SERIES_ID, "");
                 String name = XmlUtil.getGrandChildText(item, Eia.TAG_NAME,
                                   (String) null);
-                Entry entry = createSeriesEntry(mainEntry, parentEntry, id,
+                Entry entry = createSeriesEntry(request,mainEntry, parentEntry, id,
                                   name);
                 seriesEntries.add(entry);
             }
@@ -353,7 +353,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Entry createSeriesEntry(Entry mainEntry, Entry parentEntry,
+    private Entry createSeriesEntry(Request request,Entry mainEntry, Entry parentEntry,
                                     String seriesId, String name)
             throws Exception {
 
@@ -379,7 +379,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
                         new Resource(), "", Entry.DEFAULT_ORDER,
                         dttm.getTime(), dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), values);
-        seriesTypeHandler.initializeSeries(entry);
+        seriesTypeHandler.initializeSeries(request,entry);
         getEntryManager().cacheSynthEntry(entry);
 
         return entry;
@@ -416,7 +416,7 @@ public class EiaCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         if (type.equals(Eia.PREFIX_CATEGORY)) {
             return createCategoryEntry(mainEntry, mainEntry, id, null);
         } else {
-            return createSeriesEntry(mainEntry, mainEntry, id, null);
+            return createSeriesEntry(request,mainEntry, mainEntry, id, null);
         }
 
     }

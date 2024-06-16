@@ -659,10 +659,10 @@ public class NCLModelPlotDataService extends NCLDataService {
 
                 nameList.append(entry.getName());
                 if (isGridEntry(entry)) {
-                    modelList.append(entry.getValue(1));
-                    expList.append(entry.getValue(2));
-                    ensList.append(entry.getValue(3));
-                    dateList.append(entry.getValue(5));
+                    modelList.append(entry.getValue(request,1));
+                    expList.append(entry.getValue(request,2));
+                    ensList.append(entry.getValue(request,3));
+                    dateList.append(entry.getValue(request,5));
                     haveGrid = true;
                 }
                 //fileList.append("\"");
@@ -1034,10 +1034,10 @@ public class NCLModelPlotDataService extends NCLDataService {
                 ensList.append(";");
                 dateList.append(";");
             }
-            modelList.append(first.getValue(1));
-            expList.append(first.getValue(2));
-            ensList.append(first.getValue(3));
-            dateList.append(first.getValue(5));
+            modelList.append(first.getValue(request,1));
+            expList.append(first.getValue(request,2));
+            ensList.append(first.getValue(request,3));
+            dateList.append(first.getValue(request,5));
             haveGrid = true;
 
             boolean     haveOne   = false;
@@ -1486,6 +1486,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             Collections.synchronizedSortedSet(new TreeSet<String>());
         SortedSet<String> uniqueMembers =
             Collections.synchronizedSortedSet(new TreeSet<String>());
+	Request request = getAdminRequest();
         for (Entry entry : entries) {
             if ( !(entry.getTypeHandler()
                     instanceof ClimateModelFileTypeHandler)) {
@@ -1496,8 +1497,8 @@ public class NCLModelPlotDataService extends NCLDataService {
 
                 return false;
             }
-            uniqueModels.add(entry.getValue(1).toString());
-            uniqueMembers.add(entry.getValue(3).toString());
+            uniqueModels.add(entry.getValue(request,1).toString());
+            uniqueMembers.add(entry.getValue(request,3).toString());
         }
         // one model, one member
         if ((uniqueModels.size() == 1) && (uniqueMembers.size() == 1)) {

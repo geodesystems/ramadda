@@ -118,7 +118,8 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 
     public String getTargetLabel(Entry entry)  {
 	Column column = findColumn("target_language");
-	String target = (String) entry.getValue(DictionaryTypeHandler.IDX_TARGET_LANGUAGE);
+	String target = (String) entry.getValue(getRepository().getAdminRequest(),
+						DictionaryTypeHandler.IDX_TARGET_LANGUAGE);
 	String label = stringDefined(target)?column.getEnumLabel(target):"";
 	if(!stringDefined(label)) label = target;
 	return label;
@@ -127,7 +128,7 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
 
     public String getDictionary(Request request, Entry group,WikiUtil wikiUtil,Hashtable props) throws Exception {
         StringBuffer sb = new StringBuffer();
-	String headerLabel = (String)group.getValue(IDX_LANGUAGE);
+	String headerLabel = (String)group.getValue(request,IDX_LANGUAGE);
 	String to  =getTargetLabel(group);
 	if(stringDefined(to))  headerLabel += HU.space(1) +"-&gt;"+ HU.space(1) + to;
 	sb.append(HU.center(headerLabel));
@@ -168,7 +169,7 @@ public class DictionaryTypeHandler extends LetterTypeHandler {
         for (Entry child : entries) {
             String name   = child.getName();
 	    if(child.getTypeHandler().isType("type_dictionary_word")) {
-		name += HU.space(1) +"-&gt;" + HU.space(1) +child.getValue(DictionaryWordTypeHandler.IDX_OTHER_WORD);
+		name += HU.space(1) +"-&gt;" + HU.space(1) +child.getValue(request,DictionaryWordTypeHandler.IDX_OTHER_WORD);
 	    }
             String letter = "-";
             if (name.length() > 0) {

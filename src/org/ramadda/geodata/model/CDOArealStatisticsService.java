@@ -204,7 +204,7 @@ public class CDOArealStatisticsService extends CDODataService {
         || units.equals("mm/day")
                                   || units.equals("mm"));  // for cpc global precip
 
-        boolean     isAnom = first.getValue(3).toString().equals("anom");
+        boolean     isAnom = first.getValue(request,3).toString().equals("anom");
         List<Entry> climos = findClimatology(request, first);
         boolean haveClimo = true;  // we make this true since we can create one on the fly
         if ((climos == null) || climos.isEmpty()) {
@@ -273,13 +273,13 @@ public class CDOArealStatisticsService extends CDODataService {
         Entry         oneOfThem = ops.get(0).getEntries().get(0);
         Object[]      values    = oneOfThem.getValues(true);
         StringBuilder fileName  = new StringBuilder();
-        fileName.append(oneOfThem.getValue(4));
+        fileName.append(oneOfThem.getValue(request,4));
         if (type.equals(ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE)) {
             fileName.append("_MultiModel_");
         } else {
             fileName.append("_Ensemble_");
         }
-        fileName.append(oneOfThem.getValue(2));
+        fileName.append(oneOfThem.getValue(request,2));
         fileName.append("_mean_");
         String id      = getRepository().getGUID();
         String newName = fileName + id + ".nc";
@@ -2167,12 +2167,13 @@ public class CDOArealStatisticsService extends CDODataService {
             Collections.synchronizedSortedSet(new TreeSet<String>());
         SortedSet<String> uniqueMembers =
             Collections.synchronizedSortedSet(new TreeSet<String>());
+	Request request=getAdminRequest();
         for (Entry entry : entries) {
             if ( !(isClimateModelType(entry))) {
                 return false;
             }
-            uniqueModels.add(entry.getValue(1).toString());
-            uniqueMembers.add(entry.getValue(3).toString());
+            uniqueModels.add(entry.getValue(request,1).toString());
+            uniqueMembers.add(entry.getValue(request,3).toString());
         }
         // one model, one member
         if ((uniqueModels.size() == 1) && (uniqueMembers.size() == 1)) {

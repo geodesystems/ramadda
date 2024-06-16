@@ -78,7 +78,7 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-	String id = (String) entry.getValue(IDX_ID);
+	String id = (String) entry.getValue(request,IDX_ID);
 	if(!Utils.stringDefined(id)) {
 	    entry.setValue(IDX_ID,Utils.makeID(entry.getName(),false,"-"));
 	}
@@ -129,7 +129,7 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
         if (column.getName().equals("view_roles")
                 || column.getName().equals("file_roles")) {
             String roles =
-                (String) entry.getValue(column.getName().equals("view_roles")
+                (String) entry.getValue(request,column.getName().equals("view_roles")
                                         ? IDX_VIEW_ROLES
                                         : IDX_FILE_ROLES);
             for (String r : Utils.split(roles, ",", true, true)) {
@@ -141,7 +141,7 @@ public class DataPolicyTypeHandler extends GenericTypeHandler {
         }
 
         if (column.getName().startsWith("license")) {
-            String license = (String) entry.getValue(column.getOffset());
+            String license = (String) entry.getValue(request,column.getOffset());
 	    if(Utils.stringDefined(license) && !license.equals("none")) {
 		String label = column.getEnumLabel(license);
 		tmpSb.append(getMetadataManager().getLicenseHtml(license, label,false));

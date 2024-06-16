@@ -104,7 +104,7 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry, Entries children)
 	throws Exception {
         Column c = getColumn("embed_type");
-        String style = entry.getStringValue(IDX_STYLE, c.getDflt());
+        String style = entry.getStringValue(request,IDX_STYLE, c.getDflt());
         if (style.equals("none")) {
             return null;
         }
@@ -188,7 +188,7 @@ public class HtmlDocTypeHandler extends ExtensibleGroupTypeHandler {
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
             throws Exception {
-        if ( !((entry.getValue(IDX_STYLE) + "").equals("partial"))) {
+        if ( !((entry.getValue(request,IDX_STYLE) + "").equals("partial"))) {
             return null;
         }
 

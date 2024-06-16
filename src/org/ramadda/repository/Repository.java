@@ -3689,7 +3689,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append("\n");
 	}
 
-	String seesv = (String)entry.getValue("convert_commands");
+	String seesv = (String)entry.getValue(request, "convert_commands");
 	if(Utils.stringDefined(seesv)) {
 	    seesv+="\n-args";
             List<String> lines  =  Seesv.tokenizeCommands(seesv,false).get(0);

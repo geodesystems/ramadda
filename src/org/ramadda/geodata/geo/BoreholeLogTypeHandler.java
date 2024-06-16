@@ -43,7 +43,7 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
             throws Exception {
 	super.initializeNewEntry(request, entry,newType);
 	if(!isNew(newType)) return;
-	String holeId = (String) entry.getValue("hole");
+	String holeId = (String) entry.getValue(request,"hole");
 	if(!stringDefined(holeId)) return;
 	if(holes==null) {
 	    holes = new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/geo/resources/holes.json"));
@@ -72,7 +72,7 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	throws Exception {
         if (tag.equals("borehole_profiles")) {
 	    StringBuilder sb = new StringBuilder();
-	    String fields=(String) entry.getValue("fields_to_show");
+	    String fields=(String) entry.getValue(request,"fields_to_show");
 	    if(!stringDefined(fields)) {
 		//Hacky way to get the number of fields since the metadata can be edited/changed
 		List<Metadata> metadata= getMetadataManager().findMetadata(request, entry, "thredds.variable",false);

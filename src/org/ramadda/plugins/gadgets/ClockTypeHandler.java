@@ -59,8 +59,8 @@ public class ClockTypeHandler extends GenericTypeHandler {
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        //        String orient = entry.getStringValue(0,"");
-        String timezone       = entry.getStringValue(0, "");
+        //        String orient = entry.getStringValue(request,0,"");
+        String timezone       = entry.getStringValue(request,0, "");
         int    timezoneOffset = 0;
         if (timezone.length() > 0) {
             TimeZone t = TimeZone.getTimeZone(timezone);

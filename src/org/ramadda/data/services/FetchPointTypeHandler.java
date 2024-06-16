@@ -113,7 +113,7 @@ public class FetchPointTypeHandler extends PointTypeHandler {
         List<Entry> entries =
             request.getRepository().getEntryManager().getEntriesFromDb(request);
         for (Entry entry : entries) {
-            fetchEntry(entry);
+            fetchEntry(request,entry);
         }
     }
 
@@ -124,19 +124,19 @@ public class FetchPointTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void fetchEntry(Entry entry) throws Exception {
+    private void fetchEntry(Request request,Entry entry) throws Exception {
         if ( !entry.getResource().isStoredFile()) {
             throw new IllegalArgumentException("Entry is not a stored file:"
                     + entry);
         }
-        boolean enabled = (Boolean) entry.getValue(IDX_ENABLED);
+        boolean enabled = (Boolean) entry.getValue(request,IDX_ENABLED);
         if ( !enabled) {
             return;
         }
         Date now        = new Date();
-        Date lastUpdate = (Date) entry.getValue(IDX_LAST_UPDATE);
+        Date lastUpdate = (Date) entry.getValue(request,IDX_LAST_UPDATE);
         if (lastUpdate != null) {
-            double hours = (double) entry.getValue(IDX_HOURS);
+            double hours = (double) entry.getValue(request,IDX_HOURS);
             double hoursSince = (now.getTime() - lastUpdate.getTime()) / 1000
                                 / 60 / 60.0;
             //      System.err.println("hours since:" + hoursSince +" hours:" + hours);
@@ -147,8 +147,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
                 return;
             }
         }
-        boolean addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
-        String  contents = readContents(entry);
+        boolean addDate  = (Boolean) entry.getValue(request,IDX_ADD_DATE);
+        String  contents = readContents(request,entry);
         if (contents == null) {
             return;
         }
@@ -191,8 +191,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    private String readContents(Entry entry) throws Exception {
-        String url = (String) entry.getValue(IDX_SOURCE_URL);
+    private String readContents(Request request, Entry entry) throws Exception {
+        String url = (String) entry.getValue(request,IDX_SOURCE_URL);
         url = url.replace("points.json", "points.csv");
         url += "&fullheader=true";
         System.err.println("U:" + url);
@@ -208,8 +208,8 @@ public class FetchPointTypeHandler extends PointTypeHandler {
             return;
         }
         File tmpFile = getStorageManager().getTmpFile("csv");
-        boolean          addDate  = (Boolean) entry.getValue(IDX_ADD_DATE);
-        String           contents = readContents(entry);
+        boolean          addDate  = (Boolean) entry.getValue(request,IDX_ADD_DATE);
+        String           contents = readContents(request,entry);
         StringBuilder    sb       = new StringBuilder();
         SimpleDateFormat sdf      = new SimpleDateFormat(DATE_FORMAT);
         Date             now      = new Date();

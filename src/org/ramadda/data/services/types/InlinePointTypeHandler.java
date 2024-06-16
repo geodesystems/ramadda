@@ -72,7 +72,7 @@ public class InlinePointTypeHandler extends PointTypeHandler {
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry, Hashtable properties,  Hashtable requestProperties)
             throws Exception {
-        return new InlinePointRecordFile(getRepository(), entry);
+        return new InlinePointRecordFile(request,getRepository(), entry);
     }
 
 
@@ -86,6 +86,8 @@ public class InlinePointTypeHandler extends PointTypeHandler {
      * @author         Enter your name here...
      */
     public static class InlinePointRecordFile extends CsvFile {
+
+	Request request;
 
         /** _more_ */
         Repository repository;
@@ -103,8 +105,9 @@ public class InlinePointTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public InlinePointRecordFile(Repository repository, Entry entry)
+        public InlinePointRecordFile(Request request, Repository repository, Entry entry)
                 throws IOException {
+	    this.request = request;
             this.repository = repository;
             this.entry      = entry;
         }
@@ -123,7 +126,7 @@ public class InlinePointTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
-            String data  = (String) entry.getValue(IDX_DATA);
+            String data  = (String) entry.getValue(request,IDX_DATA);
             byte[] bytes = data.getBytes();
 
             return new BufferedInputStream(new ByteArrayInputStream(bytes));

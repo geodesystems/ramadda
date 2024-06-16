@@ -71,7 +71,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
 
     public List<String> getCsvCommands(Request request, Entry entry) throws Exception {
         String commands =
-            (String) entry.getValue(ConvertibleTypeHandler.IDX_COMMANDS);
+            (String) entry.getValue(request,ConvertibleTypeHandler.IDX_COMMANDS);
         if ( !Utils.stringDefined(commands)) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,

@@ -173,7 +173,7 @@ public class WeblogOutputHandler extends OutputHandler {
         }
         List<String> links = new ArrayList<String>();
         if (group != null) {
-            String headerValue = group.getStringValue(0, "");
+            String headerValue = group.getStringValue(request,0, "");
             if (headerValue.length() == 0) {
                 headerValue =
                     "\n:title " + group.getName() + "\n"
@@ -215,7 +215,7 @@ public class WeblogOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("col-md-3")));
         if (group != null) {
             String rightSide = getWikiManager().wikifyEntry(request, group,
-                                   group.getStringValue(1, ""));
+							    group.getStringValue(request,1, ""));
             String rssLink = getEntryManager().getEntryURL(request, group,
                                  ARG_OUTPUT,
                                  RssOutputHandler.OUTPUT_RSS_FULL.toString());

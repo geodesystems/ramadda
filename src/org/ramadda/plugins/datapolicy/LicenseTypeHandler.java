@@ -72,7 +72,7 @@ public class LicenseTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-	String id = (String)entry.getValue("license_id");
+	String id = (String)entry.getValue(request,"license_id");
 	String wiki = "{{license  license=\"" + id+"\"  includeName=\"true\" showDescription=\"true\" decorate=\"true\" }}";
 
 	return getWikiManager().wikifyEntry(request, entry, wiki);

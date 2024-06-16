@@ -132,7 +132,7 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         if (tag.equals("gtfs.stop.link")) {
-            String stopId = (String) entry.getValue(IDX_STOP_ID);
+            String stopId = (String) entry.getValue(request,IDX_STOP_ID);
             Entry  stop   = Gtfs.getStop(request, entry, stopId);
             if (stop == null) {
                 if (stopId == null) {
@@ -146,7 +146,7 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
         }
 
         if (tag.equals("gtfs.trip.link")) {
-            String tripId = (String) entry.getValue(IDX_TRIP_ID);
+            String tripId = (String) entry.getValue(request,IDX_TRIP_ID);
             //            System.err.println("calling gettrip trip id:" + tripId);
             Entry trip = Gtfs.getTrip(request, entry, tripId);
             if (trip == null) {
@@ -161,7 +161,7 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
         }
 
         if (tag.equals("gtfs.route.link")) {
-            String routeId = (String) entry.getValue(IDX_ROUTE_ID);
+            String routeId = (String) entry.getValue(request,IDX_ROUTE_ID);
             Entry  route   = Gtfs.getRoute(request, entry, routeId);
             if (route == null) {
                 if (routeId == null) {

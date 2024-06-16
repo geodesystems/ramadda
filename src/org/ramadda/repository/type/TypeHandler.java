@@ -774,8 +774,8 @@ public class TypeHandler extends RepositoryManager {
 	actionMap.put(action.id,action);
     }
 
-    public Object getWikiProperty(Entry entry, String id)  {
-	return  entry.getValue(id,true);
+    public Object getWikiProperty(Request request,Entry entry, String id)  {
+	return  entry.getValue(request,id,true);
     }
 
     public void getWikiTags(List<String[]> tags, Entry entry) {
@@ -3211,6 +3211,9 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
+    public Column findColumn(int index) {
+	return  null;
+    }
 
     /**
      * _more_
@@ -8229,7 +8232,7 @@ public class TypeHandler extends RepositoryManager {
         String   timezone = null;
         if (entry != null) {
             if (index >= 0) {
-                timezone = entry.getStringValue(index, "");
+                timezone = entry.getStringValue(request,index, "");
             }
             if ( !Utils.stringDefined(timezone)) {
                 timezone = getEntryUtil().getTimezone(request, entry);

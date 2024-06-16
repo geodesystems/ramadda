@@ -96,7 +96,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
      */
     private String getToken(Request request, Entry entry) throws Exception {
 
-        String token = (String) entry.getValue(IDX_TOKEN);
+        String token = (String) entry.getValue(request,IDX_TOKEN);
         if ( !Utils.stringDefined(token)) {
             return null;
         }
@@ -180,9 +180,9 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return _more_
      */
-    private HashSet<String> getRoomsToShow(Entry groupEntry) {
+    private HashSet<String> getRoomsToShow(Request request,Entry groupEntry) {
         HashSet<String> roomsToShow = null;
-        String          rooms       = (String) groupEntry.getValue(IDX_ROOMS);
+        String          rooms       = (String) groupEntry.getValue(request,IDX_ROOMS);
         if (Utils.stringDefined(rooms)) {
             roomsToShow = new HashSet<String>(StringUtil.split(rooms, "\n",
                     true, true));
@@ -224,7 +224,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         HashSet<String> roomsToShow = null;
-        String          roomIds     = (String) groupEntry.getValue(IDX_ROOMS);
+        String          roomIds     = (String) groupEntry.getValue(request,IDX_ROOMS);
         if (Utils.stringDefined(roomIds)) {
             roomsToShow = new HashSet<String>(StringUtil.split(roomIds, "\n",
                     true, true));
@@ -260,7 +260,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
             //do message listing
 
             String roomId =
-                parentEntry.getStringValue(HipchatRoomTypeHandler.IDX_ROOM_ID, "");
+                parentEntry.getStringValue(request,HipchatRoomTypeHandler.IDX_ROOM_ID, "");
 
             String url =
                 getUrl(groupEntry,
@@ -467,7 +467,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         Entry roomEntry = createRoomEntry(groupEntry, result,
-                                          getRoomsToShow(groupEntry));
+                                          getRoomsToShow(request,groupEntry));
         if (roomEntry == null) {
             return null;
         }

@@ -113,7 +113,7 @@ public class GithubTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new GithubRecordFile(getRepository(),
+        return new GithubRecordFile(request,getRepository(),
 				    new IO.Path(getPathForEntry(request, entry, true)), entry);
     }
 
@@ -126,6 +126,8 @@ public class GithubTypeHandler extends PointTypeHandler {
      * @author         Enter your name here...
      */
     public static class GithubRecordFile extends CsvFile {
+
+	private Request request;
 
         /** _more_ */
         private Entry entry;
@@ -142,10 +144,11 @@ public class GithubTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public GithubRecordFile(Repository repository, IO.Path path,
+        public GithubRecordFile(Request request,Repository repository, IO.Path path,
                              Entry entry)
                 throws IOException {
             super(path);
+	    this.request= request;
             this.repository = repository;
             this.entry      = entry;
 	    putProperty(PROP_SKIPLINES, "1");
@@ -176,9 +179,9 @@ public class GithubTypeHandler extends PointTypeHandler {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	    sdf.setTimeZone(Utils.TIMEZONE_DEFAULT);
 	    Hashtable props = Utils.makeHashtable(
-						  "user",entry.getStringValue(IDX_USER, (String) null),
-						  "owner",entry.getStringValue(IDX_OWNER, (String) null),
-						  "repository",	entry.getStringValue(IDX_REPOSITORY, (String) null));		
+						  "user",entry.getStringValue(request,IDX_USER, (String) null),
+						  "owner",entry.getStringValue(request,IDX_OWNER, (String) null),
+						  "repository",	entry.getStringValue(request,IDX_REPOSITORY, (String) null));		
 	    List<Github.Item> items = Github.fetch(repository.getWikiManager(), props);
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("date,login,name,user_url,avatar_url,item_url,message\n");

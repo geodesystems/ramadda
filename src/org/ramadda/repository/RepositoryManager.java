@@ -680,6 +680,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return repository.getAdmin();
     }
 
+    public Request getAdminRequest() {
+	return getRepository().getAdminRequest();
+    }
+
     /**
      * _more_
      *

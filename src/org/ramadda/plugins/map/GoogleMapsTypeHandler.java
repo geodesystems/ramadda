@@ -95,15 +95,15 @@ public class GoogleMapsTypeHandler extends GenericTypeHandler {
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        String  sdisplay = entry.getStringValue(IDX_DISPLAY, "true");
+        String  sdisplay = entry.getStringValue(request,IDX_DISPLAY, "true");
         boolean display  = (sdisplay.length() == 0)
                            ? true
                            : Misc.equals("true", sdisplay);
         if ( !display) {
             return null;
         }
-        String width   = entry.getStringValue(IDX_WIDTH, "640");
-        String height  = entry.getStringValue(IDX_HEIGHT, "390");
+        String width   = entry.getStringValue(request,IDX_WIDTH, "640");
+        String height  = entry.getStringValue(request,IDX_HEIGHT, "390");
         String baseUrl = entry.getResource().getPath();
         String url     = baseUrl;
         url = url + "&output=embed";

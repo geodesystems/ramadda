@@ -50,7 +50,7 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
 
     private String getFromLabel(Entry parentEntry) {
 	if(parentEntry.getTypeHandler().isType("type_dictionary")) {
-	    String from  = (String) parentEntry.getValue(DictionaryTypeHandler.IDX_LANGUAGE);
+	    String from  = (String) parentEntry.getValue(getRepository().getAdminRequest(),DictionaryTypeHandler.IDX_LANGUAGE);
 	    return from +" " + msg("Word");
 	}
 	return null;
@@ -97,7 +97,7 @@ public class DictionaryWordTypeHandler extends GenericTypeHandler {
 	if(includeWord) {
 	    String to= getToLabel(entry.getParentEntry());
 	    if(to==null)  to = "Word";
-	    HU.formEntry(sb,to+":", (String) entry.getValue(IDX_OTHER_WORD));
+	    HU.formEntry(sb,to+":", (String) entry.getValue(request,IDX_OTHER_WORD));
 	}
 	String s;
 	//Add the fields to the table and include the search under the parent

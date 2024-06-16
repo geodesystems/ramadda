@@ -722,9 +722,9 @@ public class GpsOutputHandler extends OutputHandler {
             fileToEntryMap.put(rinexFile.toString(), rawEntry);
             List<String> args = new ArrayList<String>();
             args.add(teqcPath);
-            String antenna = rawEntry.getStringValue(IDX_ANTENNA_TYPE,
+            String antenna = rawEntry.getStringValue(request,IDX_ANTENNA_TYPE,
                                  (String) null);
-            double height = rawEntry.getDoubleValue(IDX_ANTENNA_HEIGHT, 0.0);
+            double height = rawEntry.getDoubleValue(request,IDX_ANTENNA_HEIGHT, 0.0);
 
             if (height != 0) {
                 args.add("-O.pe");
@@ -995,10 +995,10 @@ public class GpsOutputHandler extends OutputHandler {
                                              ARG_GPS_SELECTED
                                              + suffix, "true", entrySelected), entry.getName(), HtmlUtils.input(
                                                  ARG_GPS_ANTENNA_HEIGHT
-                                                     + suffix, entry.getStringValue(
+                                                     + suffix, entry.getStringValue(request,
                                                          IDX_ANTENNA_HEIGHT, ""), 5), HtmlUtils.select(
                                                              ARG_GPS_ANTENNA_TYPE
-                                                                 + suffix, Antenna.getAntennas(), entry.getStringValue(
+                                                                 + suffix, Antenna.getAntennas(), entry.getStringValue(request,
                                                                      IDX_ANTENNA_TYPE, "")))));
 
         }
@@ -1082,13 +1082,13 @@ public class GpsOutputHandler extends OutputHandler {
                 entryTable.append(" ");
                 entryTable.append(entry.getName());
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getStringValue(SolutionTypeHandler.IDX_X,
+                entryTable.append(entry.getStringValue(request,SolutionTypeHandler.IDX_X,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getStringValue(SolutionTypeHandler.IDX_Y,
+                entryTable.append(entry.getStringValue(request,SolutionTypeHandler.IDX_Y,
                         "NA"));
                 entryTable.append("</td><td align=right>");
-                entryTable.append(entry.getStringValue(SolutionTypeHandler.IDX_Z,
+                entryTable.append(entry.getStringValue(request,SolutionTypeHandler.IDX_Z,
                         "NA"));
 
                 entryTable.append("</td><td align=right>");
@@ -1157,20 +1157,20 @@ public class GpsOutputHandler extends OutputHandler {
             solutionEntries.add(solutionEntry);
             anyOK = true;
             String siteCode =
-                solutionEntry.getStringValue(SolutionTypeHandler.IDX_SITE_CODE, "");
+                solutionEntry.getStringValue(request,SolutionTypeHandler.IDX_SITE_CODE, "");
             if (siteCode.length() == 0) {
                 siteCode = solutionEntry.getName();
             }
             buff.append(siteCode);
             if (request.get(ARG_COORD_XYZ, false)) {
                 buff.append(",");
-                buff.append(solutionEntry.getStringValue(SolutionTypeHandler.IDX_X,
+                buff.append(solutionEntry.getStringValue(request,SolutionTypeHandler.IDX_X,
                         "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getStringValue(SolutionTypeHandler.IDX_Y,
+                buff.append(solutionEntry.getStringValue(request,SolutionTypeHandler.IDX_Y,
                         "NA"));
                 buff.append(",");
-                buff.append(solutionEntry.getStringValue(SolutionTypeHandler.IDX_Z,
+                buff.append(solutionEntry.getStringValue(request,SolutionTypeHandler.IDX_Z,
                         "NA"));
             }
 
@@ -1709,13 +1709,13 @@ public class GpsOutputHandler extends OutputHandler {
                         ARG_OPUS_EMAIL, request.getUser().getEmail()))));
 
         sb.append(HtmlUtils.formTableClose());
-        //request.getString(ARG_OPUS_ANTENNA, entry.getStringValue(IDX_ANTENNA_TYPE,"")
+        //request.getString(ARG_OPUS_ANTENNA, entry.getStringValue(request,IDX_ANTENNA_TYPE,"")
         String selectedAntenna = "";
         for (Entry entry : entries) {
             if ( !isRinex(entry)) {
                 continue;
             }
-            selectedAntenna = (String) entry.getStringValue(IDX_ANTENNA_TYPE, "");
+            selectedAntenna = (String) entry.getStringValue(request,IDX_ANTENNA_TYPE, "");
 
             break;
         }
@@ -1788,7 +1788,7 @@ public class GpsOutputHandler extends OutputHandler {
             }
             entriesSB.append("</td>");
             entriesSB.append("<td align=right>");
-            selectedAntenna = (String) entry.getStringValue(IDX_ANTENNA_TYPE, "");
+            selectedAntenna = (String) entry.getStringValue(request,IDX_ANTENNA_TYPE, "");
             entriesSB.append(HtmlUtils.select(ARG_OPUS_ANTENNA + argSuffix,
                     Antenna.getAntennas(), selectedAntenna));
             entriesSB.append("</td>");
@@ -1798,7 +1798,7 @@ public class GpsOutputHandler extends OutputHandler {
                     ARG_OPUS_HEIGHT + argSuffix,
                     request.getString(
                         ARG_OPUS_HEIGHT + argSuffix,
-                        entry.getStringValue(
+                        entry.getStringValue(request,
                             IDX_ANTENNA_HEIGHT, "")), HtmlUtils.SIZE_5));
             entriesSB.append("</td>");
 
@@ -1986,7 +1986,7 @@ public class GpsOutputHandler extends OutputHandler {
         TypeHandler typeHandler =
             getRepository().getTypeHandler(OpusTypeHandler.TYPE_OPUS);
 
-        final Object     siteCode    = rinexEntry.getStringValue(IDX_SITE_CODE, "");
+        final Object     siteCode    = rinexEntry.getStringValue(request,IDX_SITE_CODE, "");
         EntryInitializer initializer = new EntryInitializer() {
             public void initEntry(Entry entry) {
                 entry.getTypeHandler().getEntryValues(

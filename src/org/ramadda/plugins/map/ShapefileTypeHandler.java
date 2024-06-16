@@ -273,7 +273,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         if ( !entry.isFile()) {
 	    //            return true;
         }
-        int numPoints = entry.getIntValue(IDX_RECORD_COUNT, -1);
+        int numPoints = entry.getIntValue(request,IDX_RECORD_COUNT, -1);
 
         if (numPoints < 0) {
             long t1 = System.currentTimeMillis();

@@ -83,13 +83,13 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
             String id = HU.getUniqueId("image");
             boolean showControls =
                 "true".equals(Utils.getString(props.get("showControls"),
-                    entry.getStringValue(IDX_SHOWCONTROLS, "true")));
+                    entry.getStringValue(request,IDX_SHOWCONTROLS, "true")));
             boolean autoplay =
                 "true".equals(Utils.getString(props.get("autoplay"),
-                    entry.getStringValue(IDX_AUTOPLAY, "true")));
+                    entry.getStringValue(request,IDX_AUTOPLAY, "true")));
             boolean addButtons =
                 "true".equals(Utils.getString(props.get("addButtons"),
-                    entry.getStringValue(IDX_ADDBUTTONS, "true")));
+                    entry.getStringValue(request,IDX_ADDBUTTONS, "true")));
             if (showControls) {
 		sb.append("<div class=animatedgif-controls>");
                 sb.append("<a href='javascript:;' onmousedown='" + id
@@ -127,10 +127,10 @@ public class AnimatedGifTypeHandler extends ImageTypeHandler {
                     : "0");
             int maxWidth =
                 Integer.parseInt(Utils.getString(props.get("maxwidth"),
-                    entry.getValue(IDX_MAXWIDTH), "-1"));
+                    entry.getValue(request,IDX_MAXWIDTH), "-1"));
             int loopDelay =
                 Integer.parseInt(Utils.getString(props.get("loopdelay"),
-                    entry.getValue(IDX_LOOPDELAY), "-1"));
+                    entry.getValue(request,IDX_LOOPDELAY), "-1"));
             List<String> objAttrs = new ArrayList<String>();
             objAttrs.add("gif");
             objAttrs.add("document.getElementById('" + id + "')");

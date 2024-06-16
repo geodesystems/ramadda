@@ -777,7 +777,7 @@ public class JsonOutputHandler extends OutputHandler {
 		    for (int i = 0; i < extraParameters.length && i< columns.size(); i++) {
 			Column column     = columns.get(i);
 			String columnName = column.getName();
-			Object v          = entry.getValue(i);
+			Object v          = entry.getValue(request, column);
 			if (v == null) {
 			    v = "";
 			}
@@ -996,14 +996,10 @@ public class JsonOutputHandler extends OutputHandler {
         }
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes && (columns != null)) {
-            Object[] extraParameters = entry.getValues();
-            if ((extraParameters != null)
-                    && typeHandler.isType(mainTypeHandler.getType())) {
-                //              System.err.println("entry:" + entry);
-                //              System.err.println("extra:" + extraParameters.length);
-                //              System.err.println("columns:" + columns);
+            if (typeHandler.isType(mainTypeHandler.getType())) {
                 for (Column column : columns) {
-                    Object v = extraParameters[column.getOffset()];
+                    Object v = entry.getValue(request, column);
+		    //extraParameters[column.getOffset()];
                     if (v == null) {
 			if (column.isNumeric()) {
 			    items.add("null");

@@ -239,9 +239,10 @@ public class CsvOutputHandler extends OutputHandler {
                 }
                 if (column.isString()) {
                     String s = sanitize(escape,
-                                        column.getString(values));
-                    maxStringSize[col] = Math.max(maxStringSize[col],
-                            s.length());
+                                        (String)entry.getValue(request,column));
+		    if(s!=null)
+			maxStringSize[col] = Math.max(maxStringSize[col],
+						      s.length());
                 }
             }
         }

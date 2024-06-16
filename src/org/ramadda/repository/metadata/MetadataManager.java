@@ -358,9 +358,9 @@ public class MetadataManager extends RepositoryManager {
 		if(entry.isFile())  {
 		    icon = getEntryManager().getEntryResourceUrl(request, entry) ;
 		}
-		License license = new License((String) entry.getValue("license_id"),
+		License license = new License((String) entry.getValue(request,"license_id"),
 					      entry.getName(),
-					      (String)entry.getValue("external_url"),
+					      (String)entry.getValue(request,"external_url"),
 					      icon,
 					      entry.getDescription());
 		license.setFrom("Local RAMADDA Licenses");

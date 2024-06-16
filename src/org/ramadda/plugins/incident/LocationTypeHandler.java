@@ -60,7 +60,7 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
     public String getEntryName(Entry entry) {
         String name = super.getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
-            name = entry.getStringValue(0, "");
+            name = entry.getStringValue(getRepository().getAdminRequest(),0, "");
         }
 
         //        System.err.println("NAME:" + name);
@@ -116,9 +116,9 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
             return;
         }
         //TODO: if the entry has a location then don't do this?
-        String address = entry.getStringValue(0, (String) null);
-        String city    = entry.getStringValue(1, (String) null);
-        String state   = entry.getStringValue(2, (String) null);
+        String address = entry.getStringValue(request,0, (String) null);
+        String city    = entry.getStringValue(request,1, (String) null);
+        String state   = entry.getStringValue(request,2, (String) null);
         if ( !Utils.stringDefined(address)) {
             return;
         }
@@ -147,7 +147,7 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
-        double depth = entry.getDoubleValue(4, 0.0);
+        double depth = entry.getDoubleValue(request,4, 0.0);
         if (depth == 0) {
             return getIconUrl("/incident/flag_green.png");
         }

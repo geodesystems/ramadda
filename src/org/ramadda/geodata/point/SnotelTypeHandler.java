@@ -70,7 +70,7 @@ public class SnotelTypeHandler extends PointTypeHandler {
 	List<Entry> goodEntries = new ArrayList<Entry>();
 	for(Entry newEntry: entries) {
 	    cnt++;
-	    System.err.println("SnotelTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue("site_number"));
+	    System.err.println("SnotelTypeHandler: bulk entry: #" + cnt+" station:"+ newEntry.getValue(request,"site_number"));
 	    if(initializeNewEntryInner(request,newEntry))
 		goodEntries.add(newEntry);
 	}
@@ -79,7 +79,7 @@ public class SnotelTypeHandler extends PointTypeHandler {
 
     private boolean initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
-        String id = (String) entry.getStringValue(IDX_SITE_NUMBER, "");
+        String id = (String) entry.getStringValue(request,IDX_SITE_NUMBER, "");
         if ( !Utils.stringDefined(id)) {
             return false;
         }

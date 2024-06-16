@@ -32,7 +32,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String caseNumber = (String) entry.getValue("case_number",null);
+	String caseNumber = (String) entry.getValue(request,"case_number",null);
 	if(stringDefined(caseNumber)) return;
 	int cnt = getEntryUtil().getEntryCount(this);
 	int base = 10;
@@ -46,7 +46,8 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
     @Override
     public String getNameSort(Entry entry) {
-	return 	entry.getValue("last_name") +"-" + entry.getValue("first_name") +"-" + entry.getValue("middle_name");
+	Request  request=getAdminRequest();
+	return 	entry.getValue(request,"last_name") +"-" + entry.getValue(request,"first_name") +"-" + entry.getValue(request,"middle_name");
     }
 
     private void makeBlock(Appendable sb, String clazz,String header,String contents) throws Exception {
@@ -77,9 +78,9 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	int years;
 	SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
 	Date missingDate = DateHandler.checkDate(new Date(entry.getStartDate()));
-	Date birthDate = DateHandler.checkDate((Date) entry.getValue("date_of_birth"));
-	Date foundDate = DateHandler.checkDate((Date) entry.getValue("date_found"));	
-	String status=(String)entry.getValue("status","");	
+	Date birthDate = DateHandler.checkDate((Date) entry.getValue(request,"date_of_birth"));
+	Date foundDate = DateHandler.checkDate((Date) entry.getValue(request,"date_found"));	
+	String status=(String)entry.getValue(request,"status","");	
 	String clazz="missing-block missing-status-"+ status; 
 	String image="";
 	if(Utils.getProperty(props,"includeImage",false)) {
@@ -173,13 +174,13 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
     private void getHeaderLine(Request request, Entry entry, StringBuilder sb,boolean forSearch) throws Exception {
 	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-	String nickname=(String)entry.getValue("nickname");
-	String status=(String)entry.getValue("status","");	
+	String nickname=(String)entry.getValue(request,"nickname");
+	String status=(String)entry.getValue(request,"status","");	
 	sb.append("<div class=missing-header1>\n");
 	sb.append(HU.href(url));
-	//	sb.append("Missing Person/#" + entry.getValue("case_number","")+"<br>");
+	//	sb.append("Missing Person/#" + entry.getValue(request,"case_number","")+"<br>");
 	//	sb.append(entry.getName().trim());
-	String caseNumber=(String)entry.getValue("case_number","");
+	String caseNumber=(String)entry.getValue(request,"case_number","");
 	String name = entry.getName().trim();
 	if(stringDefined(nickname)) {
 	    nickname = nickname.trim();
@@ -301,7 +302,7 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 	SimpleDateFormat yob = new SimpleDateFormat("yyyy");
-	Date birthDate = DateHandler.checkDate(	(Date) entry.getValue("date_missing"));
+	Date birthDate = DateHandler.checkDate(	(Date) entry.getValue(request,"date_missing"));
 	if(birthDate!=null)
 	    HU.formEntry(info,msgLabel("Year of Birth"), yob.format(birthDate));	    
 	

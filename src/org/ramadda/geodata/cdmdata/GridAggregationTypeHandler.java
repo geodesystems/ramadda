@@ -144,7 +144,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                                            boolean fromImport) {
         //Call this to force an initial ingest
         try {
-            if (getIngest(entry)) {
+            if (getIngest(request,entry)) {
                 getNcmlString(request, entry, new long[] { 0 });
             }
         } catch (Exception exc) {
@@ -161,8 +161,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return  true if should ingest
      */
-    private boolean getIngest(Entry entry) {
-        return Misc.equals(entry.getStringValue(INDEX_INGEST, ""), "true");
+    private boolean getIngest(Request request,Entry entry) {
+        return Misc.equals(entry.getStringValue(request,INDEX_INGEST, ""), "true");
     }
 
     /**
@@ -172,9 +172,9 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return true if we should recurse
      */
-    private boolean getRecurse(Entry entry) {
+    private boolean getRecurse(Request request,Entry entry) {
         //Object[] values = entry.getValues();
-        return Misc.equals(entry.getStringValue(INDEX_RECURSE, ""), "true");
+        return Misc.equals(entry.getStringValue(request,INDEX_RECURSE, ""), "true");
     }
 
     /**
@@ -184,8 +184,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return  the list of variables
      */
-    private List<String> getFields(Entry entry) {
-        String       fieldString = entry.getStringValue(INDEX_FIELDS, "");
+    private List<String> getFields(Request request,Entry entry) {
+        String       fieldString = entry.getStringValue(request,INDEX_FIELDS, "");
         List<String> fields      = new ArrayList<String>();
         List<String> lines = StringUtil.split(fieldString, "/", true, true);
         for (String line : lines) {
@@ -219,18 +219,18 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         }
         StringBuilder sb = new StringBuilder();
 
-        NcmlUtil ncmlUtil = new NcmlUtil(entry.getStringValue(INDEX_TYPE,
+        NcmlUtil ncmlUtil = new NcmlUtil(entry.getStringValue(request,INDEX_TYPE,
                                 NcmlUtil.AGG_JOINEXISTING));
-        String timeCoordinate = entry.getStringValue(INDEX_COORDINATE, "time");
-        String       files   = entry.getStringValue(INDEX_FILES, "").trim();
-        String       pattern = entry.getStringValue(INDEX_PATTERN, "").trim();
-        boolean      ingest  = getIngest(entry);
-        boolean      recurse = getRecurse(entry);
-        List<String> fields  = getFields(entry);
+        String timeCoordinate = entry.getStringValue(request,INDEX_COORDINATE, "time");
+        String       files   = entry.getStringValue(request,INDEX_FILES, "").trim();
+        String       pattern = entry.getStringValue(request,INDEX_PATTERN, "").trim();
+        boolean      ingest  = getIngest(request,entry);
+        boolean      recurse = getRecurse(request,entry);
+        List<String> fields  = getFields(request,entry);
         final boolean harvestMetadata =
-            Misc.equals(entry.getStringValue(INDEX_ADDSHORTMETADATA, ""), "true");
+            Misc.equals(entry.getStringValue(request,INDEX_ADDSHORTMETADATA, ""), "true");
         final boolean harvestFullMetadata =
-            Misc.equals(entry.getStringValue(INDEX_ADDFULLMETADATA, ""), "true");
+            Misc.equals(entry.getStringValue(request,INDEX_ADDFULLMETADATA, ""), "true");
 
 
 
@@ -398,7 +398,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
         if (ncmlUtil.isJoinExisting()) {
 	    //Get the sort order. false=> don't check for inherited
-	    String sortOrder = (String) entry.getValue("sortorder","");
+	    String sortOrder = (String) entry.getValue(request,"sortorder","");
 	    if(stringDefined(sortOrder)) {
 		sortedChillens= getEntryUtil().sortEntriesOn(sortedChillens,sortOrder,false);
 	    } else {

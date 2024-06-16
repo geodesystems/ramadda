@@ -96,7 +96,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-	String id = (String)entry.getValue(IDX_LOCATION_ID);
+	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
 	String url = HU.url("https://api.openaq.org/v2/locations/" + id,"limit","100","page","1","offset","0");
 	IO.Result result = IO.doGetResult(new URL(url));
 	if(result.getError()) {
@@ -156,13 +156,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
 	throws Exception {
-        String location = entry.getStringValue(IDX_LOCATION_ID, (String) null);
+        String location = entry.getStringValue(request,IDX_LOCATION_ID, (String) null);
         if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
             return null;
         }
         Date now = new Date();
-        Integer hoursOffset = (Integer) entry.getIntValue(IDX_HOURS_OFFSET,
+        Integer hoursOffset = (Integer) entry.getIntValue(request,IDX_HOURS_OFFSET,
 							  Integer.valueOf(24*7));
 
         GregorianCalendar cal = new GregorianCalendar();

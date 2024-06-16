@@ -167,7 +167,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             beforeAfterTag = tag;
         }
         if (beforeAfterTag.equals(TAG_IMAGEPAIR_DEFAULT)) {
-            beforeAfterTag = entry.getStringValue(0, TAG_BEFOREAFTER);
+            beforeAfterTag = entry.getStringValue(request,0, TAG_BEFOREAFTER);
         }
         if ( !Utils.stringDefined(beforeAfterTag)) {
             beforeAfterTag = TAG_IMAGEOVERLAY;
@@ -241,7 +241,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
         HtmlUtils.importJS(
             sb,
             getPageHandler().makeHtdocsUrl("/beforeafter/imageoverlay.js"));
-        String width = entry.getStringValue(1, "800").trim();
+        String width = entry.getStringValue(request,1, "800").trim();
         if (width.length() == 0) {
             width = "800";
         }
@@ -339,7 +339,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             Entry  entry2 = entries.get(i + 1);
             String width  = "800";
             String height = "366";
-            String swidth = (String) entry.getStringValue(1, "800");
+            String swidth = (String) entry.getStringValue(request,1, "800");
             if (swidth != null) {
                 swidth = swidth.trim();
             }

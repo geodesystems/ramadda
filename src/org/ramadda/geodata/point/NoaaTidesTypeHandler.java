@@ -62,7 +62,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 
     private  void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {	
-	String id = (String)  entry.getValue(IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,IDX_STATION_ID);
 	if(!stringDefined(id)) {
 	    //try to extract it from the file name
 	    String resource = entry.getResource().getPath();
@@ -164,7 +164,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	if(entry.isFile()) {
 	    return super.getPathForEntry(request,entry,forRead);
 	}
-	String id = (String)  entry.getValue(IDX_STATION_ID);
+	String id = (String)  entry.getValue(request,IDX_STATION_ID);
 	if(!Utils.stringDefined(id)) {
 	    throw new IllegalStateException("No station defined for NOAA Tide data:" + entry);
 	}
@@ -173,13 +173,13 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	if(entry.getTypeHandler().getType().equals("type_noaa_tides_monthly")) {
 	    product=PRODUCT_MONTHLY_MEAN;
 	} else {
-	    product = (String)entry.getValue("product");
+	    product = (String)entry.getValue(request,"product");
 	}
 	if(!Utils.stringDefined(product)) {
 	    throw new IllegalStateException("No product defined for NOAA Tide data:" + entry);
 	}
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-	Integer dateOffset=(Integer)entry.getValue("days");
+	Integer dateOffset=(Integer)entry.getValue(request,"days");
 	int days = dateOffset==null?-1:dateOffset.intValue();
 	Date startDate = DateHandler.checkDate(new Date(entry.getStartDate()));
 	Date endDate = DateHandler.checkDate(new Date(entry.getEndDate()));	
@@ -200,7 +200,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    }
 	}
 
-	String datum = (String)entry.getValue("datum","MLLW");
+	String datum = (String)entry.getValue(request,"datum","MLLW");
 	//	System.err.println("product:" + product +" datum:" + datum);
 	String url = HU.url("https://api.tidesandcurrents.noaa.gov/api/prod/datagetter",
 			    "application","NOS.COOPS.TAC.WL",

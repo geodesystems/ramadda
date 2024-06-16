@@ -239,7 +239,7 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
             String  id   = XmlUtil.getAttribute(item, ATTR_ID);
             String  name = XmlUtil.getAttribute(item, ATTR_TITLE);
             //            System.err.println("series child id:" + id);
-            Entry entry = createSeriesEntry(mainEntry, parentEntry, id, name);
+            Entry entry = createSeriesEntry(request,mainEntry, parentEntry, id, name);
             seriesEntries.add(entry);
         }
 
@@ -392,7 +392,7 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Entry createSeriesEntry(Entry mainEntry, Entry parentEntry,
+    private Entry createSeriesEntry(Request request,Entry mainEntry, Entry parentEntry,
                                     String seriesId, String name)
             throws Exception {
         String id    = createSynthId(mainEntry, Fred.PREFIX_SERIES, seriesId);
@@ -419,7 +419,7 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
                         new Resource(), "", Entry.DEFAULT_ORDER,
                         dttm.getTime(), dttm.getTime(), dttm.getTime(),
                         dttm.getTime(), values);
-        seriesTypeHandler.initializeSeries(entry);
+        seriesTypeHandler.initializeSeries(request,entry);
         getEntryManager().cacheSynthEntry(entry);
 
         return entry;
@@ -455,7 +455,7 @@ public class FredCategoryTypeHandler extends ExtensibleGroupTypeHandler {
         if (type.equals(Fred.PREFIX_CATEGORY)) {
             return createCategoryEntry(mainEntry, mainEntry, id);
         } else {
-            return createSeriesEntry(mainEntry, mainEntry, id, null);
+            return createSeriesEntry(request,mainEntry, mainEntry, id, null);
         }
 
     }

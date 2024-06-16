@@ -90,7 +90,7 @@ public class NcssTypeHandler extends PointTypeHandler {
     @Override
     public String preProcessWikiText(Request request, Entry entry,
                                      String wikiText) {
-        String fields = entry.getStringValue(IDX_DEFAULT_FIELDS, "");
+        String fields = entry.getStringValue(request,IDX_DEFAULT_FIELDS, "");
         String chart =
             "{{display type=\"linechart\" showTitle=\"false\" layoutHere=\"false\" #fields=\"tmax,tmin\" }}";
         if ( !Utils.stringDefined(fields)) {
@@ -333,7 +333,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         }
         properties.append("\n");
         entry.setLocation(loc[0], loc[1]);
-	if(!stringDefined(entry.getStringValue(IDX_DEFAULT_FIELDS,null))) {
+	if(!stringDefined(entry.getStringValue(request,IDX_DEFAULT_FIELDS,null))) {
 	    entry.setValue(IDX_DEFAULT_FIELDS , defaultFields.toString());
 	}
         entry.setValue(IDX_PROPERTIES, properties.toString());
@@ -372,7 +372,7 @@ public class NcssTypeHandler extends PointTypeHandler {
             throws Exception {
         String url = entry.getResource().getPath();
         //subst the times
-	String dateType = entry.getStringValue(IDX_DATE_TYPE,DATE_TYPE_RELATIVE);
+	String dateType = entry.getStringValue(request,IDX_DATE_TYPE,DATE_TYPE_RELATIVE);
 	//	System.err.println("start:" + start +" end:" + end);
 	//	System.err.println("URL1:" +url);
 	if(dateType.equals(DATE_TYPE_ABSOLUTE)) {
@@ -383,7 +383,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 	    url = url.replace("${time_start}","${date format=yyyy-MM-dd}");
 	    url = url.replace("${time_end}","${date offset=\"${endTimeOffset}\"}");	    
 	    url = url.replace("${endTimeOffset}",
-			      (String) entry.getStringValue(IDX_END_TIME_OFFSET,
+			      (String) entry.getStringValue(request,IDX_END_TIME_OFFSET,
 							    "+10 days"));
 	}
 	url = super.convertPath(request,entry, url, requestProperties);

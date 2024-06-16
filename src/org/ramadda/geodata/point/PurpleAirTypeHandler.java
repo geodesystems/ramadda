@@ -152,8 +152,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
 
-    private String getFieldsType(Entry entry) {
-	return (String)entry.getValue(IDX_FIELDS);
+    private String getFieldsType(Request request,Entry entry) {
+	return (String)entry.getValue(request,IDX_FIELDS);
     }
 
 
@@ -176,15 +176,15 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	return sb.toString();
     }	
 
-    private String getFieldsProperty(Entry entry) {
+    private String getFieldsProperty(Request request, Entry entry) {
 	if(FIELDS_PROPERTY_SHORT==null) {
 	    FIELDS_PROPERTY_DEFAULT = makeFieldsProperty(entry,FIELDS_LIST_DEFAULT);
 	    FIELDS_PROPERTY_SHORT = makeFieldsProperty(entry,FIELDS_LIST_SHORT);
 	    FIELDS_PROPERTY_ALL = makeFieldsProperty(entry,FIELDS_LIST_ALL);	    
 	}
-	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(request,entry)))
 	    return FIELDS_PROPERTY_DEFAULT;
-	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	if(Utils.equals(FIELDS_ALL, getFieldsType(request,entry)))
 	    return FIELDS_PROPERTY_ALL;
 	return FIELDS_PROPERTY_SHORT;	
     }
@@ -194,10 +194,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @param entry _more_
      * @return _more_
      */
-    private String getDataFields(Entry entry) {
-	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+    private String getDataFields(Request request,Entry entry) {
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(request,entry)))
 	    return FIELDS_STRING_ALL;
-	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	if(Utils.equals(FIELDS_ALL, getFieldsType(request,entry)))
 	    return FIELDS_STRING_ALL;
 	return FIELDS_STRING_SHORT;
     }
@@ -207,11 +207,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @param entry _more_
      * @return _more_
      */
-    private List<String> getFieldsList(Entry entry) {
-	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(entry)))
+    private List<String> getFieldsList(Request request,Entry entry) {
+	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(request,entry)))
 	    return FIELDS_LIST_DEFAULT;
 
-	if(Utils.equals(FIELDS_ALL, getFieldsType(entry)))
+	if(Utils.equals(FIELDS_ALL, getFieldsType(request,entry)))
 	    return FIELDS_LIST_ALL;
 
         return FIELDS_LIST_SHORT;
@@ -223,8 +223,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @param entry _more_
       * @return _more_
      */
-    private String getFileHeader(Entry entry) {
-	return "date," + getDataFields(entry)   + "\n";
+    private String getFileHeader(Request request, Entry entry) {
+	return "date," + getDataFields(request,entry)   + "\n";
     }
 
 
@@ -247,7 +247,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private void runInBackground() throws Exception {
-        Request searchRequest = getRepository().getAdminRequest();
+        Request request = getRepository().getAdminRequest();
         sleepUntil();
         while (true) {
             if (debug) {
@@ -255,17 +255,17 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             }
             StringBuilder tmp = new StringBuilder();
             List<Entry> entries =
-                getEntryManager().getEntriesWithType(searchRequest,
+                getEntryManager().getEntriesWithType(request,
                     "type_point_purpleair");
             for (Entry entry : entries) {
-                if ( !entry.getValue(IDX_ACTIVE).toString().equals("true")) {
+                if ( !entry.getValue(request,IDX_ACTIVE).toString().equals("true")) {
                     if (debug) {
                         System.err.println("\tskipping:" + entry);
                     }
                     continue;
                 }
                 try {
-                    fetchData(searchRequest, entry);
+                    fetchData(request, entry);
                 } catch (Exception exc) {
                     getLogManager().logError("Error fetching purple air data:" + entry + " id:" +entry.getId()+"\n" + exc.getMessage());
                 }
@@ -285,14 +285,14 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private void fetchData(Request request, Entry entry) throws Exception {
-        Sensor sensor = readSensor(entry, getDataFields(entry));
+        Sensor sensor = readSensor(entry, getDataFields(request,entry));
         if (sensor == null) {
             System.err.println("\tfetching failed to read sensor data:"
                                + entry);
 
             return;
         }
-        int points = entry.getIntValue(IDX_RECORD_COUNT, 0);
+        int points = entry.getIntValue(request,IDX_RECORD_COUNT, 0);
         if (points == 0) {
             //If its the first record
             entry.setStartDate(sensor.date.getTime());
@@ -315,7 +315,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             System.err.println("\tfetching:" + entry + " dttm:"
                                + sensor.date);
         }
-        for (String field : getFieldsList(entry)) {
+        for (String field : getFieldsList(request,entry)) {
             double d = sensor.data.optDouble(field);
             row.append(",");
             row.append(d);
@@ -339,11 +339,11 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
-        String id = (String) entry.getStringValue(IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(request,IDX_SENSOR_ID, "");
         File newFile = getStorageManager().getTmpFile(request,
                            id + "_purpleair.csv");
         IOUtil.writeTo(
-            new ByteArrayInputStream(getFileHeader(entry).getBytes()),
+            new ByteArrayInputStream(getFileHeader(request,entry).getBytes()),
             new FileOutputStream(newFile));
         newFile = getStorageManager().moveToStorage(request, newFile);
         entry.setResource(new Resource(newFile.toString(),
@@ -417,8 +417,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
+
     private String getPrivateKey(Entry entry) {
-	String privateKey = (String) entry.getStringValue(IDX_PRIVATE_KEY, "");
+	String privateKey = (String) entry.getStringValue(getAdminRequest(),IDX_PRIVATE_KEY, "");
         if (Utils.stringDefined(privateKey)) {
             privateKey = privateKey.trim();
             String tmp = getRepository().getProperty(privateKey,
@@ -441,11 +442,12 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     private Sensor readSensor(Entry entry, String fields) throws Exception {
+	Request request = getAdminRequest();
         if (apiKey == null) {
 	    System.err.println("PurpleAir: no apikey specified");
             return null;
         }
-        String id = (String) entry.getStringValue(IDX_SENSOR_ID, "");
+        String id = (String) entry.getStringValue(request,IDX_SENSOR_ID, "");
         if ( !Utils.stringDefined(id)) {
 	    System.err.println("PurpleAir: no sensor id in entry");
             return null;
@@ -508,7 +510,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         } else if (request.get("confirm", false)) {
             File             file = entry.getFile();
             FileOutputStream fos  = new FileOutputStream(file);
-            fos.write(getFileHeader(entry).getBytes());
+            fos.write(getFileHeader(request,entry).getBytes());
             fos.close();
             entry.setValue(IDX_RECORD_COUNT, 0);
             entry.getResource().setFileSize(file.length());
@@ -575,7 +577,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    String fields = request.getString(ARG_FIELDS,"");
 	    if(!stringDefined(fields)) fields = FIELDS_DOWNLOAD_ALL;
 	    String url = HU.url("https://api.purpleair.com/v1/sensors/" +
-				entry.getStringValue(IDX_SENSOR_ID,"")+"/history/csv",
+				entry.getStringValue(request,IDX_SENSOR_ID,"")+"/history/csv",
 				ARG_FIELDS,fields,
 				ARG_AVERAGE,request.getString(ARG_AVERAGE,""));
 	    String privateKey = getPrivateKey(entry);
@@ -696,7 +698,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-        return new PurpleAirRecordFile(getRepository(), this,entry,
+        return new PurpleAirRecordFile(request, getRepository(), this,entry,
                                        new IO.Path(getPathForEntry(request, entry, true)));
     }
 
@@ -709,6 +711,8 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
      * @author         Enter your name here...
      */
     public static class PurpleAirRecordFile extends CsvFile {
+
+	Request request;
 
         /** _more_ */
         Repository repository;
@@ -727,18 +731,19 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        public PurpleAirRecordFile(Repository repository, PurpleAirTypeHandler typeHandler, Entry entry,
+        public PurpleAirRecordFile(Request request,Repository repository, PurpleAirTypeHandler typeHandler, Entry entry,
                                    IO.Path path)
                 throws IOException {
             super(path);
 	    this.typeHandler = typeHandler;
             this.repository = repository;
+	    this.request=request;
             this.entry      = entry;
         }
 
 	@Override
 	public String getFieldsProperty() {
-	    return typeHandler.getFieldsProperty(entry);
+	    return typeHandler.getFieldsProperty(request,entry);
 	}
 
 

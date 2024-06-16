@@ -1450,7 +1450,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public Object getValue(String col) {
-	    return entry.getValue(col);
+	    return entry.getValue(request, col);
 	}
 
 	public String getType() {

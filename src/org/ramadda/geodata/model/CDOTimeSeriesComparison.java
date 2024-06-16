@@ -523,6 +523,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         SortedSet<String> uniqueMembers =
             Collections.synchronizedSortedSet(new TreeSet<String>());
         boolean isTS = false;
+	Request request = getAdminRequest();
         for (Entry entry : entries) {
             TypeHandler th = entry.getTypeHandler();
             if ( !(isClimateModelType(entry)
@@ -530,8 +531,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 return false;
             }
             if (isClimateModelType(entry)) {
-                uniqueModels.add(entry.getValue(1).toString());
-                uniqueMembers.add(entry.getValue(3).toString());
+                uniqueModels.add(entry.getValue(request,1).toString());
+                uniqueMembers.add(entry.getValue(request,3).toString());
             } else if (th instanceof NoaaPsdMonthlyClimateIndexTypeHandler) {
                 isTS = true;
             }

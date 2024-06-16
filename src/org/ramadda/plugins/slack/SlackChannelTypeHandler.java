@@ -95,7 +95,7 @@ public class SlackChannelTypeHandler extends ExtensibleGroupTypeHandler {
         SlackTeamTypeHandler slackTeamTypeHandler =
             (SlackTeamTypeHandler) teamEntry.getTypeHandler();
         String token =
-            (String) teamEntry.getValue(SlackTeamTypeHandler.IDX_TOKEN);
+            (String) teamEntry.getValue(request,SlackTeamTypeHandler.IDX_TOKEN);
 
 
         List<Entry> children = getWikiManager().getEntries(request, null,
@@ -128,9 +128,9 @@ public class SlackChannelTypeHandler extends ExtensibleGroupTypeHandler {
             sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                      HtmlUtils.cssClass("slack_message")));
             String userId =
-                message.getStringValue(SlackMessageTypeHandler.IDX_USER_ID, "");
+                message.getStringValue(request,SlackMessageTypeHandler.IDX_USER_ID, "");
             String userName =
-                message.getStringValue(SlackMessageTypeHandler.IDX_USER_NAME, "");
+                message.getStringValue(request,SlackMessageTypeHandler.IDX_USER_NAME, "");
 
             String icon = HtmlUtils.href(
                               entryUrl,

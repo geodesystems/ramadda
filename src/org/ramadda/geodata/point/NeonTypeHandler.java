@@ -69,7 +69,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 
     private void initializeNewEntryInner(Request request, Entry entry,Entry base)
 	throws Exception {	
-	String id = ("" + entry.getValue(IDX_SITE_CODE)).trim();
+	String id = ("" + entry.getValue(request,IDX_SITE_CODE)).trim();
 	if(!stringDefined(id)) return;
 	if(siteInfo==null) {
 	    siteInfo= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonsites.json"));
@@ -87,7 +87,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	entry.setValue(IDX_SITE_TYPE,site.getString("siteType"));
 	entry.setValue(IDX_DOMAIN,site.getString("domainName"));
 	entry.setValue(IDX_STATE,site.getString("stateName"));		
-	String product = (String)entry.getValue(IDX_PRODUCT_CODE);
+	String product = (String)entry.getValue(request,IDX_PRODUCT_CODE);
 
 	if(!stringDefined(entry.getName())) {
 	    Column siteColumn = findColumn("sitecode");
@@ -121,7 +121,7 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	if(siteImages==null) {
 	    siteImages= new JSONObject(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/neonimages.json"));
 	}	
-	String siteId = (String)entry.getValue(IDX_SITE_CODE);
+	String siteId = (String)entry.getValue(request,IDX_SITE_CODE);
 	if(!stringDefined(siteId)) return "";
 	String images = siteImages.optString(siteId.trim(),null);
 	if(images==null) return "";
@@ -158,11 +158,11 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	    return entry.getResource().getPath();
 	}
 	return  getPathForEntry(request, entry,
-				(String)entry.getValue(IDX_SITE_CODE),
-				(String)entry.getValue(IDX_PRODUCT_CODE),
-				(String)entry.getValue(IDX_YEAR),
-				(String)entry.getValue(IDX_MONTH),
-				(String)entry.getValue(IDX_FILEPATTERN));				
+				(String)entry.getValue(request,IDX_SITE_CODE),
+				(String)entry.getValue(request,IDX_PRODUCT_CODE),
+				(String)entry.getValue(request,IDX_YEAR),
+				(String)entry.getValue(request,IDX_MONTH),
+				(String)entry.getValue(request,IDX_FILEPATTERN));				
     }
 
     public Result processEntryAction(Request request, Entry entry)

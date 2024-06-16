@@ -284,7 +284,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 
 	//Import the loaders
 	for(Entry entry: entries) {
-	    String modelFile = (String) entry.getStringValue(IDX_MODEL_FILE, null);
+	    String modelFile = (String) entry.getStringValue(request,IDX_MODEL_FILE, null);
 	    String  file;
 	    if (!Utils.stringDefined(modelFile)) {
 		file = entry.getResource().getPath();
@@ -306,7 +306,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	int cnt = 0;
 	for(Entry entry: entries) {
 	    String url;
-	    String modelFile = (String) entry.getStringValue(IDX_MODEL_FILE, null);
+	    String modelFile = (String) entry.getStringValue(request,IDX_MODEL_FILE, null);
 	    String  file;
 
 	    if (!Utils.stringDefined(modelFile)) {
@@ -321,7 +321,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 					"name",JsonUtil.quote(entry.getName()));
 	    String tmp;
 	    
-	    tmp = (String)entry.getValue(IDX_CAMERA_POSITION);
+	    tmp = (String)entry.getValue(request,IDX_CAMERA_POSITION);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"cameraPosition",JsonUtil.quote(tmp));
 	    }
@@ -351,15 +351,15 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    if(background!=null)
 		Utils.add(attrs,"fixedBackgroundImage",JsonUtil.quote(background));	    
 
-	    tmp = (String)entry.getValue(IDX_AMBIENT_LIGHT);
+	    tmp = (String)entry.getValue(request,IDX_AMBIENT_LIGHT);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"ambientLight",JsonUtil.quote(tmp));
 	    }
-	    tmp= (String)entry.getValue(IDX_LIGHTS);
+	    tmp= (String)entry.getValue(request,IDX_LIGHTS);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"lights",JsonUtil.quote(tmp));
 	    }
-	    tmp= (String)entry.getValue(IDX_PROPERTIES);
+	    tmp= (String)entry.getValue(request,IDX_PROPERTIES);
 	    if(Utils.stringDefined(tmp)) {
 		for(String line: Utils.split(tmp,"\n",true,true)) {
 		    List<String> toks = StringUtil.splitUpTo(line,"=",2);
@@ -370,7 +370,7 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    }
 
 
-	    tmp= (String)entry.getValue(IDX_ANNOTATIONS);
+	    tmp= (String)entry.getValue(request,IDX_ANNOTATIONS);
 	    if(Utils.stringDefined(tmp)) {
 		Utils.add(attrs,"annotations",JsonUtil.quote(tmp));
 	    }	    

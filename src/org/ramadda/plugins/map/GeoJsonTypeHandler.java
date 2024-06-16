@@ -243,7 +243,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	/*
 	@Override
 	public List<RecordField> doMakeFields(boolean failureOk) {
-	    String names = (String) entry.getValue(GeoJsonTypeHandler.IDX_COLUMNS);
+	    String names = (String) entry.getValue(request,GeoJsonTypeHandler.IDX_COLUMNS);
 	    if(!stringDefined(names)) return super.doMakeFields(failureOk);
 	    StringBuilder fields = new StringBuilder();
 	    for(String field:Utils.split(names,",",true,true)) {

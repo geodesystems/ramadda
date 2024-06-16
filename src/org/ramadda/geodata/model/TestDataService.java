@@ -181,7 +181,7 @@ public class TestDataService extends Service {
         || units.equals("mm/day")
                                   || units.equals("mm"));  // for cpc global precip
 
-        boolean     isAnom = first.getValue(3).toString().equals("anom");
+        boolean     isAnom = first.getValue(request,3).toString().equals("anom");
         List<Entry> climos = findClimatology(request, first);
         boolean haveClimo = true;  // we make this true since we can create one on the fly
         if ((climos == null) || climos.isEmpty()) {

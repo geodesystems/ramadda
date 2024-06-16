@@ -85,7 +85,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
      */
     private String getToken(Request request, Entry entry) throws Exception {
 
-        String token = (String) entry.getValue(IDX_TOKEN);
+        String token = (String) entry.getValue(request,IDX_TOKEN);
         if ( !Utils.stringDefined(token)) {
             return null;
         }
@@ -170,7 +170,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         }
         ids = new ArrayList<String>();
 
-        String teamId = (String) teamEntry.getValue(IDX_TEAM_ID);
+        String teamId = (String) teamEntry.getValue(request,IDX_TEAM_ID);
         if ( !Utils.stringDefined(teamId)) {
             return ids;
         }
@@ -181,7 +181,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
 
         HashSet<String> channelsToShow = null;
         String          channelIds =
-            (String) teamEntry.getValue(IDX_CHANNELS);
+            (String) teamEntry.getValue(request,IDX_CHANNELS);
         if (Utils.stringDefined(channelIds)) {
             channelsToShow = new HashSet<String>(StringUtil.split(channelIds,
                     "\n", true, true));
@@ -198,7 +198,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
             JSONArray channels = result.getJSONArray("channels");
             for (int i = 0; i < channels.length(); i++) {
                 JSONObject channel = channels.getJSONObject(i);
-                Entry channelEntry = createChannelEntry(teamEntry, channel,
+                Entry channelEntry = createChannelEntry(request,teamEntry, channel,
                                          channelsToShow);
                 if (channelEntry == null) {
                     continue;
@@ -218,7 +218,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
                 return ids;
             }
             String channelId =
-                parentEntry.getStringValue(SlackChannelTypeHandler.IDX_CHANNEL_ID,
+                parentEntry.getStringValue(request,SlackChannelTypeHandler.IDX_CHANNEL_ID,
                                      "");
             JSONObject  messages       = result.getJSONObject("messages");
             JSONArray   matches        = messages.getJSONArray("matches");
@@ -257,7 +257,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    private Entry createChannelEntry(Entry teamEntry, JSONObject channel,
+    private Entry createChannelEntry(Request request,Entry teamEntry, JSONObject channel,
                                      HashSet<String> channelsToShow)
             throws Exception {
         /*
@@ -299,7 +299,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         //        https://geodesystems.slack.com/messages/general/
 
         String desc       = "";
-        String teamDomain = (String) teamEntry.getStringValue(IDX_TEAM_DOMAIN, "");
+        String teamDomain = (String) teamEntry.getStringValue(request,IDX_TEAM_DOMAIN, "");
         Resource resource =
             new Resource(new Resource(Slack.getChannelUrl(teamDomain, name)));
         Object[] values = channelTypeHandler.makeEntryValues(null);
@@ -439,7 +439,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         HashSet<String> channelsToShow = null;
-        String          channels = (String) teamEntry.getValue(IDX_CHANNELS);
+        String          channels = (String) teamEntry.getValue(request,IDX_CHANNELS);
         if (Utils.stringDefined(channels)) {
             channelsToShow = new HashSet<String>(StringUtil.split(channels,
                     "\n", true, true));
@@ -447,7 +447,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         JSONObject channel = result.getJSONObject("channel");
-        Entry channelEntry = createChannelEntry(teamEntry, channel,
+        Entry channelEntry = createChannelEntry(request, teamEntry, channel,
                                  channelsToShow);
         if (channelEntry == null) {
             return null;

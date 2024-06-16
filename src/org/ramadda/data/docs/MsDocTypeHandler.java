@@ -150,7 +150,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
 	throws Exception {
         Column c = getColumn("display_inline");
-        Boolean b = (Boolean) entry.getValue(c.getOffset());
+        Boolean b = (Boolean) entry.getValue(request,c.getOffset());
 	if(b==null || !b) return super.getHtmlDisplay(request,entry);
 	StringBuffer sb = new StringBuffer();
 	getPageHandler().entrySectionOpen(request,  entry,sb, "");

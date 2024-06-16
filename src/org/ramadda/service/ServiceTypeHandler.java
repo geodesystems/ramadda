@@ -161,7 +161,7 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
 
         addListForm(request, entry, children.get(), sb);
 
-        String params = entry.getStringValue(IDX_PARAMETERS, "");
+        String params = entry.getStringValue(request,IDX_PARAMETERS, "");
 
         if (Utils.stringDefined(params)) {
             Element  root  = XmlUtil.getRoot(params);

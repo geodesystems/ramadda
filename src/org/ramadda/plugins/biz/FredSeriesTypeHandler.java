@@ -79,7 +79,7 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
         super.initializeNewEntry(request, entry, newType);
         if ( !Utils.stringDefined(entry.getDescription())) {
             System.err.println("FredSeries.init");
-            initializeSeries(entry);
+            initializeSeries(request,entry);
         }
     }
 
@@ -91,14 +91,14 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void initializeSeries(Entry entry) throws Exception {
+    public void initializeSeries(Request request,Entry entry) throws Exception {
         //        super.initializeNewEntry(request, entry);
 
 
         FredCategoryTypeHandler fcth =
             (FredCategoryTypeHandler) getRepository().getTypeHandler(
                 Fred.TYPE_CATEGORY);
-        String seriesId = (String) entry.getStringValue(IDX_SERIES_ID, null);
+        String seriesId = (String) entry.getStringValue(request,IDX_SERIES_ID, null);
         if (seriesId == null) {
             System.err.println("FredSeries: No series id found");
 
@@ -155,7 +155,7 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
-        String id = entry.getStringValue(IDX_SERIES_ID, (String) null);
+        String id = entry.getStringValue(request,IDX_SERIES_ID, (String) null);
         if (id == null) {
             return null;
         }

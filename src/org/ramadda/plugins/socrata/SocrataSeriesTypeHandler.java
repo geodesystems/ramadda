@@ -114,8 +114,8 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                                        Hashtable requestProperties)
             throws Exception {
 
-        String repository = entry.getStringValue(IDX_REPOSITORY, (String) null);
-        String seriesId   = entry.getStringValue(IDX_SERIES_ID, (String) null);
+        String repository = entry.getStringValue(request,IDX_REPOSITORY, (String) null);
+        String seriesId   = entry.getStringValue(request,IDX_SERIES_ID, (String) null);
         if ( !Utils.stringDefined(seriesId)
                 || !Utils.stringDefined(repository)) {
             return null;

@@ -1322,7 +1322,7 @@ public class MapInfo {
     private int getValue(Entry entry, String prop, int dflt) {
         TypeHandler th = entry.getTypeHandler();
 
-        return (int) entry.getIntValue(
+        return (int) entry.getIntValue(request,
             entry.getColumnIndex(th.getTypeProperty(prop + ".field", null)),
             th.getTypeProperty(prop, dflt));
     }
@@ -1339,7 +1339,7 @@ public class MapInfo {
     private String getValue(Entry entry, String prop, String dflt) {
         TypeHandler th = entry.getTypeHandler();
 
-        return (String) entry.getStringValue(
+        return (String) entry.getStringValue(request,
             entry.getColumnIndex(th.getTypeProperty(prop + ".field", null)),
             th.getTypeProperty(prop, dflt));
     }

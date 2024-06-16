@@ -202,8 +202,8 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
             //Only set the width if the latlonentry is the main displayed entry
 
             if (entry.getId().equals(request.getString(ARG_ENTRYID, ""))) {
-                int width  = (int) entry.getIntValue(0, -1);
-                int height = (int) entry.getIntValue(1, -1);
+                int width  = (int) entry.getIntValue(request,0, -1);
+                int height = (int) entry.getIntValue(request,1, -1);
                 if ((width > 0) && (height > 0)) {
                     map.setWidth("" + width);
                     map.setHeight("" + height);

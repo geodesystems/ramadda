@@ -95,7 +95,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         for (Entry entry : children.get()) {
             String cat = "General";
             if (entry.getType().equals(FaqEntryTypeHandler.TYPE_FAQENTRY)) {
-                cat = (String) entry.getStringValue(0, cat);
+                cat = (String) entry.getStringValue(request,0, cat);
                 if (cat == null) {
                     cat = "General";
                 }
@@ -112,7 +112,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                 cats.add(cat);
             }
             catQuestionSB.append("<li class=\"faq_question\">");
-            boolean includeLink = group.getBooleanValue(0, true);
+            boolean includeLink = group.getBooleanValue(request,0, true);
             if (canAdd || includeLink) {
                 String link =
                     HU.href(getEntryManager().getEntryURL(request, entry),

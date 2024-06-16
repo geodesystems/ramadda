@@ -56,7 +56,7 @@ public class IncidentTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
-        String disaster = entry.getStringValue(0, (String) null);
+        String disaster = entry.getStringValue(request,0, (String) null);
         if (disaster == null) {
             return super.getIconUrl(request, entry);
         }

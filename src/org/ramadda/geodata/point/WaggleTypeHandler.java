@@ -83,9 +83,9 @@ public class WaggleTypeHandler extends PointTypeHandler {
 
     private void initializeNewEntryInner(Request request, Entry entry)
             throws Exception {
-	String baseUrl  =(String) entry.getValue("serverroot");
+	String baseUrl  =(String) entry.getValue(request,"serverroot");
 	if(!stringDefined(baseUrl)) return;
-	String nodeId  =(String) entry.getValue("nodeid");
+	String nodeId  =(String) entry.getValue(request,"nodeid");
 	if(!stringDefined(nodeId)) return;	
 	nodeId = nodeId.trim();
 	String url = "https://api." + baseUrl +"/production";
@@ -118,7 +118,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	entry.setValue("node_type",vsn.getString("node_type"));	
 	entry.setValue("notes",vsn.getString("notes").replace("\n","<br>"));		
 
-	URL gpsUrl = getDataUrl(entry);
+	URL gpsUrl = getDataUrl(request,entry);
 	String payload = "{\"start\":\"-365d\",\"filter\":{\"vsn\":\"" + nodeId+"\",\"name\":\"sys.gps.*\"},\"tail\":1}";
 	String gps = IO.doPost(gpsUrl,payload);
 	for(WaggleRecord record: parseData(gps)) {
@@ -154,8 +154,8 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	return records;
     }
 
-    public URL getDataUrl(Entry entry) throws Exception {
-	return getDataUrl((String)entry.getValue("serverroot"));
+    public URL getDataUrl(Request request,Entry entry) throws Exception {
+	return getDataUrl((String)entry.getValue(request,"serverroot"));
     }
 
     public URL getDataUrl(String base) throws Exception {
@@ -201,7 +201,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	}
         @Override
 	public String getFieldsProperty() {
-	    String variable = (String) entry.getValue("variable");
+	    String variable = (String) entry.getValue(request,"variable");
 	    return "date[format=\"" + DATE_FORMAT+"\"]," +variable;
 	}
 
@@ -219,11 +219,11 @@ public class WaggleTypeHandler extends PointTypeHandler {
                 throws Exception {
 	    //	    System.err.println("waggle");
 	    //	    System.err.println(Utils.getStack(10));
-	    String nodeId = (String) entry.getValue("nodeid");
-	    final String variable = (String) entry.getValue("variable");
-	    final String sensor = (String) entry.getValue("sensor");
+	    String nodeId = (String) entry.getValue(request,"nodeid");
+	    final String variable = (String) entry.getValue(request,"variable");
+	    final String sensor = (String) entry.getValue(request,"sensor");
 
-	    String start = (String)entry.getValue("date_offset");
+	    String start = (String)entry.getValue(request,"date_offset");
 	    String end =null;
 	    Date startDate = DateHandler.checkDate(new Date(entry.getStartDate()));
 	    Date endDate = DateHandler.checkDate(new Date(entry.getEndDate()));
@@ -259,11 +259,11 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    if(Utils.stringDefined(end)) {
 		Utils.add(items,"end",JU.quote(end));
 	    }
-	    String stride = (String) entry.getValue("stride");
+	    String stride = (String) entry.getValue(request,"stride");
 	    final long delta = Utils.stringDefined(stride)?parseStep(stride):0;
 	    String payload = JU.map(items);
 	    //	    System.err.println("query:"+payload.replace("\n"," "));
-	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(entry).toString(),IO.HTTP_METHOD_POST,payload,null);
+	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(request,entry).toString(),IO.HTTP_METHOD_POST,payload,null);
 	    
 
 	    InputStream pipedStream =IO.pipeIt(new IO.PipedThing(){

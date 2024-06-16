@@ -276,7 +276,7 @@ public class WikiManager extends RepositoryManager
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    Object o = null;
 	    if(entry!=null) {
-		o = entry.getTypeHandler().getWikiProperty(entry,id);
+		o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,id);
 	    } 
 	    if(o==null) {
 		getLogManager().logSpecial("Could not find property:" + value);
@@ -5729,7 +5729,7 @@ public class WikiManager extends RepositoryManager
 
 	} 
 	//	System.err.println(column +"=" + value);
-	Object obj = entry.getValue(column);
+	Object obj = entry.getValue(request, column);
 	if(obj==null) return true;
 	return value.equals(obj.toString());
     }
@@ -8566,7 +8566,7 @@ public class WikiManager extends RepositoryManager
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
-		Object value = entry.getValue(property);
+		Object value = entry.getValue(request, property);
 		if(value==null) return false;
 		return value.toString().equals("true");
 	    }
@@ -8802,7 +8802,7 @@ public class WikiManager extends RepositoryManager
         String  content;
         boolean wikify = getProperty(wikiUtil, props, ATTR_WIKIFY, false);
         if (entry.getTypeHandler().isType(TYPE_WIKIPAGE)) {
-            content = entry.getStringValue(0, entry.getDescription());
+            content = entry.getStringValue(request,0, entry.getDescription());
             wikify  = true;
         } else {
             content = entry.getDescription();
@@ -9107,7 +9107,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    if(svalue.startsWith("property:")) {
 		String prop =svalue.substring("property:".length());
-		Object o = entry.getTypeHandler().getWikiProperty(entry,prop);
+		Object o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,prop);
 		if(o==null) o="Could not find property:" + prop;
 		svalue=o.toString();
 		change=true;
@@ -9116,6 +9116,11 @@ public class WikiManager extends RepositoryManager
 		props.put(key,svalue);
 	}
    }
+
+    public Request getAdminRequest() {
+	return getRepository().getAdminRequest();
+    }
+
 
 
     /**
@@ -9843,7 +9848,7 @@ public class WikiManager extends RepositoryManager
 			      "color", "#333",
                               "background-color", "#fff");
 
-        String s = (String) entry.getValue("style");
+        String s = (String) entry.getValue(request,"style");
         if (Utils.stringDefined(s)) {
             style += s;
         }
@@ -9902,13 +9907,13 @@ public class WikiManager extends RepositoryManager
 					 + "/images.dzi"));
 	    }
 
-        } else if (Utils.stringDefined("" + entry.getValue("tiles_url"))) {
-	    String        width  = Utils.getProperty(props, "width", (String)entry.getValue("image_width"));
+        } else if (Utils.stringDefined("" + entry.getValue(request,"tiles_url"))) {
+	    String        width  = Utils.getProperty(props, "width", (String)entry.getValue(request,"image_width"));
 	    if(width==null) width="800px";
-	    String        height  = Utils.getProperty(props, "height", (String)entry.getValue("image_height"));
+	    String        height  = Utils.getProperty(props, "height", (String)entry.getValue(request,"image_height"));
 	    if(height==null) height="600px";	    
             Utils.add(tiles, "type", JU.quote("zoomifytileservice"),
-                      "tilesUrl", JU.quote(entry.getValue(2)));
+                      "tilesUrl", JU.quote(entry.getValue(request,2)));
             Utils.add(tiles, "width", width, "height", height);
             Utils.add(jsonProps, "tileSources", JU.map(tiles));
         } else {
@@ -9918,7 +9923,7 @@ public class WikiManager extends RepositoryManager
         String        doBookmark  = Utils.getProperty(props, "doBookmark", "false");
 	Utils.add(jsonProps, "doBookmark", JU.quoteType(doBookmark));
 
-        String annotations = (String) entry.getValue("annotations_json");
+        String annotations = (String) entry.getValue(request,"annotations_json");
 	if(!Utils.stringDefined(annotations)) {
 	    annotations = "[]";
 	}

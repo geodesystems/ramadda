@@ -65,7 +65,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
 	if(column.getName().equals("directory_type")) {
 	    String selected = "";
-	    if(entry!=null) selected = (String) entry.getValue(LocalFileInfo.COL_DIRECTORY_TYPE);
+	    if(entry!=null) selected = (String) entry.getValue(request,LocalFileInfo.COL_DIRECTORY_TYPE);
 	    String select =   getRepository().makeTypeSelect(null, request,column.getEditArg(),
 							     null,true,selected,true,null, true);
 	    return select;
@@ -631,7 +631,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 		fromDate = tmpDate.getTime();
 	    }
 	}
-	Integer delta = (Integer)parentEntry.getValue(LocalFileInfo.COL_DATE_OFFSET);
+	Integer delta = (Integer)parentEntry.getValue(request,LocalFileInfo.COL_DATE_OFFSET);
 	if(delta!=null && delta.intValue()!=0) {
 	    fromDate += delta.intValue()*1000;
 	}

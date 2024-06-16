@@ -900,7 +900,7 @@ public class Entry implements Cloneable {
      *
      * @return _more_
      */
-    public Object getValue(int index) {
+    public Object getValue(Request request, int index) {
         if ((values == null) || (index >= values.length)
 	    || (values[index] == null)) {
             return null;
@@ -931,46 +931,50 @@ public class Entry implements Cloneable {
         return c.getOffset();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
-    public Object getValue(String col) {
-	return getValue(col,false);
+    public Object getValue(Request request,String col) {
+	return getValue(request,col,false);
     }
-    public Object getValue(String col,Object dflt) {
-	Object o =  getValue(col,false);
+
+    public Object getValue(Request request,String col,Object dflt) {
+	Object o =  getValue(request,col,false);
 	if(o==null) return dflt;
 	return o;
     }
 
-
     
-    public Object getValue(String col,boolean useDefault) {
-	Column column = getTypeHandler().findColumn(col);
+    private Object getValue(String col,boolean useDefault) {
+	return getValue(null, getTypeHandler().findColumn(col), useDefault);
+    }
+
+
+    public Object getValue(Request request, String col,boolean useDefault) {
+	return getValue(request, getTypeHandler().findColumn(col), useDefault);
+    }    
+
+    public Object getValue(Request request,Column column) {
+	return getValue(request, column, false);
+    }
+
+
+    public Object getValue(Request request,Column column,boolean useDefault) {
 	if(column == null) {
 	    return null;
 	}
-        Object  value = getValue(column.getOffset());
+        Object  value = getValue(request, column.getOffset());
 	if(value==null && useDefault)
 	    value = column.getDflt();
 	return value;
     }
 
-    public String getStringValue(String col,String dflt) {
+    public String getStringValue(Request request,String col,String dflt) {
 	Column column = getTypeHandler().findColumn(col);
 	if(column == null) {
 	    return dflt;
 	}
-        Object  value = getValue(column.getOffset());
+        Object  value = getValue(request, column);
 	if(value==null) return dflt;
 	return value.toString();
     }
-
 
 
 
@@ -982,7 +986,7 @@ public class Entry implements Cloneable {
      *
      * @return  a String representation of the indexed value
      */
-    public String getStringValue(int index, String dflt) {
+    public String getStringValue(Request request,int index, String dflt) {
         if ((values == null) || (index < 0) || (index >= values.length)
 	    || (values[index] == null)) {
             return dflt;
@@ -999,8 +1003,8 @@ public class Entry implements Cloneable {
      *
      * @return  the double value (or dflt)
      */
-    public double getDoubleValue(int index, double dflt) {
-        String sValue = getStringValue(index, "");
+    public double getDoubleValue(Request request, int index, double dflt) {
+        String sValue = getStringValue(request,index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -1014,16 +1018,8 @@ public class Entry implements Cloneable {
         return retval;
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public int getIntValue(int index, int dflt) {
-        String sValue = getStringValue(index, "");
+    public int getIntValue(Request request, int index, int dflt) {
+        String sValue = getStringValue(request,index, "");
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -1045,8 +1041,8 @@ public class Entry implements Cloneable {
      *
      * @return  the boolean value (or dflt)
      */
-    public boolean getBooleanValue(int index, boolean dflt) {
-        String sValue = getStringValue(index, "");
+    public boolean getBooleanValue(Request request,int index, boolean dflt) {
+        String sValue = getStringValue(request,index, "");
         if (sValue.length() == 0) {
             return dflt;
         }

@@ -385,7 +385,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                      ? values[IDX_PROPERTIES].toString()
                                      : "";
 
-        String    typeProperties   = getRecordPropertiesFromType(entry);
+        String    typeProperties   = getRecordPropertiesFromType(null,entry);
 
         Hashtable p                = null;
 
@@ -417,7 +417,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public String getRecordPropertiesFromType(Entry entry) throws Exception {
+    public String getRecordPropertiesFromType(Request request,Entry entry) throws Exception {
 	String props = getTypeProperty("record.properties", (String) null);
 	if(props!=null) {
 	    StringBuilder sb = new StringBuilder();

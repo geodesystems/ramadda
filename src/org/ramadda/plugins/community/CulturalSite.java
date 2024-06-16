@@ -75,7 +75,7 @@ public class CulturalSite extends ExtensibleGroupTypeHandler {
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
-        String type = entry.getStringValue(0, "");
+        String type = entry.getStringValue(request,0, "");
 	switch (type) {
 	case "archeological":
 	    return "/cultural/archeological.png";

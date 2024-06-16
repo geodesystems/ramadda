@@ -78,9 +78,9 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
     @Override
     public String embedYoutube(Request request, Entry entry,Hashtable props, StringBuilder sb, List attrs,
                                String mediaUrl) {
-        boolean autoPlay = entry.getBooleanValue(IDX_AUTOPLAY, false);
-        double start  = entry.getDoubleValue(IDX_START, 0.0);
-        double end    = entry.getDoubleValue(IDX_END, -1);
+        boolean autoPlay = entry.getBooleanValue(request,IDX_AUTOPLAY, false);
+        double start  = entry.getDoubleValue(request,IDX_START, 0.0);
+        double end    = entry.getDoubleValue(request,IDX_END, -1);
 	Utils.add(attrs,"autoplay",autoPlay?"1":"0");
 	if(start>0)
 	    Utils.add(attrs,"start",""+(int) start);
