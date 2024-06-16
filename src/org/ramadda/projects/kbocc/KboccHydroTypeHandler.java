@@ -87,9 +87,8 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	    entry.setValue("location",theLogger.getString("location"));
 	    entry.setValue("notes",theLogger.getString("notes"));		
 	} else {
-	    String msg = "could not find site info for file:" + fileName;
+	    String msg = "Could not find site info for file:" + fileName;
 	    getSessionManager().addSessionErrorMessage(request,msg);
-	    System.err.println("could not find site info:" + yearSite +" file:" + fileName);
 	}
 	
     }
