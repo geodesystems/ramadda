@@ -1719,8 +1719,8 @@ public abstract class ValueIterator implements DbConstants {
             double     lon  = 0;
 
             if (theColumn == null) {
-                lat = dbInfo.getLatColumn().xxxgetDouble(request,values);
-                lon = dbInfo.getLonColumn().xxxgetDouble(request,values);
+                lat = dbInfo.getLatColumn().uncheckedGetDouble(request,values);
+                lon = dbInfo.getLonColumn().uncheckedGetDouble(request,values);
             } else {
                 if ( !bbox) {
                     double[] ll = theColumn.getLatLon(request,values);
@@ -1742,7 +1742,7 @@ public abstract class ValueIterator implements DbConstants {
             Element placemark = KmlUtil.placemark(folder, label,
                                     desc.toString(), lat, lon, 0, null);
             if (dbInfo.getDateColumn() != null) {
-                Date date = (Date) dbInfo.getDateColumn().xxxgetObject(request,values);
+                Date date = (Date) dbInfo.getDateColumn().uncheckedGetObject(request,values);
                 if (date != null) {
                     KmlUtil.timestamp(placemark, date);
                 }

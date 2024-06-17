@@ -826,7 +826,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    public Object xxxgetObject(Request request, Object[] values) {
+    public Object uncheckedGetObject(Request request, Object[] values) {
         if (values == null) {
             return null;
         }
@@ -842,31 +842,20 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public String xxxgetString(Request request,Object[] values) {
-        if (values == null) {
+    public String uncheckedGetString(Request request,Object[] values) {
+	Object o = uncheckedGetObject(request, values);
+        if (o == null) {
             return null;
         }
-        int idx = getOffset();
-        if (idx >= values.length) {
-            return null;
-        }
-        if (values[idx] == null) {
-            return null;
-        }
-        if (isType(DATATYPE_PASSWORD)) {
-            return null;
-        }
-
-        return values[idx].toString();
+	return o.toString();
     }
 
-    public double xxxgetDouble(Request request, Object[] values) {
+    public double uncheckedGetDouble(Request request, Object[] values) {
         Object o = getValue(request, values);
         if (o == null) {
             return Double.NaN;
         }
         return ((Double) o).doubleValue();
-	
     }
 
     public double getDouble(Request request, Entry entry) {
@@ -929,6 +918,66 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public Object getValue(Request request, Entry entry) {
+	if(!accessOk(request, entry)) return null;
+	return getValue(request, entry.getValues());
+    }
+
+    private static final double[]NULL_BBOX={Double.NaN,Double.NaN,Double.NaN,Double.NaN};
+    private static final double[]NULL_LATLON={Double.NaN,Double.NaN,Double.NaN,Double.NaN};    
+
+    public double[] getLatLonBbox(Request request,Entry entry) {
+	if(!accessOk(request, entry)) return NULL_BBOX;
+	return getLatLonBbox(request, entry.getValues());
+    }
+
+    public double[] getLatLon(Request request,Entry entry) {
+	if(!accessOk(request, entry)) return NULL_LATLON;
+	return getLatLon(request, entry.getValues());
+    }
+
+    private Object getValue(Request request, Object[]values) {
+	int index = getOffset();
+        if ((values == null) || (index >= values.length)
+	    || (values[index] == null)) {
+            return null;
+        }
+        return values[index];	
+    }
+
+    public double[] getLatLonBbox(Request request,Object[]values) {
+        return new double[] { Utils.getDouble(values[offset]),
+			      Utils.getDouble(values[offset + 1]),
+                              Utils.getDouble(values[offset + 2]),
+                              Utils.getDouble(values[offset + 3]) };
+    }
+
+
+    public double[] getLatLon(Request request,Object []values) {
+	double lat = Double.NaN;
+	double lon = Double.NaN;
+	if (values != null) {
+	    lat = Utils.getDouble(values[offset]);
+	    lon = Utils.getDouble(values[offset + 1]);
+	    if(lat==Entry.NONGEO) lat = Double.NaN;
+	    if(lon==Entry.NONGEO) lon = Double.NaN;	    
+	}
+	return new double[]{lat,lon};
+    }
+
+    
+    public boolean hasLatLon(Request request,Entry entry) {
+	double[]latlon = getLatLon(request,entry);
+	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]);
+    }
+
+    
+    public boolean hasLatLonBox(Request request,Entry entry) {
+	double[]latlon = getLatLonBbox(request,entry);
+	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]) && !Double.isNaN(latlon[2])&& !Double.isNaN(latlon[3]);
+    }
+
+
     public String formatValue(Request request, Entry entry,  Object[] values)
 	throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -942,16 +991,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 	throws Exception {
         formatValue(request, entry, sb, output, values, null, raw);
     }
-
     
     public void formatValue(Request request, Entry entry,
 			    Appendable result,
                             String output, Object[] values,
                             SimpleDateFormat sdf, boolean raw)
 	throws Exception {
-
 	if(!accessOk(request, entry)) return;
-
 	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
         boolean    csv = Misc.equals(output, OUTPUT_CSV);
@@ -3416,65 +3462,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         enumValues = value;
     }
     
-    public Object getValue(Request request, Entry entry) {
-	if(!accessOk(request, entry)) return null;
-	return getValue(request, entry.getValues());
-    }
-
-    private static final double[]NULL_BBOX={Double.NaN,Double.NaN,Double.NaN,Double.NaN};
-    private static final double[]NULL_LATLON={Double.NaN,Double.NaN,Double.NaN,Double.NaN};    
-
-    public double[] getLatLonBbox(Request request,Entry entry) {
-	if(!accessOk(request, entry)) return NULL_BBOX;
-	return getLatLonBbox(request, entry.getValues());
-    }
-
-    public double[] getLatLon(Request request,Entry entry) {
-	if(!accessOk(request, entry)) return NULL_LATLON;
-	return getLatLon(request, entry.getValues());
-    }
-
-    private Object getValue(Request request, Object[]values) {
-	int index = getOffset();
-        if ((values == null) || (index >= values.length)
-	    || (values[index] == null)) {
-            return null;
-        }
-        return values[index];	
-    }
-
-    public double[] getLatLonBbox(Request request,Object[]values) {
-        return new double[] { Utils.getDouble(values[offset]),
-			      Utils.getDouble(values[offset + 1]),
-                              Utils.getDouble(values[offset + 2]),
-                              Utils.getDouble(values[offset + 3]) };
-    }
-
-
-    public double[] getLatLon(Request request,Object []values) {
-	double lat = Double.NaN;
-	double lon = Double.NaN;
-	if (values != null) {
-	    lat = Utils.getDouble(values[offset]);
-	    lon = Utils.getDouble(values[offset + 1]);
-	    if(lat==Entry.NONGEO) lat = Double.NaN;
-	    if(lon==Entry.NONGEO) lon = Double.NaN;	    
-	}
-	return new double[]{lat,lon};
-    }
-
-    
-    public boolean hasLatLon(Request request,Entry entry) {
-	double[]latlon = getLatLon(request,entry);
-	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]);
-    }
-
-    
-    public boolean hasLatLonBox(Request request,Entry entry) {
-	double[]latlon = getLatLonBbox(request,entry);
-	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]) && !Double.isNaN(latlon[2])&& !Double.isNaN(latlon[3]);
-    }
-
 
     public List<HtmlUtils.Selector> getValues() {
         return enumValues;

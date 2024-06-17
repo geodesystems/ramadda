@@ -3668,8 +3668,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return dbInfo.getLatLonColumn().getLatLon(request, values);
         } else if ((dbInfo.getLatColumn() != null)
                    && (dbInfo.getLonColumn() != null)) {
-            return new double[] { dbInfo.getLatColumn().xxxgetDouble(request, values),
-                                  dbInfo.getLonColumn().xxxgetDouble(request, values) };
+            return new double[] { dbInfo.getLatColumn().uncheckedGetDouble(request, values),
+                                  dbInfo.getLonColumn().uncheckedGetDouble(request, values) };
         }
 
         return null;
@@ -4677,7 +4677,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public String getIconFor(Request request, Entry entry, Hashtable entryProps,
                              Object[] values) {
         for (Column column : getDbInfo().getEnumColumns()) {
-            String value    = column.xxxgetString(request,values);
+            String value    = column.uncheckedGetString(request,values);
             String attrIcon = getIconFor(entry, entryProps, column, value);
             if (attrIcon != null) {
                 return attrIcon;
@@ -5153,7 +5153,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 if (getDbInfo().getMapCategoryColumn() != null) {
                     String cat =
-                        getDbInfo().getMapCategoryColumn().xxxgetString(request,values);
+                        getDbInfo().getMapCategoryColumn().uncheckedGetString(request,values);
                     if (cat == null) {
                         cat = "";
                     }
@@ -5177,7 +5177,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String extraLabel = "";
                 if (searchColumn != null) {
                     theSB.append("&nbsp;");
-                    String value = searchColumn.xxxgetString(request,values);
+                    String value = searchColumn.uncheckedGetString(request,values);
                     String href =
                         HU.href(
                             "#",
@@ -5233,7 +5233,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    } else {
 			if(mapPolygonsShow && polygonColumn!=null) {
 			    map.addPolygon(dbid,
-					   polygonColumn.xxxgetString(request,values),mapInfo,null,mapProperties);
+					   polygonColumn.uncheckedGetString(request,values),mapInfo,null,mapProperties);
 			}
 			if(mapMarkersShow)
 			    map.addMarker(dbid, location.latitude, location.longitude, null,
@@ -6326,7 +6326,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    if ( !isPostgres && (uniqueCols != null)) {
 			String key = "";
 			for (Column c : uniqueCols) {
-			    Object o = c.xxxgetObject(request,values);
+			    Object o = c.uncheckedGetObject(request,values);
 			    key = key + "_" + o;
 			}
 			if (seenValue.contains(key)) {
