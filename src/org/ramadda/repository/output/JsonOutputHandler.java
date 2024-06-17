@@ -885,26 +885,6 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param addSnippets _more_
-     * @param addAttributes _more_
-     * @param addPointUrl _more_
-     * @param addThumbnails _more_
-     * @param addImages _more_
-     * @param addMediaUrl _more_
-     * @param mainTypeHandler _more_
-     * @param columns _more_
-     * @param showFileUrl _more_
-     * @param remote _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String toPointJson(Request request, Entry entry,
                                boolean addSnippets, boolean addAttributes,
                                boolean addPointUrl, boolean addThumbnails,

@@ -3654,8 +3654,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return dbInfo.getLatLonColumn().getLatLon(request, entry);
         } else if ((dbInfo.getLatColumn() != null)
                    && (dbInfo.getLonColumn() != null)) {
-            return new double[] { dbInfo.getLatColumn().getDouble(request, entry),
-                                  dbInfo.getLonColumn().getDouble(request, entry) };
+            return new double[] { entry.getDoubleValue(request,dbInfo.getLatColumn(),Double.NaN),
+				  entry.getDoubleValue(request,dbInfo.getLonColumn(),Double.NaN) };
         }
 
         return null;
@@ -3668,8 +3668,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return dbInfo.getLatLonColumn().getLatLon(request, values);
         } else if ((dbInfo.getLatColumn() != null)
                    && (dbInfo.getLonColumn() != null)) {
-            return new double[] { dbInfo.getLatColumn().getDouble(request, values),
-                                  dbInfo.getLonColumn().getDouble(request, values) };
+            return new double[] { dbInfo.getLatColumn().xxxgetDouble(request, values),
+                                  dbInfo.getLonColumn().xxxgetDouble(request, values) };
         }
 
         return null;
@@ -4677,7 +4677,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public String getIconFor(Request request, Entry entry, Hashtable entryProps,
                              Object[] values) {
         for (Column column : getDbInfo().getEnumColumns()) {
-            String value    = column.getString(request,values);
+            String value    = column.xxxgetString(request,values);
             String attrIcon = getIconFor(entry, entryProps, column, value);
             if (attrIcon != null) {
                 return attrIcon;
@@ -4899,8 +4899,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		public void accept(Column theColumn, Entry entry){
 		    location.init();
 		    if (theColumn == null) {
-			location.latitude  = dbInfo.getLatColumn().getDouble(request,entry);
-			location.longitude  = dbInfo.getLonColumn().getDouble(request, entry);
+			location.latitude  = entry.getDoubleValue(request,dbInfo.getLatColumn(),Double.NaN);
+			location.longitude  = entry.getDoubleValue(request, dbInfo.getLonColumn(),Double.NaN);
 		    } else {
 			if ( !location.bbox) {
 			    //Check if the lat/lon is defined
@@ -5153,7 +5153,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 if (getDbInfo().getMapCategoryColumn() != null) {
                     String cat =
-                        getDbInfo().getMapCategoryColumn().getString(request,values);
+                        getDbInfo().getMapCategoryColumn().xxxgetString(request,values);
                     if (cat == null) {
                         cat = "";
                     }
@@ -5177,7 +5177,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String extraLabel = "";
                 if (searchColumn != null) {
                     theSB.append("&nbsp;");
-                    String value = searchColumn.getString(request,values);
+                    String value = searchColumn.xxxgetString(request,values);
                     String href =
                         HU.href(
                             "#",
@@ -5233,7 +5233,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    } else {
 			if(mapPolygonsShow && polygonColumn!=null) {
 			    map.addPolygon(dbid,
-					   polygonColumn.getString(request,values),mapInfo,null,mapProperties);
+					   polygonColumn.xxxgetString(request,values),mapInfo,null,mapProperties);
 			}
 			if(mapMarkersShow)
 			    map.addMarker(dbid, location.latitude, location.longitude, null,
@@ -6326,7 +6326,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    if ( !isPostgres && (uniqueCols != null)) {
 			String key = "";
 			for (Column c : uniqueCols) {
-			    Object o = c.getObject(request,values);
+			    Object o = c.xxxgetObject(request,values);
 			    key = key + "_" + o;
 			}
 			if (seenValue.contains(key)) {

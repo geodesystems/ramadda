@@ -111,9 +111,9 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
                                              getIconUrl(service.getIcon())));
         }
 
-        formBuffer.append(HtmlUtils.formEntry(msgLabel("Service"),
-                HtmlUtils.select(column.getEditArg(), items,
-                                 column.getString(request,values))));
+        formBuffer.append(HU.formEntry(msgLabel("Service"),
+				       HU.select(column.getEditArg(), items,
+						 entry!=null?entry.getStringValue(request,column,""):"")));
     }
 
     /**

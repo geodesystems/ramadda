@@ -348,9 +348,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
-	if(isPrivate()) {
-	    System.err.println("is private:" + typeHandler);
-	}
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
@@ -759,7 +756,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_SYNTHETIC);
     }    
 
-    
     public boolean isPrivate() {
         return isType(DATATYPE_PASSWORD);
     }
@@ -818,8 +814,19 @@ public class Column implements DataTypes, Constants, Cloneable {
         return required;
     }
 
-    
-    public Object getObject(Request request, Object[] values) {
+
+    private boolean accessOk(Request request,Entry entry) {
+	if(isPrivate()) {
+	    return request.isAdmin() || request.isOwner(entry);
+	}
+	if(isGeoAccess || isGeo()) {
+	    return request.geoOk(entry);
+	}
+	return true;
+    }
+
+
+    public Object xxxgetObject(Request request, Object[] values) {
         if (values == null) {
             return null;
         }
@@ -834,9 +841,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         return values[idx];
     }
 
-
     
-    public String getString(Request request,Object[] values) {
+    public String xxxgetString(Request request,Object[] values) {
         if (values == null) {
             return null;
         }
@@ -854,9 +860,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return values[idx].toString();
     }
 
-
-    
-    public double getDouble(Request request, Object[] values) {
+    public double xxxgetDouble(Request request, Object[] values) {
         Object o = getValue(request, values);
         if (o == null) {
             return Double.NaN;
@@ -873,13 +877,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ((Double) o).doubleValue();
     }
 
-    
-    public String toString(Object[] values) {
-        return toString(values, offset);
-    }
 
-
-    
     private String toString(Object[] values, int idx) {
         if (values == null) {
             return ((dflt != null)
@@ -895,8 +893,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return values[idx].toString();
     }
 
-
-    
     private String toLatLonString(Object[] values, int idx, boolean raw) {
         if (values == null) {
             return ((dflt != null)
@@ -947,13 +943,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         formatValue(request, entry, sb, output, values, null, raw);
     }
 
-
     
     public void formatValue(Request request, Entry entry,
 			    Appendable result,
                             String output, Object[] values,
                             SimpleDateFormat sdf, boolean raw)
 	throws Exception {
+
+	if(!accessOk(request, entry)) return;
 
 	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
@@ -1476,8 +1473,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public void addToEntryNode(Entry entry, Object[] values, Element node)
+    public void addToEntryNode(Request request,Entry entry, Object[] values, Element node)
 	throws Exception {
+	if(!accessOk(request, entry)) return;
         if (values[offset] == null) {
             return;
         }
@@ -3414,153 +3412,35 @@ public class Column implements DataTypes, Constants, Cloneable {
         return Misc.equals(this.name, name) || Misc.equals(this.label, name);
     }
 
-    
-    public void setIsIndex(boolean value) {
-        isIndex = value;
-    }
-
-    
-    public boolean getIsIndex() {
-        return isIndex;
-    }
-
-
-
-    
-    public void setIsCategory(boolean value) {
-        isCategory = value;
-    }
-
-    
-    public boolean getIsCategory() {
-        return isCategory;
-    }
-
-
-    
-    public boolean getShowEmpty() {
-        return showEmpty;
-    }
-
-
-
-    
-    public void setCanShow(boolean value) {
-        canShow = value;
-    }
-
-    
-    public boolean getCanShow() {
-        if (isType(DATATYPE_PASSWORD)) {
-            return false;
-        }
-
-        return canShow;
-    }
-
-
-
-
-
-    
-    public boolean getCanExport() {
-        return canExport;
-    }
-
-    
-    public boolean getShowLabel() {
-        return showLabel;
-    }
-
-
-    
-    public void setCanSearch(boolean value) {
-        canSearch = value;
-    }
-
-    
-    public boolean getCanSearch() {
-        return canSearch;
-    }
-
-    
-    public boolean getCanSort() {
-        return canSort;
-    }
-
-    
-    public void setSearchRows(int value) {
-        searchRows = value;
-    }
-
-    
-    public int getSearchRows() {
-        return searchRows;
-    }
-
-
-
-
-    
-    public void setCanSearchText(boolean value) {
-        canSearchText = value;
-    }
-
-    
-    public boolean getCanSearchText() {
-        return canSearchText;
-    }
-
-    
-    public boolean getAdvancedSearch() {
-        return advancedSearch;
-    }
-
-
-
-
-    
-    public void setCanList(boolean value) {
-        canList = value;
-    }
-
-    
-    public boolean getCanList() {
-        return canList;
-    }
-
-
-    
-    public void setCanDisplay(boolean value) {
-        canDisplay = value;
-    }
-
-    
-    public boolean getCanDisplay() {
-        return canDisplay;
-    }
-    
     public void setValues(List<HtmlUtils.Selector> value) {
         enumValues = value;
     }
-
     
     public Object getValue(Request request, Entry entry) {
+	if(!accessOk(request, entry)) return null;
 	return getValue(request, entry.getValues());
     }
 
-    public Object getValue(Request request, Object[]values) {
+    private static final double[]NULL_BBOX={Double.NaN,Double.NaN,Double.NaN,Double.NaN};
+    private static final double[]NULL_LATLON={Double.NaN,Double.NaN,Double.NaN,Double.NaN};    
+
+    public double[] getLatLonBbox(Request request,Entry entry) {
+	if(!accessOk(request, entry)) return NULL_BBOX;
+	return getLatLonBbox(request, entry.getValues());
+    }
+
+    public double[] getLatLon(Request request,Entry entry) {
+	if(!accessOk(request, entry)) return NULL_LATLON;
+	return getLatLon(request, entry.getValues());
+    }
+
+    private Object getValue(Request request, Object[]values) {
 	int index = getOffset();
         if ((values == null) || (index >= values.length)
 	    || (values[index] == null)) {
             return null;
         }
         return values[index];	
-    }
-
-
-    public double[] getLatLonBbox(Request request,Entry entry) {
-	return getLatLonBbox(request, entry.getValues());
     }
 
     public double[] getLatLonBbox(Request request,Object[]values) {
@@ -3570,10 +3450,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                               Utils.getDouble(values[offset + 3]) };
     }
 
-
-    public double[] getLatLon(Request request,Entry entry) {
-	return getLatLon(request, entry.getValues());
-    }
 
     public double[] getLatLon(Request request,Object []values) {
 	double lat = Double.NaN;
@@ -3586,8 +3462,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	}
 	return new double[]{lat,lon};
     }
-
-
 
     
     public boolean hasLatLon(Request request,Entry entry) {
@@ -3776,8 +3650,126 @@ public class Column implements DataTypes, Constants, Cloneable {
         return doStats;
     }
 
+    
+    public String getLookupDB() {
+        return lookupDB;
+    }
+
+    public String getDelimiter() {
+	return delimiter;
+    }
+
+    public void setIsIndex(boolean value) {
+        isIndex = value;
+    }
+    
+    public boolean getIsIndex() {
+        return isIndex;
+    }
+    
+    public void setIsCategory(boolean value) {
+        isCategory = value;
+    }
+    
+    public boolean getIsCategory() {
+        return isCategory;
+    }
+    
+    public boolean getShowEmpty() {
+        return showEmpty;
+    }
+    
+    public void setCanShow(boolean value) {
+        canShow = value;
+    }
+    
+    public boolean getCanShow() {
+        if (isType(DATATYPE_PASSWORD)) {
+            return false;
+        }
+
+        return canShow;
+    }
+
+    public boolean getCanExport() {
+        return canExport;
+    }
+    
+    public boolean getShowLabel() {
+        return showLabel;
+    }
+
 
     
+    public void setCanSearch(boolean value) {
+        canSearch = value;
+    }
+
+    
+    public boolean getCanSearch() {
+        return canSearch;
+    }
+
+    
+    public boolean getCanSort() {
+        return canSort;
+    }
+
+    
+    public void setSearchRows(int value) {
+        searchRows = value;
+    }
+
+    
+    public int getSearchRows() {
+        return searchRows;
+    }
+
+
+
+
+    
+    public void setCanSearchText(boolean value) {
+        canSearchText = value;
+    }
+
+    
+    public boolean getCanSearchText() {
+        return canSearchText;
+    }
+
+    
+    public boolean getAdvancedSearch() {
+        return advancedSearch;
+    }
+
+
+
+
+    
+    public void setCanList(boolean value) {
+        canList = value;
+    }
+
+    
+    public boolean getCanList() {
+        return canList;
+    }
+
+
+    
+    public void setCanDisplay(boolean value) {
+        canDisplay = value;
+    }
+
+    
+    public boolean getCanDisplay() {
+        return canDisplay;
+    }
+
+
+
+
     public static class Display {
         String value;
         String background;
@@ -3832,8 +3824,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
 
 
-
-
             if (style.length() > 0) {
                 v = HU.div(v, HU.style(style));
             }
@@ -3846,13 +3836,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public String getLookupDB() {
-        return lookupDB;
-    }
 
-    public String getDelimiter() {
-	return delimiter;
-    }
 
 
 }

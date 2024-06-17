@@ -67,7 +67,7 @@
     <column group="Biology" name="habitat" label="Habitat" type="enumerationplus" cansearch="true"
 	    values="file:/org/ramadda/plugins/archive/resources/habitats.txt"/>
 
-    <column group="Collection Site" name="locality"  label="Locality" 
+    <column group="Collection Site" name="locality"  label="Locality" isgeoaccess="true"
 	    type="enumerationplus" cansearch="true" />
     <column name="country"  label="Country" 
 	    type="enumerationplus" cansearch="true"

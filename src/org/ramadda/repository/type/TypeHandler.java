@@ -2928,14 +2928,13 @@ public class TypeHandler extends RepositoryManager {
     public void initEntry(Entry entry) {
 	Request request=getAdminRequest();
 	if(nameTemplate!=null) {
-            Object[] values    = getEntryValues(entry);
 	    String name =nameTemplate;
 	    List<Column> columns = getColumns();
 	    if (columns == null) {
 		return;
 	    }
 	    for(Column column: columns) {
-		String value = column.getString(request,values);
+		String value = entry.getStringValue(request,column,null);
 		if(value==null) value="";
 		name= name.replace("${" + column.getName()+"}",value);
 	    }
@@ -4963,7 +4962,6 @@ public class TypeHandler extends RepositoryManager {
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
 	throws Exception {
-        boolean hasValue = column.getString(request,values) != null;
         if ( !column.getShowInForm()) {
             return;
         }
@@ -4992,6 +4990,7 @@ public class TypeHandler extends RepositoryManager {
 
         boolean canEdit    = sourceTypeHandler.getEditable(column);
         boolean canDisplay = sourceTypeHandler.getCanDisplay(column);
+        boolean hasValue = entry!=null?entry.getStringValue(request,column,null) != null:false;
         if ((entry != null) && hasValue && !canEdit) {
             if (canDisplay) {
                 StringBuilder tmpSb = new StringBuilder();

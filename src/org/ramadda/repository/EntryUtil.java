@@ -771,8 +771,8 @@ public class EntryUtil extends RepositoryManager {
     private  int compareEntries(Request request,Entry e1, Entry e2, CompareOn on) {
 	if(on.column!=null) {
 	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
-		Object v1 = on.column.getObject(request,e1.getValues());
-		Object v2 = on.column.getObject(request,e2.getValues());	    
+		Object v1 = e1.getValue(request, on.column);
+		Object v2 = e2.getValue(request, on.column);
 		if(on.column.isDate()) {
 		    return compare((Date)v1,(Date)v2);
 		}

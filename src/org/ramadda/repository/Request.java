@@ -2703,6 +2703,12 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
+    public boolean isOwner(Entry entry) {
+	if(isAnonymous()) return false;
+	return user.equals(entry.getUser());
+    }
+
+
     /**
      * Set the Ip property.
      *

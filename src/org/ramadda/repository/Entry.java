@@ -907,6 +907,14 @@ public class Entry implements Cloneable {
     }
 
 
+    public Column getColumn(int index) {
+	return getTypeHandler().findColumn(index);
+    }
+    public Column getColumn(String col) {
+	return getTypeHandler().findColumn(col);
+    }    
+
+
     public Object getValue(Request request,Column column,boolean useDefault) {
 	if(column == null) {
 	    return null;
@@ -927,18 +935,21 @@ public class Entry implements Cloneable {
     }
 
     public Object getValue(Request request, String col,boolean useDefault) {
-	return getValue(request, getTypeHandler().findColumn(col), useDefault);
+	return getValue(request, getColumn(col), useDefault);
     }    
 
     public Object getValue(Request request,String col) {
 	return getValue(request,col,false);
     }
 
-
-    public Object getValue(Request request,String col,Object dflt) {
+    public Object getValue(Request request,Column col,Object dflt) {
 	Object o =  getValue(request,col,false);
 	if(o==null) return dflt;
 	return o;
+    }
+
+    public Object getValue(Request request,String col,Object dflt) {
+	return getValue(request,getColumn(col),dflt);
     }
 
     public String getStringValue(Request request,Column col,String dflt) {
@@ -949,37 +960,21 @@ public class Entry implements Cloneable {
     }
 
     public String getStringValue(Request request,String col,String dflt) {
+	return getStringValue(request, getColumn(col),dflt);
+    }
+
+    public String getStringValue(Request request,int index, String dflt) {
+	return getStringValue(request, getColumn(index),dflt);
+    }
+
+    public double getDoubleValue(Request request,Column col,double dflt) {
         Object  value = getValue(request, col);
 	if(value==null) return dflt;
-	return value.toString();
-    }
+	if(value instanceof Double) {
+	    return ((Double)value).doubleValue();
+	}
 
-
-
-    /**
-     * Get the string value of the values index
-     *
-     * @param index  the values index
-     * @param dflt   the default value
-     *
-     * @return  a String representation of the indexed value
-     */
-    public String getStringValue(Request request,int index, String dflt) {
-	Object value = getValue(request, index);
-	if(value==null) return dflt;
-        return value.toString();
-    }
-
-    /**
-     * Get the indexed value as a double
-     *
-     * @param index  index in getValues array;
-     * @param dflt   the default value
-     *
-     * @return  the double value (or dflt)
-     */
-    public double getDoubleValue(Request request, int index, double dflt) {
-        String sValue = getStringValue(request,index, "");
+        String sValue = value.toString();
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -989,12 +984,26 @@ public class Entry implements Cloneable {
         } catch (Exception e) {
             retval = dflt;
         }
-
         return retval;
     }
 
-    public int getIntValue(Request request, int index, int dflt) {
-        String sValue = getStringValue(request,index, "");
+
+    public double getDoubleValue(Request request, int index, double dflt) {
+	return getDoubleValue(request, getColumn(index), dflt);
+    }
+
+    public double getDoubleValue(Request request, String index, double dflt) {
+	return getDoubleValue(request, getColumn(index), dflt);
+    }
+
+    public int getIntValue(Request request,Column col,int dflt) {
+        Object  value = getValue(request, col);
+	if(value==null) return dflt;
+	if(value instanceof Integer) {
+	    return ((Integer)value).intValue();
+	}
+
+        String sValue = value.toString();
         if (sValue.length() == 0) {
             return dflt;
         }
@@ -1004,32 +1013,45 @@ public class Entry implements Cloneable {
         } catch (Exception e) {
             retval = dflt;
         }
-
         return retval;
     }
 
-    /**
-     * Get the indexed value as a double
-     *
-     * @param index  index in getValues array;
-     * @param dflt   the default value
-     *
-     * @return  the boolean value (or dflt)
-     */
-    public boolean getBooleanValue(Request request,int index, boolean dflt) {
-        String sValue = getStringValue(request,index, "");
+
+    public int getIntValue(Request request, int index, int dflt) {
+	return getIntValue(request,getColumn(index),dflt);
+    }
+    public int getIntValue(Request request, String index, int dflt) {
+	return getIntValue(request,getColumn(index),dflt);
+    }    
+
+
+    public boolean getBooleanValue(Request request,Column col,boolean dflt) {
+        Object  value = getValue(request, col);
+	if(value==null) return dflt;
+	if(value instanceof Boolean) {
+	    return ((Boolean)value).booleanValue();
+	}
+
+        String sValue = value.toString();
         if (sValue.length() == 0) {
             return dflt;
         }
         boolean retval = dflt;
         try {
-            retval = Boolean.parseBoolean(sValue);
+            retval = sValue.equals("true");
         } catch (Exception e) {
             retval = dflt;
         }
-
         return retval;
     }
+
+
+    public boolean getBooleanValue(Request request,int index, boolean dflt) {
+	return getBooleanValue(request, getColumn(index), dflt);
+    }
+    public boolean getBooleanValue(Request request,String index, boolean dflt) {
+	return getBooleanValue(request, getColumn(index), dflt);
+    }    
 
     public void setValue(String col, Object v) {
 	Column column = getTypeHandler().findColumn(col);

@@ -840,10 +840,6 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-
-	
-
-
     public Result processEntryFile(Request request) throws Exception {
 	//	/repository/entry/file/id/...
 	String path = request.getRequestPath();
@@ -7618,10 +7614,10 @@ public class EntryManager extends RepositoryManager {
                                 theNewEntry.getTypeHandler().getColumns();
                             if (columns != null) {
                                 for (Column c : columns) {
-                                    Object obj = c.getObject(request,values);
+                                    String s = theNewEntry.getStringValue(request,c,"");
                                     nameTemplate = nameTemplate.replace("${"
 									+ c.getName()
-									+ "}", obj.toString());
+									+ "}", s);
                                 }
                             }
                         }

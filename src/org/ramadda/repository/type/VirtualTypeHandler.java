@@ -76,7 +76,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         if (column.getOffset() == 0) {
             String value = "";
             if (values != null) {
-                value = column.toString(values);
+                value = entry!=null?entry.getStringValue(request,column,""):"";
             }
             String urlArg     = column.getEditArg();
             String textAreaId = HU.getUniqueId("input_");
