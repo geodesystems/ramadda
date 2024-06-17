@@ -3131,7 +3131,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
 			if (dbInfo.getHasLocation()) {
-			    double[] ll  = getLocation(request,entry);
+			    double[] ll  = getLocation(request,values);
 			    double   lat = ll[0];
 			    double   lon = ll[1];
 			    if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
@@ -3648,28 +3648,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    protected double[] getLocation(Request request, Entry entry) {
+    protected double[] getLocation(Request request,Object[] values) {
         DbInfo dbInfo = getDbInfo();
         if (dbInfo.getLatLonColumn() != null) {
-            return dbInfo.getLatLonColumn().getLatLon(request, entry);
+            return dbInfo.getLatLonColumn().getLatLon(request,values);
         } else if ((dbInfo.getLatColumn() != null)
                    && (dbInfo.getLonColumn() != null)) {
-            return new double[] { entry.getDoubleValue(request,dbInfo.getLatColumn(),Double.NaN),
-				  entry.getDoubleValue(request,dbInfo.getLonColumn(),Double.NaN) };
-        }
-
-        return null;
-
-    }
-
-    protected double[] getLocation(Request request, Object[]values) {
-        DbInfo dbInfo = getDbInfo();
-        if (dbInfo.getLatLonColumn() != null) {
-            return dbInfo.getLatLonColumn().getLatLon(request, values);
-        } else if ((dbInfo.getLatColumn() != null)
-                   && (dbInfo.getLonColumn() != null)) {
-            return new double[] { dbInfo.getLatColumn().uncheckedGetDouble(request, values),
-                                  dbInfo.getLonColumn().uncheckedGetDouble(request, values) };
+            return new double[] { dbInfo.getLatColumn().uncheckedGetDouble(request,values),
+                                  dbInfo.getLonColumn().uncheckedGetDouble(request,values) };
         }
 
         return null;
@@ -4674,11 +4660,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public String getIconFor(Request request, Entry entry, Hashtable entryProps,
+    public String getIconFor(Request request,Entry entry, Hashtable entryProps,
                              Object[] values) {
         for (Column column : getDbInfo().getEnumColumns()) {
             String value    = column.uncheckedGetString(request,values);
-            String attrIcon = getIconFor(entry, entryProps, column, value);
+            String attrIcon = getIconFor(request,entry, entryProps, column, value);
             if (attrIcon != null) {
                 return attrIcon;
             }
@@ -4699,7 +4685,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      * @return _more_
      */
-    public String getIconFor(Entry entry, Hashtable entryProps,
+    public String getIconFor(Request request,Entry entry, Hashtable entryProps,
                              Column column, String value) {
         return getAttributeFor(entry, entryProps, column, value,
                                PROP_CAT_ICON);
@@ -4895,30 +4881,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-	Utils.BiConsumer<Column,Entry>  getLocation =  new Utils.BiConsumer<Column,Entry>() {
-		public void accept(Column theColumn, Entry entry){
+	Utils.BiConsumer<Column,Object[]>  getLocation =  new Utils.BiConsumer<Column,Object[]>() {
+		public void accept(Column theColumn, Object[] values){
 		    location.init();
 		    if (theColumn == null) {
-			location.latitude  = entry.getDoubleValue(request,dbInfo.getLatColumn(),Double.NaN);
-			location.longitude  = entry.getDoubleValue(request, dbInfo.getLonColumn(),Double.NaN);
+			location.latitude  = dbInfo.getLatColumn().uncheckedGetDouble(request,values);
+			location.longitude  = dbInfo.getLonColumn().uncheckedGetDouble(request,values);
 		    } else {
 			if ( !location.bbox) {
-			    //Check if the lat/lon is defined
-			    if ( !theColumn.hasLatLon(request,entry)) {
-				return;
+			    double[] ll = theColumn.getLatLon(request,values);
+			    if(!Double.isNaN(ll[0]) && !Double.isNaN(ll[1])) {
+				location.latitude = ll[0];
+				location.longitude = ll[1];
 			    }
-			    double[] ll = theColumn.getLatLon(request, entry);
-			    location.latitude = ll[0];
-			    location.longitude = ll[1];
 			} else {
-			    if ( !theColumn.hasLatLonBox(request,entry)) {
-				return;
+			    double[] ll = theColumn.getLatLonBbox(request,values);
+			    if(!Double.isNaN(ll[0]) && !Double.isNaN(ll[1])
+			       && !Double.isNaN(ll[2])
+			       && !Double.isNaN(ll[3])) {
+				location.north = ll[0];
+				location.west  = ll[1];
+				location.south = ll[2];
+				location.east  = ll[3];
 			    }
-			    double[] ll = theColumn.getLatLonBbox(request, entry);
-			    location.north = ll[0];
-			    location.west  = ll[1];
-			    location.south = ll[2];
-			    location.east  = ll[3];
 			}
 		    }
 		}
@@ -4985,7 +4970,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(doTile) {
 		List<GeoUtils.TiledObject> tiledObjects = new ArrayList<GeoUtils.TiledObject>();
 		for (Object[] value : valueList) {
-		    getLocation.accept(theColumn, entry);
+		    getLocation.accept(theColumn, value);
 		    if(location.hasPoint()) {
 			tiledObjects.add(new GeoUtils.TiledObject(value,location.latitude,location.longitude));
 		    } else 	if(location.hasBounds()) {
@@ -5144,7 +5129,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		//		if(xcnt++>3) break;
                 Object[] values = (Object[]) obj;
                 String   dbid   = (String) values[IDX_DBID];
-		getLocation.accept(theColumn, entry);
+		getLocation.accept(theColumn, values);
 		//		if(!location.hasLocation()) continue;
                 if (location.hasBounds()) {
                     map.addBox("", "", "",
