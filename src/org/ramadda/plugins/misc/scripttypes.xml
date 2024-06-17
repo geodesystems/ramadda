@@ -1,5 +1,6 @@
 <types supercategory="Miscellaneous">
 
+<!--
   <type name="jythonscript"  description="Repository Script" handler="org.ramadda.repository.type.JythonTypeHandler">
      <property name="icon" value="/icons/python.png"/>
      <property name="form.date.show" value="false"/>
@@ -10,7 +11,8 @@
      <column name="password"  type="password"    label="Password" showinhtml="false"/>
      <column name="initializationCode"  type="clob"  size="4028"   label="Initialization" columns="80"  rows="10" showinhtml="false"/>
      <column name="executionCode"    size="16000"   type="clob"  label="Execute" columns="80"  rows="20" showinhtml="false"/>
-</type>
+     </type>
+     -->
 
 
 </types>

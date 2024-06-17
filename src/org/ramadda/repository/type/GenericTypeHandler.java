@@ -291,13 +291,10 @@ public class GenericTypeHandler extends TypeHandler {
 	Column column = findColumn(categoryType);
 	if(column==null) column = categoryColumn;
         if (column != null) {
-            Object[] values = entry.getValues();
-            if (values != null) {
-                String s = column.getString(request,values);
-                if (s != null) {
-                    String label = column.getEnumLabel(s);
-                    return new TwoFacedObject(label, s);
-                }
+	    Object s = entry.getValue(request,column);
+	    if (s != null) {
+		String label = column.getEnumLabel(s.toString());
+		return new TwoFacedObject(label, s);
             }
         }
 
@@ -375,29 +372,6 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param columnName _more_
-     *
-     * @return _more_
-     */
-    @Override
-    public Object getEntryValue(Request request,Entry entry, String columnName) {
-        Object[] values = getEntryValues(entry);
-        if (values == null) {
-            return null;
-        }
-        Column column = findColumn(columnName);
-        if (column == null) {
-            return null;
-        }
-
-
-        return column.getObject(request, values);
-    }
-
 
 
 
@@ -424,45 +398,13 @@ public class GenericTypeHandler extends TypeHandler {
         return colNames.size() - 1;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Object[] makeEntryValueArray() {
         int numberOfValues = getTotalNumberOfValues();
 
         return new Object[numberOfValues];
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public Object[] getEntryValues(Entry entry) {
-        Object[] values = entry.getValues();
-        if (values == null) {
-            values = makeEntryValueArray();
-            entry.setValues(values);
-        }
 
-        return values;
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception on badness
-     */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -546,7 +488,7 @@ public class GenericTypeHandler extends TypeHandler {
         for (Column column : getColumns()) {
             int match = column.matchValue(arg, value, ((entry == null)
                     ? null
-                    : entry.getValues()));
+                   : entry.getValues()));
             if (match == MATCH_FALSE) {
                 return MATCH_FALSE;
             }
@@ -934,34 +876,10 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public Object[] getValues(Entry entry, Clause clause) throws Exception {
         return getValues(entry, clause, makeEntryValueArray());
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param clause _more_
-     * @param values _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public Object[] getValues(Entry entry, Clause clause, Object[] values)
             throws Exception {
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
@@ -1016,20 +934,17 @@ public class GenericTypeHandler extends TypeHandler {
     public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
         super.getTextCorpus(entry, sb,args);
 	if(args.length>0 && !args[0]) return;
-
-
-        Object[] values = entry.getValues();
-        if (values == null) {
-            return;
-        }
+	Request request = getAdminRequest();
         for (Column column : getMyColumns()) {
             if (column.isPrivate()) {
                 continue;
             }
             if (column.isString()) {
-                String s = column.toString(values);
-                sb.append(s);
-                sb.append("\n");
+                Object s = entry.getValue(request,column);
+		if(s!=null) {
+		    sb.append(s.toString());
+		    sb.append("\n");
+		}
             }
         }
     }

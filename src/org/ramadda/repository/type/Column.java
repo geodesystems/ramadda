@@ -2614,71 +2614,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public double[] getLatLonBbox(Request request,Entry entry) {
-	Object[] values = entry.getValues();
-	return getLatLonBbox(request, values);
-    }
-
-    public double[] getLatLonBbox(Request request,Object[]values) {
-        return new double[] { Utils.getDouble(values[offset]),
-			      Utils.getDouble(values[offset + 1]),
-                              Utils.getDouble(values[offset + 2]),
-                              Utils.getDouble(values[offset + 3]) };
-    }
-
-
-
-
-    public double[] getLatLon(Request request,Entry entry) {
-	Object[] values = entry.getValues();
-	return getLatLon(request, values);
-    }
-
-    public double[] getLatLon(Request request,Object []values) {
-	double lat = Double.NaN;
-	double lon = Double.NaN;
-	if (values != null) {
-	    lat = Utils.getDouble(values[offset]);
-	    lon = Utils.getDouble(values[offset + 1]);
-	    if(lat==Entry.NONGEO) lat = Double.NaN;
-	    if(lon==Entry.NONGEO) lon = Double.NaN;	    
-	}
-	return new double[]{lat,lon};
-    }
-
-
-
-    
-    public boolean hasLatLon(Entry entry) {
-	Object[] values = entry.getValues();
-        if ((values[offset] == null)
-	    || ((Double) values[offset]).doubleValue() == Entry.NONGEO) {
-            return false;
-        }
-        if ((values[offset + 1] == null)
-	    || ((Double) values[offset + 1]).doubleValue()
-	    == Entry.NONGEO) {
-            return false;
-        }
-
-        return true;
-    }
-
-    
-    public boolean hasLatLonBox(Entry entry) {
-	Object[] values = entry.getValues();
-        for (int i = 0; i < 4; i++) {
-            if ((values[offset + i] == null)
-		|| ((Double) values[offset + i]).doubleValue()
-		== Entry.NONGEO) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
     
     public void setValue(Request request, Entry entry, Object[] values)
 	throws Exception {
@@ -3604,9 +3539,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean getCanDisplay() {
         return canDisplay;
     }
-
-
-
     
     public void setValues(List<HtmlUtils.Selector> value) {
         enumValues = value;
@@ -3614,8 +3546,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     
     public Object getValue(Request request, Entry entry) {
-	Object[]values = entry.getValues();
-	return getValue(request, values);
+	return getValue(request, entry.getValues());
     }
 
     public Object getValue(Request request, Object[]values) {
@@ -3625,6 +3556,49 @@ public class Column implements DataTypes, Constants, Cloneable {
             return null;
         }
         return values[index];	
+    }
+
+
+    public double[] getLatLonBbox(Request request,Entry entry) {
+	return getLatLonBbox(request, entry.getValues());
+    }
+
+    public double[] getLatLonBbox(Request request,Object[]values) {
+        return new double[] { Utils.getDouble(values[offset]),
+			      Utils.getDouble(values[offset + 1]),
+                              Utils.getDouble(values[offset + 2]),
+                              Utils.getDouble(values[offset + 3]) };
+    }
+
+
+    public double[] getLatLon(Request request,Entry entry) {
+	return getLatLon(request, entry.getValues());
+    }
+
+    public double[] getLatLon(Request request,Object []values) {
+	double lat = Double.NaN;
+	double lon = Double.NaN;
+	if (values != null) {
+	    lat = Utils.getDouble(values[offset]);
+	    lon = Utils.getDouble(values[offset + 1]);
+	    if(lat==Entry.NONGEO) lat = Double.NaN;
+	    if(lon==Entry.NONGEO) lon = Double.NaN;	    
+	}
+	return new double[]{lat,lon};
+    }
+
+
+
+    
+    public boolean hasLatLon(Request request,Entry entry) {
+	double[]latlon = getLatLon(request,entry);
+	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]);
+    }
+
+    
+    public boolean hasLatLonBox(Request request,Entry entry) {
+	double[]latlon = getLatLonBbox(request,entry);
+	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]) && !Double.isNaN(latlon[2])&& !Double.isNaN(latlon[3]);
     }
 
 

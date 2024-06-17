@@ -180,19 +180,16 @@ public class GranuleTypeHandler extends GenericTypeHandler {
             return null;
         }
         if (granule.getTypeHandler() instanceof GranuleTypeHandler) {
-            Object[] values = granule.getValues();
-            if (values != null) {
-                String collectionEntryId = (String) values[0];
-                if (collectionEntryId != null) {
-                    try {
-                        Entry collection =
-                            granule.getTypeHandler().getEntryManager()
-                                .getEntry(request, collectionEntryId);
-
-                        return collection;
-                    } catch (Exception e) {
-                        return null;
-                    }
+	    String collectionEntryId = granule.getStringValue(request,0,null);
+	    if (collectionEntryId != null) {
+		try {
+		    Entry collection =
+			granule.getTypeHandler().getEntryManager()
+			.getEntry(request, collectionEntryId);
+		    
+		    return collection;
+		} catch (Exception e) {
+		    return null;
                 }
             }
         }

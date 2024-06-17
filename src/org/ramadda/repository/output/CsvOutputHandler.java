@@ -231,7 +231,6 @@ public class CsvOutputHandler extends OutputHandler {
                     maxStringSize[i] = 0;
                 }
             }
-            Object[] values = entry.getTypeHandler().getEntryValues(entry);
             for (int col = 0; col < columns.size(); col++) {
                 Column column = columns.get(col);
                 if ( !column.getCanExport()) {
@@ -297,8 +296,6 @@ public class CsvOutputHandler extends OutputHandler {
                 sb.append(headerString);
                 sb.append("\n");
             }
-
-            Object[] values = entry.getTypeHandler().getEntryValues(entry);
 
             int      colCnt = 0;
             for (String field : fieldNames) {
@@ -368,8 +365,7 @@ public class CsvOutputHandler extends OutputHandler {
                             if (cnt > 0) {
                                 sb.append(delimiter);
                             }
-                            String s = sanitize(escape,
-						column.getString(request,values));
+                            String s = sanitize(escape,entry.getStringValue(request, column,null));
                             sb.append(s);
                             if (fixedWidth) {
                                 if (column.isString()) {
@@ -400,8 +396,7 @@ public class CsvOutputHandler extends OutputHandler {
                     }
                     Column column = columnMap.get(field);
                     if (column != null) {
-                        String s = sanitize(escape,
-                                            column.getString(request,values));
+                        String s = sanitize(escape,entry.getStringValue(request,column,""));
                         sb.append(s);
                         if (fixedWidth) {
                             if (column.isString()) {

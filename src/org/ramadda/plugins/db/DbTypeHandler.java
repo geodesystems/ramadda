@@ -4904,14 +4904,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    } else {
 			if ( !location.bbox) {
 			    //Check if the lat/lon is defined
-			    if ( !theColumn.hasLatLon(entry)) {
+			    if ( !theColumn.hasLatLon(request,entry)) {
 				return;
 			    }
 			    double[] ll = theColumn.getLatLon(request, entry);
 			    location.latitude = ll[0];
 			    location.longitude = ll[1];
 			} else {
-			    if ( !theColumn.hasLatLonBox(entry)) {
+			    if ( !theColumn.hasLatLonBox(request,entry)) {
 				return;
 			    }
 			    double[] ll = theColumn.getLatLonBbox(request, entry);

@@ -159,15 +159,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         if (mainEntry == null) {
             return false;
         }
-        Object[] values = mainEntry.getValues();
-        if (values == null) {
-            return false;
-        }
-        double maxSize = 0;
-        if (values[COL_MAXSIZE] != null) {
-            maxSize = ((Double) values[COL_MAXSIZE]).doubleValue();
-        }
-
+        double maxSize = entry.getDoubleValue(request, COL_MAXSIZE,0);
         return entry.getResource().getFileSize() < 1000000 * maxSize;
     }
 
@@ -197,7 +189,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @return _more_
      */
-    public File getFileForEntry(Entry entry) {
+    public File getFileForEntry(Request request, Entry entry) {
         try {
             File  badFile = new File("badfile");
             Entry parent  = getMainEntry(entry.getId());
@@ -206,17 +198,8 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
                 return badFile;
             }
-            Object[] values = parent.getValues();
-            if (values == null) {
-                System.err.println("FtpTypeHandler: no values");
-
-                return badFile;
-            }
-            double maxSize = 0;
-            if (values[COL_MAXSIZE] != null) {
-                maxSize = ((Double) values[COL_MAXSIZE]).doubleValue();
-            }
-            String server = (String) values[COL_SERVER];
+	    double maxSize = parent.getDoubleValue(request, COL_MAXSIZE,0);
+            String server = parent.getStringValue(request, COL_SERVER,"");
             if (entry.getResource().getFileSize() > 1000000 * maxSize) {
                 //                System.err.println("FtpTypeHandler: Bad size "
                 //                                   + entry.getResource().getFileSize()+" " +
@@ -226,9 +209,8 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             FTPClient ftpClient = null;
             try {
                 String[] pair = getEntryManager().getSynthId(entry.getId());
-                MyFTPFile myFtpFile = getFileFromId(parent, pair[1],
-                                          (String) values[COL_BASEDIR]);
-                ftpClient = getFtpClient(parent);
+                MyFTPFile myFtpFile = getFileFromId(request,parent, pair[1],parent.getStringValue(request,COL_BASEDIR,""));
+                ftpClient = getFtpClient(request,parent);
                 if (ftpClient == null) {
                     System.err.println("no ftp client ");
 
@@ -241,7 +223,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                     path = path.substring(prefix.length());
                 }
                 String cacheFileName = java.net.URLEncoder.encode("ftp:"
-                                           + values[COL_SERVER] + ":"
+                                           + server + ":"
                                            + path, "UTF-8");
                 File cacheFile =
                     getStorageManager().getCacheFile(cacheFileName);
@@ -376,8 +358,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         long         t0      = System.currentTimeMillis();
         List<String> ids     = new ArrayList<String>();
 
-        Object[]     values  = mainEntry.getValues();
-        String       baseDir = (String) values[COL_BASEDIR];
+        String baseDir  = mainEntry.getStringValue(request, COL_BASEDIR,"");
         String       path    = getPathFromId(synthId, baseDir);
 
         /*        boolean descending = !request.get(ARG_ASCENDING, false);
@@ -388,7 +369,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             }*/
         long      t1        = System.currentTimeMillis();
 
-        FTPClient ftpClient = getFtpClient(mainEntry);
+        FTPClient ftpClient = getFtpClient(request,mainEntry);
         if (ftpClient == null) {
             return ids;
         }
@@ -396,8 +377,8 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         //        System.err.println ("getFtpClient:" + (t2-t1));
 
         try {
-            String pattern = (String) values[COL_FILE_PATTERN];
-            if ((pattern != null) && (pattern.trim().length() == 0)) {
+            String pattern = mainEntry.getStringValue(request, COL_FILE_PATTERN,null);
+            if (stringDefined(pattern)) {
                 pattern = null;
             }
             boolean isDir = ftpClient.changeWorkingDirectory(path);
@@ -521,26 +502,11 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private FTPClient getFtpClient(Entry parentEntry) throws Exception {
-        Object[] values = parentEntry.getValues();
-        if (values == null) {
-            return null;
-        }
-        String server   = (String) values[COL_SERVER];
-        String baseDir  = (String) values[COL_BASEDIR];
-        String user     = (String) values[COL_USER];
-        String password = (String) values[COL_PASSWORD];
+    private FTPClient getFtpClient(Request request,Entry parentEntry) throws Exception {
+	String server   = parentEntry.getStringValue(request,COL_SERVER,"");
+        String baseDir  = parentEntry.getStringValue(request,COL_BASEDIR,"");
+        String user     = parentEntry.getStringValue(request,COL_USER,"");
+        String password = parentEntry.getStringValue(request,COL_PASSWORD,"");
         if (password != null) {
             password =
                 getRepository().getPageHandler().processTemplate(password,
@@ -629,7 +595,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public MyFTPFile getFileFromId(Entry parentEntry, String id,
+    public MyFTPFile getFileFromId(Request request, Entry parentEntry, String id,
                                    String baseDir)
             throws Exception {
         String path;
@@ -647,7 +613,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             return new MyFTPFile(ftpFile, path);
         }
 
-        FTPClient ftpClient = getFtpClient(parentEntry);
+        FTPClient ftpClient = getFtpClient(request,parentEntry);
         if (ftpClient == null) {
             return null;
         }
@@ -717,13 +683,9 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
-        Object[] values = parentEntry.getValues();
-        if (values == null) {
-            return null;
-        }
-        String    baseDir   = (String) values[COL_BASEDIR];
-        String    server    = (String) values[COL_SERVER];
-        MyFTPFile myFtpFile = getFileFromId(parentEntry, id, baseDir);
+        String    baseDir   = parentEntry.getStringValue(request,COL_BASEDIR,"");
+        String    server    = parentEntry.getStringValue(request,COL_SERVER,"");
+        MyFTPFile myFtpFile = getFileFromId(request,parentEntry, id, baseDir);
         if (myFtpFile == null) {
             return null;
         }
@@ -764,32 +726,9 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-        double maxSize = 0;
-        if (values[COL_MAXSIZE] != null) {
-            maxSize = ((Double) values[COL_MAXSIZE]).doubleValue();
-        }
+        double maxSize = parentEntry.getDoubleValue(request,COL_MAXSIZE,0);
 
         long dttm = ftpFile.getTimestamp().getTime().getTime();
-        /*
-          String datePattern = (String)values[COL_DATE_PATTERN];
-          //TODO cache the compiled patterns
-          if(datePattern!=null && datePattern.length()>0)  {
-              Pattern p = Pattern.compile(datePattern);
-              Matcher m = p.matcher(path);
-              if(m.matches()) {
-                  String dateString = m.group(1);
-                  String dateFormat = (String)values[COL_DATE_FORMAT];
-                  Date date=null;
-                  if(dateFormat!=null && dateFormat.length()==0) {
-                       date = new SimpleDateFormat(dateFormat).parse(dateString);
-
-                  } else {
-                       date = Utils.parseDate(dateString);
-                  }
-                  dttm  = date.getTime();
-              }
-          }
-         */
         Resource resource;
         if (isDir) {
             resource = new Resource("ftp://" + server + myFtpFile.path,

@@ -1281,13 +1281,6 @@ public class TypeHandler extends RepositoryManager {
         getEntryValues(entry)[index] = value;
     }
 
-    public Object getEntryValue(Request request, Entry entry, int index) {
-        return getEntryValues(entry)[index];
-    }
-
-    public Object getEntryValue(Request request,Entry entry, String columnName) {
-        return null;
-    }
 
 
     /**
@@ -6109,9 +6102,9 @@ public class TypeHandler extends RepositoryManager {
     public String getDisplayAttribute(Request request,Entry entry, String attribute) {
         List<Column> columns = getColumns();
         if (columns != null) {
-            Object[] values = entry.getValues();
             for (Column column : columns) {
-                String s    = column.getString(request,values);
+                String s    = entry.getStringValue(request, column,null);
+		if(s==null) continue;
                 String attr = column.getDisplayAttribute(attribute, s);
                 if (attr != null) {
                     return attr;

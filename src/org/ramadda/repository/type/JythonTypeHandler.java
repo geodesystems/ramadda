@@ -133,7 +133,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
             throws Exception {
 
 
-        String       init     = (String) entry.getValues()[1];
+        String       init     =  entry.getStringValue(request, 1,"");
         StringBuffer sb       = new StringBuffer();
         FormInfo     formInfo = new FormInfo(this, entry, request, sb);
         boolean      makeForm = !request.exists(ARG_SUBMIT);
@@ -182,7 +182,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
 
 
-        String password = (String) entry.getValues()[0];
+        String password =  entry.getStringValue(request,0,"");
         if ((password != null) && (password.trim().length() > 0)) {
             if ( !Misc.equals(password.trim(),
                               request.getString(ARG_SCRIPT_PASSWORD,
@@ -221,8 +221,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                               PythonInterpreter interp, FormInfo formInfo)
             throws Exception {
 
-        String       password = (String) entry.getValues()[0];
-
+        String       password = entry.getStringValue(request, 0,"");
 
         StringBuffer formSB   = new StringBuffer();
         formSB.append(formInfo.prefix);
@@ -327,7 +326,7 @@ public class JythonTypeHandler extends GenericTypeHandler {
                 processInfo.variables.add(info.id);
             }
             try {
-                String exec = (String) entry.getValues()[2];
+                String exec = entry.getStringValue(request,2,"");
                 interp.exec(exec);
             } catch (Exception exc) {
                 return new Result(entry.getName(),

@@ -84,21 +84,17 @@ public class LocalFileInfo {
      */
     public LocalFileInfo(Repository repository, Entry entry)
             throws Exception {
-        Object[] values = entry.getValues();
-        if (values == null) {
-            return;
-        }
-
-	directoryType = (String) values[COL_DIRECTORY_TYPE];
+	Request request = repository.getAdminRequest();
+	directoryType = entry.getStringValue(request,COL_DIRECTORY_TYPE,"");
 	if(!Utils.stringDefined(directoryType)) directoryType=null;
 
-	datePatterns = (String) values[COL_DATE_PATTERNS];
+	datePatterns = entry.getStringValue(request,COL_DATE_PATTERNS,"");
 
-        names    = get(values, COL_NAMES);
-        includes = get(values, COL_INCLUDES);
-        excludes = get(values, COL_EXCLUDES);
-        ageLimit = ((Double) values[COL_AGE]).doubleValue();
-	String rootPath = (String) values[0];
+        names    = get(entry.getStringValue(request, COL_NAMES,null));
+        includes = get(entry.getStringValue(request, COL_INCLUDES,null));
+        excludes = get(entry.getStringValue(request, COL_EXCLUDES,null));
+        ageLimit = entry.getDoubleValue(request, COL_AGE,0);
+	String rootPath = entry.getStringValue(request,0,"");
 	if(!Utils.stringDefined(rootPath)) {
 	    return;
 	}
@@ -151,13 +147,6 @@ public class LocalFileInfo {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
     private void checkMe(Repository repository) throws Exception {
         if ( !rootDir.exists()) {
 	    return;
@@ -166,20 +155,12 @@ public class LocalFileInfo {
         repository.getStorageManager().checkLocalFile(rootDir);
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     * @param idx _more_
-     *
-     * @return _more_
-     */
-    public static List<String> get(Object[] values, int idx) {
-        if (values[idx] == null) {
+    public static List<String> get(String s) {
+        if (s == null) {
             return new ArrayList<String>();
         }
 
-        return (List<String>) Utils.split(values[idx], "\n", true, true);
+        return (List<String>) Utils.split(s, "\n", true, true);
     }
 
 
