@@ -369,7 +369,7 @@ public class CsvOutputHandler extends OutputHandler {
                                 sb.append(delimiter);
                             }
                             String s = sanitize(escape,
-                                           column.getString(values));
+						column.getString(request,values));
                             sb.append(s);
                             if (fixedWidth) {
                                 if (column.isString()) {
@@ -401,7 +401,7 @@ public class CsvOutputHandler extends OutputHandler {
                     Column column = columnMap.get(field);
                     if (column != null) {
                         String s = sanitize(escape,
-                                            column.getString(values));
+                                            column.getString(request,values));
                         sb.append(s);
                         if (fixedWidth) {
                             if (column.isString()) {

@@ -611,7 +611,7 @@ public abstract class ValueIterator implements DbConstants {
             XmlUtils.appendCdata(sb, info);
             sb.append(XmlUtil.closeTag(RssUtil.TAG_DESCRIPTION));
             if (dbInfo.getHasLocation()) {
-                double[] ll = db.getLocation(values);
+                double[] ll = db.getLocation(request,values);
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOLAT, "", "" + ll[0]));
                 sb.append(XmlUtil.tag(RssUtil.TAG_GEOLON, "", "" + ll[1]));
             }
@@ -1719,15 +1719,15 @@ public abstract class ValueIterator implements DbConstants {
             double     lon  = 0;
 
             if (theColumn == null) {
-                lat = dbInfo.getLatColumn().getDouble(values);
-                lon = dbInfo.getLonColumn().getDouble(values);
+                lat = dbInfo.getLatColumn().getDouble(request,values);
+                lon = dbInfo.getLonColumn().getDouble(request,values);
             } else {
                 if ( !bbox) {
-                    double[] ll = theColumn.getLatLon(values);
+                    double[] ll = theColumn.getLatLon(request,values);
                     lat = ll[0];
                     lon = ll[1];
                 } else {
-                    double[] ll = theColumn.getLatLonBbox(values);
+                    double[] ll = theColumn.getLatLonBbox(request,values);
                     //Lower right
                     lat = ll[2];
                     lon = ll[3];
@@ -1742,7 +1742,7 @@ public abstract class ValueIterator implements DbConstants {
             Element placemark = KmlUtil.placemark(folder, label,
                                     desc.toString(), lat, lon, 0, null);
             if (dbInfo.getDateColumn() != null) {
-                Date date = (Date) dbInfo.getDateColumn().getObject(values);
+                Date date = (Date) dbInfo.getDateColumn().getObject(request,values);
                 if (date != null) {
                     KmlUtil.timestamp(placemark, date);
                 }

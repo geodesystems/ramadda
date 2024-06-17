@@ -135,7 +135,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
      */
     public void setSortOrder(Request request, Entry entry, Entry parent)
             throws Exception {
-        Integer index = (Integer) getEntryValue(entry, INDEX_FIELD_INDEX);
+        Integer index = (Integer) entry.getValue(request,INDEX_FIELD_INDEX);
         int     idx   = ((index == null)
                          ? -1
                          : index.intValue());
@@ -145,7 +145,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
                                        parent, null);
             for (Entry sibling : siblings) {
                 if (sibling.getTypeHandler().isType(TYPE)) {
-                    int siblingIndex = ((Integer) getEntryValue(sibling,
+                    int siblingIndex = ((Integer) sibling.getValue(request,
                                            0)).intValue();
                     maxIndex = Math.max(maxIndex, siblingIndex);
                 }
@@ -165,8 +165,8 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
      *
      * @throws Exception _more_
      */
-    public Hashtable getProperties(Entry entry) throws Exception {
-        String s = (String) getEntryValue(entry, INDEX_PROPERTIES);
+    public Hashtable getProperties(Request request, Entry entry) throws Exception {
+        String s = (String) entry.getValue(request, INDEX_PROPERTIES);
         if (s == null) {
             s = "";
         }
@@ -198,7 +198,7 @@ public class MetametaFieldTypeHandler extends MetametaFieldTypeHandlerBase {
         String    id     = (String) values[INDEX_FIELD_ID];
         String    type   = (String) values[INDEX_DATATYPE];
         String    enums  = (String) values[INDEX_ENUMERATION_VALUES];
-        Hashtable props  = getProperties(entry);
+        Hashtable props  = getProperties(request,entry);
         int       size   = ((values[INDEX_DATABASE_COLUMN_SIZE] != null)
                             ? ((Integer) values[INDEX_DATABASE_COLUMN_SIZE])
                                 .intValue()

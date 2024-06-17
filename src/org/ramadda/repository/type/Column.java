@@ -819,7 +819,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public Object getObject(Object[] values) {
+    public Object getObject(Request request, Object[] values) {
         if (values == null) {
             return null;
         }
@@ -836,7 +836,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public String getString(Object[] values) {
+    public String getString(Request request,Object[] values) {
         if (values == null) {
             return null;
         }
@@ -856,14 +856,22 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public double getDouble(Object[] values) {
-        Object o = getObject(values);
+    public double getDouble(Request request, Object[] values) {
+        Object o = getValue(request, values);
+        if (o == null) {
+            return Double.NaN;
+        }
+        return ((Double) o).doubleValue();
+	
+    }
+
+    public double getDouble(Request request, Entry entry) {
+        Object o = getValue(request, entry);
         if (o == null) {
             return Double.NaN;
         }
         return ((Double) o).doubleValue();
     }
-
 
     
     public String toString(Object[] values) {
@@ -872,7 +880,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public String toString(Object[] values, int idx) {
+    private String toString(Object[] values, int idx) {
         if (values == null) {
             return ((dflt != null)
                     ? dflt
@@ -1217,7 +1225,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    sb.append(displaySuffix);
 	}
         String s = sb.toString();
-	s = typeHandler.applyMacros(entry,macros,values[offset],s);
+	s = typeHandler.applyMacros(request,entry,macros,values[offset],s);
         s = typeHandler.decorateValue(null, entry, this, s);
 	result.append(s);
     }
@@ -2337,7 +2345,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    return "";
 	} 
         if (isLatLon()) {
-            double[] latlon = getLatLon(values);
+            double[] latlon = getLatLon(request,entry);
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
@@ -2606,7 +2614,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public double[] getLatLonBbox(Object[] values) {
+    public double[] getLatLonBbox(Request request,Entry entry) {
+	Object[] values = entry.getValues();
+	return getLatLonBbox(request, values);
+    }
+
+    public double[] getLatLonBbox(Request request,Object[]values) {
         return new double[] { Utils.getDouble(values[offset]),
 			      Utils.getDouble(values[offset + 1]),
                               Utils.getDouble(values[offset + 2]),
@@ -2615,7 +2628,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
-    public double[] getLatLon(Object[] values) {
+
+    public double[] getLatLon(Request request,Entry entry) {
+	Object[] values = entry.getValues();
+	return getLatLon(request, values);
+    }
+
+    public double[] getLatLon(Request request,Object []values) {
 	double lat = Double.NaN;
 	double lon = Double.NaN;
 	if (values != null) {
@@ -2630,7 +2649,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public boolean hasLatLon(Object[] values) {
+    public boolean hasLatLon(Entry entry) {
+	Object[] values = entry.getValues();
         if ((values[offset] == null)
 	    || ((Double) values[offset]).doubleValue() == Entry.NONGEO) {
             return false;
@@ -2645,7 +2665,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public boolean hasLatLonBox(Object[] values) {
+    public boolean hasLatLonBox(Entry entry) {
+	Object[] values = entry.getValues();
         for (int i = 0; i < 4; i++) {
             if ((values[offset + i] == null)
 		|| ((Double) values[offset + i]).doubleValue()
@@ -3592,6 +3613,21 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
+    public Object getValue(Request request, Entry entry) {
+	Object[]values = entry.getValues();
+	return getValue(request, values);
+    }
+
+    public Object getValue(Request request, Object[]values) {
+	int index = getOffset();
+        if ((values == null) || (index >= values.length)
+	    || (values[index] == null)) {
+            return null;
+        }
+        return values[index];	
+    }
+
+
     public List<HtmlUtils.Selector> getValues() {
         return enumValues;
     }

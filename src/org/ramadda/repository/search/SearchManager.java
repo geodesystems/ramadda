@@ -629,11 +629,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		for (Column column : columns) {
 		    if (!column.getCanSearch()) continue;
 		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
-		    Object v= column.getObject(values);
+		    Object v= column.getObject(request,values);
 		    if(v==null) continue;
 		    //TODO handle latlonbox
 		    if(column.isLatLon()) {
-			double[] latlon = column.getLatLon(values);
+			double[] latlon = column.getLatLon(request,values);
 			doc.add(new DoublePoint(field+SUFFIX_LATITUDE, latlon[0]));
 			doc.add(new DoublePoint(field+SUFFIX_LONGITUDE, latlon[1]));
 		    } else   if(column.isDate()) {

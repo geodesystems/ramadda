@@ -1293,8 +1293,7 @@ public class MapInfo {
 
         String props = "null";
 
-        String fillColor = entry.getTypeHandler().getDisplayAttribute(entry,
-                               "mapFillColor");
+        String fillColor = entry.getTypeHandler().getDisplayAttribute(request,entry,    "mapFillColor");
         if (fillColor != null) {
             props = "{fillColor:'" + fillColor + "'";
             props += "}";
@@ -1309,16 +1308,6 @@ public class MapInfo {
                        + props + ");\n");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private int getValue(Entry entry, String prop, int dflt) {
         TypeHandler th = entry.getTypeHandler();
 
@@ -1327,15 +1316,6 @@ public class MapInfo {
             th.getTypeProperty(prop, dflt));
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private String getValue(Entry entry, String prop, String dflt) {
         TypeHandler th = entry.getTypeHandler();
 
@@ -1344,14 +1324,6 @@ public class MapInfo {
             th.getTypeProperty(prop, dflt));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public void addCircle(Request request, Entry entry,Hashtable props) throws Exception {
         double[]    location = entry.getCenter(request);
         TypeHandler th       = entry.getTypeHandler();
@@ -1366,32 +1338,10 @@ public class MapInfo {
                       true));
     }
 
-
-    /**
-     *
-     * @param id _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param radius _more_
-     */
     public void addCircle(String id, double lat, double lon, int radius) {
         addCircle(id, lat, lon, radius, 1, "#000", "blue", "");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param lat _more_
-     * @param lon _more_
-     * @param radius _more_
-     * @param strokeWidth _more_
-     * @param strokeColor _more_
-     * @param fillColor _more_
-     * @param info _more_
-     */
     public void addCircle(String id, double lat, double lon, int radius,
                           int strokeWidth, String strokeColor,
                           String fillColor, String info) {

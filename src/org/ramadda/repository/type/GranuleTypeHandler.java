@@ -155,7 +155,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
             CollectionTypeHandler th =
                 (CollectionTypeHandler) collection.getTypeHandler();
             LinkedHashMap enumMap = th.getColumnEnumTable(column);
-            String        s = column.toString(values, column.getOffset());
+            String        s = entry.getStringValue(request, column,"");
             String        label   = (String) enumMap.get(s);
             if (label != null) {
                 s = label;

@@ -286,21 +286,14 @@ public class GenericTypeHandler extends TypeHandler {
         return allColumns;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
-    public TwoFacedObject getCategory(Entry entry, String categoryType) {
+    public TwoFacedObject getCategory(Request request,Entry entry, String categoryType) {
 	Column column = findColumn(categoryType);
 	if(column==null) column = categoryColumn;
         if (column != null) {
             Object[] values = entry.getValues();
             if (values != null) {
-                String s = column.getString(values);
+                String s = column.getString(request,values);
                 if (s != null) {
                     String label = column.getEnumLabel(s);
                     return new TwoFacedObject(label, s);
@@ -308,7 +301,7 @@ public class GenericTypeHandler extends TypeHandler {
             }
         }
 
-        return super.getCategory(entry,categoryType);
+        return super.getCategory(request,entry,categoryType);
     }
 
     /**
@@ -391,7 +384,7 @@ public class GenericTypeHandler extends TypeHandler {
      * @return _more_
      */
     @Override
-    public Object getEntryValue(Entry entry, String columnName) {
+    public Object getEntryValue(Request request,Entry entry, String columnName) {
         Object[] values = getEntryValues(entry);
         if (values == null) {
             return null;
@@ -402,7 +395,7 @@ public class GenericTypeHandler extends TypeHandler {
         }
 
 
-        return column.getObject(values);
+        return column.getObject(request, values);
     }
 
 
@@ -1086,7 +1079,7 @@ public class GenericTypeHandler extends TypeHandler {
                         return null;
                     }
                     if (raw) {
-                        Object o = column.getObject(values);
+                        Object o = column.getObject(request, values);
                         if (o != null) {
                             return o.toString();
                         }
@@ -1205,7 +1198,7 @@ public class GenericTypeHandler extends TypeHandler {
 	if (column.getShowLabel()) {
 	    String label = tmpSb.toString();
 	    if(column.getCanSearch() && (column.isEnumeration()/*||column.isString()*/)&& values!=null) {
-		String s = column.getString(values);
+		String s = column.getString(request,values);
 		if(stringDefined(s)) {
 		    String searchUrl = getSearchManager().URL_SEARCH_TYPE + "/"
 			+ entry.getTypeHandler().getType();
@@ -1281,7 +1274,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (values != null) {
             for (Column column : getMyColumns()) {
                 StringBuilder tmpSb = new StringBuilder();
-                Object        o     = column.getObject(values);
+                Object        o     = column.getObject(request, values);
                 String        v     = "";
                 if (o != null) {
                     v = o.toString();

@@ -1972,7 +1972,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		typeHandler = entry.getTypeHandler();
 		columns     = typeHandler.getColumns();
 		String name = getEntryDisplayName(entry);
-		Object[] values = entry.getValues();	
 		EntryLink entryLink = showEntryDetails?getEntryManager().getAjaxLink(request, entry, name):null;
 		StringBuilder toggle = new StringBuilder();
 		//Limit to 3 ancestors
@@ -2033,10 +2032,7 @@ public class HtmlOutputHandler extends OutputHandler {
 			} else {
 			    Column column = typeHandler.getColumn(col);
 			    if(column!=null) {
-				String v = column.getString(values);
-				if (v == null) {
-				    v = "";
-				}
+				String v = entry.getStringValue(request, column,"");
 				String s = entry.getTypeHandler().decorateValue(request, entry, column, v);
 				if (column.isNumeric()) {
 				    HU.col(tableSB, s,HU.attr("align","right") +HU.attr("data-sort",v));
@@ -2099,10 +2095,7 @@ public class HtmlOutputHandler extends OutputHandler {
 				if (column.getCanList()
 				    && Utils.getProperty(props,
 							 "show" + column.getName(), showColumns)) {
-				    String s = column.getString(values);
-				    if (s == null) {
-					s = "";
-				    }
+				    String s = entry.getStringValue(request, column,"");
 				    s = entry.getTypeHandler().decorateValue(
 									     request, entry, column, s);
 				    if (column.isNumeric()) {

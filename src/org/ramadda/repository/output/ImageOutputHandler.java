@@ -2220,8 +2220,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (request.get("loopdelay", 0) > 0) {
             Utils.add(playerArgs,"delay", request.getString("loopdelay", "0"));
         } else {
-            Object v = mainEntry.getTypeHandler().getEntryValue(mainEntry,
-                           "delay");
+            Object v = mainEntry.getValue(request, "delay");
             if (v != null) {
                 int delay =  Integer.parseInt(v.toString());
                 if (delay > 0) {
@@ -2231,8 +2230,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
 	String autoPlay = null;
-	Object entryAutoPlay  = mainEntry.getTypeHandler().getEntryValue(mainEntry,
-							    "autostart");
+	Object entryAutoPlay  = mainEntry.getValue(request,  "autostart");
 	if (entryAutoPlay != null)  autoPlay = entryAutoPlay.toString();
 
 	String small = Utils.getProperty(props,"smallButtons",null);

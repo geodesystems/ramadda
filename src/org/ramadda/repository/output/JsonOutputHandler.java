@@ -304,7 +304,7 @@ public class JsonOutputHandler extends OutputHandler {
             }
         }
 	if(sort) {
-	    entries = EntryUtil.sortEntriesOnDate(entries, true);
+	    entries = getEntryUtil().sortEntriesOnDate(entries, true);
 	}
 	//	System.err.println("Json: sort:" + sort +" entries:" + entries);
         List<String> fields     = new ArrayList<String>();
@@ -358,23 +358,22 @@ public class JsonOutputHandler extends OutputHandler {
         List<Column> columns     = null;
         if (addAttributes && (entries.size() > 0)) {
             Entry    entry           = entries.get(0);
-            Object[] extraParameters = entry.getValues();
-            if (extraParameters != null) {
-                typeHandler = entry.getTypeHandler();
-                columns     = typeHandler.getColumnsForPointJson();
-                for (Column column : columns) {
-                    String columnName = column.getName();
-                    String type       = column.isDate()
-                                        ? "date"
-                                        : column.isNumeric()
-                                          ? "double"
-                                          : column.isBoolean()
-                                            ? "enumeration"
-                                            : column.isEnumeration()
-                            ? "enumeration"
-                            : "string";
-                    addPointHeader(fields, columnName, column.getLabel(),
-                                   type);
+	    TypeHandler otherTypeHandler = entry.getTypeHandler();
+	    columns     = otherTypeHandler.getColumnsForPointJson();
+	    if(columns!=null) {
+		for (Column column : columns) {
+		    String columnName = column.getName();
+		    String type       = column.isDate()
+			? "date"
+			: column.isNumeric()
+			? "double"
+			: column.isBoolean()
+			? "enumeration"
+			: column.isEnumeration()
+			? "enumeration"
+			: "string";
+		    addPointHeader(fields, columnName, column.getLabel(),
+				   type);
                 }
             }
         }
@@ -770,34 +769,30 @@ public class JsonOutputHandler extends OutputHandler {
             List<String> extraColumns    = new ArrayList<String>();
             List<String> columnNames     = new ArrayList<String>();
             List<String> columnLabels    = new ArrayList<String>();
-            Object[]     extraParameters = entry.getValues();
-            if (extraParameters != null) {
-                List<Column> columns = entry.getTypeHandler().getColumns();
-		if(columns!=null) {
-		    for (int i = 0; i < extraParameters.length && i< columns.size(); i++) {
-			Column column     = columns.get(i);
-			String columnName = column.getName();
-			Object v          = entry.getValue(request, column);
-			if (v == null) {
-			    v = "";
-			}
-			if (v instanceof Date) {
-			    v = formatDate((Date) v);
-			}
-			String value = v.toString();
-			columnNames.add(columnName);
-			columnLabels.add(column.getLabel());
-			//                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
-			extraColumns.add(JsonUtil.map(Utils.makeListFromValues(columnName,
-								     JsonUtil.quote(value))));
-			ids.add(columnName);
-			attrs.add(JsonUtil.map(Utils.makeListFromValues("id",
-							      JsonUtil.quote(columnName), "type",
-							      JsonUtil.quote("attribute"), "label",
-							      JsonUtil.quote(column.getLabel()), "value",
-							      JsonUtil.quote(value), "canshow",
-							      Boolean.toString(column.getCanShow()))));
+	    List<Column> columns = entry.getTypeHandler().getColumns();
+	    if(columns!=null) {
+		for(Column column:columns) {
+		    String columnName = column.getName();
+		    Object v          = entry.getValue(request, column);
+		    if (v == null) {
+			v = "";
 		    }
+		    if (v instanceof Date) {
+			v = formatDate((Date) v);
+		    }
+		    String value = v.toString();
+		    columnNames.add(columnName);
+		    columnLabels.add(column.getLabel());
+		    //                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
+		    extraColumns.add(JsonUtil.map(Utils.makeListFromValues(columnName,
+									   JsonUtil.quote(value))));
+		    ids.add(columnName);
+		    attrs.add(JsonUtil.map(Utils.makeListFromValues("id",
+								    JsonUtil.quote(columnName), "type",
+								    JsonUtil.quote("attribute"), "label",
+								    JsonUtil.quote(column.getLabel()), "value",
+								    JsonUtil.quote(value), "canshow",
+								    Boolean.toString(column.getCanShow()))));
 		}
             }
         }

@@ -315,11 +315,9 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                 "/org/ramadda/plugins/metameta/resources/TypeHandler.template");
         StringBuffer defines = new StringBuffer();
         StringBuffer methods = new StringBuffer();
-        String handlerClass = (String) getEntryValue(entry,
-                                  INDEX_HANDLER_CLASS);
-        String shortName = (String) getEntryValue(entry, INDEX_SHORT_NAME);
-        boolean isGroup = ((Boolean) getEntryValue(entry,
-                              INDEX_ISGROUP)).booleanValue();
+        String handlerClass = (String) entry.getValue(request,INDEX_HANDLER_CLASS);
+        String shortName = (String) entry.getValue(request, INDEX_SHORT_NAME);
+        boolean isGroup = ((Boolean) entry.getValue(request, INDEX_ISGROUP)).booleanValue();
         int    idx       = handlerClass.lastIndexOf('.');
         String pkg       = handlerClass.substring(0, idx);
         String className = handlerClass.substring(idx + 1) + "Base";
@@ -339,8 +337,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         for (Entry child : getChildrenEntries(request, entry)) {
             MetametaFieldTypeHandler field =
                 (MetametaFieldTypeHandler) child.getTypeHandler();
-            String fieldId = (String) field.getEntryValue(child,
-                                 field.INDEX_FIELD_ID);
+            String fieldId = (String) child.getValue(request,   field.INDEX_FIELD_ID);
             String FIELDID = fieldId.toUpperCase();
             defines.append("\tpublic static final int INDEX_" + FIELDID
                            + " = INDEX_BASE + " + cnt + ";\n");
@@ -375,7 +372,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      */
     public Result handleGeneratePoint(Request request, Entry entry)
             throws Exception {
-        Hashtable    props  = getProperties(entry, INDEX_PROPERTIES);
+        Hashtable    props  = getProperties(request,entry, INDEX_PROPERTIES);
         StringBuffer propSB = getPointProperties(request, entry);
         request.setReturnFilename(entry.getName() + ".properties");
 
@@ -395,27 +392,22 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
      */
     public StringBuffer getPointProperties(Request request, Entry entry)
             throws Exception {
-        Hashtable props = getProperties(entry, INDEX_PROPERTIES);
+        Hashtable props = getProperties(request,entry, INDEX_PROPERTIES);
         StringBuffer propSB = new StringBuffer("#\n#Generated from "
                                   + entry.getName() + " data dictionary\n");
         int          cnt    = 0;
         StringBuffer fields = new StringBuffer();
 
-        propSB.append(getEntryValue(entry, INDEX_PROPERTIES));
+        propSB.append(entry.getValue(request, INDEX_PROPERTIES));
         for (Entry child : getChildrenEntries(request, entry)) {
             MetametaFieldTypeHandler field =
                 (MetametaFieldTypeHandler) child.getTypeHandler();
-            String fieldId = (String) field.getEntryValue(child,
-                                 field.INDEX_FIELD_ID);
-            String dataType = (String) field.getEntryValue(child,
-                                  field.INDEX_DATATYPE);
+            String fieldId = (String) child.getValue(request,  field.INDEX_FIELD_ID);
+            String dataType = (String) child.getValue(request,  field.INDEX_DATATYPE);
+            String missing = (String) child.getValue(request, field.INDEX_MISSING);
+            String unit = (String) child.getValue(request, field.INDEX_UNIT);
 
-            String missing = (String) field.getEntryValue(child,
-                                 field.INDEX_MISSING);
-            String unit = (String) field.getEntryValue(child,
-                              field.INDEX_UNIT);
-
-            Hashtable fprops  = field.getProperties(child);
+            Hashtable fprops  = field.getProperties(request,child);
 
             String    FIELDID = fieldId.toUpperCase();
             if (cnt > 0) {
@@ -470,11 +462,10 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 	    xml.append("\n");
 	    xml.append("<!-- This is a generated plugin that defines a database.\nCopy it into the plugins directory in your RAMADDA home directory -->\n");
         }
-        String shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
-        String handlerClass = (String) getEntryValue(parent,
-                                  INDEX_HANDLER_CLASS);
+        String shortName = (String) parent.getValue(request, INDEX_SHORT_NAME);
+        String handlerClass = (String) parent.getValue(request, INDEX_HANDLER_CLASS);
 
-        Hashtable props = getProperties(parent, INDEX_PROPERTIES);
+        Hashtable props = getProperties(request,parent, INDEX_PROPERTIES);
         String    icon  = Misc.getProperty(props, "icon", "/db/tasks.gif");
         props.remove("icon");
 
@@ -502,14 +493,14 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
 
 
 	xml.append("\n");
-        String  wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
+        String  wikiText  = (String) parent.getValue(request, INDEX_WIKI_TEXT);
 	if(Utils.stringDefined(wikiText)) {
 	    xml.append("\n");
             xml.append(XmlUtil.tag("wiki", "", XmlUtil.getCdata(wikiText)));
             xml.append("\n");
 	}
 
-        String  basetype = (String) getEntryValue(parent,  INDEX_BASETYPE);
+        String  basetype = (String) parent.getValue(request,  INDEX_BASETYPE);
 	if(Utils.stringDefined(basetype)) {
 	    xml.append("<!-- The base type defined the columns and properties for the entry type -->\n");
 	    xml.append("<basetype>\n");
@@ -562,16 +553,13 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         boolean isPoint   = isPoint(request, parent);
 
 
-        String  shortName = (String) getEntryValue(parent, INDEX_SHORT_NAME);
-        String  superType = (String) getEntryValue(parent, INDEX_SUPER_TYPE);
-        String  wikiText  = (String) getEntryValue(parent, INDEX_WIKI_TEXT);
-        String handlerClass = (String) getEntryValue(parent,
-                                  INDEX_HANDLER_CLASS);
-        boolean isGroup = ((Boolean) getEntryValue(parent,
-                              INDEX_ISGROUP)).booleanValue();
-        String propertiesString = (String) getEntryValue(parent,
-                                      INDEX_PROPERTIES);
-        Hashtable props = getProperties(parent, INDEX_PROPERTIES);
+        String  shortName = (String) parent.getValue(request, INDEX_SHORT_NAME);
+        String  superType = (String) parent.getValue(request, INDEX_SUPER_TYPE);
+        String  wikiText  = (String) parent.getValue(request, INDEX_WIKI_TEXT);
+        String handlerClass = (String) parent.getValue(request,INDEX_HANDLER_CLASS);
+        boolean isGroup = ((Boolean) parent.getValue(request,  INDEX_ISGROUP)).booleanValue();
+        String propertiesString = (String) parent.getValue(request,     INDEX_PROPERTIES);
+        Hashtable props = getProperties(request,parent, INDEX_PROPERTIES);
         if ( !Utils.stringDefined(shortName)) {
             shortName = parent.getName();
         }
@@ -666,7 +654,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         if (entry == null) {
             return false;
         }
-        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
+        String type = (String) entry.getValue(request, INDEX_DICTIONARY_TYPE);
 
         return Misc.equals(type, "datafile");
     }
@@ -685,8 +673,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         if (entry == null) {
             return false;
         }
-        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
-
+        String type = (String) entry.getValue(request, INDEX_DICTIONARY_TYPE);
         return Misc.equals(type, "database");
     }
 
@@ -704,7 +691,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         if (entry == null) {
             return false;
         }
-        String type = (String) getEntryValue(entry, INDEX_DICTIONARY_TYPE);
+        String type = (String) entry.getValue(request, INDEX_DICTIONARY_TYPE);
 
         return Misc.equals(type, "entry");
     }
@@ -758,12 +745,9 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         super.addEntryButtons(request, entry, buttons);
 
         try {
-            String handlerClass = (String) getEntryValue(entry,
-                                      INDEX_HANDLER_CLASS);
-            String shortName = (String) getEntryValue(entry,
-                                   INDEX_SHORT_NAME);
-            String type = (String) getEntryValue(entry,
-                              INDEX_DICTIONARY_TYPE);
+            String handlerClass = (String) entry.getValue(request,  INDEX_HANDLER_CLASS);
+            String shortName = (String) entry.getValue(request,  INDEX_SHORT_NAME);
+            String type = (String) entry.getValue(request,  INDEX_DICTIONARY_TYPE);
             boolean isPoint    = isPoint(request, entry);
             boolean isEntry    = isEntry(request, entry);
             boolean isDatabase = isDatabase(request, entry);

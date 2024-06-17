@@ -211,7 +211,7 @@ public class BeforeAfterBase extends GenericTypeHandler {
             }
             entriesToUse.add(child);
         }
-        entriesToUse = EntryUtil.sortEntriesOn(entriesToUse,
+        entriesToUse = getEntryUtil().sortEntriesOn(entriesToUse,
                 "entryorder,createdate", false);
 
         return entriesToUse;

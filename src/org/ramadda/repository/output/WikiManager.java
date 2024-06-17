@@ -1479,9 +1479,8 @@ public class WikiManager extends RepositoryManager
 	    if(columns!=null) {
 		for (Column column : columns) {
 		    if(column.isType(DataTypes.DATATYPE_URL) && column.getName().equals(s)) {
-			Object[] values = entry.getValues();
-			String url    = column.getString(values);
-			if(url!=null && url.length()>0) {
+			String url    = entry.getStringValue(request, column,null);
+			if(stringDefined(url)) {
 			    return getWikiImage(wikiUtil, request, url, entry, props);
 			}
 		    }
@@ -3239,7 +3238,7 @@ public class WikiManager extends RepositoryManager
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
-	    checkProperties(entry,props);
+	    checkProperties(request,entry,props);
             for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
                 String key   = (String) keys.nextElement();
                 Object value =  props.get(key);
@@ -3565,7 +3564,7 @@ public class WikiManager extends RepositoryManager
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GROUP)
                    || theTag.equals(WIKI_TAG_GROUP_OLD)) {
-	    checkProperties(entry,props);
+	    checkProperties(request,entry,props);
             getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), null, sb, props, null);
 
@@ -5226,11 +5225,7 @@ public class WikiManager extends RepositoryManager
 		} else {
 		    Column column = child.getTypeHandler().getColumn(macro.getId());
 		    if(column!=null) {
-			Object[] values = child.getValues();
-			v = column.getString(values);
-			if (v == null) {
-			    v = "";
-			}
+			v = child.getStringValue(request, column,"");
 			if(macro.getProperty("justIcon",false)) {
 			    v = column.getIcon(v);
 			} else {
@@ -5822,7 +5817,7 @@ public class WikiManager extends RepositoryManager
                                 Entry entry, Entry originalEntry,
                                 String theTag, Hashtable props, Appendable sb)
 	throws Exception {
-	checkProperties(entry,props);
+	checkProperties(request,entry,props);
 
         boolean hideIfNoLocations = getProperty(wikiUtil, props, "hideIfNoLocations",false);
         String  width      = getProperty(wikiUtil, props, ATTR_WIDTH, "");
@@ -9086,7 +9081,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    private void checkProperties(Entry entry, Hashtable props) {
+    private void checkProperties(Request request, Entry entry, Hashtable props) {
 	for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
 	    Object key   = keys.nextElement();
 	    Object value = props.get(key);
@@ -9097,7 +9092,7 @@ public class WikiManager extends RepositoryManager
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if(columns!=null) {
 		    for (Column column : columns) {
-			Object v = column.getObject(entry.getValues());
+			Object v = entry.getValue(request, column);
 			if(v!=null) {
 			    svalue = svalue.replace("${property:" + column.getName()+"}", v.toString());
 			    change=true;
@@ -9146,7 +9141,7 @@ public class WikiManager extends RepositoryManager
                                  Hashtable props, List<String> propList)
 	throws Exception {
 
-	checkProperties(entry,props);
+	checkProperties(request,entry,props);
         String displayType = getProperty(wikiUtil, props, "type",   "linechart");
 
         boolean isNotebook =   displayType.equals("notebook");	

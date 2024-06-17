@@ -757,7 +757,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                               Object[] values)
             throws Exception {
         if ((entry != null) && column.getName().equals("localfilepath")) {
-            String path  = column.getString(values);
+            String path  = column.getString(request,values);
             String error = null;
             if (Utils.stringDefined(path)) {
                 File f = new File(path);

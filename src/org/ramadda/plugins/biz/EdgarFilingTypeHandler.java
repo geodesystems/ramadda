@@ -113,8 +113,7 @@ public class EdgarFilingTypeHandler extends GenericTypeHandler {
         }
 
         String companyName =
-            (String) entry.getTypeHandler().getEntryValue(entry,
-                "company_name");
+            (String) entry.getValue(request,  "company_name");
         if (companyName != null) {
             entry.setName(companyName + "-" + entry.getName());
         }

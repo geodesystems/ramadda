@@ -163,7 +163,7 @@ public class EntryUtil extends RepositoryManager {
     /*
       the metadata needs to be the sort order metadata
      */
-    public static List<Entry> sortEntriesOnMetadata(List<Entry> entries,Metadata metadata) {
+    public List<Entry> sortEntriesOnMetadata(List<Entry> entries,Metadata metadata) {
 	String by = metadata.getAttr1();
 	boolean descending=!metadata.getAttr2().equals("true");
 	return 	sortEntriesOn(entries,by, descending);
@@ -178,7 +178,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnName(List<Entry> entries,
+    public  List<Entry> sortEntriesOnName(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -213,7 +213,7 @@ public class EntryUtil extends RepositoryManager {
      * @param descending _more_
       * @return _more_
      */
-    public static List<Entry> sortEntriesOnNumber(List<Entry> entries,
+    public  List<Entry> sortEntriesOnNumber(List<Entry> entries,
             final boolean descending) {
         List tmp = new ArrayList();
         for (Entry entry : entries) {
@@ -448,7 +448,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnPattern(List<Entry> entries,
+    public  List<Entry> sortEntriesOnPattern(List<Entry> entries,
             final boolean descending, String p) {
         p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
         final Pattern pattern = Pattern.compile(p);
@@ -527,7 +527,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> doGroupAndNameSort(List<Entry> entries,
+    public  List<Entry> doGroupAndNameSort(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -570,7 +570,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnDate(List<Entry> entries,
+    public List<Entry> sortEntriesOnDate(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -608,7 +608,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
+    public  List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -646,7 +646,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
+    public  List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -683,7 +683,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
+    public  List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -768,11 +768,11 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    private static int compareEntries(Entry e1, Entry e2, CompareOn on) {
+    private  int compareEntries(Request request,Entry e1, Entry e2, CompareOn on) {
 	if(on.column!=null) {
 	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
-		Object v1 = on.column.getObject(e1.getValues());
-		Object v2 = on.column.getObject(e2.getValues());	    
+		Object v1 = on.column.getObject(request,e1.getValues());
+		Object v2 = on.column.getObject(request,e2.getValues());	    
 		if(on.column.isDate()) {
 		    return compare((Date)v1,(Date)v2);
 		}
@@ -833,31 +833,13 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param ons _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public static List<Entry> sortEntriesOn(List<Entry> entries, String ons,
+    public  List<Entry> sortEntriesOn(List<Entry> entries, String ons,
                                             boolean descending) {
         return sortEntriesOn(entries, Utils.split(ons, ",", true, true),
                              descending);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param ons _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
-    public static List<Entry> sortEntriesOn(List<Entry> entries,
+    public  List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
@@ -865,7 +847,7 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
-    private static List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries){
+    private List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries){
 	List<CompareOn> compareOns = new ArrayList<CompareOn>();
 	for(String on: ons) {
 	    Column column=null;
@@ -879,18 +861,19 @@ public class EntryUtil extends RepositoryManager {
 	return compareOns;
     }
 
-    private static List<Entry> sortEntriesCompareOn(List<Entry> entries,
+    private  List<Entry> sortEntriesCompareOn(List<Entry> entries,
 						    final List<CompareOn> ons,
 						    final boolean descending) {
 	
 
 
+	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
                 Entry e2 = (Entry) o2;
                 for (CompareOn on : ons) {
-                    int result = compareEntries(e1, e2, on);
+                    int result = compareEntries(request,e1, e2, on);
                     if (result != 0) {
                         if (descending) {
                             return -result;
@@ -925,7 +908,7 @@ public class EntryUtil extends RepositoryManager {
      *
      * @return _more_
      */
-    public static List<Entry> sortEntries(List<Entry> entries, String sorts,
+    public  List<Entry> sortEntries(List<Entry> entries, String sorts,
                                           final boolean descending) {
         if (sorts.startsWith("number:")) {
             return sortEntriesOnPattern(entries, descending,
@@ -954,19 +937,10 @@ public class EntryUtil extends RepositoryManager {
         return -1;
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     * @param type _more_
-     * @param sortOrderFieldIndex _more_
-     *
-     * @return _more_
-     */
-    public static List<Entry> sortEntriesOnField(List<Entry> entries,
+    public  List<Entry> sortEntriesOnField(List<Entry> entries,
             final boolean descending, final String type,
             final int sortOrderFieldIndex) {
+	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry   e1 = (Entry) o1;
@@ -976,11 +950,9 @@ public class EntryUtil extends RepositoryManager {
                 boolean isType2 = e2.getTypeHandler().isType(type);
                 if (isType1 && isType2) {
                     Integer i1 =
-                        (Integer) e1.getTypeHandler().getEntryValue(e1,
-                            sortOrderFieldIndex);
+                        (Integer) e1.getValue(request, sortOrderFieldIndex);
                     Integer i2 =
-                        (Integer) e2.getTypeHandler().getEntryValue(e2,
-                            sortOrderFieldIndex);
+                        (Integer) e2.getValue(request,  sortOrderFieldIndex);
                     if ((i1 < 0) && (i2 >= 0)) {
                         result = 1;
                     } else if ((i2 < 0) && (i1 >= 0)) {

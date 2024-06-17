@@ -24,7 +24,6 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.util.Misc;
 
-
 import java.awt.geom.Rectangle2D;
 
 import java.io.File;
@@ -893,31 +892,7 @@ public class Entry implements Cloneable {
         return newValues;
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     */
-    public Object getValue(Request request, int index) {
-        if ((values == null) || (index >= values.length)
-	    || (values[index] == null)) {
-            return null;
-        }
 
-        return values[index];
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public int getColumnIndex(String name) {
         if (name == null) {
             return -1;
@@ -931,9 +906,34 @@ public class Entry implements Cloneable {
         return c.getOffset();
     }
 
+
+    public Object getValue(Request request,Column column,boolean useDefault) {
+	if(column == null) {
+	    return null;
+	}
+	Object value = column.getValue(request, this);
+	if(value==null && useDefault)
+	    value = column.getDflt();
+	return value;
+    }
+
+
+    public Object getValue(Request request,Column column) {
+	return getValue(request, column, false);
+    }
+
+    public Object getValue(Request request, int index) {
+	return getValue(request, getTypeHandler().findColumn(index));
+    }
+
+    public Object getValue(Request request, String col,boolean useDefault) {
+	return getValue(request, getTypeHandler().findColumn(col), useDefault);
+    }    
+
     public Object getValue(Request request,String col) {
 	return getValue(request,col,false);
     }
+
 
     public Object getValue(Request request,String col,Object dflt) {
 	Object o =  getValue(request,col,false);
@@ -941,37 +941,15 @@ public class Entry implements Cloneable {
 	return o;
     }
 
-    
-    private Object getValue(String col,boolean useDefault) {
-	return getValue(null, getTypeHandler().findColumn(col), useDefault);
-    }
-
-
-    public Object getValue(Request request, String col,boolean useDefault) {
-	return getValue(request, getTypeHandler().findColumn(col), useDefault);
-    }    
-
-    public Object getValue(Request request,Column column) {
-	return getValue(request, column, false);
-    }
-
-
-    public Object getValue(Request request,Column column,boolean useDefault) {
-	if(column == null) {
-	    return null;
-	}
-        Object  value = getValue(request, column.getOffset());
-	if(value==null && useDefault)
-	    value = column.getDflt();
-	return value;
+    public String getStringValue(Request request,Column col,String dflt) {
+        Object  value = getValue(request, col);
+	if(value==null) return dflt;
+	return value.toString();
+	
     }
 
     public String getStringValue(Request request,String col,String dflt) {
-	Column column = getTypeHandler().findColumn(col);
-	if(column == null) {
-	    return dflt;
-	}
-        Object  value = getValue(request, column);
+        Object  value = getValue(request, col);
 	if(value==null) return dflt;
 	return value.toString();
     }
@@ -987,12 +965,9 @@ public class Entry implements Cloneable {
      * @return  a String representation of the indexed value
      */
     public String getStringValue(Request request,int index, String dflt) {
-        if ((values == null) || (index < 0) || (index >= values.length)
-	    || (values[index] == null)) {
-            return dflt;
-        }
-
-        return values[index].toString();
+	Object value = getValue(request, index);
+	if(value==null) return dflt;
+        return value.toString();
     }
 
     /**

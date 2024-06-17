@@ -794,7 +794,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	for(String[]tuple: geojsonUrls) {
 	    String  geojson = tuple[0];
 	    if(!stringDefined(geojson)) continue;
-	    geojson = entry.getTypeHandler().applyTemplate(entry, geojson, true);
+	    geojson = entry.getTypeHandler().applyTemplate(request,entry, geojson, true);
 	    //Check for any macros not added
 	    if(geojson.indexOf("${")<0)  {
 		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, tuple[1]);
@@ -1474,7 +1474,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    if(urls!=null) {
 		for(String geojson: urls) {
 		    if(!stringDefined(geojson)) continue;
-		    geojson = mainEntry.getTypeHandler().applyTemplate(mainEntry, geojson, true);
+		    geojson = mainEntry.getTypeHandler().applyTemplate(request,mainEntry, geojson, true);
 		    //Check for any macros not added
 		    if(geojson.indexOf("${")<0)  {
 			map.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, "");
@@ -1646,7 +1646,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 if (Misc.equals(categoryType, "parent")) {
                     category = getEntryDisplayName(entry.getParentEntry());
 		}  else {
-                    category = entry.getTypeHandler().getCategory(entry,categoryType).getLabel().toString();
+                    category = entry.getTypeHandler().getCategory(request,entry,categoryType).getLabel().toString();
                 }
             }
 

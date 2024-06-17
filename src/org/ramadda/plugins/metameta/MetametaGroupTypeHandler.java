@@ -56,21 +56,8 @@ public abstract class MetametaGroupTypeHandler extends OrderedGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
-    public Hashtable getProperties(Entry entry, int index) throws Exception {
-        String s = (String) getEntryValue(entry, index);
-        if (s == null) {
-            s = "";
-        }
+    public Hashtable getProperties(Request request,Entry entry, int index) throws Exception {
+        String s =  entry.getStringValue(request,index,"");
         Properties props = new Properties();
         props.load(new ByteArrayInputStream(s.getBytes()));
         Hashtable table = new Hashtable();
@@ -128,11 +115,8 @@ public abstract class MetametaGroupTypeHandler extends OrderedGroupTypeHandler {
         }
         MetametaFieldTypeHandler field =
             (MetametaFieldTypeHandler) entry.getTypeHandler();
-        String fieldId = (String) field.getEntryValue(entry,
-                             field.INDEX_FIELD_ID);
-
-        String datatype = (String) field.getEntryValue(entry,
-                              field.INDEX_DATATYPE);
+        String fieldId =  entry.getStringValue(request, field.INDEX_FIELD_ID,"");
+        String datatype = entry.getStringValue(request, field.INDEX_DATATYPE,"");
 
         sb.append(
             "<table cellpadding=0 cellspacing=0 border=0 style=\"min-width:600px;\" width=100%><tr valign=top>");

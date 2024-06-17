@@ -205,7 +205,7 @@ public class KmlOutputHandler extends OutputHandler {
 
 
         for (Entry entry : children) {
-            String category = entry.getTypeHandler().getCategory(
+            String category = entry.getTypeHandler().getCategory(request,
 								 entry,"type").getLabel().toString();
             Element parentFolder = defaultFolder;
 

@@ -1059,7 +1059,7 @@ public class Service extends RepositoryManager {
 
         String cmd          = getCommand();
         if (Utils.stringDefined(cmd)) {
-            cmd = applyMacros(currentEntry, entryMap, valueMap, workDir, cmd,
+            cmd = applyMacros(request,currentEntry, entryMap, valueMap, workDir, cmd,
                               input.getForDisplay(), null);
             commands.add(cmd);
         }
@@ -1109,7 +1109,7 @@ public class Service extends RepositoryManager {
                 }
             } else if (arg.isFile()) {
                 //TODO:
-                //                String filename = applyMacros(currentEntry, valueMap, entryMap, workDir,
+                //                String filename = applyMacros(request,currentEntry, valueMap, entryMap, workDir,
                 //arg.getFileName(), input.getForDisplay(), arg.getMap());
                 //argValue = IOUtil.joinDir(workDir, filename);
             } else if (arg.isEntry()) {
@@ -1200,7 +1200,7 @@ public class Service extends RepositoryManager {
 
                     if (arg.getFile() != null) {
                         //                            System.err.println ("file:" + arg.getFile() + " " + arg.filePattern);
-                        String fileName = applyMacros(currentEntry, entryMap,
+                        String fileName = applyMacros(request,currentEntry, entryMap,
                                               valueMap, workDir,
                                               arg.getFile(),
                                               input.getForDisplay(),
@@ -1221,7 +1221,7 @@ public class Service extends RepositoryManager {
                         }
 
                         if (arg.getFilePattern() != null) {
-                            String basePattern = applyMacros(currentEntry,
+                            String basePattern = applyMacros(request,currentEntry,
                                                      entryMap, valueMap,
                                                      workDir,
                                                      arg.getFilePattern(),
@@ -1262,7 +1262,7 @@ public class Service extends RepositoryManager {
                         value = value.replace("${value}", originalValue);
                         //                            System.err.println("new value:" + value);
 		    }
-                    value = applyMacros(currentEntry, entryMap, valueMap,
+                    value = applyMacros(request,currentEntry, entryMap, valueMap,
                                         workDir, value,
                                         input.getForDisplay(), arg.getMap());
                     valueMap.put(arg.getName(), value);
@@ -2541,7 +2541,7 @@ public class Service extends RepositoryManager {
             File[] files = null;
             if (output.getUseStdout()) {
                 setResultsFromStdout = false;
-                String filename = applyMacros(currentEntry, null, valueMap,
+                String filename = applyMacros(request,currentEntry, null, valueMap,
                                       input.getProcessDir(),
                                       output.getFilename(),
                                       input.getForDisplay(), output.getMap());
@@ -2550,7 +2550,7 @@ public class Service extends RepositoryManager {
                 IOUtil.moveFile(stdoutFile, destFile);
                 files = new File[] { destFile };
             }
-            final String thePattern = applyMacros(currentEntry, null, null,
+            final String thePattern = applyMacros(request,currentEntry, null, null,
                                           input.getProcessDir(),
                                           output.getPattern(),
                                           input.getForDisplay(),
@@ -2763,7 +2763,7 @@ public class Service extends RepositoryManager {
      *
      * @return _more_
      */
-    public String applyMacros(Entry entry,
+    public String applyMacros(Request request,Entry entry,
                               Hashtable<String, List<Entry>> entryMap,
                               Hashtable<String, String> valuesSoFar,
                               File workDir, String value, boolean forDisplay,
@@ -2791,7 +2791,7 @@ public class Service extends RepositoryManager {
                     entryMap.keys(); keys.hasMoreElements(); ) {
                 String id = (String) keys.nextElement();
                 for (Entry otherEntry : entryMap.get(id)) {
-                    value = applyMacros(otherEntry, id, value, forDisplay);
+                    value = applyMacros(request, otherEntry, id, value, forDisplay);
                 }
             }
         }
@@ -2809,7 +2809,7 @@ public class Service extends RepositoryManager {
 
         //        System.err.println("Apply macros:" +entry);
         if (entry != null) {
-            value = applyMacros(entry, "entry", value, forDisplay);
+            value = applyMacros(request,entry, "entry", value, forDisplay);
         }
 
         return value;
@@ -2826,14 +2826,13 @@ public class Service extends RepositoryManager {
      *
      * @return _more_
      */
-    private String applyMacros(Entry entry, String id, String value,
+    private String applyMacros(Request request, Entry entry, String id, String value,
                                boolean forDisplay) throws Exception {
         List<Column> columns = entry.getTypeHandler().getColumns();
         if (columns != null) {
             for (Column column : columns) {
                 Object columnValue =
-                    entry.getTypeHandler().getEntryValue(entry,
-                        column.getName());
+                    entry.getValue(request,  column.getName());
                 if (columnValue != null) {
                     value = value.replace("${" + id + ".attr."
                                           + column.getName() + "}", ""

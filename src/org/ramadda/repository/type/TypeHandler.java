@@ -967,7 +967,7 @@ public class TypeHandler extends RepositoryManager {
         if (columns != null) {
             for (Column column : columns) {
                 if (column.isMediaUrl()) {
-                    String url = column.getString(entry.getValues());
+                    String url = entry.getStringValue(request, column,null);
                     if (Utils.stringDefined(url)) {
                         return url;
                     }
@@ -1277,40 +1277,15 @@ public class TypeHandler extends RepositoryManager {
         return -1;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param index _more_
-     * @param value _more_
-     */
     public void setEntryValue(Entry entry, int index, Object value) {
         getEntryValues(entry)[index] = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param index _more_
-     *
-     * @return _more_
-     */
-    public Object getEntryValue(Entry entry, int index) {
+    public Object getEntryValue(Request request, Entry entry, int index) {
         return getEntryValues(entry)[index];
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param columnName _more_
-     *
-     * @return _more_
-     */
-    public Object getEntryValue(Entry entry, String columnName) {
+    public Object getEntryValue(Request request,Entry entry, String columnName) {
         return null;
     }
 
@@ -1481,7 +1456,7 @@ public class TypeHandler extends RepositoryManager {
 	if (columns != null) {
 	    for(Column column: columns) {
 		if(!column.isLatLon()) continue;
-		double[] latlon = column.getLatLon(entry.getValues());
+		double[] latlon = column.getLatLon(request,entry);
 		if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
 		    if(bounds==null)
 			bounds = new Rectangle2D.Double();
@@ -1516,7 +1491,7 @@ public class TypeHandler extends RepositoryManager {
 	boolean didOne=false;
 	for(Column column: columns) {
 	    if(column.isLatLon()) {
-		double[] latlon = column.getLatLon(entry.getValues());
+		double[] latlon = column.getLatLon(request,entry);
 		if(!Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1])) {
 		    String icon  = getTypeProperty("column.icon",getTypeProperty(column.getName()+".column.icon",null));
 		    String info  = getMapManager().encodeText(getMapManager().makeInfoBubble(request,entry,column.getLabel(),"<hr class=ramadda-hr>"));
@@ -1841,7 +1816,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public String applyMacros(Entry entry, List<Utils.Macro> macros,Object value,String s) {
+    public String applyMacros(Request request, Entry entry, List<Utils.Macro> macros,Object value,String s) {
 	if(macros==null) return s;
 	StringBuilder tmp = new StringBuilder();
 	for(Utils.Macro macro: macros) {
@@ -1870,7 +1845,7 @@ public class TypeHandler extends RepositoryManager {
 				else if(otherColumn.equals("createdate")) 
 				    startDate  = new Date(entry.getCreateDate());
 				else
-				    startDate = (Date) otherColumn.getObject(entry.getValues());
+				    startDate = (Date) entry.getValue(request,otherColumn);
 			    } else {
 				return "Could not find other column:" + otherColumn;
 			    }
@@ -2958,6 +2933,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public void initEntry(Entry entry) {
+	Request request=getAdminRequest();
 	if(nameTemplate!=null) {
             Object[] values    = getEntryValues(entry);
 	    String name =nameTemplate;
@@ -2966,7 +2942,7 @@ public class TypeHandler extends RepositoryManager {
 		return;
 	    }
 	    for(Column column: columns) {
-		String value = column.getString(values);
+		String value = column.getString(request,values);
 		if(value==null) value="";
 		name= name.replace("${" + column.getName()+"}",value);
 	    }
@@ -4994,7 +4970,7 @@ public class TypeHandler extends RepositoryManager {
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
 	throws Exception {
-        boolean hasValue = column.getString(values) != null;
+        boolean hasValue = column.getString(request,values) != null;
         if ( !column.getShowInForm()) {
             return;
         }
@@ -6041,16 +6017,15 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
-    public String applyTemplate(Entry entry, String template) throws Exception {
-	return applyTemplate(entry, template, false);
+    public String applyTemplate(Request request,Entry entry, String template) throws Exception {
+	return applyTemplate(request,entry, template, false);
     }	
 
-    public String applyTemplate(Entry entry, String template,boolean includeMetadata) throws Exception {		    
+    public String applyTemplate(Request request, Entry entry, String template,boolean includeMetadata) throws Exception {		    
 	List<Column> columns =getColumns();
 	if (columns != null) {
-            Object[] templateValues = entry.getValues();
 	    for (Column column : columns) {
-		String s = column.getString(templateValues);
+		String s = entry.getStringValue(request, column,null);
 		if (s != null) {
 		    template = template.replace("${"
 						+ column.getName() + "}", s);
@@ -6131,20 +6106,12 @@ public class TypeHandler extends RepositoryManager {
 	return entry.getName();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param attribute _more_
-     *
-     * @return _more_
-     */
-    public String getDisplayAttribute(Entry entry, String attribute) {
+    public String getDisplayAttribute(Request request,Entry entry, String attribute) {
         List<Column> columns = getColumns();
         if (columns != null) {
             Object[] values = entry.getValues();
             for (Column column : columns) {
-                String s    = column.getString(values);
+                String s    = column.getString(request,values);
                 String attr = column.getDisplayAttribute(attribute, s);
                 if (attr != null) {
                     return attr;
@@ -7786,27 +7753,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public TwoFacedObject getCategory(Entry entry,String categoryType) {
+    public TwoFacedObject getCategory(Request request,Entry entry,String categoryType) {
         return new TwoFacedObject(description, this.type);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public String getMapInfoBubble(Request request, Entry entry)
 	throws Exception {
         return getBubbleTemplate(request, entry);
@@ -7966,7 +7917,7 @@ public class TypeHandler extends RepositoryManager {
 								 props.get("timezone"), "UTC")).format(dttm);
 	    }
 	    if(startDateMacros!=null) {
-		s = applyMacros(entry, startDateMacros,dttm,s);
+		s = applyMacros(request,entry, startDateMacros,dttm,s);
 	    }
 	    return s;
         }
@@ -7981,7 +7932,7 @@ public class TypeHandler extends RepositoryManager {
 				       (String) Utils.getNonNull(props.get("timezone"), "UTC")).format(dttm);
 	    }
 	    if(endDateMacros!=null) {
-		s = applyMacros(entry, endDateMacros,dttm,s);
+		s = applyMacros(request,entry, endDateMacros,dttm,s);
 	    }
 	    return s;
         }

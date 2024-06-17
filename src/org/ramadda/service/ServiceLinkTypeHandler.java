@@ -113,7 +113,7 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
 
         formBuffer.append(HtmlUtils.formEntry(msgLabel("Service"),
                 HtmlUtils.select(column.getEditArg(), items,
-                                 column.getString(values))));
+                                 column.getString(request,values))));
     }
 
     /**

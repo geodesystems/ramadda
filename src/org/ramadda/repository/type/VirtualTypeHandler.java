@@ -65,20 +65,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         cachedIds.clearCache();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param column _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addColumnToEntryForm(Request request, Column column,
                                      Appendable formBuffer, Entry parentEntry,Entry entry,
@@ -90,7 +76,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         if (column.getOffset() == 0) {
             String value = "";
             if (values != null) {
-                value = column.toString(values, column.getOffset());
+                value = column.toString(values);
             }
             String urlArg     = column.getEditArg();
             String textAreaId = HU.getUniqueId("input_");

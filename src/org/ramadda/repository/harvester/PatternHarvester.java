@@ -1755,7 +1755,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 desc = templateEntry.getDescription();
             }
             groupName =
-                templateEntry.getTypeHandler().applyTemplate(templateEntry,
+                templateEntry.getTypeHandler().applyTemplate(request,templateEntry,
 							     groupName);
         }
 

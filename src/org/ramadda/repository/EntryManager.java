@@ -1558,7 +1558,7 @@ public class EntryManager extends RepositoryManager {
 	}
 	
 	if(request.getString(ARG_ORDERBY,"").equals(ORDERBY_NUMBER)) {
-	    List<Entry> tmp = EntryUtil.sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
+	    List<Entry> tmp = getEntryUtil().sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
 	    children.clear();
 	    children.addAll(tmp);
 	}
@@ -7618,7 +7618,7 @@ public class EntryManager extends RepositoryManager {
                                 theNewEntry.getTypeHandler().getColumns();
                             if (columns != null) {
                                 for (Column c : columns) {
-                                    Object obj = c.getObject(values);
+                                    Object obj = c.getObject(request,values);
                                     nameTemplate = nameTemplate.replace("${"
 									+ c.getName()
 									+ "}", obj.toString());
@@ -8101,7 +8101,7 @@ public class EntryManager extends RepositoryManager {
 
 
 	if(select.getOrderBy()!=null) {
-	    entries= EntryUtil.sortEntriesOn(entries,select.getOrderBy(),!select.getAscending());
+	    entries= getEntryUtil().sortEntriesOn(entries,select.getOrderBy(),!select.getAscending());
 	}
 
 	if(select.getMax()>=0 && entries.size()>select.getMax()) {
@@ -8324,13 +8324,13 @@ public class EntryManager extends RepositoryManager {
 	    //init in case it hasn't
 	    select.init();
 	    if(select.getHadOrderBy()) {
-		children = EntryUtil.sortEntriesOn(children, select.getOrderBy(),!select.getAscending());
+		children = getEntryUtil().sortEntriesOn(children, select.getOrderBy(),!select.getAscending());
 	    }
 	}
 
 
 	if(request.getString(ARG_ORDERBY,"").equals(ORDERBY_NUMBER)) {
-	    children = EntryUtil.sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
+	    children = getEntryUtil().sortEntriesOnNumber(children, !request.get(ARG_ASCENDING,true));
 	}
 
 	children =applyFilter(request,children,select);
