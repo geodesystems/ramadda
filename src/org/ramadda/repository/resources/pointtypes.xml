@@ -29,26 +29,26 @@ message="" setEntry.acceptGroup=file entry="child:orderby:date;ascending:false;t
 <tr valign=top>
 <td width=1%>
 {{display_fieldslist 	       message="" setEntry.acceptGroup=file
-	       entry="child:orderby:date;ascending:false;type:type_point"
-	       width=185px height=65vh
-	       loadingMessage="" 
-	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-	       numericOnly=true asList=true
-	       showPopup=false decorate=true
-	       }}
-	       </td><td>
-	       {{display_linechart 	       message=""setEntry.acceptGroup=file
-	       entry="child:orderby:date;ascending:false;type:type_point"
-	       fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-	       height=60vh padRight=true chartLeft="80" chartRight="80"
-	       addTooltip=false useMultipleAxes=true
-	       }}
-	       </tr></td></table>
-	       ----
-	       :heading Files
-	       {{tree}}
-	       -section
-      ]]>
+entry="child:orderby:date;ascending:false;type:type_point"
+width=185px height=65vh
+loadingMessage="" 
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+numericOnly=true asList=true
+showPopup=false decorate=true
+}}
+</td><td>
+{{display_linechart 	       message="" setEntry.acceptGroup=file
+entry="child:orderby:date;ascending:false;type:type_point"
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+height=60vh padRight=true chartLeft="80" chartRight="80"
+addTooltip=false useMultipleAxes=true
+}}
+</tr></td></table>
+----
+:heading Files
+{{tree}}
+-section
+]]>
     </wiki>
   </type>
 

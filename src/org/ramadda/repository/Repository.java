@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -138,7 +138,6 @@ import java.util.Properties;
 
 /**
  * The main RAMADDA class.
- *
  */
 @SuppressWarnings("unchecked")
 public class Repository extends RepositoryBase implements RequestHandler,
@@ -169,16 +168,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private static final org.ramadda.repository.job.JobManager dummyField6ToForceCompile =
         null;
 
-    /** _more_ */
     private static final org.ramadda.data.docs.TabularOutputHandler dummyField7 =
         null;
 
-
-    /** _more_ */
     private static final org.ramadda.util.seesv.Seesv dummyField7ToForceCompile =
         null;
 
-    /** Cache resoruces property */
+    /** Cache resources property */
     public static final String PROP_CACHE_RESOURCES = "ramadda.cacheresources";
     public static final String PROP_CACHE_HTDOCS = "ramadda.cachehtdocs";    
 
@@ -267,7 +263,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The SessionManager */
     private SessionManager sessionManager;
 
-    /** _more_ */
     private JobManager jobManager;
 
     /** The WikiManager */
@@ -279,10 +274,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The EntryManager */
     private EntryManager entryManager;
 
-    /** _more_ */
     private ExtEditor extEditor;
 
-    /** _more_ */
     private EntryUtil entryUtil;
 
     /** The CommentManager */
@@ -361,188 +354,123 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The cookie expiration date */
     private String cookieExpirationDate;
 
-    /** _more_ */
     private Properties mimeTypes;
 
-    /**  */
     private String installPassword;
 
 
-    /** _more_ */
     private Properties localProperties = new Properties();
 
-    /** _more_ */
     private Properties pluginProperties = new Properties();
 
-    /** _more_ */
     private Properties cmdLineProperties = new Properties();
 
-    /** _more_ */
     private Properties coreProperties = new Properties();
 
-
-    /** _more_ */
     private Map<String, String> systemEnv;
 
-    /** _more_ */
     private TTLObject<Properties> dbProperties;
 
     private Properties dbPropertiesDummy = new Properties();    
 
-    /** _more_ */
     private long baseTime = System.currentTimeMillis();
 
-    /** _more_ */
     ucar.unidata.util.SocketConnection dummyConnection;
 
-    /** _more_ */
     private List<String> sqlLoadFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<EntryChecker> entryMonitors = new ArrayList<EntryChecker>();
 
     private List<String[]>httpHeaders = new ArrayList<String[]>();
 
-    /** _more_ */
     private String dumpFile;
 
-    /** _more_ */
     private String startupScript;
 
-    /** _more_ */
     private Date startTime = new Date();
 
-
-    /** _more_ */
     private HashSet blacklist;
+
     private List<String> blacklistList;    
 
-    /** _more_ */
     private Hashtable<String, TypeHandler> typeHandlersMap =
         new Hashtable<String, TypeHandler>();
 
-    /** _more_ */
     private List<TypeHandler> allTypeHandlers = new ArrayList<TypeHandler>();
 
-    /** _more_ */
     private List<OutputHandler> outputHandlers =
         new ArrayList<OutputHandler>();
 
-
-    /** _more_ */
     private Hashtable<String, OutputHandler> outputHandlerMap =
         new Hashtable<String, OutputHandler>();
 
-
-    /** _more_ */
     private Hashtable<String, OutputType> outputTypeMap =
         new Hashtable<String, OutputType>();
 
-    /** _more_ */
     private Hashtable resources = new Hashtable();
 
-
-    /** _more_ */
     private Hashtable namesHolder = new Hashtable();
 
-
-    /** _more_ */
     private List<User> cmdLineUsers = new ArrayList();
 
-
-    /** _more_ */
     String[] args;
 
-
-    /** _more_ */
     public static boolean debug = false;
 
-
-    /** _more_ */
     public static boolean debugSession = false;
 
-
-    /** _more_ */
     private GroupTypeHandler groupTypeHandler;
 
     private TypeHandler fileTypeHandler;    
 
-
-
-    /** _more_ */
     private List categoryList = null;
 
-    /** _more_ */
     private List<String> htdocRoots = new ArrayList<String>();
 
-    /** _more_ */
     private int htdocsCacheSize = 0;
 
     private boolean cacheHtdocs = true;
-    
-    /** _more_ */
+
     private static final int HTDOCS_CACHE_LIMIT = 10_000_000;
 
-    /** _more_ */
     private Hashtable<String, byte[]> htdocsCache = new Hashtable<String,
 	byte[]>();
 
-
-    /** _more_ */
     private Hashtable<String, String> htdocsPathCache = new Hashtable<String,
 	String>();
 
-
-
-    /** _more_ */
     private List<File> localFilePaths = new ArrayList<File>();
 
-
-    /** _more_ */
     private HttpClient httpClient;
 
-    /** _more_ */
     private boolean repositoryInitialized = false;
 
-    /** _more_ */
     private boolean isActive = true;
 
-
-    /** _more_ */
     private boolean readOnly = false;
 
-    /** _more_ */
     private boolean doCache = true;
 
-
-    /** _more_ */
     private boolean adminOnly = false;
 
-    /** _more_ */
     private boolean requireLogin = false;
 
-    /** _more_ */
     private boolean allSsl = false;
 
-    /** _more_ */
     private boolean sslIgnore = false;
 
-    /** _more_ */
     private boolean cacheResources = false;
 
-    /** _more_ */
     private String repositoryName = "Repository";
 
-    /** _more_ */
     private String repositoryDescription = "";
 
     private boolean logActivityToFile = false;
+
     private boolean logActivityToDatabase = false;    
 
-    /** _more_ */
     private boolean downloadOk = true;
 
-    /** _more_ */
     private boolean minifiedOk = true;
 
     private boolean acceptRobots = true;
@@ -551,56 +479,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private boolean commentsEnabled  =false;
 
-
     private boolean useFixedHostName = false;
 
     private boolean corsOk = true;
 
     private boolean streamOutput = false;
 
-
-    /** _more_ */
     private boolean cdnOk = false;
 
-    /** _more_ */
     private boolean enableHostnameMapping = true;
 
-    /** _more_ */
     private String language = "";
 
-    /** _more_ */
     private String languageDefault = "";
 
     private boolean runningStandAlone = false;
 
-
-    /** _more_ */
     private int overridePort = -1;
 
-    /** _more_ */
     private boolean ignoreSSL = false;
 
     private int defaultMaxEntries=1000;
 
     private HashSet<String> scriptPaths = new HashSet<String>();    
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public Repository() throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param parentRepository _more_
-     * @param args _more_
-     * @param port _more_
-     *
-     * @throws Exception _more_
-     */
     public Repository(Repository parentRepository, String[] args, int port)
 	throws Exception {
         super(port);
@@ -608,29 +512,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         init(args, port);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param port _more_
-     *
-     * @throws Exception _more_
-     */
     public Repository(String[] args, int port) throws Exception {
         this(null, args, port);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param port _more_
-     *
-     * @throws Exception _more_
-     */
     public void init(String[] args, int port) throws Exception {
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
@@ -689,11 +574,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public synchronized String getInstallPassword() throws Exception {
         if ( !Utils.stringDefined(installPassword)) {
             installPassword =
@@ -760,24 +640,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<RepositoryManager> getRepositoryManagers() {
         return repositoryManagers;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHostname() {
         String hostname = getProperty(PROP_HOSTNAME, (String) null);
         if (Utils.stringDefined(hostname)) {
@@ -791,12 +657,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return super.getHostname();
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean useFixedHostnameForAbsoluteUrls() {
         return useFixedHostName;
     }
@@ -812,12 +672,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getPort() {
         if (overridePort > 0) {
             return overridePort;
@@ -830,26 +684,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return super.getPort();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setPort(int value) {
         super.setPort(value);
         overridePort = value;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @return _more_
-     */
     public boolean isSSLEnabled(Request request) {
         //Defer to the parent
         if (parentRepository != null) {
@@ -874,11 +713,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         standAloneServer = value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Object getStandAloneServer() {
         return standAloneServer;
     }
@@ -887,78 +721,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	runningStandAlone = v;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isChild() {
         return parentRepository != null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isMaster() {
         //For now always enable this
         return true;
         //        return getProperty(LocalRepositoryManager.PROP_MASTER_ENABLED,false);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     */
     private void setParentRepository(Repository parent) {
         this.parentRepository = parent;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getParentRepository() {
         return parentRepository;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Repository> getChildRepositories() {
         return new ArrayList<Repository>(childRepositories);
     }
 
-    //
-
-    /**
-     * _more_
-     *
-     * @param childRepository _more_
-     *
-     * @throws Exception _more_
-     */
     public void removeChildRepository(Repository childRepository)
 	throws Exception {
         childRepositories.remove(childRepository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param childRepository _more_
-     *
-     * @throws Exception _more_
-     */
     public void addChildRepository(Repository childRepository)
 	throws Exception {
         childRepositories.add(childRepository);
@@ -970,21 +759,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isReadOnly() {
         return readOnly;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean doCache() {
         //Don't cache even when we're in readonly mode
         //        if (readOnly) {
@@ -993,68 +771,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return doCache;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getActive() {
         return isActive;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getIsInitialized() {
         return repositoryInitialized;
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
     public void setActive(boolean v) {
         isActive = v;
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void close() throws Exception {
         shutdown();
     }
 
-
-    //    private boolean shutdownEnabled = false;
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getShutdownEnabled() {
         return standAloneServer != null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isRunningStandAlone() {
         return standAloneServer != null;
     }
 
-    /**
-     * _more_
-     */
     public void shutdown() {
         try {
             if ( !isActive) {
@@ -1144,25 +884,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param port _more_
-     */
     public void setHttpsPort(int port) {
         super.setHttpsPort(port);
         reinitializeRequestUrls();
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param properties _more_
-     * @throws Exception _more_
-     */
     public void init(Properties properties) throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.init");
         //        MyTrace.startTrace();
@@ -1308,13 +1034,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         IO.close(inputStream);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param contextProperties _more_
-     * @throws Exception _more_
-     */
     public void initProperties(Properties contextProperties)
 	throws Exception {
         MyTrace.msg("RAMADDA: initializing properties");
@@ -1585,9 +1304,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return defaultMaxEntries;
     }
 
-    /**
-     * _more_
-     */
     private void initProxy() {
         //First try the local ramadda properties
         //The default value is the system property 
@@ -1640,26 +1356,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public HttpClient getHttpClient() {
         return httpClient;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     protected void initServer() throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.initServer");
         getDatabaseManager().init();
@@ -1786,13 +1486,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	System.err.println("\tshould be null:" +   getEntryManager().findEntryFromName(request, rootEntry, "/Top/RAMADDA/test"));
     }
     
-
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void loadResources() throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.loadResources-1");
         getPluginManager().loadPlugins();
@@ -1807,12 +1500,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(Repository.debugInit)   System.err.println("Repository.loadResources-6");	
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadPluginResources() throws Exception {
         getPluginManager().loadPropertyFiles();
 
@@ -1829,11 +1516,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         loadAdminHandlers();
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadTypeHandlers() throws Exception {
         List<String> badFiles = new ArrayList<String>();
         String       theFile  = null;
@@ -1890,16 +1572,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     * _more_
-     *
-     * @param root _more_
-     * @param overwrite _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite, boolean debug)
 	throws Exception {
         List children = XU.findChildren(root, TypeHandler.TAG_TYPE);
@@ -1918,17 +1590,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return typeHandlers;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entryNode _more_
-     * @param overwrite _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     private TypeHandler loadTypeHandler(Element entryNode, boolean overwrite)
 	throws Exception {
         String classPath = XU.getAttribute(entryNode,
@@ -1971,12 +1632,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void loadOutputHandlers() throws Exception {
         for (String commandFile : getPluginManager().getAllFiles()) {
             if ( !commandFile.endsWith("services.xml")) {
@@ -2044,16 +1699,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param addToGlobals _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Service makeService(Element node, boolean addToGlobals)
 	throws Exception {
         Constructor ctor =
@@ -2074,12 +1719,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return command;
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void loadSql() throws Exception {
         for (String sqlFile : getPluginManager().getSqlFiles()) {
             if (getPluginManager().haveSeen(sqlFile)) {
@@ -2092,11 +1731,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadAdminHandlers() throws Exception {
         for (Class adminHandlerClass :
 		 getPluginManager().getAdminHandlerClasses()) {
@@ -2120,25 +1754,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getRepository() {
         return this;
     }
 
-    /**
-     * _more_
-     *
-     * @param repositoryManager _more_
-     */
+
     public void addRepositoryManager(RepositoryManager repositoryManager) {
         synchronized (repositoryManagers) {
             //            System.err.println("adding repo manager:" + repositoryManager.getClass().getName());
@@ -2150,13 +1770,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @return _more_
-     */
     public RepositoryManager getRepositoryManager(Class c) {
         synchronized (repositoryManagers) {
             for (RepositoryManager manager : repositoryManagers) {
@@ -2169,147 +1782,62 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected SessionManager doMakeSessionManager() {
         return new SessionManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected PageHandler doMakePageHandler() {
         return new PageHandler(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected DateHandler doMakeDateHandler() {
         return new DateHandler(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected WikiManager doMakeWikiManager() {
         return new WikiManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected EntryManager doMakeEntryManager() {
         return new EntryManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected CommentManager doMakeCommentManager() {
         return new CommentManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected AssociationManager doMakeAssociationManager() {
         return new AssociationManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected HarvesterManager doMakeHarvesterManager() {
         return new HarvesterManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected ActionManager doMakeActionManager() {
         return new ActionManager(this);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected StorageManager doMakeStorageManager() {
         return new StorageManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected PluginManager doMakePluginManager() {
         return new PluginManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected DatabaseManager doMakeDatabaseManager() {
         return new DatabaseManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected FtpManager doMakeFtpManager() {
         return new FtpManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected Admin doMakeAdmin() {
         return new Admin(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected UserManager doMakeUserManager() {
         return new UserManager(this);
     }
@@ -2318,15 +1846,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new AuthManager(this);
     }    
 
-
-    /** _more_ */
     private Object getMutex = new Object();
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public UserManager getUserManager() {
         if (userManager == null) {
             userManager = doMakeUserManager();
@@ -2342,24 +1863,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return authManager;
     }    
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected MonitorManager doMakeMonitorManager() {
         return new MonitorManager(this);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public MonitorManager getMonitorManager() {
         if (monitorManager == null) {
             monitorManager = doMakeMonitorManager();
@@ -2368,12 +1875,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return monitorManager;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public SessionManager getSessionManager() {
         if (sessionManager == null) {
             sessionManager = doMakeSessionManager();
@@ -2383,20 +1884,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return sessionManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected ApiManager doMakeApiManager() {
         return new ApiManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public ApiManager getApiManager() {
         if (apiManager == null) {
             apiManager = doMakeApiManager();
@@ -2405,11 +1896,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return apiManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public PageHandler getPageHandler() {
         if (pageHandler == null) {
             pageHandler = doMakePageHandler();
@@ -2418,11 +1904,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return pageHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public DateHandler getDateHandler() {
 
         if (dateHandler == null) {
@@ -2432,12 +1913,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return dateHandler;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public WikiManager getWikiManager() {
         if (wikiManager == null) {
             wikiManager = doMakeWikiManager();
@@ -2445,13 +1920,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         return wikiManager;
     }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public LogManager getLogManager() {
         if (logManager == null) {
             logManager = doMakeLogManager();
@@ -2461,21 +1929,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return logManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected LogManager doMakeLogManager() {
         return new LogManager(this);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public JobManager getJobManager() {
         if (jobManager == null) {
             jobManager = doMakeJobManager();
@@ -2484,20 +1944,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return jobManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected JobManager doMakeJobManager() {
         return new JobManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public EntryManager getEntryManager() {
         if (entryManager == null) {
             entryManager = doMakeEntryManager();
@@ -2506,11 +1958,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return entryManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public ExtEditor getExtEditor() {
         if (extEditor == null) {
             extEditor = new ExtEditor(this);
@@ -2519,11 +1967,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return extEditor;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public synchronized EntryUtil getEntryUtil() {
         if (entryUtil == null) {
             entryUtil = EntryUtil.newEntryUtil(getRepository());
@@ -2534,11 +1978,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public CommentManager getCommentManager() {
         if (commentManager == null) {
             commentManager = doMakeCommentManager();
@@ -2548,11 +1988,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public AssociationManager getAssociationManager() {
         if (associationManager == null) {
             associationManager = doMakeAssociationManager();
@@ -2561,11 +1997,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return associationManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public HarvesterManager getHarvesterManager() {
         if (harvesterManager == null) {
             harvesterManager = doMakeHarvesterManager();
@@ -2575,11 +2007,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public ActionManager getActionManager() {
         if (actionManager == null) {
             actionManager = doMakeActionManager();
@@ -2589,11 +2017,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected AccessManager doMakeAccessManager() {
         return new AccessManager(this);
     }
@@ -2601,11 +2025,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public AccessManager getAccessManager() {
         if (accessManager == null) {
             accessManager = doMakeAccessManager();
@@ -2617,11 +2037,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected SearchManager doMakeSearchManager() {
         return new SearchManager(this);
     }
@@ -2633,11 +2049,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public SearchManager getSearchManager() {
         if (searchManager == null) {
             searchManager = doMakeSearchManager();
@@ -2655,11 +2067,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected MapManager doMakeMapManager() {
         return new MapManager(this);
     }
@@ -2667,11 +2075,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MapManager getMapManager() {
         if (mapManager == null) {
             mapManager = doMakeMapManager();
@@ -2682,24 +2086,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected MetadataManager doMakeMetadataManager() {
         return new MetadataManager(this);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MetadataManager getMetadataManager() {
         if (metadataManager == null) {
             metadataManager = doMakeMetadataManager();
@@ -2710,30 +2102,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected RegistryManager doMakeRegistryManager() {
         return new RegistryManager(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected MailManager doMakeMailManager() {
         return new MailManager(this);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     protected LocalRepositoryManager doMakeLocalRepositoryManager() {
         return new LocalRepositoryManager(this);
     }
@@ -2741,11 +2121,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RegistryManager getRegistryManager() {
         if (registryManager == null) {
             registryManager = doMakeRegistryManager();
@@ -2754,11 +2130,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return registryManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MailManager getMailManager() {
         if (mailManager == null) {
             mailManager = doMakeMailManager();
@@ -2767,11 +2139,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return mailManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public LocalRepositoryManager getLocalRepositoryManager() {
         if (localRepositoryManager == null) {
             localRepositoryManager = doMakeLocalRepositoryManager();
@@ -2782,11 +2150,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public StorageManager getStorageManager() {
         if (storageManager == null) {
             storageManager = doMakeStorageManager();
@@ -2796,11 +2160,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return storageManager;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public PluginManager getPluginManager() {
         if (pluginManager == null) {
             pluginManager = doMakePluginManager();
@@ -2810,11 +2170,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public DatabaseManager getDatabaseManager() {
         if (databaseManager == null) {
             databaseManager = doMakeDatabaseManager();
@@ -2824,11 +2180,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public FtpManager getFtpManager() {
         if (ftpManager == null) {
             //Only the top-level ramaddas gets the ftpmanager
@@ -2843,11 +2195,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Admin getAdmin() {
         if (admin == null) {
             admin = doMakeAdmin();
@@ -2857,21 +2205,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /** _more_ */
     public static final double VERSION = 1.0;
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void updateToVersion1_0() throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void checkVersion() throws Exception {
 	/*
 	  double version = getDbProperty(PROP_VERSION, 0.0);
@@ -2884,14 +2223,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param c _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getListing(String path, Class c) {
         List<String> listing = new ArrayList<String>();
         File         f       = new File(path);
@@ -2926,20 +2258,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Date getStartTime() {
         return startTime;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<ImportHandler> getImportHandlers() {
         return getPluginManager().getImportHandlers();
     }
@@ -2947,15 +2271,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /** _more_ */
+    
     private static final String USAGE_MESSAGE =
         "\nUsage: repository\n\t-installpassword <password>\n\n-home /path/to/ramadda/home\n\t-admin <admin name> <admin password>\n\t-port <http port>\n\t-Dname=value";
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     protected void usage(String message) {
         throw new IllegalArgumentException(message + "\n" + USAGE_MESSAGE);
     }
@@ -2963,13 +2283,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param propertyName _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getResourcePaths(String propertyName) {
         List<String> tmp = Utils.split(getProperty(propertyName, BLANK), ";",
                                        true, true);
@@ -2985,11 +2299,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Properties readDatabaseProperties() {
 	//	System.err.println("readDatabaseProperties");
 	//	System.err.println(Utils.getStack(10));
@@ -3025,9 +2335,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     private static final Object CLEAR_CACHE_MUTEX =new Object();
-    /**
-     * _more_
-     */
+    
     public void clearAllCaches() {
 	synchronized(CLEAR_CACHE_MUTEX) {
 	    List<RepositoryManager> managers = new ArrayList<RepositoryManager>();
@@ -3049,9 +2357,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     */
+    
     public void clearCache() {
         getEntryManager().clearCache();
         getAccessManager().clearCache();
@@ -3059,11 +2365,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param requestUrl _more_
-     */
+    
     public void initRequestUrl(RequestUrl requestUrl) {
         try {
             synchronized (initializedUrls) {
@@ -3090,9 +2392,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    /**
-     * _more_
-     */
+    
     protected void reinitializeRequestUrls() {
         synchronized (initializedUrls) {
             for (RequestUrl requestUrl : initializedUrls) {
@@ -3103,27 +2403,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     @Override
     public String getHttpsUrl(String url) {
         return getHttpsUrl(null, url);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String getHttpsUrl(Request request, String url) {
         String hostname = (request != null)
 	    ? request.getServerName()
@@ -3143,15 +2430,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param requestUrl _more_
-     *
-     * @return _more_
-     */
+    
     //    @Override
     public String getUrlPath(Request request, RequestUrl requestUrl) {
         if (requestUrl.getNeedsSsl()) {
@@ -3161,14 +2440,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getUrlBase() + requestUrl.getPath();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String httpsUrl(Request request, String url) {
         String hostname = (request != null)
 	    ? request.getServerName()
@@ -3186,22 +2458,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     */
+    
     public void addOutputType(OutputType type) {
         outputTypeMap.put(type.getId(), type);
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
+    
     public OutputType findOutputType(String id) {
         if ((id == null) || (id.length() == 0)) {
             return OutputHandler.OUTPUT_HTML;
@@ -3215,11 +2477,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void initDefaultOutputHandlers() throws Exception {
 
         OutputHandler outputHandler = new OutputHandler(getRepository(),
@@ -3809,11 +3067,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param entryMonitor _more_
-     */
+    
     public void addEntryChecker(EntryChecker entryMonitor) {
         entryMonitors.add(entryMonitor);
     }
@@ -3841,15 +3095,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result handleRequest(Request request) throws Exception {
 	//Add in any default http headers
 	for(String[]pair: httpHeaders) {
@@ -3869,17 +3115,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
-    /** _more_ */
+    
     public static boolean propdebug = false;
 
-    /** _more_ */
+    
     public int propcnt = 0;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private boolean acceptRobots() {
         return acceptRobots;
     }
@@ -3888,23 +3130,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return  acceptGoogleBot;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getCommentsEnabled() {
 	return commentsEnabled;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+    
     public Result getNoRobotsResult(Request request) throws Exception {
 	if(request.getRequestPath().indexOf("robots.txt")>=0) {
 	    return processRobotsTxt(request);
@@ -3916,17 +3148,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param zipFileName _more_
-     * @param files _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result zipFiles(Request request, String zipFileName,
                            List<File> files)
 	throws Exception {
@@ -3950,15 +3172,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private Result handleRequestInner(Request request) throws Exception {
 
         if (debugSession) {
@@ -4207,15 +3421,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param exc _more_
-     * @param message _more_
-     *
-     * @return _more_
-     */
+    
     public String handleError(Request request, Throwable exc,
                               String message) {
         getLogManager().logError("Error:" + exc.getMessage(), exc);
@@ -4234,13 +3440,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+    
     public Result makeBlockedResult(Request request, boolean sleep) {
         getLogManager().logRequest(request, Result.RESPONSE_BLOCKED);
 	if(sleep)
@@ -4251,14 +3451,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param exc _more_
-     *
-     * @return _more_
-     */
+    
     public Result makeErrorResult(Request request, Throwable exc) {
         Throwable inner = LogUtil.getInnerException(exc);
         String    msg;
@@ -4270,14 +3463,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return makeErrorResult(request, msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public Result makeErrorResult(Request request, String msg) {
 	return makeErrorResult(request, msg, true);
     }
@@ -4312,28 +3498,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public Result makeOkResult(Request request, String msg) {
         StringBuilder sb = new StringBuilder(makeOkResponse(request, msg));
 
         return makeResponseResult(request, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     */
+    
     public Result makeResponseResult(Request request, StringBuilder sb) {
         Result result = null;
         if (request.responseAsJson()) {
@@ -4353,14 +3525,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public String makeErrorResponse(Request request, String msg,boolean ...sanitize) {
 	if(sanitize.length==0 || sanitize[0])
 	    msg = HU.strictSanitizeString(msg);
@@ -4381,14 +3546,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public String makeOkResponse(Request request, String msg) {
         if (request.responseAsJson()) {
             return JsonUtil.mapAndQuote(Utils.makeListFromValues("ok", msg));
@@ -4412,22 +3570,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String debugPrefix() {
         return getUrlBase() + ": ";
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param msg _more_
-     */
+    
     public void debugSession(Request request, String msg) {
         if (debugSession) {
             /*
@@ -4443,15 +3591,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private long callCnt=0;
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected Result getResult(Request request) throws Exception {
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
 	//	System.err.println(request.getAbsoluteUrl(request.toString()));
@@ -4522,14 +3662,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param apiMethod _more_
-     *
-     * @return _more_
-     */
+    
     private Result checkForSslRedirect(Request request, ApiMethod apiMethod) {
         boolean debug      = false;
         boolean sslEnabled = isSSLEnabled(request);
@@ -4590,13 +3723,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param bytes _more_
-     * @param force _more_
-     */
+    
     private void putHtdocsCache(String path, byte[] bytes, boolean force) {
 	if (!cacheHtdocs) return;
         synchronized (htdocsCache) {
@@ -4610,19 +3737,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param path _more_
-     * @param inputStream _more_
-     * @param mimeType _more_
-     * @param cacheOk _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result makeResult(Request request, String path,
                              InputStream inputStream, String mimeType,
                              boolean cacheOk)
@@ -4631,20 +3746,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                           false);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param path _more_
-     * @param inputStream _more_
-     * @param mimeType _more_
-     * @param cacheOk _more_
-     * @param gzipIt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result makeResult(Request request, String path,
                              InputStream inputStream, String mimeType,
                              boolean cacheOk, boolean gzipIt)
@@ -4670,15 +3772,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected Result getHtdocsFile(Request request) throws Exception {
 	boolean debug = false;
         request.setCORSHeaderOnResponse();
@@ -4958,9 +4052,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     */
+    
     private void initRepositoryAttributes() {
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
 	defaultMaxEntries     = getProperty("ramadda.defaultmaxentries",defaultMaxEntries);
@@ -5003,9 +4095,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	httpHeaders = tmpHttpHeaders;
     }
 
-    /**
-     * _more_
-     */
+    
     public void initAttributes() {
         initRepositoryAttributes();
         synchronized (repositoryManagers) {
@@ -5022,11 +4112,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getAdminOnly() {
         return adminOnly;
     }
@@ -5043,49 +4129,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return logActivityToDatabase;
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getRequireLogin() {
         return requireLogin;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getEnableHostnameMapping() {
         return enableHostnameMapping;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getDownloadOk() {
         return downloadOk;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getMinifiedOk() {
         return minifiedOk;
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
+    
     @Override
     public String getIconUrl(String f) {
         if (f == null) {
@@ -5106,22 +4170,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getUrlBase() + f;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getCdnOk() {
         return cdnOk;
     }
 
 
     
-    /**
-       Get the StreamOutput property.
-       
-       @return The StreamOutput
-    **/
+    
     public boolean getStreamOutput () {
 	return streamOutput;
     }
@@ -5129,52 +4185,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getLanguage() {
         return language;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getLanguageDefault() {
         return languageDefault;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getRepositoryName() {
         return repositoryName;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getCacheResources() {
         return cacheResources;
     }
 
 
 
-    /**
-       this returns a path defined by the given property name that
-       will be used to do an external execute. This is just a wrapper
-       around getLocalProperty but we use it to keep track of what scripts
-       are being accessed
-    */
+    
     public String getScriptPath(String name,String...dflts) {
 	String path =  getLocalProperty(name, dflts!=null && dflts.length>0?dflts[0]:null);
 	addScriptPath(path);
@@ -5205,12 +4240,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-       Run the external commands.
-       Returns a 2-array:
-       array[0] = error results; 
-       array[1] = results; 
-    */
+    
     public String[] runCommands(List<String>commands) throws Exception {
         ProcessBuilder pb      = makeProcessBuilder(commands);
         Process        process = pb.start();
@@ -5237,14 +4267,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * Get properties from the local repository or cmd line properties - not from the plugins
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getLocalProperty(String name, String dflt) {
         Object value = localProperties.get(name);
         if (value == null) {
@@ -5270,51 +4293,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(String name) {
         return getPropertyValue(name, true);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Properties getPluginProperties() {
         return pluginProperties;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param checkDb _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertyValue(String name, boolean checkDb) {
         return getPropertyValue(name, checkDb, false);
     }
 
 
 
-    /**
-     * get the property value
-     *
-     * @param name property name
-     * @param checkDb Check the db properties
-     * @param needsToBeNonEmpty If true then only return true if the string is length>0
-     *
-     * @return property value
-     */
+    
     private String getPropertyValue(String name, boolean checkDb,
                                     boolean needsToBeNonEmpty) {
 	//	propdebug = name.equals(PROP_READ_ONLY);
@@ -5447,14 +4445,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     * Check if the property has been set
-     *
-     * @param prop The property value
-     * @param needsToBeNonEmpty If true then only return true if the string is length>0
-     *
-     * @return Is property set
-     */
+    
     private boolean checkProperty(String prop, boolean needsToBeNonEmpty) {
         if (prop == null) {
             return false;
@@ -5469,14 +4460,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param label _more_
-     *
-     * @return _more_
-     */
+    
     private String getPropertiesListing(Properties props, String label) {
         StringBuilder sb = null;
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -5495,11 +4479,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertiesListing() {
         StringBuilder sb = new StringBuilder();
         sb.append(getPropertiesListing(getDbProperties(), "Database"));
@@ -5510,15 +4490,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     *  this gets the property from this repository if defined. Else it will get the
-     *  property from the parent repository if defined. Else this returns the dflt
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertyFromTree(String name, String dflt) {
         String value = getProperty(name, (String) null);
         if (Utils.stringDefined(value)) {
@@ -5532,28 +4504,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(String name, String dflt) {
         return getPropertyValue(name, dflt, true);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     * @param checkDb _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertyValue(String name, String dflt,
                                    boolean checkDb) {
         String prop = getPropertyValue(name, checkDb);
@@ -5567,14 +4524,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getProperty(String name, boolean dflt) {
         String prop = getProperty(name);
         if (Utils.stringDefined(prop)) {
@@ -5586,14 +4536,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getProperty(String name, int dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
@@ -5604,14 +4547,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public long getProperty(String name, long dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
@@ -5621,14 +4557,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public double getProperty(String name, double dflt) {
         String prop = getPropertyValue(name, true, true);
         if (prop != null) {
@@ -5640,24 +4569,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getDbProperty(String name, boolean dflt) {
         return Misc.getProperty(getDbProperties(), name, dflt);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private Properties getDbProperties() {
         try {
 	    if (dbProperties == null) {
@@ -5678,14 +4596,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public double getDbProperty(String name, double dflt) {
         return Misc.getProperty(getDbProperties(), name, dflt);
     }
@@ -5699,12 +4610,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     *
-     */
+    
     protected void initSchema() throws Exception {
         //Force a connection
         getDatabaseManager().init();
@@ -5727,26 +4633,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void writeGlobal(String name, boolean value) throws Exception {
         writeGlobal(name, BLANK + value);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param propName _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void writeGlobal(Request request, String propName)
 	throws Exception {
         writeGlobal(request, propName, false);
@@ -5754,15 +4646,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param propName _more_
-     * @param deleteIfNull _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void writeGlobal(Request request, String propName,
                             boolean deleteIfNull)
 	throws Exception {
@@ -5778,14 +4662,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void writeGlobal(String name, String value) throws Exception {
         getDatabaseManager().delete(Tables.GLOBALS.NAME,
                                     Clause.eq(Tables.GLOBALS.COL_NAME, name));
@@ -5803,16 +4680,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     *  _more_
-     *
-     *  @param request The request
-     * @param state _more_
-     *
-     *  @return _more_
-     *
-     *  @throws Exception _more_
-     */
+    
     public List<Link> getOutputLinks(Request request,
                                      OutputHandler.State state)
 	throws Exception {
@@ -5845,16 +4713,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param state _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Link> getLinksForHeader(Request request,
                                         OutputHandler.State state)
 	throws Exception {
@@ -5872,13 +4731,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<OutputType> getOutputTypes() throws Exception {
         List<OutputType> allTypes = new ArrayList<OutputType>();
         for (OutputHandler outputHandler : outputHandlers) {
@@ -5889,13 +4742,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param outputType _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isOutputTypeOK(OutputType outputType) {
         if (outputType == null) {
             return true;
@@ -5904,11 +4751,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return outputType.getOkToUse();
     }
 
-    /**
-     * _more_
-     *
-     * @param outputType _more_
-     */
+    
     public void setOutputTypeOK(OutputType outputType) {
         try {
             if (outputType == null) {
@@ -5933,14 +4776,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param outputType _more_
-     * @param ok _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void setOutputTypeOK(OutputType outputType, boolean ok)
 	throws Exception {
         outputType.setOkToUse(ok);
@@ -5949,13 +4785,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param outputHandler _more_
-     *
-     * @return _more_
-     */
+    
     public boolean addOutputHandler(OutputHandler outputHandler) {
         synchronized (outputHandlers) {
             outputHandlers.add(outputHandler);
@@ -5964,13 +4794,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return addOutputHandlerTypes(outputHandler);
     }
 
-    /**
-     * _more_
-     *
-     * @param outputHandler _more_
-     *
-     * @return _more_
-     */
+    
     public boolean addOutputHandlerTypes(OutputHandler outputHandler) {
         boolean ok   = true;
         HashSet seen = new HashSet();
@@ -5993,22 +4817,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<OutputHandler> getOutputHandlers() {
         return new ArrayList<OutputHandler>(outputHandlers);
     }
 
-    /**
-     * _more_
-     *
-     * @param handlerClass _more_
-     *
-     * @return _more_
-     */
+    
     public OutputHandler getOutputHandler(Class handlerClass) {
         for (OutputHandler handler : outputHandlers) {
             if (handler.getClass().equals(handlerClass)) {
@@ -6020,15 +4834,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param outputType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public OutputHandler getOutputHandler(OutputType outputType)
 	throws Exception {
         if ( !isOutputTypeOK(outputType)) {
@@ -6039,15 +4845,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public OutputHandler getOutputHandler(Request request) throws Exception {
 
         //Do this for now as it forces the setting of the output
@@ -6065,15 +4863,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public OutputHandler getOutputHandler(String type) throws Exception {
         if ((type == null) || (type.length() == 0)) {
             type = OutputHandler.OUTPUT_HTML.getId();
@@ -6085,12 +4875,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     */
+    
     public HtmlOutputHandler getHtmlOutputHandler() {
         try {
             return (HtmlOutputHandler) getOutputHandler(
@@ -6101,17 +4886,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /** _more_ */
+    
     private JsonOutputHandler jsonOutputHandler;
 
     private CsvOutputHandler csvOutputHandler;
     private PointOutputHandler pointOutputHandler;    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public CsvOutputHandler getCsvOutputHandler() {
         if (csvOutputHandler == null) {
             csvOutputHandler = (CsvOutputHandler) getOutputHandler(
@@ -6121,11 +4902,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return csvOutputHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public PointOutputHandler getPointOutputHandler() {
         if (pointOutputHandler == null) {
             pointOutputHandler = (PointOutputHandler) getOutputHandler(PointOutputHandler.class);
@@ -6146,11 +4923,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getOutputHandler(
@@ -6161,24 +4934,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public ZipOutputHandler getZipOutputHandler() throws Exception {
         return (ZipOutputHandler) getOutputHandler(
 						   ZipOutputHandler.OUTPUT_ZIP);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public TypeHandler getGroupTypeHandler() {
         return groupTypeHandler;
     }
@@ -6189,13 +4952,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public XmlOutputHandler getXmlOutputHandler() throws Exception {
         return (XmlOutputHandler) getOutputHandler(
 						   XmlOutputHandler.OUTPUT_XML);
@@ -6206,11 +4963,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private TypeHandler anyTypeHandler;
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void initDefaultTypeHandlers() throws Exception {
 	
         addTypeHandler(TypeHandler.TYPE_ANY,
@@ -6246,12 +4999,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param typeName _more_
-     * @param typeHandler _more_
-     */
+    
     public void addTypeHandler(String typeName, TypeHandler typeHandler) {
         addTypeHandler(typeName, typeHandler, false);
     }
@@ -6319,37 +5067,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     */
+    
     public void removeTypeHandler(TypeHandler typeHandler) {
         typeHandlersMap.remove(typeHandler.getType());
         allTypeHandlers.remove(typeHandler);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<TypeHandler> getTypeHandlers() throws Exception {
         return new ArrayList<TypeHandler>(allTypeHandlers);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param anyOk _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<TypeHandler> getTypeHandlersForDisplay(boolean anyOk)
 	throws Exception {
         List<TypeHandler> typeHandlers = getTypeHandlers();
@@ -6404,16 +5134,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getTypeHandler(type, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param useDefaultIfNotFound _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public TypeHandler getTypeHandler(String type,
                                       boolean useDefaultIfNotFound)
 	throws Exception {
@@ -6445,15 +5166,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processPing(Request request) throws Exception {
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
             Document resultDoc = XU.makeDocument();
@@ -6470,15 +5183,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processClearState(Request request) throws Exception {
         StringBuilder sb         = new StringBuilder("");
         String        passPhrase = getProperty(PROP_PASSPHRASE, "").trim();
@@ -6559,15 +5264,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processProxy(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String) null);
         if (url != null) {
@@ -6653,15 +5350,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processBlank(Request request) throws Exception {
         Result result = new Result("", new StringBuilder());
         result.setShouldDecorate(false);
@@ -6669,34 +5358,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getRepositoryDescription() {
         return repositoryDescription;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getRepositoryEmail() {
         return getProperty(PROP_ADMIN_EMAIL, "");
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public ServerInfo getServerInfo() throws Exception {
         int    sslPort = getHttpsPort();
         String url     = getTmpRequest().getAbsoluteUrl("");
@@ -6715,15 +5390,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return getProperty(PROP_REPOSITORY_SLUG,"");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processRobotsTxt(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
 	sb.append("User-agent: Twitterbot\nAllow: /\n\nUser-agent: facebookexternalhit\nAllow: /\n\n");
@@ -6864,15 +5531,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return new Result(sb.toString(), MIME_TEXT);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processInfo(Request request) throws Exception {
         //        getDatabaseManager().printIt();
         if (request.getString(ARG_RESPONSE, "").equals(RESPONSE_XML)) {
@@ -6941,15 +5600,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result("", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processHttpTest(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
         getPageHandler().sectionOpen(request, sb,"Http Test",false);
@@ -6970,15 +5621,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processLicense(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
         getPageHandler().sectionOpen(request, sb,"RAMADDA License",false);	
@@ -6998,15 +5641,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processColorTables(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb,"Color Tables",false);	
@@ -7020,15 +5655,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processDocs(Request request) throws Exception {
         StringBuilder  sb      = new StringBuilder();
         List<String[]> docUrls = getPluginManager().getDocUrls();
@@ -7071,15 +5698,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processMessage(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         request.appendMessage(sb);
@@ -7088,15 +5707,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processGetTmpFile(Request request) throws Exception {
         String file     = request.getString("file", "");
         File   f        = getStorageManager().getTmpFilePath(request, file);
@@ -7115,15 +5726,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processTest(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("HttpServletRequest.getServerName: ");
@@ -7139,15 +5742,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result(BLANK, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processDummy(Request request) throws Exception {
         return new Result(BLANK, new StringBuilder(BLANK));
     }
@@ -7174,15 +5769,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSslRedirect(Request request) throws Exception {
         if (request.getCheckingAuthMethod()) {
             return new Result(AuthorizationMethod.AUTH_HTTP);
@@ -7197,17 +5784,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param what _more_
-     * @param includeExtra _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List getListLinks(Request request, String what,
                              boolean includeExtra)
 	throws Exception {
@@ -7257,13 +5834,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Request getTmpRequest()  {
 	try {
 	    return getTmpRequest(UserManager.USER_ANONYMOUS);
@@ -7272,15 +5843,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param userId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Request getTmpRequest(String userId) throws Exception {
         User user = getUserManager().findUser(userId);
 
@@ -7295,13 +5858,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Request getAdminRequest()  {
 	try {
 	    User    user    = getUserManager().getAdminUser();
@@ -7328,15 +5885,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Request getTmpRequest(Entry entry) throws Exception {
         Request request = getTmpRequest();
         request.setPageStyle(getPageHandler().doMakePageStyle(request,
@@ -7347,15 +5896,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param user _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Request getRequest(User user) throws Exception {
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(user);
@@ -7365,64 +5906,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msg(String msg) {
         return PageHandler.msg(msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgLabel(String msg) {
         return PageHandler.msgLabel(msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgHeader(String h) {
         return PageHandler.msgHeader(h);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getResource(String id) throws Exception {
         return getResource(id, false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param ignoreErrors _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getResource(String id, boolean ignoreErrors)
 	throws Exception {
         String resource = (String) resources.get(id);
@@ -7461,36 +5967,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param includeAny _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String makeTypeSelect(Request request, boolean includeAny)
 	throws Exception {
         return makeTypeSelect(request, includeAny, "", false, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param includeAny _more_
-     * @param selected _more_
-     * @param checkAddOk _more_
-     * @param exclude _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String makeTypeSelect(Request request, boolean includeAny,
                                  String selected, boolean checkAddOk,
                                  HashSet<String> exclude)
@@ -7499,20 +5981,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               checkAddOk, exclude,false);
     }
 
-    /**
-     * _more_
-     *
-     * @param items _more_
-     * @param request _more_
-     * @param includeAny _more_
-     * @param selected _more_
-     * @param checkAddOk _more_
-     * @param exclude _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String makeTypeSelect(List initItems, Request request,
 				 String arg, String attrs,
                                  boolean includeAny, String selected,
@@ -7568,15 +6037,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<TypeHandler> getTypeHandlers(Request request)
 	throws Exception {
         TypeHandler       typeHandler = getTypeHandler(request);
@@ -7591,13 +6052,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getTypeHandlers();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List getDefaultCategorys() throws Exception {
         if (categoryList != null) {
             return categoryList;
@@ -7637,13 +6092,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return getMimeTypeFromSuffix(entry.getResource().getPath());
     }
 
-    /**
-     * _more_
-     *
-     * @param suffix _more_
-     *
-     * @return _more_
-     */
+    
     public String getMimeTypeFromSuffix(String path) {
 	String suffix = IO.getFileExtension(path);
 	//A hack because of the mime type properties
@@ -7666,9 +6115,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     */
+    
     public void setLocalFilePaths() {
         localFilePaths = (List<File>) Misc.toList(
 						  IOUtil.toFiles(
@@ -7678,26 +6125,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         localFilePaths.add(0, getStorageManager().getRepositoryDir());
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<File> getLocalFilePaths() {
         return localFilePaths;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param fieldValue _more_
-     * @param namesFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getFieldDescription(String fieldValue, String namesFile)
 	throws Exception {
         return getFieldDescription(fieldValue, namesFile, null);
@@ -7705,15 +6139,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-    /**
-     * _more_
-     *
-     * @param namesFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Properties getFieldProperties(String namesFile) throws Exception {
         if (namesFile == null) {
             return null;
@@ -7735,17 +6161,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param fieldValue _more_
-     * @param namesFile _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getFieldDescription(String fieldValue, String namesFile,
                                       String dflt)
 	throws Exception {
@@ -7761,11 +6177,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     */
+    
     public void checkNewEntries(final Request request, final List<Entry> entries) {
 	final boolean debug = false;
 	if(debug) System.err.println("checkNewEntries:" + entries);
@@ -7779,10 +6191,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    });
     }
 
-    /**
-     *
-     * @param entries _more_
-     */
+    
     public void checkMovedEntries(final List<Entry> entries) {
 	Misc.run(new Runnable() {
 		public void run() {
@@ -7793,11 +6202,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    });
     }
 
-    /**
-     * _more_
-     *
-     * @param ids _more_
-     */
+    
     public void checkDeletedEntries(final Request request, final List<String> ids) {
         Misc.run(new Runnable() {
 		public void run() {
@@ -7809,11 +6214,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     */
+    
     public void checkModifiedEntries(final Request request, final List<Entry> entries) {
         Misc.run(new Runnable() {
 		public void run() {
@@ -7828,21 +6229,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public List<EntryChecker> getEntryCheckers() {
         return entryMonitors;
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public static XmlEncoder getEncoder() {
         XmlEncoder xmlEncoder = new XmlEncoder();
         xmlEncoder.addClassPatternReplacement("ucar.unidata.repository",
@@ -7854,75 +6248,37 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return xmlEncoder;
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     *
-     * @return _more_
-     */
+    
     public static String encodeObject(Object object) {
         return getEncoder().toXml(object, false);
     }
 
-    /**
-     * Decode the XML into an Object
-     *
-     * @param xml  the XML spec
-     *
-     * @return the Object defined by the XML
-     *
-     * @throws Exception  problem decoding
-     */
+    
     public static Object decodeObject(String xml) throws Exception {
         return getEncoder().toObject(xml);
     }
 
-    /**
-     * Get the python libraries
-     *
-     * @return  the libraries
-     */
+    
     public List<String> getPythonLibs() {
         return getPluginManager().getPythonLibs();
     }
 
-    /**
-     * Print the message
-     *
-     * @param msg the message
-     */
+    
     public static void println(String msg) {
         System.err.println(msg);
     }
 
-    /**
-     * Get the system message
-     *
-     * @return  the message
-     */
+    
     public String getSystemMessage() {
 	return getProperty(PROP_SYSTEM_MESSAGE, "");
     }
 
-    /**
-     * Get the system message for the request
-     *
-     * @param request  the request
-     *
-     * @return  the message
-     */
+    
     public String getSystemMessage(Request request) {
         return getSystemMessage();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean isStreetviewEnabled() throws Exception {
         ImageOutputHandler imageOutputHandler =
             (ImageOutputHandler) getOutputHandler(
@@ -7931,11 +6287,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return imageOutputHandler.isStreetviewEnabled();
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void trustAllCertificates() throws Exception {
         TrustManager[] trustAllCerts = new TrustManager[] {
 	    new X509TrustManager() {

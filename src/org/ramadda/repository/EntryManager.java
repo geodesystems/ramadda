@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -112,7 +112,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public static final String[] PRELOAD_CATEGORIES = { "Documents",
-							"General", "Information", "Collaboration", "Database" };
+	    "General", "Information", "Collaboration", "Database" };
 
 
     public enum TEMPLATE {
@@ -1302,7 +1302,7 @@ public class EntryManager extends RepositoryManager {
 	    String url = getEntryResourceUrl(request, newEntry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,false);
 
 	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","ok","message","File added","entryid",newEntry.getId(),"name",newEntry.getName(),"type",newEntry.getTypeHandler().getType(), "geturl",
-							  url)));
+								    url)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	} catch(Exception exc) {
 	    System.err.println("Error:" + exc);
@@ -2111,10 +2111,10 @@ public class EntryManager extends RepositoryManager {
 
 
     public void initEntry(Entry entry,
-			   String name, String description, Entry parentEntry,
-			   User user, Resource resource, String category,
-			   int entryOrder, long createDate, long changeDate,
-			   long startDate, long endDate, Object[] values) {
+			  String name, String description, Entry parentEntry,
+			  User user, Resource resource, String category,
+			  int entryOrder, long createDate, long changeDate,
+			  long startDate, long endDate, Object[] values) {
 	entry.initEntry(name, description, parentEntry,user,resource,category,entryOrder,createDate,
 			changeDate, startDate, endDate, values);
 	parentageChanged(parentEntry);
@@ -2608,7 +2608,7 @@ public class EntryManager extends RepositoryManager {
 		    noName =true;
                     String nameTemplate =
                         typeHandlerToUse.getTypeProperty("nameTemplate",
-						    (String) null);
+							 (String) null);
                     if (nameTemplate == null) {
                         name = IO.getFileTail(Utils.getDefined("",info.name,info.resource));
                         if (request.get(ARG_MAKENAME, false)) {
@@ -6130,7 +6130,7 @@ public class EntryManager extends RepositoryManager {
                 entry.setEast(entry.getWest(request));
             } else {
                 entry.setNorth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								       ATTR_NORTH,
+									  ATTR_NORTH,
 									  entry.getNorth(request) + "")));
                 entry.setSouth(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 									  ATTR_SOUTH,
@@ -6138,7 +6138,7 @@ public class EntryManager extends RepositoryManager {
                 entry.setEast(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
 									 ATTR_EAST, entry.getEast(request) + "")));
                 entry.setWest(GeoUtils.decodeLatLon(XmlUtil.getAttribute(node,
-								      ATTR_WEST, entry.getWest(request) + "")));
+									 ATTR_WEST, entry.getWest(request) + "")));
             }
 
             entry.setAltitudeTop(Utils.getAttributeOrTag(node,
@@ -7559,7 +7559,7 @@ public class EntryManager extends RepositoryManager {
 
 
     public void insertEntries(Request request, final List<Entry> entries,
-                               boolean isNew, TypeHandler.NewType newType)
+			      boolean isNew, TypeHandler.NewType newType)
 	throws Exception {
 	insertEntries(request, entries, isNew,  newType,true);
     }

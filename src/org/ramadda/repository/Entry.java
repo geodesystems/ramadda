@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -55,13 +55,10 @@ public class Entry implements Cloneable {
     //New installs will use a clob for the description
     //    public static final int MAX_DESCRIPTION_LENGTH = Integer.MAX_VALUE;
 
-    /** _more_ */
     public static final int MAX_DESCRIPTION_LENGTH = 32000;
 
-    /** _more_ */
     public static final int MAX_NAME_LENGTH = 200;
 
-    /** _more_ */
     public static final int DEFAULT_ORDER = 999;
 
     /** List of comments */
