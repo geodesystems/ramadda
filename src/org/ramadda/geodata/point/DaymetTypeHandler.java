@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -29,48 +29,16 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
 
-/**
- */
 public class DaymetTypeHandler extends PointTypeHandler {
-
-
-    /** _more_ */
     private SimpleDateFormat dateSDF;
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_STRIDE = IDX++;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public DaymetTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -81,9 +49,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
     }
 
 
-
-
-    /** _more_ */
     private static final String URL_TEMPLATE =
         "https://daymet.ornl.gov/single-pixel/api/data?lat=${latitude}&lon=${longitude}&vars=prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
 
@@ -96,19 +61,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	if(!stringDefined(lon)) lon= "" + entry.getLongitude(request);
 	return new String[]{lat,lon};
     }
-	
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -135,34 +89,12 @@ public class DaymetTypeHandler extends PointTypeHandler {
         return url;
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class DaymetRecordFile extends CsvFile {
-
 	Request request;
-
-        /** _more_ */
         Repository repository;
-
-        /** _more_ */
         Entry entry;
 	String[]loc;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param entry _more_
-	 *
-         * @throws IOException _more_
-         */
         public DaymetRecordFile(Request request, Repository repository, Entry entry,
 				String[]loc,
                                 IO.Path path)
@@ -199,15 +131,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	    return is;
         }
 
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             super.prepareToVisit(visitInfo);

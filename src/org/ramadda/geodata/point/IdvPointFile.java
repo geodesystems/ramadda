@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -15,47 +15,16 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-
-/**
- */
 public class IdvPointFile extends CsvFile {
 
-    /**
-     * _more_
-     */
     public IdvPointFile() {}
-
-    /**
-     * ctor
-     *
-     *
-     * @throws IOException _more_
-     */
     public IdvPointFile(IO.Path path) throws IOException {
         super(path);
     }
-
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param properties _more_
-     *
-     * @throws IOException _more_
-     */
     public IdvPointFile(IO.Path path, Hashtable properties)
             throws IOException {
         super(path, properties);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
     @Override
     public int getSkipLines(VisitInfo visitInfo) {
         String skipFromProperties = getProperty(PROP_SKIPLINES,
@@ -66,30 +35,11 @@ public class IdvPointFile extends CsvFile {
         return 3;
     }
 
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordIO readHeader(RecordIO recordIO) throws Exception {
         return recordIO;
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     @Override
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
@@ -103,16 +53,6 @@ public class IdvPointFile extends CsvFile {
         return visitInfo;
     }
 
-    /**
-     * _more_
-     *
-     * @param field _more_
-     * @param properties _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getProperty(RecordField field, Hashtable properties,
                               String prop, String dflt) {
@@ -129,13 +69,6 @@ public class IdvPointFile extends CsvFile {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param failureOk _more_
-     * @return _more_
-     */
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getProperty(PROP_FIELDS, null);
@@ -154,15 +87,6 @@ public class IdvPointFile extends CsvFile {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public PointRecord getRecord(int index) throws Exception {
         throw new IllegalArgumentException("Not implemented");

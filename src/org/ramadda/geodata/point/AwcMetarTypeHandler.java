@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -17,8 +17,6 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
-
-
 import java.io.*;
 import java.util.Hashtable;
 import java.util.HashSet;
@@ -30,8 +28,6 @@ import org.json.*;
 /**
  * TypeHandler for Aviation Weather Center METARS
  * https://www.aviationweather.gov/adds/dataserver
- *
- *
  */
 public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
@@ -39,28 +35,14 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
     public static final String URL = "https://aviationweather.gov/api/data/metar?format=json&ids={station}&hours={offset}";
 
 
-    /** _more_ */
     private static int IDX =
         org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
 
 
-    /** _more_ */
     public static final int IDX_SITE_ID = IDX++;
-    /** _more_ */
     public static final int IDX_STATE = IDX++;
-
-
-    /** _more_ */
     public static final int IDX_TIME_OFFSET = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception On badnes
-     */
     public AwcMetarTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
@@ -71,11 +53,11 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
     private void doCleanup() {
 	/*
-Table:TYPE_AWC_METAR
-ID (VARCHAR 200)
-SITE_ID (VARCHAR 200)
-TIME_OFFSET (INTEGER 10)
-STATE (VARCHAR 200)
+	  Table:TYPE_AWC_METAR
+	  ID (VARCHAR 200)
+	  SITE_ID (VARCHAR 200)
+	  TIME_OFFSET (INTEGER 10)
+	  STATE (VARCHAR 200)
 	*/
 
 	try {

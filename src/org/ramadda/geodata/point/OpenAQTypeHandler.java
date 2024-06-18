@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -36,31 +36,15 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class OpenAQTypeHandler extends PointTypeHandler {
 
-    /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_LOCATION_ID = IDX++;
-
-    /** _more_ */
     private static int IDX_COUNTRY = IDX++;
-
-    /** _more_ */
     private static int IDX_CITY = IDX++;
-
     private static int IDX_SENSOR = IDX++;    
-
     private static int IDX_STATIONARY = IDX++;    
-
-    /** _more_ */
     private static int IDX_HOURS_OFFSET = IDX++;
-
-
-    /** _more_ */
     private SimpleDateFormat dateSDF;
 
     private static final String[]
@@ -78,13 +62,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	"-print"
     };
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public OpenAQTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
@@ -120,20 +97,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	}
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -142,17 +105,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         return new OpenAQRecordFile(entry, new IO.Path(getPathForEntry(request, entry,true)));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
 	throws Exception {
@@ -187,39 +139,15 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         return url;
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
-    public static class OpenAQRecordFile extends CsvFile {
 
+    public static class OpenAQRecordFile extends CsvFile {
 	Entry entry;
-	
-        /**
-         * _more_
-         *
-         *
-         * @throws IOException _more_
-         */
+
         public OpenAQRecordFile(Entry _entry, IO.Path path) throws IOException {
             super(path);
 	    this.entry  = _entry;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         *
-         * @throws Exception _more_
-         */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {

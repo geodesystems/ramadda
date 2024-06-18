@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -29,51 +29,18 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class GsdTypeHandler extends PointTypeHandler {
-
-
-    /** _more_ */
     private SimpleDateFormat dateSDF;
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_MODEL = IDX++;
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
-    public GsdTypeHandler(Repository repository, Element node)
-            throws Exception {
-        super(repository, node);
-    }
-
-
-    /** _more_ */
     private static final String URL_TEMPLATE =
         "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source={model}&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param topProps _more_
-     *
-     * @return _more_
-     */
+    public GsdTypeHandler(Repository repository, Element node)
+            throws Exception {
+        super(repository, node);
+    }
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
@@ -89,17 +56,6 @@ public class GsdTypeHandler extends PointTypeHandler {
         return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public IO.Path getPathForRecordEntry(Request request,Entry entry,
 					 Hashtable requestProperties)
@@ -126,17 +82,6 @@ public class GsdTypeHandler extends PointTypeHandler {
         return new IO.Path(url);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {

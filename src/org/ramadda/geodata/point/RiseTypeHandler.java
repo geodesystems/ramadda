@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -15,41 +15,16 @@ import org.w3c.dom.*;
 import java.io.*;
 import java.net.URL;
 
-/**
- */
 public class RiseTypeHandler extends PointTypeHandler {
-
-    /**  */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /**  */
     public static final int IDX_RISE_ID = IDX++;
-
-    /**  */
     public static final int IDX_LOCATION_TYPE = IDX++;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public RiseTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {

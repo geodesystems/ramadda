@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -23,20 +23,9 @@ import org.json.*;
 /**
  * TypeHandler for Aviation Weather Center METARS
  * https://www.aviationweather.gov/adds/dataserver
- *
- *
  */
 public class NwsStationTypeHandler extends PointTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception On badnes
-     */
     public NwsStationTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);

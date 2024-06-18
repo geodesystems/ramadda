@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -29,33 +29,18 @@ import org.json.*;
 /**
  * TypeHandler for Aviation Weather Center METARS
  * https://www.aviationweather.gov/adds/dataserver
- *
- *
  */
 public class NwsObsTypeHandler extends NwsStationTypeHandler {
-
-    /** _more_ */
     public static final String URL =
         "https://api.weather.gov/stations/{station}/observations";
 
 
-    /** _more_ */
     private static int IDX =
         org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
 
 
-    /** _more_ */
     public static final int IDX_SITE_ID = IDX++;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception On badnes
-     */
     public NwsObsTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -70,18 +55,6 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
    }
 
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badnes
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -101,35 +74,11 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
 				    new IO.Path(getPathForEntry(request, entry,true)));
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class NwsObsRecordFile extends CsvFile {
-
-        /** _more_ */
         Repository repository;
-
 	Request request;
-
-        /** _more_ */
         Entry entry;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param entry _more_
-         * @param filename _more_
-         *
-         * @throws IOException _more_
-         */
         public NwsObsRecordFile(Request request,Repository repository, Entry entry,
 				IO.Path path)
                 throws IOException {

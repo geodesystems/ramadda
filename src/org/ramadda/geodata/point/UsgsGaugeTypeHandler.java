@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -100,7 +100,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    
     }
 
-    /** _more_ */
     private static final String URL_TEMPLATE_FLOW =
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
 

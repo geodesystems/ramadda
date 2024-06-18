@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -44,7 +44,6 @@ public class WaterMLFile extends PointFile {
                    longitude = 0,
                    altitude  = 0;
 
-    /** _more_ */
     private List<RecordField> fields;
 
     /** time series values */
@@ -53,24 +52,12 @@ public class WaterMLFile extends PointFile {
     /** dates */
     private List<Date> dates;
 
-    /**
-     * The constructor
-     *
-     * @throws IOException On badness
-     */
+
     public WaterMLFile(IO.Path path) throws IOException {
         super(path);
         sdf = makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     */
     public BaseRecord doMakeRecord(VisitInfo visitInfo) {
         DataRecord dataRecord = new DataRecord(this);
         if (fields == null) {
@@ -258,16 +245,6 @@ public class WaterMLFile extends PointFile {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     public BaseRecord.ReadStatus readNextRecord(VisitInfo visitInfo,
             BaseRecord record)
             throws IOException {
@@ -290,13 +267,6 @@ public class WaterMLFile extends PointFile {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
     public boolean isCapable(String action) {
         if (action.equals(ACTION_TIME)) {
             return true;
@@ -306,11 +276,6 @@ public class WaterMLFile extends PointFile {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         PointFile.test(args, WaterMLFile.class);
     }

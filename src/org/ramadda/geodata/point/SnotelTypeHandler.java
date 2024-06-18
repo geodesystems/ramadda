@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -18,14 +18,8 @@ import java.util.List;
 import java.io.*;
 import java.net.URL;
 
-/**
- */
 public class SnotelTypeHandler extends PointTypeHandler {
-
-    /**  */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-
     private static int IDX_SITE_NUMBER = IDX++;
     private static int IDX_SITE_ID = IDX++;
     private static int IDX_STATE = IDX++;
@@ -33,30 +27,11 @@ public class SnotelTypeHandler extends PointTypeHandler {
     private static int IDX_NETWORK = IDX++;
     private static int IDX_HUC_ID = IDX++;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public SnotelTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {

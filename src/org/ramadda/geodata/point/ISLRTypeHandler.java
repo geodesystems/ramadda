@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -28,11 +28,7 @@ import java.util.List;
 
 
 public class ISLRTypeHandler extends PointTypeHandler {
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_STATION_ID = IDX++;
 
     public ISLRTypeHandler(Repository repository, Element node)

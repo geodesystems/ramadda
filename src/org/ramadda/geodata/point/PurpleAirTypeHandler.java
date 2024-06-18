@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -36,60 +36,27 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class PurpleAirTypeHandler extends PointTypeHandler {
-
 
     private static String FIELDS_DEFAULT="default";
     private static String FIELDS_SHORT="short";
     private static String FIELDS_ALL="all";
 
-    /**  */
     private static boolean testMode = false;
-
-
-    /**  */
     private static boolean debug = false;
-
-
-
-    /**  */
     private String apiKey;
-
-    /** _more_ */
     private SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /**  */
     public static final int IDX_SENSOR_ID = IDX++;
-
-    /**  */
     public static final int IDX_PRIVATE_KEY = IDX++;
-
-    /**  */
     public static final int IDX_ACTIVE = IDX++;
-
     public static final int IDX_FIELDS = IDX++;    
-
-    /**  */
     public static final int IDX_MODEL = IDX++;
-
-    /**  */
     public static final int IDX_HARDWARE = IDX++;
-
-    /**  */
     public static final int IDX_LOCATION_TYPE = IDX++;
-
-    /**  */
     private static final String FIELDS_STRING_DEFAULT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0";
 
-
-
-    /**  */
     private static final String FIELDS_STRING_SHORT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
 
@@ -97,36 +64,22 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static final String FIELDS_DOWNLOAD_ALL = "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,analog_input,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
 
 
-
-    /**  */
     private static final String FIELDS_STRING_ALL =
         "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,ozone1,analog_input,pm1.0,pm1.0_a,pm1.0_b,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5,pm2.5_a,pm2.5_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm2.5_10minute,pm2.5_10minute_a,pm2.5_10minute_b,pm2.5_30minute,pm2.5_30minute_a,pm2.5_30minute_b,pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,pm2.5_6hour,pm2.5_6hour_a,pm2.5_6hour_b,pm2.5_24hour,pm2.5_24hour_a,pm2.5_24hour_b,pm2.5_1week,pm2.5_1week_a,pm2.5_1week_b,pm10.0,pm10.0_a,pm10.0_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
 
     private static final List<String> FIELDS_LIST_DEFAULT =
         Utils.split(FIELDS_STRING_DEFAULT, ",");
 
-
-    /**  */
     private static final List<String> FIELDS_LIST_SHORT =
         Utils.split(FIELDS_STRING_SHORT, ",");
 
-    /**  */
     private static final List<String> FIELDS_LIST_ALL =
         Utils.split(FIELDS_STRING_ALL, ",");
-
 
     private static String FIELDS_PROPERTY_DEFAULT;
     private static String FIELDS_PROPERTY_SHORT;
     private static String FIELDS_PROPERTY_ALL;    
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public PurpleAirTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -189,11 +142,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	return FIELDS_PROPERTY_SHORT;	
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @return _more_
-     */
     private String getDataFields(Request request,Entry entry) {
 	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(request,entry)))
 	    return FIELDS_STRING_ALL;
@@ -202,11 +150,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	return FIELDS_STRING_SHORT;
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @return _more_
-     */
     private List<String> getFieldsList(Request request,Entry entry) {
 	if(Utils.equals(FIELDS_DEFAULT, getFieldsType(request,entry)))
 	    return FIELDS_LIST_DEFAULT;
@@ -218,18 +161,10 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
 
-    /**
-     *
-     * @param entry _more_
-      * @return _more_
-     */
     private String getFileHeader(Request request, Entry entry) {
 	return "date," + getDataFields(request,entry)   + "\n";
     }
 
-
-    /**
-     */
     private void sleepUntil() {
         if (testMode) {
             System.err.println("PurpleAir test sleeping for:" + 10);
@@ -241,11 +176,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         Utils.sleepUntil(freq, testMode || debug);
     }
 
-
-    /**
-     *
-     * @throws Exception _more_
-     */
     private void runInBackground() throws Exception {
         Request request = getRepository().getAdminRequest();
         sleepUntil();
@@ -275,15 +205,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
-
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void fetchData(Request request, Entry entry) throws Exception {
         Sensor sensor = readSensor(entry, getDataFields(request,entry));
         if (sensor == null) {
@@ -390,27 +311,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Feb 3, '22
-     * @author         Enter your name here...
-     */
     private static class Sensor {
-
-        /**  */
         Date date;
-
-        /**  */
         JSONObject data;
-
-        /**
-         *
-         *
-         * @param date _more_
-         * @param data _more_
-         */
         public Sensor(Date date, JSONObject data) {
             this.date = date;
             this.data = data;
@@ -432,15 +335,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	return null;
     }
 
-
-    /**
-     *
-     * @param entry _more_
-     * @param fields _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Sensor readSensor(Entry entry, String fields) throws Exception {
 	Request request = getAdminRequest();
         if (apiKey == null) {
@@ -481,15 +375,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 			  obj.getJSONObject("sensor"));
     }
 
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryAction(Request request, Entry entry)
             throws Exception {
         String action = request.getString("action", "");
@@ -677,22 +562,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	return getEntryManager().addEntryHeader(request, entry,
 						new Result(DOWNLOAD_TITLE, sb));
     }
-    
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -702,35 +572,13 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                                        new IO.Path(getPathForEntry(request, entry, true)));
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class PurpleAirRecordFile extends CsvFile {
 
 	Request request;
-
-        /** _more_ */
         Repository repository;
-
 	PurpleAirTypeHandler typeHandler;
-
-        /** _more_ */
         Entry entry;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
         public PurpleAirRecordFile(Request request,Repository repository, PurpleAirTypeHandler typeHandler, Entry entry,
                                    IO.Path path)
                 throws IOException {
@@ -746,16 +594,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 	    return typeHandler.getFieldsProperty(request,entry);
 	}
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             super.prepareToVisit(visitInfo);

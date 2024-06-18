@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -53,63 +53,22 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class NasaAmesTypeHandler extends PointTypeHandler {
-
-
-    /** _more_ */
     private SimpleDateFormat dateSDF;
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     public static final int IDX_DIMENSIONS = IDX++;
-
-    /** _more_ */
     public static final int IDX_ORIGINATOR_NAME = IDX++;
-
-    /** _more_ */
     public static final int IDX_AFFILIATION = IDX++;
-
-    /** _more_ */
     public static final int IDX_INSTRUMENT = IDX++;
-
-    /** _more_ */
     public static final int IDX_CAMPAIGN = IDX++;
-
-    /** _more_ */
     public static final int IDX_COMMENTS = IDX++;
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public NasaAmesTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -118,14 +77,7 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         return new NasaAmesRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
     } 
 
-    /**
-     * _more_
-     *
-     * @param recordEntry _more_
-     * @param metadata _more_
-     *
-     * @throws Exception _more_
-     */
+
     @Override
     protected void handleHarvestedMetadata(Request request,RecordEntry recordEntry,
                                            PointMetadataHarvester metadata)
@@ -145,148 +97,54 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class NasaAmesRecordFile extends CsvFile {
-
-
-        /** _more_ */
         String name;
-
-        /** _more_ */
         int numDimensions;
-
-        /** _more_ */
         String affiliation;
-
-        /** _more_ */
         String instrument;
-
-        /** _more_ */
         String campaign;
-
-        /** _more_ */
         StringBuilder comments = new StringBuilder();
-
-        /** _more_ */
         Date startDate;
 
-        /** _more_ */
         private SimpleDateFormat sdf =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-        /** _more_ */
         public static final int DATEUNIT_HOURS = 1;
-
-        /** _more_ */
         public static final int DATEUNIT_DAYS = 2;
-
-        /** _more_ */
         public static final int DATEUNIT_SECONDS = 3;
-
-        /** _more_ */
         private int dateIdx = -1;
-
-        /** _more_ */
         private boolean doElapsed = false;
-
-        /** _more_ */
         private int dateUnit;
-
-        /** _more_ */
         private long dateBase;
 
-        /**
-         * _more_
-         *
-         * @param filename _more_
-         *
-         * @throws IOException _more_
-         */
         public NasaAmesRecordFile(IO.Path path) throws IOException {
             super(path);
         }
 
-
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Sun, Dec 22, '19
-         * @author         Enter your name here...
-         */
         private static class Var {
-
-            /** _more_ */
             String id;
-
-            /** _more_ */
             String label;
-
-            /** _more_ */
             String unit;
-
-            /** _more_ */
             String scale;
-
-            /** _more_ */
             String missing;
-
-            /**
-             * _more_
-             *
-             * @param id _more_
-             * @param label _more_
-             * @param unit _more_
-             */
             public Var(String id, String label, String unit) {
                 this.id    = id;
                 this.label = label;
                 this.unit  = unit;
             }
-
-            /**
-             * _more_
-             *
-             * @param id _more_
-             * @param label _more_
-             * @param unit _more_
-             * @param scale _more_
-             * @param missing _more_
-             */
             public Var(String id, String label, String unit, String scale,
                        String missing) {
                 this(id, label, unit);
                 this.scale   = scale;
                 this.missing = missing;
             }
-
-            /**
-             * _more_
-             *
-             * @return _more_
-             */
             public String toString() {
                 return "id:" + id + " label:" + label + " unit:" + unit;
             }
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param tok _more_
-         *
-         * @return _more_
-         */
         private Var parseVar(String tok) {
             tok = tok.trim();
             String var   = tok;
@@ -320,14 +178,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
 
             return new Var(Utils.makeID(var), label, unit);
         }
-
-        /**
-         * _more_
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
         private String clean(String s) {
             int idx = s.indexOf(";");
             if (idx >= 0) {
@@ -337,13 +187,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
             return s.trim();
         }
 
-        /**
-         * _more_
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
         public List<String> tokenize(String s) {
             s = clean(s);
 
@@ -352,15 +195,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
                                        : " ", true, true);
         }
 
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
 
@@ -512,17 +346,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         * @param record _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public boolean processAfterReading(VisitInfo visitInfo,
                                            BaseRecord record)
                 throws Exception {

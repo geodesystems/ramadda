@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -20,12 +20,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- *
- * @author Jeff McWhirter
- */
-
 public class PointApiHandler extends RepositoryManager {
 
 
@@ -45,27 +39,11 @@ public class PointApiHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getRepository().getOutputHandler(
             PointOutputHandler.class);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processJsonRequest(Request request) throws Exception {
         PointOutputHandler poh   = getPointOutputHandler();
         Entry              entry = getEntryManager().getEntry(request);
@@ -83,16 +61,6 @@ public class PointApiHandler extends RepositoryManager {
         return poh.outputEntry(request, poh.OUTPUT_PRODUCT, entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processDataRequest(Request request) throws Exception {
         PointOutputHandler poh   = getPointOutputHandler();
         Entry              entry = getEntryManager().getEntry(request);

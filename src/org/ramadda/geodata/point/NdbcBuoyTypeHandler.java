@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -34,33 +34,14 @@ import java.util.List;
 
 
 
-/**
- */
+
 public class NdbcBuoyTypeHandler extends PointTypeHandler {
-
-
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_STATION_ID = IDX++;
-
-    /** _more_ */
     private static int IDX_DATA_TYPE = IDX++;
-
-    /** _more_ */
     private static final String URL_TEMPLATE =
         "https://www.ndbc.noaa.gov/data/realtime2/${station_id}.${data_type}";
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public NdbcBuoyTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
@@ -129,17 +110,6 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	}
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {

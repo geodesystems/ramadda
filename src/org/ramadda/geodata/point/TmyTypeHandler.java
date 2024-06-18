@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
@@ -30,79 +30,32 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 public class TmyTypeHandler extends PointTypeHandler {
-
-
-    /** _more_ */
     private SimpleDateFormat dateSDF;
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_STATE = IDX++;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public TmyTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
     }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getContextNamespace() {
         return "tmy";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
         return new TmyRecordFile(getRepository(), entry,
                                  new IO.Path(entry.getResource().getPath()), this);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
-            throws Exception {
+	throws Exception {
 	if(!isNew(newType)) return;
         initializeRecordEntry(entry, entry.getFile(), true);
 
@@ -119,45 +72,18 @@ public class TmyTypeHandler extends PointTypeHandler {
         fis.close();
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public static class TmyRecordFile extends CsvFile {
-
-        /** _more_ */
         Repository repository;
 
-        /** _more_ */
         Entry entry;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param entry _more_
-         * @param context _more_
-         *
-         * @throws IOException _more_
-         */
         public TmyRecordFile(Repository repository, Entry entry,
                              IO.Path path, RecordFileContext context)
-                throws IOException {
+	    throws IOException {
             super(path, context, null);
             this.repository = repository;
             this.entry      = entry;
         }
 
     }
-
-
-
-
 }
