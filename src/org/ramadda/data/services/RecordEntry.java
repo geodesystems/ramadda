@@ -52,7 +52,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     /** the job id */
     private Object processId;
 
-    /** _more_ */
     private Bounds bounds;
 
     /**
@@ -90,42 +89,15 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public boolean isEnabled() throws Exception {
         return getRecordFile() != null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param property _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean isCapable(String property) throws Exception {
         return getRecordFile().isCapable(property);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public BaseRecord getRecord(int index) throws Exception {
         return getRecordFile().getRecord(index);
     }
@@ -206,46 +178,18 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         return recordFile;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
     public void setRecordFile(RecordFile file) {
         this.recordFile = file;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RecordOutputHandler getOutputHandler() {
         return recordOutputHandler;
     }
 
-
-    /*
-     * get the entry
-     *
-     * @return the entry
-     */
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Entry getEntry() {
         return entry;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return "record entry:" + entry;
     }
@@ -307,13 +251,6 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         recordFile.visit(visitor, visitInfo, getFilter());
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Request getRequest() {
         return request;
     }
