@@ -54,11 +54,17 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	    loggers = new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/kbocc/loggers.json"));
 	}
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
+	String _fileName = fileName.replace("_","-");
 	String yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d\\d)");
 	if(yearSite==null)
 	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d\\d)");
+	if(yearSite==null)
+	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d)");
+	if(yearSite==null)
+	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d)");	
 	if(yearSite==null) yearSite="";
 	yearSite=yearSite.replace("_","-");
+	System.err.println("YS:" + yearSite +" " + fileName);
 	List<String> toks = Utils.splitUpTo(yearSite,"-",2);
 	String site = toks.size()==2?toks.get(1):"";
 	JSONObject theLogger=null;
@@ -66,10 +72,12 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	for(int i=0;theLogger==null && i<loggers.length();i++) {
 	    JSONObject logger=loggers.getJSONObject(i);
 	    String id = logger.getString("id").trim();
-	    if(fileName.startsWith(id) || id.equals(yearSite)) {
+	    if(fileName.equals(id) || _fileName.equals(id) ||fileName.startsWith(id) || id.equals(yearSite)) {
 		theLogger = logger;
 	    }
 	}
+
+
 	//next look for site
 	site = site.trim();
 	for(int i=0;theLogger==null && i<loggers.length();i++) {
