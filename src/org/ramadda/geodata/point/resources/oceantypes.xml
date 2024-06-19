@@ -797,6 +797,77 @@ Data is from the [https://sealevel.nasa.gov/task-force-scenario-tool/ Interagenc
 
 
 
+<type name="type_point_islr_obs" description="Interagency Sea Level Rise - Observations" super="type_point_ocean"  foruser="true"
+      handler="org.ramadda.geodata.point.ISLRTypeHandler">
+  <property name="icon" value="/point/nasa.png"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  <property name="form.header.new">
+<![CDATA[+note\nDownload the XLS files from <a target=_data href=https://sealevel.nasa.gov/task-force-scenario-tool/>sealevel.nasa.gov</a>\n-note]]></property>    
+
+<column  name="station"  label="Station" type="string" cansearch="false"/>
+<column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  canedit="false"  showinhtml="false" bgroup="Convert"/>
+<property name="record.properties">
+xls.sheet=3
+csvcommands1=-bom,-notcolumns,psmsl_id\,units,-scale,1-15
+csvcommands2=0,0.00328084,0,-addheader, default.unit feet
+</property>
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{group}}
+{{display_linechart showMenu=true fields="obs_extrap_17th"}}
+{{display_linechart showMenu=true fields="obs_extrap_50th"}} 
+{{display_linechart showMenu=true fields="obs_extrap_83rd"}}
+-section
+]]></property>
+
+
+<wiki>
+<![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{group}}
++row
++col-9
+{{display_linechart showMenu=true fields="obs_extrap_17th"}}
+{{display_linechart showMenu=true fields="obs_extrap_50th"}} 
+{{display_linechart showMenu=true fields="obs_extrap_83rd"}}
+-col
++col-3
++center
+{{resource  message="" title="Download File"}}
+-center
+{{mapentry}}
++center
+View station: 
+<a target=_other href="https://sealevel.nasa.gov/task-force-scenario-tool/?psmsl_id={{field name=station}}">@NASA</a>
+<a target=_other href="https://psmsl.org/data/obtaining/stations/{{field name=station}}.php">@PSMSL</a>
+
+
+-center
+-col
+-row
+:heading Table
+{{display_download}}
+{{display_table}}
+
+----
+
+:heading Information
+Data is from the [https://sealevel.nasa.gov/task-force-scenario-tool/ Interagency Sea Level Rise Scenario Tool]
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
 <type name="type_point_ex0profiler"  description="EX0 Profiler"  super="type_point" 
 	handler="org.ramadda.data.services.PointTypeHandler"
 	pattern="(?i).*pfl.*\.dat">
