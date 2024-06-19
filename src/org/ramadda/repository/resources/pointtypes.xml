@@ -25,25 +25,14 @@ labelTemplate="${name}"
 {{display_entrytitle
 message="" setEntry.acceptGroup=file entry="child:orderby:date;ascending:false;type:type_point"}}
 -center
-<table width=100% border=0 cellpadding=10>
-<tr valign=top>
-<td width=1%>
-{{display_fieldslist 	       message="" setEntry.acceptGroup=file
-entry="child:orderby:date;ascending:false;type:type_point"
-width=185px height=65vh
-loadingMessage="" 
-fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-numericOnly=true asList=true
-showPopup=false decorate=true
-}}
-</td><td>
-{{display_linechart 	       message="" setEntry.acceptGroup=file
+{{display_entrywiki
+wiki="{{import showTitle=false macro=forpointcollection}}"
+message="" setEntry.acceptGroup=file
 entry="child:orderby:date;ascending:false;type:type_point"
 fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
 height=60vh padRight=true chartLeft="80" chartRight="80"
 addTooltip=false useMultipleAxes=true
 }}
-</tr></td></table>
 ----
 :heading Files
 {{tree}}
@@ -121,6 +110,7 @@ addTooltip=false useMultipleAxes=true
     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
     <column name="properties" type="string" size="8000" columns="-1" rows="8"  label="Properties"  showinform="true" showinhtml="false" canlist="false" changetype="true" canexport="false" cansearch="false"
 	    help="Point data properties"/>
+
   </type>
 
 
