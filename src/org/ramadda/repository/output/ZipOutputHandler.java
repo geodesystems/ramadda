@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -422,7 +423,7 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
 
         long      sizeProcessed = 0;
-        Hashtable seen          = new Hashtable();
+        HashSet seen          = new HashSet();
         long      sizeLimit;
         if (request.isAnonymous()) {
             sizeLimit = MEGA
@@ -531,10 +532,13 @@ public class ZipOutputHandler extends OutputHandler {
 
             int    cnt  = 1;
             if ( !forExport) {
-                while (seen.get(name) != null) {
+		boolean dup =false;
+                while (seen.contains(name)) {
                     name = (cnt++) + "_" + name;
+		    dup=true;
                 }
-                seen.put(name, name);
+                seen.add(name);
+		if(dup) name = "dup_" + name;
                 if (!thumbnails && prefix.length() > 0) {
                     name = prefix + "/" + name;
                 }
