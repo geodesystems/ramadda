@@ -812,13 +812,15 @@ Data is from the [https://sealevel.nasa.gov/task-force-scenario-tool/ Interagenc
 <column name="convert_commands" type="clob"   rows="5" columns="60" label="Convert Text"  canedit="false"  showinhtml="false" bgroup="Convert"/>
 <property name="record.properties">
 xls.sheet=3
-csvcommands1=-bom,-notcolumns,psmsl_id\,units,-scale,1-15
-csvcommands2=0,0.00328084,0,-addheader, default.unit feet
+csvcommands1=-bom,-notcolumns,psmsl_id\,units,-change,1-4
+csvcommands2=-32768,NaN,-scale,1-4,0
+csvcommands3=0.00328084,0,-addheader, default.unit feet
 </property>
 <property name="bubble">
 <![CDATA[
 +section  title={{name}}
 {{group}}
+{{display_linechart showMenu=true fields="tg_obs"}}
 {{display_linechart showMenu=true fields="obs_extrap_17th"}}
 {{display_linechart showMenu=true fields="obs_extrap_50th"}} 
 {{display_linechart showMenu=true fields="obs_extrap_83rd"}}
@@ -834,6 +836,7 @@ csvcommands2=0,0.00328084,0,-addheader, default.unit feet
 {{group}}
 +row
 +col-9
+{{display_linechart showMenu=true fields="tg_obs"}}
 {{display_linechart showMenu=true fields="obs_extrap_17th"}}
 {{display_linechart showMenu=true fields="obs_extrap_50th"}} 
 {{display_linechart showMenu=true fields="obs_extrap_83rd"}}
