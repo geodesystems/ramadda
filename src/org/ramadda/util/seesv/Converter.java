@@ -5137,14 +5137,14 @@ public abstract class Converter extends Processor {
                 if (!row.indexOk(index)) {
                     continue;
                 }
+		String s = row.get(index).toString();
                 try {
-                    double value =
-                        Double.parseDouble(row.get(index).toString());
+                    double value =   Seesv.parseDouble(s);
                     row.set(index,
                             Double.valueOf((value + delta1) * scale
 					   + delta2).toString());
                 } catch (NumberFormatException nfe) {
-		    System.err.println("Error converting:" +row.get(index).toString() + " in row:" + row);
+		    System.err.println("Error converting:" +s + " in row:" + row);
 		}
             }
 
