@@ -1818,6 +1818,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
+	{p:'filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterDateSelects',
 	 ex:'-30 days:Last 30 days,-60 days:Last 60 days,-90 days:Last 90 days,ytd:Year to date,thisyear:This year,year_2022:2022',
