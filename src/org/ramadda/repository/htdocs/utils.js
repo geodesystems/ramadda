@@ -253,7 +253,7 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title,ack,addLink,removeTags) {
+    initCopyable: function(selector,title,ack,addLink,removeTags,removeNL,downloadFileName) {
 	$(selector).each(function(){
 	    $(this).attr('title',title??'Click to copy');
 	    let link = $(this);
@@ -271,7 +271,18 @@ var Utils =  {
 		let text = $(this).attr('data-copy')??$(this).html();
 		if(removeTags) {
 		    text = text.replace(/<br>/g,'\n').replace(/<p>/g,'\n\n').replace(/<[^>]+>/g,'');
+		    text = text.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 		}
+		if(removeNL) {
+		    text = text.replace(/\n/g,' ');
+		}
+		if(downloadFileName) {
+		    let f = prompt('Download file name',downloadFileName);
+		    if(f) {
+			Utils.makeDownloadFile(f,text);
+			return
+		    }
+		} 
 		Utils.copyToClipboard(text)
 		alert($(this).attr('copy-message')??ack??'Text copied to clipboard');
 	    });
