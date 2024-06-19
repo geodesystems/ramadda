@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 18 19:38:50 MDT 2024";
+var build_date="RAMADDA build date: Tue Jun 18 21:24:18 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5788,6 +5788,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
+	{p:'filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterDateSelects',
 	 ex:'-30 days:Last 30 days,-60 days:Last 60 days,-90 days:Last 90 days,ytd:Year to date,thisyear:This year,year_2022:2022',
@@ -31003,7 +31004,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_average}'},
 	{p:'highlightOnScroll',ex:'true'},
 	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'},
-	{p:'colorBackground',d:false, canCache:true}];
+	{p:'colorBackground',d:false, canCache:true},
+	{p:'addCopyToClipboard',ex:true,tt:'Add a link to copy the output to the clipboard'},
+	{p:'copyToClipboardDownloadFile',ex:'somefile.txt',tt:'Instead of copying to the clipboard download the file'}	
+    ];
 
 
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -31315,6 +31319,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		contents+= headerTemplate;
 	    }
 
+	    let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
 
 
 	    if(Utils.stringDefined(template)) {
@@ -31333,8 +31338,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		var colCnt = 0;
 		var style = this.getTemplateStyle("");
-		let handleSelectOnClick = this.getPropertyHandleSelectOnClick(true);
-
 		let noWrapper = this.getNoWrapper();
 		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 		    if(max!=-1 && rowIdx>=max) break;
@@ -31353,7 +31356,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			var value =  record.getData()[colorBy.index];
 			color =  colorBy.getColor(value, record);
 		    }
-		    let s = template.trim();
+		    let s = template;
 		    let row = this.getDataValues(record);
 		    if(s.trim()=="${default}") {
 			s = this.getRecordHtml(record,fields,s);
@@ -31381,8 +31384,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 			rowAttrs["color"] = color;
 		    }
-		    if(!handleSelectOnClick)
-			recordStyle+=HU.css("cursor","default");
+		    if(!handleSelectOnClick)			recordStyle+=HU.css("cursor","default");
 		    let tag = HU.openTag("div",[CLASS,noWrapper?'':'display-template-record',STYLE,recordStyle, ID, this.getId() +"-" + record.getId(), TITLE,"",RECORD_ID,record.getId(),RECORD_INDEX, rowIdx]);
 		    s = macros.apply(rowAttrs);
 		    if(s.startsWith("<td")) {
@@ -31445,7 +31447,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.makeTooltips(recordElements, selected);
 	    this.makePopups(recordElements, selected);
 	    let _this = this;
-	    if(this.getPropertyHandleSelectOnClick(true)) {
+	    if(this.getProperty('addCopyToClipboard')) {
+		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css('cursor','pointer');
+		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),null,null,true,true,true,
+				   this.getProperty('copyToClipboardDownloadFile'));
+	    }
+	    if(handleSelectOnClick) {
 		this.find(".display-template-record").click(function() {
 		    var record = selected[$(this).attr(RECORD_INDEX)];
 		    _this.handleEventRecordHighlight(this, {record:record,highlight:true,immediate:true,skipScroll:true});
