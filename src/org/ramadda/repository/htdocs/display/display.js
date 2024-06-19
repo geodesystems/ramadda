@@ -1114,10 +1114,7 @@ function DisplayThing(argId, argProperties) {
 	    if(!fields) return "";
 	    let dflt = this.getRecordHtmlProps();
 	    let link  =  dflt.linkField?record.getValue(dflt.linkField.getIndex()):null;
-            let showGeo = false;
-            if (Utils.isDefined(this.showGeo)) {
-                showGeo = ("" + this.showGeo) == "true";
-            }
+            let showGeo = this.getTooltipShowGeo();
 	    if(template=="") return "";
 	    if(!Utils.stringDefined(template))
 		template = this.getProperty("recordTemplate");
@@ -1743,6 +1740,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipCollision'},
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
+	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
 	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',

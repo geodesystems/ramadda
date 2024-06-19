@@ -987,7 +987,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doPopupSlider', ex:'true',tt:'Do the inline popup that slides down'},
 	{p:'popupSliderRight', ex:'true',tt:'Position the inline slider to the right'},	
 	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:''},	
-	{p:'labelField',ex:'',tt:'field to show in TOC'},
+	{p:'labelField',ex:'',tt:'fields to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
 	{p:'centerOnFilterChange',d:true,ex:true,tt:'Center map when the data filters change'},
@@ -3126,16 +3126,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	makeToc:function(records) {
 	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
-	    let labelField = this.getFieldById(null,this.getProperty("labelField","name"));
-	    if(!labelField) labelField = this.getFieldByType(null,"string");
-	    if(labelField) {
+	    let labelField = this.getFieldsByIds(null,this.getProperty("labelField","name"));
+	    if(!labelField || labelField.length==0) labelField = this.getFieldsByType(null,"string");
+	    if(labelField && labelField.length>0) {
 		let html = "";
 		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
 		    let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
-		    let value = labelField.getValue(record);
+		    let values= labelField.map(f=>{
+			return f.getValue(record);
+		    });
+		    let value = Utils.join(values,' ');
 		    if(!iconField) {
 			clazz+=" ramadda-nav-list-link ";
 		    } else {
