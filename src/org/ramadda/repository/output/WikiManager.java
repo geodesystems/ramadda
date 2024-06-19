@@ -424,14 +424,23 @@ public class WikiManager extends RepositoryManager
             }
 
 
-	    String macroTag = Utils.getProperty(props,"macro",null);
-	    if(macroTag!=null) {
-		WikiMacro macro = theEntry.getTypeHandler().getWikiMacroTag(theEntry,macroTag);
-		System.err.println(macroTag +" " + macro);
-		if(macro!=null) {
-		    String text=macro.getWikiText().trim();
-		    return wikifyEntry(request, theEntry, text);
+	    String macroTags = Utils.getProperty(props,"macro",null);
+	    if(macroTags!=null) {
+		WikiMacro macro = null;
+		String dflt = null;
+		//A bit of a hack
+		String dfltChart = "<table><tr valign=top><td width=1%>{{display_fieldslist  message=\"\" width=185px height=65vh loadingMessage=\"\" fieldsPatterns=\".*temp.*,.*rh.*,.*pres.*\" numericOnly=true asList=true showPopup=false decorate=true}}</td><td>{{display_linechart 	       message=\"\" setEntry.acceptGroup=file fieldsPatterns=\".*temp.*,.*rh.*,.*pres.*\" height=60vh padRight=true chartLeft=\"80\" chartRight=\"80\" addTooltip=false useMultipleAxes=true}}</tr></td></table>";
+		for(String macroTag: Utils.split(macroTags,",",true,true)) {
+		    macro = theEntry.getTypeHandler().getWikiMacroTag(theEntry,macroTag);
+		    if(macro!=null) {
+			String text=macro.getWikiText().trim();
+			return wikifyEntry(request, theEntry, text);
+		    }
+		    if(macroTag.equals("forpointcollection")) dflt=dfltChart;
 		}
+		if(dflt!=null)
+		    return wikifyEntry(request, theEntry, dflt);
+
 	    }
             String propertyKey = null;
             //TODO: figure out a way to look for infinte loops
