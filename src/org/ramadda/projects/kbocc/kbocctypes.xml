@@ -123,6 +123,31 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 -row
 -section
 ]]></wiki>
+
+<wikimacro name="kbocc_merged_chart" label="Merged Chart" tags="forpointcollection">
+<![CDATA[
+{{group
+2016.color=Red 2017.color=Green 2018.color=Blue 2019.color=darkgoldenrod
+2020.color=Magenta 2021.color=Orange 2022.color=Cyan 2023.color=black
+2024.color=Purple 2024.color=Brown
+}}
++row
++col-2
+{{display_fieldslist numericOnly=true fields=2016,2017,2018,2019,2020,2021,2022,2023,2024,2025}} 
+-col
++col-8
+{{display_linechart height=60vh vAxisSharedRange=true vAxisTitle="property:axis_label" 
+tooltip="${default}"
+hAxis.ticks="3648:June 1,4392:July 1,5064:Aug 1,5736:Sept 1,6408:Oct 1,7080:Nov 1,8280:Dec 1" 
+indexField=hours_in_year
+fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}} 
+-col
++col-2
+{{display_template  onlyShowSelected=true template="${default}"}}
+-col
+-row
+]]></wikimacro>
+
 </type>
 
 
