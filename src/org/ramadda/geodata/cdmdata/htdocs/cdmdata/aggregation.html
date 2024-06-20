@@ -17,24 +17,51 @@ https://noaa-mrms-pds.s3.amazonaws.com/index.html#CONUS/FLASH_CREST_MAXSTREAMFLO
 these GRIB files contains one time step. Go and download the files of interest. Then in RAMADDA,
 Select Pick a Type... and look for Grid Aggregation:
 
-[ht::screenshot agg/aggtype.png]
+{{image align=center width=screenshot src=/cdmdata/agg/aggtype.png }}
 
 You can leave the default settings:
-[ht::screenshot agg/aggnew.png]
+{{image align=center width=screenshot src=/cdmdata/agg/aggnew.png}}
 
+
++callout-info
+The grid aggregation works by dyamically constructing a
+[https://docs.unidata.ucar.edu/netcdf-java/current/userguide/ncml_overview.html NCML] file.
+The Aggregation type, Time Coordinate and Fields are are used to control how the
+NCML is configured. 
+More documentation on this in the future.
+-callout
+
++callout-info
+Note: The Files, File Pattern, Recurse, etc fields allow an admin
+to define that this grid aggregation dynamically loads gridded files from
+the server file system. More documentation on this in the future.
+-callout
+
+:heading Adding Gridded Files
 Then from the new Aggregation entry choose Pick a Type... and select Gridded Data File:
-[ht::screenshot agg/gridtype.png]
+{{image align=center width=screenshot src=/cdmdata/agg/gridtype.png}}
 
 +callout-info
 Note: you can either upload each GRIB file individually or you can zip them up (as below) and upload
 the zip file
 -callout
-[ht::screenshot agg/gridnew.png]
+{{image align=center width=screenshot src=/cdmdata/agg/gridnew.png}}
 
-Once done you will have a listing like:
+Once done you will have a listing like below. You can access each of the grid files individually
+but you can also access subset and OpenDAP services on the aggregation.
+Note: There can be some performance issues as RAMADDA has to crack open each individual file when
+accessing the aggregation.
 
-[ht::screenshot agg/list.png]
+{{image align=center width=screenshot src=/cdmdata/agg/listing.png}}
 
+
+:heading Making a single grid
+You can use the Subset Grid form on the aggregation to subset the aggregated grid and to
+publish it back to RAMADDA as a single NetCDF file. This can address some of the performance
+issues with with aggregation. Optionally specify  spatial and temporal bounds. At the bottom of
+the form you can specify a RAMADDA folder to add the new NetCDF grid file to.
+
+{{image align=center width=screenshot src=/cdmdata/agg/subset.png}}
 
 
 
