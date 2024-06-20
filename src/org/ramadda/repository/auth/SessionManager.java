@@ -200,8 +200,6 @@ public class SessionManager extends RepositoryManager {
 
     public void setLocation(Request request, double latitude, double longitude)
 	throws Exception {
-	System.err.println("set loc:" +latitude +" " + longitude);
-
         if ( !Double.isNaN(latitude) && !Double.isNaN(longitude)) {
             putSessionProperty(request, ARG_LOCATION_LATITUDE,
                                latitude + ";" + longitude);
