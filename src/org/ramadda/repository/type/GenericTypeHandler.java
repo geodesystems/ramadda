@@ -409,16 +409,19 @@ public class GenericTypeHandler extends TypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        //        System.err.println ("GenericTypeHandler.initFromForm");
-        //Always call getEntryValues here so we get create the correct size array
         Object[] values = getEntryValues(entry);
         if (haveDatabaseTable()) {
             for (Column column : getMyColumns()) {
-                column.setValue(request, entry, values);
+		setColumnValue(request, entry,  column,values);
             }
         }
         super.initializeEntryFromForm(request, entry, parent, newEntry);
     }
+
+    public void setColumnValue(Request request, Entry entry, Column column,Object[]values)  
+            throws Exception {
+	column.setValue(request, entry, values);
+    }    
 
 
     /**
