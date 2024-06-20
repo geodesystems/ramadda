@@ -1434,6 +1434,11 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 
         String src = getProperty(wikiUtil, props, ATTR_SRC, (String) null);
+	if(src!=null && src.startsWith("/")) {
+	    return getWikiImage(wikiUtil, request, getRepository().getUrlBase()+src,entry,props);
+	}
+
+
 	if(entry==null) {
 	    return getMessage(wikiUtil, props, msg("No image entry"));
 	}
