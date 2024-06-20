@@ -299,6 +299,9 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
         }
 
 
+	getMapManager().setSessionLocation(request, llp.getLatitude(),llp.getLongitude());
+
+
 
         int                timeStride = 1;
         List<CalendarDate> allDates   =
@@ -703,18 +706,13 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
 
         String formUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String fileName = IOUtil.stripExtension(entry.getName()) + "_point";
-
         String formId   = HU.getUniqueId("form_");
 
         getPageHandler().entrySectionOpen(request, entry, sb, "Extract Time Series");
 
-
-
         sb.append(HU.form(formUrl + "/" + fileName,
                                  HU.id(formId)));
         sb.append(HU.br());
-
-
 
         sb.append(HU.submit("Get Data", ARG_SUBMIT));
         sb.append(HU.br());
@@ -734,12 +732,13 @@ public class GridPointOutputHandler extends CdmOutputHandler implements CdmConst
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-        MapInfo map = getRepository().getMapManager().createMap(request,
-                          entry, true, null);
+	String[] latlon = getMapManager().getSessionLocation(request, new String[] { lat, lon });
+
+        MapInfo map = getMapManager().createMap(request,
+						entry, true, null);
         map.addBox("", "", "", llr,
                    new MapProperties("blue", false, true));
-        String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
-                lon });
+        String llb = map.makeSelector(ARG_LOCATION, true, latlon);
         sb.append(HU.formEntryTop(msgLabel("Location"), llb));
 
         getCdmManager().addTimeWidget(request, dates, sb);
