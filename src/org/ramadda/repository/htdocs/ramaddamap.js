@@ -704,6 +704,9 @@ RepositoryMap.prototype = {
     },
     setInitialCenterAndZoom: function(lon, lat, zoomLevel) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
+	if(debugBounds)
+	    console.log("setInitialCenterAndZoom:" + this.defaultBounds);
+
 	this.setInitialZoom(zoomLevel);
         this.params.initialZoom = zoomLevel;
     },
@@ -3441,19 +3444,24 @@ RepositoryMap.prototype = {
             if (this.argBase && !this.fldNorth) {
                 this.setSelection(this.argBase);
             }
-
             if (this.fldNorth) {
                 this.setSelectionBox(this.fldNorth.obj.value,
 				     this.fldWest.obj.value, this.fldSouth.obj.value,
 				     this.fldEast.obj.value, true);
             }
 
+
             if (this.fldLon) {
                 this.addClickHandler(this.fldLon.id, this.fldLat.id);
                 this.setSelectionMarker(this.fldLon.obj.value, this.fldLat.obj.value);
 	    }
         }
-	this.map.updateSize();
+	//The updateSize messes with map position
+	let center = this.map.getCenter();
+//	let zoom =  this.map.getZoom();
+	this.getMap().updateSize();
+        this.getMap().setCenter(center);
+//	this.setZoom(zoom);
     },
 
     setSelectionBoxFromFields:  function(zoom) {
