@@ -155,6 +155,20 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     /**
+       Override this to only allow the admin user to set the files value
+     */
+    @Override
+    public void setColumnValue(Request request, Entry entry, Column column,Object[]values)  
+            throws Exception {
+	if(column.getName().equals("files")) {
+	    if(!request.isAdmin()) return;
+	}
+	super.setColumnValue(request, entry, column, values);
+    }    
+
+
+
+    /**
      * Get whether we should ingest files
      *
      * @param entry  the Entry
@@ -220,7 +234,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuilder sb = new StringBuilder();
 
         NcmlUtil ncmlUtil = new NcmlUtil(entry.getStringValue(request,INDEX_TYPE,
-                                NcmlUtil.AGG_JOINEXISTING));
+							      NcmlUtil.AGG_JOINEXISTING));
         String timeCoordinate = entry.getStringValue(request,INDEX_COORDINATE, "time");
         String       files   = entry.getStringValue(request,INDEX_FILES, "").trim();
         String       pattern = entry.getStringValue(request,INDEX_PATTERN, "").trim();
@@ -277,6 +291,8 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             getRepository().getEntryManager().getChildren(request, entry);
 
         //Check if the user specified any files directly
+	//TODO: maybe allow this if the user isn't admin since we only allow the files attribute
+	//to be set by an admin
         if (stringDefined(files != null) && entry.getUser().getAdmin()) {
             List<Entry>       dummyEntries = new ArrayList<Entry>();
             List<File>        filesToUse   = new ArrayList<File>();
@@ -351,12 +367,11 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                         }
                     };
                     //                    System.err.println("Adding file to aggregation:" + dataFile);
-                    Request addRequest = new Request(getRepository(),
-                                             entry.getUser());
+                    Request addRequest = new Request(getRepository(),  entry.getUser());
                     Entry newEntry =
                         getEntryManager().addFileEntry(addRequest, dataFile,
 						       entry, null, dataFile.getName(), "", entry.getUser(),
-                            null, initializer);
+						       null, initializer);
                     childrenEntries.add(newEntry);
                 }
                 if (addedNewOne && (harvestMetadata || harvestFullMetadata)) {
@@ -373,7 +388,6 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                 childrenEntries = dummyEntries;
             }
         }
-
 
         for (Entry child : childrenEntries) {
             if (child.getType().equals(TYPE_GRIDAGGREGATION)) {
