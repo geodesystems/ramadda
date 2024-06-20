@@ -277,11 +277,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             getRepository().getEntryManager().getChildren(request, entry);
 
         //Check if the user specified any files directly
-        if ((files != null) && (files.length() > 0)) {
-            if ( !entry.getUser().getAdmin()) {
-                throw new IllegalArgumentException(
-                    "When using the files list in the grid aggregation you must be an administrator");
-            }
+        if (stringDefined(files != null) && entry.getUser().getAdmin()) {
             List<Entry>       dummyEntries = new ArrayList<Entry>();
             List<File>        filesToUse   = new ArrayList<File>();
             PatternFileFilter filter       = null;
