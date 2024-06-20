@@ -176,6 +176,19 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                          MapInfo.DFLT_HEIGHT, forSelection, props);
     }
 
+    public void setSessionLocation(Request request, double lat, double lon) throws Exception {
+	getRepository().getSessionManager().setLocation(request, lat,lon);
+    }
+
+    public String[] getSessionLocation(Request request, String[] latlon) throws Exception{
+	String userLoc =
+	    (String) getSessionManager().getSessionProperty(request,ARG_LOCATION_LATITUDE);
+	if (userLoc != null) {
+	    List<String> toks = Utils.split(userLoc, ";");
+	    return new String[]{toks.get(0),toks.get(1)};
+	}
+	return latlon;
+    }
 
     public void addMapMarkerMetadata(Request request, Entry entry,List propList) throws Exception {
 	List<Metadata> markers =
@@ -270,10 +283,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
 
 
+
         if ( !didLoc) {
             String userLoc =
-                (String) getSessionManager().getSessionProperty(request,
-								ARG_LOCATION_LATITUDE);
+                (String) getSessionManager().getSessionProperty(request,ARG_LOCATION_LATITUDE);
             if (userLoc != null) {
                 List<String> toks = Utils.split(userLoc, ";");
                 props.put(PROP_INITIAL_LOCATION, JsonUtil.list(toks));
