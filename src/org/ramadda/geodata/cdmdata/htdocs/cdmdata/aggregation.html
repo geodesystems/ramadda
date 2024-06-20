@@ -1,0 +1,49 @@
+<html>
+<title>Grid Aggregation</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+:navtop
+
+:heading Grid Aggregation
+The Grid Aggregation entry type lets you aggregate any number of gridded data files.
+The common use case is to aggregate the children grids on the time dimension, so for example,
+if you have a number of the same grids but one time step per file you can aggregate these
+files and act as if they are one grid.
+:p
+For example, NOAA provides Max Stream flow grids (in GRIB2 format) available at
+[https://noaa-mrms-pds.s3.amazonaws.com/index.html#CONUS/FLASH_CREST_MAXSTREAMFLOW_00.00
+https://noaa-mrms-pds.s3.amazonaws.com/index.html#CONUS/FLASH_CREST_MAXSTREAMFLOW_00.00]. Each of
+these GRIB files contains one time step. Go and download the files of interest. Then in RAMADDA,
+Select Pick a Type... and look for Grid Aggregation:
+
+[ht::screenshot agg/aggtype.png]
+
+You can leave the default settings:
+[ht::screenshot agg/aggnew.png]
+
+Then from the new Aggregation entry choose Pick a Type... and select Gridded Data File:
+[ht::screenshot agg/gridtype.png]
+
++callout-info
+Note: you can either upload each GRIB file individually or you can zip them up (as below) and upload
+the zip file
+-callout
+[ht::screenshot agg/gridnew.png]
+
+Once done you will have a listing like:
+
+[ht::screenshot agg/list.png]
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
