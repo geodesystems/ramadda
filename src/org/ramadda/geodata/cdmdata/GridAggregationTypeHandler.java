@@ -289,11 +289,10 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
         boolean     childrenAggregation = false;
         List<Entry> childrenEntries =
             getRepository().getEntryManager().getChildren(request, entry);
-
         //Check if the user specified any files directly
 	//TODO: maybe allow this if the user isn't admin since we only allow the files attribute
 	//to be set by an admin
-        if (stringDefined(files != null) && entry.getUser().getAdmin()) {
+        if (stringDefined(files) && entry.getUser().getAdmin()) {
             List<Entry>       dummyEntries = new ArrayList<Entry>();
             List<File>        filesToUse   = new ArrayList<File>();
             PatternFileFilter filter       = null;
@@ -389,6 +388,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
+	//	System.err.println("sorted chillens:" + childrenEntries);
         for (Entry child : childrenEntries) {
             if (child.getType().equals(TYPE_GRIDAGGREGATION)) {
                 String ncml = getNcmlString(request, child, timestamp);
@@ -405,6 +405,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
             sortedChillens.add(child);
 
         }
+
 
         if (ncmlUtil.isJoinExisting()) {
 	    //Get the sort order. false=> don't check for inherited
