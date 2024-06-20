@@ -30,7 +30,7 @@
 
   <type name="cdm_grid"  description="Gridded Data File" foruser="true" category="Geoscience Data" 
         handler="org.ramadda.geodata.cdmdata.GridTypeHandler"
-        pattern=".*\.(grb|grib|grib2|grb2)$">
+        pattern=".*\.(grb|grib|grib2|grb2|grb\.gz|grib\.gz|grb2\.gz|grib2\.gz)$">
      <property name="icon" value="/cdmdata/grid.png"/>
    <embedwiki><![CDATA[
    {{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}}

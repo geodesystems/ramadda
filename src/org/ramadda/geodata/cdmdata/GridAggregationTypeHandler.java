@@ -371,7 +371,7 @@ public class GridAggregationTypeHandler extends ExtensibleGroupTypeHandler {
                     Entry newEntry =
                         getEntryManager().addFileEntry(addRequest, dataFile,
 						       entry, null, dataFile.getName(), "", entry.getUser(),
-						       null, initializer);
+						       getRepository().getTypeHandler("cdm_grid"), initializer);
                     childrenEntries.add(newEntry);
                 }
                 if (addedNewOne && (harvestMetadata || harvestFullMetadata)) {
