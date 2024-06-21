@@ -213,7 +213,19 @@ but cannot see any of the details of the folder or any of the children entry of 
 
 <a name="file"></a>
 <li> File - This allows users to see the information about an entry but they cannot access the file. i.e., they cannot download the
-file or access any of the content of the file (e.g., through OpenDAP).
+file or access any of the content of the file (e.g., through charts or maps).
+This also includes any file based properties like entry thumbnails.
+
+<a name="geo"></a>
+<li> Geolocation - This allows limits any access to the geolocation (i.e., its north/west/south/east bounding box)
+of an entry including displaying in a map, export, JSON listing, etc.
+If the user is searching based on geographic location and they don't have "geo" access then the entries
+won't be shown.
++callout-info
+Note: This access setting has no effect on 
+data files that have geolocation (e.g., a Shapefile, a CSV file with Lat/Lon, etc).
+If you need to control access to the file then use the View or File permissions described above.
+-callout
 
 <a name="edit"></a>
 <li> Edit - Can a user edit the entry.
@@ -232,14 +244,6 @@ In the Edit page for the uploaded Entry the owner can "bless" the entry to make 
 If you want more people than the owner to receive notification simply add  a "Contact" property to the folder
 that contains the other recipient's email.
 
-<a name="geo"></a>
-<li> Geolocation - This allows limits any access to the geolocation (i.e., its north/west/south/east bounding box)
-of an entry including in displaying in a map, export, JSON listing, etc.
-If the user is searching based on geographic location and they don't have "geo" access then the entries
-won't be shown.
-<p>
-Note: If a data file has geolocation (e.g., a CSV file with Lat/Lon) then this access settings
-has no effect on filtering the lat/lon.
 
 
 
