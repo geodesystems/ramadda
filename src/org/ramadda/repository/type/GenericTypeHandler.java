@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -55,67 +55,32 @@ import java.util.List;
 import java.util.Properties;
 
 
-/**
- * Class TypeHandler _more_
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class GenericTypeHandler extends TypeHandler {
 
-    /** _more_ */
     public static final String ATTR_CLASS = "class";
-
-    /** _more_ */
     public static final String COL_ID = "id";
-
-    /** _more_ */
     private List<Column> myColumns = new ArrayList<Column>();
-
-    /** _more_ */
     private List<Column> allColumns;
-
-    /** _more_ */
     private Column categoryColumn;
-
-    /** _more_ */
     List<String> colNames = new ArrayList<String>();
-
 
     /** If true then place this types edit form elements at the beginning */
     private boolean meFirst = false;
 
-
-    /**
-     * ctor
-     */
     public GenericTypeHandler() {
         super(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository The repository
-     * @param type _more_
-     * @param description _more_
-     */
+    
     public GenericTypeHandler(Repository repository, String type,
                               String description) {
         super(repository, type, description);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param repository The repository
-     * @param entryNode _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public GenericTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -126,13 +91,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entryNode _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void initGenericTypeHandler(Element entryNode) throws Exception {
         if (getType().indexOf(".") >= 0) {
             //Were screwed - too may types had a . in them
@@ -151,11 +110,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private boolean getMeFirst() {
         if (meFirst) {
             return true;
@@ -169,13 +124,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param columnNodes _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void initColumns(List<Element> columnNodes) throws Exception {
         Statement statement = getDatabaseManager().createStatement();
         colNames.add(COL_ID);
@@ -241,32 +190,20 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getColumnNames() {
         return colNames;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<Column> getMyColumns() {
         return myColumns;
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     @Override
     public List<Column> getColumns() {
         if (allColumns == null) {
@@ -351,14 +288,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param columnName _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
+    
     public Object convert(String columnName, String value) {
         Column column = findColumn(columnName);
         if (column == null) {
@@ -375,21 +305,13 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private boolean haveDatabaseTable() {
         return colNames.size() > 0;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getNumberOfMyValues() {
         if ( !haveDatabaseTable()) {
             return 0;
@@ -424,16 +346,7 @@ public class GenericTypeHandler extends TypeHandler {
     }    
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     * @param files _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
@@ -478,15 +391,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param value _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public int matchValue(String arg, Object value, Entry entry) {
         for (Column column : getColumns()) {
             int match = column.matchValue(arg, value, ((entry == null)
@@ -504,13 +409,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param longName _more_
-     *
-     * @return _more_
-     */
+    
     public List<TwoFacedObject> getListTypes(boolean longName) {
         List<TwoFacedObject> list = super.getListTypes(longName);
         for (Column column : getColumns()) {
@@ -527,16 +426,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param what _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public Result processList(Request request, String what) throws Exception {
         Column theColumn = null;
         for (Column column : getColumns()) {
@@ -615,13 +505,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     *
-     * @return _more_
-     */
+    
     public boolean equals(Object obj) {
         if ( !super.equals(obj)) {
             return false;
@@ -632,15 +516,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param statement _more_
-     * @param entry _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void deleteEntry(Request request, Statement statement, Entry entry)
             throws Exception {
         deleteEntryFromDatabase(request, statement, entry.getId());
@@ -648,17 +524,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param statement _more_
-     * @param id _more_
-     * @param parent _more_
-     * @param values _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parent, Object[] values)
@@ -668,15 +534,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param statement _more_
-     * @param id _more_
-     *
-     * @throws Exception on badness
-     */
+    
     private void deleteEntryFromDatabase(Request request,
                                          Statement statement, String id)
             throws Exception {
@@ -690,16 +548,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param searchCriteria _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public List<Clause> assembleWhereClause(Request request,
                                             Appendable searchCriteria)
@@ -729,13 +578,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param isNew _more_
-     * @param typeInserts _more_
-     */
+    
     @Override
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {
@@ -762,15 +605,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param stmt _more_
-     * @param isNew _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void setStatement(Entry entry, PreparedStatement stmt,
                              boolean isNew)
@@ -780,18 +615,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param values _more_
-     * @param stmt _more_
-     * @param isNew _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public int setStatement(Entry entry, Object[] values,
                             PreparedStatement stmt, boolean isNew)
             throws Exception {
@@ -814,13 +638,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void initializeEntryFromDatabase(Entry entry) throws Exception {
         //Always call getEntryValues here so we get create the correct size array
@@ -834,16 +652,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param values _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     private Object[] readValuesFromDatabase(Entry entry, Object[] values)
             throws Exception {
         Clause clause = Clause.eq(COL_ID, entry.getId());
@@ -905,17 +714,7 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param tmpSb _more_
-     * @param values _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, Appendable tmpSb,
                                       Object[] values)
@@ -925,14 +724,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
         super.getTextCorpus(entry, sb,args);
@@ -953,15 +745,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param requst _more_
-     * @param entry _more_
-     * @param output _more_
-     *
-     * @return _more_
-     */
+    
     public boolean shouldShowInHtml(Request requst, Entry entry,
                                     OutputType output) {
         return output.equals(OutputHandler.OUTPUT_HTML)
@@ -969,19 +753,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param name _more_
-     * @param raw _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public String getFieldHtml(Request request, Entry entry, Hashtable props,
                                String name, boolean raw)
@@ -1001,13 +773,10 @@ public class GenericTypeHandler extends TypeHandler {
                         if (o != null) {
                             return o.toString();
                         }
-
                         return null;
                     }
                     StringBuilder tmpSB = new StringBuilder();
-                    formatColumnHtmlValue(request, entry, column, tmpSB,
-                                          values);
-
+                    formatColumnHtmlValue(request, entry, column, tmpSB, values);
                     return tmpSB.toString();
                 }
             }
@@ -1016,22 +785,7 @@ public class GenericTypeHandler extends TypeHandler {
         return super.getFieldHtml(request, entry, props, name, raw);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param request _more_
-     * @param typeHandler _more_
-     * @param output _more_
-     * @param showDescription on badness
-     * @param showResource _more_
-     * @param linkToDownload _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void getInnerEntryContent(Entry entry, Request request,
 				     TypeHandler typeHandler, OutputType output,
@@ -1137,17 +891,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param html _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public String processDisplayTemplate(Request request, Entry entry,
                                          String html)
             throws Exception {
@@ -1171,16 +915,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forReading)
             throws Exception {
@@ -1205,14 +940,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param initTables _more_
-     *
-     * @return _more_
-     */
+    
     protected List getTablesForQuery(Request request, List initTables) {
         super.getTablesForQuery(request, initTables);
         for (Column column : getMyColumns()) {
@@ -1229,11 +957,7 @@ public class GenericTypeHandler extends TypeHandler {
         return initTables;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTableName() {
         String typeName = getType();
 
@@ -1255,17 +979,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler sourceTypeHandler, HashSet seen)
@@ -1277,18 +991,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param formInfo _more_
-     * @param sourceTypeHandler _more_
-     *
-     * @throws Exception on badness
-     */
+    
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry parentEntry, Entry entry, Object[] values,
                                       FormInfo formInfo,
@@ -1306,17 +1009,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fileWriter _more_
-     * @param node _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void addToEntryNode(Request request, Entry entry,
                                FileWriter fileWriter, Element node)
@@ -1333,15 +1026,7 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param fieldsToShow _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void addToSpecialSearchForm(Request request,
                                        Appendable formBuffer,
@@ -1360,18 +1045,7 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param titles _more_
-     * @param contents _more_
-     * @param where _more_
-     * @param advancedForm _more_
-     * @param showText _more_
-     *
-     * @throws Exception on badness
-     */
+    
     @Override
     public void addToSearchForm(Request request, List<String> titles,
                                 List<String> contents, List<Clause> where,
@@ -1383,19 +1057,6 @@ public class GenericTypeHandler extends TypeHandler {
                                advancedForm, null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param titles _more_
-     * @param contents _more_
-     * @param where _more_
-     * @param advancedForm _more_
-     * @param fieldsToShow _more_
-     *
-     * @throws Exception on badness
-     */
     public void addColumnsToSearchForm(Request request, List<String> titles,
                                        List<String> contents,
                                        List<Clause> where,

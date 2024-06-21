@@ -1,10 +1,9 @@
 /*
- * Copyright (c) 2008-2023 Geode Systems LLC
+ * Copyright (c) 2008-2024 Geode Systems LLC
  * SPDX-License-Identifier: Apache-2.0
  */
 
 package org.ramadda.repository.output;
-
 
 import org.ramadda.data.services.RecordTypeHandler;
 
@@ -104,24 +103,11 @@ public class WikiManager extends RepositoryManager
 								"", ICON_WIKI);
 
 
-    /**  */
     public static final String MEDIA_VIMEO = "vimeo";
-
-    /**  */
     public static final String MEDIA_YOUTUBE = "youtube";
-
     public static final String MEDIA_TIKTOK = "tiktok";
-
-    /**  */
     public static final String MEDIA_SOUNDCLOUD = "soundcloud";
-
-    /**  */
     public static final String MEDIA_OTHER = "other";
-
-
-
-
-
 
     //max number of entries in fulltree/menutree
     private static final int ENTRY_TREE_MAX_COUNT = 1000;
@@ -133,41 +119,17 @@ public class WikiManager extends RepositoryManager
     private String wikiMenuTagsButton;
     private String wikiMenuEtcButton;
     private String wikiMenuHelpButton;
-
-
-
-    /** _more_ */
     private String displayImports;
     private String displayInits;
-
-
-    /** _more_ */
+    private boolean defaultTableFormOpen = false;
     private Hashtable<String, String> wikiMacros;
-
-
-
     private WikiUtil dummyWikiUtil = new WikiUtil();
-
     private Hashtable<String,WikiTagHandler> tagHandlers =  new Hashtable<String,WikiTagHandler>();
 
-
-    private boolean defaultTableFormOpen = false;
-
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     */
     public WikiManager(Repository repository) {
         super(repository);
     }
 
-
-
-
-    /**
-     * _more_
-     */
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -229,30 +191,12 @@ public class WikiManager extends RepositoryManager
 	return template;
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param prop _more_
-     *
-     * @return _more_
-     */
     public String getProperty(WikiUtil wikiUtil, Hashtable props,
                               String prop) {
         return getProperty(wikiUtil, props, prop, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(WikiUtil wikiUtil, Hashtable props,
                               String prop, String dflt) {
         String value = Utils.getProperty(props, prop, (String) null);
@@ -289,16 +233,7 @@ public class WikiManager extends RepositoryManager
         return value;
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getProperty(WikiUtil wikiUtil, Hashtable props,
                                String prop, boolean dflt) {
         String value = getProperty(wikiUtil, props, prop, null);
@@ -309,16 +244,7 @@ public class WikiManager extends RepositoryManager
         return value.equals("true");
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
                            int dflt) {
         String value = getProperty(wikiUtil, props, prop, null);
@@ -340,17 +266,7 @@ public class WikiManager extends RepositoryManager
     }    
 
 
-    /**
-     * Get a wiki property value
-     *
-     * @param wikiUtil The wiki util
-     * @param property the property
-     * @param tag _more_
-     * @param remainder _more_
-     * @param notTags _more_
-     *
-     * @return the value
-     */
+    
     public String getWikiPropertyValue(WikiUtil wikiUtil, String property,
                                        String tag, String remainder,
                                        HashSet notTags) {
@@ -449,7 +365,7 @@ public class WikiManager extends RepositoryManager
                 if (request.getExtraProperty(propertyKey) != null) {
 		    return  makeErrorMessage(request,wikiUtil,props,tag, 
 					     "<b>Detected circular wiki import:" + tag+ "<br>For entry:" + theEntry.getId() + "</b>");
-		//                    return "<b>Detected circular wiki import:" + tag+ "<br>For entry:" + theEntry.getId() + "</b>";
+		    //                    return "<b>Detected circular wiki import:" + tag+ "<br>For entry:" + theEntry.getId() + "</b>";
                 }
                 request.putExtraProperty(propertyKey, property);
             }
@@ -565,19 +481,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entry _more_
-     * @param wikiContent _more_
-     * @param wrapInDiv _more_
-     * @param notTags _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
                               HashSet notTags)
@@ -657,28 +561,14 @@ public class WikiManager extends RepositoryManager
 	    wikiUtil.putProperty("primaryEntry", entry);
 	}
         String s = wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           notTags, true);
+			       notTags, true);
 	contentList.remove(wikiContent);
 	return s;
     }
 
 
 
-    /**
-     * Wikify the entry
-     *
-     * @param request The request
-     * @param entry   the Entry
-     * @param wikiUtil The wiki util
-     * @param wikiContent  the content to wikify
-     * @param wrapInDiv    true to wrap in a div tag
-     * @param notTags _more_
-     * @param includeJavascript _more_
-     *
-     * @return the wikified Entry
-     *
-     * @throws Exception  problem wikifying
-     */
+    
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
                               boolean wrapInDiv,  HashSet notTags,
@@ -917,18 +807,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entry _more_
-     * @param wikiUtil _more_
-     * @param entryId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry findEntryFromId(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
@@ -947,7 +826,7 @@ public class WikiManager extends RepositoryManager
     }
 
     public Entry findEntryFromIdInner(Request request, Entry entry,
-				 WikiUtil wikiUtil, Hashtable props, String entryId)
+				      WikiUtil wikiUtil, Hashtable props, String entryId)
 	throws Exception {
         Entry theEntry = null;
 
@@ -1132,20 +1011,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * Get a wiki image link
-     *
-     *
-     * @param wikiUtil The wiki util
-     * @param request The request
-     * @param url  the image url
-     * @param entry  the entry
-     * @param props  the properties
-     *
-     * @return the link
-     *
-     * @throws Exception problems
-     */
+    
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
 	throws Exception {
@@ -1318,30 +1184,13 @@ public class WikiManager extends RepositoryManager
 
     }
 
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param attr _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getDimension(Hashtable props, String attr, int dflt) {
         return getDimension(null, props, attr, dflt);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param attr _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getDimension(WikiUtil wikiUtil, Hashtable props, String attr,
                             int dflt) {
         try {
@@ -1375,15 +1224,6 @@ public class WikiManager extends RepositoryManager
 
     /**
      * Get the wiki url
-     *
-     * @param wikiUtil The wiki util
-     * @param request The request
-     * @param entry  the entry
-     * @param props  the properties
-     *
-     * @return  the url
-     *
-     * @throws Exception problems
      */
     public String getWikiUrl(WikiUtil wikiUtil, Request request, Entry entry,
                              Hashtable props)
@@ -1747,15 +1587,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processGetWikiToolbar(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
 						 request.getString(ARG_ENTRYID, ""));
@@ -1771,15 +1603,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processWikiTags(Request request) throws Exception {
         StringBuilder sb   = new StringBuilder();
         List<String>  tags = new ArrayList<String>();
@@ -1792,7 +1616,7 @@ public class WikiManager extends RepositoryManager
                 tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
                 for (int j = 0; j < tag.attrsList.size(); j += 2) {
                     tmp.add(JU.map(Utils.makeListFromValues("p",JU.quote(tag.attrsList.get(j)),"ex",
-							JU.quote(tag.attrsList.get(j + 1)))));
+							    JU.quote(tag.attrsList.get(j + 1)))));
                 }
                 tags.add(tag.tag);
                 tags.add(JU.list(tmp));
@@ -1819,15 +1643,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processWikify(Request request) throws Exception {
         String wiki = request.getUnsafeString("wikitext", "");
 	wiki = Request.cleanXSS(wiki);
@@ -1852,10 +1668,10 @@ public class WikiManager extends RepositoryManager
 
 	/*
 	  if(true) {
-	    Result result2 = new Result("", new StringBuilder("XXXX"));
-	    result2.setShouldDecorate(false);
-	    return result2;
-	    }*/
+	  Result result2 = new Result("", new StringBuilder("XXXX"));
+	  result2.setShouldDecorate(false);
+	  return result2;
+	  }*/
 	
 
 
@@ -1864,15 +1680,7 @@ public class WikiManager extends RepositoryManager
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processGetNotebook(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
 						 request.getString(ARG_ENTRYID, ""));
@@ -1912,15 +1720,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSaveNotebook(Request request) throws Exception {
         try {
             return processSaveNotebookInner(request);
@@ -1977,15 +1777,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSaveNotebookInner(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
 						 request.getString(ARG_ENTRYID, ""));
@@ -2047,20 +1839,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request the request
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param theTag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String getWikiIncludeInner(WikiUtil wikiUtil, Request request,
                                        Entry originalEntry, Entry entry,
                                        String theTag, Hashtable props,String remainder)
@@ -2329,9 +2108,9 @@ public class WikiManager extends RepositoryManager
 	    if(props.get("supers")!=null) supers =
 					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("supers"),",",true,true));
 	    if(props.get("cats")!=null) cats =
-					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("cats"),",",true,true));	    
+					    (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("cats"),",",true,true));	    
 	    if(props.get("types")!=null) types =
-					      (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("types"),",",true,true));	    
+					     (HashSet<String>) Utils.makeHashSet(Utils.split(props.get("types"),",",true,true));	    
 	    getSearchManager().addSearchByTypeList(request, sb,props,showHeader,showSearchField,listStyle,supers,cats,types);
 	    return sb.toString();
 	} else if(theTag.equals("csvform")) {
@@ -2445,7 +2224,7 @@ public class WikiManager extends RepositoryManager
 	    String channels = "facebook,twitter,reddit,linkedin,pinterest,email";
 
 	    Utils.add(args,"channels",JU.list(JU.quote(Utils.split(
-									       getProperty(wikiUtil, props, "channels", channels),",",true,true))));
+								   getProperty(wikiUtil, props, "channels", channels),",",true,true))));
 	    String id = HU.getUniqueId("share_");
 	    HU.div(sb,"",HU.attrs("id",id,"class","ramadda-share share-bar","style",style));
 	    StringBuilder js = new StringBuilder();
@@ -2610,9 +2389,9 @@ public class WikiManager extends RepositoryManager
 	    String height = getProperty(wikiUtil,props,"height",width);
 	    String js  = "new QRCode(" + HU.squote(id)+","+
 		JU.map("text",JU.quote(url),"width",width,
-			     "height",height,
-			     "colorDark",JU.quote(getProperty(wikiUtil,props,"colorDark","#000000")),
-			     "colorLight",JU.quote(getProperty(wikiUtil,props,"colorLight","#ffffff"))) +");\n";
+		       "height",height,
+		       "colorDark",JU.quote(getProperty(wikiUtil,props,"colorDark","#000000")),
+		       "colorLight",JU.quote(getProperty(wikiUtil,props,"colorLight","#ffffff"))) +");\n";
 							       
 	    HU.script(sb,js);
 	    return sb.toString();
@@ -2725,11 +2504,11 @@ public class WikiManager extends RepositoryManager
 	    String dflt= "Download";
             if ( !entry.getResource().isDefined()) {
                 dflt = url   = entry.getTypeHandler().getPathForEntry(request,
-							       entry,false);
+								      entry,false);
             } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request, entry,inline);
             } else {
-               dflt = url   = entry.getResource().getPath();
+		dflt = url   = entry.getResource().getPath();
             }
 	    label = getProperty(wikiUtil, props, ATTR_TITLE,
 				getProperty(wikiUtil, props, ATTR_LABEL, dflt));
@@ -2952,8 +2731,8 @@ public class WikiManager extends RepositoryManager
 
 	    String id = HU.getUniqueId("license_");
 	    String contents = HU.span(HU.div(prefix+result + text,HU.cssClass("ramadda-license")+
-					    HU.style(style)),
-				     HU.id(id));
+					     HU.style(style)),
+				      HU.id(id));
 	    if(stringDefined(required)) {
 		List<String> opts = new ArrayList<String>();
 		Utils.add(opts,"entryid",JU.quote(entry.getId()));
@@ -3673,7 +3452,7 @@ public class WikiManager extends RepositoryManager
 
             String links = getEntryManager().getEntryActionsTable(request,entry, type,null,false,props);
 	    String title = getProperty(wikiUtil, props, "title",null);
-            if (getProperty(wikiUtil, props, "popup", true)) {
+            if (getProperty(wikiUtil, props, ATTR_POPUP, true)) {
                 StringBuilder popup  = new StringBuilder();
                 if (getProperty(wikiUtil, props, "breadcrumbs", true)) {
                     StringBuilder tmp = new StringBuilder();
@@ -3942,9 +3721,9 @@ public class WikiManager extends RepositoryManager
             StringBuilder style = new StringBuilder(getProperty(wikiUtil,
 								props, APPLY_PREFIX + ATTR_STYLE, ""));
             String padding = getProperty(wikiUtil, props,
-                                      APPLY_PREFIX + ATTR_PADDING, null);
+					 APPLY_PREFIX + ATTR_PADDING, null);
             String margin = getProperty(wikiUtil, props,
-                                     APPLY_PREFIX + ATTR_MARGIN, null);
+					APPLY_PREFIX + ATTR_MARGIN, null);
             int border = getProperty(wikiUtil, props,
                                      APPLY_PREFIX + ATTR_BORDER, -1);
             String bordercolor = getProperty(wikiUtil, props,
@@ -3998,7 +3777,7 @@ public class WikiManager extends RepositoryManager
             }
             String layout = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "layout", "table");
-           int columns = getProperty(wikiUtil, props,
+	    int columns = getProperty(wikiUtil, props,
                                       APPLY_PREFIX + ATTR_COLUMNS, 1);
             if (columns > children.size()) {
                 columns = children.size();
@@ -4810,7 +4589,7 @@ public class WikiManager extends RepositoryManager
             }
             String template = getProperty(wikiUtil, props, "template", null);
             getHtmlOutputHandler().makeFrames(request, children, sb, width,
-						height, template,props);
+					      height, template,props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ENTRIES_TEMPLATE)) {
@@ -4842,7 +4621,7 @@ public class WikiManager extends RepositoryManager
 
 	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_NAVBAR)) {
-	    boolean popup = getProperty(wikiUtil,props,"popup",false);	    
+	    boolean popup = getProperty(wikiUtil,props,ATTR_POPUP,false);	    
 	    String style =getProperty(wikiUtil,props,"style","");
 	    String linkStyle =getProperty(wikiUtil,props,"linkStyle","");
 	    String separator =getProperty(wikiUtil,props,"separator",popup?"<br>":null);
@@ -4907,7 +4686,7 @@ public class WikiManager extends RepositoryManager
 					  "title","Show links",
 					  "style",popupLinkStyle));
 		HU.span(sb2,sb.toString(),HU.attrs("id",id+"_popup",
-						  "class","ramadda-navbar-popup"));
+						   "class","ramadda-navbar-popup"));
 		sb2.append(HU.script(HU.call("Utils.initNavbarPopup",HU.squote(id))));
 		return sb2.toString();
 	    }
@@ -5021,9 +4800,9 @@ public class WikiManager extends RepositoryManager
 	boolean decorate = getProperty(wikiUtil, props, "decorate",
 				       false);
 	boolean showSnippet = getProperty(wikiUtil, props,
-					     "showSnippet", getProperty(wikiUtil,props,"includeSnippet",false));
+					  "showSnippet", getProperty(wikiUtil,props,"includeSnippet",false));
 	boolean showDescription = getProperty(wikiUtil, props,
-						 "showDescription", false);	
+					      "showDescription", false);	
 	boolean showicon = getShowIcon(wikiUtil, props, false);
 
 	boolean linkResource = getProperty(wikiUtil, props,
@@ -5223,13 +5002,13 @@ public class WikiManager extends RepositoryManager
 							     child.getCreateDate(), macro);
 		} else if(macro.getId().equals(TypeHandler.FIELD_FROMDATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
-								      child.getStartDate(),macro);
+							     child.getStartDate(),macro);
 		} else if(macro.getId().equals(TypeHandler.FIELD_TODATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
 							     child.getEndDate(),macro);
 		} else if(macro.getId().equals(TypeHandler.FIELD_DATE)) {
 		    v = getDateHandler().formatDateWithMacro(request, child,
-								      child.getStartDate(),macro);
+							     child.getStartDate(),macro);
 		} else if(macro.getId().equals(TypeHandler.FIELD_DESCRIPTION)) {
 		    String desc = child.getDescription();		
 		    if(macro.getProperty("wikify",false)) {
@@ -5780,18 +5559,7 @@ public class WikiManager extends RepositoryManager
 	
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entry _more_
-     * @param id _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getWikiMetadataLabel(Request request, Entry entry,
                                        String id, String text)
 	throws Exception {
@@ -5812,21 +5580,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entry _more_
-     * @param originalEntry _more_
-     * @param theTag _more_
-     * @param props _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public MapInfo handleMapTag(Request request, WikiUtil wikiUtil,
                                 Entry entry, Entry originalEntry,
                                 String theTag, Hashtable props, Appendable sb)
@@ -5839,9 +5593,9 @@ public class WikiManager extends RepositoryManager
         boolean justPoints = getProperty(wikiUtil, props, "justpoints",
                                          false);
         boolean addMapLayerFromProperty = getProperty(wikiUtil, props, "addMapLayerFromProperty",
-                                         false);	
+						      false);	
         boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",
-                                         false);
+					  false);
         List<Entry> children;
 	if(skipEntries) {
             children = new ArrayList<Entry>();
@@ -5973,16 +5727,7 @@ public class WikiManager extends RepositoryManager
 	return map;
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void checkHeading(Request request, WikiUtil wikiUtil,
                              Hashtable props, Appendable sb)
 	throws Exception {
@@ -5994,17 +5739,7 @@ public class WikiManager extends RepositoryManager
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param child _more_
-     * @param wikify _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getSnippet(Request request, Entry child, boolean wikify, String dflt)
 	throws Exception {
         String snippet = getRawSnippet(request, child, wikify);
@@ -6015,17 +5750,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param child _more_
-     * @param wikify _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getRawSnippet(Request request, Entry child, boolean wikify)
 	throws Exception {
         String snippet = child.getSnippet();
@@ -6070,34 +5795,17 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param wikiUtil _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param props _more_
-     * @param addPrefix _more_
-     * @param prefix _more_
-     * @param showRoot _more_
-     * @param showIcon _more_
-     * @param depth _more_
-     * @param types _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private int doFullTree(Request request,  WikiUtil wikiUtil,
-                            Entry originalEntry, Entry entry,
-                            Hashtable props,
-			    boolean top, boolean asMenu, String menuId,
-			    String style,
-			    int labelWidth,
-			    boolean addPrefix,
-                            String prefix, boolean showRoot,
-                            boolean showIcon, int depth, List<String> types,
-                            Appendable sb,int count)
+			   Entry originalEntry, Entry entry,
+			   Hashtable props,
+			   boolean top, boolean asMenu, String menuId,
+			   String style,
+			   int labelWidth,
+			   boolean addPrefix,
+			   String prefix, boolean showRoot,
+			   boolean showIcon, int depth, List<String> types,
+			   Appendable sb,int count)
 	throws Exception {
 	if(top) {
 	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
@@ -6155,9 +5863,9 @@ public class WikiManager extends RepositoryManager
                             ? prefix + "."
                             : "") + (cnt++);
                 count = doFullTree(request,  wikiUtil, originalEntry, child, props,
-				 false, asMenu, null,			   
-				 style, labelWidth, addPrefix, p, showRoot, showIcon, depth, types,
-				 sb,count);
+				   false, asMenu, null,			   
+				   style, labelWidth, addPrefix, p, showRoot, showIcon, depth, types,
+				   sb,count);
 	    }
 	    if(addedUl) {
 		HU.close(sb,"ul","\n");
@@ -6169,18 +5877,7 @@ public class WikiManager extends RepositoryManager
 	return count;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String makeCard(Request request, WikiUtil wikiUtil,
                             Hashtable props, Entry entry)
 	throws Exception {
@@ -6214,7 +5911,7 @@ public class WikiManager extends RepositoryManager
 		tagTypes = new String[]{"enum_tag","content.keyword"};
 	    }
 	    List<Metadata> tagList =getMetadataManager().findMetadata(request, entry,
-						  tagTypes, false);
+								      tagTypes, false);
 	    if(tagList!=null && tagList.size()>0) {
 		StringBuilder tags = new StringBuilder();
 		tags.append("<div class=metadata-tags>");
@@ -6310,7 +6007,7 @@ public class WikiManager extends RepositoryManager
 					 "loading", "lazy"));
 
             String  inner;
-            boolean popup = getProperty(wikiUtil, props, "popup", true);
+            boolean popup = getProperty(wikiUtil, props, ATTR_POPUP, false);
             if (popup) {
                 boolean popupResource = getProperty(wikiUtil, props,
 						    "popupResource", false);
@@ -6355,16 +6052,7 @@ public class WikiManager extends RepositoryManager
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private Request copyRequest(Request request, Hashtable props)
 	throws Exception {
         Request clonedRequest = request.cloneMe();
@@ -6386,51 +6074,51 @@ public class WikiManager extends RepositoryManager
     public void addImagePopupJS(Request request, WikiUtil wikiUtil,
                                 Appendable buf, Hashtable props) {
 	try {
-        if (request.getExtraProperty("added fancybox") == null) {
-            String captionpos = getProperty(wikiUtil, props,
-                                            ATTR_POPUPCAPTION, "none");
-            StringBuilder options = new StringBuilder("{");
-            //Note: this doesn't work in v3
-            if ( !captionpos.equals("none")) {
-                options.append("helpers:{title:{");
-                if (captionpos.equals("inside")) {
-                    options.append("type:'inside'");
-                } else if (captionpos.equals("over")) {
-                    options.append("type:'over'");
-                } else if (captionpos.equals("top")) {
-                    options.append("type:'over',");
-                    options.append("position:'top'");
-                } else {
-                    options.append("type:'outside'");
-                }
-                options.append("}}");
-            } else {
-                options.append(HU.squote("titleShow"));
-                options.append(" : ");
-                options.append("false");
-            }
+	    if (request.getExtraProperty("added fancybox") == null) {
+		String captionpos = getProperty(wikiUtil, props,
+						ATTR_POPUPCAPTION, "none");
+		StringBuilder options = new StringBuilder("{");
+		//Note: this doesn't work in v3
+		if ( !captionpos.equals("none")) {
+		    options.append("helpers:{title:{");
+		    if (captionpos.equals("inside")) {
+			options.append("type:'inside'");
+		    } else if (captionpos.equals("over")) {
+			options.append("type:'over'");
+		    } else if (captionpos.equals("top")) {
+			options.append("type:'over',");
+			options.append("position:'top'");
+		    } else {
+			options.append("type:'outside'");
+		    }
+		    options.append("}}");
+		} else {
+		    options.append(HU.squote("titleShow"));
+		    options.append(" : ");
+		    options.append("false");
+		}
 
-            if (getProperty(wikiUtil, props, "popupIframe", false)) {
-                //              options.append(",width:600");
-                //              options.append(",height:300");
-                options.append(",type:'iframe'");
-            }
+		if (getProperty(wikiUtil, props, "popupIframe", false)) {
+		    //              options.append(",width:600");
+		    //              options.append(",height:300");
+		    options.append(",type:'iframe'");
+		}
 
 
-            options.append("}");
+		options.append("}");
 
-            if (wikiUtil != null) {
-                wikiUtil.appendJavascript(
-					  "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
-					  + options.toString() + ");\n });\n");
-            } else {
-                buf.append(
-			   HU.script(
-				     "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
-				     + options.toString() + ");\n });\n"));
-            }
-            request.putExtraProperty("added fancybox", "yes");
-        }
+		if (wikiUtil != null) {
+		    wikiUtil.appendJavascript(
+					      "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
+					      + options.toString() + ");\n });\n");
+		} else {
+		    buf.append(
+			       HU.script(
+					 "$(document).ready(function() {\n HU.createFancyBox($(\"a.popup_image\"),"
+					 + options.toString() + ");\n });\n"));
+		}
+		request.putExtraProperty("added fancybox", "yes");
+	    }
 	}catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
@@ -6451,16 +6139,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wiki _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String wikify(Request request, String wiki) throws Exception {
         return makeWikiUtil(request, false).wikify(wiki, this);
     }
@@ -6476,15 +6155,7 @@ public class WikiManager extends RepositoryManager
     }
 
 	
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public WikiUtil initWikiUtil(Request request, WikiUtil wikiUtil,
                                  Entry entry) {
 	wikiUtil.setProperty(ATTR_REQUEST,   request);
@@ -6504,14 +6175,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param original _more_
-     * @param props _more_
-     *
-     * @return _more_
-     */
+    
     private Request makeRequest(Request original, Hashtable props) {
         Request newRequest = original.cloneMe();
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
@@ -7167,10 +6831,10 @@ public class WikiManager extends RepositoryManager
 		}
 
 		/*
-		System.err.println("REMOTE:" + chunk);
-		System.err.println("BASE:" + baseUrl);
-		System.err.println("ENTRYID:" + entryId);
-		System.err.println("XML URL:" + xmlUrl);
+		  System.err.println("REMOTE:" + chunk);
+		  System.err.println("BASE:" + baseUrl);
+		  System.err.println("ENTRYID:" + entryId);
+		  System.err.println("XML URL:" + xmlUrl);
 		*/
 		String entriesXml = IO.readUrl(new URL(xmlUrl));
 		System.err.println(Utils.clip(entriesXml,200,"").trim().replace("\n"," "));
@@ -7437,16 +7101,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param baseEntry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void addSearchTerms(Request request, WikiUtil wikiUtil,
                                 Hashtable props, Entry baseEntry)
 	throws Exception {
@@ -7726,11 +7381,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public GraphOutputHandler getGraphOutputHandler() {
         try {
             return (GraphOutputHandler) getRepository().getOutputHandler(
@@ -7831,7 +7482,7 @@ public class WikiManager extends RepositoryManager
 		prefix = wikifyEntry(request, importEntry, wikiUtil, prefix, false,
 				     wikiUtil.getNotTags(), true);
 		content = prefix+content;
-        }
+	    }
 
 
 
@@ -8012,7 +7663,7 @@ public class WikiManager extends RepositoryManager
 				"+expandable header=_quote__quote_ expand=false_newline_", "-expandable"),
 			l2.call("Full screen", "Allow a section to be expanded to full screen",  "+fullscreen_newline_", "-fullscreen"),
 			l2.call("Draggable", "A draggable section\nimg:draggable.png","+draggable framed=true header=_quote__quote_ style=_quote_background:#fff;_quote_ toggle=_quote_true_quote_ toggleVisible=_quote_true_quote__newline_",
-			       "-draggable"));
+				"-draggable"));
 
         Utils.appendAll(tags4,
 			l.call("Navigation left", ":navleft leftStyle=_qt_width:250px;_qt_ rightStyle=_qt__qt_  maxLevel=_qt_4_qt_", ""),
@@ -8028,26 +7679,26 @@ public class WikiManager extends RepositoryManager
         Utils.appendAll(tags3, l2.call( "Note", "A centered text note\nimg:note.png","+note\\n\\n", "-note"));
         String[] colors = new String[] {"gray",  "yellow"};
 	/*
-        for (String color : colors) {
-            tags3.append(getWikiEditLink(textAreaId, HU.div("Note "
-							    + color, HU.attrs(
-									      "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
-									      + color)), 
-					 "+note-" + color + "_nl__nl_", "-note",""));
-					 }*/
+	  for (String color : colors) {
+	  tags3.append(getWikiEditLink(textAreaId, HU.div("Note "
+	  + color, HU.attrs(
+	  "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
+	  + color)), 
+	  "+note-" + color + "_nl__nl_", "-note",""));
+	  }*/
 
         Utils.appendAll(tags3, l.call( "Box", "+box_nl__nl_", "-box"));
 	/*
-        for (String color : colors) {
-            tags3.append(
-			 getWikiEditLink(
-					 textAreaId, HU.div(
-							    "Box "
-							    + color, HU.attrs(
-									      "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
-									      + color)), "+box-" + color
-					 + "_nl__nl_", "-box",""));
-        }
+	  for (String color : colors) {
+	  tags3.append(
+	  getWikiEditLink(
+	  textAreaId, HU.div(
+	  "Box "
+	  + color, HU.attrs(
+	  "style", "padding:2px; display:inline-block;", "class", "ramadda-background-"
+	  + color)), "+box-" + color
+	  + "_nl__nl_", "-box",""));
+	  }
 	*/
 
         Utils.appendAll(tags3,
@@ -8167,16 +7818,16 @@ public class WikiManager extends RepositoryManager
 	};
 
 	/*
-        for (String extraHelp :
-		 Utils.split(request.getString("extrahelp", ""), ",",
-			     true, true)) {
-            List<String> toks = Utils.splitUpTo(extraHelp, "|", 2);
-            if (toks.size() == 2) {
-                help.append(HU.href(Utils.encodeUntrustedText(toks.get(0)),
-                                    Utils.encodeUntrustedText(toks.get(1)),
-                                    "target=_help") + "<br>");
-            }
-	    }*/
+	  for (String extraHelp :
+	  Utils.split(request.getString("extrahelp", ""), ",",
+	  true, true)) {
+	  List<String> toks = Utils.splitUpTo(extraHelp, "|", 2);
+	  if (toks.size() == 2) {
+	  help.append(HU.href(Utils.encodeUntrustedText(toks.get(0)),
+	  Utils.encodeUntrustedText(toks.get(1)),
+	  "target=_help") + "<br>");
+	  }
+	  }*/
 
         makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
         makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
@@ -8276,8 +7927,8 @@ public class WikiManager extends RepositoryManager
 
 
         String entriesButton = makeMenuButton("Entries",
-						HU.span(makeTagsMenu(entry,textAreaId),
-							HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
+					      HU.span(makeTagsMenu(entry,textAreaId),
+						      HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
 	
         String displaysButton = HU.href("javascript:noop()", "Displays",
 					HU.attrs("id", "displays_button" + textAreaId,
@@ -8338,15 +7989,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param charts _more_
-     * @param sb _more_
-     * @param textAreaId _more_
-     *
-     * @return _more_
-     */
+    
     public String makeTagsMenu(Entry entry,String textAreaId) {
         StringBuilder sb     = new StringBuilder();
         String        inset  = "&nbsp;&nbsp;";
@@ -8463,15 +8106,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param src _more_
-     * @param props _more_
-     *
-     * @return _more_
-     */
+    
     public String getWikiImageUrl(WikiUtil wikiUtil, String src,
                                   Hashtable props) {
         try {
@@ -8791,19 +8426,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String getDescription(Request request, WikiUtil wikiUtil,
                                   Hashtable props, Entry originalEntry,
                                   Entry entry)
@@ -8830,19 +8453,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String makeSimpleDisplay(Request request, WikiUtil wikiUtil,
                                     Hashtable props, Entry originalEntry,
                                     Entry entry)
@@ -9022,16 +8633,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getStandardChartDisplay(Request request, Entry entry)
 	throws Exception {
         TypeHandler       typeHandler       = entry.getTypeHandler();
@@ -9124,7 +8726,7 @@ public class WikiManager extends RepositoryManager
 	    if(change)
 		props.put(key,svalue);
 	}
-   }
+    }
 
     public Request getAdminRequest() {
 	return getRepository().getAdminRequest();
@@ -9132,22 +8734,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param wikiUtil _more_
-     * @param entry _more_
-     * @param originalEntry _more_
-     * @param tag _more_
-     * @param name _more_
-     * @param pointDataUrl _more_
-     * @param sb _more_
-     * @param props _more_
-     * @param propList _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void getEntryDisplay(Request request, WikiUtil wikiUtil,
                                  Entry entry, Entry originalEntry,
                                  String tag, String name,
@@ -9269,9 +8856,9 @@ public class WikiManager extends RepositoryManager
 			pattern = tok.substring("ramadda:".length()).toLowerCase();
 			doName=true;
 		    } else {
-			 pattern = tok.substring(doName
-						 ? "name:".length()
-						 : "category:".length()).toLowerCase();
+			pattern = tok.substring(doName
+						? "name:".length()
+						: "category:".length()).toLowerCase();
 		    }
                     //                    System.err.println ("doName:" + doName +" pattern:" + pattern);
                     for (SearchProvider searchProvider :searchProviders) {
@@ -9303,11 +8890,11 @@ public class WikiManager extends RepositoryManager
                             }
                             icon = getPageHandler().applyBaseMacros(icon);
 			    String v =JU.map(Utils.makeListFromValues("id",JU.quote(searchProvider.getId()),
-								  "type",JU.quote(searchProvider.getType()),
-								  "name",JU.quote(searchProvider.getName()),
-								  "capabilities",JU.quote(searchProvider.getCapabilities()),					       
-								  "icon",JU.quote(icon),
-								  "category",JU.quote(searchProvider.getCategory())));
+								      "type",JU.quote(searchProvider.getType()),
+								      "name",JU.quote(searchProvider.getName()),
+								      "capabilities",JU.quote(searchProvider.getCapabilities()),					       
+								      "icon",JU.quote(icon),
+								      "category",JU.quote(searchProvider.getCategory())));
                             processed.add(v);
                         }
                     }
@@ -9344,11 +8931,11 @@ public class WikiManager extends RepositoryManager
 			icon = subToks.get(2);
 		    }
 		    String v =JU.map(Utils.makeListFromValues("id",JU.quote(id),
-							  "type",JU.quote(searchProvider.getType()),
-							  "name",JU.quote(label),
-							  "capabilities",JU.quote(searchProvider.getCapabilities()),					       
-							  "icon",JU.quote(icon),
-							  "category",JU.quote(searchProvider.getCategory())));
+							      "type",JU.quote(searchProvider.getType()),
+							      "name",JU.quote(label),
+							      "capabilities",JU.quote(searchProvider.getCapabilities()),					       
+							      "icon",JU.quote(icon),
+							      "category",JU.quote(searchProvider.getCategory())));
 		    processed.add(v);
 		}
 	    }
@@ -9414,8 +9001,8 @@ public class WikiManager extends RepositoryManager
             propList.add("entryIcon");
             propList.add(
 			 JU.quote(
-					entry.getTypeHandler().getEntryIconUrl(
-									       request, originalEntry)));
+				  entry.getTypeHandler().getEntryIconUrl(
+									 request, originalEntry)));
         }
 
 
@@ -9425,7 +9012,7 @@ public class WikiManager extends RepositoryManager
             propList.add("timezone");
             TimeZone tz = TimeZone.getTimeZone(timezone);
             propList.add(JU.quote("" + (tz.getRawOffset() / 1000 / 60
-					      / 60)));
+					/ 60)));
         }
 
         String title = getProperty(wikiUtil, props, ATTR_TITLE,
@@ -9485,7 +9072,7 @@ public class WikiManager extends RepositoryManager
 
         topProps.add("layoutType");
         topProps.add(JU.quote(getProperty(wikiUtil, props, "layoutType",
-						"table")));
+					  "table")));
         props.remove("layoutType");
         topProps.add("layoutColumns");
         topProps.add(getProperty(wikiUtil, props, "layoutColumns", "1"));
@@ -9503,8 +9090,8 @@ public class WikiManager extends RepositoryManager
         } else if (entry.hasAreaDefined(request)) {
             Utils.add(propList, "entryBounds",
                       JU.quote(entry.getNorth(request) + "," + entry.getWest(request)
-				     + "," + entry.getSouth(request) + ","
-				     + entry.getEast(request)));
+			       + "," + entry.getSouth(request) + ","
+			       + entry.getEast(request)));
         }
 
         topProps.add("defaultMapLayer");
@@ -9912,8 +9499,8 @@ public class WikiManager extends RepositoryManager
 	    } else {
 		Utils.add(jsonProps, "tileSources",
 			  JU.quote(getRepository().getUrlBase()
-					 + "/entryfile/" + entry.getId()
-					 + "/images.dzi"));
+				   + "/entryfile/" + entry.getId()
+				   + "/images.dzi"));
 	    }
 
         } else if (Utils.stringDefined("" + entry.getValue(request,"tiles_url"))) {
@@ -9945,10 +9532,6 @@ public class WikiManager extends RepositoryManager
         Utils.add(jsonProps, "top", "false");
         return  jsonProps;
     }
-
-
-
-
 
     private ServerInfo getServer(Request request, Entry entry,
 				 WikiUtil wikiUtil, Hashtable props) throws Exception {
