@@ -1762,11 +1762,8 @@ public class AccessManager extends RepositoryManager {
             throw new AccessException("Can't set access", request);
         }
 
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Define Access Rights");
-
+        getPageHandler().entrySectionOpen(request, entry, sb, "Define Permissions");
         request.appendMessage(sb);
-
         StringBuffer currentAccess = new StringBuffer();
         currentAccess.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
                                             HU.attrs("celladding", "0",
@@ -1808,13 +1805,13 @@ public class AccessManager extends RepositoryManager {
         if (debug) {
             System.err.println("dp map:" + dpMap);
         }
+	
+	HU.center(sb,getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
-
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append("<p>");
+        sb.append("<br>");
         sb.append(HtmlUtils.submit("Change Access"));
-	sb.append(getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
-        sb.append("<p>");
+        sb.append("<br>");
         if (dataPolicies.size() > 0) {
             List         items    = new ArrayList();
             List<String> selected = new ArrayList<String>();
@@ -1846,19 +1843,19 @@ public class AccessManager extends RepositoryManager {
 							  "" + (Math.min(items.size(), 4)));
             if (debug) {
                 System.err.println("items:" + items);
-                //                System.err.println("selected:" + selected);
             }
             String select = HU.select(ARG_DATAPOLICY, items, selected,
                                       extraSelect, 100);
-            sb.append(HU.b("Data Policy") + ": " + select);
-            sb.append(HU.href(getRepository().getUrlBase()
-                              + "/access/datapolicies", "View Data Policies",
-			      HU.attr("target", "_datapolicies")));
+	    String help = HU.href(getRepository().getUrlBase()    + "/access/datapolicies",
+				  HU.getIconImage("fas fa-binoculars"),
+				  HU.attrs("title","View data policies",
+					   "target", "_datapolicies"));
+	    HU.span(sb,HU.b("Data Policy") + " " + help +"<br>" + select,"");
         }
 
         sb.append("<table id='accessform' style=''><tr valign=top>");
         sb.append("<td>");
-        sb.append("<table style='margin-right:10px;' >");
+        sb.append("<table style='margin-right:20px;' >");
         List opts = new ArrayList();
         Utils.add(
 		  opts, new TwoFacedObject("Add role", ""),

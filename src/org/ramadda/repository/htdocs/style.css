@@ -1060,7 +1060,7 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-heading-outer  {
     text-align:center;
-    margin-top:10px;
+    margin-top:5px;
 }
 
 
@@ -4309,6 +4309,8 @@ label {
 
 td .ramadda-role {
     padding:2px;
+    padding-left:4px;
+    padding-right:4px;    
     margin:0px;
 }
 
@@ -4317,6 +4319,8 @@ td .ramadda-role {
 }
 .ramadda-role-none {
     background:#D72128;
+    background:#C6282A;
+    color:white;
 }
 .ramadda-role-negated {
     font-weight:bold;
@@ -4335,8 +4339,8 @@ td .ramadda-role {
 }
 
 .ramadda-access-summary td {
-    padding-left:4px;
-    padding-right:4px;    
+    //padding-left:4px;
+    //padding-right:4px;    
 }
 
 .ramadda-access-summary td {
