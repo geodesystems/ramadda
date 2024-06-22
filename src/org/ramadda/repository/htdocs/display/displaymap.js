@@ -987,7 +987,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'doPopupSlider', ex:'true',tt:'Do the inline popup that slides down'},
 	{p:'popupSliderRight', ex:'true',tt:'Position the inline slider to the right'},	
 	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:''},	
-	{p:'labelField',ex:'',tt:'fields to show in TOC'},
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
 	{p:'centerOnFilterChange',d:true,ex:true,tt:'Center map when the data filters change'},
@@ -1005,7 +1004,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map GUI'},
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
-	{p:'tableOfContentsTitle'},
+	{p:'tocTitle'},
+	{p:'tocWidth'},
+	{p:'tocFields',ex:'',tt:'fields to show in TOC'},
+	{p:'tocTemplate',ex:'',tt:'template to show in TOC'},	
+
 	{p:'showMarkersToggle',ex:'true',tt:'Show the toggle checkbox for the marker layer'},
 	{p:'showMarkersToggleLabel',ex:'label',tt:'Label to use for checkbox'},
 	{p:'showClipToBounds',ex:'true',tt:'Show the clip bounds checkbox'},
@@ -3126,37 +3129,66 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	makeToc:function(records) {
 	    let urlField  =  this.getFieldById(null,this.getProperty("urlField"));
-	    let labelField = this.getFieldsByIds(null,this.getProperty("labelField","name"));
-	    if(!labelField || labelField.length==0) labelField = this.getFieldsByType(null,"string");
-	    if(labelField && labelField.length>0) {
-		let html = "";
+	    let fields = this.getFieldsByIds(null,this.getTocFields(this.getProperty("labelField","name")));
+	    if(!fields || fields.length==0) fields = this.getFieldsByType(null,"string");
+	    let template = this.getTocTemplate();
+	    let html='';
+	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
+	    if(template) {
+		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
+		records.forEach(record=>{
+		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
+		    html+=HU.div([ATTR_CLASS,clazz], label);
+		});
+	    } else   if(fields && fields.length>0) {
 		let iconField = this.getFieldById(null, this.getProperty("iconField"));
+		let doTable=this.getProperty('tocTable',true);
+		if(doTable) {
+		    html+='<table><tr>'
+		    fields.forEach(f=>{
+			html+='<td style=\'font-weight:bold;\'>' + f.getLabel() +'</td>';
+		    });
+		    html+='</tr>';
+		}
+		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
-		    let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
-		    let values= labelField.map(f=>{
+		    let values= fields.map(f=>{
 			return f.getValue(record);
 		    });
-		    let value = Utils.join(values,' ');
-		    if(!iconField) {
-			clazz+=" ramadda-nav-list-link ";
+		    let value;
+		    if(doTable) {
+			value = Utils.wrap(values,HU.open('td',[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx]),'</td>');
+			html+=HU.tag('tr',[], value);
 		    } else {
-			value = HU.getIconImage(iconField.getValue(record,icon_blank16),["width",16]) + SPACE + value;
-		    }
-		    if(urlField) {
-			let url = urlField.getValue(record);
-			if(Utils.stringDefined(url)) {
-			    value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']) + HU.space(1) +value;
+			value = Utils.join(values,' ');
+			if(!iconField) {
+			    clazz+=" ramadda-nav-list-link ";
+			} else {
+			    value = HU.getIconImage(iconField.getValue(record,icon_blank16),["width",16]) + SPACE + value;
 			}
+			if(urlField) {
+			    let url = urlField.getValue(record);
+			    if(Utils.stringDefined(url)) {
+				value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']) + HU.space(1) +value;
+			    }
+			}
+			html+= HU.span([ATTR_TITLE, title, ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		    }
-		    html+= HU.span([ATTR_TITLE, title, ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx], value);
 		});
-
+		if(doTable) {
+		    html+='</table>';
+		}
+	    }
+	    if(html) {
 		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
 		height="calc(" +HU.getDimension(height)+" - 1em)";
-		html = HU.div([CLASS, "display-map-toc",STYLE,HU.css('height',height,"max-height",height,'overflow-y','auto'),ID, this.domId("toc")],html);
-		let title = this.getProperty("tableOfContentsTitle","");
+		let style = HU.css('height',height,"max-height",height,'overflow-y','auto');
+		if(this.getTocWidth()) {
+		    style+=HU.css("min-width",this.getTocWidth());
+		}
+		html = HU.div([CLASS, "display-map-toc",ATTR_STYLE,style,ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		let _this = this;

@@ -523,7 +523,7 @@ table.dataTable {
 
 .display-map-toc-item {
     padding:2px;
-    display:inline-block;
+    xdisplay:inline-block;
     margin-top:2px;
     width:100%;
     white-space:nowrap;
