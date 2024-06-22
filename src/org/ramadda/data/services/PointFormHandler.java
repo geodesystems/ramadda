@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -60,75 +60,31 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- * @author         Jeff McWhirter
- */
+
 @SuppressWarnings("unchecked")
 public class PointFormHandler extends RecordFormHandler {
 
-    /** _more_ */
     public static final String FIELD_ALTITUDE = "dflt_altitude";
-
-
-    /** _more_ */
     private static IdwGrid dummyField1 = null;
-
-    /** _more_ */
     private static org.ramadda.service.ServiceProvider dummyServiceInfoProvider =
         null;
 
-    /** _more_ */
     private static ObjectGrid dummyField2 = null;
-
-    /** _more_ */
     private static GridUtils dummyField3 = null;
-
-    /** _more_ */
     private static Gridder dummyField4 = null;
-
-    /** _more_ */
     private static GridVisitor dummyField5 = null;
-
-    /** _more_ */
     private RecordFileFactory dummyField6 = null;
-
-    /** _more_ */
     private PointTypeHandler dummyField7 = null;
-
-    /** _more_ */
     private RecordCollectionTypeHandler dummyField8 = null;
-
-    /** _more_ */
     private RecordApiHandler dummyField9 = null;
-
-    /** _more_ */
     private PointJobManager dummyField10 = null;
-
-    /** _more_ */
     private RecordCollectionHarvester dummyField11 = null;
-
-    /** _more_ */
     private PointCollectionTypeHandler dummyField12 = null;
-
-    /** _more_ */
     public static final String LABEL_ALTITUDE = "Altitude";
-
-    /** _more_ */
     public static List<Integer> xindices = new ArrayList<Integer>();
-
-    /** _more_ */
     public static int[] drawCnt = { 0 };
-
-    /** _more_ */
     public static boolean debugChart = false;
 
-
-    /**
-     * ctor
-     *
-     * @param recordOutputHandler _more_
-     */
     public PointFormHandler(PointOutputHandler recordOutputHandler) {
         super(recordOutputHandler);
     }
@@ -1051,6 +1007,13 @@ public class PointFormHandler extends RecordFormHandler {
 
 		HU.script(subsetSB,"HU.initToggleAll('" + toggleAllId+"','.ramadda-subset-field');");
             }
+	    /*
+	    if(entry.isGeoreferenced(request)) {
+		HU.formEntry(subsetSB,msgLabel("Entry location"),
+			     HU.labeledCheckbox(ARG_ADD_LATLON, "true",false,"Add latitude/longitude"));
+			     }*/
+
+
         }
 
 

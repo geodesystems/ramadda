@@ -32,6 +32,8 @@ public interface RecordConstants extends Constants {
     /** url arg */
     public static final String ARG_ASYNCH = "asynch";
 
+    public static final String ARG_ADD_LATLON = "addlatlon";
+
 
 
 

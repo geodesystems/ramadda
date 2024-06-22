@@ -1499,6 +1499,13 @@ public class PointOutputHandler extends RecordOutputHandler {
 			csvVisitor = new CsvVisitor(getThePrintWriter(),
 						    getFields(request, record.getFields()),
 						    headerPrinter, lineEnder);
+			if(request.get(ARG_ADD_LATLON,false)) {
+			    System.err.println("ADDL:" + request);
+			    csvVisitor.setExtraHeader("latitiude,longitude");
+			    csvVisitor.setExtraLine(mainEntry.getLatitude(request)+","+ mainEntry.getLongitude(request));
+			}
+
+
 			if (request.defined(ARG_HEADER)) {
 			    csvVisitor.setAltHeader(request.getString(ARG_HEADER, ""));
 			}

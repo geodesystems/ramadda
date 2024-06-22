@@ -42,6 +42,10 @@ public class CsvVisitor extends RecordVisitor {
     /** _more_ */
     private boolean printedHeader = false;
 
+    private String extraHeader;
+    private String extraLine;
+
+
     /** _more_ */
     private String altHeader = null;
 
@@ -234,6 +238,11 @@ public class CsvVisitor extends RecordVisitor {
                     cnt++;
                     pw.append(field.getName());
                 }
+		if(extraHeader!=null) {
+		    pw.append(",");
+		    pw.append(extraHeader);
+		}
+			      
                 pw.append("\n");
             } else {
                 comment("");
@@ -253,6 +262,10 @@ public class CsvVisitor extends RecordVisitor {
                     cnt++;
                     field.printCsvHeader(visitInfo, pw);
                 }
+		if(extraHeader!=null) {
+		    pw.append(",");
+		    pw.append(extraHeader);
+		}
                 pw.append("\n");
                 String source = (String) visitInfo.getProperty(PROP_SOURCE);
                 if (source != null) {
@@ -351,6 +364,42 @@ public class CsvVisitor extends RecordVisitor {
      */
     public boolean getFullHeader() {
         return fullHeader;
+    }
+
+    /**
+       Set the ExtraHeader property.
+
+       @param value The new value for ExtraHeader
+    **/
+    public void setExtraHeader (String value) {
+	extraHeader = value;
+    }
+
+    /**
+       Get the ExtraHeader property.
+
+       @return The ExtraHeader
+    **/
+    public String getExtraHeader () {
+	return extraHeader;
+    }
+
+    /**
+       Set the ExtraLine property.
+
+       @param value The new value for ExtraLine
+    **/
+    public void setExtraLine (String value) {
+	extraLine = value;
+    }
+
+    /**
+       Get the ExtraLine property.
+
+       @return The ExtraLine
+    **/
+    public String getExtraLine () {
+	return extraLine;
     }
 
 
