@@ -14,7 +14,10 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.seesv.Seesv;
+
 import ucar.unidata.util.StringUtil;
+
 
 import org.w3c.dom.*;
 import org.json.*;
@@ -48,11 +51,16 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	super.initializeNewEntry(request, entry, newType);
 
 	if(entry.hasLocationDefined(request)) return;
+
 	File file = entry.getFile();
 	if(!file.exists()) return;
 	if(loggers==null) {
 	    loggers = new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/projects/kbocc/loggers.json"));
 	}
+	//Add in the year
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+	entry.setValue("datayear",sdf.format(new Date(entry.getStartDate())));
+
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
 	String _fileName = fileName.replace("_","-");
 	String yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d\\d)");
@@ -93,6 +101,13 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	    entry.setLongitude(theLogger.getDouble("longitude"));
 	    entry.setValue("location",theLogger.getString("location"));
 	    entry.setValue("notes",theLogger.getString("notes"));		
+	    JSONObject o = theLogger;
+	    System.out.println(Utils.join(Utils.makeListFromValues(o.getString("id"),o.getString("location"),
+								   ""+o.getDouble("latitude"),
+								   ""+o.getDouble("longitude"),
+								   Seesv.cleanColumnValue(o.getString("notes")),
+								   fileName),","));
+	    
 	} else {
 	    String msg = "Could not find site info for file:" + fileName;
 	    getSessionManager().addSessionErrorMessage(request,msg);
