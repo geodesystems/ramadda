@@ -39,6 +39,36 @@ addTooltip=false useMultipleAxes=true
 -section
 ]]>
     </wiki>
+
+<wikimacro name="point_collection_display" label="Collection Display">
+<![CDATA[
++center
+{{display_menu 
+message=""
+entryTypes=type_point
+doEntries=true
+setEntry.acceptGroup=month
+setEntry.shareGroup=file
+showArrows=true
+menuLabel="Select File:"
+noun=File
+labelTemplate="${name}"
+}}
+{{display_entrytitle
+message="" setEntry.acceptGroup=file entry="child:orderby:date;ascending:false;type:type_point"}}
+-center
+{{display_entrywiki
+wiki="{{import showTitle=false macro=forpointcollection}}"
+message="" setEntry.acceptGroup=file
+entry="child:orderby:date;ascending:false;type:type_point"
+fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
+height=60vh padRight=true chartLeft="80" chartRight="80"
+addTooltip=false useMultipleAxes=true
+}}
+]]>
+</wikimacro>
+    
+
   </type>
 
 
