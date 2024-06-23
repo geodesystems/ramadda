@@ -277,16 +277,22 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	return parent;
     }
 
-@Override
+    @Override
     public int hashCode() {
-	return id.hashCode() ^ parent.hashCode();
+	if(parent!=null && id!=null)
+	    return id.hashCode() ^ parent.hashCode();
+	if(id!=null)
+	    return id.hashCode();
+	if(parent!=null)
+	    return parent.hashCode();
+	return 0;
     }
 
     @Override
     public boolean equals(Object o) {
 	if(!(o instanceof MetadataElement)) return false;
 	MetadataElement that = (MetadataElement)o;
-	return this.id.equals(that.id) && this.parent.equals(that.parent);
+	return Misc.equals(this.id,that.id) && Misc.equals(this.parent,that.parent);
     }    
 
     /**
