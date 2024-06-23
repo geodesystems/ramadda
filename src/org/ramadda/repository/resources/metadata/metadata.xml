@@ -27,7 +27,7 @@
 -->
 
     <type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords">
-      <element name="Tag Value" />
+      <element name="Tag Value" searchable="true"/>
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
       <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
@@ -35,7 +35,7 @@
 
 
     <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Tags and Keywords"  >
-      <element name="Keyword" />
+      <element name="Keyword"  searchable="true"/>
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
       <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
@@ -111,7 +111,7 @@
        id="metadata_author"
        priority="10"
        >
-      <element name="Name"/>
+      <element name="Name" searchable="true"/>
       <element name="Email"/>
       <element name="Organization"/>
     </type>

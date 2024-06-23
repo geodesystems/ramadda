@@ -1099,8 +1099,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 	List<MetadataElement> children = getChildren();
-	boolean makeSearchLink =  !smallDisplay && getSearchable() && children.size()==1;
-	if(makeSearchLink && !children.get(0).isEnumeration()) makeSearchLink=false;
+	boolean makeSearchLink =  !smallDisplay && getSearchable() && children.size()>=1;
+	if(makeSearchLink)
+	    if(!children.get(0).isEnumeration() && !children.get(0).getSearchable()) {
+		makeSearchLink=false;
+	    }
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
 	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
