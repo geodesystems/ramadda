@@ -267,6 +267,7 @@ Override the logo icon and URL used in the default page templates.
     <type
        name="Footer"
        id="content.footer"
+       showlabel="false"
        candisplay="false">
       <help>
 <![CDATA[Add a footer to any page]]>

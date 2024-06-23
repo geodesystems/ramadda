@@ -71,10 +71,10 @@ public class Metadata implements Constants {
     public static final int PRIORITY_UNDEFINED = 0;
 
     private MetadataType metadataType;
+    private String type;
     private Entry entry;
     private String id;
     private String entryId;
-    private String type;
     private int priority = PRIORITY_UNDEFINED;
     private String attr1 = "";
     private String attr2 = "";
@@ -93,7 +93,6 @@ public class Metadata implements Constants {
     public Metadata(Metadata that) {
         this("", "", that);
     }
-
 
     public Metadata(String id, String entryId, MetadataType type,  boolean inherited) {
         this(id, entryId, type, inherited, DFLT_ATTR, DFLT_ATTR, DFLT_ATTR, DFLT_ATTR, DFLT_EXTRA);
@@ -115,9 +114,9 @@ public class Metadata implements Constants {
                     boolean inherited, Object[] values) {
         this.id        = id;
         this.entryId   = id;
-	setMetadataType(type);
         this.inherited = inherited;
         this.values    = values;
+	setMetadataType(type);
     }
 
 
@@ -190,8 +189,7 @@ public class Metadata implements Constants {
     public Metadata(String id, String entryId, Metadata that) {
         this.id        = id;
         this.entryId   = entryId;
-	this.metadataType =that.metadataType;
-	this.type      = that.type;
+	setMetadataType(that.metadataType);
         this.inherited = that.inherited;
 	this.access=that.access;
 	this.accessList=that.accessList;	
@@ -404,7 +402,8 @@ public class Metadata implements Constants {
 
     
     public String toString() {
-        return "id:"+ id +" entry:" + entryId + " type:" + type + " attr1:" + attr1
+        return "id:"+ id +" entry:" + entryId + " Type:" + metadataType+
+	    " type:" + type + " attr1:" + attr1
 	    + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
 
@@ -768,6 +767,8 @@ public class Metadata implements Constants {
 	metadataType = value;
 	if(metadataType!=null)
 	    this.type    = metadataType.getId();
+	else
+	    System.err.println("Bad type:" + this + " " + Utils.getStack(10));
 	
     }
 

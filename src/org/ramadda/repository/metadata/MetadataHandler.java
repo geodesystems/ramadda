@@ -459,7 +459,12 @@ public class MetadataHandler extends RepositoryManager {
      * @return _more_
      */
     public MetadataType findType(String stringType) {
-        return typeMap.get(stringType);
+        MetadataType type  = typeMap.get(stringType);
+	if(type==null) {
+	    //	    System.err.println("Could not find type:" + stringType);
+	    return getMetadataManager().findType(stringType);
+	}
+	return type;
     }
 
 

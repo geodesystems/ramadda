@@ -1249,6 +1249,8 @@ public class MetadataManager extends RepositoryManager {
             }
             if (type != null && type.length>0 && stringDefined(type[0])) {
                 for (int i = 0; i < type.length; i++) {
+		    if(metadata.getType()==null)
+			System.err.println("NULL:" + metadata);
                     if (metadata.getType().equals(type[i])) {
                         result.add(metadata);
 
