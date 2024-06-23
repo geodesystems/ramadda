@@ -477,18 +477,29 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
 
             if (showRecords) {
-                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(html));
+                this.writeHtml(ID_DISPLAY_BOTTOM, html);
             } else {
                 let prefix = "";
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
                 this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ID, this.domId("table"), STYLE, HU.css('height','300px')], "")));
-                let dataTable = google.visualization.arrayToDataTable(data);
-                this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
-                this.chart.draw(dataTable, {
-                    allowHtml: true
-                });
+		let step2=()=>{
+                    let dataTable = google.visualization.arrayToDataTable(data);
+                    this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
+                    this.chart.draw(dataTable, {
+			allowHtml: true
+                    });
+		}
+		let step1=()=>{
+		    if(!ramaddaLoadGoogleChart('table',step2)) {
+			return
+		    }
+		}
+		if(!haveGoogleChartsLoaded(step1)) {
+		    return;
+		}
+		step2();
             }
         }
     });
