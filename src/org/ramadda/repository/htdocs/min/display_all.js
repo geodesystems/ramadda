@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 23 01:02:58 MDT 2024";
+var build_date="RAMADDA build date: Sun Jun 23 07:51:32 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -19569,10 +19569,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    args = args || {};
             SUPER.updateUI.call(this, args);
 	    //	    console.log(this.type +".updateUI: ready");
+
 	    this.updateUIInner(args);
 	},
 	updateUIInner: function(args) {
-
 	    let debug = false;
 	    if(debug)
 		console.log(this.type+".updateUI")
@@ -19818,9 +19818,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         displayData: function(reload, debug) {
+	    this.displayDataInner(reload,debug);
+	},
+
+
+        displayDataInner: function(reload, debug) {
 	    if(this.dataLoadFailed) {
 		return;
 	    } 
+
 
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
@@ -19964,8 +19970,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 		selectedFields=tmp;
 	    }
-
-
 
 
             let props = {
@@ -20386,8 +20390,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
-	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
-	    
+	    let addTooltip = (Utils.stringDefined(tt));
+	    if(!this.getProperty("addTooltip",true) || !this.doAddTooltip()) {
+		addTooltip=false;
+	    }
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
@@ -25174,25 +25180,26 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 }
 
 function RamaddaFieldslistDisplay(displayManager, id, properties) {
-    const ID_POPUP = "popup";
-    const ID_POPUP_BUTTON = "popupbutton";    
+    const ID_POPUP = 'popup';
+    const ID_POPUP_BUTTON = 'popupbutton';    
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_FIELDSLIST, properties);
     let myProps =[
-	{label:"Metadata"},
-	{p:"decorate",ex:true},
-	{p:"asList",d:true},
-	{p:"reverseFields",ex:true},
-	{p:"sortFields",d:true,ex:true},
-	{p:"includeLatLon",d:false,ex:true},				
-	{p:"selectable",ex:true},
-	{p:"showFieldDetails",ex:true},
-	{p:"showPopup",d:false,ex:true,tt:"Popup the selector"},	
-	{p:"selectOne",ex:true},
-	{p:"numericOnly",ex:true},
-	{p:"some_field.color",ex:'red',tt:'add a color block'},
-	{p: "selectLabel",tt:"Label to use for the button"},
-	{p: "filterSelect",ex:true,tt:"Use this display to select filter fields"},
-	{p: "filterSelectLabel",tt:"Label to use for the button"}	
+	{label:"Fields List"},
+	{p:'displayFields',tt:'Fields to display'},
+	{p:'numericOnly',ex:true},
+	{p:'reverseFields',ex:true},
+	{p:'decorate',ex:true},
+	{p:'asList',d:true},
+	{p:'sortFields',d:true,ex:true},
+	{p:'includeLatLon',d:false,ex:true},				
+	{p:'selectable',ex:true},
+	{p:'showFieldDetails',ex:true},
+	{p:'showPopup',d:false,ex:true,tt:'Popup the selector'},	
+	{p:'selectOne',ex:true},
+	{p:'some_field.color',ex:'red',tt:'add a color block'},
+	{p: 'selectLabel',tt:'Label to use for the button'},
+	{p: 'filterSelect',ex:true,tt:'Use this display to select filter fields'},
+	{p: 'filterSelectLabel',tt:'Label to use for the button'}	
     ];
     
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -25224,7 +25231,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    let html = "";
             let selectedFields;
 	    if(this.getFilterSelect()) {
-		selectedFields = this.getFieldsByIds(null,this.getProperty("filterFields", ""));
+		selectedFields = this.getFieldsByIds(null,this.getProperty('filterFields', ''));
 	    } else  {
 		selectedFields = this.getSelectedFields();
 	    }
@@ -25245,8 +25252,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
             let fields = this.fields;
 	    if(!fields) {
-		if(this.getProperty('displayFields'))
-		    fields =this.getFieldsByIds(null, this.getProperty("displayFields", "", true));
+		if(this.getDisplayFields())
+		    fields =this.getFieldsByIds(null, this.getDisplayFields(), true);
 		else
 		    fields = this.getData().getRecordFields();
 		if(this.getNumericOnly()) {
@@ -25278,13 +25285,13 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		this.fieldsMap[f.getId()] = f;
 	    });
 
-//	    html += HU.center("#" + records.length +" records");
+//	    html += HU.center('#' + records.length +' records');
 	    let fs = [];
-	    let clazz = " ramadda-clickable display-fields-field ";
+	    let clazz = ' ramadda-clickable display-fields-field ';
 	    let asList = this.getAsList();
-	    if(this.getDecorate(true)) clazz+= " display-fields-field-decorated ";
+	    if(this.getDecorate(true)) clazz+= ' display-fields-field-decorated ';
 	    if(asList)
-		clazz+=" display-fields-list-field";
+		clazz+=' display-fields-list-field';
 	    let selectable = this.getSelectable(true);
 	    let details = this.getShowFieldDetails(false);	    
 	    fields.forEach((f,idx)=>{
@@ -25296,27 +25303,27 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		block = HU.div([ATTR_STYLE,HU.css('position','relative')],block);
 
 		if(details) {
-		    block+= "<br>" +
-			f.getId() + f.getUnitSuffix()+"<br>" +
+		    block+= '<br>' +
+			f.getId() + f.getUnitSuffix()+'<br>' +
 			f.getType();
 		}
 		let c = clazz;
 		let selected = this.selectedMap[f.getId()];
-		if(selectable) c += " display-fields-field-selectable ";
-		if(selectable && selected) c += " display-fields-field-selected ";
-		let title = "";
+		if(selectable) c += ' display-fields-field-selectable ';
+		if(selectable && selected) c += ' display-fields-field-selected ';
+		let title = '';
 		if(selectable)
-		    title = "Click to toggle. Shift-click toggle all";
-		block =HU.div([TITLE,title,"field-selected",selected, "field-id", f.getId(),'class',c], block);
+		    title = 'Click to toggle. Shift-click toggle all';
+		block =HU.div([TITLE,title,'field-selected',selected, 'field-id', f.getId(),'class',c], block);
 		fs.push(block);
 	    });
-	    let fhtml = Utils.wrap(fs,"","");
+	    let fhtml = Utils.wrap(fs,'','');
 	    html += fhtml;
 
-	    let label = this.getSelectLabel(this.getFilterSelect()?this.getFilterSelectLabel("Select Filter Fields"):"Select fields");
+	    let label = this.getSelectLabel(this.getFilterSelect()?this.getFilterSelectLabel('Select Filter Fields'):'Select fields');
 	    if(this.getShowPopup()) {
 		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)], label) +
-		    HU.div([ID,this.domId(ID_POPUP),STYLE,"display:none;max-height:300px;overflow-y:auto;width:600px;"], html);
+		    HU.div([ID,this.domId(ID_POPUP),STYLE,'display:none;max-height:300px;overflow-y:auto;width:600px;'], html);
 	    }
 	    this.setContents(html);
 	    if(this.getShowPopup()) {
@@ -25326,7 +25333,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	    }
 	    if(selectable) {
 		let _this = this;
-		let fieldBoxes = this.find(".display-fields-field");
+		let fieldBoxes = this.find('.display-fields-field');
 		fieldBoxes.draggable({
 		    stop: function() {
 		    },
@@ -25372,7 +25379,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		    let shift = event.shiftKey ;
 		    let doAll = shift;
 		    let allSelected;
-		    let selected  = $(this).attr("field-selected")=="true";
+		    let selected  = $(this).attr('field-selected')=='true';
 		    if(_this.getSelectOne()) {
 			if(selected) return;
 			selected=true;
@@ -25383,20 +25390,20 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			allSelected=selected;
 		    }
 		    if(doAll) {
-			fieldBoxes.attr("field-selected",allSelected);
+			fieldBoxes.attr('field-selected',allSelected);
 			if(allSelected) {
-			    fieldBoxes.addClass("display-fields-field-selected");
+			    fieldBoxes.addClass('display-fields-field-selected');
 			} else {
-			    fieldBoxes.removeClass("display-fields-field-selected");
+			    fieldBoxes.removeClass('display-fields-field-selected');
 			}
 
 		    }
 
-		    $(this).attr("field-selected",selected);
+		    $(this).attr('field-selected',selected);
 		    if(selected) {
-			$(this).addClass("display-fields-field-selected");
+			$(this).addClass('display-fields-field-selected');
 		    } else {
-			$(this).removeClass("display-fields-field-selected");
+			$(this).removeClass('display-fields-field-selected');
 		    }
 
 		    _this.handleFieldSelect();
