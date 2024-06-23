@@ -16,6 +16,7 @@
 
 package org.ramadda.projects.asdi;
 
+import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
 
@@ -74,6 +75,13 @@ public class NoaaIsdFile extends CsvFile {
     public NoaaIsdFile(IO.Path path)  throws java.io.IOException {
         super(path);
     }
+
+    @Override
+    public boolean isMissingValue(BaseRecord record, RecordField field,
+				  double v) {
+	return v==9999 || v==99999 || v==999999;
+    }
+
 
 
     boolean hdr = true;
