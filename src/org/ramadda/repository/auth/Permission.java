@@ -32,7 +32,7 @@ public class Permission {
 	ACTION_EDIT, ACTION_NEW,
         ACTION_DELETE, ACTION_UPLOAD, 
         //ACTION_COMMENT,
-	//ACTION_VIEWCHILDREN, 
+	ACTION_VIEWCHILDREN, 
 	//ACTION_TYPE1, ACTION_TYPE2
     };
 
@@ -42,7 +42,7 @@ public class Permission {
 	"Geo Location",
 	"Edit", "New", "Delete", "Anon. Upload",
         //"Comment",
-        //"View Children", 
+        "View Children", 
 	//"Type specific 1", "Type specific 2"
     };
 
