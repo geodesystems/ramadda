@@ -410,10 +410,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    args = args || {};
             SUPER.updateUI.call(this, args);
 	    //	    console.log(this.type +".updateUI: ready");
+
 	    this.updateUIInner(args);
 	},
 	updateUIInner: function(args) {
-
 	    let debug = false;
 	    if(debug)
 		console.log(this.type+".updateUI")
@@ -659,9 +659,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	},
 
         displayData: function(reload, debug) {
+	    this.displayDataInner(reload,debug);
+	},
+
+
+        displayDataInner: function(reload, debug) {
 	    if(this.dataLoadFailed) {
 		return;
 	    } 
+
 
 	    if(debug)
 		console.log(this.type +" displayData " + this.getId() +" " + this.type);
@@ -805,8 +811,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		});
 		selectedFields=tmp;
 	    }
-
-
 
 
             let props = {
@@ -1227,8 +1231,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
 	    let tt = this.getProperty("tooltip");
-	    let addTooltip = (tt || this.getProperty("addTooltip",false)) && this.doAddTooltip();
-	    
+	    let addTooltip = (Utils.stringDefined(tt));
+	    if(!this.getProperty("addTooltip",true) || !this.doAddTooltip()) {
+		addTooltip=false;
+	    }
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
