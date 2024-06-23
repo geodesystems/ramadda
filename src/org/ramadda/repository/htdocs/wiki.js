@@ -1253,7 +1253,7 @@ WikiEditor.prototype = {
 	    if(data.length) {
 		let html = prefix??'';
 		data.forEach(d=>{
-		    html+=(d.icon?HU.getIconImage(d.icon)+HU.space(1):'')+
+		    html+=(d.icon?HU.getIconImage(d.icon,['width','24px'])+HU.space(1):'')+
 			HU.href(RamaddaUtil.getUrl("/entry/show")+"?entryid=" + d.id,
 				d.name,[ATTR_TITLE,d.id,'target','_entries'])+"<br>";
 		});
