@@ -48,7 +48,8 @@
 -section
 +section
 +center
-<div style='margin-bottom:4px;'>{{tags}}</div>
+
+<div style='margin-bottom:4px;'>{{tags types="enum_tag,content.keyword,metadata_author"}}</div>
 {{pdf}}
 -center
 :p
