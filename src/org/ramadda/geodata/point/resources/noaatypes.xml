@@ -175,7 +175,7 @@ commentLineStart=#
   <type name="type_point_isd"  super="type_point" description="NOAA ISD Data"  
 handler="org.ramadda.data.services.PointTypeHandler">
     <property name="icon" value="/point/noaa.gif"/>
-    <property name="record.file.class" value="org.ramadda.projects.asdi.NoaaIsdFile"/>
+    <property name="record.file.class" value="org.ramadda.geodata.point.NoaaIsdFile"/>
     <column  name="station_name"   label="Station Name" size="1000" cansearch="true">
       <property name="record_field" value="name"/>
       <property name="is_default_entry_name" value="true"/>
@@ -197,6 +197,7 @@ fields=station[type=enumeration label="Station" ],date[type=date label="Date"  f
 ----
 +row
 +col-md-8
+{{property max=20000}}
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="temperature"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="dewpoint"}}
