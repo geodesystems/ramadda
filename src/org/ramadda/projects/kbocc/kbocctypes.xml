@@ -141,7 +141,9 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 -col
 +col-8
 {{display_linechart addTooltip=false
-height=60vh vAxisSharedRange=true vAxisTitle="property:axis_label" 
+height=60vh
+vAxisExplicit=true vAxisMinValue=30 vAxisMaxValue=90 vAxisSharedRange=true
+vAxisTitle="property:axis_label" 
 tooltip="${default}"
 hAxis.ticks="3648:June 1,4392:July 1,5064:Aug 1,5736:Sept 1,6408:Oct 1,7080:Nov 1,8280:Dec 1" 
 indexField=hours_in_year
