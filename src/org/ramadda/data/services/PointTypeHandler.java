@@ -658,7 +658,7 @@ public class PointTypeHandler extends RecordTypeHandler {
          *
          *       Metadata polygonMetadata =
          *           new Metadata(getRepository().getGUID(), entry.getId(),
-         *                        MetadataHandler.TYPE_SPATIAL_POLYGON,
+         *                        getMetadataManager().findType(MetadataHandler.TYPE_SPATIAL_POLYGON),
          *                        DFLT_INHERITED, sb[0].toString(),
          *                        sb[1].toString(), sb[2].toString(),
          *                        sb[3].toString(), Metadata.DFLT_EXTRA);
@@ -711,7 +711,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                 String unit = field.getUnit();
                 Metadata fieldMetadata =
                     new Metadata(getRepository().getGUID(), entry.getId(),
-                                 "thredds.variable", DFLT_INHERITED,
+                                 getMetadataManager().findType("thredds.variable"),
+				 DFLT_INHERITED,
                                  field.getName(), field.getLabel(),
                                  (unit != null)
                                  ? unit

@@ -2095,7 +2095,7 @@ public class TypeHandler extends RepositoryManager {
 					 parentEntry,
 					 new Metadata(
 						      getRepository().getGUID(), parentEntry.getId(),
-						      ContentMetadataHandler.TYPE_PAGESTYLE, true, "", "true", "",
+						      getMetadataManager().findType(ContentMetadataHandler.TYPE_PAGESTYLE), true, "", "true", "",
 						      "", ""));
 
         parentEntry.putTransientProperty("showinbreadcrumbs", "false");
@@ -4356,7 +4356,8 @@ public class TypeHandler extends RepositoryManager {
                 getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(),
 							      entry.getId(),
-							      ContentMetadataHandler.TYPE_URL, false,
+							      getMetadataManager().findType(ContentMetadataHandler.TYPE_URL),
+							      false,
 							      url, url, "", "", ""));
             }
         }
@@ -4572,7 +4573,8 @@ public class TypeHandler extends RepositoryManager {
 		    ? ContentMetadataHandler.TYPE_THUMBNAIL
 		    : ContentMetadataHandler.TYPE_ATTACHMENT;
                 Metadata metadata = new Metadata(getRepository().getGUID(),
-						 entry.getId(), mtype, false,
+						 entry.getId(), getMetadataManager().findType(mtype),
+						 false,
 						 fileName, null, null, null, null);
 		//		getLogManager().logSpecial("service: added attachment:" + metadata);
                 getMetadataManager().addMetadata(request,entry, metadata);
@@ -7097,7 +7099,8 @@ public class TypeHandler extends RepositoryManager {
                 }
                 index++;
 
-                Metadata metadata = new Metadata(type, valueArray[0],
+                Metadata metadata = new Metadata(getMetadataManager().findType(type),
+						 valueArray[0],
 						 valueArray[1], valueArray[2],
 						 valueArray[3], "");
 

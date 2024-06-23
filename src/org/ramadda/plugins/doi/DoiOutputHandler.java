@@ -372,7 +372,7 @@ public class DoiOutputHandler extends OutputHandler {
             String doi    = ezid.mintIdentifier(prefix, null);
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(),
-                                             DoiMetadataHandler.TYPE_DOI,
+                                             getMetadataManager().findType(DoiMetadataHandler.TYPE_DOI),
                                              false,
                                              DoiMetadataHandler.ID_TYPE_DOI,
                                              doi, "", "", "");

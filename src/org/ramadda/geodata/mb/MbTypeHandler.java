@@ -128,7 +128,7 @@ public class MbTypeHandler extends GenericTypeHandler {
             getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(), "enum_tag",
+			     getRepository().getGUID(), entry.getId(), getMetadataManager().findType("enum_tag"),
                     false, attr, "", "", "", ""));
 
         }

@@ -1648,7 +1648,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(),
-                                             METADATA_TYPE_VISUALIZATION,
+                                             getMetadataManager().findType(METADATA_TYPE_VISUALIZATION),
                                              false,
                                              request.getString(ARG_SAVE_NAME,
                                                  ""), args, fileName, "", "");

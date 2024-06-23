@@ -113,7 +113,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
             } else if (line.startsWith("EXPDATA ")) {
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
-                                     entry.getId(), "bio_method", true,
+                                     entry.getId(), getMetadataManager().findType("bio_method"), true,
                                      line.substring("EXPDATA ".length()), "",
                                      "", "", ""));
 
@@ -147,7 +147,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "bio_pdb_compound", true, map.get("MOL_ID"),
+                    getMetadataManager().findType("bio_pdb_compound"), true, map.get("MOL_ID"),
                     map.get("MOLECULE"), map.get("CHAIN"),
                     map.get("ENGINEERED"), ""));
         }
@@ -158,7 +158,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "bio_pdb_source", true, map.get("MOL_ID"),
+                    getMetadataManager().findType("bio_pdb_source"), true, map.get("MOL_ID"),
                     map.get("ORGANISM_SCIENTIFIC"),
                     map.get("ORGANISM_COMMON"), map.get("ORGANISM_TAXID"),
                     ""));
@@ -168,7 +168,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
             getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(), "bio_author",
+			     getRepository().getGUID(), entry.getId(), getMetadataManager().findType("bio_author"),
                     true, word, "", "", "", ""));
         }
 
@@ -178,7 +178,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "content.keyword", true, word, "", "", "", ""));
+                    getMetadataManager().findType("content.keyword"), true, word, "", "", "", ""));
         }
         if (titles.size() > 0) {
 

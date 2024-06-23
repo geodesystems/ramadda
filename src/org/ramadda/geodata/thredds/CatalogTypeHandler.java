@@ -486,7 +486,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
         List<Metadata> metadataList = new ArrayList<Metadata>();
         CatalogOutputHandler.collectMetadata(repository, metadataList, root);
         metadataList.add(new Metadata(repository.getGUID(), entry.getId(),
-                                      ThreddsMetadataHandler.TYPE_LINK,
+                                      getMetadataManager().findType(ThreddsMetadataHandler.TYPE_LINK),
                                       DFLT_INHERITED,
                                       "Imported from catalog", url,
                                       Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,

@@ -270,7 +270,7 @@ public class HtmlImportHandler extends ImportHandler {
                 if (addProvenance) {
                     getMetadataManager().addMetadata(request,entry,
                             new Metadata(getRepository().getGUID(),
-                                         entry.getId(), "metadata_source",
+                                         entry.getId(), getMetadataManager().findType("metadata_source"),
                                          false, link.getUrl().toString(),
                                          "RAMADDA entry import", null, null,
                                          null));

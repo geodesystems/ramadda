@@ -463,7 +463,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "project_person", true, person, position, org, email,
+                    getMetadataManager().findType("project_person"), true, person, position, org, email,
                     ""));
         }
     }
@@ -488,7 +488,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                 String text = XmlUtil.getChildText((Element) children.get(i));
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
-                                     entry.getId(), "content.keyword", true,
+                                     entry.getId(), getMetadataManager().findType("content.keyword"), true,
                                      text, "", "", "", ""));
 
             }

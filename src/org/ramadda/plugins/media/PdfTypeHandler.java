@@ -109,7 +109,7 @@ public class PdfTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "metadata_author", false, author, null, null, null,
+                    getMetadataManager().findType("metadata_author"), false, author, null, null, null,
                     null));
         }
 

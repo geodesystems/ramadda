@@ -288,7 +288,7 @@ public class DifImporter extends ImportHandler {
 
             Metadata metadata =
                 new Metadata(getRepository().getGUID(), entry.getId(),
-                             DifMetadataHandler.TYPE_PERSONNEL,
+                             getMetadataManager().findType(DifMetadataHandler.TYPE_PERSONNEL),
                              DFLT_INHERITED, roleXml,
                              XmlUtil.getGrandChildText(node,
                                  DifUtil.TAG_First_Name,
@@ -330,7 +330,7 @@ public class DifImporter extends ImportHandler {
                 (List<Element>) XmlUtil.findChildren(difRoot, tag)) {
             String value = XmlUtil.getChildText(node);
             Metadata metadata = new Metadata(getRepository().getGUID(),
-                                             entry.getId(), metadataId,
+                                             entry.getId(), getMetadataManager().findType(metadataId),
                                              DFLT_INHERITED, value,
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_ATTR,
@@ -363,7 +363,7 @@ public class DifImporter extends ImportHandler {
                 values[i] = XmlUtil.getGrandChildText(node, subTags[i], "");
             }
             Metadata metadata = new Metadata(getRepository().getGUID(),
-                                             entry.getId(), metadataId,
+                                             entry.getId(), getMetadataManager().findType(metadataId),
                                              values);
             getMetadataManager().addMetadata(request,entry, metadata);
         }

@@ -93,7 +93,7 @@ public class NdnpSearchProvider extends OpenSearchProvider {
         String img = url + "/thumbnail.jpg";
         Metadata thumbnailMetadata =
             new Metadata(getRepository().getGUID(), newEntry.getId(),
-                         ContentMetadataHandler.TYPE_THUMBNAIL, false, img,
+                         getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL), false, img,
                          null, null, null, null);
         getMetadataManager().addMetadata(request,newEntry, thumbnailMetadata);
     }

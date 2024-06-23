@@ -183,7 +183,7 @@ public class YouTubeSearchProvider extends SearchProvider {
             if (thumb != null) {
                 Metadata thumbnailMetadata =
                     new Metadata(getRepository().getGUID(), newEntry.getId(),
-                                 ContentMetadataHandler.TYPE_THUMBNAIL,
+                                 getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
                                  false, thumb, null, null, null, null);
                 getMetadataManager().addMetadata(request,newEntry, thumbnailMetadata);
             }

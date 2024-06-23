@@ -411,13 +411,13 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                 getMetadataManager().addMetadata(request,messageEntry,
                         new Metadata(getRepository().getGUID(),
                                      messageEntry.getId(),
-                                     ContentMetadataHandler.TYPE_URL, false,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_URL), false,
                                      url, title, null, null, null));
                 if (thumbnailUrl != null) {
                     Metadata thumbnailMetadata =
                         new Metadata(getRepository().getGUID(),
                                      messageEntry.getId(),
-                                     ContentMetadataHandler.TYPE_THUMBNAIL,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
                                      false, thumbnailUrl, null, null, null,
                                      null);
                     getMetadataManager().addMetadata(request,messageEntry,

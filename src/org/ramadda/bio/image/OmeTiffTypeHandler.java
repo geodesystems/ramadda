@@ -147,7 +147,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "bio_ome_experiment", false,
+                    getMetadataManager().findType("bio_ome_experiment"), false,
                     XmlUtil.getAttribute(experiment, "Type", ""),
                     XmlUtil.getGrandChildText(experiment, "Description"),
                     XmlUtil.getAttribute(experiment, "ID", ""), ((ref != null)
@@ -167,7 +167,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
                 entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
-                    "bio_ome_experimenter", false,
+                    getMetadataManager().findType("bio_ome_experimenter"), false,
                     XmlUtil.getAttribute(experimenter, "FirstName", ""),
                     XmlUtil.getAttribute(experimenter, "LastName", ""),
                     XmlUtil.getAttribute(experimenter, "Email", ""),

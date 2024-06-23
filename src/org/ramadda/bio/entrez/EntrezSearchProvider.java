@@ -245,7 +245,7 @@ public class EntrezSearchProvider extends SearchProvider {
                                     newEntry,
                                     new Metadata(
                                         getRepository().getGUID(),
-                                        newEntry.getId(), "synonym", false,
+                                        newEntry.getId(), getMetadataManager().findType("synonym"), false,
                                         backupName, null, null, null, null));
                             }
                         }

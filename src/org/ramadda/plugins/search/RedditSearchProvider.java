@@ -152,7 +152,7 @@ public class RedditSearchProvider extends SearchProvider {
                     && thumbnail.startsWith("https:")) {
                 Metadata metadata =
                     new Metadata(getRepository().getGUID(), newEntry.getId(),
-                                 ContentMetadataHandler.TYPE_THUMBNAIL,
+                                 getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
                                  false, thumbnail, "image", null, null, null);
                 getMetadataManager().addMetadata(request,newEntry, metadata);
             }

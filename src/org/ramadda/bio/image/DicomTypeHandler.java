@@ -177,7 +177,7 @@ public class DicomTypeHandler extends GenericTypeHandler {
             if (metadataTags.contains(tag.id)
                     || metadataTags.contains(tag.name)) {
                 Metadata metadata = new Metadata(getRepository().getGUID(),
-                                        entry.getId(), "bio_dicom_attr",
+						 entry.getId(), getMetadataManager().findType("bio_dicom_attr"),
                                         false, tag.name, value, null, null,
                                         null);
 

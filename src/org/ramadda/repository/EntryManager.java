@@ -1631,7 +1631,8 @@ public class EntryManager extends RepositoryManager {
 								f).getName());
 		getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(), entry.getId(),
-							      "content.votes", false, f.toString(), "", "", "",""));
+							      getMetadataManager().findType("content.votes"),
+							      false, f.toString(), "", "", "",""));
 		getEntryManager().updateEntry(null, entry);
 	    }
 
@@ -2802,7 +2803,8 @@ public class EntryManager extends RepositoryManager {
 		    getMetadataManager().addMetadata(request,
 						     e,
 						     new Metadata(getRepository().getGUID(), e.getId(),
-								  "enum_tag", false, tag, "", "", "", ""),true);
+								  getMetadataManager().findType("enum_tag"),
+								  false, tag, "", "", "", ""),true);
 		}
 	    }
 
@@ -3939,7 +3941,8 @@ public class EntryManager extends RepositoryManager {
 					 entry,
 					 new Metadata(
 						      getRepository().getGUID(), entry.getId(),
-						      AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false, user,
+						      getMetadataManager().findType(AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD),
+						      false, user,
 						      request.getIp(), ((oldType != null)
 									? oldType
 									: ""), fromEmail, ""));
@@ -6156,7 +6159,7 @@ public class EntryManager extends RepositoryManager {
                 if (tag.equals("tag")) {
                     getMetadataManager().addMetadata(request,entry,
 						     new Metadata(getRepository().getGUID(),
-								  entry.getId(), "enum_tag", true,
+								  entry.getId(), getMetadataManager().findType("enum_tag"), true,
 								  XmlUtil.getChildText(entryChild),
 								  "", "", "", ""));
 
@@ -6511,7 +6514,8 @@ public class EntryManager extends RepositoryManager {
 					 entry,
 					 new Metadata(
 						      getRepository().getGUID(), entry.getId(),
-						      ContentMetadataHandler.TYPE_ATTACHMENT, false, theFile, "",
+						      getMetadataManager().findType(ContentMetadataHandler.TYPE_ATTACHMENT),
+						      false, theFile, "",
 						      "", "", ""));
         if (andInsert) {
             updateEntry(null, entry);

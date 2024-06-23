@@ -85,7 +85,7 @@ public class MailTypeHandler extends GenericTypeHandler {
 	Metadata metadata =
 	    new Metadata(
 			 getRepository().getGUID(), entry.getId(),
-			 "email_address",
+			 getMetadataManager().findType("email_address"),
 			 false, email, null, null, null, null);
 	getMetadataManager().addMetadata(request,entry, metadata);
     }
@@ -242,7 +242,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                         Metadata metadata =
                             new Metadata(
                                 getRepository().getGUID(), entry.getId(),
-                                ContentMetadataHandler.TYPE_ATTACHMENT,
+                                getMetadataManager().findType(ContentMetadataHandler.TYPE_ATTACHMENT),
                                 false, fileName, null, null, null, null);
                         getMetadataManager().addMetadata(request,entry, metadata);
                     }

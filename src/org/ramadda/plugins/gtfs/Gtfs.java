@@ -1517,11 +1517,11 @@ public class Gtfs implements Constants {
         request.getRepository().getMetadataManager().addMetadata(request,entry,
                 new Metadata(request.getRepository().getGUID(),
                              entry.getId(),
-                             ContentMetadataHandler.TYPE_ALIAS, false,
+                             request.getRepository().getMetadataManager().findType(ContentMetadataHandler.TYPE_ALIAS), false,
                              alias.toLowerCase(), null, null, null, null));
     }
 
-
+    
 
 
     /**
@@ -1997,7 +1997,7 @@ public class Gtfs implements Constants {
                         Metadata dirMetadata =
                             new Metadata(repository.getGUID(),
                                          newEntry.getId(),
-                                         "camera.direction", false,
+                                         request.getRepository().getMetadataManager().findType("camera.direction"), false,
                                          "" + pos.getBearing(),
                                          Metadata.DFLT_ATTR,
                                          Metadata.DFLT_ATTR,

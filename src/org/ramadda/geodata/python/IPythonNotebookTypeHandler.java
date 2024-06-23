@@ -113,7 +113,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 								     tmpFile).getName();
 		Metadata thumbnailMetadata =
 		    new Metadata(getRepository().getGUID(), entry.getId(),
-				 ContentMetadataHandler.TYPE_THUMBNAIL, false,
+				 getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL), false,
 				 fileName, null, null, null, null);
 		getMetadataManager().addMetadata(request,entry, thumbnailMetadata);
 		return true;

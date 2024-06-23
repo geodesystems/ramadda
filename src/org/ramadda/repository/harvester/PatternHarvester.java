@@ -1926,7 +1926,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(),
 							      entry.getId(),
-							      ContentMetadataHandler.TYPE_THUMBNAIL,
+							      getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
 							      false, newThumbFile, null, null, null,
 							      null));
 

@@ -169,7 +169,7 @@ public class EsriSearchProvider extends SearchProvider {
                     Metadata thumbnailMetadata =
                         new Metadata(getRepository().getGUID(),
                                      newEntry.getId(),
-                                     ContentMetadataHandler.TYPE_THUMBNAIL,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
                                      false, thumb, null, null, null, null);
                     getMetadataManager().addMetadata(request,newEntry,
                             thumbnailMetadata);
@@ -197,7 +197,7 @@ public class EsriSearchProvider extends SearchProvider {
                     getMetadataManager().addMetadata(request,newEntry,
                         new Metadata(
                             getRepository().getGUID(), newEntry.getId(),
-                            "enum_tag", false,
+                            getMetadataManager().findType("enum_tag"), false,
                             JsonUtil.readValue(tag, "display_name", ""), null,
                             null, null, null));
                 }

@@ -408,7 +408,7 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
                 //For now don't add the polygon.
                 Metadata polygonMetadata =
                     new Metadata(getRepository().getGUID(), entry.getId(),
-                                 MetadataHandler.TYPE_SPATIAL_POLYGON,
+                                 getMetadataManager().findType(MetadataHandler.TYPE_SPATIAL_POLYGON),
                                  DFLT_INHERITED, sb[0].toString(),
                                  sb[1].toString(), sb[2].toString(),
                                  sb[3].toString(), Metadata.DFLT_EXTRA);

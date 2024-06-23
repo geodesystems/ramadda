@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -110,81 +110,49 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
-    private static boolean debugCorpus = false;
-
-    public static boolean debugSearch = false;
+    public static boolean debugCorpus = false;
+    public static boolean debugIndex = false;
+    public static boolean debugSearch = true;
 
     public static final String SUFFIX_LATITUDE ="_latitude";
     public static final String SUFFIX_LONGITUDE ="_longitude";
 
-
-    /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
-
-
-    /** _more_ */
     public static final String ARG_PROVIDER = "provider";
-
-    /** _more_ */
     public static final String ARG_SEARCH_SUBSET = "search.subset";
-
-    /** _more_ */
     public static final String ARG_SEARCH_SERVERS = "search.servers";
-
-
-    /** _more_ */
     public final RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this,
 							      "/search/do", "Search");
 
-
-
-    /** _more_ */
     public final RequestUrl URL_SEARCH_FORM = new RequestUrl(this,
 							     "/search/form", "Form");
 
 
-    /** _more_ */
     public final RequestUrl URL_SEARCH_TYPE = new RequestUrl(this,
 							     "/search/type", "By Type");
 
-    /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS =
         new RequestUrl(this, "/search/associations/do", "Associations");
 
-    /** _more_ */
     public final RequestUrl URL_SEARCH_ASSOCIATIONS_FORM =
         new RequestUrl(this, "/search/associations/form",
                        "Search Associations");
 
-    /** _more_ */
     public final RequestUrl URL_SEARCH_BROWSE = new RequestUrl(this,
 							       "/search/browse",
 							       "Browse Metadata");
-
-
-
-    /** _more_ */
     public final RequestUrl URL_SEARCH_REMOTE_DO =
         new RequestUrl(this, "/search/remote/do", "Search Remote Servers");
 
-
-    /** _more_ */
     public final List<RequestUrl> searchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_FORM,
 					    URL_SEARCH_TYPE,
 					    URL_SEARCH_BROWSE,
 					    URL_SEARCH_ASSOCIATIONS_FORM });
-
-    /** _more_ */
     public final List<RequestUrl> remoteSearchUrls =
         RequestUrl.toList(new RequestUrl[] { URL_SEARCH_FORM,
 					    URL_SEARCH_TYPE,
@@ -195,85 +163,45 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     private static final String  FIELD_ENTRYORDER ="entryorder";
     private static final String  FIELD_SIZE ="size";
     private static final String  FIELD_SUPERTYPE ="supertype";    
-
-    /** _more_ */
     private static final String FIELD_ENTRYID = "entryid";
     private static final String FIELD_PARENT = "parent";
     private static final String FIELD_ANCESTOR = "ancestor";    
-
-    /** _more_ */
     private static final String FIELD_PATH = "path";
-
     private static final String FIELD_TYPE = "type";
-
     private static final String FIELD_NORTH = "north";
     private static final String FIELD_WEST = "west";    
     private static final String FIELD_SOUTH = "south";
     private static final String FIELD_EAST = "east";
-
     private static final String FIELD_CORPUS = "corpus";
-
-
-    /** _more_ */
     private static final String FIELD_CONTENTS = "contents";
-
     private static final String FIELD_ATTACHMENT = "attachment";
-
-    /** _more_ */
     private static final String FIELD_DATE_CREATED = "date_created";
     private static final String FIELD_DATE_CHANGED = "date_changed";
     private static final String FIELD_DATE_START = "date_start";
     private static final String FIELD_DATE_END = "date_end";    
-
-    /** _more_ */
     private static final String FIELD_METADATA = "metadata";
-
     private static final String FIELD_PROPERTY = "property";
-
-
-    /** _more_ */
     private static final String FIELD_DESCRIPTION = "description";
-
-    /** _more_ */
     private static final String FIELD_NAME = "name";
-
     private static final String FIELD_CREATOR = "entry_creator";    
-
     private static final String FIELD_NAME_SORT = "namesort";    
-
     private static final String[] SEARCH_FIELDS ={
 	FIELD_CORPUS, FIELD_NAME, FIELD_CREATOR,FIELD_DESCRIPTION, FIELD_CONTENTS,FIELD_ATTACHMENT, FIELD_PATH};
 
-
-
     private Object LUCENE_MUTEX = new Object();
-
     public static final int LUCENE_MAX_LENGTH = 25_000_000;
-
     private Directory luceneDirectory;
-
-
     private IndexWriter luceneWriter;
-
     private IndexSearcher luceneSearcher;
-
     private String tesseractPath;
-
     private boolean indexImages = true;
-
     private SearchProvider thisSearchProvider;
-
     private List<SearchProvider> searchProviders;
-
     private List<SearchProvider> allProviders;
-
     private Hashtable<String, SearchProvider> searchProviderMap;
-
     private List<SearchProvider> pluginSearchProviders =
         new ArrayList<SearchProvider>();
-
     private Hashtable<String,List<String>> synonyms;
-
     private boolean showMetadata= true;
 
     public SearchManager(Repository repository)  {
@@ -287,7 +215,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	}
     }
-
 
     public  void debug(String msg) {
 	if(debugSearch) getLogManager().logSpecial(msg);
@@ -337,25 +264,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return stringDefined(tesseractPath);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean includeMetadata() {
 	return showMetadata;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private IndexWriter getLuceneWriter() throws Exception {
 	if(luceneWriter==null) {
 	    synchronized(LUCENE_MUTEX) {
@@ -482,11 +394,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<RequestUrl> getAdminUrls() {
         return null;
     }
@@ -507,13 +415,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private  void indexEntries(List<Entry> entries, Request request, boolean isNew)
 	throws Exception {
 	//	synchronized(LUCENE_MUTEX) {
@@ -534,14 +436,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param indexWriter _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     int rcnt=0;
     private void indexEntry(IndexWriter indexWriter, Entry entry, Request request, boolean isNew)
 	throws Exception {
@@ -736,10 +631,23 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
+	if(debugIndex) {
+	    System.err.println("indexing:" + entry);
+	}
+	//	MetadataManager.debugGetMetadata = true;
+	//	getMetadataManager().getMetadata(request,entry);
+	//	MetadataManager.debugGetMetadata = false;	
+
         for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
 	    if(type==null) {
+		if(debugIndex) {
+		    System.err.println("\tno metadata type:" + metadata);
+		}
 		continue;
+	    }
+	    if(debugIndex) {
+		System.err.println("\tmetadata:" + metadata);
 	    }
 	    for (MetadataElement element : type.getChildren()) {
 		if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
@@ -752,19 +660,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		}
 	    }
-	    if(type.getSearchable()) {
-		//Don't add to corpus as the TypeHandler.getTextCorpus above does that for us
-		//		System.err.println("MTD:" + metadata.getAttr1().toLowerCase());
-		//		corpus.append(metadata.getAttr1().toLowerCase());
-		//		corpus.append(" ");
-		for(MetadataElement element: getMetadataManager().getSearchableElements(type)) {
-		    String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
-		    String fieldValue = metadata.getAttr(element.getIndex());
-		    if(element.isEnumeration()) {
-			doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
-		    } else {
-			doc.add(new TextField(fieldId, fieldValue,Field.Store.NO));
-		    }
+	    if(!type.getSearchable()) {
+		if(debugIndex) {
+		    System.err.println("\tnot searchable:" + metadata);
+		}
+		continue;
+	    }
+
+	    //Don't add to corpus as the TypeHandler.getTextCorpus above does that for us
+	    //		System.err.println("MTD:" + metadata.getAttr1().toLowerCase());
+	    //		corpus.append(metadata.getAttr1().toLowerCase());
+	    //		corpus.append(" ");
+	    for(MetadataElement element: getMetadataManager().getSearchableElements(type)) {
+		String fieldId = getMetadataField(type.getId()+"_"+element.getIndex());
+		String fieldValue = metadata.getAttr(element.getIndex());
+		if(element.isEnumeration()) {
+		    if(debugIndex)
+			System.err.println("enum:" + fieldId +" v:" + fieldValue);
+		    doc.add(new StringField(fieldId, fieldValue,Field.Store.NO));
+		} else {
+		    if(debugIndex)
+			System.err.println("string:" + fieldId +" v:" + fieldValue);
+		    doc.add(new TextField(fieldId, fieldValue,Field.Store.NO));
 		}
 	    }
 	}
@@ -907,15 +824,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	}
     }
     
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param doc _more_
-     * @param f _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void addContentField(Request request, Entry entry,
                                  org.apache.lucene.document.Document doc,
 				 String field,
@@ -953,13 +862,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private IndexSearcher getLuceneSearcher() throws Exception {
 	if(luceneSearcher==null) {
 	    IndexReader reader = DirectoryReader.open(luceneDirectory);
@@ -980,15 +883,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntrySuggest(Request request) throws Exception {
         List<String> names  = new ArrayList<String>();
 	request.put(ARG_MAX,20);
@@ -1674,11 +1569,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     */
+    
     public void entriesCreated(Request request, List<Entry> entries) {
         try {
             indexEntries(entries, request, true);
@@ -1689,11 +1580,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     */
+    
     public void entriesModified(Request request, List<Entry> entries) {
         try {
             List<String> ids = new ArrayList<String>();
@@ -1762,11 +1649,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	HU.formEntry(sb,"#of documents:",""+ stats.docCount());
     }
 
-    /**
-     * _more_
-     *
-     * @param ids _more_
-     */
+    
     public void entriesDeleted(List<String> ids) {
         try {
 	    //	    synchronized(LUCENE_MUTEX) {
@@ -1781,29 +1664,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processCapabilities(Request request) throws Exception {
         return new Result("", "text/xml");
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processOpenSearch(Request request) throws Exception {
 
         Document doc  = XmlUtil.makeDocument();
@@ -1848,15 +1715,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSearchForm(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append(HU.sectionOpen(null, false));
@@ -1889,13 +1748,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<RequestUrl> getSearchUrls() throws Exception {
         if (getRegistryManager().getEnabledRemoteServers().size() > 0) {
             //            return getRepository().remoteSearchUrls;
@@ -1906,27 +1759,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+    
     public String getSearchUrl(Request request) {
 	//        return request.makeUrl(URL_ENTRY_SEARCH, ARG_NAME, WHAT_ENTRIES);
         return request.makeUrl(URL_ENTRY_SEARCH);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String getTextField(Request request) throws Exception {
         String value = (String) request.getString(ARG_TEXT, "");
         value = value.replaceAll("\"", "&quot;");
@@ -1941,28 +1780,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return textField;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String getSearchButtons(Request request) throws Exception {
         return HU.submit("Search", ARG_SEARCH_SUBMIT);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void makeSearchForm(Request request, Appendable sb)
 	throws Exception {
 	sb.append("\n");
@@ -1993,17 +1817,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     *
-     * _more_
-     *
-     * @param request _more_
-     * @param typeSpecific _more_
-     * @param sb _more_
-     * @param addTextField _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void makeSearchForm(Request request, Appendable sb,
                                 boolean typeSpecific, boolean addTextField)
 	throws Exception {
@@ -2103,15 +1917,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String makeOutputSettings(Request request, boolean addMax) throws Exception {
         String orderBy =makeOrderBy(request,false);
         String s = HU.b("Output") +": " +
@@ -2145,15 +1951,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param contents _more_
-     * @param titles _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addSearchProviders(Request request, List<String> contents,
 				   List<String> titles,boolean justRamadda,
 				   boolean skipIfNone)
@@ -2255,11 +2053,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private List getOutputHandlerSelectList() {
         List tfos = new ArrayList<TwoFacedObject>();
         for (OutputHandler outputHandler :
@@ -2284,15 +2078,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSearchType(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         List<String> toks = Utils.split(request.getRequestPath(), "/", true,
@@ -2321,14 +2107,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addSearchByTypeList(Request request, Appendable sb,
 				    Hashtable props,
 				    boolean showHeader,
@@ -2420,15 +2199,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSearchInfo(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Search Information",
@@ -2495,15 +2266,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSearchProviders(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Search Providers", false);
@@ -2519,15 +2282,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return makeResult(request, "Search Providers", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processSearchWadl(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         WadlUtil.openTag(sb);
@@ -2573,16 +2328,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param includeThis _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<ServerInfo> findServers(Request request, boolean includeThis)
 	throws Exception {
         List<ServerInfo> servers = new ArrayList<ServerInfo>();
@@ -2603,15 +2349,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processRemoteSearch(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         List<String> servers = (List<String>) request.get(ATTR_SERVER,
@@ -2649,15 +2387,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntryBrowseSearchForm(Request request)
 	throws Exception {
 
@@ -2669,17 +2399,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return makeResult(request, "Search Form", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param title _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result makeResult(Request request, String title, Appendable sb)
 	throws Exception {
         StringBuilder headerSB = new StringBuilder();
@@ -2693,11 +2413,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         return addHeaderToAncillaryPage(request, result);
     }
 
-    /**
-     * _more_
-     *
-     * @param provider _more_
-     */
+    
     public void addPluginSearchProvider(SearchProvider provider) {
         pluginSearchProviders.add(provider);
 	if(searchProviderMap==null) searchProviderMap =     new Hashtable<String, SearchProvider>();    
@@ -2706,15 +2422,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public SearchProvider getSearchProvider(String id) throws Exception {
         //Force the init
         List<SearchProvider> searchProviders = getSearchProviders();
@@ -2745,13 +2453,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public synchronized  List<SearchProvider> getSearchProviders() throws Exception {
         if (searchProviders == null) {
             //            System.err.println("SearchManager.doSearch- making searchProviders");
@@ -2808,16 +2510,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param searchInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Entry> doSearch(Request request, SelectInfo searchInfo)
 	throws Exception {
         HashSet<String> providers = new HashSet<String>();
@@ -2903,15 +2596,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntrySearch(Request request) throws Exception {
 	//	System.err.println(request);
 
@@ -2987,16 +2672,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param servers _more_
-     * @param tmpEntry _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void doDistributedSearch(Request request,
                                     List<ServerInfo> servers,
                                     final Entry tmpEntry,
@@ -3050,15 +2726,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param runnables _more_
-     * @param running _more_
-     * @param runnableCnt _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void runSearch(List<Runnable> runnables, boolean[] running,
 			   int[] runnableCnt)
 	throws Exception {
@@ -3223,16 +2891,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param what _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected List getSearchFormLinks(Request request, String what)
 	throws Exception {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);

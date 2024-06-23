@@ -1822,7 +1822,8 @@ public class WikiManager extends RepositoryManager
 					     entry,
 					     new Metadata(
 							  getRepository().getGUID(), entry.getId(),
-							  "wiki_notebook", false, notebookId, theFile, "", "", ""));
+							  getMetadataManager().findType("wiki_notebook"),
+							  false, notebookId, theFile, "", "", ""));
             getEntryManager().updateEntry(null, entry);
 
             return new Result("", new StringBuilder("{\"result\":\"ok\"}"),

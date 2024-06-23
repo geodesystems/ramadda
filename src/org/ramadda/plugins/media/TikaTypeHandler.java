@@ -112,7 +112,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
             getMetadataManager().addMetadata(request,
 					     entry,
 					     new Metadata(
-							  getRepository().getGUID(), entry.getId(), "property",
+							  getRepository().getGUID(), entry.getId(), getMetadataManager().findType("property"),
 							  false, "slide_count", slideCount, null, null, null));
         }
 
@@ -122,7 +122,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
             getMetadataManager().addMetadata(request,
 					     entry,
 					     new Metadata(
-							  getRepository().getGUID(), entry.getId(), "property",
+							  getRepository().getGUID(), entry.getId(), getMetadataManager().findType("property"),
 							  false, "word_count", wordCount, null, null, null));
         }
 
@@ -132,7 +132,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
             getMetadataManager().addMetadata(request,
 					     entry,
 					     new Metadata(
-							  getRepository().getGUID(), entry.getId(), "property",
+							  getRepository().getGUID(), entry.getId(), getMetadataManager().findType("property"),
 							  false, "page_count", pageCount, null, null, null));
         }
 
@@ -146,7 +146,7 @@ public class TikaTypeHandler extends GenericTypeHandler {
 					     entry,
 					     new Metadata(
 							  getRepository().getGUID(), entry.getId(),
-							  "metadata_author", false, author, null, null, null,
+							  getMetadataManager().findType("metadata_author"), false, author, null, null, null,
 							  null));
         }
 
@@ -158,7 +158,8 @@ public class TikaTypeHandler extends GenericTypeHandler {
 					     entry,
 					     new Metadata(
 							  getRepository().getGUID(), entry.getId(),
-							  "metadata_author", false, lastAuthor, null, null, null,
+							  getMetadataManager().findType("metadata_author"),
+							  false, lastAuthor, null, null, null,
 							  null));
         }
 
@@ -173,7 +174,8 @@ public class TikaTypeHandler extends GenericTypeHandler {
 					     entry,
 					     new Metadata(
 							  getRepository().getGUID(), entry.getId(),
-							  "metadata_publisher", false, publisher, null, null, null,
+							  getMetadataManager().findType("metadata_publisher"),
+							  false, publisher, null, null, null,
 							  null));
         }
 

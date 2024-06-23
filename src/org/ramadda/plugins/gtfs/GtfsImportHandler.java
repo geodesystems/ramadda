@@ -958,10 +958,11 @@ public class GtfsImportHandler extends ImportHandler {
                     if (Utils.stringDefined(timezone)) {
                         getMetadataManager().addMetadata(request,
                             entry,
+					 
                             new Metadata(
                                 request.getRepository().getGUID(),
                                 entry.getId(),
-                                ContentMetadataHandler.TYPE_TIMEZONE, true,
+                                getMetadataManager().findType(ContentMetadataHandler.TYPE_TIMEZONE), true,
                                 timezone, null, null, null, null));
                     }
                     agencies.add(entry);

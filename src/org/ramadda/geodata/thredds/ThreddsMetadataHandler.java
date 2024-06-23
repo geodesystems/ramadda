@@ -502,7 +502,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     getRepository().getProperty("metadata.type." + name);
                 if (metadataType != null) {
                     metadata = new Metadata(getRepository().getGUID(),
-                                            entry.getId(), metadataType,
+                                            entry.getId(), getMetadataManager().findType(metadataType),
                                             DFLT_INHERITED, value,
                                             Metadata.DFLT_ATTR,
                                             Metadata.DFLT_ATTR,
@@ -548,7 +548,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         try {
                             metadata =
                                 new Metadata(getRepository().getGUID(),
-                                             entry.getId(), TYPE_KEYWORD,
+                                             entry.getId(), getMetadataManager().findType(TYPE_KEYWORD),
                                              DFLT_INHERITED, keyword,
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_ATTR,
@@ -584,7 +584,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
                 metadata = new Metadata(getRepository().getGUID(),
-                                        entry.getId(), TYPE_PROPERTY,
+                                        entry.getId(), getMetadataManager().findType(TYPE_PROPERTY),
                                         DFLT_INHERITED, name, value,
                                         Metadata.DFLT_ATTR,
                                         Metadata.DFLT_ATTR,
@@ -677,7 +677,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     varName = var.getShortName();
                     try {
                         metadata = new Metadata(getRepository().getGUID(),
-                                entry.getId(), TYPE_VARIABLE, DFLT_INHERITED,
+						entry.getId(), getMetadataManager().findType(TYPE_VARIABLE), DFLT_INHERITED,
                                 varName, var.getFullName(),
                                 var.getUnitsString(), Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
@@ -702,7 +702,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                             metadata =
                                 new Metadata(getRepository().getGUID(),
                                              entry.getId(),
-                                             TYPE_STANDARDNAME,
+                                             getMetadataManager().findType(TYPE_STANDARDNAME),
                                              DFLT_INHERITED, varName,
                                              var.getFullName(),
                                              var.getUnitsString(),
@@ -732,7 +732,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         System.err.println("making variable level metadata:"
                                            + metadataType);
                         metadata = new Metadata(getRepository().getGUID(),
-                                entry.getId(), metadataType, DFLT_INHERITED,
+						entry.getId(), getMetadataManager().findType(metadataType), DFLT_INHERITED,
                                 var.getFullName(), attr.getStringValue(),
                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
@@ -1016,7 +1016,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             if (XmlUtil.hasAttribute(child, "xlink:href")) {
                 String url = XmlUtil.getAttribute(child, "xlink:href");
 
-                return new Metadata(getRepository().getGUID(), "", TYPE_LINK,
+                return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_LINK),
                                     DFLT_INHERITED,
                                     XmlUtil.getAttribute(child,
                                         "xlink:title", url), url,
@@ -1028,14 +1028,14 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 String text = XmlUtil.getChildText(child).trim();
 
                 return new Metadata(getRepository().getGUID(), "",
-                                    TYPE_DOCUMENTATION, DFLT_INHERITED, type,
+                                    getMetadataManager().findType(TYPE_DOCUMENTATION), DFLT_INHERITED, type,
                                     text, Metadata.DFLT_ATTR,
                                     Metadata.DFLT_ATTR, Metadata.DFLT_EXTRA);
             }
         } else if (isTag(tag, TYPE_PROJECT)) {
             String text = XmlUtil.getChildText(child).trim();
 
-            return new Metadata(getRepository().getGUID(), "", TYPE_PROJECT,
+            return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_PROJECT),
                                 DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_VOCABULARY,
                                     ""), Metadata.DFLT_ATTR,
@@ -1045,7 +1045,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             String text = XmlUtil.getChildText(child).trim();
 
             return new Metadata(getRepository().getGUID(), "",
-                                TYPE_CONTRIBUTOR, DFLT_INHERITED, text,
+                                getMetadataManager().findType(TYPE_CONTRIBUTOR), DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_ROLE, ""),
                                 Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
@@ -1073,7 +1073,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
             text = text.replace("\r\n", " ");
             text = text.replace("\n", " ");
 
-            return new Metadata(getRepository().getGUID(), "", TYPE_KEYWORD,
+            return new Metadata(getRepository().getGUID(), "", getMetadataManager().findType(TYPE_KEYWORD),
                                 DFLT_INHERITED, text,
                                 XmlUtil.getAttribute(child, ATTR_VOCABULARY,
                                     ""), Metadata.DFLT_ATTR,

@@ -131,7 +131,7 @@ public class MsDocTypeHandler extends GenericTypeHandler {
 							       f).getName();
 			Metadata metadata =
 			    new Metadata(getRepository().getGUID(),
-					 entry.getId(), (isThumbnail
+					 entry.getId(), getMetadataManager().findType(isThumbnail
 							 ? ContentMetadataHandler.TYPE_THUMBNAIL
 							 : ContentMetadataHandler.TYPE_ATTACHMENT), false,
 					 fileName, null, null, null, null);

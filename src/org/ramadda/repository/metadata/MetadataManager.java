@@ -216,7 +216,11 @@ public class MetadataManager extends RepositoryManager {
      * @return _more_
      */
     public MetadataType findType(String stringType) {
-        return typeMap.get(stringType);
+	MetadataType type =  typeMap.get(stringType);
+	if(type==null) {
+	    return new MetadataType(stringType,getDefaultMetadataHandler());
+	}
+	return type;
     }
 
     /**
@@ -832,7 +836,7 @@ public class MetadataManager extends RepositoryManager {
                     entry,
                     new Metadata(
                         getRepository().getGUID(), entry.getId(),
-                        ContentMetadataHandler.TYPE_THUMBNAIL, false,
+                        findType(ContentMetadataHandler.TYPE_THUMBNAIL), false,
                         f.getName(), null, null, null, null));
             } finally {
                 IO.close(fos);
@@ -1334,17 +1338,8 @@ public class MetadataManager extends RepositoryManager {
 	return result;
     }	
 
+    public static boolean debugGetMetadata = false;
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Metadata> getMetadata(Request request,Entry entry, String type)
             throws Exception {
         if (entry.isDummy()) {
@@ -1353,8 +1348,11 @@ public class MetadataManager extends RepositoryManager {
 		: getMetadata(request,entry,entry.getMetadata(request), type);
         }
         List<Metadata> metadataList = entry.getMetadata(request);
+	if(debugGetMetadata) System.err.println("getMetadata:" + entry +" list:" +metadataList);
         if (metadataList != null) {
-            return getMetadata(request,entry,metadataList, type);
+            metadataList =  getMetadata(request,entry,metadataList, type);
+	    if(debugGetMetadata) System.err.println("getMetadata 2 list:" +metadataList);
+	    return metadataList;
         }
 
         final List<Metadata> finalMetadataList = new ArrayList();
@@ -1389,8 +1387,12 @@ public class MetadataManager extends RepositoryManager {
         });
 
         metadataList = Metadata.sort(finalMetadataList);
+	if(debugGetMetadata) System.err.println("getMetadata 3 list:" +metadataList);
+
         entry.setMetadata(metadataList);
-        return getMetadata(request,entry,metadataList, type);
+        metadataList = getMetadata(request,entry,metadataList, type);
+	if(debugGetMetadata) System.err.println("getMetadata 4 list:" +metadataList);
+	return metadataList;
     }
 
 
@@ -1544,7 +1546,7 @@ public class MetadataManager extends RepositoryManager {
             throws Exception {
         addMetadata(request,entry,
                     new Metadata(getRepository().getGUID(), entry.getId(),
-                                 type, false, values[0],
+                                 findType(type), false, values[0],
 				 values.length>1 && values[1]!=null?values[1]:Metadata.DFLT_ATTR,
 				 values.length>2 &&values[2]!=null?values[2]:Metadata.DFLT_ATTR,
 				 values.length>3 && values[3]!=null?values[3]:Metadata.DFLT_ATTR,
@@ -1655,14 +1657,16 @@ public class MetadataManager extends RepositoryManager {
         if (handler != null) {
             return handler;
         }
+	return getDefaultMetadataHandler();
+    }
+
+    public MetadataHandler getDefaultMetadataHandler() {
         if (dfltMetadataHandler == null) {
             dfltMetadataHandler = new MetadataHandler(getRepository(), null);
         }
 
         return dfltMetadataHandler;
     }
-
-
 
 
     public MetadataHandler findMetadataHandler(String type) throws Exception {

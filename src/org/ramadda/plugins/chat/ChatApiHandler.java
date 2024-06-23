@@ -134,7 +134,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             getMetadataManager().addMetadata(request,
                 entry,
                 new Metadata(
-                    getRepository().getGUID(), entry.getId(), "chat_file",
+			     getRepository().getGUID(), entry.getId(), getMetadataManager().findType("chat_file"),
                     false, theFile, "", "", "", ""));
             getEntryManager().updateEntry(null, entry);
         } else {

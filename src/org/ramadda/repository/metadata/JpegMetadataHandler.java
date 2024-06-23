@@ -117,8 +117,8 @@ public class JpegMetadataHandler extends MetadataHandler {
 	//	Utils.printTimes("thumb",t1,t2,t3,t4,t5,t6);
 
         return new Metadata(getRepository().getGUID(), entry.getId(),
-                            ContentMetadataHandler.TYPE_THUMBNAIL, false,
-                            fileName, null, null, null, null);
+                            getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
+			    false,  fileName, null, null, null, null);
     }
 
 
@@ -233,7 +233,7 @@ public class JpegMetadataHandler extends MetadataHandler {
                 if (gpsDir.containsTag(GpsDirectory.TAG_IMG_DIRECTION)) {
                     Metadata dirMetadata =
                         new Metadata(getRepository().getGUID(),
-                                     entry.getId(), TYPE_CAMERA_DIRECTION,
+                                     entry.getId(), getMetadataManager().findType(TYPE_CAMERA_DIRECTION),
                                      DFLT_INHERITED,
                                      "" + getValue(gpsDir,
                                          GpsDirectory

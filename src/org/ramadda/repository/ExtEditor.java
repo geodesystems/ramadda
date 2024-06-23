@@ -392,7 +392,8 @@ public class ExtEditor extends RepositoryManager {
 		    getRepository().getMetadataManager().addMetadata(request,child,
 								     new Metadata(request.getRepository().getGUID(),
 										  entry.getId(),
-										  ContentMetadataHandler.TYPE_ALIAS, false,
+										  getMetadataManager().findType(ContentMetadataHandler.TYPE_ALIAS),
+										  false,
 										  alias, null, null, null, null));
 		    getEntryManager().updateEntry(request, child);
 		    list.append(HU.td("alias added"));

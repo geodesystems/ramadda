@@ -709,7 +709,8 @@ public class CatalogHarvester extends Harvester {
     private Metadata makeImportMetadata(String entryId,
                                         String catalogUrlPath) {
         return new Metadata(repository.getGUID(), entryId,
-                            ThreddsMetadataHandler.TYPE_LINK, DFLT_INHERITED,
+                            getMetadataManager().findType(ThreddsMetadataHandler.TYPE_LINK),
+			    DFLT_INHERITED,
                             "Imported from catalog", catalogUrlPath,
                             Metadata.DFLT_ATTR, Metadata.DFLT_ATTR,
                             Metadata.DFLT_EXTRA);

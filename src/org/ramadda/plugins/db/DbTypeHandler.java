@@ -2630,7 +2630,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(),
-                                             METADATA_SAVEDSEARCH, false,
+                                             getMetadataManager().findType(METADATA_SAVEDSEARCH), false,
                                              name, args, null, null, null);
             getMetadataManager().addMetadata(request,entry, metadata);
             request.put(ARG_DB_SEARCHID, metadata.getId());

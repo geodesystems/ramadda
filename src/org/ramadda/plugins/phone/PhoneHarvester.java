@@ -653,7 +653,7 @@ public class PhoneHarvester extends Harvester {
                     Metadata metadata =
                         new Metadata(getRepository().getGUID(),
                                      currentEntry.getId(),
-                                     EnumeratedMetadataHandler.TYPE_TAG,
+                                     getMetadataManager().findType(EnumeratedMetadataHandler.TYPE_TAG),
                                      false, tag, "", "", "", null);
                     System.err.println("metadata:" + currentEntry + " "
                                        + metadata + " " + tag);

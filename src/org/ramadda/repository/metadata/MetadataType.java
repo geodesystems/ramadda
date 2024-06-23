@@ -574,8 +574,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	throws Exception {
         boolean inherited = request.get(ARG_METADATA_INHERITED + suffix,
                                         false);
-        Metadata metadata = new Metadata(id, entry.getId(), getId(),
-                                         inherited);
+        Metadata metadata = new Metadata(id, entry.getId(), this, inherited);
 	metadata.setAccess(request.getString(ARG_METADATA_ACCESS+suffix,""));
         for (MetadataElement element : getChildren()) {
             String value = element.handleForm(request, entry, metadata,

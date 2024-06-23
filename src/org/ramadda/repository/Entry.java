@@ -10,6 +10,7 @@ import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.MetadataManager;
 import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
@@ -2237,17 +2238,22 @@ public class Entry implements Cloneable {
     public List<Metadata> getMetadata(Request request,boolean checkAccess) {	
 	if(checkAccess && metadata!=null && request!=null) {
 	    List<Metadata> restricted=new ArrayList<Metadata>();
+	    if(MetadataManager.debugGetMetadata) System.err.println("Entry getMetadata:" + this +" list:" +metadata);
 	    for(Metadata mtd: metadata) {
 		MetadataType type=mtd.getMetadataType();
 		if(type==null) {
-		    //		    System.err.println(this.getName() +" null type:" + mtd);
+		    if(MetadataManager.debugGetMetadata) 
+			System.err.println("\tnull type:" + mtd);
 		} else if(!type.isPrivate(request,this,mtd)) {
-		    //		    System.err.println(this.getName() +" OK:" +mtd);
+		    if(MetadataManager.debugGetMetadata) 
+			System.err.println("\tok:" + mtd);
 		    restricted.add(mtd);
 		}else {
-		    //System.err.println(this.getName() +" PRIVATE:" + mtd);
+		    if(MetadataManager.debugGetMetadata) 
+			System.err.println("\tprivate:" + mtd);
 		}
 	    }
+	    if(MetadataManager.debugGetMetadata) System.err.println("\trestricted list:" +restricted);
 	    return restricted;
 	}
         return metadata;

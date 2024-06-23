@@ -342,7 +342,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                     getMetadataManager().addMetadata(request,entry,
                             new Metadata(getRepository().getGUID(),
                                          entry.getId(),
-                                         ContentMetadataHandler.TYPE_KEYWORD,
+                                         getMetadataManager().findType(ContentMetadataHandler.TYPE_KEYWORD),
                                          false, word, "", "", "", ""));
                 }
             }
@@ -355,7 +355,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
-                                     ContentMetadataHandler.TYPE_URL, false,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_URL), false,
                                      url, urlName, "", "", ""));
 
             }
@@ -366,7 +366,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
-                                     ContentMetadataHandler.TYPE_AUTHOR,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_AUTHOR),
                                      false, author, "", "", "", ""));
 
             }
@@ -378,7 +378,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 getMetadataManager().addMetadata(request,entry,
                         new Metadata(getRepository().getGUID(),
                                      entry.getId(),
-                                     ContentMetadataHandler.TYPE_EMAIL,
+                                     getMetadataManager().findType(ContentMetadataHandler.TYPE_EMAIL),
                                      false, email, "", "", "", ""));
 
             }

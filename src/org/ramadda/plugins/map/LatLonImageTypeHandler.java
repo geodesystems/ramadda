@@ -146,7 +146,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
                                 entry.getFile()).getName();
         Metadata metadata =
             new Metadata(getRepository().getGUID(), entry.getId(),
-                         ContentMetadataHandler.TYPE_ATTACHMENT, false,
+                         getMetadataManager().findType(ContentMetadataHandler.TYPE_ATTACHMENT), false,
                          attachment, null, null, null, null);
 
         getMetadataManager().addMetadata(request,entry, metadata);

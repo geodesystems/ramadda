@@ -99,8 +99,7 @@ public class MetadataHandler extends RepositoryManager {
      * @param node _more_
      * @throws Exception _more_
      */
-    public MetadataHandler(Repository repository, Element node)
-            throws Exception {
+    public MetadataHandler(Repository repository, Element node) {
         super(repository);
     }
 
@@ -179,7 +178,7 @@ public class MetadataHandler extends RepositoryManager {
         if (isInternal==EntryManager.INTERNAL.NO) {
             id = XmlUtil.getAttribute(node, "id", id);
         }
-        Metadata metadata = new Metadata(id, entry.getId(), type,
+        Metadata metadata = new Metadata(id, entry.getId(), getMetadataManager().findType(type),
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
         String access = XmlUtil.getGrandChildText(node, "access", null);
@@ -440,10 +439,9 @@ public class MetadataHandler extends RepositoryManager {
                                  String extra) {
 
         MetadataType metadataType = findType(type);
-        Metadata metadata = new Metadata(id, entryId, type, inherited, attr1,
+        Metadata metadata = new Metadata(id, entryId, metadataType, inherited, attr1,
                                          attr2, attr3, attr4, extra);
 	metadata.setAccess(access);
-	metadata.setMetadataType(metadataType);	
         if (metadataType != null) {
             metadata.setPriority(metadataType.getPriority());
         }
