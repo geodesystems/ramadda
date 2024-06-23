@@ -2491,6 +2491,7 @@ thin_hr,.ramadda-thin-hr {
 }
 
 .ui-tooltip {
+    background:#fff;
     border:1px solid #ccc !important;    
     margin:0px;
     padding:4px;
