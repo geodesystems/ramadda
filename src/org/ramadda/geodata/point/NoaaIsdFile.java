@@ -69,15 +69,17 @@ public class NoaaIsdFile extends CsvFile {
     @Override
     public boolean isMissingValue(BaseRecord record, RecordField field,
 				  double v) {
-	return v==9999 || v==99999 || v==999999;
+	return v == 999.9 || v==9999.9 || v==9999 || v==99999 || v==999999;
     }
 
 
 
+    int cnt = 0;
     boolean hdr = true;
     public List<String> processTokens(TextRecord record, List<String> toks,
                                       boolean isHeader) {
 	List<String> newToks = new ArrayList<String>();
+	cnt++;
 	for(int i=0;i<toks.size() && i<=SLP;i++) {
 	    String tok = toks.get(i);
 	    if(i<=FIRST_STOP) {
@@ -88,8 +90,20 @@ public class NoaaIsdFile extends CsvFile {
 		newToks.add(tok);
 		continue;
 	    }
-	    newToks.addAll(Utils.split(tok,","));
+	    List<String>toks2 = Utils.split(tok,",");
+	    if(i==WND) {
+		double v = Double.parseDouble(toks2.get(3));
+		v = v/10.0;
+		toks2.set(3,""+v);
+	    }
+	    if(i==SLP || i==TMP || i==DEW) {
+		double v = Double.parseDouble(toks2.get(0));
+		v = v/10.0;
+		toks2.set(0,""+v);
+	    }
+	    newToks.addAll(toks2);
 	}
+	//	if(cnt<10) System.err.println(newToks);
         return newToks;
     }    
 
