@@ -1042,6 +1042,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     }
 
     public boolean isPrivate(Request request, Entry entry,Metadata metadata) {
+	//Check for the missing type
+	if(restrictions==null) {
+	    return false;
+	}
+
 	if(request.isAdmin()) return false;
 	if(isGeo && !request.geoOk(entry)) {
 	    return true;
