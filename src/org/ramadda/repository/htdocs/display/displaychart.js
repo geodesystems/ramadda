@@ -4168,6 +4168,9 @@ function CalendarDisplay(displayManager, id, properties) {
 
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	getDoDyamicTooltip: function() {
+	    return false;
+	},
 	getRequiredPackages: function() {
 	    return ['calendar'];
 	},
