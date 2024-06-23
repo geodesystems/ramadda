@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 23 07:51:32 MDT 2024";
+var build_date="RAMADDA build date: Sun Jun 23 16:06:25 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -19485,6 +19485,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
 
+	{p:'dynamicTooltip',ex:'true',d:true,tt:'Dynamically create the tooltips'},
+
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
 	{p:'replaceNanWithZero'},
 	{p:'maxColumns',d:-1},
@@ -20389,10 +20391,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let replaceNanWithZero = this.getReplaceNanWithZero();
 
 	    let maxWidth = this.getProperty("maxFieldLength",this.getProperty("maxFieldWidth",-1));
-	    let tt = this.getProperty("tooltip");
+	    let tt = this.getProperty('tooltip');
 	    let addTooltip = (Utils.stringDefined(tt));
 	    if(!this.getProperty("addTooltip",true) || !this.doAddTooltip()) {
 		addTooltip=false;
+	    }
+	    if(this.getDoDyamicTooltip()) {
+		addTooltip = false;
 	    }
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
@@ -21468,10 +21473,17 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(Utils.isDefined(this.getProperty('vAxisMinValue')))min=+this.getProperty('vAxisMinValue');
 		    if(Utils.isDefined(this.getProperty('vAxisMaxValue')))max=+this.getProperty('vAxisMaxValue');
 		    
-                    chartOptions.vAxis.minValue = min;
-                    chartOptions.vAxis.maxValue = max;
+                    this.chartOptions.vAxis.minValue = min;
+                    this.chartOptions.vAxis.maxValue = max;
 		}
             }
+
+
+	    if(this.getDoDyamicTooltip()) {
+		this.chartOptions.tooltip={ trigger: 'none' };
+	    }
+
+
 
 
 	    if(this.getAnimateChart(this.getProperty("animation",false,true))) {
@@ -21508,11 +21520,63 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    return null;
 		}
 	    }
-	    this.addEvents(chart);
+
+	    this.addEvents(chart,dataTable);
 	    return chart;
 	},
-	addEvents: function(chart) {
+	addDynamicTooltip: function(chart,data,event) {
+	    let row = event.row;
+	    let record = this.indexToRecord[row];
+	    if(!record) return;
+	    if(!this.tooltipEvent) return;
+	    let tooltip = this.tooltipDiv;
+	    if(!this.tooltipDiv) {
+		tooltip = this.tooltipDiv =  document.createElement('div');
+		tooltip.style.position = 'absolute';
+		document.body.appendChild(tooltip);
+	    }
+	    let tt = this.getProperty("tooltip");
+	    let content =   HU.div([ATTR_CLASS,'ui-tooltip',ATTR_STYLE,HU.css('font-size','80%')],
+				   this.getRecordHtml(record, null, tt));
+
+	    tooltip.innerHTML = content;
+	    let cli = chart.getChartLayoutInterface();
+	    let chartArea = cli.getChartAreaBoundingBox();
+	    let x = cli.getXLocation(data.getValue(row, 0));
+	    let y = cli.getYLocation(data.getValue(row, 1));
+	    let chartContainer = chart.getContainer();
+	    let chartRect = chartContainer.getBoundingClientRect();
+	    let pageX = this.tooltipEvent.pageX;
+            let pageY = this.tooltipEvent.pageY;
+	    tooltip.style.left = pageX+'px';
+	    tooltip.style.top =(pageY+20)+'px';
+	    tooltip.style.display = 'block';
+	},
+
+	getDoDyamicTooltip: function() {
+	    return this.getDynamicTooltip();
+	},
+	addEvents: function(chart,data) {
             let _this = this;
+	    if(this.getDoDyamicTooltip()) {
+		let chartContainer = chart.getContainer();
+		if(chartContainer) {
+		    chartContainer.addEventListener('mousemove', (event) =>{
+			this.tooltipEvent = event;
+		    })
+		}
+		google.visualization.events.addListener(chart, 'onmouseover', (event) =>{
+		    this.addDynamicTooltip(chart,data,event);
+		});
+
+		google.visualization.events.addListener(chart, 'onmouseout', (event)=> {
+		    if(this.tooltipDiv) {
+			this.tooltipDiv.style.display = 'none';
+		    }
+		});
+	    }
+
+
 	    if(this.getProperty("propagateHighlightEvent")) {
 		google.visualization.events.addListener(chart, 'onmouseover', function(event) {
                     pointData = _this.dataCollection.getList()[0];
