@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 23 16:20:08 MDT 2024";
+var build_date="RAMADDA build date: Sun Jun 23 16:35:38 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -23327,6 +23327,9 @@ function CalendarDisplay(displayManager, id, properties) {
 
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	getDoDyamicTooltip: function() {
+	    return false;
+	},
 	getRequiredPackages: function() {
 	    return ['calendar'];
 	},
@@ -31028,18 +31031,29 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
 
             if (showRecords) {
-                this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(html));
+                this.writeHtml(ID_DISPLAY_BOTTOM, html);
             } else {
                 let prefix = "";
                 if (!tokenize) {
                     prefix = (field?field.getLabel():"Word") + "=" + word
                 }
                 this.writeHtml(ID_DISPLAY_BOTTOM, HU.center(prefix + HU.div([ID, this.domId("table"), STYLE, HU.css('height','300px')], "")));
-                let dataTable = google.visualization.arrayToDataTable(data);
-                this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
-                this.chart.draw(dataTable, {
-                    allowHtml: true
-                });
+		let step2=()=>{
+                    let dataTable = google.visualization.arrayToDataTable(data);
+                    this.chart = new google.visualization.Table(document.getElementById(this.domId("table")));
+                    this.chart.draw(dataTable, {
+			allowHtml: true
+                    });
+		}
+		let step1=()=>{
+		    if(!ramaddaLoadGoogleChart('table',step2)) {
+			return
+		    }
+		}
+		if(!haveGoogleChartsLoaded(step1)) {
+		    return;
+		}
+		step2();
             }
         }
     });
