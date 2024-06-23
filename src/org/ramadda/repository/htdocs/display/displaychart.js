@@ -2381,10 +2381,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				   this.getRecordHtml(record, null, tt));
 
 	    tooltip.innerHTML = content;
-	    let cli = chart.getChartLayoutInterface();
-	    let chartArea = cli.getChartAreaBoundingBox();
-	    let x = cli.getXLocation(data.getValue(row, 0));
-	    let y = cli.getYLocation(data.getValue(row, 1));
 	    let chartContainer = chart.getContainer();
 	    let chartRect = chartContainer.getBoundingClientRect();
 	    let pageX = this.tooltipEvent.pageX;
@@ -2777,6 +2773,9 @@ function HistogramDisplay(displayManager, id, properties) {
         okToHandleEventRecordSelection: function() {
             return false;
         },
+	getDoDyamicTooltip: function() {
+	    return false;
+	},
         makeDataTable: function(dataList, props, selectedFields) {
             return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
         },
@@ -2862,6 +2861,9 @@ function PiechartDisplay(displayManager, id, properties) {
 
 	uniqueValues:[],
 	uniqueValuesMap:{},
+	getDoDyamicTooltip: function() {
+	    return false;
+	},
         canDoGroupBy: function() {
             return true;
         },
@@ -3111,6 +3113,10 @@ function SankeyDisplay(displayManager, id, properties) {
 	getRequiredPackages: function() {
 	    return ['sankey'];
 	},
+	getDoDyamicTooltip: function() {
+	    return false;
+	},
+
         doMakeGoogleChart: function(dataList, props, chartDiv,  selectedFields, chartOptions) {
             chartOptions.height = parseInt(this.getProperty("chartHeight", this.getProperty("height", "400")));
             chartOptions.sankey = {
