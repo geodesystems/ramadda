@@ -5,6 +5,7 @@ super="type_point"
 category="Point Data"
 supercategory="Geoscience"  
 handler="org.ramadda.projects.kbocc.KboccHydroTypeHandler">
+<property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="true"/>
@@ -74,6 +75,7 @@ super="type_point"
 category="Point Data"
 supercategory="Geoscience"  
 handler="org.ramadda.data.services.PointTypeHandler">
+<property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
 <property name="form.date.show" value="false"/>
