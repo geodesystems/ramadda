@@ -65,11 +65,11 @@
 }
 /* the margin  should be a little more than the height of the logo image */
 .ramadda-outercontents {
-    margin-top:60px;
+    padding-top:60px;
 }
 
 .ramadda-system-message {
-    margin-top:60px;
+    padding-top:60px;
 }
 
 /* this is for the left side navigation */
