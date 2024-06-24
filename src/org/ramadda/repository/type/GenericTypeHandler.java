@@ -999,8 +999,9 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         Hashtable state = new Hashtable();
         for (Column column : getMyColumns()) {
-	    if(seen.contains(column.getName())) continue;
-	    seen.add(column.getName());
+	    String key = "column_"+column.getName();
+	    if(seen.contains(key)) continue;
+	    seen.add(key);
             addColumnToEntryForm(request, column, formBuffer, parentEntry, entry, values,
                                  state, formInfo, sourceTypeHandler);
 
