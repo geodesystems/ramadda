@@ -424,11 +424,11 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
   <property name="icon" value="/media/3dmodel.png"/>
   <property name="upload.zip" value="true"/>
 
-     <property name="form.area.show" value="false"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.datatype.show" value="false"/>
-     <column name="model_file" type="string" label="Model File" showinform="false"/>
-     <column changetype="true" name="camera_position"  canlist="false" columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz" showinhtml="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>  
+  <property name="form.date.show" value="true"/>
+  <column name="model_file" type="string" label="Model File" showinform="false"/>
+  <column changetype="true" name="camera_position"  canlist="false" columns="60" size="500" type="string" label="Camera Position" help="posx,posy,poz;rotx,roty,rotz;targetx,targety,targetz" showinhtml="false"/>
      <column name="ambient_light" type="string" label="Ambient Light" canlist="false" help="color,intensity -- e.g., #f0f0f0,1" showinhtml="false"/>
      <column changetype="true" name="lights" type="string" label="Lights" canlist="false" rows="5" columns="60" size="1000" help="color1,x1,y1,z1 e.g., #f0f0f0,10,0,0" showinhtml="false"/>
      <column name="properties" type="clob" rows="10" columns="90" xxxsize="10000" label="Properties" showinform="true"
