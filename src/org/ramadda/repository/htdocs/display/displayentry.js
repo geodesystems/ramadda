@@ -2404,9 +2404,13 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    }
 	    url = url.replace(/max=\d+/,'max='+size);
             if(event.shiftKey) {
+		let protocol = window.location.protocol;
+		let hostname = window.location.hostname;
+		let port = window.location.port;
+		let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+		url = prefix+url;
 		Utils.copyToClipboard(url);
 		alert('The URL has been copied to the clipboard');
-
 	    } else {
 		Utils.triggerDownload(url);
 	    }
