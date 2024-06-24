@@ -71,11 +71,15 @@
     </type>
 
     <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        category="Basic Properties">
-      <type name="License" displaygroup="Licenses" id="content.license" searchable="true" browsable="true" priority="0">
+      <type name="Usage Tag"
+	    displaygroup="Usage Tags"
+	    id="content.license"
+	    searchable="true" browsable="true" priority="0">
 	<help>
-	  <![CDATA[More information at <a href="https://ramadda.org/repository/userguide/wiki/licenses.html" target=_other>ramadda.org</a>]]>
+	  <![CDATA[More information at <a href="https://ramadda.org/repository/userguide/wiki/usagetags.html" target=_other>ramadda.org</a>]]>
 	</help>
-	<element name="License" datatype="enumerationplus"
+	<element name="Usage Descriptor"
+		 datatype="enumerationplus"
 		 values="resource:licenses"/>
 	<element name="Description" rows="3" />
 	<element name="Required ID"  />	

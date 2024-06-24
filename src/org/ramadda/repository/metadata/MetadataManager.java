@@ -357,17 +357,17 @@ public class MetadataManager extends RepositoryManager {
 	    Request request =getRepository().getAdminRequest();
 	    List<License> licenses= new ArrayList<License>();
 	    for(Entry entry:getEntryManager().getEntriesWithType(request,
-								 "type_license")) {
+								 "type_usage_descriptor")) {
 		String icon =  "";
 		if(entry.isFile())  {
 		    icon = getEntryManager().getEntryResourceUrl(request, entry) ;
 		}
-		License license = new License((String) entry.getValue(request,"license_id"),
+		License license = new License(entry.getStringValue(request,"usage_id",""),
 					      entry.getName(),
 					      (String)entry.getValue(request,"external_url"),
 					      icon,
 					      entry.getDescription());
-		license.setFrom("Local RAMADDA Licenses");
+		license.setFrom("Local RAMADDA Usage Descriptors");
 		licenses.add(license);
 	    }
 	    return licenses;
@@ -429,11 +429,11 @@ public class MetadataManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public Result processLicenses(Request request) throws Exception {
+    public Result processUsageDescriptors(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().sectionOpen(request, sb, "Available Licenses",
+        getPageHandler().sectionOpen(request, sb, "Available Usage Descriptors",
                                      false);
-	HU.addPageSearch(sb,".ramadda-licenses-license",null,"Find Licenses");
+	HU.addPageSearch(sb,".ramadda-licenses-license",null,"Find Descriptor");
 
         String from = "";
         int    cnt  = 0;

@@ -2687,7 +2687,7 @@ public class WikiManager extends RepositoryManager
 	    HU.span(sb,text,HU.cssClass("ramadda-copyable"));
 	    sb.append(HU.script(HU.call("Utils.initCopyable",HU.squote("#"+id))));
 	    return sb.toString();
-        } else if (theTag.equals(WIKI_TAG_LICENSE)) {
+        } else if (theTag.equals(WIKI_TAG_LICENSE) || theTag.equals(WIKI_TAG_USAGE)) {
 	    String prefix = getProperty(wikiUtil,props,"textBefore","");
 	    String required = getProperty(wikiUtil,props,"required",null);
 	    if(stringDefined(prefix))
@@ -2700,7 +2700,8 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"decorate",false))
 		style+=HU.css("border","var(--basic-border)");
 
-	    String l = getProperty(wikiUtil,props,"license","CC-BY").trim();
+	    String l = getProperty(wikiUtil, props,"descriptor",
+				   getProperty(wikiUtil,props,"license","CC-BY")).trim();
 	    License license = getMetadataManager().getLicense(l);
 	    if(license==null)
 		license = getMetadataManager().getLicense(l.toUpperCase());

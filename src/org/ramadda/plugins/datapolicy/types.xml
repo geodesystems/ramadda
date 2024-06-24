@@ -1,6 +1,8 @@
 <types supercategory="Science and Education" adminonly="true">
 
-  <type  name="type_license"  description="License"  category="Services"
+  <type  name="type_usage_descriptor"
+	 description="Usage Descriptor"
+	 category="Services"
 	 handler="org.ramadda.plugins.datapolicy.LicenseTypeHandler">
   <property name="icon" value="/datapolicy/cc.png"/>
   <property name="form.file.show" value="true"/>
@@ -11,10 +13,11 @@
   <property name="form.url.show" value="false"/>
   <property name="form.resource.extra.show" value="false"/>  
   <property name="form.filesonserver.show" value="false"/>  
-  <property name="form.file.label" value="License Icon"/>  
-  <property name="form.description.label" value="License Description:"/>  
-  <column  name="license_id"  label="ID" cansearch="false" suffix="No spaces, unique, e.g., &lt;i&gt;my-license-1&lt;/i&gt;"/>
-  <column  name="external_url"  label="External URL"  cansearch="false" suffix="Optional URL to site that describes this license"/>    
+  <property name="form.file.label" value="Usage Icon"/>  
+  <property name="form.description.label" value="Usage Description:"/>  
+  <column  name="usage_id"  label="ID" cansearch="false"
+	   suffix="No spaces, unique, e.g., &lt;i&gt;my-license-1&lt;/i&gt;"/>
+  <column  name="external_url"  label="External URL"  cansearch="false" suffix="Optional URL to site that describes this usage description"/>    
 
 <wiki>
 <![CDATA[
@@ -28,6 +31,14 @@
 
 </type>  
   
+
+<type  name="type_license"  super="type_usage_descriptor" description="License"
+       foruser="false">
+  <column  name="license_id"  label="ID" cansearch="false"/>
+</type>
+
+    
+
 
 
 <type  name="type_datapolicy_source"  

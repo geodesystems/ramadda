@@ -35,45 +35,23 @@ import java.util.List;
 public class LicenseTypeHandler extends GenericTypeHandler {
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public LicenseTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
 
-        if ( !tag.equals("type_license")) {
+        if ( !tag.equals("type_usage_descriptor") && !tag.equals("type_license")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-	String id = (String)entry.getValue(request,"license_id");
-	String wiki = "{{license  license=\"" + id+"\"  includeName=\"true\" showDescription=\"true\" decorate=\"true\" }}";
+	String id = entry.getStringValue(request,"usage_id",
+					 entry.getStringValue(request,"license_id",""));
+	String wiki = "{{usage  descriptor=\"" + id+"\"  includeName=\"true\" showDescription=\"true\" decorate=\"true\" }}";
 
 	return getWikiManager().wikifyEntry(request, entry, wiki);
 
