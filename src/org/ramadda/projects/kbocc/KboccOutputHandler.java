@@ -4,31 +4,16 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.projects.kbocc;
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
-import org.ramadda.util.HtmlUtils;
-
-import org.w3c.dom.*;
-
 import org.ramadda.util.seesv.Seesv;
-
-
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-
-
-
+import org.w3c.dom.*;
 import java.io.*;
-import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class KboccOutputHandler extends OutputHandler {
-
 
     public static final OutputType OUTPUT_KBOCC_MERGE =
         new OutputType("Merge KBOCC Files", "kboccmerge", -1, "", "/kbocc/kbocclg.png");
@@ -39,25 +24,15 @@ public class KboccOutputHandler extends OutputHandler {
         addType(OUTPUT_KBOCC_MERGE);
     }
 
-
-
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 	//links.add(makeLink(request, state.getEntry(), OUTPUT_GPX));
-    }
-
-
-    public Result outputEntry(Request request, OutputType outputType,   Entry entry)
-            throws Exception {
-	return null;
     }
 
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
             throws Exception {
-
-
 	if(children.size()==0) {
 	    for(Object id: request.get(ARG_ENTRYID,new ArrayList<String>())) {
 		Entry entry=getEntryManager().getEntry(request,id.toString());
@@ -120,7 +95,6 @@ public class KboccOutputHandler extends OutputHandler {
 			  "-sortby","hours_in_year", "up","",
 			  "-formatdateoffset","hours_in_year","hours_in_year","-firstcolumns","month_day_hour","-print"};
 
-
 	File   mergedFile = new File(IOUtil.joinDir(dir, "merged.csv"));
 	FileOutputStream fos = new FileOutputStream(mergedFile);
 	Seesv seesv = new Seesv(cmds2,new BufferedOutputStream(fos), null);
@@ -132,7 +106,4 @@ public class KboccOutputHandler extends OutputHandler {
 	request.setReturnFilename(site+"_merged.csv");
 	return new Result(new FileInputStream(mergedFile),"text/csv");
     }
-
-
-
 }
