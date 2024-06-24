@@ -780,7 +780,7 @@ Ramadda3DDisplay.prototype = {
 	    console.log(error)
 	};
 	let url = model.url;
-	if(url.match(/\.gltf/gi)) {
+	if(url.match(/\.gltf/gi)|| url.match(/\.glb/gi)) {
 	    const loader = new THREE.GLTFLoader();
 	    this.incrLoading(1);
 	    loader.load(url, (gltf)=>{
