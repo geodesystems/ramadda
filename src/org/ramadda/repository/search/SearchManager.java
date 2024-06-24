@@ -527,6 +527,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    Object v= entry.getValue(request,column);
 		    if(v==null) continue;
 		    //TODO handle latlonbox
+		    if(debugIndex) System.err.println("\tindexing column:" + column);
 		    if(column.isLatLon()) {
 			double[] latlon = column.getLatLon(request,values);
 			doc.add(new DoublePoint(field+SUFFIX_LATITUDE, latlon[0]));
@@ -541,6 +542,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    } else if(column.isEnumeration())  {
 			corpus.append(v.toString());
 			corpus.append(" ");
+			if(debugIndex) System.err.println("\t\tenum value=" + v);
 			doc.add(new StringField(field, v.toString(),Field.Store.YES));
 			if(column.getCanSort())
 			    doc.add(new SortedDocValuesField(field+"_sort", new BytesRef(v.toString())));
