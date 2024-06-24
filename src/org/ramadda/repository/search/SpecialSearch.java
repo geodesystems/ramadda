@@ -577,8 +577,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    sb.append("{{display_entrylist ");
 	    addAttr(sb, "searchDirect","false");
 	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
-	    if(stringDefined(providers))
+	    if(stringDefined(providers)) {
 		addAttr(sb, "providers",providers);
+		addAttr(sb, "showProviders","true");
+	    }
 
 	    for(String prop:new String[]{"tooltip",
 					 "formHeight",
@@ -589,6 +591,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "columnsToggleClose",
 					 "providersMultiple",
 					 "providersMultipleSize",
+					 "showProviders",
 					 "showEntryImage",
 					 "includeNonImages"}) {
 		String v=Utils.getProperty(props,prop,null);
