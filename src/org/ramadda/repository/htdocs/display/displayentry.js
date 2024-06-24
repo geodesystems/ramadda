@@ -495,6 +495,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'startDateLabel'},
 	{p:'createDateLabel'},	
 	{p:'areaLabel'},
+	{p:'toggleClose',ex:true},
+	{p:'textToggleClose',ex:true},
+	{p:'dateToggleClose',ex:true},		
+	{p:'areaToggleClose',ex:true},
+	{p:'columnsToggleClose',ex:true},		
 	{p:'orderByTypes',d:'relevant,name,createdate,date,size'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -1286,6 +1291,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             entryList.doSearch(null,success,fail);
 	},
         makeSearchForm: function() {
+	    let toggleClose = this.getProperty('toggleClose',false);
+
             let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
@@ -1476,7 +1483,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    }	    
 
 	    if(textFields.length) {
-		extra+=this.addWidget('Text',Utils.join(textFields,'<br>'));
+		extra+=this.addWidget('Text',Utils.join(textFields,'<br>'),{
+		    toggleClose:this.getProperty('textToggleClose',toggleClose)});
 	    }
 
 
@@ -1498,13 +1506,14 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    dateWidget+=HU.div([ATTR_STYLE,'margin-top:4px;'],this.createdateRangeWidget.getHtml());
             }
 	    if(Utils.stringDefined(dateWidget)) {
-		extra+=this.addWidget('Date',dateWidget);
+		extra+=this.addWidget('Date',dateWidget,{toggleClose:this.getProperty('dateToggleClose',toggleClose)});
 	    }
             if (this.getShowArea()) {
 		let label=this.getLabel(this.getAreaLabel('Location'));
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
-                extra += this.addWidget(label, HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()));
+                extra += this.addWidget(label, HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()),
+					{toggleClose:this.getProperty('areaToggleClose',toggleClose)});
             }
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
 
@@ -1952,6 +1961,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         addExtraForm: function() {
+	    let toggleClose = this.getProperty('columnsToggleClose',this.getProperty('toggleClose',true));
             if (this.savedValues == null) this.savedValues = {};
             let extra = "";
             let cols = this.getSearchableColumns();
@@ -1971,9 +1981,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    lastGroup=group;
 		    let widgetId = HU.getUniqueId('');
 		    extra+=HU.open('div',[ATTR_CLASS,'display-search-group']);
-		    let label = this.addToggle(group,widgetId);
+		    let label = this.addToggle(group,widgetId,toggleClose);
 		    extra+=HU.div([ATTR_CLASS,'display-search-group-label'],label);
-		    extra+=HU.open('div',[ATTR_ID,widgetId]);
+		    extra+=HU.open('div',[ATTR_ID,widgetId,ATTR_STYLE,HU.css('display',toggleClose?'none':'block')]);
 		}
                 let field = "";
                 let id = this.getDomId(ID_COLUMN + col.getName());
@@ -2064,7 +2074,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()), ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget =  field + " " + help;
 		}
-		extra+=this.addWidget(label,widget,{addToggle:!inGroup});
+		extra+=this.addWidget(label,widget,{
+		    addToggle:!inGroup
+		});
 	    }
 
 	    if(inGroup) extra+='</div></div>';
