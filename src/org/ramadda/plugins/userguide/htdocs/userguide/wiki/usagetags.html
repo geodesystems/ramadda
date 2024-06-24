@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>Usage Tags</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#wiki/usagetags.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="../page_wikifacilities.html">Wiki Facilities</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikifunctions.html"><table><td valign=center><td><span title="Previous: Wiki Functions"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Functions</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 5.12: Usage Tags</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="tips.html"><table><tr valign=center><td>Tips and Tricks</td><td><span title="Next: Tips and Tricks"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+:navtop
+
++callout-info
+RAMADDA provides a list of licenses, usage  statements and notices
+that can be embedded into any entry page through the wiki facility.
+-callout
+
+:heading The Usage Descriptors
+Usage descriptors can be defined in plugins and can also be created interactively by 
+a site administrator with a special Usage Descriptor entry type.
+See [{{root}}/usagedescriptors {{root}}/usagedescriptors] to view the list of descriptors.
+:p
+To create a custom Usage Descriptor:
+* Go to some folder
+* Add an new entry with  "Pick a type..."
+* Look for the "Usage Descriptor" entry type
+* Specify a name, optional image, description, unique identifier and an optional redirect URL.
+
+This results in a new Usage Descriptor entry, e.g.:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseentry.png?version=360"><img  src="images/licenseentry.png?version=360"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseentry.png?version=360" ></a></div></div>
+
+
+
+:heading Usage Tag
+A usage descriptor is displayed in a wiki page with the "usage" tag. The below tag:
+
++pre
+{<noop>{usage  descriptor="cc-by"  includeName="true"  showDescription="true"  decorate="true"  
+#iconWidth="60px"  #textBefore="extra text"  #textAfter="extra text"  
+#required="If set then user must agree. Some unique id, e.g., agreed_license_1"  
+#requireMessage="Message to show" 
+#requireSuffix="Message to show after descriptor"
+#requireShowLicense="false"
+#requireRedirect="https://example.com"
+#requireOnlyAnonymous="true" 
+#logName="true"  
+}} 
+-pre
+
+Gives:
++center
+{{usage  descriptor="cc-by"  includeName="true"  showDescription="true"  decorate="true"  
+#iconWidth="60px"  #textBefore="extra text"  #textAfter="extra text"  
+#required="If set then user must agree. Some unique id, e.g., agreed_license_1"  
+#requireMessage="Message to show" 
+#requireSuffix="Message to show after descriptor"
+#requireShowLicense="false"
+#requireRedirect="https://example.com"
+#requireOnlyAnonymous="true" 
+#logName="true"  
+}}
+-center
+
+The descriptor used is specified with the license="&lt;descriptor id&gt;" attribute. You can select
+the descriptor ID from  the [{{root}}/usagedescriptors list of usage descriptors]. 
+You can also configure the Usage Descriptor with custom text, etc.
+
+:heading Usage Descriptor Prompt
+If you set the required="some identifier" then, when a user visits a page that displays the
+usage descriptor they will be prompted to accept the terms. The "some identifier" is used to track
+whether the user has accepted the usage descriptor.
+If you want to update a descriptor then just change the required identifier.
+:p
+Setting  logName="true" will prompt the user for their name and email. This will be
+logged by RAMADDA in the file &lt;RAMADDA home&gt/logs/usagedescriptor.log
+:p
+
+This will result in a prompt when a user visits the page that displays the usage descriptor:
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseprompt.png?version=360"><img  src="images/licenseprompt.png?version=360"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseprompt.png?version=360" ></a></div></div>
+
+
+
+:heading Using the Usage Tag property
+There is also Usage Tag  type that can be specified and can then be embedded in entry pages.
+To create a Usage Tag property go to the Entry Add Properties form and, under Basic Properties,
+select "Add Usage Tag". You need to specify  the Usage Descriptor ID and optionally specify a description,
+required ID, message,etc. If inherited is set to true then this Usage Tag property is applicable
+to all descendant entries.
+  
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licenseproperty.png?version=360"><img  src="images/licenseproperty.png?version=360"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licenseproperty.png?version=360" ></a></div></div>
+
+To embed a Usage Tag in any wiki page use the properties tag as shown below. The inherited=true specifies to
+use any inherited property. The  message="" states to show blank if there are no
+usage tag properties.
+Some entry types  (e.g., Cultural Site) have wiki text that embeds the  usage tags.
+
++pre
+#Note the usage tag type is actually content.license to maintain backwards compatability
+{<dummy>{properties   message="" inherited="true" metadata.types="content.license"}}  
+-pre
+
+:heading Using Footer Property
+You can add a Usage Tag to a whole tree of entries, even the entire repository. This is done through
+the Footer property:
+*  Go to Add Property
+* Under Thumbnails, Page Style,  Etc. choose Footer
+* The Footer takes arbitrary wiki text. Add the Usage Tag.
+* Select inherited to apply this footer to all children pages
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licensefooter.png?version=360"><img  src="images/licensefooter.png?version=360"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licensefooter.png?version=360" ></a></div></div>
+
+This results in the below footer added to every page:
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/licensefooter2.png?version=360"><img  src="images/licensefooter2.png?version=360"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/licensefooter2.png?version=360" ></a></div></div>    
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikifunctions.html"><table><td valign=center><td><span title="Previous: Wiki Functions"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Functions</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="tips.html"><table><tr valign=center><td>Tips and Tricks</td><td><span title="Next: Tips and Tricks"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
