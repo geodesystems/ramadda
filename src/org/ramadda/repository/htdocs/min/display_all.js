@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 23 22:18:53 MDT 2024";
+var build_date="RAMADDA build date: Sun Jun 23 22:39:52 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -33370,9 +33370,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 if (fromSelect != null) {
                     provider = fromSelect;
                 } else {
-		    this.getPropertyProviders().forEach(p=>{
-			provider = p.id;
-                    });
+		    provider =    this.getPropertyProviders()[0];
+		    if(provider)provider = provider.id;
                 }
 		let ramadda=this.getRamadda();
 		let ok = true;
@@ -33629,6 +33628,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'showToggle',d: false},
 	{p:'showEntryBreadcrumbs',ex:'false'},
 	{p:'showSnippetInList',ex:'true'},
+        {p:'showProviders',d: false},
         {p:'showDate',d: true},
         {p:'showCreateDate',ex:'true',d: false},	
         {p:'showArea',d: true},
@@ -34504,69 +34504,73 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let providers = this.getPropertyProviders();
             if (providers != null) {
 		if(providers.length==1) {
-		    this.provider = providers[0].id;
+		    this.provider = providers[0];
 		} else {
-                    let options = "";
-		    let selected = HU.getUrlArgument(ID_PROVIDERS);
-                    let currentCategory = null;
-                    let catToBuff = {};
-                    let cats = [];
-		    this.getPropertyProviders().forEach(provider=>{
-			this.providerMap[provider.id] = provider;
-			let id = provider.id;
-			if(!Utils.isDefined(selected)) {
-			    selected = id;
-			}
-			let label = provider.name;
-			if (label.length > 40) {
-                            label = label.substring(0, 39) + "...";
-			}
-			let extraAttrs = "";
-			if (id == selected) {
-                            extraAttrs += " selected ";
-			}
-			let category = provider.category||"";
-			let buff = catToBuff[category];
-			if (buff == null) {
-                            cats.push(category);
-                            catToBuff[category] = "";
-                            buff = "";
-			}
-			let img = provider.icon;
-			if(img) {
-                            img = img.replace(/\${urlroot}/g, ramaddaBaseUrl);
-                            img = img.replace(/\${root}/g, ramaddaBaseUrl);
-                            extraAttrs += " data-iconurl=\"" + img + "\" ";
-			}
-			buff += "<option  title='" + label+"' class=display-search-provider " + extraAttrs + " value=\"" + id + "\">" + label + "</option>\n";
-			catToBuff[category] = buff;
-		    });
-
-		    if(cats.length==1) {
-			options += catToBuff[cats[0]];
+		    if(!this.getShowProviders()){
+			this.provider = providers[0];
 		    } else {
-			for (let catIdx = 0; catIdx < cats.length; catIdx++) {
-			    let category = cats[catIdx];
-			    if (category != "")
-				options += "<optgroup label=\"" + category + "\">\n";
-			    options += catToBuff[category];
-			    if (category != "")
-				options += "</optgroup>";
+			let options = "";
+			let selected = HU.getUrlArgument(ID_PROVIDERS);
+			let currentCategory = null;
+			let catToBuff = {};
+			let cats = [];
+			this.getPropertyProviders().forEach(provider=>{
+			    this.providerMap[provider.id] = provider;
+			    let id = provider.id;
+			    if(!Utils.isDefined(selected)) {
+				selected = id;
+			    }
+			    let label = provider.name;
+			    if (label.length > 40) {
+				label = label.substring(0, 39) + "...";
+			    }
+			    let extraAttrs = "";
+			    if (id == selected) {
+				extraAttrs += " selected ";
+			    }
+			    let category = provider.category||"";
+			    let buff = catToBuff[category];
+			    if (buff == null) {
+				cats.push(category);
+				catToBuff[category] = "";
+				buff = "";
+			    }
+			    let img = provider.icon;
+			    if(img) {
+				img = img.replace(/\${urlroot}/g, ramaddaBaseUrl);
+				img = img.replace(/\${root}/g, ramaddaBaseUrl);
+				extraAttrs += " data-iconurl=\"" + img + "\" ";
+			    }
+			    buff += "<option  title='" + label+"' class=display-search-provider " + extraAttrs + " value=\"" + id + "\">" + label + "</option>\n";
+			    catToBuff[category] = buff;
+			});
+
+			if(cats.length==1) {
+			    options += catToBuff[cats[0]];
+			} else {
+			    for (let catIdx = 0; catIdx < cats.length; catIdx++) {
+				let category = cats[catIdx];
+				if (category != "")
+				    options += "<optgroup label=\"" + category + "\">\n";
+				options += catToBuff[category];
+				if (category != "")
+				    options += "</optgroup>";
+			    }
 			}
+			let attrs = [ATTR_STYLE,HU.css(),
+				     ATTR_ID, this.getDomId(ID_PROVIDERS),
+				     ATTR_CLASS, "display-search-providers"];
+			if(this.getProvidersMultiple()) {
+			    let size =Math.min(8,providers.length+1);
+			    attrs.push("size",this.getProvidersMultipleSize(size),  "multiple", "multiple");
+			}
+			let providersSelect = HU.tag("select",attrs, options);
+			providersSelect = this.addWidget('Providers',providersSelect,
+							 {toggleClose:true,
+							  addToggle:true,
+							  searchWidgetClass:(this.getProvidersMultiple()?'display-search-widget-providers':'')});
+			topItems.push(providersSelect);
 		    }
-		    let attrs = [ATTR_STYLE,HU.css(),
-				 ATTR_ID, this.getDomId(ID_PROVIDERS),
-				 ATTR_CLASS, "display-search-providers"];
-		    if(this.getProvidersMultiple()) {
-			let size =Math.min(8,providers.length+1);
-			attrs.push("size",this.getProvidersMultipleSize(size),  "multiple", "multiple");
-		    }
-		    let providersSelect = HU.tag("select",attrs, options);
-		    providersSelect = this.addWidget('Providers',providersSelect,
-						     {toggleClose:true,
-						      addToggle:true,
-						      searchWidgetClass:(this.getProvidersMultiple()?'display-search-widget-providers':'')});
-                    topItems.push(providersSelect);
 		}
 	    }
 
