@@ -30,7 +30,7 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${temperature decimals=1 su
 </property>
 
 <column name="datayear" type="enumerationplus"  label="Year" cansearch="true"/>
-<column name="location" type="string"  label="Location" cansearch="false"/>
+<column name="location" type="enumerationplus"  label="Location" cansearch="true"/>
 <column name="notes" type="string" size="2000"  label="Notes" cansearch="false"/>
 
 

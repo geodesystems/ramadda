@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.projects.kbocc.KboccOutputHandler" name="KBOCC"/>
+</outputhandlers>
