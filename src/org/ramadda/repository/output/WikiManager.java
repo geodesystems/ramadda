@@ -2087,7 +2087,7 @@ public class WikiManager extends RepositoryManager
 	    if(typeHandler==null) {
 		return  makeErrorMessage(request,wikiUtil,props,theTag, "Could not find type");
 	    }
-	    typeHandler.getSpecialSearch().processSearchRequest(request,  sb,props);
+	    typeHandler.getSpecialSearch().processSearchRequest(request.cloneMe(),  sb,props);
 	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LIST)) {
 	    HashSet<String> supers = null;
@@ -6910,7 +6910,11 @@ public class WikiManager extends RepositoryManager
 	    if((select = matches.call(entryId,ID_CHILDREN,PREFIX_CHILDREN))!=null) { 
                 List<Entry> children = getEntryManager().getChildren(select.getRequest(),
 								     select.getEntry(),select);
-		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter));
+
+
+		entries.addAll(getEntryManager().applyFilter(select.getRequest(), children,filter))
+
+;
                 continue;
             }
 
@@ -7030,6 +7034,7 @@ public class WikiManager extends RepositoryManager
 
         }
 
+
         HashSet     seen = new HashSet();
         List<Entry> tmp  = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -7086,6 +7091,8 @@ public class WikiManager extends RepositoryManager
                 entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
 	    }
         }
+
+
 
 	max = initRequest.get(ARG_MAX,max);
         if (max > 0) {
