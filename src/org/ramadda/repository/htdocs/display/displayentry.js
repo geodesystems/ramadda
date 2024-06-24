@@ -1045,7 +1045,26 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let settings = this.getSearchSettings();
 	    let outputs = this.getRamadda().getSearchLinks(settings,true);
 	    let url= this.getRamadda().getSearchUrl(settings);
-	    let copyId = HU.getUniqueId("copy");
+	    let copyId = HU.getUniqueId('copy');
+	    if(this.getProperty('searchOutputs')) {
+		Utils.split(this.getProperty('searchOutputs'),',',true,true).forEach(tok=>{
+		    let tuple = Utils.split(tok,';');
+		    if(tuple.length<2)return;
+		    let id = tuple[0];
+		    let label = tuple[1];
+                    outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+					  ATTR_TITLE,'Click to download; shift-click to copy URL',
+					  'data-name',label,
+					  'data-format',id,
+					  'data-url',
+					  this.getRamadda().getSearchUrl(settings,id)],
+					  label));
+
+		});
+
+	    }
+
+
 	    outputs = HU.join(outputs, HU.space(2));
 	    outputs = outputs+ HU.space(2)+
 		HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
