@@ -1111,7 +1111,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		if(element.getSearchable()) cnt++;
 	    }
 
-	    if(!children.get(0).isEnumeration() || cnt>1) {
+	    if(children.size()==1 && cnt==1) {
+	    } else  if(!children.get(0).isEnumeration() || cnt>1) {
 		makeSearchLink=false;
 	    }
 	}
