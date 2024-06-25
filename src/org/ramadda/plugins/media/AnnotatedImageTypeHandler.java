@@ -62,8 +62,8 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
 	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"));
 	    HU.importJS(sb,getHtdocsPath(ANN_PATH+"/annotorious.min.js"));
 	    HU.importJS(sb,getHtdocsPath(ANN_PATH+"/annotorious-toolbar.min.js"));
-	    HU.cssLink(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.css","/media/annotation.css"));
-            HU.importJS(sb,getHtdocsPath("/src/org/ramadda/plugins/media/htdocs/media/annotation.js","/media/annotation.js"));
+	    HU.cssLink(sb,getHtdocsPath("/media/annotation.css","/media/annotation.css"));
+            HU.importJS(sb,getHtdocsPath("/media/annotation.js","/media/annotation.js"));
             request.putExtraProperty("annotation_added", "true");
         }
     }	
