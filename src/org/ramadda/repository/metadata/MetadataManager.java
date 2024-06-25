@@ -308,7 +308,7 @@ public class MetadataManager extends RepositoryManager {
                 JSONObject jlicense = jlicenses.getJSONObject(i);
 		if(jlicense.optBoolean("skip",false)) continue;
                 License license = new License(getRepository(),
-					      obj.optString("name", "Licenses"),
+					      obj.optString("name", "Usage Descriptors"),
 					      jlicense.optString("url",
 								 obj.optString("url",
 									       null)), jlicense, priority);
@@ -454,7 +454,7 @@ public class MetadataManager extends RepositoryManager {
 	HU.script(sb,"Utils.initCopyable('.ramadda-copyable');");
 
 
-        return new Result("Licenses", sb);
+        return new Result("Usage Descriptors", sb);
     }
 
 
@@ -479,7 +479,7 @@ public class MetadataManager extends RepositoryManager {
 	if(includeId)
 	    contents+=HU.space(2)
 		+ "ID: " + HU.span(license.getId(),
-						 HU.attrs("class","ramadda-copyable","copy-message","License ID copied to clipboard"));
+						 HU.attrs("class","ramadda-copyable","copy-message","Usage descriptor ID copied to clipboard"));
 
         String icon = license.getIcon();
         String text = license.getText();
