@@ -94,6 +94,15 @@ public class EntryUtil extends RepositoryManager {
     }
 
 
+    public static List<File> getFiles(Request request,List<Entry> entries) throws Exception {
+	List<File> files = new ArrayList<File>();
+	for(Entry child: entries) {
+	    File file = child.getResource().getTheFile();
+	    if(file.exists()) files.add(file);
+	}
+	return files;
+    }
+
     /**
      *
      * @param entries _more_
