@@ -10,8 +10,9 @@
 .ramadda-model-watermark ,.ramadda-model-watermark-right {
     position:absolute;
     opacity:0.75;
-    width:80px;
+    width:100px;
     bottom:10px;
+    background:#fff;
 }
 
 .ramadda-model-watermark {
@@ -47,8 +48,8 @@
     width:250px;
     max-width:250px;
     overflow-x:hidden;
-    border:1px solid #ccc;
-    border-right:0px solid #ccc;    
+    //border:1px solid #ccc;
+    border-right:1px solid #ccc;    
 }
 
 .ramadda-model-toc-item {
