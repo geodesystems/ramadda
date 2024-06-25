@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun 24 07:06:57 MDT 2024";
+var build_date="RAMADDA build date: Mon Jun 24 18:08:31 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -34230,6 +34230,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    let label = tuple[1];
                     outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
 					  ATTR_TITLE,'Click to download; shift-click to copy URL',
+					  'custom-output','true',
 					  'data-name',label,
 					  'data-format',id,
 					  'data-url',
@@ -34251,7 +34252,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
 	    let _this = this;
 	    this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event){
-		_this.handleSearchLink(event,$(this));
+		let custom  =$(this).attr('custom-output');
+		_this.handleSearchLink(event,$(this),custom);
 	    });
             let msg = this.searchMessage;
             if (msg == null) {
@@ -35561,7 +35563,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    return tabs;
         },
 
-	handleSearchLink:function(event,button) {
+	handleSearchLink:function(event,button,dontAsk) {
 	    let copy = button.attr('data-copy');
 	    if(copy) {
 		Utils.copyToClipboard(copy);
@@ -35571,13 +35573,20 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 	    let url = button.attr('data-url');
 	    let format = button.attr('data-name')
-	    let size = prompt('How many records do you want in the ' + format +' download?',this.jq(ID_SEARCH_MAX).val());
-	    if(!size) return;
+	    let size = "100";
+	    if(!dontAsk) {
+		size = prompt('How many records do you want in the ' + format +' download?',this.jq(ID_SEARCH_MAX).val());
+		if(!size) return;
+	    }
 	    url = url.replace(/max=\d+/,'max='+size);
             if(event.shiftKey) {
+		let protocol = window.location.protocol;
+		let hostname = window.location.hostname;
+		let port = window.location.port;
+		let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+		url = prefix+url;
 		Utils.copyToClipboard(url);
 		alert('The URL has been copied to the clipboard');
-
 	    } else {
 		Utils.triggerDownload(url);
 	    }
@@ -35616,7 +35625,8 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		let _this =this;
                 this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
 		this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event) {
-		    _this.handleSearchLink(event,$(this));
+		    let custom  =$(this).attr('custom-output');
+		    _this.handleSearchLink(event,$(this),custom);
 		});
             }
 
