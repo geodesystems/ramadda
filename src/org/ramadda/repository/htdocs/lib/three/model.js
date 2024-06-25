@@ -49,8 +49,6 @@ function Ramadda3DDisplayManager(models,props) {
 	html+= HU.div(['id',this.getSubDivId(idx),
 		       'class','ramadda-model-3ddisplay','tabindex','0','style',HU.css('position','relative','display','none','width',HU.getDimension(width),'height',HU.getDimension(height))],contents);
     });
-    console.log(html);
-
     jqid(this.divId).css('width',this.opts.width).css('height',this.opts.height).css('max-width',this.opts.width).css('max-height',this.opts.height).css('overflow-y','hide');
     jqid(this.divId).html(html);
     this.displays = [];
