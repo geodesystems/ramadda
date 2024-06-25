@@ -434,7 +434,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'orderBy',ex: 'name_ascending|name_descending|fromdate_ascending|fromdate_descending|todate_|createdate_|size_'},
         {p:'orientation',ex:'horizontal|vertical',d:'horizontal'},
 	{p:'formHeight',d:'1000px'},
-        {p:'entriesHeight',d:'70vh'},	
+        {p:'entriesHeight',ex:'70vh'},	
         {p:'showEntries',d: true},
         {p:'showFooter',d: true},	
         {p:'showType',d: true},
@@ -703,7 +703,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 innerHeight = this.getEntriesHeight();
             }
             if (innerHeight != null) {
-//                style = "margin: 0px; padding: 0px; max-height:" + HU.getDimension(innerHeight) + "; overflow-y: auto;";
+                style = "margin: 0px; padding: 0px; max-height:" + HU.getDimension(innerHeight) + "; overflow-y: auto;";
+                style = HU.css('max-height', HU.getDimension(innerHeight),'overflow-y','auto');
             }
 	    style+= entriesStyle;
             entriesDivAttrs.push(ATTR_STYLE);
