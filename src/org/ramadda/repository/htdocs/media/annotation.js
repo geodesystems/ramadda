@@ -306,7 +306,6 @@ RamaddaAnnotationFormatter.prototype = {
 		    if(state.bg) style+=HU.css('background',state.bg);
 		    if(state.border) style+=HU.css('border',state.border);		    
 		    html +=HU.div(['style',style,'class','a9s-shape-label'],HU.div([ATTR_STYLE,HU.css('padding','2px')],label));
-		    console.log(style);
 		    html+="</div>";
 		    foreignObject.innerHTML = html;
 		    result.element= foreignObject;
