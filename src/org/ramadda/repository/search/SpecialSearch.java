@@ -584,6 +584,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 	    for(String prop:new String[]{"tooltip",
 					 "formHeight",
+					 "entriesHeight",
 					 "toggleClose",
 					 "textToggleClose",
 					 "dateToggleClose",
