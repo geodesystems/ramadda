@@ -316,7 +316,9 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#textToggleClose","true",
 					"#dateToggleClose","true",
 					"#areaToggleClose","true",
-					"#columnsToggleClose","true"),
+					"#columnsToggleClose","true",
+					"#formHeight","70vh",
+					"#entriesHeight","70vh"),
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LIST,"Type Search List",
 					
 					"showHeader","true",
