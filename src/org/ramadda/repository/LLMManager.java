@@ -279,9 +279,10 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    private String applyPromptToDocument(Request request, Entry entry, String prompt,PromptInfo info)
+    public String applyPromptToDocument(Request request, Entry entry, String prompt,PromptInfo info)
 	throws Exception {
 	try {
+	    if(info==null) info=new PromptInfo();
 	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    if(corpus==null) return null;
 	    info.corpusLength=corpus.length();
