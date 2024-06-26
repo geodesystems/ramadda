@@ -924,7 +924,7 @@ public class ExtEditor extends RepositoryManager {
 		    "//title,summary, etc are varargs\n" +
 		    "entry.setLLM('one of gpt3.5 gpt4 gemini claude');\n" +
 		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
-		    "entry.addLLMMetadata('metadata_type','prompt');\n" +
+		    "entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon');\n" +
 		    "entry.addLLMGeo('optional prompt');\n" +		    		    
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
@@ -1478,7 +1478,9 @@ public class ExtEditor extends RepositoryManager {
 		    ctx.print("No results for entry:" + entry.getName());
 		} else {
 		    ctx.print("Metadata added for entry:" + entry.getName() +"="  + r);
-		    repository.getMetadataManager().addMetadata(request,entry,  type, true,r);
+		    for(String tok:Utils.split(r,";",true,true)) {
+			repository.getMetadataManager().addMetadata(request,entry,  type, true,tok);
+		    }
 		    changed=true;
 		}
 	    } catch(Exception exc) {
