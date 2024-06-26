@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 25 22:40:46 MDT 2024";
+var build_date="RAMADDA build date: Tue Jun 25 23:53:05 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -55083,12 +55083,12 @@ MapGlyph.prototype = {
 
 	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
-	    //make a copy becausewe can change it later
-	    obj  =$.extend({},obj);
+	    //make a copy because we can change it later
+	    //Maybe not since the state doesn't get set
+	    //	    obj  =$.extend({},obj);
 	    if(debug)
 		console.log('applyColors',attr);
 	    let strings  =[]
-
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
@@ -55106,7 +55106,7 @@ MapGlyph.prototype = {
 		    max = Math.max(max,value);		    
 		}
 	    });
-	    
+
 	    if(!anyNumber) {
 		obj.min =min = 0;
 		obj.max = max= strings.length-1;
