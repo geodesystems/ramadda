@@ -923,7 +923,8 @@ public class ExtEditor extends RepositoryManager {
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
 		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
-		    "entry.addLLMMetadata('metadata_type','prompt');\n" +		    
+		    "entry.addLLMMetadata('metadata_type','prompt');\n" +
+		    "entry.addLLMGeo('optional prompt');\n" +		    		    
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
 		    "//stop processing but still apply any changes\n" +
@@ -1485,6 +1486,44 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
+	public void addLLMGeo(String prompt)  throws Exception {
+	    if(entry.isGeoreferenced(request)) {
+		ctx.print("Alread has location:" + entry.getName());
+		return;
+	    }
+	    if(!Utils.stringDefined(prompt)) {
+		prompt="Give the latitude and longitude of the area that this document describes. Just give the 2 numbers, nothing else. Give it in the form <latitude>,<longitude></longitude></latitude>";
+	    }
+	    try {
+		String r = repository.getLLMManager().applyPromptToDocument(request,
+									    entry,
+									    prompt,null);
+		if(!Utils.stringDefined(r)) {
+		    ctx.print("No results for entry:" + entry.getName());
+		    return;
+		} 
+		List<String> toks = Utils.split(r,",",true,true);
+		if(toks.size()!=2) {
+		    ctx.print("Could not parse results for:" + entry.getName() +" r:" + r);
+		    return;
+		}
+		double lat  =Double.parseDouble(toks.get(0));
+		double lon  =Double.parseDouble(toks.get(1));		
+		if(lat<-90 || lat>90 || lon<-180 || lon>180) {
+		    ctx.print("invalid lat/lon for entry:" + entry.getName()+" lat/lon:" + lat +" " +lon);
+		    return;
+		}
+		entry.setLatitude(lat);
+		entry.setLongitude(lon);
+		ctx.print("entry changed:" + entry.getName()+" lat/lon:" + lat +" " +lon);
+		changed=true;
+	    } catch(Exception exc) {
+		repository.getLogManager().logError("Extended edit error:" + exc,exc);
+		exc.printStackTrace();
+		ctx.print("An error occurred processing:" + entry +" " + exc);
+	    }
+	}
+	
 
 	public void applyLLM(boolean ifDescEmpty,String...args)  throws Exception {
 	    if(ifDescEmpty && Utils.stringDefined(entry.getDescription())) {
