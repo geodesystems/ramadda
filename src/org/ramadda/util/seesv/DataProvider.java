@@ -507,9 +507,16 @@ public abstract class DataProvider extends SeesvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
-            URL url = new URL(ctx.getInputFile());
-            List<HtmlUtils.Link> links = HtmlUtils.extractLinks(url, s,
-                                             pattern);
+            List<HtmlUtils.Link> links;
+	    if(new File(ctx.getInputFile()).exists()) {
+		URL url = new URL("https://ramadda.org");
+		links = HtmlUtils.extractLinks(url,
+					       s,  pattern);
+	    } else {
+		URL url = new URL(ctx.getInputFile());
+
+		links = HtmlUtils.extractLinks(url, s,  pattern);
+	    }
             Row row = makeRow();
             row.add("Label");
             row.add("URL");
