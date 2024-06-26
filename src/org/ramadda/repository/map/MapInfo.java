@@ -1386,9 +1386,9 @@ public class MapInfo {
      * @param canSelect _more_
      * @param args _more_
      */
-    public void addGeoJsonUrl(String name, String url, boolean canSelect,String args) {
-
+    public void addGeoJsonUrl(String name, String url, boolean canSelect,String args,boolean ...zoomToArg) {
 	boolean zoomTo = mapProps==null?true:Utils.getProperty(mapProps,"zoomToLayer",true);
+	if(zoomToArg.length>0) zoomTo=zoomToArg[0];
 	if(!Utils.stringDefined(args)) args = "null";
         getJS().append(HU.call(mapVarName + ".addGeoJsonLayer",
 			       HU.squote(name),

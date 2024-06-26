@@ -2572,6 +2572,10 @@ RepositoryMap.prototype = {
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 	let layer = MapUtils.createLayerGeoJson(this,name,url);
+	if(args) {
+	    if(Utils.isDefined(args.zoomToExtent))
+		zoomToExtent=args.zoomToExtent;
+	}
 	this.addMapFileLayer(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback);
 	return layer;
     },

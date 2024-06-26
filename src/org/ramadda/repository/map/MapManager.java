@@ -803,17 +803,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         MapInfo mapInfo = new MapInfo(request, getRepository(), props, width,
                                       height, forSelection);
 
-	List<String[]> geojsonUrls=findGeoJsonUrls(request, entry);
-	for(String[]tuple: geojsonUrls) {
-	    String  geojson = tuple[0];
-	    if(!stringDefined(geojson)) continue;
-	    geojson = entry.getTypeHandler().applyTemplate(request,entry, geojson, true);
-	    //Check for any macros not added
-	    if(geojson.indexOf("${")<0)  {
-		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, tuple[1]);
-	    }
-	}
-
+	addGeoJson(request, mapInfo, entry,true);
 
 
         if (style != null) {
@@ -1916,6 +1906,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
                 if ( !rectOK) {
                     addMarker = false;
                 }
+		if(addGeoJson(request, map, entry,false)) rectOK = false;
+
             }
 
             if (makeRectangles) {
@@ -1974,6 +1966,23 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
 
     }
+
+    private boolean addGeoJson(Request request, MapInfo mapInfo,Entry entry,boolean zoomTo) throws Exception {
+	boolean added=false;
+	List<String[]> geojsonUrls=findGeoJsonUrls(request, entry);
+	for(String[]tuple: geojsonUrls) {
+	    String  geojson = tuple[0];
+	    if(!stringDefined(geojson)) continue;
+	    geojson = entry.getTypeHandler().applyTemplate(request,entry, geojson, true);
+	    //Check for any macros not added
+	    if(geojson.indexOf("${")<0)  {
+		added=true;
+		mapInfo.addGeoJsonUrl(IO.getFileTail(geojson), geojson, true, tuple[1],zoomTo);
+	    }
+	}
+	return added;
+    }
+
 
     public List<String[]> findGeoJsonUrls(Request request, Entry entry) throws Exception {
 	List<String[]> urls=new ArrayList<String[]>();
