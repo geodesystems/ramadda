@@ -928,6 +928,7 @@ public class ExtEditor extends RepositoryManager {
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
 		    "//stop processing but still apply any changes\n" +
+		    "ctx.pause(seconds) \n"+
 		    "ctx.stop() \n"+
 		    "//cancel processing and no changes will be applied\n"+
 		    "ctx.cancel() \n";
@@ -1663,6 +1664,10 @@ public class ExtEditor extends RepositoryManager {
 	public JsContext(EntryVisitor visitor, boolean confirm) {
 	    this.visitor= visitor;
 	    this.confirm = confirm;
+	}
+
+	public void pause(int seconds) {
+	    Misc.sleepSeconds(seconds);
 	}
 
 	public void stop() {
