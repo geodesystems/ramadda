@@ -74,6 +74,15 @@ public class NcssTypeHandler extends PointTypeHandler {
     }
 
     
+    private String getUrl(Entry entry) {
+	String url = entry.getResource().getPath();
+	if(url.startsWith("ncss.")) {
+	    url = getRepository().getProperty(url,null);
+	}
+	return url;
+    }
+
+
     private String parseUrl(String url, double[] loc, List<String> vars)
             throws Exception {
         String   lat = null,
@@ -172,7 +181,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 	    return;
 	}
         super.initializeNewEntry(request, entry, newType);
-        String url = entry.getResource().getPath();
+        String url = getUrl(entry);
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
             if (toks == null) {
@@ -210,9 +219,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         List<String> vars = new ArrayList<String>();
         double[]     loc  = new double[] { 0, 0 };
         url = parseUrl(url, loc, vars);
-	System.err.println("VARS:" + vars);
-
-
         entry.getResource().setPath(url);
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
@@ -280,7 +286,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 
     private boolean checkLatLon(Request request, Entry entry) {
 	//Do this before initializeNewEntry since that sets the lat/lon from the URL
-        String url = entry.getResource().getPath();
+        String url = getUrl(entry);
 	if(url.indexOf("${latitude")>0) return false;
 	if(entry.hasLocationDefined(request)) {
 	    url = url.replaceAll("latitude=[0-9\\.\\-]+\\&","latitude="+entry.getLatitude(request)+"&");
@@ -296,7 +302,7 @@ public class NcssTypeHandler extends PointTypeHandler {
     public IO.Path getPathForRecordEntry(Request request, Entry entry,
 					 Hashtable requestProperties)
             throws Exception {
-        String url = entry.getResource().getPath();
+        String url = getUrl(entry);
         //subst the times
 	String dateType = entry.getStringValue(request,IDX_DATE_TYPE,DATE_TYPE_RELATIVE);
 	//	System.err.println("start:" + start +" end:" + end);
