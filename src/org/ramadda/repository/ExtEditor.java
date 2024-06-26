@@ -1469,8 +1469,19 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
-	public void addLLMMetadata(String type,String prompt)  throws Exception {
+	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
+		if(check.length==0 || check[0]) {
+		    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+
+		    if(list!=null && list.size()>0) {
+			ctx.print("Already has metadata:" + entry.getName());
+			return;
+		    }
+		}
+		    
+
+
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
 									    prompt,null);
