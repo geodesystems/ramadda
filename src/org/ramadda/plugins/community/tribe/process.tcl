@@ -2,6 +2,14 @@ package require csv
 package require http
 
 
+
+
+set ::entriesfp [open entries.xml w]
+proc write {s} {
+    puts $::entriesfp $s
+}
+
+
 proc index {base key} {
     set data "::${base}key"
     for {set i 0} {$i<[llength [set $data]]} {incr i} {
@@ -95,7 +103,7 @@ proc geojson {tribe file} {
     set url "https://ramadda.org/repository/entry/show?entryid=c6969703-c500-49ad-9fe5-ee14c19a5b2d&output=geojsonfilter&geojson_property=name&geojson_filter=Subset&geojson_value=(?i).*$text.*"
     catch {exec wget -O $file $url}
     if {[file size $file]<100} {
-	puts "not ok: $tribe text:$text"
+	puts stderr "not ok: $tribe text:$text"
 	file delete $file
 	return 0
     }
@@ -103,7 +111,8 @@ proc geojson {tribe file} {
     return 1
 }
 
-puts "<entries>"
+
+write "<entries>"
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
@@ -169,7 +178,7 @@ proc findSlug {tribe} {
 set ::tribecnt 0
 proc tribe {state tribe wiki lat lon} {
     incr ::tribecnt
-#    if {$::tribecnt>10} return
+    if {$::tribecnt>2} return
     set key [cleanTribe $tribe]
     set biaInfo [find  bia  tribe $key]
     set file [string tolower $tribe]
@@ -178,7 +187,7 @@ proc tribe {state tribe wiki lat lon} {
     set id $file
     regsub -all {'} $id {} id
     set file "$file.geojson"
-    puts "<entry [attr type tribal_datahub] [attr name $tribe] [attr id $id]";
+    write "<entry [attr type tribal_datahub] [attr name $tribe] [attr id $id]";
     set desc "+callout-info\nThis is an example data hub for the $tribe\n-callout\n"
     append desc "@($wiki imageWidth=100 addHeader=false ignoreError=true)\n"
 
@@ -229,12 +238,12 @@ proc tribe {state tribe wiki lat lon} {
 	}
     }
 
-    puts $attrs
-    puts ">"
+    write $attrs
+    write ">"
 
-    puts $metadata
-    puts "<state>[cdata $state]</state>\n"
-    puts "<metadata [attr type content.alias]><attr [attr index 1] [attr encoded false]><!\[CDATA\[tribe_$id\]\]></attr></metadata>"
+    write $metadata
+    write "<state>[cdata $state]</state>\n"
+    write "<metadata [attr type content.alias]><attr [attr index 1] [attr encoded false]><!\[CDATA\[tribe_$id\]\]></attr></metadata>"
     set children ""
     set template $::toptemplate
     regsub -all {%parent%} $template $id template
@@ -311,10 +320,16 @@ proc tribe {state tribe wiki lat lon} {
 	append desc ":br\n"
 	append desc "{{nws.forecast [attr entry ${id}_nws] showHeader=false showDetails=false count=1000}}\n";
     }
-    puts  "<description><!\[CDATA\[$desc\]\]></description>\n"
-    puts "</entry>"    
-    puts $children
+    write  "<description><!\[CDATA\[$desc\]\]></description>\n"
+    write "</entry>"    
+    write $children
 }
 
 source tribes.tcl
-puts "</entries>"
+write "</entries>"
+
+close $::entriesfp 
+
+set command [concat exec jar -cvf tribes.zip entries.xml [glob *.geojson]]
+eval $command
+puts stderr "tribes.zip generated"

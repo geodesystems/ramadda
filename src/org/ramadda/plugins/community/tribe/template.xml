@@ -1,7 +1,11 @@
-  <entry type="type_ncss"  changedate="2024-06-08 11:38 UTC" createdate="2024-06-08 11:38 UTC"  latitude="%latitude%" longitude="%longitude%"
-entryorder="999" fromdate="2024-02-03 00:00 UTC" id="05636a72-c3a3-4454-a0cf-03bfc632617e" isgroup="false" name="%tribe% GFS Forecast"  parent="%parent%" 
-todate="2024-03-20 00:00 UTC" 
-url="https://thredds.ucar.edu/thredds/ncss/grid/grib/NCEP/GFS/Global_0p5deg/Best?var=Wind_speed_gust_surface&amp;var=Pressure_surface&amp;var=Temperature_surface&amp;var=Precipitable_water_entire_atmosphere_single_layer&amp;var=Total_cloud_cover_entire_atmosphere&amp;latitude=${latitude}&amp;longitude=${longitude}&amp;time_start=${date format=yyyy-MM-dd}&amp;time_end=${date offset=&quot;${endTimeOffset}&quot;}&amp;&amp;&amp;accept=csv" >
+<entry type="type_ncss"  changedate="2024-06-08 11:38 UTC" createdate="2024-06-08 11:38 UTC"
+       latitude="%latitude%" longitude="%longitude%"
+       name="%tribe% GFS Forecast"  parent="%parent%"        
+       url="ncss.tribes.gfs" 
+       entryorder="999" fromdate="2024-02-03 00:00 UTC" id="05636a72-c3a3-4454-a0cf-03bfc632617e" isgroup="false"
+      todate="2024-03-20 00:00 UTC" 
+>
+
     <properties encoded="true"><![CDATA[c2tpcGxpbmVzPTENCmZpZWxkcz10aW1lW3R5cGU9ZGF0ZSBmb3JtYXQ9Inl5eXktTU0tZGQnVCdI
 SDptbTpzcyJdLHN0YXRpb25bdHlwZT1zdHJpbmddLGxhdGl0dWRlW3VuaXQ9ImRlZ3JlZXNfbm9y
 dGgiXSxsb25naXR1ZGVbdW5pdD0iZGVncmVlc19lYXN0Il0sV2luZF9zcGVlZF9ndXN0X3N1cmZh
@@ -17,6 +21,94 @@ Il0NCg==
     <end_date_offset encoded="true"><![CDATA[KzEwIGRheXM=
 ]]></end_date_offset>
     <default_fields encoded="true"><![CDATA[VGVtcGVyYXR1cmVfc3VyZmFjZSwgUHJlc3N1cmVfc3VyZmFjZQ==
+]]></default_fields>
+  </entry>
+
+  <entry changedate="2024-06-26 05:24 UTC" createdate="2024-03-21 00:26 UTC"  entryorder="999"
+	 latitude="%latitude%" longitude="%longitude%"
+	 name="%tribe% MPI ECHAM5"  parent="%parent%" 
+	 fromdate="1968-01-16 00:00 UTC" id="8ca1cc4a-852b-44d4-9845-0c2de060be53" isgroup="false"
+	 path="Home/RAMADDA /Development/Climate/MPI ECHAM5"  todate="2099-12-16 00:00 UTC" type="type_ncss"
+	 url="ncss.tribes.echam5" >
+    <description encoded="true"><![CDATA[K25vdGUNCkRhdGEgaXMgZnJvbSBbaHR0cDovL3JlZ2NsaW0uY29hcy5vcmVnb25zdGF0ZS5lZHU6
+ODA4MC90aHJlZGRzL2NhdGFsb2cvY2F0YWxvZy5odG1sIHJlZ2NsaW0uY29hci5vcmVnb25zdGF0
+ZS5lZHVdDQotbm90ZQ==
+]]></description>
+    <metadata id="a77af43b-84c6-44d1-afe8-a0bd088f8264" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[R0REMTA=
+]]></attr>
+      <attr index="2"><![CDATA[R2RkMTA=
+]]></attr>
+      <attr index="3"><![CDATA[R0RE
+]]></attr>
+    </metadata>
+    <metadata id="3774665a-71d3-4f25-aad9-ef5afacd4caf" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[UlQ=
+]]></attr>
+      <attr index="2"><![CDATA[UlQ=
+]]></attr>
+      <attr index="3"><![CDATA[bW0vZGF5
+]]></attr>
+    </metadata>
+    <metadata id="4a472e09-4fa4-42a8-bb6e-6e06a0d46cb0" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[U01U
+]]></attr>
+      <attr index="2"><![CDATA[U210
+]]></attr>
+      <attr index="3"><![CDATA[bW0=
+]]></attr>
+    </metadata>
+    <metadata id="43b49bd3-48ef-4952-bac6-449e6e73338a" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[U05PVw==
+]]></attr>
+      <attr index="2"><![CDATA[U25vdw==
+]]></attr>
+      <attr index="3"><![CDATA[bW0gSDJP
+]]></attr>
+    </metadata>
+    <metadata id="a83c6896-c7e2-4dbc-9455-71a2e8d800aa" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[bGF0aXR1ZGU=
+]]></attr>
+      <attr index="2"><![CDATA[TGF0aXR1ZGU=
+]]></attr>
+      <attr index="3"><![CDATA[ZGVncmVlc19ub3J0aA==
+]]></attr>
+    </metadata>
+    <metadata id="4534ab02-a8a7-4b24-b73f-b85e12d85a7b" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[bG9uZ2l0dWRl
+]]></attr>
+      <attr index="2"><![CDATA[TG9uZ2l0dWRl
+]]></attr>
+      <attr index="3"><![CDATA[ZGVncmVlc19lYXN0
+]]></attr>
+    </metadata>
+    <metadata id="a9cbae2f-6011-442b-ae99-c32321fd663e" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[c3RhdGlvbg==
+]]></attr>
+      <attr index="2"><![CDATA[U3RhdGlvbg==
+]]></attr>
+      <attr index="3"><![CDATA[]]></attr>
+    </metadata>
+    <metadata id="36d6744e-ed38-479d-a117-6fa899734e1e" inherited="false" type="thredds.variable">
+      <attr index="1"><![CDATA[dGltZQ==
+]]></attr>
+      <attr index="2"><![CDATA[VGltZQ==
+]]></attr>
+      <attr index="3"><![CDATA[]]></attr>
+    </metadata>
+    <numberofpoints encoded="true"><![CDATA[MTQ2NA==
+]]></numberofpoints>
+    <properties encoded="true"><![CDATA[c2tpcGxpbmVzPTENCmZpZWxkcz10aW1lW3R5cGU9ZGF0ZSBmb3JtYXQ9Inl5eXktTU0tZGQnVCdI
+SDptbTpzcyJdLHN0YXRpb25bdHlwZT1zdHJpbmddLGxhdGl0dWRlW3VuaXQ9ImRlZ3JlZXNfbm9y
+dGgiXSxsb25naXR1ZGVbdW5pdD0iZGVncmVlc19lYXN0Il0sR0REMTBbbGFiZWw9IkdkZDEwIiAg
+IHVuaXQ9IkdERCJdLFJUW2xhYmVsPSJSVCIgICB1bml0PSJtbS9kYXkiXSxTTVRbbGFiZWw9IlNt
+dCIgICB1bml0PSJtbSJdLFNOT1dbbGFiZWw9IlNub3ciICAgdW5pdD0ibW0gSDJPIl0NCg==
+]]></properties>
+    <datetype encoded="true"><![CDATA[cmVsYXRpdmU=
+]]></datetype>
+    <end_date_offset encoded="true"><![CDATA[KzEwMCB5ZWFycw==
+]]></end_date_offset>
+    <default_fields encoded="true"><![CDATA[R0REMTAsIFJULCBTTVQsIFNOT1c=
 ]]></default_fields>
   </entry>
 
