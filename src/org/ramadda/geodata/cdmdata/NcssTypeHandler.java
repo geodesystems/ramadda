@@ -77,7 +77,9 @@ public class NcssTypeHandler extends PointTypeHandler {
     private String getUrl(Entry entry) {
 	String url = entry.getResource().getPath();
 	if(url.startsWith("ncss.")) {
-	    url = getRepository().getProperty(url,null);
+	    String _url = getRepository().getProperty(url,null);
+	    if(_url==null) throw new IllegalArgumentException("No NCSS property set:" +  url);
+	    return _url;
 	}
 	return url;
     }
