@@ -584,7 +584,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			System.err.println("\ttoo many tokens. Trying again with limit:" + info.tokenLimit);
 		    continue;
 		} catch(Exception exc) {
-		    exc.printStackTrace();
+		    //		    exc.printStackTrace();
 		    throw new RuntimeException("Unable to process GPT request:" + result.getResult());
 		}
 	    }

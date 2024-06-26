@@ -922,9 +922,10 @@ public class ExtEditor extends RepositoryManager {
 		    "entry.applyCommand('addthumbnail');\n" +
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
+		    "entry.hasMetadata('type');\n" +
 		    "entry.setLLM('one of gpt3.5 gpt4 gemini claude');\n" +
 		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
-		    "entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon');\n" +
+		    "entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon',false -> don't check if on exists);\n" +
 		    "entry.addLLMGeo('optional prompt');\n" +		    		    
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
@@ -1469,6 +1470,18 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
+	public void hasMetadata(String type) throws Exception {
+	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+
+	    if(list!=null && list.size()>0) {
+		ctx.print("has metadata:" + entry.getName());
+	    } else {
+		ctx.print("does not have metadata:" + entry.getName());
+	    }
+	}
+
+
+
 	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
 		if(check.length==0 || check[0]) {
@@ -1481,12 +1494,11 @@ public class ExtEditor extends RepositoryManager {
 		}
 		    
 
-
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
 									    prompt,null);
 		if(!Utils.stringDefined(r)) {
-		    ctx.print("No results for entry:" + entry.getName());
+		    ctx.warning("No results for entry:" + entry.getName());
 		} else {
 		    ctx.print("Metadata added for entry:" + entry.getName() +"="  + r);
 		    for(String tok:Utils.split(r,";",true,true)) {
@@ -1497,13 +1509,13 @@ public class ExtEditor extends RepositoryManager {
 	    } catch(Exception exc) {
 		repository.getLogManager().logError("Extended edit error:" + exc,exc);
 		exc.printStackTrace();
-		ctx.print("An error occurred processing:" + entry +" " + exc);
+		ctx.error("An error occurred processing:" + entry +" " + exc);
 	    }
 	}
 
 	public void addLLMGeo(String prompt)  throws Exception {
 	    if(entry.isGeoreferenced(request)) {
-		ctx.print("Alread has location:" + entry.getName());
+		ctx.print("Already has location:" + entry.getName());
 		return;
 	    }
 	    if(!Utils.stringDefined(prompt)) {
@@ -1514,7 +1526,7 @@ public class ExtEditor extends RepositoryManager {
 									    entry,
 									    prompt,null);
 		if(!Utils.stringDefined(r)) {
-		    ctx.print("No results for entry:" + entry.getName());
+		    ctx.warning("No results for entry:" + entry.getName());
 		    return;
 		} 
 		List<String> toks = Utils.split(r,",",true,true);
@@ -1702,6 +1714,16 @@ public class ExtEditor extends RepositoryManager {
 	public void print(Object msg) {
 	    visitor.append(msg+"\n");
 	}
+
+	public void warning(Object msg) {
+	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-warning")));
+						  
+	}	
+
+	public void error(Object msg) {
+	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-error")));
+						  
+	}	
 	
 
 
