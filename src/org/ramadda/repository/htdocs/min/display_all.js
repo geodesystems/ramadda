@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 25 08:49:15 MDT 2024";
+var build_date="RAMADDA build date: Tue Jun 25 18:25:25 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35827,6 +35827,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'placeholder'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
+	{p:'autoFocus',d:true,ex:'false'},	
 	{p:'doTagSearch',ex:'true'},	
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
@@ -35918,7 +35919,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    }
 
 
-	    if(this.getDoPageSearch()) {
+	    if(this.getDoPageSearch() && this.getAutoFocus()) {
 		//Put this in a timeout because if it is in a tabs then the whole page gets scrolled
                 setTimeout(()=>{
 		    this.jq(ID_TEXT_FIELD).focus();
