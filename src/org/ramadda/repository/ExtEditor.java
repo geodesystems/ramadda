@@ -593,7 +593,7 @@ public class ExtEditor extends RepositoryManager {
 					    if(changed) {
 						getEntryManager().removeFromCache(entry);
 						if(!haveReset) {
-						    resetMessageBuffer();
+						    //						    resetMessageBuffer();
 						    haveReset = true;
 						}
 						append("Updated entry:" + entry+"\n");
@@ -611,7 +611,7 @@ public class ExtEditor extends RepositoryManager {
 		    holder[0] = jsContext;
 		    scope.put("ctx", scope, jsContext);
                     walker.walk(finalEntry);
-		    jsContext.print("* Done\nProcessed:#" +cnt[0]);
+		    jsContext.print("* Done - Processed:#" +cnt[0]);
                     getActionManager().setContinueHtml(actionId,
 						       walker.getMessageBuffer().toString());
                 }
@@ -923,6 +923,7 @@ public class ExtEditor extends RepositoryManager {
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
 		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
+		    "entry.addLLMMetadata('metadata_type','prompt');\n" +		    
 		    "//ctx is the context object\n" +
 		    "ctx.print() prints output\n" +
 		    "//stop processing but still apply any changes\n" +
@@ -1462,6 +1463,26 @@ public class ExtEditor extends RepositoryManager {
 	    List<Entry> entries = new ArrayList<Entry>();
 	    entries.add(entry);
 	    repository.getSearchManager().entriesModified(request, entries);
+	}
+
+
+	public void addLLMMetadata(String type,String prompt)  throws Exception {
+	    try {
+		String r = repository.getLLMManager().applyPromptToDocument(request,
+									    entry,
+									    prompt,null);
+		if(!Utils.stringDefined(r)) {
+		    ctx.print("No results for entry:" + entry.getName());
+		} else {
+		    ctx.print("Metadata added for entry:" + entry.getName() +"="  + r);
+		    repository.getMetadataManager().addMetadata(request,entry,  type, true,r);
+		    changed=true;
+		}
+	    } catch(Exception exc) {
+		repository.getLogManager().logError("Extended edit error:" + exc,exc);
+		exc.printStackTrace();
+		ctx.print("An error occurred processing:" + entry +" " + exc);
+	    }
 	}
 
 
