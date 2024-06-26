@@ -2708,9 +2708,9 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     padding-left:5px;
     border:var(--basic-border);
     background:#fff;
-    width:1200px;
-    height:100px; 
-    max-height:100px;
+    width:1000px;
+    height:200px; 
+    max-height:200px;
     overflow-y:auto;
 }
 

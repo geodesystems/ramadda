@@ -40,7 +40,7 @@ import java.util.concurrent.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = false;
+    public static boolean  debug = true;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";
@@ -402,6 +402,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    args.add(extraArgs[i+1]);
 	}
 	Utils.add(args,"model",JsonUtil.quote(model));
+	System.err.println(gptText.length());
 	Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
 							     "role",JsonUtil.quote("user"),
 							     "content",JsonUtil.quote(gptText))));
@@ -585,7 +586,9 @@ public class LLMManager extends  AdminHandlerImpl {
 		    continue;
 		} catch(Exception exc) {
 		    //		    exc.printStackTrace();
-		    throw new RuntimeException("Unable to process GPT request:" + result.getResult());
+		    String msg = result.getResult();
+		    if(result.getCode()==429)   msg = "Too many requests";
+		    throw new RuntimeException("Unable to process GPT request:" + msg);
 		}
 	    }
 
