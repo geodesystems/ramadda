@@ -6186,6 +6186,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    for (EntryChecker entryMonitor : getEntryCheckers()) {
 			if(debug) System.err.println("\tentryMonitor:" + entryMonitor);
 			entryMonitor.entriesCreated(request, entries);
+			if(debug) System.err.println("\tDone");
 		    }
 		}
 	    });

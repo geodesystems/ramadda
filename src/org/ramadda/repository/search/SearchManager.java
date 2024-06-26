@@ -599,14 +599,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		boolean entryChanged = false;
 		if(isNew) {
 		    try {
-			//			Misc.sleepSeconds(5);
-			//			if(true) throw new RuntimeException("TEST ERROR");
 			entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
 		    } catch(Throwable thr) {
+			//log the error and carry on
 			getSessionManager().addSessionErrorMessage(request,
+								   
 								   "An error occurred doing the LLM extraction for the entry: " + entry.getName()+
-								   "<br>Error: " + thr.getMessage());
-			throw new RuntimeException(thr);
+								   "<br><b>Error</b>: " + thr.getMessage());
+			
 		    }
 		}
 
