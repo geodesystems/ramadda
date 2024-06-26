@@ -55,6 +55,12 @@
     </type>
 
 
+    <type name="Tribe Name" id="tribal_name" searchable="true" browsable="true">
+      <element name="Tribe Name" datatype="enumerationplus" />
+    </type>
+
+
+
   </handler>
 
 
