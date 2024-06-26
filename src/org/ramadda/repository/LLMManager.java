@@ -160,11 +160,17 @@ public class LLMManager extends  AdminHandlerImpl {
 	    else if(a.equals("debug")) request.put("debug","true");
 	    else if(a.startsWith("model:")) {
 		String model = a.substring("model:".length());
-		if(model.equals("gpt3.5")) model=MODEL_GPT_3_5;
-		else if(model.equals("gpt4")) model=MODEL_GPT_4;
-		request.put(ARG_MODEL,model);
+		setModel(request,model);
+
 	    }
 	}
+    }
+
+
+    public void setModel(Request request, String model) {
+	if(model.equals("gpt3.5")) model=MODEL_GPT_3_5;
+	else if(model.equals("gpt4")) model=MODEL_GPT_4;
+	request.put(ARG_MODEL,model);
     }
 
 
