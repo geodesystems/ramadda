@@ -4547,12 +4547,12 @@ MapGlyph.prototype = {
 
 	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
-	    //make a copy becausewe can change it later
-	    obj  =$.extend({},obj);
+	    //make a copy because we can change it later
+	    //Maybe not since the state doesn't get set
+	    //	    obj  =$.extend({},obj);
 	    if(debug)
 		console.log('applyColors',attr);
 	    let strings  =[]
-
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
@@ -4570,7 +4570,7 @@ MapGlyph.prototype = {
 		    max = Math.max(max,value);		    
 		}
 	    });
-	    
+
 	    if(!anyNumber) {
 		obj.min =min = 0;
 		obj.max = max= strings.length-1;
