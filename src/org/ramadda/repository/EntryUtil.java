@@ -1166,6 +1166,25 @@ public class EntryUtil extends RepositoryManager {
 
 
     /**
+     *  trim and remove the delimiter character
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public static String cleanupEntryName(String name) {
+        if (name.length() > 200) {
+            name = name.substring(0, 195) + "...";
+        }
+        name = name.replaceAll(Entry.PATHDELIMITER, "-");
+
+        return name;
+    }
+
+
+
+
+    /**
      * _more_
      *
      * @param args _more_
@@ -1173,6 +1192,7 @@ public class EntryUtil extends RepositoryManager {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {}
+
 
 
     public static class Excluder {

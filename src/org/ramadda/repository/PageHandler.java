@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -69,152 +69,55 @@ import java.util.TimeZone;
 public class PageHandler extends RepositoryManager {
 
     private static  boolean debugTemplates = false;
+    private static String CDNROOT = null;
+    private static String CDNHTDOCS = null;    
 
-    /**  */
     public static final String IMPORTS_BEGIN = "<!--imports-->";
-
-    /**  */
     public static final String IMPORTS_END = "<!--end imports-->";
-
-
-    /**  */
     public static final String PREFIX_NOPRELOAD = "nopreload:";
-
-
-
-    /** _more_ */
     public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
-    /** _more_ */
     private static final String ACK_MESSAGE =
         "<div class='ramadda-acknowledgement'><a title='geodesystems.com' href='https://geodesystems.com'><img loading=lazy width=100px  src='${cdnpath}/images/poweredby.png'></a><br><a title='Help' href=${root}/userguide/index.html><i class='fas fa-question-circle'></i></a>&nbsp;<a title='Server Information' href=${root}/info><i class='fas fa-circle-info'></i></a></div>";
 
-    /**  */
     private String ackMessage;
-
-
-
-    /** _more_ */
     private List<MapLayer> mapLayers = null;
-
-
-    /** _more_ */
     private List<MapRegion> mapRegions = new ArrayList<MapRegion>();
-
-    /** _more_ */
     public static final String MSG_PREFIX = "<msg ";
-
-    /** _more_ */
     public static final String MSG_SUFFIX = " msg>";
-
-
-    /** html template macro */
     public static final String MACRO_LINKS = "links";
-
     public static final String MACRO_PAGEHEADER = "pageheader";
-
-    /** html template macro */
     public static final String MACRO_LOGO_URL = "logo.url";
-
-    /** html template macro */
     public static final String MACRO_LOGO_IMAGE = "logo.image";
-
-    /** html template macro */
     public static final String MACRO_SEARCH_URL = "search.url";
-
     public static final String MACRO_ENTRY_NAME = "entry.name";
     public static final String MACRO_ENTRY_URL = "entry.url";    
-
-    /** html template macro */
     public static final String MACRO_ENTRY_HEADER = "entry.header";
-
-    /** html template macro */
     public static final String MACRO_HEADER = "header";
-
-    /** html template macro */
     public static final String MACRO_ENTRY_FOOTER = "entry.footer";
-
-
-
-
-    /** html template macro */
     public static final String MACRO_ENTRY_BREADCRUMBS = "entry.breadcrumbs";
-
     public static final String MACRO_ENTRY_POPUP = "entry.popup";
-    /** html template macro */
     public static final String MACRO_HEADER_IMAGE = "header.image";
-
-    /** html template macro */
     public static final String MACRO_HEADER_TITLE = "header.title";
-
-    /** html template macro */
     public static final String MACRO_USERLINK = "userlinks";
-
-
-
-    /** html template macro */
     public static final String MACRO_REPOSITORY_NAME = "repository_name";
-
-    /** _more_ */
     public static final String MACRO_REGISTER = "register";
-
-    /** html template macro */
     public static final String MACRO_FOOTER = "footer";
-
-    /**  */
-    public static final String MACRO_FOOTER_ACKNOWLEDGEMENT =
-        "footer.acknowledgement";
-
-
-
-
-    /** html template macro */
+    public static final String MACRO_FOOTER_ACKNOWLEDGEMENT = "footer.acknowledgement";
     public static final String MACRO_TITLE = "title";
-
-    /** html template macro */
     public static final String MACRO_ROOT = "root";
-
-    /** html template macro */
     public static final String MACRO_HEADFINAL = "headfinal";
-
-    /** html template macro */
     public static final String MACRO_BOTTOM = "bottom";
-
-    /** html template macro */
     public static final String MACRO_CONTENT = "content";
-
-    /**  */
     public static final String MACRO_IMPORTS = "imports";
-
-
-    /** _more_ */
     private String webImports;
-
     private String displayImports;
-
-    /** _more_ */
+    private String templateJavascriptContent;
     private List<HtmlTemplate> htmlTemplates;
-
-
-    /** _more_ */
     private Hashtable<String, HtmlTemplate> templateMap;
-
-
-    /** _more_ */
     private HtmlTemplate mapTemplate;
-
-
-    /** _more_ */
     private Hashtable<String, StringBuilder> languageMap = new Hashtable<String,StringBuilder>();
-
-
-    /** _more_ */
     private List<TwoFacedObject> languages = new ArrayList<TwoFacedObject>();
-
-
-
-
-
 
     /**
      * Set this to true to print to a file the missing messages and this also
@@ -222,99 +125,43 @@ public class PageHandler extends RepositoryManager {
      */
     private static boolean debugMsg = false;
 
-    /** _more_ */
     private static PrintWriter allMsgOutput;
-
-    /** _more_ */
     private static PrintWriter missingMsgOutput;
-
-
-    /** _more_ */
     private static HashSet<String> seenMsg = new HashSet<String>();
-
-
-    /** _more_ */
     private String headerIcon;
-
-    /** _more_ */
     private Hashtable<String, String> typeToWikiTemplate =
         new Hashtable<String, String>();
-
-    /** _more_ */
     public static final String ID_TEMPLATE_DEFAULT = "_DEFAULT_";
-
     public static final String ID_TEMPLATE_MOBILE = "_MOBILE_";    
-
-    /** _more_ */
     public static final String TEMPLATE_CONTENT = "content";
     public static final String TEMPLATE_DEFAULT = "default";    
-
-
-    /** _more_ */
     private boolean showCreateDate;
-
-    /** _more_ */
     private boolean showJsonLd;    
-
     private boolean showTwitterCard;
-    /** _more_ */
     private boolean showSearch;
-
-    /** _more_ */
     private String shortDateFormat;
-
-    /** _more_ */
     private String createdDisplayMode;
-
-    /** _more_ */
     private String myLogoImage;
-
-    /** _more_ */
     private String footer;
-
-    /** _more_ */
     private boolean cacheTemplates;
-
-    /**  */
     private boolean showHelp = true;
-
-    /**  */
     private boolean noStyle = false;
-
-    /**  */
     private String logoUrl = "";
-
-    /**  */
     private String bootstrapVersion = "bootstrap-5.1.3";
-
-
-    /** _more_ */
     TimeZone defaultTimeZone;
-
-
-    /** _more_ */
     private Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
 
-    /** _more_ */
     protected List<SimpleDateFormat> parseFormats;
 
+    private String languagesJson;
 
-
-    /**  */
     String searchImg = HU.faIcon("ramadda-header-icon fas fa-search", "title", "Search", "class",
                                  "ramadda-user-menu-image", "id",
                                  "searchlink");
 
-    /**  */
     String popupImage;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public PageHandler(Repository repository) {
         super(repository);
         popupImage = HU.faIcon("ramadda-header-icon fas fa-cog", "title",
@@ -326,9 +173,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     */
+    
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -362,13 +207,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param resource _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<String[]> readWebResources(String resource) throws Exception {
         List<String[]> result = new ArrayList<String[]>();
         List<String> files =
@@ -440,14 +279,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addDisplayImports(Request request, Appendable sb)
 	throws Exception {
 	addDisplayImports(request, sb, true);
@@ -467,11 +299,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String makeDisplayImports() {
         try {
             Appendable sb = Utils.makeAppendable();
@@ -541,13 +369,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     *
-     * @param sb _more_
-     * @param resourcePath _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addJSImports(Appendable sb, String resourcePath)
             throws Exception {
         for (String[] file : readWebResources(resourcePath)) {
@@ -557,12 +379,7 @@ public class PageHandler extends RepositoryManager {
             sb.append("\n");
         }
     }
-
-
-
-    /**
-     * _more_
-     */
+    
     private void initWebResources() {
         try {
 
@@ -590,11 +407,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getHeaderIcon() {
         if (headerIcon == null) {
             headerIcon = getIconUrl(ICON_HEADER);
@@ -603,26 +416,14 @@ public class PageHandler extends RepositoryManager {
         return headerIcon;
     }
 
-    /**
-     *
-     * @param entry _more_
-      * @return _more_
-     */
+    
     public String getEntryTooltip(Entry entry) {
         return noMsg(entry.getName()) + HU.NL + " - "
 	    + msg(entry.getTypeHandler().getLabel());
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param result _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void decorateResult(Request request, Result result)
             throws Exception {
         String html = decorateResult(request, result, true, true);
@@ -632,17 +433,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param result _more_
-     * @param prefix _more_
-     * @param suffix _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String decorateResult(Request request, Result result,
                                  boolean prefix, boolean suffix)
             throws Exception {
@@ -657,19 +448,7 @@ public class PageHandler extends RepositoryManager {
     private String wrapPageLink(String s) {
         return  "<span class=ramadda-page-link>" + s + "</span>";
     }
-
-
-    /**
-     *
-     * @param request _more_
-     * @param result _more_
-     * @param sb _more_
-     * @param prefix _more_
-     * @param suffix _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean decorateResult(Request request, Result result,
                                   Appendable sb, boolean prefix,
                                   boolean suffix)
@@ -1011,13 +790,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param result _more_
-     *
-     * @return _more_
-     */
+    
     public String getLogoImage(Result result) {
         String logoImage = null;
         if (result != null) {
@@ -1035,14 +808,10 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /** _more_ */
-    private String templateJavascriptContent;
+    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+
+    
     public String getTemplateJavascriptContent() {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
@@ -1071,14 +840,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param template _more_
-     * @param ignoreErrors _more_
-     *
-     * @return _more_
-     */
+    
     public String processTemplate(String template, boolean ignoreErrors) {
         List<Utils.Macro>  toks   = Utils.splitMacros(template);
         StringBuilder result = new StringBuilder();
@@ -1113,14 +875,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param map _more_
-     *
-     * @return _more_
-     */
+    
     private static String replaceMsgNew(String s, Properties map) {
         StringBuilder stripped     = new StringBuilder();
         int           prefixLength = MSG_PREFIX.length();
@@ -1192,15 +947,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param file _more_
-     * @param content _more_
-     *
-     * @return _more_
-     */
+    
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
         StringBuilder   phrases = new StringBuilder();
@@ -1246,16 +993,11 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<TwoFacedObject> getLanguages() {
         return languages;
     }
 
-    private String languagesJson;
     public String  getLanguagesJson() {
 	if(languagesJson==null) {
 	    List<String> l =new ArrayList<String>();
@@ -1271,37 +1013,19 @@ public class PageHandler extends RepositoryManager {
 	return languagesJson;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public HtmlTemplate getMobileTemplate() {
         return getTemplateMap().get(ID_TEMPLATE_MOBILE);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String makeHtdocsUrl(String url) {
         return getRepository().getUrlBase() + "/"
                + RepositoryUtil.getHtdocsVersion() + url;
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String concatFiles(List<String> files) throws Exception {
         StringBuilder sb     = new StringBuilder();
         String        prefix = "/org/ramadda/repository/htdocs";
@@ -1331,11 +1055,7 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<HtmlTemplate> getTemplates() {
         try {
 	    if(debugTemplates)
@@ -1359,13 +1079,7 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private synchronized Hashtable<String, HtmlTemplate> checkTemplates()
             throws Exception {
 	Hashtable<String,HtmlTemplate> tmp_templateMap  = templateMap;
@@ -1536,15 +1250,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param html _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String processTemplate(String html) throws Exception {
         StringBuilder template = new StringBuilder();
         while (true) {
@@ -1584,11 +1290,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void loadLanguagePacks() throws Exception {
 	languageMap = new Hashtable<String,StringBuilder>();
 	HashSet<String> seenPack = new HashSet<String>();
@@ -1649,22 +1351,12 @@ public class PageHandler extends RepositoryManager {
 
     
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<MapRegion> getMapRegions() {
         return getMapRegions(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     *
-     * @return _more_
-     */
+    
     public List<MapRegion> getMapRegions(String group) {
         if (group == null) {
             return mapRegions;
@@ -1679,14 +1371,7 @@ public class PageHandler extends RepositoryManager {
         return regions;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param inputArgBase _more_
-     *
-     * @return _more_
-     */
+    
     public String getMapRegionSelector(Request request, String inputArgBase) {
         StringBuilder sb = new StringBuilder();
 
@@ -1694,11 +1379,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void loadMapRegions() throws Exception {
         List<String> mapRegionFiles = new ArrayList<String>();
         List<String> allFiles       = getPluginManager().getAllFiles();
@@ -1763,26 +1444,14 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getTemplateProperty(Request request, String name,
                                       String dflt) {
         return getTemplate(request).getTemplateProperty(name, dflt);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<TwoFacedObject> getTemplateSelectList() {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("-default-", ""));
@@ -1805,13 +1474,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+    
     public HtmlTemplate getTemplate(Request request) {
         Entry currentEntry = null;
         if (request != null) {
@@ -1951,13 +1614,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msg(String msg) {
         //for now no translation
         if (true) {
@@ -1977,13 +1634,7 @@ public class PageHandler extends RepositoryManager {
         return Utils.concatString(MSG_PREFIX, msg, MSG_SUFFIX);
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgLabel(String msg) {
         if (msg == null) {
             return null;
@@ -1995,13 +1646,7 @@ public class PageHandler extends RepositoryManager {
         return Utils.concatString(msg(msg), ":", HU.SPACE);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgHeader(String h) {
         return HU.div(
             msg(h),
@@ -2011,16 +1656,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param url _more_
-     * @param okArg _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public static String makeOkCancelForm(Request request, RequestUrl url,
                                           String okArg, String extra) {
         StringBuilder fb = new StringBuilder();
@@ -2138,17 +1774,6 @@ public class PageHandler extends RepositoryManager {
         return links;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param template _more_
-     * @return _more_
-     */
     private List<String> getNavLinks(Request request, String template) {
         List<String> links   = new ArrayList<String>();
         boolean      isAdmin = (request == null)
@@ -2186,17 +1811,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param urls _more_
-     * @param arg _more_
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     public void makeLinksHeader(Request request, Appendable sb,
                                 List<RequestUrl> urls, String arg)
             throws Exception {
@@ -2232,99 +1847,46 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogNote(String h, String... extra) {
         return getDialog(h, extra, ICON_DIALOG_INFO, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogBlank(String h, String... extra) {
         return getDialog(h, extra, null, false);
     }
 
-    /**
-     *
-     * @param entry _more_
-      * @return _more_
-     */
+    
     public String showAccessRestricted(Entry entry) {
         return showDialogWarning("Access to " + entry.getName()
                                  + " is restricted");
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
+    
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogWarning(String h, String... extra) {
         return getDialog(h, extra, Constants.ICON_DIALOG_WARNING, false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param buttons _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogQuestion(String h, String buttons) {
         return getDialog(h, new String[] { buttons },
                          Constants.ICON_DIALOG_QUESTION, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogError(String h, String... extra) {
         return showDialogError(h, true, extra);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param cleanString _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+    
     public String showDialogError(String h, boolean cleanString,
                                   String... extra) {
         if (h == null) {
@@ -2338,13 +1900,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public static String getDialogString(String s) {
 	//Remove url args
 	s = s.replaceAll("\\?[^ \"]+","---");
@@ -2365,15 +1921,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param msg _more_
-     * @param extra _more_
-     * @param icon _more_
-     * @param showClose _more_
-     *
-     * @return _more_
-     */
+    
     public String getDialog(String msg, String[] extra, String icon,
                             boolean showClose) {
         msg = msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
@@ -2434,15 +1982,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param icon _more_
-     * @param showClose _more_
-     *
-     * @return _more_
-     */
+    
     public String getMessage(String h, String icon, boolean showClose) {
         h = h.replaceAll("\n", "<br>");
         h = h.replaceAll("&#10;", "<br>");
@@ -2476,14 +2016,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public PageStyle doMakePageStyle(Request request, Entry entry) {
         try {
             PageStyle pageStyle = new PageStyle();
@@ -2575,16 +2108,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getConfirmBreadCrumbs(Request request, Entry entry)
             throws Exception {
 	
@@ -2594,52 +2118,21 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    
     public String getBreadCrumbs(Request request, Entry entry)
             throws Exception {
         return getBreadCrumbs(request, entry, null, null, 80,-1);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param stopAt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt)
             throws Exception {
         return getBreadCrumbs(request, entry, stopAt, null, 80,-1);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param stopAt _more_
-     * @param requestUrl _more_
-     * @param lengthLimit _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt,
                                  RequestUrl requestUrl, int lengthLimit,int maxCount)
             throws Exception {
@@ -2735,17 +2228,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryHeader(Request request, Entry entry,
                                  Appendable title,Appendable entryMenu)
             throws Exception {
@@ -2848,16 +2331,7 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryToolbar(Request request, Entry entry)
             throws Exception {
         List<Link>    links  = getEntryManager().getEntryLinks(request,
@@ -2888,16 +2362,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryMenubar(Request request, Entry entry)
             throws Exception {
 
@@ -3005,17 +2470,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parents _more_
-     * @param titleList _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<String> makeBreadcrumbList(Request request,
                                            List<Entry> parents,
                                            List<String> titleList)
@@ -3047,16 +2502,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param breadcrumbs list of crumbs
-     * @param sb buffer
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     public void makeBreadcrumbs(Request request, List<String> breadcrumbs,
                                 Appendable sb)
             throws Exception {
@@ -3078,26 +2524,13 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void loadResources() throws Exception {
         loadLanguagePacks();
         loadMapRegions();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String getIconUrlInner(Request request, Entry entry)
             throws Exception {
 
@@ -3117,17 +2550,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getIconUrl(Request request, Entry entry) throws Exception {
         String iconPath = getIconUrlInner(request, entry);
 
@@ -3155,7 +2578,6 @@ public class PageHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-
     public String entryFooter(Request request, Entry entry) throws Exception {
 
         if (entry == null) {
@@ -3216,16 +2638,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getCommentHtml(Request request, Entry entry)
             throws Exception {
         boolean       canEdit = getAccessManager().canDoEdit(request, entry);
@@ -3305,9 +2718,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     */
+    
     @Override
     public void clearCache() {
         super.clearCache();
@@ -3318,17 +2729,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param templateType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getWikiTemplate(Request request, Entry entry,
                                   String templateType)
             throws Exception {
@@ -3363,13 +2764,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param cb _more_
-     */
+    
     public void doTableLayout(Request request, Appendable sb,
                               CategoryBuffer cb) {
 
@@ -3409,31 +2804,17 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getCreatedDisplayMode() {
         return createdDisplayMode;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean showEntryTableCreateDate() {
         return showCreateDate;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private List<MapLayer> getMapLayers() {
         if (mapLayers == null) {
             List<MapLayer> tmp = new ArrayList<MapLayer>();
@@ -3451,12 +2832,7 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mapInfo _more_
-     */
+    
     public void addToMap(Request request, MapInfo mapInfo) {
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
@@ -3499,17 +2875,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandler _more_
-     * @param includeNonFiles _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String makeFileTypeSelector(Request request,
                                        TypeHandler typeHandler,
                                        boolean includeNonFiles)
@@ -3545,33 +2911,14 @@ public class PageHandler extends RepositoryManager {
 	entrySectionClose(request, entry, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param title _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title)
             throws Exception {
         entrySectionOpen(request, entry, sb, title, false);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     * @param s _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public StringBuilder makeEntryPage(Request request, Entry entry,
                                        String title, String s)
             throws Exception {
@@ -3592,18 +2939,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result makeEntryHeaderResult(Request request, Entry entry,
                                         String title, String text)
             throws Exception {
@@ -3615,16 +2951,7 @@ public class PageHandler extends RepositoryManager {
         return new Result("", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param title _more_
-     * @param showLine _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void sectionOpen(Request request, Appendable sb, String title,
                             boolean showLine) {
 
@@ -3638,14 +2965,7 @@ public class PageHandler extends RepositoryManager {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void sectionClose(Request request, Appendable sb)  {
 	try {
 	    sb.append(HU.sectionClose());
@@ -3656,17 +2976,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param title _more_
-     * @param showLine _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title, boolean force)
             throws Exception {
@@ -3703,15 +3013,7 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
 	entrySectionClose(request, entry, sb, false);
@@ -3726,14 +3028,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     *
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addGoogleJSImport(Request request, Appendable sb)
             throws Exception {
         if (request.getExtraProperty("googlejsapi") == null) {
@@ -3744,83 +3039,7 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {}
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    private static String replaceMsgOld(String s, Properties map)
-            throws Exception {
-        boolean debug = s.length() > 100000;
-        String  tmps  = s;
-        if (debug) {
-            //            System.err.println ("Translate - s.length= " + s.length());
-        }
-
-
-        StringBuilder stripped     = new StringBuilder();
-        int           prefixLength = MSG_PREFIX.length();
-        int           suffixLength = MSG_PREFIX.length();
-        //        System.out.println(s);
-        int transCnt = 0;
-        while (s.length() > 0) {
-            String tmp  = s;
-            int    idx1 = s.indexOf(MSG_PREFIX);
-            if (idx1 < 0) {
-                stripped.append(s);
-
-                break;
-            }
-            String text = s.substring(0, idx1);
-            if (text.length() > 0) {
-                stripped.append(text);
-            }
-            s = s.substring(idx1 + 1);
-
-            int idx2 = s.indexOf(MSG_SUFFIX);
-            if (idx2 < 0) {
-                //Should never happen
-                throw new IllegalArgumentException(
-                    "No closing message suffix:" + s);
-            }
-            String key   = s.substring(prefixLength - 1, idx2);
-            String value = null;
-            if (value == null) {
-                value = key;
-            }
-            stripped.append(value);
-            s = s.substring(idx2 + suffixLength);
-            transCnt++;
-        }
-        if (debug) {
-            //            System.err.println ("Translate:  " + tmps.length() +" " + transCnt);
-        }
-
-        return stripped.toString();
-    }
-
-    /** _more_ */
-    private static String CDNROOT = null;
-    private static String CDNHTDOCS = null;    
-
-    /**
-      * @return _more_
-     */
+        
     private String getAckMessage() {
         if (ackMessage == null) {
             ackMessage = applyBaseMacros(ACK_MESSAGE);
@@ -3830,13 +3049,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String applyBaseMacros(String s) {
         String dotmini = getRepository().getMinifiedOk()
                          ? ".min"
@@ -3884,13 +3097,7 @@ public class PageHandler extends RepositoryManager {
 	    HU.script("Utils.initCopyable('#"+id+"');");
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
+    
     public String getCdnPath(String path) {
 	return getCdnPath(path,path);
     }
@@ -3905,16 +3112,11 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-
     private String getCdnRoot() {
 	getCdn();
 	return CDNROOT;
     }
-
-    /**
-     *  @return _more_
-     */
+    
     private String getCdn() {
         if (CDNHTDOCS == null) {
             CDNROOT = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"  + RepositoryUtil.getVersion();
@@ -3927,18 +3129,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param selectId _more_
-     * @param sb _more_
-     * @param label _more_
-     * @param extra _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addEntrySelect(Request request, Entry entry, String selectId,
                                Appendable sb, String label, String extra)
             throws Exception {
@@ -3956,31 +3147,10 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryHref(Request request, Entry entry, String... args)
             throws Exception {
-        /*
-        List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry,
-            new String[]{ContentMetadataHandler.TYPE_ALIAS},false);
-        String url;
-        if(metadataList.size()>0) {
-            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-        } else {
-            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-        }
-        */
-        String url = getEntryManager().getEntryUrl(request, entry);
+	String url = getEntryManager().getEntryUrl(request, entry);
 
         return HU.href(url, (args.length > 0)
                             ? args[0]

@@ -5833,7 +5833,7 @@ public class EntryManager extends RepositoryManager {
 	throws Exception {
 
         boolean doAnonymousUpload = false;
-        String name = cleanupEntryName(Utils.getAttributeOrTag(node,
+        String name = EntryUtil.cleanupEntryName(Utils.getAttributeOrTag(node,
 							       ATTR_NAME, ""));
 
         String originalId = XmlUtil.getAttribute(node, ATTR_ID,
@@ -6202,21 +6202,6 @@ public class EntryManager extends RepositoryManager {
         }	
     }
 
-    /**
-     *  trim and remove the delimiter character
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
-    public String cleanupEntryName(String name) {
-        if (name.length() > 200) {
-            name = name.substring(0, 195) + "...";
-        }
-        name = name.replaceAll(Entry.PATHDELIMITER, "-");
-
-        return name;
-    }
 
 
     public Entry getPathEntry(Request request, Entry parentEntry, Entry entry, String path) throws Exception {
