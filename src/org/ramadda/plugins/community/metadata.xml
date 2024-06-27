@@ -55,7 +55,8 @@
     </type>
 
 
-    <type name="Tribe Name" id="tribe_name" searchable="true" browsable="true">
+    <type name="Tribe Name" id="tribe_name" searchable="true" browsable="true"
+	  tagstyle="background:#9ACD32;border:1px solid #000;">
       <element name="Tribe Name" datatype="enumerationplus" />
     </type>
 
