@@ -5709,8 +5709,12 @@ public class TypeHandler extends RepositoryManager {
 
 	    Column column = getColumn(what);
 	    if(column!=null) {
-		addColumnToEntryForm(request, column, sb, parentEntry,entry, values,
-				     state, formInfo, this);
+		String key = "column_"+column.getName();
+		if(!seen.contains(key)) {
+		    seen.add(key);
+		    addColumnToEntryForm(request, column, sb, parentEntry,entry, values,
+					 state, formInfo, this);
+		}
 		continue;
 	    }
 		
