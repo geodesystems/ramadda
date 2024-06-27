@@ -248,6 +248,8 @@ priority="2"       >
 	     label="Show Tag Search"  showinhtml="false" default="true"/>
      <column name="add_tags" type="boolean"
 	     label="Add Tags"  showinhtml="false" default="true"/>
+     <column name="tag_types" type="string"
+	     label="Tag Types"  showinhtml="false" default="enum_tag,content.keyword"/>     
      <column name="embed_link" type="boolean"
 	     label="Embed Link"  showinhtml="false" default="false"/>     
      <column name="show_table" type="boolean"
@@ -319,6 +321,7 @@ pageSearchParent=.ramadda-grid-container
 {{grid tag=card message="No documents available"
 addTags="property:add_tags"
 addTagSearchLink=false
+tagTypes="property:tag_types"
 sortby=name
 inner-height=200
 embedLink="property:embed_link"

@@ -5907,7 +5907,7 @@ public class WikiManager extends RepositoryManager
 	    boolean addTagSearchLink = getProperty(wikiUtil, props, "addTagSearchLink", true);
 	    String[] tagTypes;
 	    String  tagType = getProperty(wikiUtil, props, "tagTypes",null);
-	    if(tagType!=null) {
+	    if(stringDefined(tagType)) {
 		tagTypes = Utils.toStringArray(Utils.split(tagType,",",true,true));
 	    } else {
 		tagTypes = new String[]{"enum_tag","content.keyword"};

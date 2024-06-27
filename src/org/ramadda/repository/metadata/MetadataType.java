@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -45,142 +45,51 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class MetadataType extends MetadataTypeBase implements Comparable {
 
     public static final String RESTRICTIONS_NONE = "none";
     public static final String RESTRICTIONS_ADMIN = "admin";
     public static final String RESTRICTIONS_USER = "user";
-
-
-    /** _more_ */
     public static final String TAG_TYPE = "type";
-
-    /** _more_ */
     public static final String TAG_TEMPLATE = "template";
-
-
-    /** _more_ */
     public static final String TAG_HANDLER = "handler";
-
-
-    /** _more_ */
     public static final String ATTR_METADATATYPE = "metadatatype";
-
-
-
-    /** _more_ */
     public static final String ATTR_CLASS = "class";
-
-
-    /** _more_ */
     public static final String ATTR_HANDLER = "handler";
-
-    /** _more_ */
     public static final String ATTR_ID = "id";
-
-    /** _more_ */
     public static final String ATTR_PRIORITY = "priority";
-
-    /** _more_ */
     public static final String ATTR_ADMINONLY = "adminonly";
-
-    /** _more_ */
     public static final String ATTR_FORUSER = "foruser";
-
-    /** _more_ */
     public static final String ATTR_ENTRYTYPE = "entrytype";
-
-
-
-    /** _more_ */
     public static final String ATTR_DISPLAYCATEGORY = "displaycategory";
-
-    /** _more_ */
     public static final String ATTR_CATEGORY = "category";
-
-    /** _more_ */
     public static final String ATTR_DISPLAYGROUP = "displaygroup";
-
-
-    /** _more_ */
     public static final String ATTR_BROWSABLE = "browsable";
-
-
-
-    /** _more_ */
     public static final String ATTR_ = "";
-
-
-    /** _more_ */
     public static final String PROP_METADATA_LABEL = "metadata.label";
-
-    /** _more_ */
     public static String ARG_METADATAID = "metadataid";
     public static String ARG_METADATA_ACCESS = "metadataaccess";    
-
-    /** _more_ */
     private String id;
-
-    /** _more_ */
     private int priority = 1000;
-
     private int textLengthLimit=400;
-
-
-    /** _more_ */
     private List<Column> databaseColumns;
-
-    /** _more_ */
     private String displayCategory = "Properties";
-
-    /** _more_ */
     private String displayGroup = null;
-
-    /** _more_ */
     private String category = "Properties";
-
-
-    /** _more_ */
     private boolean adminOnly = false;
-
     private boolean isGeo = false;
     private String restrictions;
-
-
     private boolean canView = true;
-
     private boolean canDisplay = true;
-
     private boolean showLabel = true;                
-   
-
-
-    /** _more_ */
     private boolean browsable = false;
-
-    /** _more_ */
     private boolean forUser = true;
-
-    /** _more_ */
     private String entryType = null;
-
-    /** _more_ */
     private String help = "";
+    private String tagStyle="";
 
-    /**
-     * _more_
-     *
-     *
-     * @param id _more_
-     * @param handler _more_
-     */
     public MetadataType(String id, MetadataHandler handler) {
         super(handler);
         this.id = id;
@@ -327,6 +236,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	    
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.help = Utils.getAttributeOrTag(node, ATTR_HELP, "");
+            metadataType.tagStyle = Utils.getAttributeOrTag(node, "tagstyle","");
             metadataType.init(node);
 	    //Is this type ok
 	    if(!manager.metadataTypeOk(metadataType)) {
@@ -1472,7 +1382,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 
-
+    public String getTagStyle() {
+	return tagStyle;
+    }
 
 
     /**
