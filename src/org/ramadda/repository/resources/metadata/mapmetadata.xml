@@ -100,8 +100,8 @@
     <type
 	foruser="false"
 	id="spatial.region"
-	name="Named Spatial Region">
-      <element name="value"/>
+	name="Region">
+      <element name="value"           datatype="enumerationplus"/>
     </type>
 
 

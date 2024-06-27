@@ -2697,6 +2697,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    let tag = $(this).attr('metadata-tag');
 		    if(!tags[tag]) {
 			tags[tag] = {
+			    group:$(this).attr('metadata-group'),
 			    tag:tag,
 			    count:0,
 			    elements:[]
@@ -2707,10 +2708,20 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    tags[tag].elements.push($(this));
 		});
 		list = list.sort((a,b)=>{
+		    if(a.group && b.group) {
+			let c = a.group.localeCompare(b.group);
+			if(c!=0) return c;
+		    }
 		    return b.count-a.count;
 		});
+		let group=null;
 		list.forEach(obj=>{
 		    let tag = obj.tag;
+		    if(obj.group!=group)  {
+			if(group!=null) contents+='<br>';
+			contents+=HU.b(obj.group)+': ';
+			group=obj.group;
+		    }
 		    let ele = obj.elements[0];
 		    if(ele.attr('data-image-url')) {
 			let title = ele.attr('title')+HU.getTitleBr()??'';
