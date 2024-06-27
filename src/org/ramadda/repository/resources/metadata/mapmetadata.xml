@@ -100,6 +100,7 @@
     <type
 	foruser="false"
 	id="spatial.region"
+	tagstyle="background:#EBDFC5;border:1px solid #000;"
 	name="Region">
       <element name="value"           datatype="enumerationplus"/>
     </type>
