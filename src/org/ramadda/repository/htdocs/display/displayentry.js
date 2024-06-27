@@ -2729,8 +2729,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 			contents+=HU.image(ele.attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
 		    } else {
 			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
-			style = ele.attr('style');
-			contents+=HU.div(['data-background',ele.attr('data-background'),'style',style??'',CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
+			style = ele.attr(ATTR_STYLE);
+			contents+=HU.div(['data-background',ele.attr('data-background'),
+					  'data-style',style??'',
+					  ATTR_STYLE,style??'',ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
 		    }
 		});
 		contents+='<div>';
@@ -2742,6 +2744,8 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    if($(this).hasClass("metadata-tag-selected")) {
 			$(this).removeClass("metadata-tag-selected");
 			$(this).css('background',$(this).attr('data-background')??"");
+			let style = $(this).attr('data-style');
+			if(style) $(this).attr(ATTR_STYLE,style);
 		    } else {
 			$(this).addClass("metadata-tag-selected");
 			$(this).css('background','');
