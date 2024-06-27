@@ -3033,6 +3033,11 @@ table.dataTable tfoot td {
     position:relative;
 }
 
+.display-simplesearch-inner .metadata-tags {
+    max-height:200px;
+    overflow-y:auto;
+}
+
 .ramadda-simplesearch-container {
 }
 
