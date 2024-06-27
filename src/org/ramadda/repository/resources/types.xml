@@ -252,10 +252,13 @@ priority="2"       >
 	     label="Tag Types"  showinhtml="false" default="enum_tag,content.keyword"/>     
      <column name="embed_link" type="boolean"
 	     label="Embed Link"  showinhtml="false" default="false"/>     
+     <column name="show_map" type="boolean"
+	     label="Show Map"  showinhtml="false" default="false"/>
      <column name="show_table" type="boolean"
 	     label="Show Table"  showinhtml="false" default="true"/>
      <column name="show_information" type="boolean"
 	     label="Show Information"  showinhtml="false" default="true"/>
+
 
    <wikimacro name="document_search" label="Document Search">
    <![CDATA[
@@ -298,6 +301,7 @@ showHeading=true
 
      <wiki><![CDATA[
 +section title={{name}}
+:navtop
 {{description wikify=true}}
 +center
 +if property=show_text_search
@@ -334,7 +338,10 @@ showLink=false
 showHeading=true
 }} 
 </div>
-:vspace 1em
++if property=show_map
+:heading Map
+{{map width="100%" height="300"   message="" listentries="true"}}
+-if
 +if property=show_table
 :heading Table
 {{tabletree message=""}}
