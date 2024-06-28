@@ -94,7 +94,7 @@ $.extend(Utils,{
             });
             cnt++;
         });
-	Utils.initCopyable('.colortable-id','Click to copy color table ID','Color table ID copied to clipboard');
+	Utils.initCopyable('.colortable-id',{title:'Click to copy color table ID',ack:'Color table ID copied to clipboard'});
     },
     getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
         let popup = "<div class=wiki-editor-popup-items>"

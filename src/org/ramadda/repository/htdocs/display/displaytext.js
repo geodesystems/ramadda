@@ -986,8 +986,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    if(this.getProperty('addCopyToClipboard')) {
 		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css('cursor','pointer');
-		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),null,null,true,true,true,
-				   this.getProperty('copyToClipboardDownloadFile'));
+		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),{addLink:true,removeTags:true,removeNL:true,
+								 downloadFileName:this.getProperty('copyToClipboardDownloadFile')});
 	    }
 	    if(handleSelectOnClick) {
 		this.find(".display-template-record").click(function() {

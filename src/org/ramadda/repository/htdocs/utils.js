@@ -253,14 +253,25 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title,ack,addLink,removeTags,removeNL,downloadFileName,extraStyle) {
+    initCopyable: function(selector,args) {
+	let opts = {
+	    title:null,
+	    ack:null,
+	    addLink:false,
+	    removeTags:false,
+	    removeNL:false,
+	    downloadFileName:null,
+	    extraStyle:null,
+	    textArea:null
+	}
+	if(args) $.extend(opts,args);
 	$(selector).each(function(){
-	    $(this).attr('title',title??'Click to copy');
+	    $(this).attr('title',opts.title??'Click to copy');
 	    let link = $(this);
-	    if(addLink) {
+	    if(opts.addLink) {
 		let parent = $(this).parent();
 		parent.css('position','relative');
-		let style = HU.css('position','absolute') +(extraStyle??HU.css('top','5px',  'right','5px'));
+		let style = HU.css('position','absolute') +(opts.extraStyle??HU.css('top','5px',  'right','5px'));
 		link = $(HU.div([ATTR_CLASS,'ramadda-clickable',
 				 ATTR_STYLE,style],
 				 
@@ -270,22 +281,27 @@ var Utils =  {
 	    }
 	    link.click(()=>{
 		let text = $(this).attr('data-copy')??$(this).html();
-		if(removeTags) {
+		if(opts.removeTags) {
 		    text = text.replace(/<br>/g,'\n').replace(/<p>/g,'\n\n').replace(/<[^>]+>/g,'');
 		    text = text.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
 		}
-		if(removeNL) {
+		if(opts.removeNL) {
 		    text = text.replace(/\n/g,' ');
 		}
-		if(downloadFileName) {
-		    let f = prompt('Download file name',downloadFileName);
+		if(opts.addNL) text = text+'\n';
+		if(opts.textArea) {
+		    HU.insertIntoTextarea(opts.textArea,text);
+		    return;
+		}
+		if(opts.downloadFileName) {
+		    let f = prompt('Download file name',opts.downloadFileName);
 		    if(f) {
 			Utils.makeDownloadFile(f,text);
 			return
 		    }
 		} 
 		Utils.copyToClipboard(text)
-		alert($(this).attr('copy-message')??ack??'Text copied to clipboard');
+		alert($(this).attr('copy-message')??opts.ack??'Text copied to clipboard');
 	    });
 	});
     },
@@ -3753,6 +3769,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(typeof myField=='string') {
 	    myField =  document.getElementById(myField);
 	}
+
 
 	value = Utils.decodeText(value);    
 	var textScroll = myField.scrollTop;

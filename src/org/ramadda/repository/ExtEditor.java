@@ -71,106 +71,106 @@ public class ExtEditor extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
+    public static final String ARG_EXTEDIT_EDIT = "extedit_edit";
 
-    public static final String ARG_EXTEDIT_REINDEX = "extedit.reindex";
+    public static final String ARG_EXTEDIT_REINDEX = "extedit_reindex";
 
 
     public static final String ARG_EXTEDIT_EXCLUDE = "excludeentries";
 
-    public static final String ARG_EXTEDIT_THUMBNAIL= "extedit.thumbnail";    
+    public static final String ARG_EXTEDIT_THUMBNAIL= "extedit_thumbnail";    
 
 
-    public static final String ARG_EXTEDIT_TYPE= "extedit.type";
+    public static final String ARG_EXTEDIT_TYPE= "extedit_type";
 
-    public static final String ARG_EXTEDIT_THISONE= "extedit.thisone";    
+    public static final String ARG_EXTEDIT_THISONE= "extedit_thisone";    
 
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
+    public static final String ARG_EXTEDIT_URL_TO = "extedit_url_to";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_URL_PATTERN =
-        "extedit.url.pattern";
+        "extedit_url_pattern";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_URL_CHANGE = "extedit.url";
+    public static final String ARG_EXTEDIT_URL_CHANGE = "extedit_url";
 
-    public static final String ARG_EXTEDIT_JS = "extedit.js";
+    public static final String ARG_EXTEDIT_JS = "extedit_js";
 
     public static final String ARG_EXTEDIT_JS_CONFIRM =
-        "extedit.js.confirm";
-    public static final String ARG_EXTEDIT_SOURCE = "extedit.source";    
+        "extedit_js_confirm";
+    public static final String ARG_EXTEDIT_SOURCE = "extedit_source";    
 
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_SPATIAL = "extedit.spatial";
+    public static final String ARG_EXTEDIT_SPATIAL = "extedit_spatial";
 
 
 
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_TEMPORAL = "extedit.temporal";
-    public static final String ARG_EXTEDIT_METADATA = "extedit.metadata";    
+    public static final String ARG_EXTEDIT_TEMPORAL = "extedit_temporal";
+    public static final String ARG_EXTEDIT_METADATA = "extedit_metadata";    
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_MD5 = "extedit.md5";
+    public static final String ARG_EXTEDIT_MD5 = "extedit_md5";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_REPORT = "extedit.report";
+    public static final String ARG_EXTEDIT_REPORT = "extedit_report";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_REPORT_MISSING =
-        "extedit.report.missing";
+        "extedit_report_missing";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_REPORT_FILES =
-        "extedit.report.files";
+        "extedit_report_files";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_REPORT_EXTERNAL =
-        "extedit.report.external";
+        "extedit_report_external";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_REPORT_INTERNAL =
-        "extedit.report.internal";
+        "extedit_report_internal";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_SETPARENTID =
-        "extedit.setparentid";
+        "extedit_setparentid";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_NEWTYPE = "extedit.newtype";
+    public static final String ARG_EXTEDIT_NEWTYPE = "extedit_newtype";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_NEWTYPE_PATTERN =
-        "extedit.newtype.pattern";
+        "extedit_newtype_pattern";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_OLDTYPE = "extedit.oldtype";
+    public static final String ARG_EXTEDIT_OLDTYPE = "extedit_oldtype";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_RECURSE = "extedit.recurse";
+    public static final String ARG_EXTEDIT_RECURSE = "extedit_recurse";
 
     /** _more_ */
-    public static final String ARG_EXTEDIT_CHANGETYPE = "extedit.changetype";
+    public static final String ARG_EXTEDIT_CHANGETYPE = "extedit_changetype";
 
 
     /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE =
-        "extedit.changetype.recurse";
+        "extedit_changetype_recurse";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM =
-        "extedit.changetype.recurse.confirm";
+        "extedit_changetype_recurse_confirm";
 
 
-    public static final String ARG_EXTEDIT_ADDALIAS = "extedit.addalias";
-    public static final String ARG_EXTEDIT_ADDALIAS_NOTFIRST = "extedit.addalias.notfirst";    
+    public static final String ARG_EXTEDIT_ADDALIAS = "extedit_addalias";
+    public static final String ARG_EXTEDIT_ADDALIAS_NOTFIRST = "extedit_addalias_notfirst";    
 
-    public static final String ARG_EXTEDIT_ADDALIAS_CONFIRM = "extedit.addalias.confirm";
+    public static final String ARG_EXTEDIT_ADDALIAS_CONFIRM = "extedit_addalias_confirm";
 
-    public static final String ARG_EXTEDIT_ADDALIAS_TEMPLATE = "extedit.addalias.template";        
+    public static final String ARG_EXTEDIT_ADDALIAS_TEMPLATE = "extedit_addalias_template";        
 
     /**
      * _more_
@@ -908,32 +908,36 @@ public class ExtEditor extends RepositoryManager {
 						   request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Save changes to entries"));
 
 
-		String eg =   "entry.getName() entry.setName()\n" +
-		    "entry.getType()\n"+
-		    "entry.getDescription();  entry.setDescription(String)\n" +
-		    "entry.getStartDate(); entry.getEndDate()\n" +
-		    "entry.setStartDate(String); entry.setEndDate(String)\n" +
-		    "entry.hasLocationDefined(); entry.setLocation(lat,lon);\n"+
-		    "entry.getChildren();\n" +
-		    "entry.setColumnValue(name,value);\n" +
-		    "entry.isImage(); entry.resizeImage(400); entry.grayscaleImage();\n" +
-		    "entry.makeThumbnail(deleteExisting:boolean);\n" +
-		    "entry.getValue('column_name');\n" +
-		    "entry.applyCommand('addthumbnail');\n" +
+		String eg =
+		    "<div id=exteg>" +
+		    "<span>entry.getName()</span> <span>entry.setName()</span>\n" +
+		    "<span>entry.getType()</span>\n"+
+		    "<span>entry.getDescription()</span>  <span>entry.setDescription(String)</span>\n" +
+		    "<span>entry.getStartDate()</span> <span>entry.getEndDate()</span>\n" +
+		    "<span>entry.setStartDate(String)</span> <span>entry.setEndDate(String)</span>\n" +
+		    "<span>entry.hasLocationDefined()</span> <span>entry.setLocation(lat,lon)</span>\n"+
+		    "<span>entry.getChildren()</span>\n" +
+		    "<span>entry.setColumnValue(name,value)</span>\n" +
+		    "<span>entry.isImage()</span> <span>entry.resizeImage(400)</span> <span>entry.grayscaleImage()</span>\n" +
+		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
+		    "<span>entry.getValue('column_name')</span>\n" +
+		    "<span>entry.applyCommand('addthumbnail')</span>\n" +
+		    "<span>entry.hasMetadata('type')</span>\n" +
+		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
-		    "entry.hasMetadata('type');\n" +
-		    "entry.setLLM('one of gpt3.5 gpt4 gemini claude');\n" +
-		    "entry.applyLLM(true,'title','summary','keywords','model:gpt4');\n" +
-		    "entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon',false -> don't check if on exists);\n" +
-		    "entry.addLLMGeo('optional prompt');\n" +		    		    
+		    "<span>entry.applyLLM(true,'title','summary','keywords','model:gpt4')</span>\n" +
+		    "<span>entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon',false -> don't check if on exists)</span>\n" +
+		    "<span>entry.addLLMGeo('optional prompt')</span>\n" +		    		    
 		    "//ctx is the context object\n" +
-		    "ctx.print() prints output\n" +
+		    "<span>ctx.print()</span> prints output\n" +
 		    "//stop processing but still apply any changes\n" +
-		    "ctx.pause(seconds) \n"+
-		    "ctx.stop() \n"+
+		    "<span>ctx.pause(seconds)</span> \n"+
+		    "<span>ctx.stop()</span> \n"+
 		    "//cancel processing and no changes will be applied\n"+
-		    "ctx.cancel() \n";
+		    "<span>ctx.cancel()</span></div>\n"+
+		    HU.script("Utils.initCopyable('#exteg span',{addNL:true,textArea:'" +ARG_EXTEDIT_SOURCE+"'});");
+
 
 		String ex =  (String) getSessionManager().getSessionProperty(request,"extedit");
 		if(ex==null)
@@ -944,9 +948,9 @@ public class ExtEditor extends RepositoryManager {
 		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
 
 		HU.formEntry(sb,  HU.b("Javascript:")+
-			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60) +
+			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
 							exclude,
-						     HU.pre(eg)))));
+							HU.pre(eg)))));
 		
 		sb.append(HU.formTableClose());
 
