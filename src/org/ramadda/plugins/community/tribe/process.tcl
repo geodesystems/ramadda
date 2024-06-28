@@ -320,23 +320,23 @@ proc tribe {state tribe wiki lat lon} {
 	append children "<entry [attr type type_daymet] [attr name $name] [attr parent ${dataid}] [attr latitude $lat] [attr longitude $lon]/>\n"	
 	if {$ocean} {
 	    set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
-	    set desc "{{map  zoomLevel=9 height=70vh}}"
+	    set mapdesc "{{map  zoomLevel=9 height=70vh}}"
 	    append children "<entry [attr type type_virtual] [attr name {NOAA Sea-Level Trends}] [attr parent ${dataid}]>\n"
-	    append children "<description>[cdata $desc]</description>"
+	    append children "<description>[cdata $mapdesc]</description>"
 	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_trend\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	    append children "</entry>\n"
 
 	    append children "<entry [attr type type_virtual] [attr name {NOAA Tides - 6 Minutes}] [attr parent ${dataid}]>\n"
-	    append children "<description>[cdata $desc]</description>"
+	    append children "<description>[cdata $mapdesc]</description>"
 	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_waterlevel\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	    append children "</entry>\n"
 
 	    append children "<entry [attr type type_virtual] [attr name {NOAA Tides - Monthly Means}] [attr parent ${dataid}]>\n"
-	    append children "<description>[cdata $desc]</description>"
+	    append children "<description>[cdata $mapdesc]</description>"
 	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_monthly\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	    append children "</entry>\n"
 
-	    set desc2 "Data is from the \[https://sealevel.nasa.gov/task-force-scenario-tool/ Interagency Sea Level Rise Scenario Tool\]\n$desc"
+	    set desc2 "Data is from the \[https://sealevel.nasa.gov/task-force-scenario-tool/ Interagency Sea Level Rise Scenario Tool\]\n$mapdesc"
 
 	    append children "<entry [attr type type_virtual] [attr name {Interagency Sea Level Rise}] [attr parent ${dataid}]>\n"
 	    append children "<description>[cdata $desc2]</description>"
