@@ -48,7 +48,8 @@
 
 
     <type isgeo="true"
-       name="Extra Map Layer File"
+	  name="Extra Map Layer File"
+	  showinhtml="false"      	  
        id="map_displaymap_file">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
       <element name="Fill Color" />
