@@ -253,16 +253,17 @@ var Utils =  {
             timer = setTimeout(() => {f.apply(this, args)}, delay);
 	}
     },
-    initCopyable: function(selector,title,ack,addLink,removeTags,removeNL,downloadFileName) {
+    initCopyable: function(selector,title,ack,addLink,removeTags,removeNL,downloadFileName,extraStyle) {
 	$(selector).each(function(){
 	    $(this).attr('title',title??'Click to copy');
 	    let link = $(this);
 	    if(addLink) {
 		let parent = $(this).parent();
 		parent.css('position','relative');
+		let style = HU.css('position','absolute') +(extraStyle??HU.css('top','5px',  'right','5px'));
 		link = $(HU.div([ATTR_CLASS,'ramadda-clickable',
-				 ATTR_STYLE,HU.css('position','absolute','top','5px',
-						   'right','5px')],
+				 ATTR_STYLE,style],
+				 
 				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
 	    } else {
 		$(this).addClass('ramadda-clickable');
