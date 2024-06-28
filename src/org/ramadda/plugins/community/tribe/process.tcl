@@ -178,7 +178,7 @@ proc findSlug {tribe} {
 set ::tribecnt 0
 proc tribe {state tribe wiki lat lon} {
     incr ::tribecnt
-    if {$::tribecnt>2} return
+#    if {$::tribecnt>10} return
     set key [cleanTribe $tribe]
     set biaInfo [find  bia  tribe $key]
     set file [string tolower $tribe]
@@ -187,7 +187,8 @@ proc tribe {state tribe wiki lat lon} {
     set id $file
     regsub -all {'} $id {} id
     set file "$file.geojson"
-    write "<entry [attr type tribal_datahub] [attr name $tribe] [attr id $id]";
+    set tribeName $tribe
+    write "<entry [attr type tribal_datahub] [attr name $tribeName] [attr id $id]";
     set desc "+callout-info\nThis is an example data hub for the $tribe\n-callout\n"
     append desc "@($wiki imageWidth=100 addHeader=false ignoreError=true)\n"
 
@@ -200,7 +201,7 @@ proc tribe {state tribe wiki lat lon} {
 	if {$url!=""} {
 	    append metadata "<metadata [attr type content.url]>"
 	    append metadata "<attr  [attr index 1] [attr encoded false]>[cdata $url]</attr>"
-	    append metadata "<attr  [attr index 2] [attr encoded false]>$tribe Website</attr>"	    
+	    append metadata "<attr  [attr index 2] [attr encoded false]>$tribeName Website</attr>"	    
 	    append metadata "</metadata>"
 	}
 	append metadata "<metadata [attr type content.address]>"
@@ -241,6 +242,12 @@ proc tribe {state tribe wiki lat lon} {
     write $attrs
     write ">"
 
+    set ocean 0
+    if {$lon!="N/A"} {
+	set ocean [expr $lon < "-121"]
+    }
+
+
     write $metadata
     write "<state>[cdata $state]</state>\n"
     write "<metadata [attr type content.alias]><attr [attr index 1] [attr encoded false]><!\[CDATA\[tribe_$id\]\]></attr></metadata>"
@@ -253,7 +260,10 @@ proc tribe {state tribe wiki lat lon} {
 
     set template $::template
     set dataid ${id}_data
-    append children "<entry [attr type group] [attr name Data] [attr parent $id] [attr id ${dataid}]/>\n"
+    set dataName "$tribeName Data"
+    append children "<entry [attr type group] [attr name $dataName] [attr parent $id] [attr id ${dataid}]>\n"
+    append children "<metadata [attr type content.alias]><attr [attr index 1] [attr encoded false]><!\[CDATA\[tribe_${id}_data\]\]></attr></metadata>\n"
+    append children "</entry>"
     regsub -all {%tribe%} $template $tribe template
     regsub -all {%latitude%} $template $lat template
     regsub -all {%longitude%} $template $lon template
@@ -295,24 +305,52 @@ proc tribe {state tribe wiki lat lon} {
 	set d 1
 	set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
 	append children "<entry [attr type type_virtual] [attr name {Local Weather Stations}] [attr parent ${dataid}]>\n"
-	append children "<description>[cdata {{{map}}}]</description>"
+	append children "<description>[cdata {{{map zoomLevel=9 height=70vh}}}]</description>"
 	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_awc_metar\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	append children "</entry>\n"
 	
 	append children "<entry [attr type type_virtual] [attr name {USGS Stream Gauges}] [attr parent ${dataid}]>\n"
-	append children "<description>[cdata {{{map}}}]</description>"
+	append children "<description>[cdata {{{map zoomLevel=9 height=70vh}}}]</description>"
 	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_usgs_gauge\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	append children "</entry>\n"
 	set d 2
-	set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
-	append children "<entry [attr type type_virtual] [attr name {NOAA Sea-Level Trends}] [attr parent ${dataid}]>\n"
-	append children "<description>[cdata {{{map}}}]</description>"
-	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_trend\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
-	append children "</entry>\n"
 	set name "$tribe Current Conditions"
 	append children "<entry [attr type nwsfeed] [attr name $name] [attr id ${id}_nws] [attr parent ${dataid}] [attr latitude $lat] [attr longitude $lon]/>\n"
 	set name "$tribe Historic Weather"
 	append children "<entry [attr type type_daymet] [attr name $name] [attr parent ${dataid}] [attr latitude $lat] [attr longitude $lon]/>\n"	
+	if {$ocean} {
+	    set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
+	    set desc "{{map  zoomLevel=9 height=70vh}}"
+	    append children "<entry [attr type type_virtual] [attr name {NOAA Sea-Level Trends}] [attr parent ${dataid}]>\n"
+	    append children "<description>[cdata $desc]</description>"
+	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_trend\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
+	    append children "</entry>\n"
+
+	    append children "<entry [attr type type_virtual] [attr name {NOAA Tides - 6 Minutes}] [attr parent ${dataid}]>\n"
+	    append children "<description>[cdata $desc]</description>"
+	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_waterlevel\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
+	    append children "</entry>\n"
+
+	    append children "<entry [attr type type_virtual] [attr name {NOAA Tides - Monthly Means}] [attr parent ${dataid}]>\n"
+	    append children "<description>[cdata $desc]</description>"
+	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_noaa_tides_monthly\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
+	    append children "</entry>\n"
+
+	    set desc2 "Data is from the \[https://sealevel.nasa.gov/task-force-scenario-tool/ Interagency Sea Level Rise Scenario Tool\]\n$desc"
+
+	    append children "<entry [attr type type_virtual] [attr name {Interagency Sea Level Rise}] [attr parent ${dataid}]>\n"
+	    append children "<description>[cdata $desc2]</description>"
+	    append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_point_islr\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
+	    append children "</entry>\n"
+
+
+
+
+
+	}
+
+
+
 	append desc ":heading Current Conditions\n"
 	append desc "{{nws.hazards entry=\"${id}_nws\" addHeader=\"false\"}}\n"
 	append desc ":br\n"
