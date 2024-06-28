@@ -99,11 +99,13 @@ function RepositoryMap(mapId, params) {
 
 
     if(!Utils.isDefined(params.initialZoom)) {
+	this.hadInitialZoom = Utils.isDefined(params[ARG_ZOOMLEVEL]);
 	params.initialZoom= Utils.isDefined(params[ARG_ZOOMLEVEL])?params[ARG_ZOOMLEVEL]:MapUtils.defaults.defaultZoomLevel;
 	if(debugBounds) console.log("setting initial zoom:",params.initialZoom);
     } else {
 	if(debugBounds) console.log("initial zoom already set:",params.initialZoom);
     }
+
 
     $.extend(dflt, params);
     params = this.params = dflt;
@@ -2571,6 +2573,7 @@ RepositoryMap.prototype = {
     },
 
     addGeoJsonLayer:  function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
+	if(this.hadInitialZoom) zoomToExtent=false;
 	let layer = MapUtils.createLayerGeoJson(this,name,url);
 	if(args) {
 	    if(Utils.isDefined(args.zoomToExtent))
