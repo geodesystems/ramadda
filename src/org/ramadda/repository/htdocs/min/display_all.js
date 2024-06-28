@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jun 26 22:09:07 MDT 2024";
+var build_date="RAMADDA build date: Fri Jun 28 05:33:59 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -96,7 +96,7 @@ $.extend(Utils,{
             });
             cnt++;
         });
-	Utils.initCopyable('.colortable-id','Click to copy color table ID','Color table ID copied to clipboard');
+	Utils.initCopyable('.colortable-id',{title:'Click to copy color table ID',ack:'Color table ID copied to clipboard'});
     },
     getColorTablePopup: function(wikiEditor, itemize,label,showToggle,attr,value) {
         let popup = "<div class=wiki-editor-popup-items>"
@@ -31540,8 +31540,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let _this = this;
 	    if(this.getProperty('addCopyToClipboard')) {
 		this.jq(ID_DISPLAY_CONTENTS).find('.display-template-record').css('cursor','pointer');
-		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),null,null,true,true,true,
-				   this.getProperty('copyToClipboardDownloadFile'));
+		Utils.initCopyable(this.jq(ID_DISPLAY_CONTENTS),{addLink:true,removeTags:true,removeNL:true,
+								 downloadFileName:this.getProperty('copyToClipboardDownloadFile')});
 	    }
 	    if(handleSelectOnClick) {
 		this.find(".display-template-record").click(function() {
