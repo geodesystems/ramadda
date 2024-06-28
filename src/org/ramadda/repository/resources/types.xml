@@ -340,7 +340,7 @@ showHeading=true
 </div>
 +if property=show_map
 :heading Map
-{{map width="100%" height="300"   message="" listentries="true"}}
+{{map width="100%" height="70vh"   message="" listentries="true"}}
 -if
 +if property=show_table
 :heading Table
