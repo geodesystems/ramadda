@@ -1659,8 +1659,9 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		html+=HU.div([ID,this.domId("addrow"),CLASS,"ramadda-clickable"], HU.getIconImage("fas fa-plus"));
 	    }	
 	    if(cellCnt==0) {
-		this.setDisplayMessage('No table available for table');
-		return
+		this.setContents('');
+		this.setDisplayMessage('No data available');
+		return;
 	    }
 	    this.setContents(html);
 	    aggIds.forEach(id=>{
