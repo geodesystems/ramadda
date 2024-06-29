@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository;
-
 
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.database.DatabaseManager;
@@ -62,150 +61,77 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ExtEditor extends RepositoryManager {
 
-
-    /** _more_ */
     public static final String SESSION_ENTRIES = "entries";
-
-    /** _more_ */
     public static final String SESSION_TYPES = "types";
-
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit_edit";
-
     public static final String ARG_EXTEDIT_REINDEX = "extedit_reindex";
-
-
     public static final String ARG_EXTEDIT_EXCLUDE = "excludeentries";
-
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit_thumbnail";    
-
-
     public static final String ARG_EXTEDIT_TYPE= "extedit_type";
-
     public static final String ARG_EXTEDIT_THISONE= "extedit_thisone";    
-
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_URL_TO = "extedit_url_to";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_URL_PATTERN =
-        "extedit_url_pattern";
-
-    /** _more_ */
+    public static final String ARG_EXTEDIT_URL_PATTERN =   "extedit_url_pattern";
     public static final String ARG_EXTEDIT_URL_CHANGE = "extedit_url";
-
     public static final String ARG_EXTEDIT_JS = "extedit_js";
-
-    public static final String ARG_EXTEDIT_JS_CONFIRM =
-        "extedit_js_confirm";
+    public static final String ARG_EXTEDIT_JS_CONFIRM =    "extedit_js_confirm";
     public static final String ARG_EXTEDIT_SOURCE = "extedit_source";    
-
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_SPATIAL = "extedit_spatial";
-
-
-
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_TEMPORAL = "extedit_temporal";
     public static final String ARG_EXTEDIT_METADATA = "extedit_metadata";    
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_MD5 = "extedit_md5";
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_REPORT = "extedit_report";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_REPORT_MISSING =
-        "extedit_report_missing";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_REPORT_FILES =
-        "extedit_report_files";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_REPORT_EXTERNAL =
-        "extedit_report_external";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_REPORT_INTERNAL =
-        "extedit_report_internal";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_SETPARENTID =
-        "extedit_setparentid";
-
-    /** _more_ */
+    public static final String ARG_EXTEDIT_REPORT_MISSING =  "extedit_report_missing";
+    public static final String ARG_EXTEDIT_REPORT_FILES =  "extedit_report_files";
+    public static final String ARG_EXTEDIT_REPORT_EXTERNAL =   "extedit_report_external";
+    public static final String ARG_EXTEDIT_REPORT_INTERNAL =  "extedit_report_internal";
+    public static final String ARG_EXTEDIT_SETPARENTID = "extedit_setparentid";
     public static final String ARG_EXTEDIT_NEWTYPE = "extedit_newtype";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_NEWTYPE_PATTERN =
-        "extedit_newtype_pattern";
-
-    /** _more_ */
+    public static final String ARG_EXTEDIT_NEWTYPE_PATTERN = "extedit_newtype_pattern";
     public static final String ARG_EXTEDIT_OLDTYPE = "extedit_oldtype";
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_RECURSE = "extedit_recurse";
-
-    /** _more_ */
     public static final String ARG_EXTEDIT_CHANGETYPE = "extedit_changetype";
-
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE =
-        "extedit_changetype_recurse";
-
-    /** _more_ */
-    public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM =
-        "extedit_changetype_recurse_confirm";
-
-
+    public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE = "extedit_changetype_recurse";
+    public static final String ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM = "extedit_changetype_recurse_confirm";
     public static final String ARG_EXTEDIT_ADDALIAS = "extedit_addalias";
     public static final String ARG_EXTEDIT_ADDALIAS_NOTFIRST = "extedit_addalias_notfirst";    
-
     public static final String ARG_EXTEDIT_ADDALIAS_CONFIRM = "extedit_addalias_confirm";
-
     public static final String ARG_EXTEDIT_ADDALIAS_TEMPLATE = "extedit_addalias_template";        
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public ExtEditor(Repository repository) {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntryExtEdit(final Request request)
-            throws Exception {
+	throws Exception {
+        Entry              entry        = getEntryManager().getEntry(request);
+	return processEntryExtEdit(request, entry,null);
 
+    }
+    
+    public Result processEntryExtEdit(final Request request,Entry entry,List<Entry> searchChildren)
+	throws Exception {
+
+	boolean dummy = entry.isDummy();
 	String[] what = new String[]{
 	    ARG_EXTEDIT_EDIT,
 	    //	    ARG_EXTEDIT_REINDEX,
-	    ARG_EXTEDIT_ADDALIAS,	    
 	    ARG_EXTEDIT_CHANGETYPE,
 	    ARG_EXTEDIT_CHANGETYPE_RECURSE,
-	    ARG_EXTEDIT_URL_CHANGE,
-	    ARG_EXTEDIT_REPORT,
 	    ARG_EXTEDIT_JS,
+	    ARG_EXTEDIT_URL_CHANGE,
+	    ARG_EXTEDIT_ADDALIAS,	    
+	    ARG_EXTEDIT_REPORT
 	};
-	
 
+	if(dummy) {
+	    what = new String[]{
+		ARG_EXTEDIT_EDIT,
+		ARG_EXTEDIT_CHANGETYPE_RECURSE,
+		ARG_EXTEDIT_JS,
+		ARG_EXTEDIT_URL_CHANGE,
+		ARG_EXTEDIT_ADDALIAS};
+	}
 
 
         final StringBuilder sb = new StringBuilder();
@@ -217,7 +143,6 @@ public class ExtEditor extends RepositoryManager {
 	Object actionId=null;
 	boolean canCancel = false;
 
-        Entry              entry        = getEntryManager().getEntry(request);
         final Entry        finalEntry   = entry;
         final boolean      recurse = request.get(ARG_EXTEDIT_RECURSE, false);
         final EntryManager entryManager = getEntryManager();
@@ -231,70 +156,69 @@ public class ExtEditor extends RepositoryManager {
             final boolean doTemporal = request.get(ARG_EXTEDIT_TEMPORAL, false);
 	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
             ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    EntryVisitor walker = new EntryVisitor(request,
-                                              getRepository(), actionId,
-                                              recurse) {
-                        public boolean processEntry(Entry entry,
-                                List<Entry> children)
-                                throws Exception {
-                            boolean changed = false;
-                            if (doThumbnail) {
-				List<String> urls = new ArrayList<String>();
-				getMetadataManager().getThumbnailUrls(request, entry, urls);
-				//Only add a thumbnail if there isn't one
-				if(urls.size()==0 && entry.isImage()) {
-				    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry,null);
-				    if(thumbnailMetadata!=null) {
-					getMetadataManager().addMetadata(request,entry,thumbnailMetadata);
-                                        changed = true;
+		    public void run(Object actionId) throws Exception {
+			EntryVisitor walker = new EntryVisitor(request,
+							       getRepository(), actionId,
+							       recurse) {
+				public boolean processEntry(Entry entry,  List<Entry> children)
+				    throws Exception {
+				    boolean changed = false;
+				    if (doThumbnail) {
+					List<String> urls = new ArrayList<String>();
+					getMetadataManager().getThumbnailUrls(request, entry, urls);
+					//Only add a thumbnail if there isn't one
+					if(urls.size()==0 && entry.isImage()) {
+					    Metadata thumbnailMetadata = jpegMetadataHandler.getThumbnail(request, entry,null);
+					    if(thumbnailMetadata!=null) {
+						getMetadataManager().addMetadata(request,entry,thumbnailMetadata);
+						changed = true;
+					    }
+					}
 				    }
+
+				    if(doMetadata) {
+					List<Entry> entries = new ArrayList<Entry>();
+					entries.add(entry);
+					List<Entry> changedEntries = getEntryManager().addInitialMetadata(request,
+													  entries,
+													  false,false);
+					entry.getTypeHandler().addInitialMetadata(request, entry,true);
+					changed = true;
+				    }
+
+
+
+				    if (doSpatial) {
+					Rectangle2D.Double rect = getEntryUtil().getBounds(request,children);
+					if (rect != null) {
+					    if ( !Misc.equals(rect,
+							      entry.getBounds(request))) {
+						entry.setBounds(rect);
+						changed = true;
+					    }
+					}
+				    }
+				    if (doTemporal) {
+					if (setTimeFromChildren(getRequest(), entry,
+								children)) {
+					    changed = true;
+					}
+				    }
+				    if (changed) {
+					incrementProcessedCnt(1);
+					append(getPageHandler().getConfirmBreadCrumbs(
+										      getRequest(), entry));
+					append(HU.br());
+					getEntryManager().updateEntry(getRequest(), entry);
+				    }
+				    return true;
 				}
-			    }
-
-			    if(doMetadata) {
-				List<Entry> entries = new ArrayList<Entry>();
-				entries.add(entry);
-				List<Entry> changedEntries = getEntryManager().addInitialMetadata(request,
-								     entries,
-								     false,false);
-				entry.getTypeHandler().addInitialMetadata(request, entry,true);
-				changed = true;
-			    }
-
-
-
-                            if (doSpatial) {
-                                Rectangle2D.Double rect = getEntryUtil().getBounds(request,children);
-                                if (rect != null) {
-                                    if ( !Misc.equals(rect,
-						      entry.getBounds(request))) {
-                                        entry.setBounds(rect);
-                                        changed = true;
-                                    }
-                                }
-                            }
-                            if (doTemporal) {
-                                if (setTimeFromChildren(getRequest(), entry,
-                                        children)) {
-                                    changed = true;
-                                }
-                            }
-                            if (changed) {
-                                incrementProcessedCnt(1);
-                                append(getPageHandler().getConfirmBreadCrumbs(
-                                    getRequest(), entry));
-                                append(HU.br());
-                                getEntryManager().updateEntry(getRequest(), entry);
-                            }
-                            return true;
-                        }
-                    };
-                    walker.walk(finalEntry);
-                    getActionManager().setContinueHtml(actionId,
-                            walker.getMessageBuffer().toString());
-                }
-            };
+			    };
+			walker.walk(finalEntry);
+			getActionManager().setContinueHtml(actionId,
+							   walker.getMessageBuffer().toString());
+		    }
+		};
 
 	    actionId = getActionManager().runAction(action,"Change Metadata","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_EDIT};
@@ -302,35 +226,33 @@ public class ExtEditor extends RepositoryManager {
 	} else  if (request.exists(ARG_EXTEDIT_REINDEX)) {
 	    //	    final boolean doMetadata = request.get(ARG_EXTEDIT_METADATA, false);
 	    /* not implemented yet
-            ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-		    try {
-			getSearchManager().reindexLuceneTreeFields(actionId, finalEntry);
-			getActionManager().setContinueHtml(actionId,
-							   "Reindexing finished");
-		    } catch(Throwable thr) {
-			getActionManager().setContinueHtml(actionId,
-							   "An error occurred reindexing entry\n" + thr);
-			thr.printStackTrace();
-			return;
-		    }
-                }
-            };
+	       ActionManager.Action action = new ActionManager.Action() {
+	       public void run(Object actionId) throws Exception {
+	       try {
+	       getSearchManager().reindexLuceneTreeFields(actionId, finalEntry);
+	       getActionManager().setContinueHtml(actionId,
+	       "Reindexing finished");
+	       } catch(Throwable thr) {
+	       getActionManager().setContinueHtml(actionId,
+	       "An error occurred reindexing entry\n" + thr);
+	       thr.printStackTrace();
+	       return;
+	       }
+	       }
+	       };
 
-	    actionId = getActionManager().runAction(action,"Reindex","",finalEntry);
-	    canCancel = true;
-	    what = new String[]{ARG_EXTEDIT_REINDEX};
+	       actionId = getActionManager().runAction(action,"Reindex","",finalEntry);
+	       canCancel = true;
+	       what = new String[]{ARG_EXTEDIT_REINDEX};
 	    */
         } else  if (request.exists(ARG_EXTEDIT_CHANGETYPE)) {
             getAuthManager().ensureAuthToken(request);
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
-                                             request.getString(
-                                                 ARG_EXTEDIT_NEWTYPE, ""));
+									request.getString(
+											  ARG_EXTEDIT_NEWTYPE, ""));
 
             entry = changeType(request, entry, newTypeHandler);
-            prefix.append(
-                getPageHandler().showDialogNote(
-                    msg("Entry type has been changed")));
+            prefix.append(getPageHandler().showDialogNote(msg("Entry type has been changed")));
         } else  if (request.exists(ARG_EXTEDIT_ADDALIAS) || request.exists(ARG_EXTEDIT_ADDALIAS_CONFIRM)) {
 	    what = new String[]{ARG_EXTEDIT_ADDALIAS};
 	    boolean firstTime = !request.exists(ARG_EXTEDIT_ADDALIAS_NOTFIRST);
@@ -419,60 +341,60 @@ public class ExtEditor extends RepositoryManager {
             final boolean forReal =
                 request.get(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, false);
             final TypeHandler newTypeHandler = getRepository().getTypeHandler(
-                                                   request.getString(
-                                                       ARG_EXTEDIT_NEWTYPE,
-                                                       ""));
+									      request.getString(
+												ARG_EXTEDIT_NEWTYPE,
+												""));
             final String oldType = request.getString(ARG_EXTEDIT_OLDTYPE, "");
             final String pattern =
                 request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN, (String) null);
             ActionManager.Action action = new ActionManager.Action() {
-                public void run(final Object actionId) throws Exception {
-                    EntryVisitor walker = new EntryVisitor(request,
-                                              getRepository(), actionId,
-                                              true) {
-                        public boolean processEntry(Entry entry,
-                                List<Entry> children)
-                                throws Exception {
-                            if (!oldType.equals("") &&
-				!oldType.equals(TypeHandler.TYPE_ANY) &&
-				!entry.getTypeHandler().isType(oldType)) {
-                                return true;
-                            }
-                            if ((pattern != null) && (pattern.length() > 0)) {
-                                boolean matches =
-                                    entry.getName().matches(pattern);
-                                if ( !matches
-                                        && (entry.getResource().getPath()
-                                            != null)) {
-                                    matches =
-                                        entry.getResource().getPath().matches(
-                                            pattern);
-                                }
+		    public void run(final Object actionId) throws Exception {
+			EntryVisitor walker = new EntryVisitor(request,
+							       getRepository(), actionId,
+							       true) {
+				public boolean processEntry(Entry entry,
+							    List<Entry> children)
+				    throws Exception {
+				    if (!oldType.equals("") &&
+					!oldType.equals(TypeHandler.TYPE_ANY) &&
+					!entry.getTypeHandler().isType(oldType)) {
+					return true;
+				    }
+				    if ((pattern != null) && (pattern.length() > 0)) {
+					boolean matches =
+					    entry.getName().matches(pattern);
+					if ( !matches
+					     && (entry.getResource().getPath()
+						 != null)) {
+					    matches =
+						entry.getResource().getPath().matches(
+										      pattern);
+					}
 
-                                if ( !matches) {
-				    //System.err.println("\tdoesn't match pattern:" + pattern);
-                                    return true;
-                                }
-                            }
-                            if (forReal) {
-                                append("Changing type:" + entry.getName() + "<br>");
-                                entry = changeType(request, entry,
-                                        newTypeHandler);
-                            } else {
-				String label = "Would change: " + entry.getName();
-				if(Utils.stringDefined(entry.getResource().getPath())) {
-				    label+=HU.space(2)+"file: " + getStorageManager().getOriginalFilename(entry.getResource().getPathName());
+					if ( !matches) {
+					    //System.err.println("\tdoesn't match pattern:" + pattern);
+					    return true;
+					}
+				    }
+				    if (forReal) {
+					append("Changing type:" + entry.getName() + "<br>");
+					entry = changeType(request, entry,
+							   newTypeHandler);
+				    } else {
+					String label = "Would change: " + entry.getName();
+					if(Utils.stringDefined(entry.getResource().getPath())) {
+					    label+=HU.space(2)+"file: " + getStorageManager().getOriginalFilename(entry.getResource().getPathName());
+					}
+					append(label + "<br>");
+				    }
+				    return true;
 				}
-                                append(label + "<br>");
-                            }
-                            return true;
-                        }
-                    };
-                    walker.walk(finalEntry);
-                    getActionManager().setContinueHtml(actionId,
-                            walker.getMessageBuffer().toString());
-                }
-            };
+			    };
+			walker.walk(finalEntry);
+			getActionManager().setContinueHtml(actionId,
+							   walker.getMessageBuffer().toString());
+		    }
+		};
 
 	    actionId = getActionManager().runAction(action,"Change Type","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_CHANGETYPE_RECURSE};
@@ -493,128 +415,128 @@ public class ExtEditor extends RepositoryManager {
 	    }
 
             ActionManager.Action action = new ActionManager.Action() {
-                public void run(final Object actionId) throws Exception {
-		    final org.mozilla.javascript.Context ctx =
-			org.mozilla.javascript.Context.enter();
-		    final org.mozilla.javascript.Scriptable scope =
-			ctx.initSafeStandardObjects();
-		    final StringBuilder buffer = new StringBuilder();
-		    ctx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
-		    final org.mozilla.javascript.Script script = ctx.compileString(js, "code", 0, null);
-		    //Do the holder because the walker needs a final JsContext but the
-		    //JsContext needs the walker
-		    final Request theRequest =  request;
-		    final JsContext[] holder = new JsContext[1];
-		    final List<EntryWrapper> wrappers = new ArrayList<EntryWrapper>();
-		    final int[]cnt={0};
-                    EntryVisitor walker = new EntryVisitor(request,
-							   getRepository(), actionId,
-							   true) {
-			    int errorCount = 0;
-			    @Override
-			    public boolean entryOk(Entry entry) {
-				if(!super.entryOk(entry)) return false;
-				if(not.contains(entry.getId())) return false;
-				return true;
-			    }
-			    public boolean processEntry(Entry entry,
-							List<Entry> children)
-                                throws Exception {
-				if(!thisOne && entry.getId().equals(finalEntry.getId())) {
+		    public void run(final Object actionId) throws Exception {
+			final org.mozilla.javascript.Context ctx =
+			    org.mozilla.javascript.Context.enter();
+			final org.mozilla.javascript.Scriptable scope =
+			    ctx.initSafeStandardObjects();
+			final StringBuilder buffer = new StringBuilder();
+			ctx.evaluateString(scope, "var confirmed = "+ forReal+";", "<cmd>", 1, null);
+			final org.mozilla.javascript.Script script = ctx.compileString(js, "code", 0, null);
+			//Do the holder because the walker needs a final JsContext but the
+			//JsContext needs the walker
+			final Request theRequest =  request;
+			final JsContext[] holder = new JsContext[1];
+			final List<EntryWrapper> wrappers = new ArrayList<EntryWrapper>();
+			final int[]cnt={0};
+			EntryVisitor walker = new EntryVisitor(request,
+							       getRepository(), actionId,
+							       true) {
+				int errorCount = 0;
+				@Override
+				public boolean entryOk(Entry entry) {
+				    if(!super.entryOk(entry)) return false;
+				    if(not.contains(entry.getId())) return false;
 				    return true;
 				}
-
-				//				Misc.sleepSeconds(1);				System.err.println("process:" + entry);
-				if(anyFile) {
-				    if(!entry.getResource().isFile()) {
+				public boolean processEntry(Entry entry,
+							    List<Entry> children)
+				    throws Exception {
+				    if(!thisOne && entry.getId().equals(finalEntry.getId())) {
 					return true;
-				    }					
-				} else  if(Utils.stringDefined(type) && !entry.getTypeHandler().isType(type)) {
-				    return true;
-				}
+				    }
 
-				if(!getActionManager().getActionOk(actionId)) {
-				    return false;
-				}
+				    //				Misc.sleepSeconds(1);				System.err.println("process:" + entry);
+				    if(anyFile) {
+					if(!entry.getResource().isFile()) {
+					    return true;
+					}					
+				    } else  if(Utils.stringDefined(type) && !entry.getTypeHandler().isType(type)) {
+					return true;
+				    }
 
-				try {
-				    cnt[0]++;
-				    EntryWrapper wrapper = new EntryWrapper(request,getRepository(),holder[0],entry);
-				    wrappers.add(wrapper);
-				    scope.put("entry", scope, wrapper);
-				    script.exec(ctx, scope);
-				    if(!holder[0].okToRun) {
+				    if(!getActionManager().getActionOk(actionId)) {
 					return false;
 				    }
-				} catch(Exception exc) {
-				    holder[0].cancel = true;
-				    append("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
-				    System.err.println("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
-				    if(errorCount++>100) {
-					append("Too many errors");
-					System.err.println("Too many errors");
-					return false;
-				    }
-				}
-				return true;
-			    }
-			    public void finished() {
-				super.finished();
-				if(holder[0].cancel) return;
-				if(forReal) {
-				    boolean haveReset = false;
+
 				    try {
-					for(EntryWrapper wrapper:  wrappers) {
-					    Entry entry = wrapper.entry;
-					    boolean changed = wrapper.getChanged();
-					    if(wrapper.name!=null) {
-						changed = true;
-						entry.setName(wrapper.name);
-					    }
-					    if(wrapper.description!=null) {
-						changed = true;
-						entry.setDescription(wrapper.description);
-					    }					    
-					    if(wrapper.url!=null) {
-						changed = true;
-						entry.getResource().setPath(wrapper.url);
-					    }					    
-					    if(wrapper.startDateChanged) {
-						changed = true;
-						entry.setStartDate(wrapper.startDate);
-					    }
-					    if(wrapper.endDateChanged) {
-						changed = true;
-						entry.setEndDate(wrapper.endDate);
-					    }
-
-
-
-					    if(changed) {
-						getEntryManager().removeFromCache(entry);
-						if(!haveReset) {
-						    //						    resetMessageBuffer();
-						    haveReset = true;
-						}
-						append("Updated entry:" + entry+"\n");
-						incrementProcessedCnt(1);
-						getEntryManager().updateEntry(request, entry);
-					    }
+					cnt[0]++;
+					EntryWrapper wrapper = new EntryWrapper(request,getRepository(),holder[0],entry);
+					wrappers.add(wrapper);
+					scope.put("entry", scope, wrapper);
+					script.exec(ctx, scope);
+					if(!holder[0].okToRun) {
+					    return false;
 					}
 				    } catch(Exception exc) {
-					append("An error occurred updating entry\n" + exc);
-				    }					
+					holder[0].cancel = true;
+					append("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+					System.err.println("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+					if(errorCount++>100) {
+					    append("Too many errors");
+					    System.err.println("Too many errors");
+					    return false;
+					}
+				    }
+				    return true;
 				}
-			    }
-			};
-		    final JsContext jsContext = new JsContext(walker,forReal);
-		    holder[0] = jsContext;
-		    scope.put("ctx", scope, jsContext);
-                    walker.walk(finalEntry);
-		    jsContext.print("* Done - Processed:#" +cnt[0]);
-                    getActionManager().setContinueHtml(actionId,
-						       walker.getMessageBuffer().toString());
-                }
+				public void finished() {
+				    super.finished();
+				    if(holder[0].cancel) return;
+				    if(forReal) {
+					boolean haveReset = false;
+					try {
+					    for(EntryWrapper wrapper:  wrappers) {
+						Entry entry = wrapper.entry;
+						boolean changed = wrapper.getChanged();
+						if(wrapper.name!=null) {
+						    changed = true;
+						    entry.setName(wrapper.name);
+						}
+						if(wrapper.description!=null) {
+						    changed = true;
+						    entry.setDescription(wrapper.description);
+						}					    
+						if(wrapper.url!=null) {
+						    changed = true;
+						    entry.getResource().setPath(wrapper.url);
+						}					    
+						if(wrapper.startDateChanged) {
+						    changed = true;
+						    entry.setStartDate(wrapper.startDate);
+						}
+						if(wrapper.endDateChanged) {
+						    changed = true;
+						    entry.setEndDate(wrapper.endDate);
+						}
+
+
+
+						if(changed) {
+						    getEntryManager().removeFromCache(entry);
+						    if(!haveReset) {
+							//						    resetMessageBuffer();
+							haveReset = true;
+						    }
+						    append("Updated entry:" + entry+"\n");
+						    incrementProcessedCnt(1);
+						    getEntryManager().updateEntry(request, entry);
+						}
+					    }
+					} catch(Exception exc) {
+					    append("An error occurred updating entry\n" + exc);
+					}					
+				    }
+				}
+			    };
+			final JsContext jsContext = new JsContext(walker,forReal);
+			holder[0] = jsContext;
+			scope.put("ctx", scope, jsContext);
+			walker.walk(finalEntry);
+			jsContext.print("* Done - Processed:#" +cnt[0]);
+			getActionManager().setContinueHtml(actionId,
+							   walker.getMessageBuffer().toString());
+		    }
 		};
 	    actionId = getActionManager().runAction(action,"extendededitjs","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_JS};
@@ -622,37 +544,37 @@ public class ExtEditor extends RepositoryManager {
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
             getAuthManager().ensureAuthToken(request);
             final String pattern = request.getString(ARG_EXTEDIT_URL_PATTERN,
-                                       (String) null);
+						     (String) null);
             final String to = request.getString(ARG_EXTEDIT_URL_TO,
-                                  (String) null);
+						(String) null);
             ActionManager.Action action = new ActionManager.Action() {
-                public void run(final Object actionId) throws Exception {
-                    EntryVisitor walker = new EntryVisitor(request,
-                                              getRepository(), actionId,
-                                              true) {
-                        public boolean processEntry(Entry entry,
-                                List<Entry> children)
-                                throws Exception {
-                            String path = entry.getResource().getPath();
-                            if (path == null) {
-                                return true;
-                            }
-                            String newPath = path.replaceAll(pattern, to);
-                            if ( !path.equals(newPath)) {
-                                entry.getResource().setPath(newPath);
-                                getEntryManager().updateEntry(request, entry);
-                                append("Changing URL:" + entry.getName()
-                                       + "<br>");
-                            }
+		    public void run(final Object actionId) throws Exception {
+			EntryVisitor walker = new EntryVisitor(request,
+							       getRepository(), actionId,
+							       true) {
+				public boolean processEntry(Entry entry,
+							    List<Entry> children)
+				    throws Exception {
+				    String path = entry.getResource().getPath();
+				    if (path == null) {
+					return true;
+				    }
+				    String newPath = path.replaceAll(pattern, to);
+				    if ( !path.equals(newPath)) {
+					entry.getResource().setPath(newPath);
+					getEntryManager().updateEntry(request, entry);
+					append("Changing URL:" + entry.getName()
+					       + "<br>");
+				    }
 
-                            return true;
-                        }
-                    };
-                    walker.walk(finalEntry);
-                    getActionManager().setContinueHtml(actionId,
-                            walker.getMessageBuffer().toString());
-                }
-            };
+				    return true;
+				}
+			    };
+			walker.walk(finalEntry);
+			getActionManager().setContinueHtml(actionId,
+							   walker.getMessageBuffer().toString());
+		    }
+		};
 
 	    actionId = getActionManager().runAction(action,"","",finalEntry);
 	    what = new String[]{ARG_EXTEDIT_URL_CHANGE};
@@ -663,104 +585,68 @@ public class ExtEditor extends RepositoryManager {
             final boolean showMissing =
                 request.get(ARG_EXTEDIT_REPORT_MISSING, false);
             final boolean showFiles = request.get(ARG_EXTEDIT_REPORT_FILES,
-                                          false);
+						  false);
             EntryVisitor walker = new EntryVisitor(request, getRepository(),
-                                      null, true) {
-                @Override
-                public boolean processEntry(Entry entry, List<Entry> children)
+						   null, true) {
+		    @Override
+		    public boolean processEntry(Entry entry, List<Entry> children)
                         throws Exception {
-                    for (Entry child : children) {
-                        String url =
-                            request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                             child);
-                        if (child.isFileType()) {
-                            boolean exists = child.getResource().fileExists();
-                            if ( !exists && !showMissing) {
-                                continue;
-                            }
-                            if (exists && !showFiles) {
-                                continue;
-                            }
-                            append("<tr><td>");
-                            append(getPageHandler().getBreadCrumbs(request,
-                                    child, entry));
+			for (Entry child : children) {
+			    String url =
+				request.entryUrl(getRepository().URL_ENTRY_SHOW,
+						 child);
+			    if (child.isFileType()) {
+				boolean exists = child.getResource().fileExists();
+				if ( !exists && !showMissing) {
+				    continue;
+				}
+				if (exists && !showFiles) {
+				    continue;
+				}
+				append("<tr><td>");
+				append(getPageHandler().getBreadCrumbs(request,
+								       child, entry));
 
-			    String resource = IO.getFileTail(child.getResource().getPath());
-			    String name = getStorageManager().getOriginalFilename(resource);
-			    append(HU.td(HU.div(name,HU.style("margin-left:10px;margin-right:10px;"))));
-                            append("</td><td align=right>");
-                            if (exists) {
-                                File file = child.getFile();
-                                size[0] += file.length();
-                                numFiles[0]++;
-                                append("" + file.length());
-                            } else {
-                                append("Missing:" + child.getResource());
-                            }
-                            append("</td>");
-                            append("<td>");
-                            if (child.getResource().isStoredFile()) {
-                                append("***");
-                            }
-                            append("</td>");
-                            append("</tr>");
-                        } else if (child.isGroup()) {}
-                        else {}
-                    }
+				String resource = IO.getFileTail(child.getResource().getPath());
+				String name = getStorageManager().getOriginalFilename(resource);
+				append(HU.td(HU.div(name,HU.style("margin-left:10px;margin-right:10px;"))));
+				append("</td><td align=right>");
+				if (exists) {
+				    File file = child.getFile();
+				    size[0] += file.length();
+				    numFiles[0]++;
+				    append("" + file.length());
+				} else {
+				    append("Missing:" + child.getResource());
+				}
+				append("</td>");
+				append("<td>");
+				if (child.getResource().isStoredFile()) {
+				    append("***");
+				}
+				append("</td>");
+				append("</tr>");
+			    } else if (child.isGroup()) {}
+			    else {}
+			}
 
-                    return true;
-                }
-            };
+			return true;
+		    }
+		};
 	    walker.walk(finalEntry);
 	    suffix.append(HU.openInset(5, 30, 20, 0));
             suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
-                      + msg("Size") + "</td><td></td></tr>");
+			  + msg("Size") + "</td><td></td></tr>");
             suffix.append(walker.getMessageBuffer());
             suffix.append("<tr><td><b>" + msgLabel("Total")
-                      + "</td><td></td><td align=right>"
-                      + HU.b(formatFileLength(size[0]))
-                      + "</td></tr>");
+			  + "</td><td></td><td align=right>"
+			  + HU.b(formatFileLength(size[0]))
+			  + "</td></tr>");
             suffix.append("</table>");
             suffix.append("**** - File managed by RAMADDA");
 	    suffix.append(HU.closeInset());
 	    what = new String[]{ARG_EXTEDIT_REPORT};
         }
-
-        /*
-	  else if(request.exists(ARG_EXTEDIT_SETPARENTID)) {
-            ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    StringBuilder sb = new StringBuilder();
-                    setParentId(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
-                    getActionManager().setContinueHtml(actionId,
-                                                       sb.toString());
-                }
-            };
-            return getActionManager().doAction(request, action,
-                                               "Setting parent ids", "", entry);
-
-        }
-        */
-
-        /*
-	  else if(request.exists(ARG_EXTEDIT_MD5)) {
-            ActionManager.Action action = new ActionManager.Action() {
-                public void run(Object actionId) throws Exception {
-                    StringBuilder sb = new StringBuilder();
-                    setMD5(request, actionId, sb, recurse, entry.getId(), new int[]{0}, new int[]{0});
-                    if(sb.length()==0) sb.append("No checksums set");
-                    getActionManager().setContinueHtml(actionId,
-                                                       sb.toString());
-                }
-            };
-            return getActionManager().doAction(request, action,
-                                               "Setting MD5 Checksum", "", entry);
-
-        }
-        */
-
-
-
 
 
         getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit");
@@ -781,18 +667,28 @@ public class ExtEditor extends RepositoryManager {
 
 
 
+	final StringBuilder[] buff={null};
+	List<String> titles=  new ArrayList<String>();
+	List<StringBuilder> contents=  new ArrayList<StringBuilder>();	
+
+
 	Consumer<String> opener = label->{
-	    sb.append(formHeader(HU.span(label,HU.style("font-size:120%;"))));
-	    sb.append(HU.openInset(5, 30, 20, 0));
+	    titles.add(label);
+	    buff[0] = new StringBuilder();
+	    contents.add(buff[0]);
+	    request.formPostWithAuthToken(buff[0], getRepository().URL_ENTRY_EXTEDIT,HU.attr("name", "entryform"));
+	    buff[0].append(HU.hidden(ARG_ENTRYID, finalEntry.getId()));
+   
+	    buff[0].append(HU.openInset(5, 30, 20, 0));
 	};
         Utils.VarArgsConsumer<String> closer= (args) -> {
-	    sb.append(formSuffix);
-	    sb.append(HU.p());
+	    buff[0].append(formSuffix);
+	    buff[0].append(HU.p());
 	    for(int i=0;i<args.length;i+=2) {
-		sb.append(HU.submit(args[i+1], args[i]));
-		sb.append(HU.space(2));
+		buff[0].append(HU.submit(args[i+1], args[i]));
+		buff[0].append(HU.space(2));
 	    }
-	    sb.append(HU.closeInset());
+	    buff[0].append(HU.closeInset());
 	};
 
 
@@ -800,42 +696,39 @@ public class ExtEditor extends RepositoryManager {
 	tfos.add(0,new HtmlUtils.Selector("Select one","",""));
 
 	for(String form: what) {
-	    request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_EXTEDIT,
-					  HU.attr("name", "entryform"));
-	    sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	    if(form.equals(ARG_EXTEDIT_EDIT)) {
 		opener.accept("Spatial and Temporal Metadata");
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
-					     request.get(ARG_EXTEDIT_SPATIAL,false), "Set spatial metadata"));
-		sb.append(HU.br());
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
-					     request.get(ARG_EXTEDIT_TEMPORAL,false), "Set temporal metadata"));
-		sb.append(HU.br());
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_METADATA, "true",
-					     request.get(ARG_EXTEDIT_METADATA,false), "Set other metadata"));		
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
+						  request.get(ARG_EXTEDIT_SPATIAL,false), "Set spatial metadata"));
+		buff[0].append(HU.br());
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_TEMPORAL, "true",
+						  request.get(ARG_EXTEDIT_TEMPORAL,false), "Set temporal metadata"));
+		buff[0].append(HU.br());
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_METADATA, "true",
+						  request.get(ARG_EXTEDIT_METADATA,false), "Set other metadata"));		
 
-		sb.append(HU.br());
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
-					     request.get(ARG_EXTEDIT_THUMBNAIL,false), "Add image thumbnails"));	
-		sb.append(HU.br());
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
-						    true, "Recurse"));
+		buff[0].append(HU.br());
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
+						  request.get(ARG_EXTEDIT_THUMBNAIL,false), "Add image thumbnails"));	
+		buff[0].append(HU.br());
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
+						  true, "Recurse"));
 		closer.accept(form,"Set metadata");
 	    } else if(form.equals(ARG_EXTEDIT_REINDEX)){
 		opener.accept("Reindex");
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
-					     true, "Show missing files")  + "<br>");
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
+						  true, "Show missing files")  + "<br>");
 		closer.accept(form, "Reindex Search");
 	    } else if(form.equals(ARG_EXTEDIT_REPORT)){
 		opener.accept("File Listing");
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
-					     request.get(ARG_EXTEDIT_REPORT_MISSING,false),"Show missing files")  + "<br>");
-		sb.append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", request.get(ARG_EXTEDIT_REPORT_FILES,false),"Show OK files") + "<p>");
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_MISSING, "true",
+						  request.get(ARG_EXTEDIT_REPORT_MISSING,false),"Show missing files")  + "<br>");
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_REPORT_FILES, "true", request.get(ARG_EXTEDIT_REPORT_FILES,false),"Show OK files") + "<p>");
 		closer.accept(form, "Generate File Listing");
 	    } else if(form.equals(ARG_EXTEDIT_ADDALIAS)){
 		opener.accept("Add aliases to children entries");
-		sb.append("Use the macro \"${name}\" in the template to create the alias<br>");
-		sb.append(HU.b("Template") +": "+
+		buff[0].append("Use the macro \"${name}\" in the template to create the alias<br>");
+		buff[0].append(HU.b("Template") +": "+
 			       HU.input(ARG_EXTEDIT_ADDALIAS_TEMPLATE,request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,"${name}"),
 					HU.attr("size","40")) +" e.g., somealias_${name}");
 		
@@ -849,10 +742,10 @@ public class ExtEditor extends RepositoryManager {
 		    closer.accept(ARG_EXTEDIT_ADDALIAS,"Test aliases");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
 		opener.accept("Change Entry Type");
-		sb.append(msgLabel("New type"));
-		sb.append(HU.space(1));
-		sb.append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos, request.getString(ARG_EXTEDIT_NEWTYPE,"")));
-		sb.append(HU.p());
+		buff[0].append(msgLabel("New type"));
+		buff[0].append(HU.space(1));
+		buff[0].append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos, request.getString(ARG_EXTEDIT_NEWTYPE,"")));
+		buff[0].append(HU.p());
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if ((columns != null) && (columns.size() > 0)) {
 		    StringBuilder note = new StringBuilder();
@@ -862,50 +755,50 @@ public class ExtEditor extends RepositoryManager {
 			}
 			note.append(col.getLabel());
 		    }
-		    sb.append(msgLabel("Note: this metadata would be lost") + note);
+		    buff[0].append(msgLabel("Note: this metadata would be lost") + note);
 		}
 
 		closer.accept(form, "Change type of this entry");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE_RECURSE)){
 		opener.accept("Change Descendants Entry Type");
-		sb.append(HU.formTable());
-		HU.formEntry(sb, msgLabel("Old type"),
+		buff[0].append(HU.formTable());
+		HU.formEntry(buff[0], msgLabel("Old type"),
 			     HU.select(ARG_EXTEDIT_OLDTYPE,
 				       tfos,request.getString(ARG_EXTEDIT_OLDTYPE,"")));
 
-		HU.formEntry(sb, msgLabel("Regexp Pattern"),
+		HU.formEntry(buff[0], msgLabel("Regexp Pattern"),
 			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN,"")) + " "
 			     + msg("Only change type for entries that match this pattern"));
 
-		HU.formEntry(sb, msgLabel("New type"),
+		HU.formEntry(buff[0], msgLabel("New type"),
 			     HU.select(ARG_EXTEDIT_NEWTYPE,
 				       tfos,request.getString(ARG_EXTEDIT_NEWTYPE,"")));
-		HU.formEntry(sb, "",
+		HU.formEntry(buff[0], "",
 			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
 						false, "Yes, change them"));
-		sb.append(HU.formTableClose());
+		buff[0].append(HU.formTableClose());
 		closer.accept(form,"Change the type of all descendant entries");
 	    }	else if(form.equals(ARG_EXTEDIT_URL_CHANGE)){		
 		opener.accept("Change Descendants URL Path");
-		sb.append(HU.formTable());
-		HU.formEntry(sb, msgLabel("Pattern"),
+		buff[0].append(HU.formTable());
+		HU.formEntry(buff[0], msgLabel("Pattern"),
 			     HU.input(ARG_EXTEDIT_URL_PATTERN, request.getString(ARG_EXTEDIT_URL_PATTERN,"")));
-		HU.formEntry(sb,msgLabel("To"),  HU.input(ARG_EXTEDIT_URL_TO, request.getString(ARG_EXTEDIT_URL_TO,"")));
-		sb.append(HU.formTableClose());
+		HU.formEntry(buff[0],msgLabel("To"),  HU.input(ARG_EXTEDIT_URL_TO, request.getString(ARG_EXTEDIT_URL_TO,"")));
+		buff[0].append(HU.formTableClose());
 		closer.accept(form,"Change URLs");
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
-		closer.accept(form,"Apply Javascript");
-		sb.append(HU.formTable());
-		HU.formEntry(sb, HU.b("Only apply to entries of type")+": "+
+		buff[0].append(HU.submit("Apply Javascript",form));
+		buff[0].append(HU.formTable());
+		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
 			     + HU.space(1) +
 			     HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
 						request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
 
 
-		HU.formEntry(sb,HU.labeledCheckbox(ARG_EXTEDIT_JS_CONFIRM, "true",
-						   request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Save changes to entries"));
+		HU.formEntry(buff[0],HU.labeledCheckbox(ARG_EXTEDIT_JS_CONFIRM, "true",
+							request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Save changes to entries"));
 
 
 		String eg =
@@ -947,19 +840,28 @@ public class ExtEditor extends RepositoryManager {
 		String exclude = "<br>"+HU.b("Exclude entries") +":<br>"+
 		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
 
-		HU.formEntry(sb,  HU.b("Javascript:")+
+		HU.formEntry(buff[0],  HU.b("Javascript:")+
 			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
 							exclude,
 							HU.pre(eg)))));
 		
-		sb.append(HU.formTableClose());
-
-
-		sb.append("<br>");
+		buff[0].append(HU.formTableClose());
+		buff[0].append("<br>");
 		closer.accept(form,"Apply Javascript");
 	    }
-	    sb.append(HU.formClose());
+	    buff[0].append(HU.formClose());
 	}
+
+	
+	if(titles.size()==1) {
+	    String label = titles.get(0);
+	    sb.append(formHeader(HU.span(label,HU.style("font-size:120%;"))));
+	    sb.append(contents.get(0));
+	}else {
+	    HU.makeAccordion(sb,titles,contents);
+	}
+
+
 	sb.append(suffix);
 
 
@@ -967,25 +869,13 @@ public class ExtEditor extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param fileType _more_
-     * @param nonFileType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<HtmlUtils.Selector> getTypeHandlerSelectors(Request request,
-            boolean fileType, boolean nonFileType, Entry entry)
-            throws Exception {
+							    boolean fileType, boolean nonFileType, Entry entry)
+	throws Exception {
         List<String> sessionTypes =
             (List<String>) getSessionManager().getSessionProperty(request,
-                SESSION_TYPES);
+								  SESSION_TYPES);
 
         List<HtmlUtils.Selector> tfos  = new ArrayList<HtmlUtils.Selector>();
 
@@ -1016,7 +906,7 @@ public class ExtEditor extends RepositoryManager {
             }
 
             if ((entry != null)
-                    && !entry.getTypeHandler().canChangeTo(typeHandler)) {
+		&& !entry.getTypeHandler().canChangeTo(typeHandler)) {
                 continue;
             }
 
@@ -1034,13 +924,13 @@ public class ExtEditor extends RepositoryManager {
                 tfos.add(tfo);
             }
             cats.add(typeHandler.getCategory(), tfo); 
-       }
+	}
         for (String cat : cats.getCategories()) {
             List<HtmlUtils.Selector> selectors = cats.get(cat);
             if (selectors.size() > 0) {
                 tfos.add(new HtmlUtils.Selector(cat, "",
 						getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
-                        true));
+						true));
                 tfos.addAll(selectors);
             }
         }
@@ -1049,83 +939,75 @@ public class ExtEditor extends RepositoryManager {
     }
 
     /*
-        private void setMD5(Request request, StringBuilder sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
-            if(!getRepository().getActionManager().getActionOk(actionId)) {
-                return;
-            }
-            Statement stmt = getDatabaseManager().select(SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID,
-                                                                                    Tables.ENTRIES.COL_TYPE,
-                                                                                    Tables.ENTRIES.COL_MD5,
-                                                                                    Tables.ENTRIES.COL_RESOURCE}),
-                Tables.ENTRIES.NAME,
-                Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entryId));
-            SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
-            ResultSet        results;
+      private void setMD5(Request request, StringBuilder sb, boolean recurse, String entryId, int []totalCnt, int[] setCnt) throws Exception {
+      if(!getRepository().getActionManager().getActionOk(actionId)) {
+      return;
+      }
+      Statement stmt = getDatabaseManager().select(SqlUtil.comma(new String[]{Tables.ENTRIES.COL_ID,
+      Tables.ENTRIES.COL_TYPE,
+      Tables.ENTRIES.COL_MD5,
+      Tables.ENTRIES.COL_RESOURCE}),
+      Tables.ENTRIES.NAME,
+      Clause.eq(Tables.ENTRIES.COL_PARENT_GROUP_ID, entryId));
+      SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
+      ResultSet        results;
 
-            while ((results = iter.getNext()) != null) {
-                totalCnt[0]++;
-                int col = 1;
-                String id = results.getString(col++);
-                String type= results.getString(col++);
-                String md5 = results.getString(col++);
-                String resource = results.getString(col++);
-                if(new File(resource).exists() && !Utils.stringDefined(md5)) {
-                    setCnt[0]++;
-                    Entry entry = getEntry(request, id);
-                    if(!getAccessManager().canDoEdit(request, entry)) {
-                        continue;
-                    }
-                    md5 = ucar.unidata.util.IOUtil.getMd5(resource);
-                    getDatabaseManager().update(Tables.ENTRIES.NAME,
-                                                Tables.ENTRIES.COL_ID,
-                                                id, new String[]{Tables.ENTRIES.COL_MD5},
-                                                new String[]{md5});
-                    sb.append(getPageHandler().getConfirmBreadCrumbs(request, entry));
-                    sb.append(HU.br());
-                }
-                getActionManager().setActionMessage(actionId,
-                                                    "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
+      while ((results = iter.getNext()) != null) {
+      totalCnt[0]++;
+      int col = 1;
+      String id = results.getString(col++);
+      String type= results.getString(col++);
+      String md5 = results.getString(col++);
+      String resource = results.getString(col++);
+      if(new File(resource).exists() && !Utils.stringDefined(md5)) {
+      setCnt[0]++;
+      Entry entry = getEntry(request, id);
+      if(!getAccessManager().canDoEdit(request, entry)) {
+      continue;
+      }
+      md5 = ucar.unidata.util.IOUtil.getMd5(resource);
+      getDatabaseManager().update(Tables.ENTRIES.NAME,
+      Tables.ENTRIES.COL_ID,
+      id, new String[]{Tables.ENTRIES.COL_MD5},
+      new String[]{md5});
+      sb.append(getPageHandler().getConfirmBreadCrumbs(request, entry));
+      sb.append(HU.br());
+      }
+      getActionManager().setActionMessage(actionId,
+      "Checked " + totalCnt[0] +" entries<br>Changed " + setCnt[0] +" entries");
 
-                if(recurse) {
-                    TypeHandler typeHandler = getRepository().getTypeHandler(type);
-                    if(typeHandler.isGroup()) {
-                        setMD5(request, actionId,  sb, recurse, id, totalCnt, setCnt);
-                    }
-                }
-            }
-            getDatabaseManager().closeStatement(stmt);
-        }
-        */
-
-
+      if(recurse) {
+      TypeHandler typeHandler = getRepository().getTypeHandler(type);
+      if(typeHandler.isGroup()) {
+      setMD5(request, actionId,  sb, recurse, id, totalCnt, setCnt);
+      }
+      }
+      }
+      getDatabaseManager().closeStatement(stmt);
+      }
+    */
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
+
+    
     public Result processEntryTypeChange(Request request) throws Exception {
 
         Entry parent = getEntryManager().getEntryFromRequest(request, ARG_ENTRYID,
-					   getRepository().URL_ENTRY_GET,true);
+							     getRepository().URL_ENTRY_GET,true);
         String      fromIds = request.getString(ARG_FROM, "");
         List<Entry> entries = new ArrayList<Entry>();
         for (String id : Utils.split(fromIds, ",", true, true)) {
             Entry entry = getEntryManager().getEntry(request, id, false);
             if (entry == null) {
                 throw new RepositoryUtil.MissingEntryException(
-                    "Could not find entry:" + id);
+							       "Could not find entry:" + id);
             }
             if (entry.isTopEntry()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(
-                    getPageHandler().showDialogNote(
-                        msg("Cannot change top-level folder")));
+			  getPageHandler().showDialogNote(
+							  msg("Cannot change top-level folder")));
 
                 return new Result(msg("Entry Type Change"), sb);
             }
@@ -1140,16 +1022,16 @@ public class ExtEditor extends RepositoryManager {
 
         if (request.exists(ARG_CANCEL)) {
             return new Result(
-                request.entryUrl(
-				 getRepository().URL_ENTRY_SHOW, parent!=null?parent:entries.get(0)));
+			      request.entryUrl(
+					       getRepository().URL_ENTRY_SHOW, parent!=null?parent:entries.get(0)));
         }
 
 
         StringBuffer sb = new StringBuffer();
         if (request.exists(ARG_CONFIRM)) {
             TypeHandler newTypeHandler = getRepository().getTypeHandler(
-                                             request.getString(
-                                                 ARG_EXTEDIT_NEWTYPE, ""));
+									request.getString(
+											  ARG_EXTEDIT_NEWTYPE, ""));
             getAuthManager().ensureAuthToken(request);
 
             sb.append(msgLabel("The following entries have been changed"));
@@ -1157,8 +1039,8 @@ public class ExtEditor extends RepositoryManager {
             for (Entry entry : entries) {
                 if ( !getAccessManager().canDoEdit(request, entry)) {
                     throw new IllegalArgumentException(
-                        "Whoa dude, you can't edit this entry:"
-                        + entry.getName());
+						       "Whoa dude, you can't edit this entry:"
+						       + entry.getName());
                 }
                 entry = changeType(request, entry, newTypeHandler);
                 String icon = newTypeHandler.getIconProperty(null);
@@ -1166,8 +1048,8 @@ public class ExtEditor extends RepositoryManager {
                     icon = newTypeHandler.getIconUrl(icon);
                 }
                 sb.append(HU.href(getEntryManager().getEntryURL(request, entry),
-                                         HU.img(icon) + " "
-                                         + entry.getName()));
+				  HU.img(icon) + " "
+				  + entry.getName()));
                 sb.append("<br>");
             }
             sb.append("</ul>");
@@ -1177,7 +1059,7 @@ public class ExtEditor extends RepositoryManager {
 
 
         List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,
-                                            true, true, null);
+								true, true, null);
 
         request.formPostWithAuthToken(sb,
                                       getRepository().URL_ENTRY_TYPECHANGE);
@@ -1191,20 +1073,20 @@ public class ExtEditor extends RepositoryManager {
         inner.append(HU.p());
         inner.append(HU.formTable());
         inner.append(
-            HU.formEntry(
-                msgLabel("New type"),
-                HU.select(ARG_EXTEDIT_NEWTYPE, tfos,request.getString(ARG_EXTEDIT_NEWTYPE,""))));
+		     HU.formEntry(
+				  msgLabel("New type"),
+				  HU.select(ARG_EXTEDIT_NEWTYPE, tfos,request.getString(ARG_EXTEDIT_NEWTYPE,""))));
 
         HU.formTableClose(inner);
 
         sb.append(
-            getPageHandler().showDialogQuestion(
-                inner.toString(),
-                HU.buttons(
-                    HU.submit(
-                        msg("Yes, change the entry types"),
-                        ARG_CONFIRM), HU.submit(
-                            msg(LABEL_CANCEL), ARG_CANCEL))));
+		  getPageHandler().showDialogQuestion(
+						      inner.toString(),
+						      HU.buttons(
+								 HU.submit(
+									   msg("Yes, change the entry types"),
+									   ARG_CONFIRM), HU.submit(
+												   msg(LABEL_CANCEL), ARG_CANCEL))));
         sb.append(HU.formClose());
         sb.append("<table>");
         sb.append("<tr><td><b>Entry</b></td><td><b>Type</b></td></tr>");
@@ -1224,20 +1106,10 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param newTypeHandler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private Entry changeType(Request request, Entry entry,
                              TypeHandler newTypeHandler)
-            throws Exception {
+	throws Exception {
         if ( !getAccessManager().canDoEdit(request, entry)) {
             throw new AccessException("Cannot edit:" + entry.getLabel(),
                                       request);
@@ -1249,8 +1121,8 @@ public class ExtEditor extends RepositoryManager {
         try {
             Statement extraStmt = connection.createStatement();
             entry.getTypeHandler().deleteEntry(request, extraStmt,
-                    entry.getId(), entry.getParentEntry(),
-                    entry.getTypeHandler().getEntryValues(entry));
+					       entry.getId(), entry.getParentEntry(),
+					       entry.getTypeHandler().getEntryValues(entry));
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
@@ -1276,58 +1148,38 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param groups _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result changeType(Request request, List<Entry> groups,
                              List<Entry> entries)
-            throws Exception {
+	throws Exception {
         /*
-        if ( !request.getUser().getAdmin()) {
-            return null;
-        }
-        TypeHandler typeHandler =
-            getRepository().getTypeHandler(TypeHandler.TYPE_HOMEPAGE);
+	  if ( !request.getUser().getAdmin()) {
+	  return null;
+	  }
+	  TypeHandler typeHandler =
+	  getRepository().getTypeHandler(TypeHandler.TYPE_HOMEPAGE);
 
 
-        List<Entry> changedEntries = new ArrayList<Entry>();
+	  List<Entry> changedEntries = new ArrayList<Entry>();
 
-        entries.addAll(groups);
+	  entries.addAll(groups);
 
-        for(Entry entry: entries) {
-            if(entry.isGroup()) {
-                entry.setTypeHandler(typeHandler);
-                changedEntries.add(entry);
-            }
-        }
-        insertEntries(request, changedEntries, false);*/
+	  for(Entry entry: entries) {
+	  if(entry.isGroup()) {
+	  entry.setTypeHandler(typeHandler);
+	  changedEntries.add(entry);
+	  }
+	  }
+	  insertEntries(request, changedEntries, false);*/
         return new Result("Metadata", new StringBuilder("OK"));
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param children _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    
     public boolean setTimeFromChildren(Request request, Entry entry,
                                        List<Entry> children)
-            throws Exception {
+	throws Exception {
         if (children == null) {
             children = getEntryManager().getChildren(request, entry);
         }
@@ -1345,7 +1197,7 @@ public class ExtEditor extends RepositoryManager {
             //We seem to lose some time resolution when we store so only assume a change
             //when the time differs by more than 5 seconds
             changed = (diffStart < -10000) || (diffStart > 10000)
-                      || (diffEnd < -10000) || (diffEnd > 10000);
+		|| (diffEnd < -10000) || (diffEnd > 10000);
             entry.setStartDate(minTime);
             entry.setEndDate(maxTime);
 
@@ -1356,16 +1208,9 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void setBoundsFromChildren(Request request, Entry entry)
-            throws Exception {
+	throws Exception {
         if (entry == null) {
             return;
         }
@@ -1425,6 +1270,7 @@ public class ExtEditor extends RepositoryManager {
 		ctx.print("Thumnbail added:" + entry.getName());
 	    }
 	}
+
 
 	public void grayscaleImage() throws Exception {
 	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
@@ -1497,7 +1343,6 @@ public class ExtEditor extends RepositoryManager {
 		    }
 		}
 		    
-
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
 									    prompt,null);
@@ -1579,7 +1424,6 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-
 	public boolean getChanged() {
 	    return changed;
 	}
@@ -1598,6 +1442,7 @@ public class ExtEditor extends RepositoryManager {
 
 	public void setLocation(double lat,double lon) {
 	    entry.setLocation(lat,lon);
+	    changed=true;
 	}	
 
 
@@ -1608,10 +1453,12 @@ public class ExtEditor extends RepositoryManager {
 		entry.setWest(parent.getWest(request));
 		entry.setSouth(parent.getSouth(request));				
 		entry.setEast(parent.getEast(request));		
+		changed=true;
 	    }
 	}
 	public void setName(String name) {
 	    this.name = name;
+	    changed=true;
 	}	
 
 	public String getDescription() {
@@ -1633,6 +1480,7 @@ public class ExtEditor extends RepositoryManager {
 
 	public void setDescription(String description) {
 	    this.description = description;
+	    changed=true;
 	}	
 
 	public void setColumnValue(String key, Object value) {
@@ -1650,8 +1498,8 @@ public class ExtEditor extends RepositoryManager {
 
 	public void setUrl(String url) {
 	    this.url = url;
+	    changed=true;
 	}
-
 
 	public Date getStartDate() {
 	    return new Date(entry.getStartDate());
@@ -1662,7 +1510,6 @@ public class ExtEditor extends RepositoryManager {
 	    else 	    this.startDate = Utils.parseDate(date);
 	    startDateChanged = true;
 	}	
-
 
 	public Date getEndDate() {
 	    return new Date(entry.getEndDate());
@@ -1679,11 +1526,6 @@ public class ExtEditor extends RepositoryManager {
 	}
 	
     }
-    
-	    
-
-	    
-	
 
     public static class JsContext {
 	private StringBuilder msg = new StringBuilder();
@@ -1729,8 +1571,6 @@ public class ExtEditor extends RepositoryManager {
 						  
 	}	
 	
-
-
 	public int log(int cnt,Object msg) {
 	    if((count++%cnt)==0) {
 		String s = msg.toString();

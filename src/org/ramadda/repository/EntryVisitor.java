@@ -179,7 +179,6 @@ public abstract class EntryVisitor implements Constants {
     public boolean walk(Entry entry) throws Exception {
         try {
             boolean ok = walkInner(entry);
-
             return ok;
         } finally {
             finished();

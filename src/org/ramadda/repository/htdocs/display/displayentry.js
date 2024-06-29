@@ -1047,24 +1047,31 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let outputs = this.getRamadda().getSearchLinks(settings,true);
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId('copy');
+	    let extra = [];
+
 	    if(this.getProperty('searchOutputs')) {
-		Utils.split(this.getProperty('searchOutputs'),',',true,true).forEach(tok=>{
-		    let tuple = Utils.split(tok,';');
-		    if(tuple.length<2)return;
-		    let id = tuple[0];
-		    let label = tuple[1];
-                    outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
-					  ATTR_TITLE,'Click to download; shift-click to copy URL',
-					  'custom-output','true',
-					  'data-name',label,
-					  'data-format',id,
-					  'data-url',
-					  this.getRamadda().getSearchUrl(settings,id)],
-					  label));
-
-		});
-
+		extra = Utils.mergeLists(extra,Utils.split(this.getProperty('searchOutputs'),',',true,true));
 	    }
+	    if(!Utils.isAnonymous()) {
+//		extra.push('repository.extedit;Extended Edit');
+	    }
+
+
+	    extra.forEach(tok=>{
+		let tuple = Utils.split(tok,';');
+		if(tuple.length<2)return;
+		let id = tuple[0];
+		let label = tuple[1];
+                outputs.push(HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
+				      ATTR_TITLE,'Click to download; shift-click to copy URL',
+				      'custom-output','true',
+				      'data-name',label,
+				      'data-format',id,
+				      'data-url',
+				      this.getRamadda().getSearchUrl(settings,id)],
+				     label));
+	    });
+
 
 
 	    outputs = HU.join(outputs, HU.space(2));

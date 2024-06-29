@@ -208,7 +208,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final OutputType OUTPUT_MAKESNAPSHOT =
         new OutputType("Make Snapshot", "repository.makesnapshot",
                        OutputType.TYPE_OTHER | OutputType.TYPE_FILE, "",
+
                        "fas fa-save");
+
+    public static final OutputType OUTPUT_EXTEDIT =
+        new OutputType("Extended Edit", "repository.extedit",
+                       OutputType.TYPE_NONE, "",
+                       ICON_EDIT);    
 
     /** Publish OutputType */
     public static final OutputType OUTPUT_PUBLISH =
@@ -2600,7 +2606,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			idBuffer.append(entry.getId());
 		    }
 		    request.put(ARG_FROM, idBuffer);
-
 		    return getEntryManager().processEntryCopy(request);
 
 		    //                return new Result(request.makeUrl(URL_ENTRY_COPY, ARG_FROM,
@@ -2610,9 +2615,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
         copyHandler.addType(OUTPUT_COPY);
         addOutputHandler(copyHandler);
 
+        OutputHandler exteditHandler = new OutputHandler(getRepository(),
+						      "Extended Edit") {
+		public boolean canHandleOutput(OutputType output) {
+		    return output.equals(OUTPUT_EXTEDIT);
+		}
+		public String toString() {
+		    return "Extended Edit";
+		}
 
-        OutputHandler snapshotHandler = new OutputHandler(getRepository(),
-							  "Entry Snapshotter") {
+		@Override
+		public Result outputGroup(Request request, OutputType outputType,
+					  Entry group, List<Entry> children)
+                    throws Exception {
+		    if (request.getUser().getAnonymous()) {
+			return new Result("", "");
+		    }
+		    if ( !group.isDummy()) {
+			return new Result("", "");
+		    }
+		    return getExtEditor().processEntryExtEdit(request,group, children);
+		}
+	    };
+        exteditHandler.addType(OUTPUT_EXTEDIT);
+        addOutputHandler(exteditHandler);
+
+
+        OutputHandler snapshotHandler = new OutputHandler(getRepository(), "Entry Snapshotter") {
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_MAKESNAPSHOT);
 		}

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -14,14 +14,10 @@ import ucar.unidata.util.Misc;
 import java.util.List;
 
 
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 public class OutputType {
+
+    public static final int TYPE_NONE =0;
 
     /** for the file menu */
     public static final int TYPE_FILE = 1 << 0;
