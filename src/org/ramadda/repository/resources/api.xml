@@ -63,6 +63,7 @@
 
   <group handler="exteditor">
     <api request="/entry/extedit"          method="processEntryExtEdit"       actions="edit"/>
+    <api request="/entry/exteditentries"   method="processEntryExtEditEntries"    actions="edit"/>    
     <api request="/entry/typechange"       method="processEntryTypeChange"/>
   </group>
 

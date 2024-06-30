@@ -1053,7 +1053,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra = Utils.mergeLists(extra,Utils.split(this.getProperty('searchOutputs'),',',true,true));
 	    }
 	    if(!Utils.isAnonymous()) {
-//		extra.push('repository.extedit;Extended Edit');
+		extra.push('repository.extedit;Extended Edit');
 	    }
 
 

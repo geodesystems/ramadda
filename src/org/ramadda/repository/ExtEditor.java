@@ -61,6 +61,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ExtEditor extends RepositoryManager {
 
+    public final RequestUrl URL_EXTEDIT_ENTRIES = new RequestUrl(this, "/entry/exteditentries");
     public static final String SESSION_ENTRIES = "entries";
     public static final String SESSION_TYPES = "types";
     public static final String ARG_EXTEDIT_EDIT = "extedit_edit";
@@ -102,6 +103,17 @@ public class ExtEditor extends RepositoryManager {
     }
 
     
+    public Result processEntryExtEditEntries(Request request) throws Exception {
+	List<Entry> entries = new ArrayList<Entry>();
+	for(Object id: request.get(ARG_ENTRYID, new ArrayList<String>())) {
+	    Entry entry = getEntryManager().getEntry(request, id.toString());
+	    if(entry!=null) entries.add(entry);
+	}
+	Entry group = getRepository().getEntryManager().getDummyGroup();
+	return processEntryExtEdit(request, group,entries);
+    }
+
+
     public Result processEntryExtEdit(final Request request)
 	throws Exception {
         Entry              entry        = getEntryManager().getEntry(request);
@@ -109,10 +121,17 @@ public class ExtEditor extends RepositoryManager {
 
     }
     
-    public Result processEntryExtEdit(final Request request,Entry entry,List<Entry> searchChildren)
+    private void visit(Entry entry,List<Entry> extEntries, EntryVisitor visitor) throws Exception {
+	if(extEntries!=null)
+	    visitor.walk(extEntries);
+	else
+	    visitor.walk(entry);
+    }
+
+    public Result processEntryExtEdit(final Request request,Entry entry,final List<Entry> extEntries)
 	throws Exception {
 
-	boolean dummy = entry.isDummy();
+	final boolean dummy = entry.isDummy();
 	String[] what = new String[]{
 	    ARG_EXTEDIT_EDIT,
 	    //	    ARG_EXTEDIT_REINDEX,
@@ -124,6 +143,7 @@ public class ExtEditor extends RepositoryManager {
 	    ARG_EXTEDIT_REPORT
 	};
 
+	StringBuilder _extraFormArgs=new StringBuilder();
 	if(dummy) {
 	    what = new String[]{
 		ARG_EXTEDIT_EDIT,
@@ -131,14 +151,17 @@ public class ExtEditor extends RepositoryManager {
 		ARG_EXTEDIT_JS,
 		ARG_EXTEDIT_URL_CHANGE,
 		ARG_EXTEDIT_ADDALIAS};
+	    if(extEntries!=null) {
+		for(Entry child: extEntries) {
+		    _extraFormArgs.append(HU.hidden(ARG_ENTRYID, child.getId()));
+		}
+	    }
 	}
-
-
+	final String extraFormArgs=_extraFormArgs.toString();
         final StringBuilder sb = new StringBuilder();
         final StringBuilder prefix = new StringBuilder();
         final StringBuilder suffix = new StringBuilder();
         final StringBuilder formSuffix = new StringBuilder();
-
 
 	Object actionId=null;
 	boolean canCancel = false;
@@ -214,7 +237,7 @@ public class ExtEditor extends RepositoryManager {
 				    return true;
 				}
 			    };
-			walker.walk(finalEntry);
+			visit(finalEntry,extEntries, walker);
 			getActionManager().setContinueHtml(actionId,
 							   walker.getMessageBuffer().toString());
 		    }
@@ -267,7 +290,7 @@ public class ExtEditor extends RepositoryManager {
 	    list.append("<ul>");
 	    int cnt = 0;
 	    List<String> isSelected = request.get("aliasentry",new ArrayList<String>());
-	    List<Entry> children = getEntryManager().getChildren(request, entry);
+	    List<Entry> children = extEntries!=null?extEntries:getEntryManager().getChildren(request, entry);
 	    list.append("<table class=table-spaced>");
 	    String thStyle=HU.style("font-weight:bold;");
 	    list.append(HU.tr(HU.td("")+
@@ -390,7 +413,7 @@ public class ExtEditor extends RepositoryManager {
 				    return true;
 				}
 			    };
-			walker.walk(finalEntry);
+			visit(finalEntry,extEntries, walker);
 			getActionManager().setContinueHtml(actionId,
 							   walker.getMessageBuffer().toString());
 		    }
@@ -406,7 +429,8 @@ public class ExtEditor extends RepositoryManager {
 	    getSessionManager().putSessionProperty(request,"extedit",js);
 
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
-	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,false);
+	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,request.get(ARG_EXTEDIT_THISONE+"_hidden",
+										true));
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
 	    String exc = request.getString(ARG_EXTEDIT_EXCLUDE,"");
 	    final HashSet<String> not = new HashSet<String>();
@@ -532,7 +556,7 @@ public class ExtEditor extends RepositoryManager {
 			final JsContext jsContext = new JsContext(walker,forReal);
 			holder[0] = jsContext;
 			scope.put("ctx", scope, jsContext);
-			walker.walk(finalEntry);
+			visit(finalEntry,extEntries, walker);
 			jsContext.print("* Done - Processed:#" +cnt[0]);
 			getActionManager().setContinueHtml(actionId,
 							   walker.getMessageBuffer().toString());
@@ -570,7 +594,7 @@ public class ExtEditor extends RepositoryManager {
 				    return true;
 				}
 			    };
-			walker.walk(finalEntry);
+			visit(finalEntry,extEntries, walker);
 			getActionManager().setContinueHtml(actionId,
 							   walker.getMessageBuffer().toString());
 		    }
@@ -633,7 +657,7 @@ public class ExtEditor extends RepositoryManager {
 			return true;
 		    }
 		};
-	    walker.walk(finalEntry);
+	    visit(finalEntry,extEntries, walker);
 	    suffix.append(HU.openInset(5, 30, 20, 0));
             suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
 			  + msg("Size") + "</td><td></td></tr>");
@@ -670,14 +694,22 @@ public class ExtEditor extends RepositoryManager {
 	final StringBuilder[] buff={null};
 	List<String> titles=  new ArrayList<String>();
 	List<StringBuilder> contents=  new ArrayList<StringBuilder>();	
+	
 
 
 	Consumer<String> opener = label->{
 	    titles.add(label);
 	    buff[0] = new StringBuilder();
 	    contents.add(buff[0]);
-	    request.formPostWithAuthToken(buff[0], getRepository().URL_ENTRY_EXTEDIT,HU.attr("name", "entryform"));
-	    buff[0].append(HU.hidden(ARG_ENTRYID, finalEntry.getId()));
+	    if(dummy) {
+		request.formPostWithAuthToken(buff[0], URL_EXTEDIT_ENTRIES,HU.attr("name", "entryform"));
+	    } else {
+		request.formPostWithAuthToken(buff[0], getRepository().URL_ENTRY_EXTEDIT,HU.attr("name", "entryform"));
+	    }
+
+
+	    buff[0].append(HU.hidden(ARG_ENTRYID, finalEntry.getId()));	    
+	    buff[0].append(extraFormArgs);
    
 	    buff[0].append(HU.openInset(5, 30, 20, 0));
 	};
@@ -790,11 +822,15 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Process with Javascript");
 		buff[0].append(HU.submit("Apply Javascript",form));
 		buff[0].append(HU.formTable());
+		boolean thisOne = request.get(ARG_EXTEDIT_THISONE,request.get(ARG_EXTEDIT_THISONE+"_hidden",
+									      true));
+		System.err.println("form:" +thisOne);
+		buff[0].append(HU.hidden(ARG_EXTEDIT_THISONE+"_hidden","false"));
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
 			     + HU.space(1) +
 			     HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
-						request.get(ARG_EXTEDIT_THISONE,true), "Apply to this entry"));
+						thisOne, "Apply to this entry"));
 
 
 		HU.formEntry(buff[0],HU.labeledCheckbox(ARG_EXTEDIT_JS_CONFIRM, "true",
