@@ -851,6 +851,8 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.getValue('column_name')</span>\n" +
 		    "<span>entry.applyCommand('addthumbnail')</span>\n" +
 		    "<span>entry.hasMetadata('type')</span>\n" +
+		    "<span>entry.listMetadata('type','match value')</span>\n" +
+		    "<span>entry.changeMetadata('type','pattern','with')</span>\n" +		    		    
 		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
@@ -1364,6 +1366,42 @@ public class ExtEditor extends RepositoryManager {
 		ctx.print("does not have metadata:" + entry.getName());
 	    }
 	}
+
+	public void listMetadata(String type,String match) throws Exception {
+	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+
+	    boolean regexp = StringUtil.containsRegExp(match);
+	    String _match = match.toLowerCase();
+	    if(list!=null && list.size()>0) {
+		for(Metadata mtd:list) {
+		    if(Utils.stringDefined(match)) {
+			if(regexp) {
+			    if(mtd.getAttr1().matches(match)) 
+				continue;
+			} else {
+			    if(mtd.getAttr1().toLowerCase().indexOf(_match)<0)
+				continue;
+			}
+		    }
+		    ctx.print("Entry:" + entry.getName() +" metadata:" + mtd.getAttr1());
+		}
+	    }
+	}
+
+	public void changeMetadata(String type,String from, String to) throws Exception {
+	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+	    if(list==null || list.size()==0) return;
+	    for(Metadata mtd:list) {
+		String v= mtd.getAttr1();
+		String newV = v.replaceAll(from,to);
+		if(!v.equals(newV)) {
+		    changed = true;
+		    mtd.setAttr1(newV);
+		    ctx.print("Entry:" + entry.getName() +" changed: " + v +" to: " + newV);
+		}
+	    }
+	}
+	
 
 
 
