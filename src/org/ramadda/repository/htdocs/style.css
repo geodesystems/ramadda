@@ -198,6 +198,11 @@ ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-headi
     font-size:140%;
 }
 
+.ramadda-heading2 {
+    font-size:120%;
+}
+
+
 ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
     margin: 0px;
