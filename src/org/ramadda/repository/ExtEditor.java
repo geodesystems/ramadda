@@ -824,7 +824,6 @@ public class ExtEditor extends RepositoryManager {
 		buff[0].append(HU.formTable());
 		boolean thisOne = request.get(ARG_EXTEDIT_THISONE,request.get(ARG_EXTEDIT_THISONE+"_hidden",
 									      true));
-		System.err.println("form:" +thisOne);
 		buff[0].append(HU.hidden(ARG_EXTEDIT_THISONE+"_hidden","false"));
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
