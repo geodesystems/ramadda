@@ -3687,11 +3687,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
     initPageSearch:function(select,parentSelect,label,hideAll,opts) {
 	let args = {
-	    focus:true
+	    focus:true,
+	    inputSize:'15'
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
-	let input = HU.input('','',[ATTR_ID,id,'placeholder',label??'Search','size','15']);
+	let input = HU.input('','',[ATTR_ID,id,'placeholder',label??'Search','size',args.inputSize]);
 	if(args.target)
 	    $(args.target).html(input);
 	else

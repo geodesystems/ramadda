@@ -2659,7 +2659,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true'},
 	{p:'autoFocus',d:true,ex:'false'},	
-	{p:'doTagSearch',ex:'true'},	
+	{p:'doTagSearch',ex:'true'},
+	{p:'tagShowGroup',d:true},
+	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
@@ -2721,32 +2723,61 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    }
 		    return b.count-a.count;
 		});
-		let group=null;
+		let groupMap={};
+		let groups=[];
 		list.forEach(obj=>{
-		    let tag = obj.tag;
-		    if(obj.group!=group)  {
-			if(group!=null) contents+='<br>';
-			contents+=HU.b(obj.group)+': ';
-			group=obj.group;
+		    let currentGroup=obj.group??''
+		    let group = groupMap[currentGroup];
+		    if(!group) {
+			group = groupMap[currentGroup] = {
+			    contents:'',
+			    cnt:0
+			}
+			groups.push(currentGroup);
 		    }
+	    
+		    group.cnt++;
+		    let tag = obj.tag;
 		    let ele = obj.elements[0];
 		    if(ele.attr('data-image-url')) {
 			let title = ele.attr('title')+HU.getTitleBr()??'';
 			title+='Click to filter';
-			contents+=HU.image(ele.attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
+			group.contents+=HU.image(ele.attr('data-image-url'),[CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag,'title',title]);
 		    } else {
 			let label = '#'+obj.count+': ' + tag.replace(/^[^:]+:/,'');
 			style = ele.attr(ATTR_STYLE);
-			contents+=HU.div(['data-background',ele.attr('data-background'),
+			group.contents+=HU.div(['data-background',ele.attr('data-background'),
 					  'data-style',style??'',
 					  ATTR_STYLE,style??'',ATTR_CLASS,'metadata-tag ramadda-clickable','metadata-tag',tag],label);
 		    }
 		});
+		groups.forEach(g=>{
+		    let group = groupMap[g];
+		    let block = '';
+		    if(g!='') {
+			if(this.getTagShowGroup()) {
+			    block+=HU.b(g)+': ';
+			}
+			group.contentsid=HU.getUniqueId('taggroup');
+			if(group.cnt>this.getTagSearchLimit()) {
+			    group.uid=HU.getUniqueId('taggroup');
+			    block+=HU.span([ATTR_ID,group.uid]);
+			}			    
+		    }			
+		    block+=HU.span([ATTR_ID,group.contentsid],group.contents);
+		    contents+=HU.div([ATTR_STYLE,'text-align:left;'],block);
+		})
 		contents+='<div>';
 		if(this.getDoPageSearch()) {
 		    contents = HU.center(this.getDefaultHtml() + contents);
 		} 
 		this.setContents(contents);
+		groups.forEach(g=>{
+		    let group = groupMap[g];
+		    if(group.uid) {
+			HU.initPageSearch('#' + group.contentsid +' .metadata-tag',null,'Find tags',false,{target:'#'+group.uid,inputSize:'10'});
+		    }
+		});
 		this.find(".metadata-tag").click(function(){
 		    if($(this).hasClass("metadata-tag-selected")) {
 			$(this).removeClass("metadata-tag-selected");
