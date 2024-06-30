@@ -82,20 +82,71 @@ can choose to only list entries that have a file that is missing or only list en
 
 [ht::screenshot images/extedit_listing.png]
 
-
-
-
-<a name="extended_js"></a>
-
 :heading Process with Javascript
 This extended edit form allows you to specify some javascript that is called for each entry
-down through the entry hierarchy. This enables you to do complex changes.
+down through the entry hierarchy. This enables you to do complex changes across a entire tree of
+entries.
 
 +callout-info
 You need to check on the "Apply changes to entries" checkbox to have your changes actually applied.
 -callout
 
 [ht::screenshot images/extedit_js.png]
+
+
+If you have an LLM AI API configured (e.g., ChatGPT, Google Gemini, Anthropic Claude
+you can use the following Extended Edit Javascript commands:
+
+<a name="addllmmetadata"></a>
+:heading2 Using LLM to add metadata
+
+<pre>
+  entry.addLLMMetadata('metadata_type','prompt',check_if_exists)
+</pre>
+The metadata type can be found by going to the Add Properties, looking for the type
+and looking at the form URL for metadata_type="the type"
+<br>
+prompt: The prompt has to be crafted to tell the LLM  to only return the text
+that you desire for the metadata element.
+If there are multiple metadata elements specify that they should be separated by a semi-colon.
+You have to be stern sometimes. Something to the effect:
+<pre>
+Extract no more than three keywords from the document. 
+Only return the keywords in your response. Do not return anything else except the keyword.
+If there are multiple keywords then they must be separated by a semi-colon ;
+</pre>
+
+A good way of figuring out the prompt to use is to use the Document Chat facility on the
+entry. Go to the Entry Popup Menu and choose "Document Chat". This is an interactive facility
+where you can try out the prompt and see the result. Once you have a prompt that gives an
+acceptable result 
+
+:br
+
+check_if_exists: true or false. If true check if there already is a 
+metadata on the entry. If there is do not add a new one.
+:p
+For example there is a metadata type "tribe_name". The below call extracts the  tribe name from
+the document
+<pre>
+entry.addLLMMetadata('tribe_name',
+'Extract the native american tribe names that are mentioned by  the document. Only return the tribe names in your response. Do not return anything else except the names. If there are multiple names  then they must be separated by a semi-colon ;',true)
+</pre>
+
+<a name="addllmgeo"></a>
+:heading2 Using LLM to add location
+If you have an LLM AI API configured (e.g., ChatGPT, Google Gemini, Anthropic Claude)
+you can extract the geographic location (lat/lon) from a document with the command:
+<pre>
+entry.addLLMGeo('')
+</pre>
+The default prompt if one is not given is:
+<pre>
+Give the latitude and longitude of the area that this document describes.
+Just give the 2 numbers, nothing else. Give it in the form
+&lt;latitude&gt;,&lt;longitude&gt;&lt;/longitude&gt;&lt;/latitude&gt;
+</pre>
+
 
 
 [ht::foot]
