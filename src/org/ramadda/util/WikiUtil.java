@@ -3138,10 +3138,14 @@ public class WikiUtil implements HtmlUtilsConstants {
                     } else {
                         clazz = "ramadda-" + what;
                     }
+		    if(tline.startsWith(":heading2")) {
+			clazz="ramadda-heading2";
+		    }
 		    String attrs = "";
                     if (what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
 			String id = "heading-" +Utils.makeID(getHeadingLabel(blob));
-                        defineHeading.accept(buff, blob, 1);
+                        if(!what.startsWith("heading2"))
+			    defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
 			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
 			attrs = HU.attrs("id",id);
