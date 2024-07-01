@@ -4510,6 +4510,11 @@ a.ramadda-heading-2-link:visited {
 .ramadda-acknowledgement i {
     color:#3399CA;
 }
+.ramadda-acknowledgement img {
+    border : var(--basic-border);
+}
+
+
 .ramadda-acknowledgement, .ramadda-acknowledgement a {
     text-align: center;
     font-style:italic;
