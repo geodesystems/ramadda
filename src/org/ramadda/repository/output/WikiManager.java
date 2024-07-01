@@ -3937,8 +3937,8 @@ public class WikiManager extends RepositoryManager
             }
 	    
             boolean doingSlideshow = theTag.equals(WIKI_TAG_SLIDESHOW);
-	    boolean decorate = getProperty(wikiUtil, props, "decorate",
-					   true);
+	    boolean decorate = getProperty(wikiUtil, props, "decorate",  true);
+	    boolean expand = getProperty(wikiUtil, props, "expand",  false);	    
 	    boolean doingGrid = theTag.equals(WIKI_TAG_GRID)
 		|| theTag.equals(WIKI_TAG_BOOTSTRAP);
             List<String> titles   = new ArrayList<String>();
@@ -4201,6 +4201,7 @@ public class WikiManager extends RepositoryManager
                 String boxClass = (weights==null?"ramadda-gridbox":"")+" search-component ";
 		if(decorate) boxClass+=" ramadda-gridbox-decorated";
 		else boxClass+=" ramadda-gridbox-undecorated";		
+		if(expand) boxClass+=" ramadda-gridbox-flex ";
 		if(embedLink) boxClass+=" ramadda-gridbox-embed";
 		boxClass=HU.cssClass(boxClass);
                 String boxStyle = "";
