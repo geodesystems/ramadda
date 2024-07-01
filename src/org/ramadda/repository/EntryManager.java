@@ -8324,16 +8324,23 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public List<String> getChildIds(Request request, Entry group,
-                                    SelectInfo select)
+    public List<String> getChildIds(Request request, Entry group, SelectInfo select)
 	throws Exception {
 
+	boolean debug = group.getId().equals("a86d071a-f098-4354-839f-1f58e2656854");
 	if(select==null) select = new SelectInfo(request, group);
 
         boolean isSynthEntry = isSynthEntry(group.getId());
+	if(debug)
+	    getLogManager().logSpecial("EntryManager.getChildIds:" + group);
+
         if (group.getTypeHandler().isSynthType() || isSynthEntry) {
             List<String> ids       = new ArrayList<String>();
-	    if(!select.getSyntheticOk()) return ids;
+	    if(!select.getSyntheticOk()) {
+		if(debug)
+		    getLogManager().logSpecial("EntryManager.getChildIds: synth not ok");
+		return ids;
+	    }
 
             Entry        mainEntry = group;
             String       synthId   = null;
@@ -8360,8 +8367,11 @@ public class EntryManager extends RepositoryManager {
             //            System.err.println("****  Get synthids:" + mainEntry.getTypeHandler().getSynthIds(request, mainEntry,
             //                                                                                              group, synthId));
             try {
-                return mainEntry.getMasterTypeHandler().getSynthIds(request,select,
-								    mainEntry, group, synthId);
+                ids =mainEntry.getMasterTypeHandler().getSynthIds(request,select,
+								  mainEntry, group, synthId);
+		if(debug)
+		    getLogManager().logSpecial("EntryManager.getChildIds: got:" + ids);
+		return ids;
             } catch (Exception exc) {
                 getLogManager().logError("Error getting synthIds from:"
                                          + mainEntry, exc);

@@ -125,11 +125,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
-        List<String> ids = getEntryManager().getChildIdsFromDatabase(request,
-								     mainEntry, null);
+	boolean debug = mainEntry.getId().equals("a86d071a-f098-4354-839f-1f58e2656854");
+        List<String> ids = getEntryManager().getChildIdsFromDatabase(request,   mainEntry, null);
+        String idString = (String) mainEntry.getStringValue(request,0, "").replace(",", "_COMMA_");
+	if(debug)
+	    getLogManager().logSpecial("virtual.getSynthIds:" +Utils.clip(idString.replace("\n"," "),100,""));
 
-        String idString = (String) mainEntry.getStringValue(request,0, "").replace(",",
-									   "_COMMA_");
         String  by         = request.getString(ARG_ORDERBY, (String) null);
         boolean descending = !request.get(ARG_ASCENDING, false);
 	//TODO:This doesn't work
@@ -138,12 +139,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         List<String> fromCache = cachedIds.get(cacheKey);
         if (fromCache != null && fromCache.size()==0) {
 	    if(debug)
-		System.err.println("virtual from cache is empty:" +mainEntry.getId() +" " + debugLine(idString));
+		getLogManager().logSpecial("virtual from cache is empty:" +mainEntry.getId() +" " + debugLine(idString));
 	}
 
         if (fromCache == null) {
 	    if(debug)
-		System.err.println("virtual creating:" +mainEntry.getId() +" "+debugLine(idString));
+		getLogManager().logSpecial("virtual creating:" +mainEntry.getId() +" "+debugLine(idString));
             fromCache = new ArrayList<String>();
 	    List<String> lines = new ArrayList<String>();
 	    String unescaped = Utils.unescapeNL(idString);
@@ -159,7 +160,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 							      false, "");
 
 	    if(debug)
-		System.err.println("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
+		getLogManager().logSpecial("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
 
             if (by == null) {
                 Metadata sortMetadata =
