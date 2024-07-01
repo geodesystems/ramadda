@@ -543,7 +543,7 @@ MapGlyph.prototype = {
 	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    let dataIconsSelect= 'Show data icons: '+
+	    let dataIconsSelect= HU.b('Show data icons: ')+
 		HU.select('',[ATTR_ID,this.domId(ID_SHOWDATAICONS)],
 			  ['inherited','yes','no'],
 			  this.attrs[ID_SHOWDATAICONS]??'inherited');
