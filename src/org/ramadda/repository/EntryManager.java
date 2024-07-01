@@ -877,9 +877,13 @@ public class EntryManager extends RepositoryManager {
 	    //	request.put("product","points.csv");
 	    return   processEntryShow(request);
 	} catch(Exception exc) {
+	    exc.printStackTrace();
 	    getLogManager().logError("Error processing data",exc);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append(JsonUtil.map(Utils.makeListFromValues("error",JsonUtil.quote("Error:" + exc))));
+	    Entry entry =(Entry) request.getExtraProperty("entry");
+	    String msg = exc.getMessage();
+	    if(entry !=null) msg = " entry: " + entry.getName() +"\nid:" + entry.getId() +"\nmessage:" + msg;
+	    sb.append(JsonUtil.map(Utils.makeListFromValues("error",JsonUtil.quote("Error: "+msg))));
 	    Result result  = new Result("", sb, JsonUtil.MIMETYPE);
 	    result.setResponseCode(Result.RESPONSE_INTERNALERROR);
 	    return result;
@@ -937,7 +941,6 @@ public class EntryManager extends RepositoryManager {
 
 	request.setIsEntryShow(true);
 
-
         Entry entry = null;
         if (request.exists("parentof")) {
             Entry sibling = getEntry(request,
@@ -966,6 +969,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
+	request.putExtraProperty("entry", entry);
 
 	if(getRepository().getLogActivity()) {
 	    if(request.getString("product","").equals("points.json")) {
