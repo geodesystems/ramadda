@@ -4995,6 +4995,10 @@ snippet-hide {
     margin-bottom: 5px;
 }
 
+.ramadda-pagesearch-input {
+    border-radius: var(--default-radius);
+}
+
 .pagesubtitle {
     font-size: 120%;
     font-weight: bold;

@@ -3692,7 +3692,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
-	let input = HU.input('','',[ATTR_ID,id,'placeholder',label??'Search','size',args.inputSize]);
+	let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
+				    ATTR_ID,id,'placeholder',label??'Search','size',args.inputSize]);
 	if(args.target)
 	    $(args.target).html(input);
 	else
