@@ -515,7 +515,7 @@ public class IO {
                     if (code == 403) {
                         msg = "Access forbidden";
                     } else {
-                        msg = "Response code: " + code + " ";
+                        msg = "Code: " + code + " ";
                         try {
                             InputStream err = huc.getErrorStream();
 			    if(err==null) {
@@ -523,14 +523,21 @@ public class IO {
 			    }  else {
 				String response = new String(readBytes(err,
 								       10000));
-				msg += " Message: " + response;
+				String body = StringUtil.findPattern(response, "(?i)(?s).*<body>(.*)</body>.*");
+				if(body!=null) {
+				    response = body;
+				} 
+
+				response = Utils.stripTags(response);
+				//cap the length
+				response = Utils.clip(response,100,"");
+				msg += " " + response;
 			    }
                         } catch (Exception ignoreIt) {
 			    System.err.println("Error reading error response:" + ignoreIt);
 			}
                     }
                 }
-
                 throw new IOException(msg);
             }
         }
