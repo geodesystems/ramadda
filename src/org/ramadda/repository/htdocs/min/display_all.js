@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul  1 05:34:23 MDT 2024";
+var build_date="RAMADDA build date: Mon Jul  1 16:27:04 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -51132,7 +51132,7 @@ MapGlyph.prototype = {
 	if(this.isDataIconCapable()) {
 	    let contents ='';
 	    let help = this.getHelp('dataicons.html');
-	    let dataIconsSelect= 'Show data icons: '+
+	    let dataIconsSelect= HU.b('Show data icons: ')+
 		HU.select('',[ATTR_ID,this.domId(ID_SHOWDATAICONS)],
 			  ['inherited','yes','no'],
 			  this.attrs[ID_SHOWDATAICONS]??'inherited');
