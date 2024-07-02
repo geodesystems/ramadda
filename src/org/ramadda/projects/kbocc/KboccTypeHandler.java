@@ -40,7 +40,6 @@ public class KboccTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
-
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -60,7 +59,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 	//Add in the year
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 	String dataYear = sdf.format(new Date(entry.getStartDate()));
-	boolean isHydro = getType().equals("ype_kbocc_hydro");
+	boolean isHydro = getType().equals("type_kbocc_hydro");
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
 	String _fileName = fileName.replace("_","-");
 	String year = StringUtil.findPattern(fileName,".*_(\\d\\d\\d\\d).*");
