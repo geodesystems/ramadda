@@ -4,7 +4,7 @@ description="KBOCC Water Sensor"
 super="type_point" 
 category="Point Data"
 supercategory="Geoscience"  
-handler="org.ramadda.projects.kbocc.KboccHydroTypeHandler">
+handler="org.ramadda.projects.kbocc.KboccTypeHandler">
 <property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
@@ -75,7 +75,7 @@ description="KBOCC Merged Data"
 super="type_point" 
 category="Point Data"
 supercategory="Geoscience"  
-handler="org.ramadda.data.services.PointTypeHandler">
+handler="org.ramadda.projects.kbocc.KboccTypeHandler">
 <property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>
@@ -83,6 +83,7 @@ handler="org.ramadda.data.services.PointTypeHandler">
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
 <property name="form.properties.show" value="false"/>
+<column name="site" type="enumerationplus"  label="Site" cansearch="true"/>
 <column name="axis_label" type="string"  label="Axis Label" cansearch="false"/>
 <property name="record.properties"><![CDATA[
 csvcommands1=-addheader,month_day_hour.type string hours_in_year.type int default.type double

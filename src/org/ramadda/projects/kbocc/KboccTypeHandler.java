@@ -32,10 +32,10 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class KboccHydroTypeHandler extends PointTypeHandler {
+public class KboccTypeHandler extends PointTypeHandler {
 
     private JSONArray loggers;
-    public KboccHydroTypeHandler(Repository repository, Element node)
+    public KboccTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
@@ -60,22 +60,29 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	//Add in the year
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 	String dataYear = sdf.format(new Date(entry.getStartDate()));
-	entry.setValue("datayear",dataYear);
-
+	boolean isHydro = getType().equals("ype_kbocc_hydro");
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
 	String _fileName = fileName.replace("_","-");
 	String year = StringUtil.findPattern(fileName,".*_(\\d\\d\\d\\d).*");
-	if(year!=null && !year.equals(dataYear)) {
-	    getSessionManager().addSessionErrorMessage(request,"Warning: "  + entry.getName() +" Year in filename does not match year in datta " + year   +" " + dataYear);
+	if(isHydro) {
+	    entry.setValue("datayear",dataYear);
+	    if(year!=null && !year.equals(dataYear)) {
+		getSessionManager().addSessionErrorMessage(request,"Warning: "  + entry.getName() +" Year in filename does not match year in data " + year   +" " + dataYear);
+	    }
+	    String inst = StringUtil.findPattern(fileName,".*\\d\\d\\d\\d_(\\d\\d)\\..*");
+	    if(inst!=null) {
+		entry.setValue("instrument",inst);
+	    }
 	}
 
 
-	String inst = StringUtil.findPattern(fileName,".*\\d\\d\\d\\d_(.*)\\..*");
-	String site = StringUtil.findPattern(fileName,"(^.*)_(\\d\\d\\d\\d).*");	
-	if(inst==null) {
-	    inst = "";
+
+
+	String site = StringUtil.findPattern(fileName,"(^.*)_\\d\\d\\d\\d.*");	
+	if(site==null) {
+	    site = StringUtil.findPattern(fileName,"(^.*)_merged.*");	
 	}
-	entry.setValue("instrument",inst);
+
 	if(site==null) {
 	    site="NA";
 	}

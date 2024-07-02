@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.projects.kbocc;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
 import org.ramadda.util.seesv.SeesvException;
 import ucar.unidata.util.IOUtil;
@@ -32,7 +33,7 @@ public class KboccOutputHandler extends OutputHandler {
 	String site="";
 	for(int i=0;i<children.size();i++) {
 	    Entry child = children.get(i);
-	    site = child.getStringValue(request,"location","site");
+	    site = child.getStringValue(request,"site","site");
 	    if(stringDefined(site)) return site;
 	}
 	return "kboccsite";
@@ -164,7 +165,7 @@ public class KboccOutputHandler extends OutputHandler {
 	allFiles.add(allFile);
 	List<File> finalFiles = Seesv.applySeesv(dir,cmds2,allFiles);
 	File   mergedFile = finalFiles.get(0);
-	request.setReturnFilename(site+"_merged.csv");
+	request.setReturnFilename(Utils.makeID(site)+"_merged.csv");
 	return new Result(new FileInputStream(mergedFile),"text/csv");
     }
 }
