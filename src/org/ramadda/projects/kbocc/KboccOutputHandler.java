@@ -104,13 +104,21 @@ public class KboccOutputHandler extends OutputHandler {
     public Result processMergeSite(Request request,  Entry group, File dir, List<Entry> children)
             throws Exception {
 
-	String [] cmds1= {"-delimiter", "?", "-skiplines", "1", "-set", "0", "0", "number", "-set", "1", "0",
-	    "Date Time", "-set", "2", "0", "Temperature", "-notcolumns", "0,3-10",
-	    "-indateformats", "MM/dd/yy hh:mm:ss a;MM/dd/yyyy HH:mm", "GMT-4",
-	    "-outdateformat", "iso8601", "GMT", "-convertdate", "date_time",
-	    "-outdateformat", "yyyy-MM-dd HH:mm Z", "UTC", "-indateformat", "iso8601",
-	    "GMT", "-extractdate", "date_time", "year", "-extractdate", "date_time", "hours_in_year",
-	    "-notcolumns", "date_time", "-lastcolumns", "0" ,"-print"};
+	String [] cmds1= {"-delimiter", "?", "-skiplines", "1",
+			  "-set", "0", "0", "number",
+			  "-set", "1", "0",   "Date Time",
+			  "-set", "2", "0", "Temperature",
+			  "-notcolumns", "0,3-10",
+			  "-indateformats", "MM/dd/yy hh:mm:ss a;MM/dd/yyyy HH:mm", "GMT-4",
+			  "-outdateformat", "iso8601", "GMT",
+			  "-convertdate", "date_time",
+			  "-outdateformat", "yyyy-MM-dd HH:mm Z", "UTC",
+			  "-indateformat", "iso8601",  "GMT",
+			  "-extractdate", "date_time", "year",
+			  "-extractdate", "date_time", "hours_in_year",
+			  "-notcolumns", "date_time",
+			  "-lastcolumns", "0" ,
+			  "-print"};
 
 
 	
