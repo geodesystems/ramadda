@@ -586,6 +586,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "formHeight",
 					 "entriesHeight",
 					 "toggleClose",
+					 "displayTypes",
 					 "textToggleClose",
 					 "dateToggleClose",
 					 "areaToggleClose",
