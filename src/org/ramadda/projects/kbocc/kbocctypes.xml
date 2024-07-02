@@ -36,6 +36,14 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${temperature decimals=1 su
 
 
 
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{display_linechart height="300px" fields="temperature"}} 
+-section
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section title={{name}}
