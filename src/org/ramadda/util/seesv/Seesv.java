@@ -557,18 +557,24 @@ public class Seesv implements SeesvCommands {
 	List<File> files = new ArrayList<File>();
 	for(int i=0;i<inputFiles.size();i++) {
 	    File inputFile = inputFiles.get(i);
-	    File   tmpFile = new File(IOUtil.joinDir(dir, "file" + (uniqueCnt++)+".csv"));
-	    files.add(tmpFile);
-	    FileOutputStream fos = new FileOutputStream(tmpFile);
-	    Seesv seesv = new Seesv(commands,
-				    new BufferedOutputStream(fos), null);
-	    InputStream inputStream =new FileInputStream(inputFile);
-	    seesv.setInputStream(inputStream);
-	    seesv.run(null);
-	    inputStream.close();
+	    files.add(applySeesv(dir,commands,inputFile));
 	}
 	return files;
     }
+
+    public static File applySeesv(File dir, String[]commands,File inputFile) throws Exception {
+	File   tmpFile = new File(IOUtil.joinDir(dir, "file" + (uniqueCnt++)+".csv"));
+	FileOutputStream fos = new FileOutputStream(tmpFile);
+	Seesv seesv = new Seesv(commands,
+				new BufferedOutputStream(fos), null);
+	InputStream inputStream =new FileInputStream(inputFile);
+	seesv.setInputStream(inputStream);
+	seesv.run(null);
+	inputStream.close();
+	return tmpFile;
+    }
+
+
 
 
     public static String makeCsvCommands(List<String> args) {
