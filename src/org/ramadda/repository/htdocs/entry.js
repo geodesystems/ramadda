@@ -16,7 +16,7 @@ var DEFAULT_MAX = 100;
 var OUTPUTS = [
     {id: OUTPUT_CSV,name: "CSV"},
     {id: OUTPUT_JSON, name: "JSON"},
-    {id: OUTPUT_ZIP, name: "Zip Files"},
+    {id: OUTPUT_ZIP, name: "Download Files"},
     {id: OUTPUT_EXPORT, name: "Export"},
 ];
 
