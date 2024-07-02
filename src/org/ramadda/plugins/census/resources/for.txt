@@ -7,8 +7,10 @@ county=County
 county subdivision=County Subdivision
 tract=Tract
 block group=Block+Group
-aiannh=American Indian Area
+#aiannh=American Indian Area
 #american indian area=American Indian Area
+american indian area/alaska native area/hawaiian home land=American Indian Area
+
 congressional district=Congressional District
 urban area=Urban Area
 zip code tabulation area=Zip Code Tabulation Area
