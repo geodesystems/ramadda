@@ -40,6 +40,14 @@ public class KboccTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
+    private boolean nameMatch(String n1,String n2) {
+	if(n1.equals(n2)) return true;
+	String _n1=  n1.toLowerCase().replace(" ","_");
+	String _n2=  n2.toLowerCase().replace(" ","_");
+	if(_n1.equals(_n2)) return true;
+	return false;
+    }
+
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
@@ -85,13 +93,24 @@ public class KboccTypeHandler extends PointTypeHandler {
 	if(site==null) {
 	    site="NA";
 	}
-	String _site = site.toLowerCase().replace(" ","_");
+	Request queryRequest = getRepository().getAdminRequest();
+	//Look up any local site entries
+	for(Entry siteEntry: getEntryManager().getEntriesWithType(queryRequest, "type_kbocc_site")) {
+	    String name = siteEntry.getName();
+	    String alias = siteEntry.getStringValue(request,"alias","");
+	    if(nameMatch(site,siteEntry.getName()) || nameMatch(site,alias)) {
+		entry.setLatitude(siteEntry.getLatitude(request));
+		entry.setLongitude(siteEntry.getLongitude(request));		    
+		entry.setValue("site",siteEntry.getName());
+		return;
+	    }
+	}
+
 	JSONObject theLogger=null;
 	for(int i=0;theLogger==null && i<loggers.length();i++) {
 	    JSONObject logger=loggers.getJSONObject(i);
 	    String id = logger.getString("site").trim();
-	    String _id = id.toLowerCase().replace(" ","_");
-	    if(site.equals(id) || _site.equals(_id)) {
+	    if(nameMatch(site,id)) {
 		theLogger = logger;
 	    }
 	}
