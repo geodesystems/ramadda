@@ -7,6 +7,7 @@ package org.ramadda.projects.kbocc;
 import org.ramadda.repository.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.seesv.Seesv;
+import org.ramadda.util.seesv.SeesvException;
 import ucar.unidata.util.IOUtil;
 import org.w3c.dom.*;
 import java.io.*;
@@ -112,7 +113,23 @@ public class KboccOutputHandler extends OutputHandler {
 	    "-notcolumns", "date_time", "-lastcolumns", "0" ,"-print"};
 
 
-	List<File> files = Seesv.applySeesv(dir,cmds1,EntryUtil.getFiles(request,children));
+	
+	List<File> files = new ArrayList<File>();
+	for(Entry child: children) {
+	    File file = child.getResource().getTheFile();
+	    if(!file.exists()) continue;
+	    try {
+		File processedFile =  Seesv.applySeesv(dir,cmds1,file);
+		files.add(processedFile);
+	    } catch(Exception exc) {
+		String msg = "Error processing KBOCC merge:"  + child.getName() + " " + child.getId() +" " +
+		    exc.getMessage();
+		getLogManager().logError(msg,exc);
+		throw new SeesvException(msg);
+	    }
+	}
+
+
 	String site= getSite(request,children);
 
 	File   allFile = new File(IOUtil.joinDir(dir, "all.csv"));
