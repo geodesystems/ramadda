@@ -172,6 +172,7 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 <type name="type_kbocc_site" description="KBOCC Site"
       category="Point Data" supercategory="Geoscience">
 <property name="icon" value="/kbocc/kbocclg.png"/>
+<property name="form.resource.show" value="false"/>
 <property name="form.date.show" value="false"/>
 <property name="form.area.show" value="false"/>
 <property name="form.location.show" value="true"/>
