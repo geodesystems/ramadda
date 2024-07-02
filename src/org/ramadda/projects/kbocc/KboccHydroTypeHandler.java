@@ -59,58 +59,55 @@ public class KboccHydroTypeHandler extends PointTypeHandler {
 	}
 	//Add in the year
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-	entry.setValue("datayear",sdf.format(new Date(entry.getStartDate())));
+	String dataYear = sdf.format(new Date(entry.getStartDate()));
+	entry.setValue("datayear",dataYear);
 
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
 	String _fileName = fileName.replace("_","-");
-	String yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d\\d)");
-	if(yearSite==null)
-	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d\\d)");
-	if(yearSite==null)
-	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d_\\d)");
-	if(yearSite==null)
-	    yearSite = StringUtil.findPattern(fileName,"(\\d\\d-\\d)");	
-	if(yearSite==null) yearSite="";
-	yearSite=yearSite.replace("_","-");
-	List<String> toks = Utils.splitUpTo(yearSite,"-",2);
-	String site = toks.size()==2?toks.get(1):"";
-	JSONObject theLogger=null;
-	//First look for year-site
-	for(int i=0;theLogger==null && i<loggers.length();i++) {
-	    JSONObject logger=loggers.getJSONObject(i);
-	    String id = logger.getString("id").trim();
-	    if(fileName.equals(id) || _fileName.equals(id) ||fileName.startsWith(id) || id.equals(yearSite)) {
-		theLogger = logger;
-	    }
+	String year = StringUtil.findPattern(fileName,".*_(\\d\\d\\d\\d).*");
+	if(year!=null && !year.equals(dataYear)) {
+	    getSessionManager().addSessionErrorMessage(request,"Warning: "  + entry.getName() +" Year in filename does not match year in datta " + year   +" " + dataYear);
 	}
 
 
-	//next look for site
-	site = site.trim();
+	String inst = StringUtil.findPattern(fileName,".*\\d\\d\\d\\d_(.*)\\..*");
+	String site = StringUtil.findPattern(fileName,"(^.*)_(\\d\\d\\d\\d).*");	
+	if(inst==null) {
+	    inst = "";
+	}
+	entry.setValue("instrument",inst);
+	if(site==null) {
+	    site="NA";
+	}
+	String _site = site.toLowerCase().replace(" ","_");
+	JSONObject theLogger=null;
 	for(int i=0;theLogger==null && i<loggers.length();i++) {
 	    JSONObject logger=loggers.getJSONObject(i);
-	    if(logger.has("site")) {
-		if(site.equals(logger.getString("site").trim())) {
-		    theLogger = logger;
-		}
+	    String id = logger.getString("site").trim();
+	    String _id = id.toLowerCase().replace(" ","_");
+	    if(site.equals(id) || _site.equals(_id)) {
+		theLogger = logger;
 	    }
 	}
 
 	if(theLogger!=null) {
 	    entry.setLatitude(theLogger.getDouble("latitude"));
 	    entry.setLongitude(theLogger.getDouble("longitude"));
-	    entry.setValue("location",theLogger.getString("location"));
-	    entry.setValue("notes",theLogger.getString("notes"));		
+	    entry.setValue("site",theLogger.getString("site"));
+	    //	    entry.setValue("notes",theLogger.getString("notes"));		
 	    JSONObject o = theLogger;
+	    /*
 	    System.out.println(Utils.join(Utils.makeListFromValues(o.getString("id"),o.getString("location"),
 								   ""+o.getDouble("latitude"),
 								   ""+o.getDouble("longitude"),
 								   Seesv.cleanColumnValue(o.getString("notes")),
 								   fileName),","));
+	    */
 	    
 	} else {
 	    String msg = "Could not find site info for file:" + fileName;
 	    getSessionManager().addSessionErrorMessage(request,msg);
+	    System.err.println("MSG:" + msg);
 	}
 	
     }
