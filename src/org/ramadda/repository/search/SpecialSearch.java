@@ -597,6 +597,9 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "showProviders",
 					 "showEntryImage",
 					 "includeNonImages",
+					 "showOutputs",
+					 "outputs",
+					 
 					 "searchOutputs"}) {
 		String v=Utils.getProperty(props,prop,null);
 		if(stringDefined(v))

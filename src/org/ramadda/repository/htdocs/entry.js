@@ -409,20 +409,22 @@ function RamaddaRepository(repositoryRoot) {
             return url;
         },
 
-        getSearchLinks: function(searchSettings,makeSpan) {
+        getSearchLinks: function(searchSettings,makeSpan,check) {
             let urls = [];
             for (let i = 0; i < OUTPUTS.length; i++) {
+		let output = OUTPUTS[i];
+		if(check && !check(output)) continue;
 		if(makeSpan) {
                     urls.push(HtmlUtils.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
 					      ATTR_TITLE,'Click to download; shift-click to copy URL',
-					      'data-name',OUTPUTS[i].name,
-					      'data-format',OUTPUTS[i].id,
+					      'data-name',output.name,
+					      'data-format',output.id,
 					      'data-url',
-					      this.getSearchUrl(searchSettings, OUTPUTS[i].id)],
-					     OUTPUTS[i].name));
+					      this.getSearchUrl(searchSettings, output.id)],
+					     output.name));
 		} else {
-                    urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
-					     OUTPUTS[i].name,[ATTR_CLASS,'ramadda-search-link']));
+                    urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, output.id),
+					     output.name,[ATTR_CLASS,'ramadda-search-link']));
 		}
             }
             return urls;

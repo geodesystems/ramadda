@@ -501,6 +501,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'areaToggleClose',ex:true},
 	{p:'columnsToggleClose',ex:true},		
 	{p:'orderByTypes',d:'relevant,name,createdate,date,size'},
+	{p:'showOutputs',ex:'false'},
+	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
 
@@ -1043,8 +1045,23 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             //alert("There was an error performing the search\n" + msg);
         },
         updateForSearching: function(jsonUrl) {
+	    let showOutputs = this.getShowOutputs(true);
 	    let settings = this.getSearchSettings();
-	    let outputs = this.getRamadda().getSearchLinks(settings,true);
+	    let okOutputs = this.getProperty('outputs');
+	    if(okOutputs) {
+		okOutputs = Utils.split(okOutputs,',',true,true);
+	    }
+	    let check = output=>{
+		if(!showOutputs) return false;
+		let id = output.id??output;
+		if(!okOutputs) return true;
+		if(id==OUTPUT_CSV) id='csv';
+		else if(id==OUTPUT_ZIP) id='zip';
+		else if(id==OUTPUT_EXPORT) id='export';				
+		return okOutputs.includes(id);
+	    }
+	    let outputs = this.getRamadda().getSearchLinks(settings,true,check);
+
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId('copy');
 	    let extra = [];
@@ -1053,7 +1070,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		extra = Utils.mergeLists(extra,Utils.split(this.getProperty('searchOutputs'),',',true,true));
 	    }
 	    if(!Utils.isAnonymous()) {
-		extra.push('repository.extedit;Extended Edit');
+		if(check('extedit'))
+		    extra.push('repository.extedit;Extended Edit');
 	    }
 
 
@@ -1075,7 +1093,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 
 	    outputs = HU.join(outputs, HU.space(2));
-	    outputs = outputs+ HU.space(2)+
+	    if(check('copyurl'))
+		outputs = outputs+ HU.space(2)+
 		HU.span([ATTR_CLASS,'ramadda-search-link ramadda-clickable',
 			 ATTR_ID,copyId,
 			 'data-copy',url],
