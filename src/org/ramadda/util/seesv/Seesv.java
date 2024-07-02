@@ -86,7 +86,7 @@ public class Seesv implements SeesvCommands {
     private ReadableByteChannel channel;
     
 
-    private int sheetNumber =-1;
+    private int sheetNumber =0;
     
     private Hashtable<String,String> macros = new Hashtable<String,String>();
     
@@ -567,7 +567,9 @@ public class Seesv implements SeesvCommands {
 	FileOutputStream fos = new FileOutputStream(tmpFile);
 	Seesv seesv = new Seesv(commands,
 				new BufferedOutputStream(fos), null);
-	InputStream inputStream =new FileInputStream(inputFile);
+	IO.Path path = new IO.Path(inputFile.toString());
+	InputStream inputStream = seesv.makeInputStream(path);
+	//	InputStream inputStream =new FileInputStream(inputFile);
 	seesv.setInputStream(inputStream);
 	seesv.run(null);
 	inputStream.close();
@@ -1314,9 +1316,10 @@ public class Seesv implements SeesvCommands {
 	    checkOkToRead(file.getPath());
         }
         if (file.matchesSuffix(".xls")) {
-            return  XlsUtil.xlsToCsv(file,myTextReader.getMaxRows(),sheetNumber);
+	    System.err.println("***********  CONVERTING XLS");
+            return  XlsUtil.xlsToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".xlsx")) {
-            return  XlsUtil.xlsxToCsv(file,myTextReader.getMaxRows(),sheetNumber);
+            return  XlsUtil.xlsxToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".gz",".gzip")) {
 	    return new BufferedInputStream(new GZIPInputStream(new FileInputStream(file.getPath())));
         } else if (!makeInputStreamRaw && file.matchesSuffix(".zip")) {
