@@ -592,6 +592,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "columnsToggleClose",
 					 "providersMultiple",
 					 "providersMultipleSize",
+					 "ancestor",
 					 "showProviders",
 					 "showEntryImage",
 					 "includeNonImages",
