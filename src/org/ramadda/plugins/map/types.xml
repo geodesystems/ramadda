@@ -270,6 +270,14 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
       ]]>
     </property>
     <column name="names" type="string" changetype="true" size="2000" label="Properties" canedit="false"  showinhtml="true"/>
+
+<property name="bubble">
+<![CDATA[
++section  title={{name}}
+{{information  details="true"  showTitle="false"   menus="service" menusTitle="Services"}} `
+-section
+]]></property>
+
 <wiki>
 <![CDATA[
 +section title={{name}}
