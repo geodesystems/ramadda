@@ -132,7 +132,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 	} else {
 	    String msg = "Could not find site info for file:" + fileName;
 	    getSessionManager().addSessionErrorMessage(request,msg);
-	    System.err.println("MSG:" + msg);
+	    System.err.println("KBOCC:" + msg);
 	}
 	
     }
