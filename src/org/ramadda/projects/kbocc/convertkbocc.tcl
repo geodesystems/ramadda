@@ -1,23 +1,26 @@
-set ::fp [open loggers.csv w]
-puts $::fp {site,latitude,longitude}
+set ::sitesfp [open foosites.xml w]
+puts $::sitesfp "<entries>"
+
+if {![file exists converted]} {
+    exec mkdir converted
+}
+
 
 proc convert {site f latitude longitude notes} {
-    if {![info exists ::loc($site,lat)]} {
-	set ::loc($site,lat) "$latitude"
-	set ::loc($site,lon) "$longitude"
-	puts $::fp "$site,$latitude,$longitude"
-    } else {
-	if {!($::loc($site,lat) eq $latitude) || !($::loc($site,lon) eq $longitude)} {
-	    puts stderr "bad loc: $site $latitude $longitude should be $::loc($site,lat) $::loc($site,lon)"
-	}
-    }
-    set file files/$f
+    set file /Users/jeffmc/kbocc/rawfiles/$f
     if {![file exists $file]} {
 	puts stderr "No file: $file"
 	return
     }	
-    if {![file exists converted]} {
-	exec mkdir converted
+
+    if {![info exists ::loc($site,lat)]} {
+	set ::loc($site,lat) "$latitude"
+	set ::loc($site,lon) "$longitude"
+	puts $::sitesfp "<entry name=\"$site\" type=\"type_kbocc_site\" latitude=\"$latitude\" longitude=\"$longitude\"/>"
+    } else {
+	if {!($::loc($site,lat) eq $latitude) || !($::loc($site,lon) eq $longitude)} {
+	    puts stderr "bad loc: $site $latitude $longitude should be $::loc($site,lat) $::loc($site,lon)"
+	}
     }
     set yy ""
     set inst ""
@@ -39,6 +42,10 @@ proc convert {site f latitude longitude notes} {
 	set inst "_$inst"
     }
     set newFile [file join converted "${site}_$yy$inst.csv"]
+    file copy -force $file  $newFile
+
+    #Now move it to rawfiles2 for now
+    set newFile /Users/jeffmc/kbocc/rawfiles2/$f
     file rename -force $file  $newFile
 }
 
@@ -57,4 +64,9 @@ foreach line [split $lines "\n"] {
 }
 
 
-close $::fp
+puts $::sitesfp "</entries>"
+close $::sitesfp
+
+foreach file [glob -nocomplain  /Users/jeffmc/kbocc/rawfiles2/*] {
+    file rename $file [file join /Users/jeffmc/kbocc/rawfiles [file tail $file]]
+}
