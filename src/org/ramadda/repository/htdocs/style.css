@@ -6420,8 +6420,6 @@ a.wiki-link-noexist {
     margin-top:4px;
     margin-bottom:4px;    
     display:inline-block;
-    height:50px;
-    max-height:50px;
     overflow-y:auto;
     overflow-x:auto;
     max-width:300px;

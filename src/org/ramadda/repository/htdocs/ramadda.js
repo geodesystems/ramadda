@@ -1205,6 +1205,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 				  (event,item,result,wasDrop) =>{
 				      fileDrop.cnt++;
 				      let name = item.name;
+				      if(!name && item.getAsFile) {
+					  name = item.getAsFile().name;
+				      }
+
 				      if(!name) {
 					  let isImage = item.type && item.type.match("image/.*");
 					  name = prompt("Entry file name:",isImage?"image":"file");
