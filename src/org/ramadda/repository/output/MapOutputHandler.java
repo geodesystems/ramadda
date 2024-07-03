@@ -100,6 +100,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
+
         List<Entry> entriesToUse = new ArrayList<Entry>();
         entriesToUse.add(entry);
         StringBuilder sb = new StringBuilder();
@@ -150,6 +151,9 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         }
 
         if (children.size() == 0) {
+	    if(group.isGeoreferenced(request))
+		return  outputEntry(request,  outputType,group);
+
             sb.append(HtmlUtils.b(msg(LABEL_NO_ENTRIES_FOUND))
                       + HtmlUtils.p());
 
