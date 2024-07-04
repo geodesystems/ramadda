@@ -59,6 +59,39 @@ public class GeoJson extends JsonUtil {
 	return new JSONObject(contents);
     }    
 
+
+    public static void merge(String file1, String file2,String field1,String field2) throws Exception {
+	JSONObject j1 =  read(file1);
+	JSONObject j2 =  read(file2);
+	JSONArray f1=j1.getJSONArray("features");
+	JSONArray f2=j2.getJSONArray("features");	
+	for(int idx1=0;idx1<f1.length();idx1++) {
+	    JSONObject feature1 = f1.getJSONObject(idx1);
+	    JSONObject p1 = feature1.getJSONObject("properties");
+	    Object v1 = p1.get(field1).toString();
+	    //Slow for now
+	    JSONObject match = null;
+	    for(int idx2=0;idx2<f2.length();idx2++) {
+		JSONObject feature2 = f2.getJSONObject(idx2);
+		JSONObject p2 = feature2.getJSONObject("properties");
+		Object v2 = p2.get(field2).toString();
+		if(v1.equals(v2)) {
+		    match = p2;
+		    break;
+		}		    
+	    }
+	    if(match==null) {
+		System.err.println("no match:" + v1);
+		continue;
+	    }
+	    for (String key : match.keySet()) {
+		p1.put(key, match.get(key));
+	    }
+	}
+	System.out.println(j1);
+
+    }
+    
     public static List<String> getProperties(String file) throws Exception {
 	List<String> names = new ArrayList<String>();
 	JSONObject obj  =read(file);
@@ -734,6 +767,11 @@ public class GeoJson extends JsonUtil {
 		System.out.println(getBounds(args[++i]));
 		continue;
 	    }
+	    if(arg.equals("-merge")) {
+		merge(args[++i],args[++i],args[++i],args[++i]);
+		break;
+	    }
+
 	    if(arg.equals("-reverse")) {
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  reverse(obj);}});
 		continue;
