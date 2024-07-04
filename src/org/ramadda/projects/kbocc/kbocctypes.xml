@@ -1,4 +1,4 @@
-<types>
+<types category="Point Data" supercategory="Geoscience"  >
 <type name="type_kbocc_hydro" 
 description="KBOCC Water Sensor" 
 super="type_point" 
@@ -186,6 +186,35 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
       description="Old KBOCC Water Sensor"  />
 
 
+<type name="type_kbocc_map" 
+description="KBOCC Map" 
+super="type_point" 
+handler="org.ramadda.data.services.PointTypeHandler">
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="icon" value="/kbocc/kbocclg.png"/>
+<property name="form.date.show" value="false"/>
+<property name="form.area.show" value="false"/>
+<property name="form.location.show" value="false"/>
+<property name="form.properties.show" value="false"/>
+<property name="record.properties"><![CDATA[
+csvcommands1=-addheader, date_time.type date
+]]></property>
+<wiki>
+<![CDATA[
++section title={{name}}
+{{display_map max=20000 height=50vh zoomLevel=10 mapCenter=47.11343%2C-88.51613
+doAnimation=true  animationMode=frame 
+colorBy=temperature colorByMin=40  colorByMax=75 colorTable=plotly_bluered
+strokeWidth=0 radius=10
+labelTemplate="${temperature}"  labelYOffset=14  labelFontSize=10px  
+}} 
+
+{{display_download}}
+{{display_table}}
+-section
+]]></wiki>
+
+</type>
 
 
 
