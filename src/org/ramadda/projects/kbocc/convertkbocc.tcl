@@ -69,3 +69,12 @@ foreach file [glob -nocomplain  /Users/jeffmc/kbocc/rawfiles/*] {
 foreach file [glob -nocomplain  /Users/jeffmc/kbocc/rawfiles2/*] {
     file rename $file [file join /Users/jeffmc/kbocc/rawfiles [file tail $file]]
 }
+
+
+set fileList [glob -nocomplain converted/*]
+set command [list zip converted.zip]
+foreach file $fileList {
+    lappend command $file
+}
+
+eval exec $command
