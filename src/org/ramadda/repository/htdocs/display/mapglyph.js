@@ -5770,14 +5770,17 @@ MapGlyph.prototype = {
 	    let style={
 		strokeColor:'#000',
 		strokeWidth:2,
-		fillColor:'transparent'
+		fillColor:'transparent',
+		pointRadius:5
 	    };
+
 	    mapLayer.features.forEach(f=>{
 		f.originalStyle = f.style;
 		f.style = style;
 	    });
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}	    
+
 
 	let image = this.getImage();
 	if(image) {
