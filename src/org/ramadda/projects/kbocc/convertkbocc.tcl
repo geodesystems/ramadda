@@ -1,4 +1,4 @@
-set ::sitesfp [open foosites.xml w]
+set ::sitesfp [open sites.xml w]
 puts $::sitesfp "<entries>"
 
 if {![file exists converted]} {
@@ -6,22 +6,28 @@ if {![file exists converted]} {
 }
 
 
-proc convert {site f latitude longitude notes} {
+
+set ::currentSite ""
+proc site {site lat lon} {
+    set ::currentSite $site
+    if {![info exists ::loc($site,lat)]} {
+	set ::loc($site,lat) "$lat"
+	set ::loc($site,lon) "$lon"
+	puts $::sitesfp "<entry name=\"$site\" type=\"type_kbocc_site\" latitude=\"$lat\" longitude=\"$lon\"/>"
+    } else {
+	puts stderr "dup site: $site"
+    }
+}
+
+
+
+proc convert {f} {
     set file /Users/jeffmc/kbocc/rawfiles/$f
     if {![file exists $file]} {
 	puts stderr "No file: $file"
 	return
     }	
-
-    if {![info exists ::loc($site,lat)]} {
-	set ::loc($site,lat) "$latitude"
-	set ::loc($site,lon) "$longitude"
-	puts $::sitesfp "<entry name=\"$site\" type=\"type_kbocc_site\" latitude=\"$latitude\" longitude=\"$longitude\"/>"
-    } else {
-	if {!($::loc($site,lat) eq $latitude) || !($::loc($site,lon) eq $longitude)} {
-	    puts stderr "bad loc: $site $latitude $longitude should be $::loc($site,lat) $::loc($site,lon)"
-	}
-    }
+    set site $::currentSite
     set yy ""
     set inst ""
     foreach pattern {{(\d\d)-(\d\d)} {(\d\d)_(\d\d)} {(\d\d)-(\d)} {^(\d\d)} {(\d\d\d\d)}} {
@@ -50,22 +56,15 @@ proc convert {site f latitude longitude notes} {
 }
 
 
-
-
-set lines [read [open files.csv r]]
-set cnt 0
-foreach line [split $lines "\n"] {
-    set line [string trim $line]
-    if {$line==""} continue
-    incr cnt
-    if {$cnt==1} continue
-    foreach {site file latitude longitude notes} [split $line ,] break
-    convert  $site $file $latitude $longitude $notes
-}
-
+source files.tcl
 
 puts $::sitesfp "</entries>"
 close $::sitesfp
+
+foreach file [glob -nocomplain  /Users/jeffmc/kbocc/rawfiles/*] {
+    puts "No match for file $file"
+}
+
 
 foreach file [glob -nocomplain  /Users/jeffmc/kbocc/rawfiles2/*] {
     file rename $file [file join /Users/jeffmc/kbocc/rawfiles [file tail $file]]
