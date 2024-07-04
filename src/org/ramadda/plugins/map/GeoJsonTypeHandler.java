@@ -92,7 +92,7 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
         if (bounds != null) {
             entry.setBounds(bounds);
         }
-	entry.setValue(IDX_COLUMNS,Utils.join(names,","));
+	entry.setValue(IDX_COLUMNS,Utils.join(names,", "));
     }
 
     /**
