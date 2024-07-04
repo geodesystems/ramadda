@@ -81,8 +81,7 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${temperature decimals=1 su
 <type name="type_kbocc_merged" 
 description="KBOCC Merged Data" 
 super="type_point" 
-category="Point Data"
-supercategory="Geoscience"  
+pattern=".*kbocc_.*merged.*\.csv"
 handler="org.ramadda.projects.kbocc.KboccTypeHandler">
 <property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -189,6 +188,7 @@ fields=2017,2018,2019,2020,2021,2022,2023,2024,2025}}
 <type name="type_kbocc_map" 
 description="KBOCC Map" 
 super="type_point" 
+pattern=".*kbocc_map.*\.csv"
 handler="org.ramadda.data.services.PointTypeHandler">
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property name="icon" value="/kbocc/kbocclg.png"/>

@@ -62,7 +62,10 @@ public class KboccOutputHandler extends OutputHandler {
 	if(outputType.equals(OUTPUT_KBOCC_MERGESITE)) return processMergeSite(request, group, dir,children);
 	//These are the commands from kbocctypes.xml
 	List <File> processedFiles = new ArrayList<File>();
+	String year=null;
 	for(Entry child: children) {
+	    if(year==null)
+		year=child.getStringValue(request,"datayear",null);
 	    String[]cmds1={"-delimiter","?","-skiplines","1","-set","0","0","number","-set","1",
 			   "0","Date Time","-set","2","0","Temperature","-notcolumns","0,3-10",
 			   "-indateformats","MM/dd/yy hh:mm:ss a;MM/dd/yyyy HH:mm",   "GMT-4",
@@ -82,7 +85,8 @@ public class KboccOutputHandler extends OutputHandler {
 	String [] cmds2= {"-outdateformat","yyyy-MM-dd", "GMT","-formatdate","date_time","-extractdate", "date_time","days_in_year",
 			 "-unique","days_in_year","exact","-columns", "date_time,temperature,latitude,longitude","-print"};
 	List<File> files2 = Seesv.applySeesv(dir,cmds2,processedFiles);
-	File   finalFile = new File(IOUtil.joinDir(dir, "kboccdata.csv"));
+	String filename = year!=null?"kbocc_map_" + year+".csv":"kbocc_map.csv";
+	File   finalFile = new File(IOUtil.joinDir(dir, filename));
 	PrintWriter writer =    new PrintWriter(new FileOutputStream(finalFile));
 	for(int i=0;i<files2.size();i++) {
 	    File f= files2.get(i);
@@ -98,7 +102,7 @@ public class KboccOutputHandler extends OutputHandler {
 	    fis.close();
  	}
 	writer.close();
-	request.setReturnFilename("kboccdata.csv");
+	request.setReturnFilename(filename);
 	return new Result(new FileInputStream(finalFile),"text/csv");
     }
 
@@ -165,7 +169,7 @@ public class KboccOutputHandler extends OutputHandler {
 	allFiles.add(allFile);
 	List<File> finalFiles = Seesv.applySeesv(dir,cmds2,allFiles);
 	File   mergedFile = finalFiles.get(0);
-	request.setReturnFilename(Utils.makeID(site)+"_merged.csv");
+	request.setReturnFilename("kbocc_" + Utils.makeID(site)+"_merged.csv");
 	return new Result(new FileInputStream(mergedFile),"text/csv");
     }
 }

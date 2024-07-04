@@ -69,6 +69,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 	String dataYear = sdf.format(new Date(entry.getStartDate()));
 	boolean isHydro = getType().equals("type_kbocc_hydro");
 	String fileName = getStorageManager().getOriginalFilename(file.getName());
+	if(fileName.startsWith("kbocc")) fileName = fileName.substring("kbocc_".length());
 	String _fileName = fileName.replace("_","-");
 	String year = StringUtil.findPattern(fileName,".*_(\\d\\d\\d\\d).*");
 	if(isHydro) {
@@ -81,6 +82,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 		entry.setValue("instrument",inst);
 	    }
 	}
+
 
 
 
