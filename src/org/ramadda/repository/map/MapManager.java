@@ -824,6 +824,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (showSearch != null) {
             mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
         }
+        String featureLabelProperty = (String) props.get("featureLabelProperty");
+        if (featureLabelProperty != null) {
+            mapInfo.addProperty("featureLabelProperty", JU.quote(featureLabelProperty));
+        }	
         String displayDiv = (String) props.get("displayDiv");
         if (displayDiv != null) {
             mapInfo.addProperty("displayDiv", JsonUtil.quote(displayDiv));
