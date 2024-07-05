@@ -1932,6 +1932,7 @@ svg > g > g:last-child { pointer-events: none }
     margin-right:8px;
     padding:2px;
     display: inline-block;
+    white-space:nowrap;
 }
 
 .display-colortable-dot-item-selected {
@@ -3315,6 +3316,11 @@ table.dataTable tfoot td {
     border-radius:var(--default-radius);    
     background:#fff;
     z-index:500;
+}
+
+
+.imdv-legend-map-wrapper .display-colortable {
+    font-size:80%;
 }
 
 
