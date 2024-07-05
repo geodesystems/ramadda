@@ -2631,7 +2631,7 @@ MapGlyph.prototype = {
 	if(this.isMap() && this.mapLoaded) {
 	    let addColor= (obj,prefix, strings) => {
 		if(obj && Utils.stringDefined(obj.property)) {
-		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
+		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings,obj.stringValues);
 		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
 		    if(obj.isEnumeration) {
 			html+=HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;'],div);
@@ -3079,15 +3079,19 @@ MapGlyph.prototype = {
 	}
 	this.attrs.mapStyleRules =rules;
     },
-    getColorTableDisplay:function(id,min,max,showRange,isEnum,strings) {
+    getColorTableDisplay:function(id,min,max,showRange,isEnum,strings,stringValues) {
 	if(isEnum) showRange=false;
 	let ct = Utils.ColorTables[id];
 	if(!ct) {
 	    return "----";
 	}
+	let showDots = isEnum&& strings.length<=30;
+     	if(this.getProperty('colortable.showDots'))
+	    showDots = true;
         let display = Utils.getColorTableDisplay(ct,  min??0, max??1, {
 	    tooltips:strings,
-	    showColorTableDots:isEnum&& strings.length<=15,
+	    stringValues:stringValues,
+	    showColorTableDots:showDots,
 	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
             height: "20px",
@@ -4537,7 +4541,6 @@ MapGlyph.prototype = {
 		return true;
 	    });
 	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
-	    olDebug = true;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.fidx=idx;
@@ -4557,6 +4560,7 @@ MapGlyph.prototype = {
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
 	    let ct =Utils.getColorTable(obj.colorTable,true);
+
 	    let anyNumber =  false;
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
@@ -4572,11 +4576,17 @@ MapGlyph.prototype = {
 	    });
 
 	    if(!anyNumber) {
+		if(debug)
+		    console.log('\tno numbers - is enumeration');
 		obj.min =min = 0;
 		obj.max = max= strings.length-1;
 		obj.isEnumeration = true;
+		obj.stringValues=[];
 	    } else {
+		if(debug)
+		    console.log('\thas numbers - not enumeration');
 		obj.isEnumeration = false;
+		obj.stringValues=null;
 		if(!Utils.isDefined(obj.min))
 		    obj.min = min;
 		if(!Utils.isDefined(obj.max))
@@ -4585,6 +4595,13 @@ MapGlyph.prototype = {
 	    strings = strings.sort((a,b)=>{
 		return a.localeCompare(b);
 	    });
+
+	    if(obj.stringValues) {
+		strings.forEach((s,idx)=>{
+		    let color = idx<ct.length?ct[idx]:ct[idx-1];
+		    obj.stringValues.push({value:s,color:color});
+		});
+	    }
 
 	    //If there was no numbers then we pass back the strings
 	    if(!anyNumber) {
@@ -4605,7 +4622,6 @@ MapGlyph.prototype = {
 		    let percent = (value-obj.min)/range;
 		    index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		}
-
 		if(!f.style)
 		    f.style = $.extend({},style);
 		f.style[attr]=ct[index];
