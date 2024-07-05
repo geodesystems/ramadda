@@ -524,6 +524,9 @@ MapGlyph.prototype = {
 	}
 	if(this.isMap()) {
 	    miscLines.push('declutter.features=true');
+	    miscLines.push('colortable.select=false');
+	    miscLines.push('colortable.alpha=0.5');
+	    miscLines.push('colortable.showDots=true');
 	}
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
@@ -4560,7 +4563,10 @@ MapGlyph.prototype = {
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
 	    let ct =Utils.getColorTable(obj.colorTable,true);
-
+	    let alpha_ct = ct;
+	    if(this.getProperty('colortable.alpha')) {
+		alpha_ct =  this.display.addAlpha(ct,+this.getProperty('colortable.alpha'));
+	    }
 	    let anyNumber =  false;
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
@@ -4624,7 +4630,7 @@ MapGlyph.prototype = {
 		}
 		if(!f.style)
 		    f.style = $.extend({},style);
-		f.style[attr]=ct[index];
+		f.style[attr]=alpha_ct[index];
 		if(f.originalStyle) f.originalStyle[attr]=ct[index];		
 		if(debug && idx<3) {
 		    console.log('\t'+attr+'='+f.style[attr]);
