@@ -3888,6 +3888,7 @@ MapGlyph.prototype = {
 	    this.filterInfo[info.getId()] = info;	    
 	    if(!filters[info.property]) filters[info.property]= {};
 	    let filter = filters[info.property];
+
 	    if(!Utils.isDefined(filter.min) || isNaN(filter.min)) filter.min = info.min;
 	    if(!Utils.isDefined(filter.max) || isNaN(filter.max)) filter.max = info.max;	    
 	    filter.property =  info.property;
@@ -3904,6 +3905,7 @@ MapGlyph.prototype = {
 	    } 
 	    if(info.isEnumeration())  {
 		filter.type="enum";
+
 		if(info.samples.length>1) {
 		    let sorted = info.samples.sort((a,b)=>{
 			return a.value.localeCompare(b.value);
@@ -3915,8 +3917,12 @@ MapGlyph.prototype = {
 			return {value:sample.value,label:label}
 		    });
 
+	    
+
 		    let line=label+":<br>" +
 			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
+
+
 		    add(info,'enums',line);
 		}
 		return;
@@ -6001,7 +6007,7 @@ FeatureInfo.prototype= {
 	if(!Utils.isDefined(value)) return;
 	let isEnumeration = this.isEnumeration();
 	if(isNaN(value) || this.samples.length>0 || isEnumeration) {
-	    if(this.samples.length<30) {
+	    if(this.samples.length<100) {
 		this.type='enumeration';
 		if(!this.seen[value]) {
 		    this.seen[value] = 0;
