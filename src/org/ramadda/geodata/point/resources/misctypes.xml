@@ -38,7 +38,7 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 <wiki>
 <![CDATA[
 +section  title="{{name}}"
-{{properties  message=""  metadata.types="data.status" inherited="true" includeTitle="false" center="true" addLink="false"}}
+{{datastatus}}
 <div style='text-align:right;'>
 <span style='display:inline-block;'>{{resource  message="" title="Download Data"}}</span>
 </div>
@@ -96,7 +96,7 @@ record.type.default=double
 <![CDATA[
 +section title={{name}}                                                            
 :navtop  fixed=true
-{{properties  message=""  metadata.types="data.status" inherited="true" includeTitle="false" center="true" addLink="false"}}
+{{datastatus}}
 {{description wikify=true}}
 :heading Skew-T
 {{display_skewt skewtWidth="550" skewtHeight="450" hodographWidth=300}}

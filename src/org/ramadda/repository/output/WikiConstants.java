@@ -679,6 +679,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
 
+    public static final String WIKI_TAG_DATA_STATUS = "datastatus";    
+
     public static final String WIKI_TAG_LICENSE = "license";
     public static final String WIKI_TAG_USAGE = "usage";
 

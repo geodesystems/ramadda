@@ -3138,7 +3138,11 @@ public class WikiManager extends RepositoryManager
 	    }
 	    getAccessManager().formatDataPolicies(request, sb, dataPolicies,includeCollection, includePermissions);
 	    return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_DATA_STATUS)) {
+	    String text= "{{properties  message=\"\"  metadata.types=\"data.status\" inherited=\"true\" includeTitle=\"false\" center=\"true\" addLink=\"false\" stripe=\"false\"}}";             
+	    return   wikifyEntry(request, entry, text, false);
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
+
             return makeEntryTabs(request, wikiUtil, entry, props);
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {
             ImageOutputHandler ioh = getImageOutputHandler();

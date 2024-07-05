@@ -73,7 +73,7 @@ label,pos:s,dx:cw2,dy:-10,font:36px sans-serif,label:${match  pattern="(temp|rh)
 <wiki>
 <![CDATA[
 +section  title="{{name}}"
-{{properties  message=""  metadata.types="data.status" inherited="true" includeTitle="false" center="true" addLink="false" stripe="false"}}
+{{datastatus}}
 <div style="max-height:200px; overflow-y:auto;">
 {{description wikify=true}}
 </div>

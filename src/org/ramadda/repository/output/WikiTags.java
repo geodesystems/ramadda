@@ -249,8 +249,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"decorate","false",
 					"inherited","false"),
                             new WikiTag(WIKI_TAG_DISPLAYPROPERTIES, null, "displayType","null"),
-
-
+                            new WikiTag(WIKI_TAG_DATA_STATUS, null),
                             new WikiTag(WIKI_TAG_USAGE, "Usage Descriptor",
 					"descriptor","cc-by",
 					"includeName","true",
