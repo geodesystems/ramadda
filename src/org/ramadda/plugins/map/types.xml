@@ -270,6 +270,11 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
       ]]>
     </property>
     <column name="names" type="string" changetype="true" size="2000" label="Properties" canedit="false"  showinhtml="true"/>
+    <column name="show_search" type="boolean" default="false" label="Show Search"
+	    showinhtml="false"/>
+    <column name="feature_label_property" type="string" default="" 
+	    label="Feature label property"
+	    showinhtml="false"/>        
 
 <property name="bubble">
 <![CDATA[
@@ -284,7 +289,9 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 {{description wikify="true"}}
 +row
 +col-md-8
-{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
+{{map width="100%" height="450" showSearch="property:show_search"
+featureLabelProperty="property:feature_label_property"
+viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -col
 +col-md-4
 <div style="padding-top:20px;"></div>
