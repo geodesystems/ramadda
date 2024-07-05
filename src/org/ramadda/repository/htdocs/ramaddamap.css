@@ -5,6 +5,8 @@
     font-weight:bold;
 }
 
+
+
 .ramadda-map-message {
     position:absolute;
     top:10px;
@@ -13,6 +15,17 @@
     z-index:1000;
     border:var(--basic-border);
     padding:5px;
+}
+
+.ramadda-map-features .ramadda-map-feature {
+    border-bottom:var(--basic-border);
+    max-height:100px;
+    overflow-y:auto;
+}
+
+.ramadda-map-features .ramadda-map-feature:hover {
+    background:var(--highlight-background);
+    text-decoration:none;
 }
 
 /* Add this so when we show a graticule it doesn't pick up the mouse clicks */
