@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul  4 23:21:39 MDT 2024";
+var build_date="RAMADDA build date: Fri Jul  5 05:34:54 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -179,7 +179,9 @@ $.extend(Utils,{
 		info.titles.push(value);
             });
         }
-	
+
+
+
 	let clazz = " display-colortable " +(!options.tooltips && options.showColorTableDots?"display-colortable-dots"+(options.horizontal?'-h':''):"");
 	if(!options.horizontal)
 	    clazz+=' display-colortable-vertical';
@@ -238,6 +240,7 @@ $.extend(Utils,{
                 let val2 = min + step * (i+1);
                 let label = options.tooltips?options.tooltips[idx]:formatter(val)+ "-" + formatter(val2);
 		let color = ct[i];
+
 		if(options.stringValues)  {
 		    label = options.stringValues[idx]?.value;
 		    color = options.stringValues[idx]?.color??color;
@@ -250,7 +253,8 @@ $.extend(Utils,{
 						      'height',HU.getDimension(options.dotWidth));
 		if(options.tooltips) {
                     html += HU.div(['label',label,"data-value",val,'style','width:100%;display:inline-block;',
-				    ATTR_CLASS,"display-colortable-dot-item",TITLE,label], HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
+				    ATTR_CLASS,"display-colortable-dot-item",ATTR_TITLE,label],
+				   HU.div([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]) + delim + label);
 		} else {
 		    let dot = HU.span([ "data-value",val,"class", "display-colortable-dot", "style", dotStyle]);
 		    let item;
@@ -424,7 +428,7 @@ var defaultColorTables=[
 {"id":"d3_schemeRdYlGn","colors":["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]},
 {"id":"d3_schemeSpectral","colors":["#9e0142","#d53e4f","#f46d43","#fdae61","#fee08b","#ffffbf","#e6f598","#abdda4","#66c2a5","#3288bd","#5e4fa2"]},
 {"category":"Categorical"},
-    {"id":"gpt50","colors":["rgb(31,119,180)",,"rgb(255,127,14)","rgb(255,187,120)","rgb(174,199,232)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
+    {"id":"gpt50","colors":["rgb(31,119,180)","rgb(255,127,14)","rgb(255,187,120)","rgb(174,199,232)","rgb(44,160,44)","rgb(152,223,138)","rgb(214,39,40)","rgb(255,152,150)","rgb(148,103,189)","rgb(197,176,213)","rgb(140,86,75)","rgb(196,156,148)","rgb(227,119,194)","rgb(247,182,210)","rgb(127,127,127)","rgb(199,199,199)","rgb(188,189,34)","rgb(219,219,141)","rgb(23,190,207)","rgb(158,218,229)","rgb(218,60,60)","rgb(230,197,197)","rgb(3,81,0)","rgb(146,143,143)","rgb(140,0,140)","rgb(153,153,153)","rgb(0,80,90)","rgb(230,143,143)","rgb(0,0,0)","rgb(250,215,215)","rgb(0,100,0)","rgb(78,238,148)","rgb(205,0,90)","rgb(255,228,225)","rgb(139,58,98)","rgb(238,238,238)","rgb(205,92,92)","rgb(75,0,130)","rgb(255,235,205)","rgb(0,0,139)","rgb(139,0,139)","rgb(0,0,255)","rgb(238,130,238)","rgb(0,139,139)","rgb(0,100,0)","rgb(189,183,107)","rgb(139,0,0)","rgb(233,150,122)","rgb(143,188,143)","rgb(72,61,139)"]},
     {"id":"gpt100","colors":["#1f77b4","#ff7f0e","#ffbb78","#2ca02c","#98df8a","#aec7e8","#d62728","#ff9896","#9467bd","#c5b0d5","#8c564b","#c49c94","#e377c2","#f7b6d2","#7f7f7f","#c7c7c7","#bcbd22","#dbdb8d","#17becf","#9edae5","#393b79","#5254a3","#6b6ecf","#9c9ede","#637939","#8ca252","#b5cf6b","#cedb9c","#8c6d31","#bd9e39","#e7ba52","#e7cb94","#843c39","#ad494a","#d6616b","#e7969c","#7b4173","#a55194","#ce6dbd","#de9ed6","#3182bd","#6baed6","#9ecae1","#c6dbef","#e6550d","#fd8d3c","#fdae6b","#fdd0a2","#31a354","#74c476","#a1d99b","#c7e9c0","#756bb1","#9e9ac8","#bcbddc","#dadaeb","#636363","#969696","#bdbdbd","#d9d9d9"]},
 {id:'cats256',colors:["rgb(31,119,179)","rgb(255,126,14)","rgb(43,160,43)","rgb(214,38,40)","rgb(147,103,188)","rgb(140,86,75)","rgb(226,119,193)","rgb(126,126,126)","rgb(188,188,33)","rgb(22,189,207)","rgb(58,1,130)","rgb(0,66,1)","rgb(15,255,168)","rgb(93,0,63)","rgb(188,188,255)","rgb(216,175,161)","rgb(184,0,128)","rgb(0,77,82)","rgb(107,100,0)","rgb(124,1,0)","rgb(96,38,255)","rgb(255,255,154)","rgb(86,73,100)","rgb(140,184,147)","rgb(147,251,255)","rgb(1,130,103)","rgb(144,255,0)","rgb(130,0,160)","rgb(172,137,68)","rgb(91,52,0)","rgb(255,191,242)","rgb(255,110,117)","rgb(121,140,255)","rgb(221,0,255)","rgb(80,86,70)","rgb(0,68,137)","rgb(255,191,96)","rgb(255,1,140)","rgb(189,200,207)","rgb(175,151,181)","rgb(182,86,0)","rgb(1,112,0)","rgb(205,135,255)","rgb(28,214,70)","rgb(191,235,195)","rgb(121,151,181)","rgb(165,96,137)","rgb(110,137,86)","rgb(188,124,117)","rgb(138,40,68)","rgb(0,172,255)","rgb(142,212,255)","rgb(75,109,119)","rgb(0,212,177)","rgb(147,0,242)","rgb(138,149,0)","rgb(93,91,158)","rgb(253,223,186)","rgb(0,147,158)","rgb(255,219,0)","rgb(0,170,121)","rgb(82,0,103)","rgb(0,0,145)","rgb(10,93,61)","rgb(165,226,117)","rgb(98,59,65)","rgb(198,198,137)","rgb(255,158,181)","rgb(205,79,107)","rgb(255,7,214)","rgb(138,58,5)","rgb(126,61,112)","rgb(255,73,1)","rgb(96,43,165)","rgb(28,0,255)","rgb(230,223,255)","rgb(170,59,175)","rgb(216,156,0)","rgb(163,163,158)","rgb(63,105,255)","rgb(70,73,12)","rgb(123,105,133)","rgb(107,151,140)","rgb(255,154,117)","rgb(131,91,255)","rgb(124,107,70)","rgb(128,182,84)","rgb(188,0,73)","rgb(253,147,255)","rgb(93,0,24)","rgb(137,209,209)","rgb(156,140,211)","rgb(218,109,66)","rgb(138,87,0)","rgb(59,80,105)","rgb(75,107,59)","rgb(237,207,216)","rgb(207,237,255)","rgb(170,21,0)","rgb(223,255,79)","rgb(255,42,86)","rgb(209,73,158)","rgb(112,124,184)","rgb(89,128,0)","rgb(0,228,253)","rgb(119,75,149)","rgb(103,212,140)","rgb(61,58,114)","rgb(172,65,63)","rgb(214,161,102)","rgb(193,105,205)","rgb(105,89,93)","rgb(135,172,237)","rgb(160,165,105)","rgb(209,170,230)","rgb(135,0,98)","rgb(0,253,219)","rgb(103,40,24)","rgb(179,66,255)","rgb(14,89,196)","rgb(22,135,66)","rgb(144,211,0)","rgb(205,121,0)","rgb(249,89,255)","rgb(91,116,102)","rgb(142,174,179)","rgb(156,124,140)","rgb(70,0,198)","rgb(107,77,45)","rgb(165,109,70)","rgb(158,137,114)","rgb(168,175,202)","rgb(205,140,167)","rgb(0,253,100)","rgb(145,121,0)","rgb(255,98,161)","rgb(244,255,216)","rgb(1,140,240)","rgb(19,172,160)","rgb(91,45,89)","rgb(137,133,158)","rgb(207,204,186)","rgb(212,175,196)","rgb(219,221,109)","rgb(207,255,244)","rgb(0,100,133)","rgb(0,105,98)","rgb(168,65,103)","rgb(45,151,196)","rgb(168,116,255)","rgb(38,186,93)","rgb(87,182,0)","rgb(202,255,167)","rgb(163,121,170)","rgb(255,188,147)","rgb(137,226,193)","rgb(15,200,255)","rgb(212,0,196)","rgb(98,109,137)","rgb(105,133,142)","rgb(75,77,82)","rgb(170,96,103)","rgb(121,181,212)","rgb(43,89,22)","rgb(154,0,36)","rgb(189,209,242)","rgb(137,110,103)","rgb(105,165,107)","rgb(133,84,103)","rgb(174,205,186)","rgb(135,153,126)","rgb(202,219,0)","rgb(154,3,144)","rgb(235,188,26)","rgb(235,156,209)","rgb(112,0,110)","rgb(177,161,49)","rgb(202,107,147)","rgb(65,70,163)","rgb(228,140,137)","rgb(212,68,0)","rgb(198,138,202)","rgb(182,149,151)","rgb(212,31,117)","rgb(114,75,204)","rgb(103,77,0)","rgb(103,33,56)","rgb(56,86,79)","rgb(110,186,170)","rgb(133,58,49)","rgb(165,211,151)","rgb(184,175,142)","rgb(216,228,223)","rgb(170,0,223)","rgb(202,193,219)","rgb(255,223,140)","rgb(226,82,77)","rgb(102,105,110)","rgb(255,0,28)","rgb(82,45,114)","rgb(77,144,107)","rgb(168,109,17)","rgb(255,158,38)","rgb(94,163,175)","rgb(200,133,86)","rgb(145,89,151)","rgb(163,161,255)","rgb(253,186,186)","rgb(36,42,135)","rgb(219,230,168)","rgb(151,242,167)","rgb(103,147,214)","rgb(186,91,63)","rgb(58,93,145)","rgb(54,79,47)","rgb(38,124,149)","rgb(137,149,154)","rgb(207,179,86)","rgb(0,70,100)","rgb(94,93,47)","rgb(142,142,65)","rgb(172,63,19)","rgb(105,149,59)","rgb(161,61,133)","rgb(191,182,186)","rgb(172,198,103)","rgb(100,105,207)","rgb(145,175,0)"]},
 
@@ -51168,6 +51172,9 @@ MapGlyph.prototype = {
 	}
 	if(this.isMap()) {
 	    miscLines.push('declutter.features=true');
+	    miscLines.push('colortable.select=false');
+	    miscLines.push('colortable.alpha=0.5');
+	    miscLines.push('colortable.showDots=true');
 	}
 
 	this.getFeatureInfoList().forEach((info,idx)=>{
@@ -53275,7 +53282,7 @@ MapGlyph.prototype = {
 	if(this.isMap() && this.mapLoaded) {
 	    let addColor= (obj,prefix, strings) => {
 		if(obj && Utils.stringDefined(obj.property)) {
-		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings);
+		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings,obj.stringValues);
 		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
 		    if(obj.isEnumeration) {
 			html+=HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;'],div);
@@ -53723,15 +53730,19 @@ MapGlyph.prototype = {
 	}
 	this.attrs.mapStyleRules =rules;
     },
-    getColorTableDisplay:function(id,min,max,showRange,isEnum,strings) {
+    getColorTableDisplay:function(id,min,max,showRange,isEnum,strings,stringValues) {
 	if(isEnum) showRange=false;
 	let ct = Utils.ColorTables[id];
 	if(!ct) {
 	    return "----";
 	}
+	let showDots = isEnum&& strings.length<=30;
+     	if(this.getProperty('colortable.showDots'))
+	    showDots = true;
         let display = Utils.getColorTableDisplay(ct,  min??0, max??1, {
 	    tooltips:strings,
-	    showColorTableDots:isEnum&& strings.length<=15,
+	    stringValues:stringValues,
+	    showColorTableDots:showDots,
 	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
             height: "20px",
@@ -55181,7 +55192,6 @@ MapGlyph.prototype = {
 		return true;
 	    });
 	    if(debug) console.dir("\tadding styleMap unique rules",uniqueRules);
-	    olDebug = true;
 	    this.mapLayer.styleMap = this.display.getMap().getVectorLayerStyleMap(this.mapLayer, style,uniqueRules);
 	    features.forEach((f,idx)=>{
 		f.fidx=idx;
@@ -55201,6 +55211,10 @@ MapGlyph.prototype = {
 	    let min =Number.MAX_VALUE;
 	    let max =Number.MIN_VALUE;
 	    let ct =Utils.getColorTable(obj.colorTable,true);
+	    let alpha_ct = ct;
+	    if(this.getProperty('colortable.alpha')) {
+		alpha_ct =  this.display.addAlpha(ct,+this.getProperty('colortable.alpha'));
+	    }
 	    let anyNumber =  false;
 	    features.forEach((f,idx)=>{
 		let value = this.getFeatureValue(f,prop);
@@ -55216,11 +55230,17 @@ MapGlyph.prototype = {
 	    });
 
 	    if(!anyNumber) {
+		if(debug)
+		    console.log('\tno numbers - is enumeration');
 		obj.min =min = 0;
 		obj.max = max= strings.length-1;
 		obj.isEnumeration = true;
+		obj.stringValues=[];
 	    } else {
+		if(debug)
+		    console.log('\thas numbers - not enumeration');
 		obj.isEnumeration = false;
+		obj.stringValues=null;
 		if(!Utils.isDefined(obj.min))
 		    obj.min = min;
 		if(!Utils.isDefined(obj.max))
@@ -55229,6 +55249,13 @@ MapGlyph.prototype = {
 	    strings = strings.sort((a,b)=>{
 		return a.localeCompare(b);
 	    });
+
+	    if(obj.stringValues) {
+		strings.forEach((s,idx)=>{
+		    let color = idx<ct.length?ct[idx]:ct[idx-1];
+		    obj.stringValues.push({value:s,color:color});
+		});
+	    }
 
 	    //If there was no numbers then we pass back the strings
 	    if(!anyNumber) {
@@ -55249,10 +55276,9 @@ MapGlyph.prototype = {
 		    let percent = (value-obj.min)/range;
 		    index = Math.max(0,Math.min(ct.length-1,Math.round(percent*ct.length)));
 		}
-
 		if(!f.style)
 		    f.style = $.extend({},style);
-		f.style[attr]=ct[index];
+		f.style[attr]=alpha_ct[index];
 		if(f.originalStyle) f.originalStyle[attr]=ct[index];		
 		if(debug && idx<3) {
 		    console.log('\t'+attr+'='+f.style[attr]);
