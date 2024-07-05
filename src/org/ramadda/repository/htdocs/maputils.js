@@ -644,7 +644,7 @@ var MapUtils =  {
                 value = '' + attrs[attr];
             }
             if (value.startsWith('http:') || value.startsWith('https:')) {
-                value = '<a href=\'' + value + '\'>' + value + '</a>';
+                value = '<a target=_link href=\'' + value + '\'>' + value + '</a>';
             }
             if (value == 'null') return;
 	    if(valueFormatter) value = valueFormatter(attr,value);
