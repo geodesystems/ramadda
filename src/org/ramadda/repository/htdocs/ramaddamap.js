@@ -421,7 +421,19 @@ function ramaddaFindFeature(layer, point) {
 RepositoryMap.prototype = {
     firstCustomRegion: true,
     CUSTOM_MAP : "CUSTOM",
-    
+
+    drawFeature:function(layer,feature,style) {
+//	if(style=='default' && feature.originalStyle) style=feature.originalStyle;
+//	console.log('draw',style);
+	layer.drawFeature(feature,style);
+    },
+	
+    setFeatureStyle:function(feature,style) { 
+	if(style && style.display=='none') {
+	} else {
+	}
+	if(feature) feature.style = style;
+    },
 
     validBounds: function(b) {
 	if(!b) return false
@@ -1054,7 +1066,7 @@ RepositoryMap.prototype = {
 	    }
 	});
     },
-    handleFeatureover: function(feature, skipText) {
+    handleFeatureover: function(feature, skipText,extraStyle) {
         if (this.selectedFeature)  return;
 	if(this.doMouseOver || feature.highlightText || feature.highlightTextGetter) {
 	    let location = feature.location;
@@ -1091,7 +1103,7 @@ RepositoryMap.prototype = {
         }
 	if (layer.canSelect === false || layer.noHighlight) return;
         if (!feature.isSelected) {
-	    this.highlightFeature(feature);
+	    this.highlightFeature(feature,extraStyle);
             if (this.params.displayDiv) {
                 this.displayedFeature = feature;
                 if (!skipText) {
@@ -1114,15 +1126,16 @@ RepositoryMap.prototype = {
 
     unhighlightFeature:function(feature) {
 	if(feature.originalStyle) {
-	    feature.style = feature.originalStyle;
-	    feature.layer.drawFeature(feature);
+	    this.setFeatureStyle(feature, feature.originalStyle);
+	    this.drawFeature(feature.layer,feature);
 	}
     },
     highlightFeature:function(feature,highlightStyle) {
 	let fs = feature.style;
-	if(!feature.originalStyle)
-            feature.originalStyle = $.extend({},feature.style??{});
-        feature.style = null;
+	if(!feature.originalStyle && feature.style) {
+            feature.originalStyle = $.extend({},feature.style);
+	}
+	this.setFeatureStyle(feature,null);
 	let layer = feature.layer;
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
 
@@ -1154,9 +1167,7 @@ RepositoryMap.prototype = {
 	    highlight.externalGraphic = fs.externalGraphic;
 	    highlight.fillOpacity=1;
 	}	    
-
-
-	feature.layer.drawFeature(feature, highlight);
+	this.drawFeature(feature.layer,feature, highlight);
     },
 
     closeHighlightPopup: function() {
@@ -1193,12 +1204,12 @@ RepositoryMap.prototype = {
 
 	//Only reset to the original style if there is something there
 	if(feature.originalStyle && feature.originalStyle.fillColor) {
-            feature.style = feature.originalStyle;
+	    this.setFeatureStyle(feature, feature.originalStyle);
 	}
 
 
         if (!feature.isSelected) {
-            layer.drawFeature(feature, feature.style || "default");
+	    this.drawFeature(layer,feature, feature.style || "default");
         }
         this.dateFeatureOut(feature);
         if (!skipText && this.displayedFeature == feature && !this.fixedText) {
@@ -1228,7 +1239,7 @@ RepositoryMap.prototype = {
             this.clearDateFeature();
         }
     },
-    handleFeatureclick: function(layer, feature, center,event) {
+    handleFeatureclick: function(layer, feature, center,event,extraStyle) {
         if (!layer)
             layer = feature.layer;
 
@@ -1274,6 +1285,9 @@ RepositoryMap.prototype = {
 	    style.pointRadius = Math.round(style.pointRadius*1.5);
 	}
 
+	if(extraStyle) {
+	    $.extend(style,extraStyle);
+	}
 
 	if(style.fillColor!="transparent") {
 	    style.fillColor  = this.params.selectFillColor || highlightStyle.fillColor;
@@ -1284,7 +1298,6 @@ RepositoryMap.prototype = {
 	}
 
 	this.checkMatchStyle(fs,style);
-
 
 	//If it is a graphic then just clone the style
 	if(feature.style &&  feature.style.externalGraphic) {
@@ -1304,7 +1317,7 @@ RepositoryMap.prototype = {
 	}
 
 
-	layer.drawFeature(layer.selectedFeature, style);
+	this.drawFeature(layer,layer.selectedFeature, style);
         if (layer.selectCallback) {
             layer.feature = layer.selectedFeature;
             if (feature.originalStyle) {
@@ -1338,7 +1351,7 @@ RepositoryMap.prototype = {
         feature.isSelected = false;
         let layer = feature.layer;
         if (!layer) return;
-        layer.drawFeature(layer.selectedFeature, layer.selectedFeature.style || "default");
+	this.drawFeature(layer,layer.selectedFeature, layer.selectedFeature.style || "default");
         layer.selectedFeature.isSelected = false;
         layer.selectedFeature = null;
         this.selectedFeature = null;
@@ -1756,18 +1769,25 @@ RepositoryMap.prototype = {
         return map;
     },
 
-    getFeatureName: function(feature) {
-        var p = feature.attributes;
-        for (var attr in p) {
-            var name = ("" + attr).toLowerCase();
+    getFeatureName: function(feature,dontCheckLabel) {
+        let p = feature.attributes;
+	let featureLabelProperty = this.params.featureLabelProperty;
+	if(!dontCheckLabel && Utils.stringDefined(featureLabelProperty)) {
+	    let value = p[featureLabelProperty];
+	    if(value) {
+		return value;
+	    }
+	}
+        for (let attr in p) {
+            let name = ("" + attr).toLowerCase();
             if (!(name.includes("label"))) continue;
-            var value = this.getAttrValue(p, attr);
+            let value = this.getAttrValue(p, attr);
             if (value) return value;
         }
-        for (var attr in p) {
-            var name = ("" + attr).toLowerCase();
+        for (let attr in p) {
+            let name = ("" + attr).toLowerCase();
             if (!(name.includes("name"))) continue;
-            var value = this.getAttrValue(p, attr);
+            let value = this.getAttrValue(p, attr);
             if (value) return value;
         }
     },
@@ -1935,7 +1955,7 @@ RepositoryMap.prototype = {
                 Utils.makeDownloadFile("download.csv", csv);
             }
             this.setFeatureVisibility(layer);
-        }
+	}
     },
     checkFeatureVisible: function(feature, redraw,debug) {
         let layer = feature.layer;
@@ -1945,15 +1965,16 @@ RepositoryMap.prototype = {
 	    cbx.prop('checked',visible);
 	}
         if (feature.originalStyle) {
-            feature.style = feature.originalStyle;
+	    this.setFeatureStyle(feature, feature.originalStyle);
         }
         let style = feature.style;
         if (!style) {
-            style = {};
+	    style = {};
             let defaultStyle = layer?layer.styleMap.styles["default"].defaultStyle:{};
             $.extend(style, defaultStyle);
-            feature.style = style;
-        } else {}
+	    this.setFeatureStyle(feature, style);
+        }
+
         if (!visible) {
             style.display = 'none';
         } else {
@@ -1963,7 +1984,7 @@ RepositoryMap.prototype = {
             if (!feature.isSelected)
                 feature.renderIntent = null;
 	    if(layer)
-		layer.drawFeature(feature, feature.style || "default");
+		this.drawFeature(layer,feature, feature.style || "default");
         }
         return visible;
     },
@@ -2002,7 +2023,7 @@ RepositoryMap.prototype = {
                 didOn = true;
                 cnt++;
                 if (!onFeature) onFeature = feature;
-                html += HtmlUtils.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
+                html += HtmlUtils.div([ATTR_TITLE,'',ATTR_CLASS, 'ramadda-map-feature', 'feature-index', '' + i], this.getFeatureName(feature));
                 let geometry = feature.geometry;
                 if (geometry) {
                     let fbounds = geometry.getBounds();
@@ -2016,14 +2037,32 @@ RepositoryMap.prototype = {
         } else {
             if (didSearch || (didOn && didOff)) {
                 let id = this.mapDivId + "_features";
-                this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
+                this.showText(HU.div(["id", id, "class", "ramadda-map-features"], html),true);
+		/****
+                $("#" + id + " .ramadda-map-feature").tooltip({
+		    content: function() {
+			let index = parseInt($(this).attr("feature-index"));
+			feature =  layer.features[index];
+			if(feature) {
+			    let p = feature.attributes;
+			    if(p) {
+				return MapUtils.makeDefaultFeatureText(p);
+			    }				
+			}
+			return null;
+		    }
+		    });
+		    **/
+
                 $("#" + id + " .ramadda-map-feature").click(function(e) {
                     let index = parseInt($(this).attr("feature-index"));
-                    _this.handleFeatureclick(layer, layer.features[index], true);
+		    _this.dontShowText = true;
+                    _this.handleFeatureclick(layer, layer.features[index], true,null,{strokeColor:'red'});
+		    _this.dontShowText = false;
                 });
                 $("#" + id + " .ramadda-map-feature").mouseover(function() {
                     let index = parseInt($(this).attr("feature-index"));
-                    _this.handleFeatureover(layer.features[index], true);
+                    _this.handleFeatureover(layer.features[index], true,{strokeColor:'red'});
                 });
                 $("#" + id + " .ramadda-map-feature").mouseout(function() {
                     let index = parseInt($(this).attr("feature-index"));
@@ -2039,8 +2078,10 @@ RepositoryMap.prototype = {
         if (this.searchMsg) {
             if (didSearch)
                 this.searchMsg.html(cnt + " matched");
-            else
+            else {
                 this.searchMsg.html("");
+		this.showText('');
+	    }
         }
         layer.redraw();
         if (bounds) {
@@ -2314,10 +2355,12 @@ RepositoryMap.prototype = {
                     percent = percent - percent * percentPad;
                     if(!options) options = {};
                     let fdate = date.toLocaleDateString("en-US", options);
-                    let name = Utils.camelCase(this.getFeatureName(feature));
+                    let name = this.getFeatureName(feature);
+		    if(name && name.length>100) name = name.substring(0,99)+'...';
                     let tooltip = "";
                     tooltip += name != null ? name + "<br>" : "";
                     tooltip += fdate;
+//		    tooltip=HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto')], tooltip);
                     tooltip += "<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
                     tooltip += "";
                     html += HtmlUtils.div(["id", this.mapDivId + "_tick" + i, "feature-index", "" + i, "style", "left:" + percent + "%", "class", "ramadda-map-animation-tick", "title", tooltip], "");
@@ -2394,7 +2437,7 @@ RepositoryMap.prototype = {
                         //                            center = true;
                     }
                     _this.clearDateFeature();
-                    _this.handleFeatureclick(feature.layer, feature, center);
+		    _this.handleFeatureclick(feature.layer, feature, center,null,{strokeColor:'red'});
                 }
             });
         }
@@ -4661,7 +4704,12 @@ RepositoryMap.prototype = {
         }
     },
 
-    showText:  function(text) {
+    showText:  function(text,force) {
+        if (!force && this.searchMsg && Utils.stringDefined(this.searchMsg.html())) {
+	    return;
+	}
+
+	if(this.dontShowText) return;
 	if(text.startsWith('url:')) {
 	    let url = text.substring('url:'.length);
             $.get(url,
