@@ -87,6 +87,18 @@ inlineblock {
     position:relative;
 }
 
+.ramadda-datastatus {
+    border-radius:var(--default-radius);
+    display:inline-block;
+    background:rgba(153,255,255,0.2);
+    border:var(--basic-border);
+    padding:2px;
+    padding-left:6px;
+    padding-right:6px;    
+
+}
+
+
 .fileinput_wrapper {
     background:#fff;
     display:inline-block;

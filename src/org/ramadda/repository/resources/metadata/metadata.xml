@@ -51,7 +51,7 @@
 	  searchable="true" browsable="true">
       <element name="Status"       datatype="enumerationplus"     searchable="true"  values="Vetted,Unvetted"/>
       <element name="Description"       datatype="string"/>
-      <template type="html"><![CDATA[<div style='border-radius:var(--default-radius);display:inline-block;border:var(--basic-border);padding:4px;'><b>Data Status:</b> ${attr1} ${attr2}</div>]]></template>
+      <template type="html"><![CDATA[<div class='ramadda-datastatus'><b>Data Status:</b> ${attr1} ${attr2}</div>]]></template>
     </type>
 
 
