@@ -47,6 +47,15 @@
     </type>
 
 
+    <type name="Data Status" id="data.status" 
+	  searchable="true" browsable="true">
+      <element name="Status"       datatype="enumerationplus"     searchable="true"  values="Vetted,Unvetted"/>
+      <element name="Description"       datatype="string"/>
+      <template type="html"><![CDATA[<div style='border-radius:var(--default-radius);display:inline-block;border:var(--basic-border);padding:4px;'><b>Data Status:</b> ${attr1} ${attr2}</div>]]></template>
+    </type>
+
+
+
 
     <type name="Subject" id="content.subject" searchable="true" browsable="true" xdisplaygroup="Tags and Keywords"  >
       <element name="Subject" />
