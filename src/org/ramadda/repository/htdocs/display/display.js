@@ -1183,6 +1183,7 @@ function DisplayThing(argId, argProperties) {
 	    let labelWidth = this.getLabelWidth();
 	    fields= this.getSortedFields(fields);
 	    let excludes = props.excludes?props.excludes.split(","):[];
+	    let skipEmpty=props.skipEmpty=='true';
 	    let group = null;
 	    let includeDesc = this.getIncludeFieldDescriptionInTooltip();
             for (let doDerived = 0; doDerived < 2; doDerived++) {
@@ -1228,6 +1229,7 @@ function DisplayThing(argId, argProperties) {
                     let initValue = record.getValue(field.getIndex());
                     let value = initValue;
                     let svalue = String(initValue);		    
+		    if(skipEmpty && !Utils.stringDefined(svalue)) continue;
 		    let fieldValue = value;
 		    if(fieldValue)
 			fieldValue = svalue.replace(/"/g,"'");
@@ -1262,6 +1264,7 @@ function DisplayThing(argId, argProperties) {
 			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    let labelValue = field.getLabel();
+		    labelValue = this.getProperty('label.'+field.getId(),labelValue);
 		    value = value + field.getUnitSuffix();
 		    let tt;
 		    if(!includeDesc) {
@@ -1934,6 +1937,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'nominal time',
 	 ex:'groupTime(field=field to group time on);',
 	 tt:'Round the dates'},	
+	{p:'convertData', label:'replace',
+	 ex:'replace(fields=field_ids, pattern=,with=);',
+	 tt:'Replace pattern in text field'},
 	{p:'convertData',label:'merge rows',
 	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
 	 tt:'Merge rows together'},
