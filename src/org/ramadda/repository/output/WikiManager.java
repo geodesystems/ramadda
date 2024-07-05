@@ -6240,7 +6240,9 @@ public class WikiManager extends RepositoryManager
         boolean decorate = getProperty(wikiUtil, props,
 				       "decorate", false);
         boolean stripe = getProperty(wikiUtil, props,
-				     "stripe", true);		
+				     "stripe", true);
+        boolean center = getProperty(wikiUtil, props,
+				     "center", false);
 
 	boolean inherited = getProperty(wikiUtil,props,"inherited",false);
         for (TwoFacedObject tfo :
@@ -6254,7 +6256,9 @@ public class WikiManager extends RepositoryManager
             return getMessage(wikiUtil, props, "No metadata found");
         }
         if ( !includeTitle) {
-            return StringUtil.join("<br>", tabContents);
+            String s =  StringUtil.join("<br>", tabContents);
+	    if(center) return HU.center(s);
+	    return s;
         }
         if (tabContents.size() > 1) {
 	    String layout = getProperty(wikiUtil,props,"layout","tabs");
@@ -6274,8 +6278,9 @@ public class WikiManager extends RepositoryManager
             return OutputHandler.makeTabs(tabTitles, tabContents, true);
         }
 
-        return tabContents.get(0).toString();
-
+        String s =  tabContents.get(0).toString();
+	if(center) return HU.center(s);	
+	return s;
     }
 
 
