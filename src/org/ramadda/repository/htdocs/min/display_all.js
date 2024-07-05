@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul  3 05:49:09 MDT 2024";
+var build_date="RAMADDA build date: Thu Jul  4 23:21:39 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5153,6 +5153,7 @@ function DisplayThing(argId, argProperties) {
 	    let labelWidth = this.getLabelWidth();
 	    fields= this.getSortedFields(fields);
 	    let excludes = props.excludes?props.excludes.split(","):[];
+	    let skipEmpty=props.skipEmpty=='true';
 	    let group = null;
 	    let includeDesc = this.getIncludeFieldDescriptionInTooltip();
             for (let doDerived = 0; doDerived < 2; doDerived++) {
@@ -5198,6 +5199,7 @@ function DisplayThing(argId, argProperties) {
                     let initValue = record.getValue(field.getIndex());
                     let value = initValue;
                     let svalue = String(initValue);		    
+		    if(skipEmpty && !Utils.stringDefined(svalue)) continue;
 		    let fieldValue = value;
 		    if(fieldValue)
 			fieldValue = svalue.replace(/"/g,"'");
@@ -5232,6 +5234,7 @@ function DisplayThing(argId, argProperties) {
 			value = this.getRecordUrlHtml(attrs, field, record);
 		    }
 		    let labelValue = field.getLabel();
+		    labelValue = this.getProperty('label.'+field.getId(),labelValue);
 		    value = value + field.getUnitSuffix();
 		    let tt;
 		    if(!includeDesc) {
@@ -5904,6 +5907,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'nominal time',
 	 ex:'groupTime(field=field to group time on);',
 	 tt:'Round the dates'},	
+	{p:'convertData', label:'replace',
+	 ex:'replace(fields=field_ids, pattern=,with=);',
+	 tt:'Replace pattern in text field'},
 	{p:'convertData',label:'merge rows',
 	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
 	 tt:'Merge rows together'},
@@ -16481,6 +16487,36 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	replace: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fieldString=(args.fields??'').replace(/_comma_/g,',');
+	    let fields = this.display.getFieldsByIds(allFields, fieldString);
+	    let pattern = args.pattern??'';
+	    pattern = pattern.replace(/_quote_/g,'"');
+	    pattern = new RegExp(pattern, "g");
+	    let swith = args.with??'';
+	    let newRecords  =[]
+	    if(fields.length==0) {
+		console.log('replace: no field found:' + args.fields);
+	    }
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(field=>{
+		    let s = String(data[field.getIndex()]);
+		    s = s.replace(pattern,swith);
+		    newData[field.getIndex()]=s;
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", allFields, newRecords,null,{parent:pointData});
+	},
+
+
 	function: function(pointData, args) {
 	},
 	accum: function(pointData, args) {
@@ -56378,14 +56414,17 @@ MapGlyph.prototype = {
 	    let style={
 		strokeColor:'#000',
 		strokeWidth:2,
-		fillColor:'transparent'
+		fillColor:'transparent',
+		pointRadius:5
 	    };
+
 	    mapLayer.features.forEach(f=>{
 		f.originalStyle = f.style;
 		f.style = style;
 	    });
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}	    
+
 
 	let image = this.getImage();
 	if(image) {
