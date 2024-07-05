@@ -1026,6 +1026,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		makeSearchLink=false;
 	    }
 	}
+	makeSearchLink = Utils.getProperty(props,"addLink",makeSearchLink);
         String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
 	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
