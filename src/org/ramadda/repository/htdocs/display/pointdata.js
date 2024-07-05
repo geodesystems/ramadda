@@ -2354,6 +2354,36 @@ function CsvUtil() {
 	    }
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
 	},
+	replace: function(pointData,args) {
+	    let records = pointData.getRecords(); 
+            let allFields  = pointData.getRecordFields();
+	    let fieldString=(args.fields??'').replace(/_comma_/g,',');
+	    let fields = this.display.getFieldsByIds(allFields, fieldString);
+	    let pattern = args.pattern??'';
+	    pattern = pattern.replace(/_quote_/g,'"');
+	    pattern = new RegExp(pattern, "g");
+	    let swith = args.with??'';
+	    let newRecords  =[]
+	    if(fields.length==0) {
+		console.log('replace: no field found:' + args.fields);
+	    }
+	    for (var rowIdx=0; rowIdx <records.length; rowIdx++) {
+		let record = records[rowIdx];
+		let newRecord = record.clone();
+		newRecords.push(newRecord);
+		let data = record.getData();
+		let newData=Utils.cloneList(data);
+		fields.forEach(field=>{
+		    let s = String(data[field.getIndex()]);
+		    s = s.replace(pattern,swith);
+		    newData[field.getIndex()]=s;
+		});
+		newRecord.setData(newData);
+	    }
+	    return   new  PointData("pointdata", allFields, newRecords,null,{parent:pointData});
+	},
+
+
 	function: function(pointData, args) {
 	},
 	accum: function(pointData, args) {
