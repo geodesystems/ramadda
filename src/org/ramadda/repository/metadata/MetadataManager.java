@@ -19,9 +19,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
-
-
-import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
@@ -2161,7 +2158,7 @@ public class MetadataManager extends RepositoryManager {
 	    }
 	}
 	//Default to the first one
-	if(searchableElements.size()==0)  {
+	if(searchableElements.size()==0 && type.getChildren().size()>0)  {
 	    searchableElements.add(type.getChildren().get(0));
 	}
 	return searchableElements;
@@ -2312,6 +2309,7 @@ public class MetadataManager extends RepositoryManager {
 	if(doJson) {
 	    List<String> obj = new ArrayList<String>();
 	    Utils.add(obj,"metadataType",JsonUtil.quote(type.getId()),"metadataLabel",JsonUtil.quote(type.getLabel()));
+	    Utils.add(obj,"addNot",""+type.getAddNot());
 	    Utils.add(obj,"elements",JsonUtil.list(jsonItems));
 	    sb.append(JsonUtil.map(obj));
 	}

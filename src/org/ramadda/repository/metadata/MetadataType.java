@@ -81,6 +81,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private boolean adminOnly = false;
     private boolean isGeo = false;
     private String restrictions;
+    private boolean addNot = false;
     private boolean canView = true;
     private boolean canDisplay = true;
     private boolean showLabel = true;                
@@ -262,6 +263,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         isGeo = XmlUtil.getAttributeFromTree(node, "isgeo",false);
 	restrictions=XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE);
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
+	addNot = XmlUtil.getAttributeFromTree(node, "addnot", false);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
 	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
@@ -1354,6 +1356,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public boolean getCanView() {
         return this.canView;
     }
+    public boolean getAddNot() {
+        return this.addNot;
+    }    
 
     public boolean getCanDisplay() {
         return this.canDisplay;
