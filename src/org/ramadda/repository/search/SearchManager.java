@@ -2988,12 +2988,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    String field = manager.getMetadataField(getFieldId());
 	    for(String value: values) {
 		Query query;
+		boolean not = value.startsWith("!");
+		if(not) value = value.substring(1);
 		if(isEnumeration()) {
 		    query = new TermQuery(new Term(field, value));
 		} else {
 		    query =manager.makeTextQuery(field,value);
 		}
-		builder.add(query,BooleanClause.Occur.SHOULD);		
+		if(not) {
+		    MatchAllDocsQuery matchAllDocsQuery = new MatchAllDocsQuery();
+		    builder.add(matchAllDocsQuery, BooleanClause.Occur.SHOULD);
+		    builder.add(query,BooleanClause.Occur.MUST_NOT);		
+		} else {
+		    builder.add(query,BooleanClause.Occur.SHOULD);
+		}
 	    }
 	    return builder.build();
 	}
