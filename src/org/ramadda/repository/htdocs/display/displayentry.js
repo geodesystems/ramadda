@@ -1585,7 +1585,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                                 NONE));
                     }
 		    if(this.getShowTags()) {
-			let block = HU.div([ATTR_CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner", ATTR_ID,this.getMetadataFieldId(type)]));
+			let block = HU.div([ATTR_CLASS,"display-search-metadata-block"], HU.div([CLASS,"display-search-metadata-block-inner",
+												 ATTR_ID,this.getMetadataFieldId(type)]));
 			let countId = this.getMetadataFieldId(type)+"_count";
 			let wrapperId = this.getMetadataFieldId(type)+"_wrapper";			
 			let label = type.getLabel();
@@ -1718,6 +1719,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    dest.html('');
 	    this.idToElement = {};
 	    let cbxChange = function(){
+		let not  = $(this).attr("metadata-not");
 		let value  = $(this).attr("metadata-value");
 		let type  = $(this).attr("metadata-type");
 		let index  = $(this).attr("metadata-index");				
@@ -1725,10 +1727,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let cbx = $(this);
 		let element  = _this.idToElement[$(this).attr('id')];
 		if(on) {
-		    if(element) element.setCbxOn(value);
-		    _this.addMetadataTag(metadataType.getType(), metadataType.getLabel(),value, cbx);
+		    if(element) element.setCbxOn((not?'!':'')+value);
+		    let label = metadataType.getLabel();
+		    _this.addMetadataTag(metadataType.getType(), label,value, cbx,not);
 		} else {
-		    if(element) element.setCbxOff(value);
+		    if(element) element.setCbxOff((not?'!':'')+value);
 		    let tagId = Utils.makeId(_this.domId(ID_SEARCH_TAG) +"_" + metadataType.getType() +"_" + value);
 		    $("#" + tagId).remove();
 		}		
@@ -1777,7 +1780,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let existing = tagGroup.find(HU.attrSelect("metadata-type",type)+HU.attrSelect("metadata-value",value));
 	    return (existing.length>0);
 	},
-	addMetadataTag:function(type, label,value, cbx) {
+	addMetadataTag:function(type, label,value, cbx,not) {
 	    let _this = this;
 	    let cbxId = cbx?cbx.attr('id'):'unknowncbx';
 	    let tagGroupId = ID_SEARCH_TAG_GROUP+'_'+type;
@@ -1787,9 +1790,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    if(tagGroup.length==0) {
 		tagGroup = $(HU.div([CLASS,'display-search-tag-group',ID,_this.domId(tagGroupId)])).appendTo(_this.jq(ID_SEARCH_BAR));			     
 	    }
+	    let prefix = not?'Not ':'';
 
-	    let tag = $(HU.div(['source-id',cbxId,'metadata-type',type,'metadata-value',value,ATTR_TITLE,label+':' + value,
-				ATTR_CLASS,'display-search-tag', ATTR_ID,tagId],value+SPACE +HU.getIconImage('fas fa-times'))).appendTo(tagGroup);
+	    let tag = $(HU.div(['source-id',cbxId,'metadta-not',not,'metadata-type',type,'metadata-value',value,ATTR_TITLE,label+':' + prefix + value,
+				ATTR_CLASS,'display-search-tag', ATTR_ID,tagId],prefix + value+SPACE +HU.getIconImage('fas fa-times'))).appendTo(tagGroup);
 	    tag.click(function() {
 		let element=_this.idToElement[$(this).attr('source-id')];
 		let value = $(this).attr('metadata-value');
@@ -4426,6 +4430,8 @@ function DisplayEntryMetadata(display,metadataType,metadata) {
     this.display=display;
     this.metadata = metadata;
     this.metadataType = metadataType;
+    metadataType.addNot = metadata.addNot;
+
     if(metadata.elements) 
 	this.elements= metadata.elements.map(element=>{return new DisplayEntryMetadataElement(display,this,element);});
     $.extend(this,{
@@ -4434,7 +4440,10 @@ function DisplayEntryMetadata(display,metadataType,metadata) {
 	},
 	getLabel:function() {
 	    return this.metadataType.getLabel();
-	},	
+	},
+	getAddNot:function() {
+	    return this.metadataType.getAddNot();
+	},		
 	getElements:function() {
 	    return this.elements;
 	}
@@ -4509,6 +4518,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 	    this.selectId = this.display.getMetadataFieldId(this.metadata.getType())+"_select_" + this.getIndex();
             let select = HU.tag(TAG_OPTION, [ATTR_TITLE, "", ATTR_VALUE, ""]);
 	    let popupLimit = this.display.getTagPopupLimit();
+	    let addNot = this.display.getProperty('metadata.' +this.metadata.getType()+'.addnot',this.metadata.getAddNot());
 	    this.getValues().forEach((v,i)=>{
                 let count = v.count;
                 let value = v.value;
@@ -4531,6 +4541,22 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 		    cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label], cbx);
 		}
 		cbxs.push(cbx);
+		if(addNot) {
+		    let cbxId = this.display.getMetadataFieldId(this.metadata.getType())+"_notcheckbox_" + this.getIndex()+"_"+i;
+		    if(idToElementMap) idToElementMap[cbxId] = this;
+		    let cbx = HU.checkbox("",[ATTR_ID,cbxId,
+					      "metadata-not",true,
+					      "metadata-type",type,
+					      "metadata-index",this.getIndex(),
+					      "metadata-value",value],selected) +" " +
+			HU.tag( "label",  [CLASS,"ramadda-noselect ramadda-clickable","for",cbxId],"<b>Not</b> " + label +" (" + count+")");
+		    if(this.getValues().length>popupLimit) {
+			cbx = HU.span([ATTR_CLASS,'display-search-tag','tag',label], cbx);
+		    }
+		    cbxs.push(cbx);
+		}
+
+
 	    });
 	    this.select = HU.tag("select", [ATTR_ID,this.selectId],select);
 	    return cbxs;
