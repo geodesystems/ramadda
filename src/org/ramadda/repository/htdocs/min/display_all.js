@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jul  5 21:22:52 MDT 2024";
+var build_date="RAMADDA build date: Sat Jul  6 07:30:24 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5902,28 +5902,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'aggregateBy',tt:'Add an extra row for the aggregated rows'},
 	{p:'aggregateOperator',ex:'sum|percent',tt:'Operator to apply on the aggregated rows'},
 	{p:'aggregateOperator.fieldName',ex:'sum|percent',tt:'Operator to apply on the aggregated rows for the given field'},	
-	{p:'convertData', label:'derived data',
+	{p:'convertData', label:'Derived data',
 	 ex:'derived(field=new_field_id, function=foo*bar);',
 	 tt:'Add derived field'},
-	{p:'convertData',label:'convert date',
-	 ex:'roundDate(round=hour|day|week|month|year);',
+	{p:'convertData',label:'Convert date',
+	 ex:'roundDate(round=hour|day|week|month|year);'},
+	{p:'convertData',label:'Filter date',
+	 ex:'filterDate(one of month=0);',	 
 	 tt:'Round the dates'},
-	{p:'convertData',label:'nominal time',
+	{p:'convertData',label:'Nominal time',
 	 ex:'groupTime(field=field to group time on);',
 	 tt:'Round the dates'},	
-	{p:'convertData', label:'replace',
+	{p:'convertData', label:'Replace',
 	 ex:'replace(fields=field_ids, pattern=,with=);',
 	 tt:'Replace pattern in text field'},
-	{p:'convertData',label:'merge rows',
+	{p:'convertData',label:'Merge rows',
 	 ex:'mergeRows(keyFields=f1\\\\,f2, operator=count|sum|average, valueFields=);',
 	 tt:'Merge rows together'},
-	{p:'convertData',label:'percent increase',
+	{p:'convertData',label:'Percent increase',
 	 ex:'addPercentIncrease(replaceValues=false);',
 	 tt:'Add percent increase'},
-	{p:'convertData',label:'doubling rate',
+	{p:'convertData',label:'Doubling rate',
 	 ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',
 	 tt:'Calculate # days to double'},
-	{p:'convertData',label:'add fixed',
+	{p:'convertData',label:'Add fixed',
 	 ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
 	 tt:'add fixed value'},	
 	{p:'convertData',label:'Accumulate data',
@@ -5938,10 +5940,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'convertData',label:'Count uniques',
 	 ex:'count(field=,sort=true);',
 	 tt:'Count uniques'},
-	{p:'convertData',label:'unfurl',
+	{p:'convertData',label:'Unfurl',
 	 ex:'unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);',
 	 tt:'Unfurl'},
-	{p:'convertData',label:'rotate data',
+	{p:'convertData',label:'Rotate data',
 	 ex:'rotateData(includeFields=true,includeDate=true,flipColumns=true);',
 	 tt:'Rotate data'},
 	{p:'convertData',label:'Prune where fields are all NaN',
@@ -16209,6 +16211,26 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
 	},
+	filterDate: function(pointData, args) {
+	    let hasMonth = Utils.isDefined(args.month);
+	    let hasYear = Utils.isDefined(args.year);
+	    let hasStartYear = Utils.isDefined(args.startyear);
+	    let hasEndYear = Utils.isDefined(args.endyear);	    	    	    
+	    let records = pointData.getRecords(); 
+	    let newRecords  =[];
+	    records.forEach((record, rowIdx)=>{
+		let date = new Date(record.getTime());
+		if(hasMonth && date.getMonth()!=args.month)  return;
+		if(hasYear && date.getFullYear()!=args.year)  return;		
+		if(hasStartYear && date.getFullYear()<args.startyear)  return;
+		if(hasEndYear && date.getFullYear()>args.endyear)  return;
+		newRecords.push(record.clone());
+	    });
+            let fields  = pointData.getRecordFields();
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
+
 
 	addFixed: function(pointData, args) {
 	    let records = pointData.getRecords(); 
