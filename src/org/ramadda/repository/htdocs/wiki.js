@@ -1467,7 +1467,9 @@ WikiEditor.prototype = {
 	    all+="</div>";
 	});
 	all = HU.center(HU.input('','',['placeholder','Search','id',_this.domId('allsearch'),'width','10'])) +
-	    HU.div(['id',_this.domId('allsearch_corpus'),'style',HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
+	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
+		    ATTR_CLASS,'wikieditor-menu-popup',
+		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
 	all  = HU.div(['style','margin:5px;'], all);
 	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
 				    sticky:true,draggable:true,modal:model});
