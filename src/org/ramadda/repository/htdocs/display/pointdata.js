@@ -2072,6 +2072,26 @@ function CsvUtil() {
 	    });
 	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
 	},
+	filterDate: function(pointData, args) {
+	    let hasMonth = Utils.isDefined(args.month);
+	    let hasYear = Utils.isDefined(args.year);
+	    let hasStartYear = Utils.isDefined(args.startyear);
+	    let hasEndYear = Utils.isDefined(args.endyear);	    	    	    
+	    let records = pointData.getRecords(); 
+	    let newRecords  =[];
+	    records.forEach((record, rowIdx)=>{
+		let date = new Date(record.getTime());
+		if(hasMonth && date.getMonth()!=args.month)  return;
+		if(hasYear && date.getFullYear()!=args.year)  return;		
+		if(hasStartYear && date.getFullYear()<args.startyear)  return;
+		if(hasEndYear && date.getFullYear()>args.endyear)  return;
+		newRecords.push(record.clone());
+	    });
+            let fields  = pointData.getRecordFields();
+	    return   new  PointData("pointdata", fields, newRecords,null,{parent:pointData});
+	},
+
+
 
 	addFixed: function(pointData, args) {
 	    let records = pointData.getRecords(); 
