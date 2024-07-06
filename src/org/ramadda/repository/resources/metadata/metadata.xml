@@ -47,9 +47,10 @@
     </type>
 
 
-    <type name="Data Status" id="data.status" 
+    <type name="Data Status" id="data_status" 
+	  addnot="true"
 	  searchable="true" browsable="true">
-      <element name="Status"       datatype="enumerationplus"     searchable="true"  values="Vetted,Unvetted"/>
+      <element name="Status"       datatype="enumerationplus"     searchable="true"  values="Provisional,Active,Inactive,Processed,Archived"/>
       <element name="Description"       datatype="string"/>
       <template type="html"><![CDATA[<div class='ramadda-datastatus'><b>Data Status:</b> ${attr1} ${attr2}</div>]]></template>
     </type>
