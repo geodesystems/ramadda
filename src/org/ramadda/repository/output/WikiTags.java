@@ -130,6 +130,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"latitude:40,longitude:-105,color:red,radius:4,text:Some text",
 					"#entriesListInMap","true",
 					"#entriesListHeader","",
+					"#hideIfNoLocations","false",
 					"#showCircles","true",
 					"#mapProps","fillColor:red,strokeWidth:1,radius:6"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%",

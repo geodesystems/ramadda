@@ -5611,8 +5611,7 @@ public class WikiManager extends RepositoryManager
                                          false);
         boolean addMapLayerFromProperty = getProperty(wikiUtil, props, "addMapLayerFromProperty",
 						      false);	
-        boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",
-					  false);
+        boolean skipEntries = getProperty(wikiUtil, props, "skipEntries",false);
         List<Entry> children;
 	if(skipEntries) {
             children = new ArrayList<Entry>();
@@ -5642,7 +5641,6 @@ public class WikiManager extends RepositoryManager
 	    }
 	}
 
-
         if (children == null || children.size() == 0) {
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
                                          (String) null);
@@ -5658,16 +5656,23 @@ public class WikiManager extends RepositoryManager
                     break;
                 }
             }
-            if ( !anyHaveLatLon) {
-                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
-                                             (String) null);
-                if (message != null) {
-                    sb.append(message);
-
-                    return null;
-                }
+            if (!anyHaveLatLon) {
+		if (hideIfNoLocations) {
+		    String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+						 (String) null);
+		    if (message != null) {
+			sb.append(message);
+			return null;
+		    }
+		}
+		if(props.get("mapCenter")==null)
+		    props.put("mapCenter","40.17887%2C-100.89844");
+		if(props.get("zoomLevel")==null)
+		    props.put("zoomLevel","3");		
             }
         }
+
+
 
         checkHeading(request, wikiUtil, props, sb);
         Request newRequest = makeRequest(request, props);
