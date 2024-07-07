@@ -2469,10 +2469,14 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 	    let attrs = {};
 	    let date = null;
 	    if(this.selectedRecord) {
-		annotation = this.annotations.getAnnotationFromDate(date = this.selectedRecord.getDate());
+		date = this.selectedRecord.getDate()
+		if(date)
+		    annotation = this.annotations.getAnnotationFromDate(date);
 	    }
 	    if(!annotation) {
-		annotation = this.annotations.getAnnotationFromDate(date=this.getAnimation().getBeginTime());
+		date=this.getAnimation().getBeginTime()
+		if(date)
+		    annotation = this.annotations.getAnnotationFromDate(date);
 	    }
 	    if(date) {
 		attrs.date = date;
@@ -2480,7 +2484,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 		attrs.date = "";
 	    }
 	    if(!annotation) {
-		this.setContents("");
+//		this.setContents("");
 		return;
 	    }
 	    attrs.description = annotation.description;
@@ -2499,14 +2503,13 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 	updateUI: function() {
             SUPER.updateUI.call(this);
 	    if(this.getProperty("annotations")) {
-		let pointData = this.getData();
+		let pointData = this.getPointData();
 		if (pointData == null) return;
 		if(!this.annotations) {
 		    this.annotations  = new Annotations(this,this.filterData());
 		} 
 		if(this.annotations.isEnabled()) {
 		    this.handleAnnotation();
-		    return;
 		}
 	    }
 	    if(this.selectedRecord) {
