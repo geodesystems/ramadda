@@ -1247,19 +1247,13 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	}
         boolean       isImage = entry.isImage();
         if (isImage) {
-            int width = Utils.getDimension(request.getString(ATTR_WIDTH,
-							     (String) null), 400);
+            String width = request.getString(ATTR_WIDTH, "400px");
             String alt = request.getString(ATTR_ALT,
                                            getEntryDisplayName(entry));
-            int imageWidth =
-                Utils.getDimension(request.getString(ATTR_IMAGEWIDTH,
-						     (String) null), width);
+            String imageWidth = request.getString(ATTR_IMAGEWIDTH,width);
             String imageClass = request.getString("imageclass",
 						  (String) null);
-            String extra = HU.attr(HU.ATTR_WIDTH,
-                                          ((imageWidth < 0)
-                                           ? ("" + -imageWidth + "%")
-                                           : "" + imageWidth));
+            String extra = HU.attr(HU.ATTR_WIDTH,HU.makeDim(imageWidth));
             if ((alt != null) && !alt.isEmpty()) {
                 extra += " " + HU.attr(ATTR_ALT, alt);
             }
