@@ -27,6 +27,7 @@ import java.awt.Toolkit;
 import java.io.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 import java.net.*;
 
@@ -6482,6 +6483,17 @@ public class Utils extends IO {
     }
 
 
+    public static void printMethods(Object obj) {
+        // Get the class of the object
+        Class<?> objClass = obj.getClass();
 
+        // Get all methods of the class
+        Method[] methods = objClass.getDeclaredMethods();
+
+        // Print each method
+        for (Method method : methods) {
+            System.out.println(method.getName());
+        }
+    }
 
 }
