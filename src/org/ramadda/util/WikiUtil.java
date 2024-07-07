@@ -4093,7 +4093,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    String thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
 	    if(thumb!=null) {
 		String iwidth = Utils.getProperty(props, "imageWidth","200px");
-		thumb = HU.image(thumb,ATTR_WIDTH,HU.makeDim(iwidth,null));
+		thumb = HU.image(thumb,ATTR_WIDTH,HU.makeDim(iwidth));
 	    }
 
 	    String title = obj.getString(ATTR_TITLE);
@@ -4105,7 +4105,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    String extract = obj.optString("extract_html","").trim();
 	    extract=extract.replaceAll("^(<p>)+","").replaceAll("(</p>)+$","");
 	    if(height!=null) {
-		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height,null)+";overflow-y:auto;"));
+		extract = HU.div(extract,HU.style("max-height:" + HU.makeDim(height)+";overflow-y:auto;"));
 	    }
 	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>"+
 		makeHref(url,"Source: Wikipedia","")+"</div>";
@@ -4115,7 +4115,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		extract+=source;
 	    }
 	    if(width!=null) {
-		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width,null)));
+		extract = HU.div(extract,HU.style("width:" + HU.makeDim(width)));
 	    }
             String wstyle = Utils.getProperty(props, ATTR_STYLE,"padding:5px;");
 	    String pstyle =  Utils.getProperty(props, ATTR_STYLE,"");	    

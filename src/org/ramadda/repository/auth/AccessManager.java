@@ -340,6 +340,7 @@ public class AccessManager extends RepositoryManager {
 
     private boolean isActionExportable(String action) {
 	return action.equals(Permission.ACTION_VIEW) ||
+	    action.equals(Permission.ACTION_GEO) ||
 	    action.equals(Permission.ACTION_VIEWCHILDREN) ||
 	    action.equals(Permission.ACTION_FILE)||
 	    action.equals(Permission.ACTION_EXPORT);

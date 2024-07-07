@@ -89,8 +89,8 @@ public class AnnotatedImageTypeHandler extends ImageTypeHandler  {
     private String makeLayout(Request request, Entry entry,StringBuilder sb,Hashtable props) throws Exception {
 	initImports(request,sb);
         String        width  = Utils.getProperty(props, "width", "100%");
-        String mainStyle = HU.css("width", HU.makeDim(width, null));
-        String style = HU.css("width", HU.makeDim(width, null),
+        String mainStyle = HU.css("width", HU.makeDim(width));
+        String style = HU.css("width", HU.makeDim(width),
 			      "color", "#333",
                               "background-color", "#fff");
 

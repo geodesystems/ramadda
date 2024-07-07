@@ -3653,7 +3653,7 @@ public class WikiManager extends RepositoryManager
 		if(debug) 
 		    System.err.println("p5:" + _props.get("chartHeight"));
 		if(grid) {
-		    buff.append("\n<div class=ramadda-grid-component style='width:" + HU.makeDim(gridBoxWidth,null)+";display:inline-block;'>\n");
+		    buff.append("\n<div class=ramadda-grid-component style='width:" + HU.makeDim(gridBoxWidth)+";display:inline-block;'>\n");
 		} else if (columns > 0) {
                     colCnt++;
                     if (colCnt > columns) {
@@ -7296,7 +7296,7 @@ public class WikiManager extends RepositoryManager
 		buff.append("<div class=\"image-outer search-component\">");
 		buff.append("<div class=\"image-inner\">");
 	    } else {
-		buff.append("<div style='padding:" + HU.makeDim(padding,null)+";'>");
+		buff.append("<div style='padding:" + HU.makeDim(padding)+";'>");
 	    }
             if (popup) {
 		String thePopupCaption = popupCaption;
@@ -9465,10 +9465,10 @@ public class WikiManager extends RepositoryManager
 	sb.append("\n");
         String        width  = Utils.getProperty(props, "width", "100%");
         String        height = Utils.getProperty(props, "height", "600px");
-        String mainStyle = HU.css("width", HU.makeDim(width, null), "height",
-				  HU.makeDim(height, null),
+        String mainStyle = HU.css("width", HU.makeDim(width), "height",
+				  HU.makeDim(height),
 				  "padding","2px");
-        String style = HU.css("width", HU.makeDim(width, null),
+        String style = HU.css("width", HU.makeDim(width),
 			      //			      "border", "1px solid #aaa", 
 			      "color", "#333",
                               "background-color", "#fff");
