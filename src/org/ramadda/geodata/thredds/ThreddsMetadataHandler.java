@@ -678,7 +678,7 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     try {
                         metadata = new Metadata(getRepository().getGUID(),
 						entry.getId(), getMetadataManager().findType(TYPE_VARIABLE), DFLT_INHERITED,
-                                varName, var.getFullName(),
+                                varName, var.getDescription(),
                                 var.getUnitsString(), Metadata.DFLT_ATTR,
                                 Metadata.DFLT_EXTRA);
                     } catch (Exception exc) {
