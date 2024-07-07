@@ -1251,6 +1251,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             String alt = request.getString(ATTR_ALT,
                                            getEntryDisplayName(entry));
             String imageWidth = request.getString(ATTR_IMAGEWIDTH,width);
+	    //For backwards compat
+	    if(imageWidth.startsWith("-")) {
+		imageWidth = imageWidth.substring(1)+"%";
+	    }
             String imageClass = request.getString("imageclass",
 						  (String) null);
             String extra = HU.attr(HU.ATTR_WIDTH,HU.makeDim(imageWidth));
