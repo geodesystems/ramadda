@@ -1307,13 +1307,13 @@ public class AccessManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public void listAccess(Request request, Entry entry, StringBuffer sb,boolean even)
+    public void listAccess(Request request, Entry entry, StringBuilder sb,boolean even)
 	throws Exception {
         if (entry == null) {
             return;
         }
         List<Permission> permissions = getPermissions(entry);
-        String entryUrl = HtmlUtils.href(request.makeUrl(URL_ACCESS_FORM,
+        String entryUrl = HU.href(request.makeUrl(URL_ACCESS_FORM,
 							 ARG_ENTRYID, entry.getId()), entry.getName());
 
         Hashtable<String, List<Permission>> map = new Hashtable<String,
@@ -1328,11 +1328,11 @@ public class AccessManager extends RepositoryManager {
             p.add(permission);
         }
 
-        StringBuffer cols = new StringBuffer(HtmlUtils.cols(entryUrl));
+        StringBuffer cols = new StringBuffer(HU.cols(HU.div(entryUrl)));
         for (int i = 0; i < Permission.ACTIONS.length; i++) {
             List<Permission> p = map.get(Permission.ACTIONS[i]);
             if (p == null) {
-                cols.append(HtmlUtils.cols("&nbsp;"));
+                cols.append(HU.cols("&nbsp;"));
             } else {
                 StringBuilder tmp = null;
                 for (Permission permission : p) {
@@ -1360,14 +1360,13 @@ public class AccessManager extends RepositoryManager {
 						      + clazz)));
                     }
                 }
-                cols.append(HtmlUtils.cols(tmp.toString()));
+                cols.append(HU.cols(tmp.toString()));
             }
         }
-        sb.append(
-		  HtmlUtils.row(
-				cols.toString(),
-				HU.attr("valign", "top")
-				+ HtmlUtils.cssClass("ramadda-access-summary "+(even?"ramadda-row-even":"ramadda-row-odd"))));
+        sb.append(HU.row(
+			 cols.toString(),
+			 HU.attr("valign", "top")
+			 + HU.cssClass("ramadda-access-summary "+(even?"ramadda-row-even":"ramadda-row-odd"))));
         listAccess(request,
                    getEntryManager().getEntry(request,
 					      entry.getParentEntryId()), sb,!even);
@@ -1667,7 +1666,7 @@ public class AccessManager extends RepositoryManager {
             }
 
             buff.append(
-			HU.div(HtmlUtils.img(
+			HU.div(HU.img(
 					     getRepository().getIconUrl(
 									"fa-solid fa-building-shield")) + " "
 			       + HU.italics(label)));
@@ -1743,6 +1742,27 @@ public class AccessManager extends RepositoryManager {
     }
 
 
+    public void getCurrentAccess(Request request, Entry entry,StringBuilder currentAccess)
+	throws Exception {
+        currentAccess.append(HU.open(HU.TAG_TABLE,
+                                            HU.attrs("celladding", "0",
+						     "cellspacing", "0")));
+        StringBuffer header =
+            new StringBuffer(HU.cols(HU.bold(msg("Entry"))));
+        for (int i = 0; i < Permission.ACTIONS.length; i++) {
+            header.append(HU.cols(msg(Permission.ACTION_NAMES[i])));
+        }
+        currentAccess.append(
+			     HU.row(
+					   header.toString(),
+					   HU.attr("valign", "top")
+					   + HU.cssClass("ramadda-access-summary-header")));
+
+        listAccess(request, entry, currentAccess,true);
+        currentAccess.append(HU.close(HU.TAG_TABLE));
+
+    }
+
     /**
      * _more_
      *
@@ -1764,23 +1784,9 @@ public class AccessManager extends RepositoryManager {
 
         getPageHandler().entrySectionOpen(request, entry, sb, "Define Permissions");
         request.appendMessage(sb);
-        StringBuffer currentAccess = new StringBuffer();
-        currentAccess.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                            HU.attrs("celladding", "0",
-						     "cellspacing", "0")));
-        StringBuffer header =
-            new StringBuffer(HtmlUtils.cols(HtmlUtils.bold(msg("Entry"))));
-        for (int i = 0; i < Permission.ACTIONS.length; i++) {
-            header.append(HtmlUtils.cols(msg(Permission.ACTION_NAMES[i])));
-        }
-        currentAccess.append(
-			     HtmlUtils.row(
-					   header.toString(),
-					   HU.attr("valign", "top")
-					   + HtmlUtils.cssClass("ramadda-access-summary-header")));
 
-        listAccess(request, entry, currentAccess,true);
-        currentAccess.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        StringBuilder currentAccess = new StringBuilder();
+	getCurrentAccess(request, entry,currentAccess);
         Hashtable        map         = new Hashtable();
         List<Permission> permissions = getPermissions(entry);
         if (debug) {
@@ -1808,9 +1814,9 @@ public class AccessManager extends RepositoryManager {
 	
 	HU.center(sb,getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
-        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append("<br>");
-        sb.append(HtmlUtils.submit("Change Access"));
+        sb.append(HU.submit("Change Access"));
         sb.append("<br>");
         if (dataPolicies.size() > 0) {
             List         items    = new ArrayList();
@@ -1838,8 +1844,8 @@ public class AccessManager extends RepositoryManager {
 						 0, false));
             }
             String extraSelect = HU.cssClass("ramadda-pulldown")
-		+ HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
-				 "true") + HtmlUtils.attr("size",
+		+ HU.attr(HU.ATTR_MULTIPLE,
+				 "true") + HU.attr("size",
 							  "" + (Math.min(items.size(), 4)));
             if (debug) {
                 System.err.println("items:" + items);
@@ -1872,9 +1878,9 @@ public class AccessManager extends RepositoryManager {
 	    opts.add(new TwoFacedObject("User Role:" + role,role));
 	}
         sb.append("<tr valign=top>");
-        sb.append(HtmlUtils.cols(HtmlUtils.bold(msg("Action"))));
+        sb.append(HU.cols(HU.bold(msg("Action"))));
         sb.append("<td colspan=2>");
-        sb.append(HtmlUtils.bold("Role")
+        sb.append(HU.bold("Role")
                   + ". One per line. Prefix with \"!\" for negation");
         sb.append("</td>");
         sb.append("</tr>");
@@ -1892,21 +1898,21 @@ public class AccessManager extends RepositoryManager {
             }
 	    if(actionName==null) continue;
             String label =
-                HtmlUtils.href(
+                HU.href(
 			       getRepository().getUrlBase() + "/userguide/access.html#"
-			       + action, HtmlUtils.img(
+			       + action, HU.img(
 						       getRepository().getIconUrl(
-										  "fas fa-question-circle")), HtmlUtils.attr(
-															     HtmlUtils.ATTR_TARGET,
-															     "_help")) + HtmlUtils.space(1)
+										  "fas fa-question-circle")), HU.attr(
+															     HU.ATTR_TARGET,
+															     "_help")) + HU.space(1)
 		+ msg(actionName);
             String extra = "";
             if (i == 0) {
                 extra = HU.select("", opts, (String) null, HU.id("roles"));
             }
             extra = HU.div(extra, HU.id("holder_" + i));
-            sb.append(HtmlUtils.rowTop(HtmlUtils.cols(label,
-						      HtmlUtils.textArea(ARG_ROLES + "."
+            sb.append(HU.rowTop(HU.cols(label,
+						      HU.textArea(ARG_ROLES + "."
 									 + Permission.ACTIONS[i], roles, 5, 20,
 									 HU.attr("roleindex", "" + i)
 									 + HU.id("textarea_"
@@ -1917,7 +1923,7 @@ public class AccessManager extends RepositoryManager {
                   + "</b><i><br>");
         sb.append(currentAccess.toString());
         sb.append("</i></td>");
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
         HU.importJS(sb, getRepository().getUrlBase() + "/accessform.js");
         HU.script(sb, "Ramadda.initAccessForm();");
 
@@ -1927,8 +1933,8 @@ public class AccessManager extends RepositoryManager {
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getStandardRoles()));
         //        sb.append("</td></tr></table>");
-        sb.append(HtmlUtils.submit("Change Access"));
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.submit("Change Access"));
+        sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
 

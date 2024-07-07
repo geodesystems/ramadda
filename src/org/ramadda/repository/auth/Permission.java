@@ -39,7 +39,7 @@ public class Permission {
 
     public static final String[] ACTION_NAMES = {
         "View", "File", "Export",
-	"Geo Location",
+	"Geographic",
 	"Edit", "New", "Delete", "Anon. Upload",
         //"Comment",
         "View Children", 

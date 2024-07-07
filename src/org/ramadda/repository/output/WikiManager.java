@@ -1938,19 +1938,24 @@ public class WikiManager extends RepositoryManager
 	    //Only do this if it is an owner or an admin
 	    if(request.isAnonymous()) return "";
 	    if(!request.isAdmin() && !request.getUser().equals(entry.getUser())) return "";
+
 	    Request anon = getRepository().getAnonymousRequest();
+	    boolean full = getProperty(wikiUtil,props,"fullAccess",false);
 	    boolean canView = getAccessManager().canDoView(anon,entry);
 	    boolean canGeo = getAccessManager().canDoGeo(anon,entry);
-	    boolean canFile = getAccessManager().canDoGeo(anon,entry);
-	    boolean canExport = getAccessManager().canDoExport(anon,entry);	    	    	    
+	    boolean canFile = getAccessManager().canDoFile(anon,entry);
+	    boolean canExport = getAccessManager().canDoExport(anon,entry);
+	    boolean canEdit = getAccessManager().canDoEdit(anon,entry);	    	    	    	    
 	    String yes= HU.span("yes;"," style='color:green;font-weight:bold;' ");
 	    String no = HU.span("no;"," style='color:red;font-weight:bold;' ");
 	    sb.append("<div class=ramadda-access-status>");
 	    sb.append("Anonymous user can: ");
 	    sb.append(" view entry: " + (canView?yes:no));
 	    sb.append(" access file: " + (canFile?yes:no));
-	    sb.append(" access location: " + (canGeo?yes:no));
 	    sb.append(" export: " + (canExport?yes:no));	    
+	    sb.append(" access location: " + (canGeo?yes:no));
+	    sb.append(" edit: " + (canEdit?yes:no));	    
+
 	    String bad="";
 	    if(getAccessManager().canDoNew(anon,entry)) {
 		bad+=" do new entry. ";
@@ -1966,6 +1971,11 @@ public class WikiManager extends RepositoryManager
 		HU.span(sb,"Anonymous user can: "+bad, HU.style("background:red;padding:2px;border:1px solid #000;display:inline-block;"));
 	    }
 	    sb.append("</div>");
+	    if(full) {
+		getAccessManager().getCurrentAccess(request,  entry,sb);
+	    }
+
+
 	    return sb.toString();
 	} else if(theTag.equals(WIKI_TAG_NEW_PROPERTY)) {
 	    if(getAccessManager().canDoEdit(request, entry)) {

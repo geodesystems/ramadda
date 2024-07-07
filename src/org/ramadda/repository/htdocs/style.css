@@ -4363,6 +4363,7 @@ td .ramadda-role {
 
 .ramadda-access-summary-header td {
     padding: 5px;
+    padding-bottom: 0px;    
 }
 
 .ramadda-access-summary {
@@ -4370,12 +4371,13 @@ td .ramadda-role {
 }
 
 .ramadda-access-summary td {
-    //padding-left:4px;
-    //padding-right:4px;    
+    border: var(--basic-border);
+    padding:0px;
 }
 
-.ramadda-access-summary td {
-    border: 1px #efefef solid;
+.ramadda-access-summary td div {
+    padding-left:5px;
+    padding-right:5px;    
 }
 
 .ramadda-user-activity  {
