@@ -2086,15 +2086,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
      *
      * @return _more_
      */
-    public static String makeDim(String size, String dflt) {
+    public static String makeDim(String size, String...dflt) {
         if (size == null) {
             return null;
         }
         if ( !size.matches("^[0-9\\.+-]+$")) {
             return size;
         }
-        if (dflt != null) {
-            return size + dflt;
+        if (dflt.length>0 && dflt[0] != null) {
+            return size + dflt[0];
         }
 
         return size + "px";
