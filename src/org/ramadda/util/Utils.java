@@ -2927,7 +2927,7 @@ public class Utils extends IO {
             return v;
         } catch (Exception exc) {
             System.err.println("Utils.getDimension error:" + s + " " + exc);
-
+	    exc.printStackTrace();
             return dflt;
         }
     }
