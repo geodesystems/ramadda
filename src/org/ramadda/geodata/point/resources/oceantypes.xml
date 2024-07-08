@@ -1239,7 +1239,7 @@ https://tidesandcurrents.noaa.gov/sltrends/sltrends_station.shtml?id=8575512
 csvcommands1=-skiplines,5,-notcolumns,6-10,-combine
 csvcommands2=year\,month,-,date,-change, linear_trend\,high_conf\,low_conf,^$,NaN,-change,date
 csvcommands3=-(.)$,-0$1,-firstcolumns,date,-addheader
-csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM
+csvcommands4= year.type enumeration month.type enumeration date.format yyyy-MM monthly_msl.unit meters high_conf.unit meters low_conf.unit meters
 </property>
 <property name="bubble">
 <![CDATA[
