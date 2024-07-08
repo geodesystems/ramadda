@@ -302,10 +302,10 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	this.handleMouseUp(e);
     });
     //For now don't do this
-//    this.editor.container.addEventListener("mousedown", (e) =>{});
-//    this.editor.container.addEventListener("dblclick", (e) =>{
-//	this.handleMouseUp(e,null, true);
-//    });    
+    //    this.editor.container.addEventListener("mousedown", (e) =>{});
+    //    this.editor.container.addEventListener("dblclick", (e) =>{
+    //	this.handleMouseUp(e,null, true);
+    //    });    
     this.editor.container.addEventListener("mouseleave", (e) => {
 	this.handleMouseLeave(e);
     });
@@ -489,7 +489,7 @@ WikiEditor.prototype = {
 		    this.insertAtCursor(text);
 		}
 	    }
-		
+	    
 	    if(what==what_image) {
 		text = "{{image entry=" + entryId+" #caption=\"" + name+"\" bordercolor=\"#ccc\" align=center screenshot=true #width=75% }} ";
 	    } else  if(what==what_map) {
@@ -509,7 +509,7 @@ WikiEditor.prototype = {
 	    } else  if(what==what_grid) {
 		text = "{{grid entry=" + entryId+" }}";			
 	    } else if(what==what_wiki_text || what==what_description || what==what_children_ids ||
-		     what=="Children Links") {
+		      what=="Children Links") {
 		let url = RamaddaUtils.getUrl("/entry/wikitext?entryid="+ entryId);
 		if(what==what_description) url+="&what=description";
 		else if(what==what_children_links) url+="&what=children_links";
@@ -813,7 +813,7 @@ WikiEditor.prototype = {
 
 	if(entryId) {
 	    return {
-		    entryId:entryId,
+		entryId:entryId,
 	    };
 	}
 
@@ -924,7 +924,7 @@ WikiEditor.prototype = {
 		}
 	    });
 	}
-	    
+	
 
 
 	let llmText = this.getEditor().getSelectedText()??'';
@@ -958,11 +958,11 @@ WikiEditor.prototype = {
 	    } else {
 		options.push({value:idx,label:prompt});
 	    }		
-	 });
+	});
 	let promptMenuContainerId = HU.getUniqueId();
 	/*
 	  todo: maybe add a menu of common prompts?
-	  */
+	*/
 	let html= 
 	    HU.formTable() +
 	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
@@ -978,9 +978,9 @@ WikiEditor.prototype = {
 	html+=HU.span(['id',this.domId('llm-call')],'Evaluate');	    
 	
 	html+=HU.div(['style','position:relative;'],
-		   HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-		   HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
-			  HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
+		     HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		     HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
+			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
 
 
@@ -1087,10 +1087,10 @@ WikiEditor.prototype = {
 	    this.colorDialog.remove();
 	}
 	this.colorDialog = HU.makeDialog({content:html,anchor:this.getDiv(),
-				    my: "left bottom",     
-				    at: "left+200" +" top-50",
-				    title:"Select Color",
-				    header:true,sticky:true,draggable:true,modal:false});	
+					  my: "left bottom",     
+					  at: "left+200" +" top-50",
+					  title:"Select Color",
+					  header:true,sticky:true,draggable:true,modal:false});	
 	let picker = this.jq('color_picker');
 	let close = () =>{
 	    picker.attr('type','text').attr('type','color');
@@ -1106,7 +1106,7 @@ WikiEditor.prototype = {
 	    let Range = ace.require('ace/range').Range;
 	    let range =new Range(pos.row, pos.column, pos.row, pos.column+val.length);
 	    if(this.colorMarker)    this.editor.session.removeMarker(this.colorMarker);
-//	    this.colorMarker = this.getEditor().session.addMarker(range, "ace_selected", "text", false);
+	    //	    this.colorMarker = this.getEditor().session.addMarker(range, "ace_selected", "text", false);
 	};
 	this.jq('color_apply').button().click(()=>{
 	    apply();
@@ -1232,7 +1232,7 @@ WikiEditor.prototype = {
 	       this.wikiAttributesFromServer[tagInfo.tag][0]) {
 		title = this.wikiAttributesFromServer[tagInfo.tag][0].label;
 	    }
-		
+	    
 	    if(!title)   {
 		title = Utils.makeLabel(tagInfo.tag) +" Properties";
 	    }
@@ -1570,7 +1570,7 @@ WikiEditor.prototype = {
 	if(c) {
 	    scroller.css("cursor","context-menu");
 	    let message= "Right-click to show property menu";
-//	    if(type!="plus")message+="<br>Double click to edit";
+	    //	    if(type!="plus")message+="<br>Double click to edit";
 	    this.showMessage(message);
 	} else {
 	    scroller.css("cursor","text");
@@ -1766,8 +1766,8 @@ WikiEditor.prototype = {
 						 ATTR_STYLE,HU.css('text-align','center','margin-top','10px','font-weight','bold')], cat)) +inner;
 		    });
 		    exDiv=HU.div([ATTR_STYLE,HU.css('margin','50px','width','500px')],exDiv);
-//		    $('body').html(exDiv);
-//		    return
+		    //		    $('body').html(exDiv);
+		    //		    return
 		    exDiv=HU.div([ATTR_STYLE,HU.css('max-height','500px','overflow-y','auto','min-width','700px','max-width','700px','overflow-x','auto')],
 				 exDiv);
 		    let ex = $(exDiv).appendTo(_this.jq('expandedwikimenu'));
@@ -1870,18 +1870,18 @@ WikiEditor.prototype = {
 	    _this.jq('tagsearch').focus();
 
 	    this.tagSelectDialog.find('a').tooltip({
-		    classes: {"ui-tooltip": "wiki-editor-tooltip"},
-		    content: function () {
-			return $(this).prop(ATTR_TITLE);
-		    },
-		    show: { effect: 'slide', delay: 500, duration: 400 },
+		classes: {"ui-tooltip": "wiki-editor-tooltip"},
+		content: function () {
+		    return $(this).prop(ATTR_TITLE);
+		},
+		show: { effect: 'slide', delay: 500, duration: 400 },
 		position: { my: "left top", at: "right top" }
 	    });
 
 
 	    this.tagSelectDialog.find('.wiki-editor-popup-category').css('display','none');
 	    let tags = this.tagSelectDialog.find('.wiki-editor-popup-link');
-//	    let tags = this.tagSelectDialog.find('a');	    
+	    //	    let tags = this.tagSelectDialog.find('a');	    
 	    _this.jq('tagsearch').keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		HU.doPageSearch(text,tags);
@@ -1903,7 +1903,7 @@ WikiEditor.prototype = {
 	    {p:'ascending',ex:'true',tt:'direction of sort.'},
 	    /*
 	      {p:'sortdir',ex:'up|down',tt:'direction of sort. use up for oldest to youngest'},
-	      */
+	    */
 	    {label:'Specify entries',p:'entries',ex:'\"entryid1,entryid2,entryid3..\"',tt:'comma separated list of entry ids to use' },
 	    {label:'Specify entries by search',p:'entries',ex:'search:type:<some type>;orderby:date;ascending:false',tt:'comma separated list of entry ids to use' },	    
 	    {p:'entries.filter',ex:'file|folder|image|type:some type|geo|name:name pattern|suffix:file suffixes',tt:'allows you to select what entries to use'},
@@ -1952,6 +1952,89 @@ WikiEditor.prototype = {
 	    {p:'chunkColumns',ex:'2',tt:'how many columns use \"numChunks\" to match number of chunks'},
 	    {p:'chunkStyle',ex:'margin:10px;',tt:'chunk style'}
 	],this.groupAttributes);
+	let mapProperties = [
+	    {label:'Map Properties'},
+	    {p:'icon',ex:'#/icons/dots/green.png' },
+ 	    {p:'width',ex:'100%'},
+	    {p:'height',ex:'400'},
+	    {p:'listEntries',ex:'true'},
+	    {p:'listInMap',ex:'true'},
+	    {p:'showCheckbox',ex:'true'},
+	    {p:'listHeader'},
+	    {p:'listWidth',ex:'300px'},
+	    {p:'listIconSize',ex:'24px'},				
+	    {p:'skipEntries',ex:true,tt:'Dont show the entries'},
+	    {p:'marker1',ex:'latitude:40,longitude:-105,color:red,radius:4,text:Some text',
+	     tt:'Can do marker1 ... markerN'},
+	    {p:'credits',tt:'Text to show at the bottom of the map'},
+	    {p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
+	    {p:'details',ex:'false'},
+	    {p:'showLines',ex:'true'},
+	    {p:'showCircles',ex:'true'},
+	    {p:'azimuthLength',tt:'km',d:'1.0'},
+	    {p:'azimuthColor',ex:'red'},
+	    {p:'azimuthWidth',ex:'2'},				
+	    {p:'showBounds',ex:'false'},
+	    {p:'showMarkers',ex:'false'},
+	    {p:'showCameraDirection',ex:'false'},		
+	    {p:'showLocationSearch',ex:'true'},
+	    {p:'showSearch',ex:'false'},
+	    {p:'showLayerToggle',ex:'true'},
+	    {p:'showLatLonLines',ex:'true'},
+	    {p:'showScaleLine',ex:'true'},
+	    {p:'showLayerSwitcher',ex:'true'},
+	    {p:'showLatLonPosition',ex:'true'},
+	    {p:'showZoomPanControl',ex:'true'},
+	    {p:'showZoomOnlyControl',ex:'true'},
+	    {p:'showBookmarks',ex:'true'},
+	    {p:'showBounds',ex:'true'},
+	    {p:'showOpacitySlider',ex:'true'},
+	    {p:'useThumbnail',ex:'true'},		
+
+	    {p:'iconSize',ex:'32'},
+	    {p:'iconWidth',ex:'32'},
+	    {p:'iconHeight',ex:'32'},				
+
+	    {p:'layerStrokeColor',ex:'red'},
+	    {p:'layerStrokeWidth',ex:'2'},				
+	    {p:'layerFillColor',ex:'red'},
+	    {p:'layerFillOpacity',ex:'0.5'},				
+
+	    {p:'rules',ex:'attr1:== or != or &lt; or &gt; or  ~ (like):value:fillColor:red:strokeColor:black;attr2:',
+	     tt:'Specify style rules based on feature properties'},
+	    {p:'pointRadius',ex:''},
+	    {p:'strokeColor',ex:''},
+	    {p:'strokeWidth',ex:''},
+	    {p:'fillOpacity',ex:''},
+	    {p:'fillColor',ex:''},
+	    {p:'layerStrokeColor',ex:''},
+	    {p:'layerStrokeWith',ex:''},
+	    {p:'layerFillColor',ex:''},
+	    {p:'layerFillOpacity',ex:''},
+	    {p:'highlightStrokeColor',ex:''},
+	    {p:'highlightFillColor',ex:''},
+	    {p:'highlightStrokeWidth',ex:''},
+	    {p:'highlightFillOpacity',ex:''},
+	    {p:'zoomToLayer',tt:'Zoom to the layer extent on load',ex:'false'},
+	    {p:'popupWidth',ex:'200'},
+	    {p:'popupHeight',ex:'200'},				
+	    {p:'doPopup',ex:'false'},
+	    {p:'doFeatureSelect',ex:'false'},	    
+
+	    {p:'doPopupSlider',ex:'true'},
+	    {p:'popupSliderRight',ex:'true'},
+	    {p:'enableDragPan',ex:'false'},
+	    {p:'addMarkerOnClick',ex:'true'},
+	    {p:'markerIcon',ex:'/repository/icons/map/marker-blue.png'},		
+	    {p:'linked',ex:'true'},
+	    {p:'linkMouse',ex:'true'},
+	    {p:'linkGroup',ex:'some name'},		
+
+
+	    {p:'layer',ex:'osm|esri.topo|google.roads|google.hybrid|esri.street|opentopo|usfs|caltopo.mapbuilder|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|publiclands|historic|esri.aeronautical|osm.toner|osm.toner.lite|cartolight|watercolor|lightblue|blue|white|black|gray'},
+	    {p:'iconsonly',ex:'false'}];
+
+
 	this.wikiAttributes = {
 	    tree: treeAttrs,	
 	    tabletree: treeAttrs,
@@ -2058,86 +2141,8 @@ WikiEditor.prototype = {
 	    ],
 
 
-	    map: [
-		{label:'Map Properties'},
-		{p:'icon',ex:'#/icons/dots/green.png' },
- 		{p:'width',ex:'100%'},
-		{p:'height',ex:'400'},
-		{p:'listEntries',ex:'true'},
-		{p:'listInMap',ex:'true'},
-		{p:'showCheckbox',ex:'true'},
-		{p:'listHeader'},
-		{p:'listWidth',ex:'300px'},
-		{p:'listIconSize',ex:'24px'},				
-		{p:'skipEntries',ex:true,tt:'Dont show the entries'},
-		{p:'marker1',ex:'latitude:40,longitude:-105,color:red,radius:4,text:Some text',
-		 tt:'Can do marker1 ... markerN'},
-		{p:'credits',tt:'Text to show at the bottom of the map'},
-		{p:'hideIfNoLocations',tt:"Don't show map if no georeferenced data"},
-		{p:'details',ex:'false'},
-		{p:'showLines',ex:'true'},
-		{p:'showCircles',ex:'true'},
-		{p:'azimuthLength',tt:'km',d:'1.0'},
-		{p:'azimuthColor',ex:'red'},
-		{p:'azimuthWidth',ex:'2'},				
-		{p:'showBounds',ex:'false'},
-		{p:'showMarkers',ex:'false'},
-		{p:'showCameraDirection',ex:'false'},		
-		{p:'showLocationSearch',ex:'true'},
-		{p:'showSearch',ex:'false'},
-		{p:'showLayerToggle',ex:'true'},
-		{p:'showLatLonLines',ex:'true'},
-		{p:'showScaleLine',ex:'true'},
-		{p:'showLayerSwitcher',ex:'true'},
-		{p:'showLatLonPosition',ex:'true'},
-		{p:'showZoomPanControl',ex:'true'},
-		{p:'showZoomOnlyControl',ex:'true'},
-		{p:'showBookmarks',ex:'true'},
-		{p:'showBounds',ex:'true'},
-		{p:'showOpacitySlider',ex:'true'},
-		{p:'useThumbnail',ex:'true'},		
-
-		{p:'iconSize',ex:'32'},
-		{p:'iconWidth',ex:'32'},
-		{p:'iconHeight',ex:'32'},				
-
-		{p:'layerStrokeColor',ex:'red'},
-		{p:'layerStrokeWidth',ex:'2'},				
-		{p:'layerFillColor',ex:'red'},
-		{p:'layerFillOpacity',ex:'0.5'},				
-
-		{p:'rules',ex:'attr1:== or != or &lt; or &gt; or  ~ (like):value:fillColor:red:strokeColor:black;attr2:',
-		 tt:'Specify style rules based on feature properties'},
-		{p:'pointRadius',ex:''},
-		{p:'strokeColor',ex:''},
-		{p:'strokeWidth',ex:''},
-		{p:'fillOpacity',ex:''},
-		{p:'fillColor',ex:''},
-		{p:'layerStrokeColor',ex:''},
-		{p:'layerStrokeWith',ex:''},
-		{p:'layerFillColor',ex:''},
-		{p:'layerFillOpacity',ex:''},
-		{p:'highlightStrokeColor',ex:''},
-		{p:'highlightFillColor',ex:''},
-		{p:'highlightStrokeWidth',ex:''},
-		{p:'highlightFillOpacity',ex:''},
-
-		{p:'zoomToLayer',tt:'Zoom to the layer extent on load',ex:'false'},
-
-		{p:'popupWidth',ex:'200'},
-		{p:'popupHeight',ex:'200'},				
-		{p:'doPopupSlider',ex:'true'},
-		{p:'popupSliderRight',ex:'true'},
-		{p:'enableDragPan',ex:'false'},
-		{p:'addMarkerOnClick',ex:'true'},
-		{p:'markerIcon',ex:'/repository/icons/map/marker-blue.png'},		
-		{p:'linked',ex:'true'},
-		{p:'linkMouse',ex:'true'},
-		{p:'linkGroup',ex:'some name'},		
-
-
-		{p:'layer',ex:'osm|esri.topo|google.roads|google.hybrid|esri.street|opentopo|usfs|caltopo.mapbuilder|usgs.topo|google.terrain|google.satellite|naip|usgs.imagery|esri.shaded|esri.lightgray|esri.darkgray|esri.terrain|shadedrelief|publiclands|historic|esri.aeronautical|osm.toner|osm.toner.lite|cartolight|watercolor|lightblue|blue|white|black|gray'},
-		{p:'iconsonly',ex:'false'},],
+	    map: mapProperties,
+	    mapentry:mapProperties,
 	    name:[
 		{label:'Name Properties'},
 		{p:'link',ex:'true',tt:'Link to the entry'}],
@@ -2355,7 +2360,7 @@ function Transcriber(container,args) {
 
 Transcriber.prototype = {
 
-   jq:function(id) {
+    jq:function(id) {
 	return this.container.jq(id);
     },
     domId:function(id) {
@@ -2457,18 +2462,18 @@ Transcriber.prototype = {
 	}
 	navigator.mediaDevices.getUserMedia({audio: true,}).then((stream) => {
 	    this.transcribeMime = ['audio/mp3','audio/mp4','audio/wav', 'audio/webm','audio/mpeg']
-		  .filter(MediaRecorder.isTypeSupported)[0];
+		.filter(MediaRecorder.isTypeSupported)[0];
 	    if(!this.transcribeMime) {
 		alert("No audio formats available");
 		return;
 	    }
 	    this.mediaRecorder = new MediaRecorder(stream, {mimeType: this.transcribeMime});
 	    this.mediaRecorder.addEventListener("dataavailable", event => {
-//		console.log("data event");
+		//		console.log("data event");
 		this.audioChunks.push(event.data);
 	    });
 	    this.mediaRecorder.addEventListener("stop", () => {
-//		console.log("stop event");
+		//		console.log("stop event");
 		if(this.callDoIt) this.transcribeDoIt();
 	    });
 	    let html = '';
@@ -2486,9 +2491,9 @@ Transcriber.prototype = {
 				       false,'Send to LLM');
 	    right+=SPACE2;
 	    right+= HU.checkbox(this.domId('transcribe_addfile'),
-						['id',this.domId('transcribe_addfile'),
-						 ATTR_TITLE,'Add audio file as entry'],
-						false,'Add file');
+				['id',this.domId('transcribe_addfile'),
+				 ATTR_TITLE,'Add audio file as entry'],
+				false,'Add file');
 	    if(this.opts.addExtra)
 		html+=HU.leftRightTable(controls,right);
 	    else
