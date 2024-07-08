@@ -1968,6 +1968,9 @@ WikiEditor.prototype = {
 
 	    {p:'message',ex:''},
 	    {p:'treePrefix',ex:''},
+	    {p:'groupBy',ex:'field_name',tt:'group the tables from the entrys field'},
+	    {p:'groupLabelTemplate',ex:'Field: ${label}'},
+	    {p:'groupLayout',ex:'linear|tabs|accordion'},
 	    {p:'addPageSearch',d:true,tt:'Add the page search form'},
 	    {p:'chunkSize',ex:'10',tt:'break up the list of entries into chunkSize lists and display each list'},
 	    {p:'numChunks',ex:'2',tt:'how many entry chunks'},

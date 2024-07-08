@@ -5380,27 +5380,23 @@ public class WikiManager extends RepositoryManager
 
 
 
-
-    public String makeTableTree(Request request, WikiUtil wikiUtil, Hashtable props, List<Entry> children) throws Exception {
-	if (children.size() == 0) {
-	    return getMessage(wikiUtil, props, "No entries available");
+    private List<GroupedEntries> getGroupedEntries(Request request,List<Entry> children,String groupBy) throws Exception {
+	List<GroupedEntries>groupedEntries = new ArrayList<GroupedEntries>();
+	Hashtable<String,GroupedEntries> map =  new Hashtable<String,GroupedEntries>();
+	for(Entry entry: children) {
+	    String value = entry.getStringValue(request, groupBy,"");
+	    GroupedEntries group = map.get(value);
+	    if(group==null) {
+		group = new GroupedEntries(value);
+		groupedEntries.add(group);
+		map.put(value,group);
+	    }
+	    group.addEntry(entry);
 	}
-	if(wikiUtil==null)  wikiUtil = new WikiUtil();
-	if(props==null) props = new Hashtable();
-	StringBuilder sb = new StringBuilder();
-        int max = request.get(ARG_MAX, -1);
-        if (max == -1) {
-            max = getProperty(wikiUtil, props, ATTR_MAX, -1);
-        }
-	getRepository().getHtmlOutputHandler().showNext(request,
-							children.size(), max,sb);
+	return groupedEntries;
+    }
 
-
-	String divId  = HU.getUniqueId("div_");
-	HU.open(sb,"div",HU.id(divId));
-	if(getProperty(wikiUtil, props, "addPageSearch",false)) {
-	    HU.addPageSearch(sb,"#" + divId +" .entry-list-row-data",null,"Find");
-	}
+    private void makeTableTree(Request request, WikiUtil wikiUtil, Hashtable props, List<Entry> children, StringBuilder sb) throws Exception {
 	String guid = Utils.getGuid().replaceAll("-","_");
 	StringBuilder js = new StringBuilder();
 	String var = "entries_" + guid;
@@ -5518,6 +5514,68 @@ public class WikiManager extends RepositoryManager
 	String propArg = JU.map(argProps);
 	js.append("\nRamadda.initEntryTable('" + var+"'," + propArg+"," + var+");\n");
 	sb.append(HU.script(js.toString()));
+
+
+    }
+
+    public String makeTableTree(Request request, WikiUtil wikiUtil, Hashtable props, List<Entry> children) throws Exception {
+	if (children.size() == 0) {
+	    return getMessage(wikiUtil, props, "No entries available");
+	}
+	if(wikiUtil==null)  wikiUtil = new WikiUtil();
+	if(props==null) props = new Hashtable();
+	StringBuilder sb = new StringBuilder();
+        int max = request.get(ARG_MAX, -1);
+        if (max == -1) {
+            max = getProperty(wikiUtil, props, ATTR_MAX, -1);
+        }
+	getRepository().getHtmlOutputHandler().showNext(request,
+							children.size(), max,sb);
+
+	String groupBy = getProperty(wikiUtil,props,"groupBy",null);
+	List<GroupedEntries> groupedEntries;
+	if(stringDefined(groupBy)) {
+	    groupedEntries = getGroupedEntries(request,children,groupBy);
+	} else {
+	    groupedEntries = new ArrayList<GroupedEntries>();
+	    groupedEntries.add(new GroupedEntries(children,null));
+		
+	}	    
+	String divId  = HU.getUniqueId("div_");
+	HU.open(sb,"div",HU.id(divId));
+	if(getProperty(wikiUtil, props, "addPageSearch",false)) {
+	    HU.addPageSearch(sb,"#" + divId +" .entry-list-row-data",null,"Find");
+	}
+
+	List<StringBuilder> contents = new ArrayList<StringBuilder>();
+	String groupLabelTemplate = getProperty(wikiUtil,props,"groupLabelTemplate","${label}");
+	List<String> titles = new ArrayList<String>();	
+	for(GroupedEntries group: groupedEntries) {
+	    titles.add(groupLabelTemplate.replace("${label}",group.group));
+	    StringBuilder gsb = new StringBuilder();
+	    contents.add(gsb);
+	    makeTableTree(request, wikiUtil,  props, group.entries,gsb);
+	}
+
+
+	if(titles.size()==1) {
+	    sb.append(contents.get(0));
+	} else {
+	    String  layout = getProperty(wikiUtil,props,"groupLayout","linear");
+	    if(layout.equals("tabs")) {
+
+		sb.append(OutputHandler.makeTabs(titles, contents, true));
+	    } else if(layout.equals("accordion") || layout.equals("accordian")) {
+                HU.makeAccordion(sb, titles, contents, false,
+				 "ramadda-accordion", null);
+	    } else {
+		for(int i=0;i<titles.size();i++) {
+		    sb.append(HU.div(titles.get(i),HU.cssClass("ramadda-lheading")));
+		    sb.append(contents.get(i));
+		}
+	    }		
+	}
+
 	HU.close(sb,"div");
 	return sb.toString();
     }
@@ -9578,5 +9636,22 @@ public class WikiManager extends RepositoryManager
 
     }
 
+    public static class GroupedEntries {
+	List<Entry> entries = new ArrayList<Entry>();
+	String group;
+	GroupedEntries(List<Entry> entries,String group) {
+	    this(group);
+	    this.entries = entries;
+	}
+
+	GroupedEntries(String group) {
+	    this.group=group;
+	}
+
+	public void addEntry(Entry entry) {
+	    entries.add(entry);
+	}
+
+    }
 
 }
