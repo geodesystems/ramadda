@@ -86,6 +86,7 @@ function RepositoryMap(mapId, params) {
 
 	doPopup:true,
 	doPopupSlider:false,
+	doFeatureSelect:true,
 	popupWidth:400, 
 	popupHeight:250,	
 	popupSliderRight:false,
@@ -204,6 +205,8 @@ function RepositoryMap(mapId, params) {
     }
     
 
+    if(this.params.initialZoom)
+	this.params.initialZoom=+this.params.initialZoom;
     var options = {
         projection: this.sourceProjection,
         displayProjection: this.displayProjection,
@@ -239,6 +242,7 @@ function RepositoryMap(mapId, params) {
 		    if(debugSelect)    console.log('featureclick-1');
 		    return;
 		}
+		if(!_this.params.doFeatureSelect) return;
                 if(e.feature && e.feature.noSelect) {
 		    if(debugSelect)    console.log('featureclick-2');
                     return;
@@ -655,6 +659,7 @@ RepositoryMap.prototype = {
 	this.zoomTo(zoom);
     },
     zoomTo:function(zoom,onlyIfWeNeedToZoomIn) {
+	zoom=+zoom;
 	if(zoom<0) {
 	    zoom = this.params.singlePointZoom;
 	}
@@ -726,6 +731,7 @@ RepositoryMap.prototype = {
     },
     setInitialZoom: function(zoomLevel) {
         this.params.initialZoom = zoomLevel;
+        if(this.params.initialZoom) this.params.initialZoom=+this.params.initialZoom;
 	if(debugBounds) console.log("setInitialZoom:",this.params.initialZoom);
     },
     setInitialCenter: function(lon,lat) {
@@ -766,7 +772,7 @@ RepositoryMap.prototype = {
 
         //register the location listeners later since the map triggers a number of
         //events at the start
-        var callback = function() {
+        let callback = function() {
             _this.getMap().events.register("changebaselayer", "", function() {
                 _this.baseLayerChanged();
             });
@@ -784,7 +790,7 @@ RepositoryMap.prototype = {
             });
         };
 	//Do this later
-        setTimeout(callback, 5000);
+        setTimeout(callback, 2000);
 
         if (this.mapHidden) {
             //A hack when we are hidden
