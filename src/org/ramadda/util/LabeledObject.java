@@ -20,7 +20,7 @@ import java.util.List;
  * @param <ObjectType>
  */
 @SuppressWarnings("unchecked")
-public class LabeledObject<ObjectType> {
+public class LabeledObject<ObjectType> implements Comparable<LabeledObject> {
 
     /** _more_ */
     private String label;
@@ -39,6 +39,22 @@ public class LabeledObject<ObjectType> {
         this.label   = label;
         this.object = object;
     }
+
+    public int 	compareTo(LabeledObject o) {
+	return label.compareTo(o.label);
+    }
+
+    public static List<String> getLabels(List<LabeledObject> objects) {
+	List<String> labels = new ArrayList<String>();
+	for(LabeledObject obj: objects) labels.add(obj.label);
+	return labels;
+    }
+    public static List<Object> getObjects(List<LabeledObject> objects) {
+	List<Object> labels = new ArrayList<Object>();
+	for(LabeledObject obj: objects) labels.add(obj.object);
+	return labels;
+    }
+
 
     public static List<LabeledObject> makeList(List<String> labels,
 					       List objects) {
