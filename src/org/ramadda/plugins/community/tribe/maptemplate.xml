@@ -1,0 +1,45 @@
+<entry name="{templatename}" parent="{parentid}"  type="wikipage">
+    <wikitext encoded="false"><![CDATA[+section title={{name}}
++row 
++col-6
+ESRI Topo
+:br
+{{map  width="100%"  height="80vh" zoomLevel=8 linked=true listEntries="false" height=300px width=100%
+layerFillOpacity=0  layerFillColor=#fff doPopup=false doFeatureSelect=false
+layer=esri.topo
+mapCenter="inherit"
+}} 
+-col
++col-6
+Open Street Map
+:br
+{{map  width="100%"  height="80vh" zoomLevel=8 linked=true listEntries="false" height=300px width=100%
+layerFillOpacity=0  layerFillColor=#fff doPopup=false doFeatureSelect=false
+layer=osm
+mapCenter="inherit"
+}} 
+-col
+-row
++row 
++col-6
+Google Hybrid
+:br
+{{map  width="100%"  height="80vh" zoomLevel=8 linked=true listEntries="false" height=300px width=100%
+layerFillOpacity=0  layerFillColor=#fff doPopup=false doFeatureSelect=false
+layer=google.hybrid
+mapCenter="inherit"
+}} 
+-col
++col-6
+Shaded Relief
+:br
+{{map  width="100%"  height="80vh" zoomLevel=8 linked=true listEntries="false" height=300px width=100%
+layerFillOpacity=0  layerFillColor=#fff doPopup=false doFeatureSelect=false
+layer=esri.shaded
+mapCenter="inherit"
+}} 
+-col
+-row
+-section 
+]]></wikitext>
+  </entry>

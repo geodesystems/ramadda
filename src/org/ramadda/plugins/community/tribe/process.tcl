@@ -61,11 +61,17 @@ proc parseCsvFile {base filename} {
 
 
 
+
+
+
 set fp [open template.xml r]
 set ::template [read $fp]
 close $fp
 set fp [open toptemplate.xml r]
 set ::toptemplate [read $fp]
+close $fp
+set fp [open maptemplate.xml r]
+set ::maptemplate [read $fp]
 close $fp
 
 
@@ -178,7 +184,7 @@ proc findSlug {tribe} {
 set ::tribecnt 0
 proc tribe {state tribe wiki lat lon} {
     incr ::tribecnt
-#    if {$::tribecnt>10} return
+    if {$::tribecnt>10} return
     set key [cleanTribe $tribe]
     set biaInfo [find  bia  tribe $key]
     set file [string tolower $tribe]
@@ -230,7 +236,7 @@ proc tribe {state tribe wiki lat lon} {
 	}
 	append metadata "<metadata [attr type map_displaymap_file] [attr inherited true]>\n"
 	append metadata "<attr [attr fileid $file] [attr index 1] [attr encoded false]>[cdata $file]</attr>\n"
-	append metadata "<attr  [attr index 4] [attr encoded false]>[cdata black]</attr>\n"	
+	append metadata "<attr  [attr index 4] [attr encoded false]>[cdata blue]</attr>\n"	
 	append metadata "</metadata>\n"
 	append attrs "[attr north $north] [attr west $west] [attr south  $south] [attr east $east]"
     } else {
@@ -242,8 +248,10 @@ proc tribe {state tribe wiki lat lon} {
     write $attrs
     write ">"
 
+    set hasLocation 0
     set ocean 0
     if {$lon!="N/A"} {
+	set hasLocation 1
 	set ocean [expr $lon < "-121"]
     }
 
@@ -256,7 +264,6 @@ proc tribe {state tribe wiki lat lon} {
     regsub -all {%parent%} $template $id template
     append children $template
     append children "\n"
-
 
     set template $::template
     set dataid ${id}_data
@@ -275,6 +282,12 @@ proc tribe {state tribe wiki lat lon} {
 #	puts stderr "tribe: $tribe"
     }
 
+    set mapsid ${id}_maps
+    if {$slug!="" || $hasLocation} {
+	set name "$tribeName Maps"
+	append children "<entry [attr type type_map_folder] [attr name $name] [attr parent $id] [attr id ${mapsid}]/>\n"
+    }
+
     if {$slug!=""} {
 	set tmap "territories_${id}.geojson"
 	if {![file exists $tmap]} {
@@ -290,12 +303,19 @@ proc tribe {state tribe wiki lat lon} {
 	}
 	set bounds [exec java org.ramadda.util.geo.GeoJson -bounds $tmap]
 	regexp {north:(.*) +west:(.*) +south:(.*) +east:(.*)} $bounds match north west south east
-	set mapsid ${id}_maps
-	append children "<entry [attr type type_map_folder] [attr name Maps] [attr parent $id] [attr id ${mapsid}]/>\n"
-	append children "<entry [attr north $north] [attr west $west] [attr south $south] [attr east $east] [attr type geo_geojson] [attr name {Traditional Territories}] [attr filename $tmap] [attr file $tmap] [attr parent $mapsid]>\n"	
+	set name "$tribeName Traditional Territories"
+	append children "<entry [attr north $north] [attr west $west] [attr south $south] [attr east $east] [attr type geo_geojson] [attr name $name] [attr filename $tmap] [attr file $tmap] [attr parent $mapsid]>\n"	
 	set mapdesc "+callout-info\nTradiditional territories of the $tribe. Map courtesy of \[https://native-land.ca/ Native Land Digital\]\n-callout\n"
 	append children "<description>[cdata $mapdesc]</description>\n"
 	append children "</entry>\n"
+
+    }
+    if {$hasLocation} {
+	regsub -all {{parentid}} $::maptemplate $mapsid tmp
+	regsub -all {{templatename}} $tmp "$tribeName Area Map Layers" tmp
+	append children "\n"
+	append children $tmp
+	append children "\n"
     }
 
 
@@ -364,6 +384,7 @@ proc tribe {state tribe wiki lat lon} {
 }
 
 source tribes.tcl
+#source navajo.tcl
 write "</entries>"
 
 close $::entriesfp 
