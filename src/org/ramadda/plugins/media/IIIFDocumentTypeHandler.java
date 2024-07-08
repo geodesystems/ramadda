@@ -87,9 +87,14 @@ public class IIIFDocumentTypeHandler extends ExtensibleGroupTypeHandler {
 	String json = result.getResult();
 	JSONObject root           = new JSONObject(json);
 	String label = root.optString("label");
-	if(stringDefined(label) && !stringDefined(entry.getName())) entry.setName(label);
+	if(stringDefined(label) && (entryHasDefaultName(entry) ||
+				    !stringDefined(entry.getName()))) {
+	       entry.setName(label);
+	}
 	String description = root.optString("description");
-	if(stringDefined(description) && !stringDefined(entry.getDescription())) entry.setDescription("+note\n"+description+"\n-note\n");	
+	if(stringDefined(description) && !stringDefined(entry.getDescription())) {
+	    entry.setDescription("+toggle Description\n+box\n"+description+"\n-box\n-toggle\n");
+	}
 	try {
 	    String thumbnail   = JU.readValue(root,"thumbnail.@id",null);
 	    if(thumbnail!=null) {
