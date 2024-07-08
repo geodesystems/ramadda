@@ -5988,7 +5988,7 @@ public class WikiManager extends RepositoryManager
                 imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
 									      request, entry);
             } else if ( !useThumbnail) {
-		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry);
+		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry,false);
 		if(tuple!=null)
 		    imageUrl = tuple[0];
             }
