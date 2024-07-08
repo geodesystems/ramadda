@@ -5551,7 +5551,7 @@ public class WikiManager extends RepositoryManager
 	String groupLabelTemplate = getProperty(wikiUtil,props,"groupLabelTemplate","${label}");
 	List<String> titles = new ArrayList<String>();	
 	for(GroupedEntries group: groupedEntries) {
-	    titles.add(groupLabelTemplate.replace("${label}",group.group));
+	    titles.add(groupLabelTemplate.replace("${label}",group.group==null?"NA":group.group));
 	    StringBuilder gsb = new StringBuilder();
 	    contents.add(gsb);
 	    makeTableTree(request, wikiUtil,  props, group.entries,gsb);
@@ -9645,6 +9645,7 @@ public class WikiManager extends RepositoryManager
 	}
 
 	GroupedEntries(String group) {
+	    if(group==null) group="NA";
 	    this.group=group;
 	}
 
