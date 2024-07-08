@@ -65,6 +65,28 @@ if(!window.WikiUtil) {
 	    WikiUtil.insertText(id,t);
 	},
 
+	chooseInsertText:function(id, attr,value) {
+	    let values=value.split('|');
+	    let html = '';
+	    
+	    values.forEach(v=>{
+		let link =HU.div([ATTR_CLASS,'ramadda-clickable',
+				  'data-id',id,
+				  'data-attr',attr,
+				  'data-value',v],v);
+		html+=link;
+	    });
+	    html = HU.div([ATTR_STYLE,HU.css('padding','4px','min-width','200px',
+					     'max-height','200px','overflow-y','auto')],
+			  html);
+	    let dialog =HU.makeDialog({content:html,xanchor:null,title:"Select value for " + attr,
+				       header:true,sticky:true,draggable:true,modal:true});
+	    dialog.find('.ramadda-clickable').click(function(){
+		WikiUtil.insertText(id,$(this).attr('data-attr')+'='+$(this).attr('data-value'));
+		dialog.remove();
+	    });
+	},
+
 	insertText:function(id, value) {
 	    HtmlUtils.hidePopupObject();
 	    let popup = HtmlUtils.getTooltip();
@@ -1898,7 +1920,7 @@ WikiEditor.prototype = {
     initAttributes:function() {
 	this.groupAttributes = [
 	    {label:'Collection Properties'},
-	    {p:'orderby',ex:'name,date,changedate,createdate,entryorder,size,number',
+	    {p:'orderby',ex:'name|date|changedate|createdate|entryorder|size|number',
 	     tt:'sort type: name, date, change date, create date, etc'},
 	    {p:'ascending',ex:'true',tt:'direction of sort.'},
 	    /*
@@ -2300,12 +2322,20 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	} else if(attr =="") {
 	    attr = '"' + attr +'"';
 	}
-	attr=" " +tag.p+"=" + attr +" ";
 	attr  =attr.replace(/\"/g,"&quot;");
+	let value=attr;
+	attr=" " +tag.p+"=" + attr +" ";
 	if(block) {
 	    let corpus = label +" " + (tag.tt??"");
+	    let call
+	    if(attr.indexOf('|')>0) {
+		call ='WikiUtil.chooseInsertText('+HU.squote(id)+','+HU.squote(tag.p)+','+
+		    HU.squote(value)+')';
+	    } else {
+		call ="WikiUtil.insertText('" + id +"','"+attr+"')";
+	    }
 	    if(id)
-		label = HtmlUtils.onClick("WikiUtil.insertText('" + id +"','"+attr+"')",label);
+		label = HtmlUtils.onClick(call,label);
 	    block.items.push(HU.div(['data-block-index',block.index,'data-corpus',corpus,CLASS,itemClass,TITLE,tag.tt||"",'data-attribute',attr], label));
 	} else {
 	    console.log("no attribute block");

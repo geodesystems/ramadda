@@ -44,6 +44,8 @@
 }
 .ramadda-header-fixedtitle a {
     text-decoration:none;
+    font-weight:bold;
+    font-size:120%
 
 }
 .ramadda-header-fixedtitle  {
