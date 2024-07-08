@@ -1520,9 +1520,29 @@ public class MapManager extends RepositoryManager implements WikiConstants,
             map.setMapVar(mapVar);
         }
         if (mapProps != null) {
+	    String mapCenter = Utils.getProperty(mapProps,"mapCenter",null);
+	    if(mapCenter!=null && mapCenter.equals("inherit")) {
+		if(props!=null) {
+		    props.remove("mapCenter");
+		}
+		Entry tmpEntry = mainEntry;
+		String tmpCenter=null;
+		while(tmpEntry!=null) {
+		    if(tmpEntry.isGeoreferenced(request)) {
+			tmpCenter = tmpEntry.getLatitude(request)+","+tmpEntry.getLongitude(request);
+			break;
+		    }
+		    tmpEntry = tmpEntry.getParentEntry();
+		}
+		if(tmpCenter!=null) {
+		    mapProps.put("mapCenter",tmpCenter);
+		}  else {
+		    mapProps.put("mapCenter","41,-94");
+		    mapProps.put("zoomLevel","3");		
+		}
+	    }
             map.getMapProps().putAll(mapProps);
         }
-
 	
 
 
@@ -1567,6 +1587,8 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         if (props != null) {
             theProps.putAll(props);
         }
+
+
 
         //xx
         addToMap(request, map, entriesToUse, theProps);

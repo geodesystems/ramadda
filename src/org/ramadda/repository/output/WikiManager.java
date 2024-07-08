@@ -5698,6 +5698,7 @@ public class WikiManager extends RepositoryManager
 	Hashtable mapProps = new Hashtable();
 	String[]  mapArgs  = {
 	    "zoomLevel",
+	    "mapCenter",
 	    "strokeColor", "strokeWidth", "fillColor", "fillOpacity",
 	    "scrollToZoom", "boxColor", "shareSelected", "doPopup",
 	    "fill", "selectOnHover", "onSelect", "showDetailsLink",
@@ -5722,6 +5723,7 @@ public class WikiManager extends RepositoryManager
 	    if (v != null) {
 		v = v.replace("${entryid}", entry.getId());
 		mapProps.put(mapArg, JU.quote(v));
+		props.remove(key);
 	    }
 	}
 
