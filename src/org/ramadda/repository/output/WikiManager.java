@@ -5547,31 +5547,31 @@ public class WikiManager extends RepositoryManager
 	    HU.addPageSearch(sb,"#" + divId +" .entry-list-row-data",null,"Find");
 	}
 
-	List<StringBuilder> contents = new ArrayList<StringBuilder>();
+	//	List<LabeledObject<StringBuilder>> objects = new ArrayList<LabeledObject<StringBuilder>>();
+	List<LabeledObject> objects = new ArrayList<LabeledObject>();	
 	String groupLabelTemplate = getProperty(wikiUtil,props,"groupLabelTemplate","${label}");
-	List<String> titles = new ArrayList<String>();	
 	for(GroupedEntries group: groupedEntries) {
-	    titles.add(groupLabelTemplate.replace("${label}",group.group==null?"NA":group.group));
+	    String label = groupLabelTemplate.replace("${label}",group.group==null?"NA":group.group);
 	    StringBuilder gsb = new StringBuilder();
-	    contents.add(gsb);
+	    objects.add(new LabeledObject(label,gsb));
 	    makeTableTree(request, wikiUtil,  props, group.entries,gsb);
 	}
 
+	Collections.sort(objects);
 
-	if(titles.size()==1) {
-	    sb.append(contents.get(0));
+	if(objects.size()==1) {
+	    sb.append(objects.get(0).getObject());
 	} else {
 	    String  layout = getProperty(wikiUtil,props,"groupLayout","linear");
 	    if(layout.equals("tabs")) {
-
-		sb.append(OutputHandler.makeTabs(titles, contents, true));
+		sb.append(OutputHandler.makeTabs(LabeledObject.getLabels(objects), LabeledObject.getObjects(objects), true));
 	    } else if(layout.equals("accordion") || layout.equals("accordian")) {
-                HU.makeAccordion(sb, titles, contents, false,
+                HU.makeAccordion(sb, LabeledObject.getLabels(objects), LabeledObject.getObjects(objects), false,
 				 "ramadda-accordion", null);
 	    } else {
-		for(int i=0;i<titles.size();i++) {
-		    sb.append(HU.div(titles.get(i),HU.cssClass("ramadda-lheading")));
-		    sb.append(contents.get(i));
+		for(LabeledObject obj: objects) {
+		    sb.append(HU.div(obj.getLabel(),HU.cssClass("ramadda-lheading")));
+		    sb.append(obj.getObject());
 		}
 	    }		
 	}
