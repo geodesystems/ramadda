@@ -2582,7 +2582,7 @@ var Utils =  {
         return false;
     },
     toFloat: function(s, dflt) {
-        if (s == null || s.trim() == "") {
+        if (s == null || String(s).trim() == "") {
             if (!(typeof dflt == 'undefined')) {
                 return dflt;
             }
