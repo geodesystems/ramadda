@@ -133,6 +133,9 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 ----
 {{gallery message=""}}
 {{tabs message="" entries="children:type:media_video_quicktime_comma_media_audiofile"}}
+----
+{{tabletree}}
+----
 +row
 +col-6
 {{information showTitle="false" showDetails=false}}
