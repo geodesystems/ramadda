@@ -11,17 +11,25 @@ public abstract class EntryVisitor implements Constants {
     private Repository repository;
     private Request request;
     private boolean recurse;
+    private int maxDepth = -1;
     private int totalCnt = 0;
     private int processedCnt = 0;
     private Object actionId;
     private StringBuffer sb = new StringBuffer();
     private SelectInfo selectInfo;
+
     public EntryVisitor(Request request, Repository repository,
                         Object actionId, boolean recurse) {
+	this(request, repository, actionId, recurse, -1);
+    }
+
+    public EntryVisitor(Request request, Repository repository,
+                        Object actionId, boolean recurse, int maxDepth) {	
         this.repository = repository;
         this.request    = request;
         this.actionId   = actionId;
         this.recurse    = recurse;
+	this.maxDepth = maxDepth;
 	selectInfo = new SelectInfo(request);
 	selectInfo.setSyntheticOk(false);
     }
@@ -103,7 +111,7 @@ public abstract class EntryVisitor implements Constants {
 
     public boolean walk(Entry entry) throws Exception {
         try {
-            boolean ok = walkInner(entry);
+            boolean ok = walkInner(entry,0);
             return ok;
         } finally {
             finished();
@@ -115,7 +123,11 @@ public abstract class EntryVisitor implements Constants {
 
 
     
-    private boolean walkInner(Entry entry) throws Exception {
+    private boolean walkInner(Entry entry, int level) throws Exception {
+	if(maxDepth>=0 && level>maxDepth) {
+	    return true;
+	}
+
         if ( !isRunning()) {
             System.err.println("EntryVisitor: not running");
             return true;
@@ -143,7 +155,7 @@ public abstract class EntryVisitor implements Constants {
                             actionId)) {
                     return false;
                 }
-                if ( !walkInner(child)) {
+                if ( !walkInner(child,level+1)) {
                     return false;
                 }
             }
