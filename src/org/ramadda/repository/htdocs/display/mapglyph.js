@@ -3658,8 +3658,7 @@ MapGlyph.prototype = {
 
 	}
 
-
-
+	ex = HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], ex);
 	content.push({header:'Sample Values',contents:ex});
     },
     getStyleGroups: function() {
