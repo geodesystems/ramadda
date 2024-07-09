@@ -166,8 +166,12 @@ public class ExtEditor extends RepositoryManager {
 	Object actionId=null;
 	boolean canCancel = false;
 
+	boolean dfltRecurse = false;
+	if (request.exists(ARG_EXTEDIT_JS)) {
+	    dfltRecurse = true;
+	}
         final Entry        finalEntry   = entry;
-        final boolean      recurse = request.get(ARG_EXTEDIT_RECURSE, false);
+        final boolean      recurse = request.getCheckboxValue(ARG_EXTEDIT_RECURSE, dfltRecurse);
         final EntryManager entryManager = getEntryManager();
 
         if (request.exists(ARG_EXTEDIT_EDIT)) {
@@ -423,14 +427,12 @@ public class ExtEditor extends RepositoryManager {
 	    what = new String[]{ARG_EXTEDIT_CHANGETYPE_RECURSE};
         } else if (request.exists(ARG_EXTEDIT_JS)) {
             getAuthManager().ensureAuthToken(request);
-            final boolean forReal =
-                request.get(ARG_EXTEDIT_JS_CONFIRM, false);
+            final boolean forReal =  request.getCheckboxValue(ARG_EXTEDIT_JS_CONFIRM, false);
 	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
 	    getSessionManager().putSessionProperty(request,"extedit",js);
 
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
-	    final boolean thisOne = request.get(ARG_EXTEDIT_THISONE,request.get(ARG_EXTEDIT_THISONE+"_hidden",
-										true));
+	    final boolean thisOne = request.getCheckboxValue(ARG_EXTEDIT_THISONE,true);
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
 	    String exc = request.getString(ARG_EXTEDIT_EXCLUDE,"");
 	    final HashSet<String> not = new HashSet<String>();
@@ -455,7 +457,7 @@ public class ExtEditor extends RepositoryManager {
 			final int[]cnt={0};
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
-							       true) {
+							       true,recurse?-1:1) {
 				int errorCount = 0;
 				@Override
 				public boolean entryOk(Entry entry) {
@@ -557,7 +559,7 @@ public class ExtEditor extends RepositoryManager {
 			holder[0] = jsContext;
 			scope.put("ctx", scope, jsContext);
 			visit(finalEntry,extEntries, walker);
-			jsContext.print("* Done - Processed:#" +cnt[0]);
+			jsContext.print("Done - Processed: #" +cnt[0] +" entries");
 			getActionManager().setContinueHtml(actionId,
 							   walker.getMessageBuffer().toString());
 		    }
@@ -823,22 +825,14 @@ public class ExtEditor extends RepositoryManager {
 		closer.accept(form,"Change URLs");
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
-		buff[0].append(HU.submit("Apply Javascript",form));
+		String saveCbx = request.addCheckbox(buff[0],ARG_EXTEDIT_JS_CONFIRM,"Save changes to entries",true);		
+		buff[0].append(HU.submit("Apply Javascript",form) +HU.space(1) + saveCbx);
 		buff[0].append(HU.formTable());
-		boolean thisOne = request.get(ARG_EXTEDIT_THISONE,request.get(ARG_EXTEDIT_THISONE+"_hidden",
-									      true));
-		buff[0].append(HU.hidden(ARG_EXTEDIT_THISONE+"_hidden","false"));
+		String cbx = request.addCheckbox(buff[0],ARG_EXTEDIT_THISONE,"Apply to this entry",true);
+		String cbx2 = request.addCheckbox(buff[0],ARG_EXTEDIT_RECURSE,"Recurse",true);
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
-			     + HU.space(1) +
-			     HU.labeledCheckbox(ARG_EXTEDIT_THISONE, "true",
-						thisOne, "Apply to this entry"));
-
-
-		HU.formEntry(buff[0],HU.labeledCheckbox(ARG_EXTEDIT_JS_CONFIRM, "true",
-							request.get(ARG_EXTEDIT_JS_CONFIRM,false), "Save changes to entries"));
-
-
+			     + HU.space(1) +cbx + HU.space(1) + cbx2);
 		String eg =
 		    "<div id=exteg>" +
 		    "<span>entry.getName()</span> <span>entry.setName()</span>\n" +
@@ -881,10 +875,9 @@ public class ExtEditor extends RepositoryManager {
 		String exclude = "<br>"+HU.b("Exclude entries") +":<br>"+
 		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
 
-		HU.formEntry(buff[0],  HU.b("Javascript:")+
-			     HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
-							exclude,
-							HU.pre(eg)))));
+		HU.formEntry(buff[0],  HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
+								  exclude,
+								  HU.pre(eg)))));
 		
 		buff[0].append(HU.formTableClose());
 		buff[0].append("<br>");
