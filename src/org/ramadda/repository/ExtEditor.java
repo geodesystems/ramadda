@@ -673,7 +673,10 @@ public class ExtEditor extends RepositoryManager {
         }
 
 
-        getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit");
+	String help = HU.href(getRepository().getUrlBase()+
+			      "/userguide/extendededit.html", "Help",
+			      HU.attrs("target","_help","class","ramadda-clickable"));
+        getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit - " + help);
 
 
 	sb.append(prefix);
