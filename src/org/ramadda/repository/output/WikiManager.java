@@ -7247,6 +7247,7 @@ public class WikiManager extends RepositoryManager
                             List<Entry> imageEntries, Hashtable props,
                             StringBuilder sb)
 	throws Exception {
+
         String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
         int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
                                            -1);
@@ -7316,6 +7317,12 @@ public class WikiManager extends RepositoryManager
 								     child);
 		}
             }
+
+            if (!thumbnail && url==null) {
+		String[]tuple = getMetadataManager().getThumbnailUrl(request, child);
+		if(tuple!=null) url = tuple[0];
+	    }
+
 
 	    if(url==null) {
 		continue;
