@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -73,6 +73,7 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
     public static final String ARG_EXTRACT_TITLE = "extract_title";	        
     public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
+    public static final String ARG_EXTRACT_LATLON = "extract_latlon";
 
 
     public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
@@ -156,6 +157,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    else if(a.equals("summary")) request.put(LLMManager.ARG_EXTRACT_SUMMARY,"true");
 	    else if(a.equals("authors")) request.put(LLMManager.ARG_EXTRACT_AUTHORS,"true");
 	    else if(a.equals("locations")) request.put(LLMManager.ARG_EXTRACT_LOCATIONS,"true");	    
+	    else if(a.equals("latlon")) request.put(LLMManager.ARG_EXTRACT_LATLON,"true");	    
 	    else if(a.equals("keywords")) request.put(LLMManager.ARG_EXTRACT_KEYWORDS,"true");
 	    else if(a.equals("debug")) request.put("debug","true");
 	    else if(a.startsWith("model:")) {
@@ -254,8 +256,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_AUTHORS, "true", request.get(ARG_EXTRACT_AUTHORS,false),"","Extract authors");
+	sb.append("<br>");
+	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract named geographic locations");
 	sb.append(space);
-	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract locations");	
+	HU.labeledCheckbox(sb, ARG_EXTRACT_LATLON, "true", request.get(ARG_EXTRACT_LATLON,false),"","Extract latitude/longitude");		
 	sb.append("<br>");
 
 	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the selected LLM (e.g., <a href=https://openai.com/api/>OpenAI GPT API</a>) for processing.<br>There will also be a delay before the results are shown for the new entry.");
@@ -760,8 +764,9 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);
-	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);		
-	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations)) return false;
+	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
+	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
+	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon)) return false;
 	getEntryManager().putEntryState(entry,"message","Performing LLM extraction");
 
 
@@ -787,7 +792,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    schema.add("\"title\":\"<the title>\"");
 	}
 	if(extractSummary) {
-	    jsonPrompt+="You should include a paragraph summary of the text. The summary should be around four lines. The result in the JSON must, and I mean must, be a valid JSON string. ";
+	    jsonPrompt+="You must include a paragraph summary of the text. The summary must not in any way be longer than four sentences. Each sentence should be short and to the point. The result in the JSON must, and I mean must, be a valid JSON string. ";
 	    schema.add("\"summary\":\"<the summary>\"");
 	}
 	if(extractKeywords) {
@@ -802,7 +807,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	    jsonPrompt+="You should also include a list of geographic locations that the text mentions. This list should be a valid JSON list of strings. There should be no more than 4 geographic locations extracted ";
 	    schema.add("\"locations\":[<locations>]");
 	}
-
+	if(extractLatLon) {
+	    jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. "; 
+	    schema.add("\"latiude\":<latitude>,\"longitude\":<longitude>");
+	}	
 
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
 	if(debug) System.err.println("Prompt:" + jsonPrompt);
@@ -824,7 +832,15 @@ public class LLMManager extends  AdminHandlerImpl {
 		    json = json.substring(idx);
 		}
 	    }
-	    JSONObject obj = new JSONObject(json);
+	    JSONObject obj;
+	    try {
+		obj = new JSONObject(json);
+	    } catch(Exception exc) {
+		//Try capping it
+		json+="\"\n}";
+		obj = new JSONObject(json);
+	    }
+
 	    if(extractTitle) {
 		String title = obj.optString("title",null);
 		title = title.trim().replaceAll("\"","").replaceAll("\"","");
@@ -877,6 +893,14 @@ public class LLMManager extends  AdminHandlerImpl {
 		    }
 		}
 	    }
+	    if(extractLatLon) {
+		double latitude = obj.optDouble("latitude",Double.NaN);
+		double longitude = obj.optDouble("longitude",Double.NaN);		
+		if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
+		    entry.setLocation(latitude,longitude);
+		}
+	    }
+
 	    return true;
 	} catch(Exception exc) {
 	    getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
