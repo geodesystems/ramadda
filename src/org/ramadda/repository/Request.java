@@ -3560,6 +3560,25 @@ public class Request implements Constants, Cloneable {
     }
 
     /**
+       This gets the value from the checkbox added by addCheckbox
+       It checks for the cbx value and if not there checks for the hidden value
+     */
+    public boolean getCheckboxValue(String arg,  boolean dflt) {
+	return  get(arg,get(arg+"_hidden",dflt));
+    }
+
+
+    /**
+       adds a _hidden value to set the default value for the cbx
+     */
+    public String addCheckbox(Appendable sb, String arg,  String label,boolean dflt) throws Exception {
+	boolean v = getCheckboxValue(arg,dflt);
+	sb.append(HtmlUtils.hidden(arg+"_hidden","false"));
+	return HtmlUtils.labeledCheckbox(arg, "true", v,label);
+    }
+
+
+    /**
      * _more_
      *
      * @param args _more_
