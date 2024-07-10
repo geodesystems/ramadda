@@ -174,10 +174,21 @@ public class ImageTypeHandler extends GenericTypeHandler {
             String width  = Utils.getProperty(props, "width", "600px");
             String height = Utils.getProperty(props, "height", "200px");
 	    String sceneId = HU.getUniqueId("scene");
+	    String loadingId = HU.getUniqueId("loading");	    
             sb.append("\n");
-            sb.append(HtmlUtils.importCss("a-scene {height: " + height
-                                          + ";width:" + width + ";}"));
+	    String css = "a-scene {height: " + height
+                                          + ";width:" + width + ";}\n" +
+
+		".aframe-progress {z-index: 999;position: absolute; width: 100%;text-align: center;top: 50%;transform: translateY(-50%);color: #000000;font-size: 2rem;font-family: Arial, sans-serif;}\n";
+
+            sb.append(HtmlUtils.importCss(css));
+	    List<String> args = new ArrayList<String>();
+
+	    sb.append("<div style='position:relative;'>");
+	    sb.append(HU.div("Loading...",HU.attrs("class","aframe-progress","id",loadingId)));
             sb.append("\n<a-scene embedded id='"  +sceneId+"'>\n");
+	    Utils.add(args,"loadingId",JU.quote(loadingId));
+
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry, "3d_label",
                     true);
@@ -190,7 +201,6 @@ public class ImageTypeHandler extends GenericTypeHandler {
                               + "'></a-text>\n");
                 }
             }
-	    List<String> args = new ArrayList<String>();
 	    String initX="0";
 	    String initY = "0";
             String zoom = entry.getStringValue(request,"zoom","");
@@ -208,12 +218,12 @@ public class ImageTypeHandler extends GenericTypeHandler {
 		Utils.add(args,"rotateY",roty);
 		initY=roty;
 	    }
-
-            sb.append("<a-sky src='" + imgUrl + "'");
-            sb.append(" ></a-sky>\n ");
+	    sb.append("<a-sky src='" + imgUrl + "'");	    sb.append(" ></a-sky>\n ");
 	    String cameraId = HU.getUniqueId("camera");
-	    sb.append("<a-entity camera id=\"" +cameraId +"\"  mouse-drag-rotate  xxxlook-controls position=\"0 1.6 0\" rotation='" + initX +" " + initY +"  " + " 0' ></a-entity>\n");
+	    sb.append("<a-entity camera id=\"" +cameraId +"\"  mouse-drag-rotate   position=\"0 1.6 0\" rotation='" + initX +" " + initY +"  " + " 0' ></a-entity>\n");
             sb.append("</a-scene>\n ");
+	    sb.append("</div>");
+
 	    sb.append(HU.script(HU.call("RamaddaAframe.init",HU.quote(sceneId),HU.quote(cameraId),JU.map(args))));
             return sb.toString();
         }

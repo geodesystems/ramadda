@@ -5,6 +5,13 @@ var RamaddaAframe = {
 	    const sceneEl = document.querySelector('#'+ sceneId);
 	    const cameraEl = document.querySelector('#' + cameraId);
             const zoomSpeed = 0.1;
+	    sceneEl.addEventListener('loaded', function() {
+		if(args.loadingId) {
+		    setTimeout(()=>{
+			jqid(args.loadingId).remove();
+		    },500);
+		}
+            });
 	    if(Utils.isDefined(args.zoom)) {
 		let zoom = ()=>{
 		    const camera = cameraEl.getObject3D('camera');
