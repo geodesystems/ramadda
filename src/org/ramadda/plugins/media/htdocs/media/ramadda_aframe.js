@@ -6,11 +6,16 @@ var RamaddaAframe = {
 	    const cameraEl = document.querySelector('#' + cameraId);
             const zoomSpeed = 0.1;
 	    if(Utils.isDefined(args.zoom)) {
-		setTimeout(()=>{
+		let zoom = ()=>{
 		    const camera = cameraEl.getObject3D('camera');
+		    if(!camera) {
+			setTimeout(zoom,100);
+			return;
+		    }
 		    camera.zoom = args.zoom;
 		    camera.updateProjectionMatrix();
-		},100);
+		};
+		setTimeout(zoom,100);
 	    }
             sceneEl.addEventListener('wheel', (event) => {
 		const camera = cameraEl.getObject3D('camera');
