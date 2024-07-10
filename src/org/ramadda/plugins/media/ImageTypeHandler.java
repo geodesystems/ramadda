@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -27,38 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- *
- *
- */
 public class ImageTypeHandler extends GenericTypeHandler {
-
 
     public static final String ARG_IMAGE_RESIZE="imageresize";
     public static final String ARG_STRIP_METADATA="stripmetadata";    
     public static final String ARG_IMAGE_WIDTH="imagewidth";
-
-    /**  */
     public static int IDX = 0;
-
-    /**  */
     public static final int IDX_PROXY = IDX++;
-
-    /**  */
     public static final int IDX_FILENAME = IDX++;
-
-    /**  */
     public static final int IDX_LAST = IDX_FILENAME;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ImageTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -113,17 +91,6 @@ public class ImageTypeHandler extends GenericTypeHandler {
     }
     
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -143,18 +110,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
         return path;
     }
 
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -174,14 +130,15 @@ public class ImageTypeHandler extends GenericTypeHandler {
             String width  = Utils.getProperty(props, "width", "600px");
             String height = Utils.getProperty(props, "height", "200px");
 	    String sceneId = HU.getUniqueId("scene");
-	    String loadingId = HU.getUniqueId("loading");	    
+	    String loadingId = HU.getUniqueId("loading");
+	    String skyId = HU.getUniqueId("sky");	    	    
             sb.append("\n");
 	    String css = "a-scene {height: " + height
                                           + ";width:" + width + ";}\n" +
 
-		".aframe-progress {z-index: 999;position: absolute; width: 100%;text-align: center;top: 50%;transform: translateY(-50%);color: #000000;font-size: 2rem;font-family: Arial, sans-serif;}\n";
+		".aframe-progress {z-index: 999;position: absolute; width: 100%;text-align: center;top: 50%;transform: translateY(-50%);color: #000000;font-size: 175%;font-family: Arial, sans-serif;}\n";
 
-            sb.append(HtmlUtils.importCss(css));
+            sb.append(HU.importCss(css));
 	    List<String> args = new ArrayList<String>();
 
 	    sb.append("<div style='position:relative;'>");
@@ -218,7 +175,10 @@ public class ImageTypeHandler extends GenericTypeHandler {
 		Utils.add(args,"rotateY",roty);
 		initY=roty;
 	    }
-	    sb.append("<a-sky src='" + imgUrl + "'");	    sb.append(" ></a-sky>\n ");
+	    Utils.add(args,"skyId",JU.quote(skyId));
+	    sb.append("<a-sky ");
+	    sb.append(HU.attrs("src",imgUrl,"id",skyId));
+	    sb.append(" ></a-sky>\n ");
 	    String cameraId = HU.getUniqueId("camera");
 	    sb.append("<a-entity camera id=\"" +cameraId +"\"  mouse-drag-rotate   position=\"0 1.6 0\" rotation='" + initX +" " + initY +"  " + " 0' ></a-entity>\n");
             sb.append("</a-scene>\n ");

@@ -2,14 +2,28 @@ var RamaddaAframe = {
     init: function(sceneId,cameraId,args) {
 	args = args??{};
 	document.addEventListener('DOMContentLoaded', () => {
+	    const skyEl = document.querySelector('#' + args.skyId);
 	    const sceneEl = document.querySelector('#'+ sceneId);
 	    const cameraEl = document.querySelector('#' + cameraId);
             const zoomSpeed = 0.1;
 	    sceneEl.addEventListener('loaded', function() {
 		if(args.loadingId) {
-		    setTimeout(()=>{
-			jqid(args.loadingId).remove();
-		    },500);
+		    let cnt = 0;
+		    let interval = setInterval(()=>{
+			//Wait at most 20 seconds
+			if(cnt++>10*20) {
+			    jqid(args.loadingId).remove();
+			    clearInterval(interval);
+			    return;
+			}
+			let skyMesh = skyEl.getObject3D('mesh');
+			if (skyMesh && skyMesh.material && skyMesh.material.map && skyMesh.material.map.image) {
+			    if(skyMesh.material.map.image.complete) {
+				clearInterval(interval);
+				jqid(args.loadingId).remove();
+			    }
+			}
+		    },100);
 		}
             });
 	    if(Utils.isDefined(args.zoom)) {
