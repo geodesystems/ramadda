@@ -3949,9 +3949,12 @@ public class TypeHandler extends RepositoryManager {
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String icon = getPageHandler().getEntryIconImage(request,entry);
+	/*
 	String label =icon + HU.space(1)+HU.href(getSearchManager().getTypeSearchUrl(entry.getTypeHandler()),
 						 getFileTypeDescription(request,  entry),
 						 HU.attrs("title","Search for entries of this type"));
+	*/
+	String label =icon + HU.space(1)+ getFileTypeDescription(request,  entry);
 	sb.append(formEntry(request, msgLabel("Kind"),label));
     }
 
