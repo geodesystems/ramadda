@@ -164,10 +164,11 @@ public class ImageTypeHandler extends GenericTypeHandler {
         if (tag.equals("360image")) {
             StringBuilder sb = new StringBuilder();
             sb.append("\n\n");
-            request.putExtraProperty("aframejs", "true");
-	    sb.append(HU.importJS(getHtdocsUrl("/lib/aframe/aframe-master.js")));
-	    sb.append(HU.importJS(getHtdocsUrl("/media/ramadda_aframe.js")));
-	    //            HU.importJS(sb, "https://aframe.io/releases/0.9.0/aframe.min.js");
+	    if(request.getExtraProperty("aframejs")==null) {
+		request.putExtraProperty("aframejs", "true");
+		sb.append(HU.importJS(getHtdocsUrl("/lib/aframe/aframe-master.js")));
+		sb.append(HU.importJS(getHtdocsUrl("/media/ramadda_aframe.js")));
+	    }
             String imgUrl =
                 entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String width  = Utils.getProperty(props, "width", "600px");
