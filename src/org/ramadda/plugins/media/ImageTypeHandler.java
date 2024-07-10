@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -22,6 +23,7 @@ import org.ramadda.util.ImageUtils;
 import java.awt.Image;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -163,15 +165,18 @@ public class ImageTypeHandler extends GenericTypeHandler {
             StringBuilder sb = new StringBuilder();
             sb.append("\n\n");
             request.putExtraProperty("aframejs", "true");
-            HU.importJS(sb, "https://aframe.io/releases/0.9.0/aframe.min.js");
+	    sb.append(HU.importJS(getHtdocsUrl("/lib/aframe/aframe-master.js")));
+	    sb.append(HU.importJS(getHtdocsUrl("/media/ramadda_aframe.js")));
+	    //            HU.importJS(sb, "https://aframe.io/releases/0.9.0/aframe.min.js");
             String imgUrl =
                 entry.getTypeHandler().getEntryResourceUrl(request, entry);
             String width  = Utils.getProperty(props, "width", "600px");
             String height = Utils.getProperty(props, "height", "200px");
+	    String sceneId = HU.getUniqueId("scene");
             sb.append("\n");
             sb.append(HtmlUtils.importCss("a-scene {height: " + height
                                           + ";width:" + width + ";}"));
-            sb.append("\n<a-scene embedded>\n");
+            sb.append("\n<a-scene embedded id='"  +sceneId+"'>\n");
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry, "3d_label",
                     true);
@@ -184,16 +189,31 @@ public class ImageTypeHandler extends GenericTypeHandler {
                               + "'></a-text>\n");
                 }
             }
-            String rotation = (String) entry.getStringValue(request,IDX_LAST + 1, "");
+	    List<String> args = new ArrayList<String>();
+	    String initX="0";
+	    String initY = "0";
+            String zoom = entry.getStringValue(request,"zoom","");
+	    if(stringDefined(zoom)) {
+		Utils.add(args,"zoom",zoom);
+	    }
+
+            String rotx = entry.getStringValue(request,"rotationx","");
+	    if(stringDefined(rotx)) {
+		Utils.add(args,"rotateX",rotx);
+		initX=rotx;
+	    }
+            String roty = entry.getStringValue(request,"rotationy","");
+	    if(stringDefined(roty)) {
+		Utils.add(args,"rotateY",roty);
+		initY=roty;
+	    }
+
             sb.append("<a-sky src='" + imgUrl + "'");
-            if ((rotation != null) && (rotation.trim().length() > 0)) {
-                sb.append(" rotation='" + rotation + "' ");
-            }
             sb.append(" ></a-sky>\n ");
-	    sb.append("<a-entity camera look-controls position=\"0 1.6 0\" id=\"camera-id\"></a-entity>\n");
-
+	    String cameraId = HU.getUniqueId("camera");
+	    sb.append("<a-entity camera id=\"" +cameraId +"\"  mouse-drag-rotate  xxxlook-controls position=\"0 1.6 0\" rotation='" + initX +" " + initY +"  " + " 0' ></a-entity>\n");
             sb.append("</a-scene>\n ");
-
+	    sb.append(HU.script(HU.call("RamaddaAframe.init",HU.quote(sceneId),HU.quote(cameraId),JU.map(args))));
             return sb.toString();
         }
 

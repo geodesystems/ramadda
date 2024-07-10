@@ -254,7 +254,11 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
      <property name="search.tabs" value="images,list"/>
      <wikimacro name="360image" label="360 Image" properties="width=100% height=400px">
      <![CDATA[{{360image #entry="${entry}" width="${width}" height="${height}"}}]]></wikimacro>     
-     <column   name="rotation" label="Initial rotation" suffix="Pitch, rotation about the X-axis. Yaw, rotation about the Y-axis. Roll, rotation about the Z-axis."  showinhtml="false" />
+     <column   name="zoom" label="Initial zoom" showinhtml="false" type="string" columns="6" help="Press shift-wheel in display to see zoom in JS console"/>
+     <column   name="rotationx" label="Initial rotation x-axis" showinhtml="false" type="string" columns="6"
+	       help="Press shift-drag in display to see rotation values in JS console"/>	       
+     <column   name="rotationy" label="Initial rotation y-axis" showinhtml="false" type="string" columns="6"/>
+
 
      <wiki><![CDATA[
 {{noheading}}
