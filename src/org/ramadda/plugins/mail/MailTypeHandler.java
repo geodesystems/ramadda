@@ -9,6 +9,7 @@ package org.ramadda.plugins.mail;
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
@@ -23,6 +24,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
+import java.util.LinkedHashMap;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -92,6 +94,21 @@ public class MailTypeHandler extends GenericTypeHandler {
 
 
 
+    @Override
+    public void addToEntryForm(Request request, Appendable formBuffer,
+                               Entry parentEntry, Entry entry,
+                               FormInfo formInfo)
+            throws Exception {
+	if(entry==null) {
+	    String cbx = HU.labeledCheckbox("processhtml",  "true",false,"Process HTML");
+	    cbx += "&nbsp;" + HU.labeledCheckbox("addaddresses",  "true",true,"Add Addresses");
+	    cbx += "&nbsp;" + HU.labeledCheckbox("wikify",  "true",false,"Wikify description");	    
+	    formBuffer.append(HU.colspan(cbx, 2));
+	}
+	super.addToEntryForm(request, formBuffer, parentEntry,entry, formInfo);
+    }
+
+
     /**
      * Gets called when the user has created a new entry from the File->New form or
      * when they have edited the entry. If the eml files were being harvested from a harvester
@@ -108,16 +125,16 @@ public class MailTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
 	
-	boolean addProperties = request.get(ARG_METADATA_ADD,false) ||
-	    request.get("fromharvester",false);
 	if(!isNew(newType)) return;
-
         //If the file for the entry does not exist then return
         if ( !entry.isFile()) {
             return;
         }
 
-
+	boolean addProperties = request.get(ARG_METADATA_ADD,false) ||
+	    request.get("fromharvester",false);
+	boolean addAddresses = request.get("addaddresses",false);
+	if(!addAddresses) addProperties=false;
         System.setProperty("mail.mime.address.strict", "false");
 
         //Extract out the mail message metadata
@@ -136,7 +153,9 @@ public class MailTypeHandler extends GenericTypeHandler {
         String       from     = clean(InternetAddress.toString(message.getFrom()));
 	HashSet<String> seen =  new HashSet<String>();
 	seen.add(from);
-	addMetadata(request,entry,from);
+	if(addProperties) {
+	    addMetadata(request,entry,from);
+	}
 	StringBuilder       toSB = new StringBuilder();
 	Address[]addresses= message.getAllRecipients();
 	if(addresses!=null) {
@@ -145,8 +164,10 @@ public class MailTypeHandler extends GenericTypeHandler {
 		String s = clean(address.toString());
 		if(seen.contains(s)) continue;
 		seen.add(s);
-		toSB.append(s);
-		toSB.append("\n");
+		if(addAddresses) {
+		    toSB.append(s);
+		    toSB.append("\n");
+		}
 		if(addProperties) {
 		    addMetadata(request,entry,s);
 		}
@@ -168,24 +189,48 @@ public class MailTypeHandler extends GenericTypeHandler {
             entry.setEndDate(toDttm.getTime());
         }
 
+	LinkedHashMap<String, String> fileMap =  new LinkedHashMap<String,String>();
         //Do more mail stuff
-        processContent(request, entry, content, desc);
+	boolean wikify = request.get("wikify",false);
+	boolean processHtml = request.get("processhtml",false);
+        processContent(request, entry, content, desc,fileMap,processHtml);
 
         //Now get the values (this would be the fromaddress and toaddress from types.xml
         Object[] values = getEntryValues(entry);
         values[IDX_SUBJECT] =subject;
-        values[IDX_FROM] = from;
+	if(addAddresses)
+	    values[IDX_FROM] = from;
 	String to = Utils.clip(toSB.toString(),19900,"");
         values[IDX_TO] = toSB.toString();
 
         //Set the description from the mail message
         if (entry.getDescription().length() == 0) {
             String description = desc.toString();
+	    if(processHtml) {
+		for (String key : fileMap.keySet()) {
+		    String file = fileMap.get(key);
+		    description=description.replace(key,file);
+		    String pattern = "<img src=\"(" + file+")\"([^>]+)>";
+		    description = description.replaceAll(pattern,"\n{{image src=\"::$1\" $2}}\n");
+		    
+		}
+		description = description.replace("<div><br></div>","<br>");
+		description=description.replace("<br>","\n<br>\n");
+		description=description.replace("</div>","\n</div>\n");		
+		description=description.replaceAll("<div([^>]*)>","\n<div $1>\n");
+		description = description.replaceAll("\n\n+","\n");
+		//		System.out.println(description);
+	    }
+	    if(wikify) {
+		description = "<wiki>\n+section title={{name}}\n" + description +"\n-section\n";
+	    }
+
             if (description.length() > Entry.MAX_DESCRIPTION_LENGTH) {
                 description = description.substring(0,
                         Entry.MAX_DESCRIPTION_LENGTH - 1);
             }
-            entry.setDescription(clean2(description));
+	    //            entry.setDescription(clean2(description));
+            entry.setDescription(description);
         }
     }
 
@@ -201,7 +246,7 @@ public class MailTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     private void processContent(Request request, Entry entry, Object content,
-                                StringBuffer desc)
+                                StringBuffer desc,LinkedHashMap<String, String> fileMap, boolean processHtml)
             throws Exception {
         if (content instanceof MimeMultipart) {
             MimeMultipart multipart = (MimeMultipart) content;
@@ -211,12 +256,18 @@ public class MailTypeHandler extends GenericTypeHandler {
                 if (disposition == null) {
                     Object partContent = part.getContent();
                     if (partContent instanceof MimeMultipart) {
-                        processContent(request, entry, partContent, desc);
+                        processContent(request, entry, partContent, desc,fileMap,processHtml);
                     } else {
                         String contentType =
                             part.getContentType().toLowerCase();
                         //Only ingest the text
-                        if (contentType.indexOf("text/plain") >= 0) {
+			boolean ok = false;
+			if(processHtml) {
+			    ok = contentType.indexOf("text/html")>=0;
+			} else {
+			    ok = contentType.indexOf("text/plain")>=0;
+			}
+                        if (ok) {
                             //                        System.err.println ("part content:" + partContent.getClass().getName());
                             desc.append(partContent);
                             desc.append("\n");
@@ -229,8 +280,17 @@ public class MailTypeHandler extends GenericTypeHandler {
                         || disposition.equalsIgnoreCase(Part.INLINE)) {
                     if (part.getFileName() != null) {
                         InputStream inputStream = part.getInputStream();
-                        File f = getStorageManager().getTmpFile(request,
-                                     part.getFileName());
+			String filename = part.getFileName();
+			String id = part.getContentID();
+			if(id!=null) {
+			    id = id.replace("<","").replace(">","");
+			    String ext = IOUtil.getFileExtension(filename);
+			    if(ext==null) ext="";
+			    filename = id+ ext;
+			    fileMap.put("cid:" +id,filename);			    
+			}
+                        File f = getStorageManager().getTmpFile(request,filename);
+
                         OutputStream outputStream =
                             getStorageManager().getFileOutputStream(f);
                         IOUtil.writeTo(inputStream, outputStream);
@@ -252,7 +312,6 @@ public class MailTypeHandler extends GenericTypeHandler {
             //TODO
             Part part = (Part) content;
         } else {
-            //            System.err.println ("xxx content:" + content.getClass().getName());
             String contents = content.toString();
             desc.append(contents);
             desc.append("\n");
