@@ -264,6 +264,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 	mimetype="application/json" description="GeoJson File"
       handler="org.ramadda.plugins.map.GeoJsonTypeHandler"
       pattern="(.*\.geojson$)" metadata="map_style">
+  <property name="form.properties.show" value="false"/>
     <property name="icon" value="/icons/mapfile.png"/>
     <property name="mimetype" value="application/geo+json"/>    
     <property name="iscsvconvertible" value="true"/>
@@ -274,9 +275,11 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
     </property>
     <column name="names" type="string" changetype="true" size="2000" label="Properties" canedit="false"  showinhtml="true"/>
     <column name="show_search" type="boolean" default="false" label="Show Search"
+	    help="Show the search field in the map"
 	    showinhtml="false"/>
     <column name="feature_label_property" type="string" default="" 
 	    label="Feature label property"
+	    help="When showing the default map this is the feature to use to show a label"
 	    showinhtml="false"/>        
 
 <property name="bubble">
