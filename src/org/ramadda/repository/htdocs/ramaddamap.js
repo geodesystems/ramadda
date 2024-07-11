@@ -1828,9 +1828,9 @@ RepositoryMap.prototype = {
             }
             searchFor = searchFor.toLowerCase();
             toks = [];
-            let tmp = searchFor.split("|");
+            let tmp = Utils.split(searchFor,'|',true,true)
             if (tmp.length == 1) {
-                tmp = searchFor.split("&");
+                tmp = Utils.split(searchFor,'&',true,true);
                 doOr = tmp.length == 1;
             }
             for (let i = 0; i < tmp.length; i++) {
