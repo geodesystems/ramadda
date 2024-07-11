@@ -467,9 +467,11 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                     }
                     if (field.isTypeDate()) {
                         sb.append("<td align=right>");
-                        Date date =
-                            (Date) record.getObjectValue(field.getParamId());
-                        sb.append(formatDate(date));
+                        Object obj = record.getObjectValue(field.getParamId());
+			if(obj instanceof Date)
+			    sb.append(formatDate((Date)obj));
+			else
+			    sb.append(obj);
                         sb.append("</td>");
 
                         continue;
