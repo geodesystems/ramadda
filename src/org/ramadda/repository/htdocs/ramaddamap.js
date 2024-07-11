@@ -743,7 +743,7 @@ RepositoryMap.prototype = {
             this.searchDiv = this.mapDivId + "_search";
             let cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
             let input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
-            let search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>" + cbx + " Download</td></tr></table>"
+            let search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>"+/* + cbx + " Download*/"</td></tr></table>"
             $("#" + this.searchDiv).html(search);
             this.searchMsg = $("#" + this.searchDiv + "_message");
             let searchInput = $("#" + this.searchDiv + "_input");
