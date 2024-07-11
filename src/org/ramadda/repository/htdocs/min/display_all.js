@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 11 04:38:40 MDT 2024";
+var build_date="RAMADDA build date: Thu Jul 11 12:54:28 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -57305,6 +57305,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'startAtEnd',ex:'true'},
 	{p:'scaleFactor',ex:'10'},
 	{p:'initialZoom',ex:'10'},	
+	{p:'timelinePosition',ex:'top|bottom',d:'top'},
 	{p:'navHeight',ex:'150'},
 	{p:'backgroundColor',ex:'#ccc'},
 	{p:'groupField',ex:''},
@@ -57314,9 +57315,12 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	{p:'hideBanner',ex:"true"},
     ];
 
-    Utils.importJS(RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.js"));
-    let css = "https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css";
-    //    css =  RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.css");
+    let js = 'https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js';
+    js = RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.js");
+    Utils.importJS(js);
+    let css = 'https://cdn.knightlab.com/libs/timeline3/latest/css/themes/timeline.theme.contrast.css';
+    //Don't use our own since this breaks the fonts
+    //css =  RamaddaUtil.getCdnUrl("/lib/timeline3/timeline.css");
     $(HU.tag('link',['rel','stylesheet','href', css,'type','text/css'] )).appendTo("head");
    
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
@@ -57352,13 +57356,13 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    this.setContents(html);
 	    this.timelineReady = false;
 	    let opts = {
-		timenav_position: this.getProperty("timelinePosition","top"),
+		timenav_position: this.getTimelinePosition(),
 //		debug:true,
 		start_at_end: this.getPropertyStartAtEnd(false),
 		start_at_slide: this.getPropertyStartAtSlide(0),
 		timenav_height: this.getPropertyNavHeight(200),
-		height:100,
-		menubar_height:100,
+		height:300,
+		menubar_height:300,
 		gotoCallback: (slide)=>{
 		    if(this.timelineReady) {
 			let record = records[slide];
@@ -57463,7 +57467,6 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 	    //	    this.jq(ID_TIMELINE).find(".tl-slide-content").css("width","100%");
 	    this.jq(ID_TIMELINE).find(".tl-slidenav-description").css("display","none");
 	    this.timelineReady = true;
-
 	},
         handleEventRecordSelection: function(source, args) {
 	    if(!args.record) return;
