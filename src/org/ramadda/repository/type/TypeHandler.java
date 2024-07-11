@@ -4863,6 +4863,23 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+
+    public void addNewEntryPageHeader(Request request, Entry group,Appendable sb) throws Exception {
+
+	String msg = "+callout-info\n";
+	msg+="You are adding a new " + getDescription() + " to the entry: " + HU.italics(group.getName());
+
+	if (Utils.equals(getType(),TYPE_FILE)) {
+	    msg+="<br>RAMADDA will try to guess at the new entry type based on the file name";
+	}
+
+	msg+="\n-callout\n";
+	sb.append(getWikiManager().wikify(request, msg));
+	
+
+    }
+
+
     public void addToEntryFormHeader(Request request, Appendable sb,Entry entry) throws Exception {
 	String header = getTypeProperty(entry==null?"form.header.new":"form.header", (String) null);
 	if(header==null) header = getTypeProperty("form.header", (String) null);

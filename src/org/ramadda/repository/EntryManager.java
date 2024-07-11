@@ -1758,6 +1758,7 @@ public class EntryManager extends RepositoryManager {
 					      ((typeHandler != null)
 					       ? msg("Create new") + " " + typeHandler.getLabel()
 					       : msg("Create new entry")));
+	    typeHandler.addNewEntryPageHeader(request, group,sb);
         }
 
 	if(typeHandler!=null) {
