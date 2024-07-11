@@ -831,7 +831,7 @@ public class GeoJson extends JsonUtil {
 	    }	    
 
 	    if(arg.startsWith("-")) {
-		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-print (Print the GeoJson to stdout)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
+		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-print (Print the GeoJson to stdout)\n\t-bounds (print out the bounds)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
 		continue;
 	    }
 
