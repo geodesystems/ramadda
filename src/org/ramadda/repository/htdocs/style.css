@@ -6012,6 +6012,7 @@ a.wiki-link-noexist {
 
 .ui-datepicker { 
     border: 1px solid #aaaaaa !important;
+    z-index:999 !important;
 }
 
 
