@@ -79,7 +79,7 @@ public class AccessManager extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
-						       "/access/form", "Access");
+						       "/access/form", "Permissions");
 
 
     /** _more_ */
@@ -1780,7 +1780,7 @@ public class AccessManager extends RepositoryManager {
         Entry        entry = getEntryManager().getEntry(request);
 
         if ( !canSetAccess(request, entry)) {
-            throw new AccessException("Can't set access", request);
+            throw new AccessException("Can't set permissions", request);
         }
 
         getPageHandler().entrySectionOpen(request, entry, sb, "Define Permissions");
@@ -1817,7 +1817,7 @@ public class AccessManager extends RepositoryManager {
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append("<br>");
-        sb.append(HU.submit("Change Access"));
+        sb.append(HU.submit("Change Permissions"));
         sb.append("<br>");
         if (dataPolicies.size() > 0) {
             List         items    = new ArrayList();
@@ -1934,14 +1934,13 @@ public class AccessManager extends RepositoryManager {
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getStandardRoles()));
         //        sb.append("</td></tr></table>");
-        sb.append(HU.submit("Change Access"));
+        sb.append(HU.submit("Change Permissions"));
         sb.append(HU.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return getEntryManager().makeEntryEditResult(request, entry,
-						     msg("Edit Access"), sb);
-
+						     msg("Edit Permissions"), sb);
 
 
     }

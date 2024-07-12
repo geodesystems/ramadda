@@ -3466,7 +3466,7 @@ public class TypeHandler extends RepositoryManager {
 			  new Link(
 				   request.entryUrl(
 						    getRepository().URL_ACCESS_FORM,
-						    entry), ICON_ACCESS, "Access",
+						    entry), ICON_ACCESS, "Permissions",
 				   OutputType.TYPE_EDIT));
             }
 

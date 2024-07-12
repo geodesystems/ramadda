@@ -215,7 +215,7 @@ public class Admin extends RepositoryManager {
 
     /** _more_ */
     public RequestUrl URL_ADMIN_ACCESS = new RequestUrl(this,
-                                             "/admin/access", "Access");
+                                             "/admin/access", "Permissions");
 
 
     /** _more_ */
@@ -1877,7 +1877,7 @@ public class Admin extends RepositoryManager {
     public Result adminAccess(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(HU.sectionOpen(null, false));
-        sb.append(msgHeader("Access Overview"));
+        sb.append(msgHeader("Permissions Overview"));
 
         Statement statement =
             getDatabaseManager().execute(

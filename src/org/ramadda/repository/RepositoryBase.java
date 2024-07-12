@@ -159,7 +159,7 @@ public class RepositoryBase implements Constants, RepositorySource {
 
     /** _more_ */
     public final RequestUrl URL_ACCESS_FORM = new RequestUrl(this,
-                                                  "/access/form", "Access");
+                                                  "/access/form", "Permissions");
 
 
     /** _more_ */

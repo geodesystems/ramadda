@@ -2119,7 +2119,7 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final String MSG_ACCESS_CHANGED = "Access Changed";
+    public static final String MSG_ACCESS_CHANGED = "Permissions Changed";
 
     /** _more_ */
     public static final String MSG_ASSOCIATION_ADDED =

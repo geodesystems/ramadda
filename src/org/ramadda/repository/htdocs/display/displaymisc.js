@@ -683,7 +683,11 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 		    text:text
 		};
 		if(groupField) {
-		    event.group = record.getValue(groupField.getIndex());
+		    let value = record.getValue(groupField.getIndex());
+		    if(value && groupField.isFieldMultiEnumeration()) {
+			value = String(value).replace(/,.*/g,'');
+		    }
+		    event.group = value;
 		}
 
 		if(imageField) {

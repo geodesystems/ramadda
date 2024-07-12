@@ -4252,7 +4252,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if ( !getAccessManager().canAccessFile(request, entry)) {
-            throw new AccessException("No access to file", request);
+            throw new AccessException("No permission to access file", request);
         }
 
 
