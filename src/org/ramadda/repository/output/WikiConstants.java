@@ -409,6 +409,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_EMBEDMS = "embedms";
 
     public static final String WIKI_TAG_MEDIA = "media";
+    public static final String WIKI_TAG_SOUNDCITE = "soundcite";
 
     /** _more_ */
     public static final String WIKI_TAG_ODOMETER = "odometer";

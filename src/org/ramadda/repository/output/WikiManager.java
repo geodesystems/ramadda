@@ -1458,7 +1458,6 @@ public class WikiManager extends RepositoryManager
                                             entry, tag, props,remainder);
 
 
-
         if (result == null) {
 	    System.err.println("WIKI ERROR:" + Utils.getStack(30));
             result = getMessage(wikiUtil, props,
@@ -2440,6 +2439,26 @@ public class WikiManager extends RepositoryManager
 	    return RepositoryUtil.getVersion();
         } else if (theTag.equals(WIKI_TAG_MAKELABEL)) {
 	    return Utils.makeLabel(remainder);
+	} else if(theTag.equals(WIKI_TAG_SOUNDCITE)) {
+	    if (request.getExtraProperty("addedsoundcite") == null) {
+		request.putExtraProperty("addedsoundcite", "true");
+		sb.append(HU.importJS("https://cdn.knightlab.com/libs/soundcite/latest/js/soundcite.min.js"));
+		HU.cssLink(sb, "https://cdn.knightlab.com/libs/soundcite/latest/css/player.css");
+	    }
+
+
+	    String label = getProperty(wikiUtil,props,"label","listen");
+	    String url = getProperty(wikiUtil,props,"url",null);
+	    if(url==null) {
+		url= entry.getTypeHandler().getEntryResourceUrl(request, entry);
+	    }
+	    HU.span(sb,label,HU.attrs("class","soundcite",
+				      "data-url", url,
+				      "data-start",getProperty(wikiUtil,props,"start","0"),
+				      "xxdata-end","164000",
+				      "data-plays","1"));
+
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MEDIA)) {
             if ( !entry.getResource().isDefined()) {
                 return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
@@ -8134,7 +8153,6 @@ public class WikiManager extends RepositoryManager
                 if (tag.attrs.length() > 0) {
                     textToInsert += " " + tag.attrs;
                 }
-
                 String js2 = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 		    + "," + HU.squote("{{" + textToInsert + " ")
 		    + "," + HU.squote("}}") + "," + HU.squote("")

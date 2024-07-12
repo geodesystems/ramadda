@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2023 Geode Systems LLC
+ * Copyright (c) 2008-2024 Geode Systems LLC
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -21,24 +21,28 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class WikiTags implements  OutputConstants,WikiConstants,Constants {
+    public static final String ATTR_TT ="tt";
+
     /** list of import items for the text editor menu */
     //J--
     public static final WikiTagCategory[] WIKITAGS = {
         new WikiTagCategory("General",
-                            new WikiTag(WIKI_TAG_NAME,null,"tt","Entry name","link","true"), 
-                            new WikiTag(WIKI_TAG_DESCRIPTION,null,"tt","Entry description","wikify","true"),
-                            new WikiTag(WIKI_TAG_SNIPPET,null,"tt","Entry text snippet"),			    
-                            new WikiTag(WIKI_TAG_ICON,null,"tt","Entry Icon","#width","16px"),
-                            new WikiTag(WIKI_TAG_INFORMATION, null, "tt","General entry information",
+                            new WikiTag(WIKI_TAG_NAME,null,ATTR_TT,"Entry name","link","true"), 
+                            new WikiTag(WIKI_TAG_DESCRIPTION,null,ATTR_TT,"Entry description","wikify","true"),
+                            new WikiTag(WIKI_TAG_SNIPPET,null,ATTR_TT,"Entry text snippet"),			    
+                            new WikiTag(WIKI_TAG_ICON,null,ATTR_TT,"Entry Icon","#width","16px"),
+                            new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_TT,"General entry information",
 					"showDetails","true",
 					ATTR_SHOWTITLE,"false","#menus","file,edit,view,feeds,other,service","#menusTitle","Services"),
-                            new WikiTag(WIKI_TAG_ARK,null,"tt","Add the ARK ID if it is enabled","message","","template","<b>ARK ID:</b> ${ark}"), 
-                            new WikiTag(WIKI_TAG_RESOURCE, null, "tt","Link to entry file",ATTR_TITLE,"",ATTR_SHOWICON,"true","simple","false"),
-                            new WikiTag(WIKI_TAG_MEDIA,null,"tt","Embed the resource, e.g., image, video, audio, etc","width","100%","#full","true"), 
-                            new WikiTag(WIKI_TAG_ENTRYLINK,"Entry link", "tt","Link to entry","link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
-                            new WikiTag(WIKI_TAG_THIS,"Entry ID","tt","The entry ID"),
-                            new WikiTag(WIKI_TAG_TYPENAME,null,"tt","Entry type name"), 
-                            new WikiTag(WIKI_TAG_CHILDREN_COUNT,"Children count","tt","Show the # of children",
+                            new WikiTag(WIKI_TAG_ARK,null,ATTR_TT,"Add the ARK ID if it is enabled","message","","template","<b>ARK ID:</b> ${ark}"), 
+                            new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TT,"Link to entry file",ATTR_TITLE,"",ATTR_SHOWICON,"true","simple","false"),
+                            new WikiTag(WIKI_TAG_MEDIA,"Media",ATTR_TT,"Embed the resource, e.g., image, video, audio, etc","width","100%","#full","true"), 
+                            new WikiTag(WIKI_TAG_SOUNDCITE,"Sound Cite",ATTR_TT,"Embed a audio player link",
+					"label","listen","#url","","#start","0"), 
+                            new WikiTag(WIKI_TAG_ENTRYLINK,"Entry link", ATTR_TT,"Link to entry","link","",ATTR_TITLE,"",ATTR_SHOWICON,"true"), 			    
+                            new WikiTag(WIKI_TAG_THIS,"Entry ID",ATTR_TT,"The entry ID"),
+                            new WikiTag(WIKI_TAG_TYPENAME,null,ATTR_TT,"Entry type name"), 
+                            new WikiTag(WIKI_TAG_CHILDREN_COUNT,"Children count",ATTR_TT,"Show the # of children",
 					"template","${count}"),			    
                             new WikiTag(WIKI_TAG_EDITBUTTON,null,"label","Edit","#message","Show when cannot edit"),
                             new WikiTag(WIKI_TAG_NEW_TYPE,null,"type","entry type to create",
@@ -47,13 +51,13 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#label","","#message","Show when cannot new","addBreak","true",
 					"style","margin-bottom:4px;"), 			    			    			    
                             new WikiTag(WIKI_TAG_ACCESS_STATUS,"Show access","fullAccess","false"),
-                            new WikiTag(WIKI_TAG_ANCESTOR,"Ancestor ID","tt","ID of ancestor","#type","entry type"), 			    
+                            new WikiTag(WIKI_TAG_ANCESTOR,"Ancestor ID",ATTR_TT,"ID of ancestor","#type","entry type"), 			    
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
-                            new WikiTag(WIKI_TAG_IMPORT, null, "tt","Import display of another entry",
+                            new WikiTag(WIKI_TAG_IMPORT, null, ATTR_TT,"Import display of another entry",
 					ATTR_ENTRY,"","showTitle","false"),
-                            new WikiTag(WIKI_TAG_MACRO, null, "tt","Add entry macro",
+                            new WikiTag(WIKI_TAG_MACRO, null, ATTR_TT,"Add entry macro",
 					"name","macroname",
 					ATTR_ENTRY,""),			    
 
@@ -74,11 +78,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
                             new WikiTag(WIKI_TAG_TABLETREE, "Entry table/tree",
-					"tt","Standard entry table with tree links",
+					ATTR_TT,"Standard entry table with tree links",
 					"message","",
 					"simple","false",
 					"#maxHeight","500px"),
-                            new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree","tt",
+                            new WikiTag(WIKI_TAG_FULLTREE, "Entry full tree",ATTR_TT,
 					"Show a tree of entries",
 					"depth","10","addprefix","false","showroot","true","labelWidth","20", ATTR_SHOWICON,"true","#types","group,file,...."),
                             new WikiTag(WIKI_TAG_MENUTREE, null,"depth","4","addprefix","false","showroot","true","menuStyle","","labelWidth","20", ATTR_SHOWICON,"true","types","group,file,...."), 			    			    
@@ -87,8 +91,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_LIST),
                             new WikiTag(WIKI_TAG_ENTRIES_TEMPLATE,null,"template","${name link=true}","before","",
 					"after",""), 			    
-                            new WikiTag(WIKI_TAG_TABS, null,"tt","Show entries in tabs"), 
-                            new WikiTag(WIKI_TAG_GRID, "Entry grid","tt","Show a grid of entries", 
+                            new WikiTag(WIKI_TAG_TABS, null,ATTR_TT,"Show entries in tabs"), 
+                            new WikiTag(WIKI_TAG_GRID, "Entry grid",ATTR_TT,"Show a grid of entries", 
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","200", 
 					"width","200px",
@@ -143,7 +147,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ACCORDION, null, ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_SHOWICON, "false",ATTR_TEXTPOSITION, POS_LEFT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE, "Tables", 
-					"tt","Entry tables grouped by type"),
+					ATTR_TT,"Entry tables grouped by type"),
                             new WikiTag(WIKI_TAG_ABSOPEN,null,"canEdit","true","imageEntry","","width","100%","#height","height"),
                             new WikiTag(WIKI_TAG_ABSCLOSE,null), 			    
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
@@ -226,14 +230,14 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#url","",					
 					"#desc",""),
                             new WikiTag("loginform","Login Form",
-					"tt","Add a login form",
+					ATTR_TT,"Add a login form",
 					"onlyIfLoggedOut",   "true",
 					"showUserLink",   "true",					
 					"#userId","",
 					"#formPrefix","Please login:",
 					"#loggedInMessage",  ""), 			    
                             new WikiTag(WIKI_TAG_COPYABLE, null,
-					"tt","Add a copyable item","text","","addIcon","true"),
+					ATTR_TT,"Add a copyable item","text","","addIcon","true"),
                             new WikiTag("counter", null, "key", "key"),
                             new WikiTag("caption", null, "label", "","prefix","Image #:"),
                             new WikiTag(WIKI_TAG_QRCODE, null, "#url","","#width", "128","#height","128","#darkColor","red",
@@ -277,7 +281,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 			    new WikiTag(WIKI_TAG_WIKITEXT,null,"showToolbar","false")),
         new WikiTagCategory("Misc 2",
                             new WikiTag(WIKI_TAG_BREADCRUMBS),
-                            new WikiTag(WIKI_TAG_TOOLS,"Tools","tt","Add tools for this entry",
+                            new WikiTag(WIKI_TAG_TOOLS,"Tools",ATTR_TT,"Add tools for this entry",
 					"title","Services",
 					"includeIcon","true",
 					"#types","service,file,view,feeds",
@@ -345,7 +349,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_UPLOAD,null, "#type","Some entry type",
 					ATTR_TITLE,"Upload file", ATTR_SHOWICON,"false","showForm","false"), 
                             new WikiTag(WIKI_TAG_ROOT),
-			    new WikiTag("loremipsum","Lorem Ipsum Text","tt","Filler text\nimg:lorem.png")),
+			    new WikiTag("loremipsum","Lorem Ipsum Text",ATTR_TT,"Filler text\nimg:lorem.png")),
     };
     //J++
 
@@ -356,38 +360,17 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 
 
     public static class WikiTag {
-        /** _more_ */
         String label;
-
-        /** _more_ */
         String tag;
-
-        /** _more_ */
         String attrs;
-
 	String tt;
-
-        /** _more_ */
         List<String> attrsList = new ArrayList<String>();
-
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         */
         WikiTag(String tag) {
             this(tag, null);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param tag _more_
-         * @param label _more_
-         * @param attrs _more_
-         */
         WikiTag(String tag, String label, String... attrs) {
+	    boolean debug=false;
             this.tag = tag;
             if (label == null) {
                 label = StringUtil.camelCase(tag);
@@ -406,52 +389,30 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                         sb.append("_newline_");
                         cnt = 0;
                     }
-		    if(attrs[i]!=null && attrs[i].equals("tt")) {
+		    
+		    if(attrs[i]!=null && attrs[i].equals(ATTR_TT)) {
 			tt = attrs[i+1];
+			if(debug) System.err.println("TT:" + tt);
 			continue;
 		    }
 
                     cnt += attrs[i].length() + attrs[i + 1].length();
+		    if(debug) System.err.println("attr:" + attrs[i] + "=" + attrs[i+1]);
                     attr(sb, attrs[i], attrs[i + 1]);
                 }
                 this.attrs = sb.toString();
+		if(debug) System.err.println("attrs:" + this.attrs);
             }
         }
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 5, '14
-     * @author         Enter your name here...
-     */
+
     public static class WikiTagCategory {
-
-        /** _more_ */
         String category;
-
-        /** _more_ */
         WikiTag[] tags;
-
-        /**
-         * _more_
-         *
-         * @param c _more_
-         * @param tagArgs _more_
-         */
         WikiTagCategory(String c, WikiTag... tagArgs) {
             this.category = c;
-
-            /**
-             * Comparator comp = new Comparator() {
-             *   public int compare(Object o1, Object o2) {
-             *       return ((WikiTag) o1).tag.compareTo(((WikiTag) o2).tag);
-             *   }
-             * };
-             * Arrays.sort(tagArgs, comp);
-             */
             tags = tagArgs;
         }
     }
