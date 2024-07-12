@@ -1234,6 +1234,7 @@ WikiEditor.prototype = {
 	};
 
 	let wikiAttrs = this.getWikiAttributes(tagInfo,callback);
+
 	//Callback later
 	if(wikiAttrs===false) return false;
 	if(wikiAttrs) {
@@ -1631,7 +1632,7 @@ WikiEditor.prototype = {
 	}
 	let merge = (list) =>{
 	    if(!list) list = [];
-	    list = list.map(item=>{
+	    list = list.filter(item=>{return item.p!='tt';}).map(item=>{
 		if(!item.p) return item;
 		//strip off the comments that can come from the server
 		if(String(item.p).startsWith('#')) {
