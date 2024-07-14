@@ -5728,6 +5728,71 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
     },
+    makeSelectTagPopup:function(select,args) {
+	let opts ={
+	    label:'Select',
+	    hide: true
+	}
+	if(args) $.extend(opts,args);
+	let label = opts.label??'Select';
+	if(opts.hide)
+	    select.hide();
+	let guid = HU.getUniqueId('btn');
+	let btn =HU.div([ATTR_ID,guid,ATTR_ID,guid],
+			'Select');
+	select.before(btn);
+	let optionMap = {};
+	let cbxChange = function() {
+	    let option = optionMap[$(this).attr(ATTR_ID)];
+	    if(option) {
+		let selected=$(this).is(':checked');
+		option.prop('selected',selected);
+		select.change();
+	    }
+	}
+	let makeDialog = anchor=>{
+	    let html = '';
+	    let cbxs=[];
+	    select.find('option').each(function() {
+		let value = $(this).attr('value');
+		let selected=$(this).is(':selected');
+		let id = HU.getUniqueId('cbx')
+		optionMap[id] = $(this);
+		let cbx = HU.checkbox(id,[],selected,value);
+		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag','tag',$(this).html() +' ' + value], cbx);
+		cbxs.push(cbx);
+	    });
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let inputId = HU.getUniqueId("input_");
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
+					draggable:true,header:true});
+	    dialog.find(":checkbox").change(cbxChange);
+	    let tags = dialog.find(".ramadda-select-tag");
+	    $("#"+inputId).keyup(function(event) {
+		let text = $(this).val().trim().toLowerCase();
+		tags.each(function() {
+		    if(text=='')
+			$(this).show();
+		    else {
+			let tag = $(this).attr("tag");
+			if(tag) {
+			    tag = tag.toLowerCase();
+			    if(tag.indexOf(text)>=0)
+				$(this).show();
+			    else
+				$(this).hide();
+			}
+		    }
+		});
+	    });
+	}
+	jqid(guid).button().click(function() {
+	    makeDialog($(this));
+	});
+    },
+
     select: function(name, attrs,list, selected,maxWidth,debug) {
         var select = this.openTag("select", attrs);
         select+=HU.makeOptions(list,selected,maxWidth,debug);
