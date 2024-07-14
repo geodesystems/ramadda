@@ -3555,6 +3555,22 @@ pre {
     color:rgb(51,51,51);
 }
 
+.ramadda-select-tag {
+    font-size:80%;
+    display:inline-block;
+    margin:3px;
+    border-radius: 10px;
+    padding:1px;
+    padding-left:8px;
+    padding-right:10px;
+    cursor:pointer;
+    background:#E5E5E5;
+    border:1px solid #ccc;
+    color:rgb(51,51,51);
+}
+
+
+
 .bs-inner .metadata-tag {
     font-size:9pt;
 }
