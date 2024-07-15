@@ -2089,7 +2089,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let attrs = [ATTR_ID, id];
 			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
 			if(col.getSearchMultiples()) {
-			    attrs.push('multiple',null);
+			    attrs.push('multiple','true');
 			    attrs.push('size','4');			    
 			} else {
 			    clazz= 'display-searchmenu ' + clazz;
@@ -4526,13 +4526,19 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 	    } else if(this.getType()=='string') {
 		text = this.getInputText();
 	    }
-	    if(Utils.stringDefined(text)) {
-		settings.metadata.push({
-		    type: this.getMetadataType(),
-		    index:this.getIndex(),
-		    value: text
+	    if(text) {
+		let textArray = text;
+		if(!Array.isArray(textArray)) textArray = [textArray];
+		textArray.forEach(text=>{
+		    if(!Utils.stringDefined(text)) return;
+		    settings.metadata.push({
+			type: this.getMetadataType(),
+			index:this.getIndex(),
+			value: text
+		    });
 		});
 	    }
+
 	},
 
 
@@ -4582,7 +4588,7 @@ function DisplayEntryMetadataElement(display,metadata,element) {
 
 	    });
 	    let selectAttrs = [ATTR_ID,this.selectId];
-	    if(multiples) selectAttrs.push('multiples','','size',4);
+	    if(multiples) selectAttrs.push('multiple','true','size',4);
 	    this.select = HU.tag("select", selectAttrs,select);
 	    return cbxs;
 
