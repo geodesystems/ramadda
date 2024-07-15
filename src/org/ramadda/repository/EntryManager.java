@@ -4364,10 +4364,12 @@ public class EntryManager extends RepositoryManager {
             }
 
 	    if(byteEnd<0)  byteEnd = totalLength;
+	    if(byteStart<0)  byteStart = 0;
             Result result = new Result(BLANK, inputStream, mimeType);
             result.setResponseCode(response);
             result.addHttpHeader("Accept-Ranges", "bytes");
-            result.addHttpHeader("Content-Range", "bytes " + byteStart +"-"+byteEnd+"/"+totalLength);	               result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
+	    result.addHttpHeader("Content-Range", "bytes " + byteStart +"-"+byteEnd+"/"+totalLength);
+	    result.addHttpHeader(HU.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
             result.setCacheOk(httpCacheFile);
 	    return result;
