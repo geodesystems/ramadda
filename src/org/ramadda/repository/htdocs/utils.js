@@ -5742,13 +5742,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			'Select');
 	select.before(btn);
 	let optionMap = {};
-	let cbxChange = function() {
-	    let option = optionMap[$(this).attr(ATTR_ID)];
+	let handleChange = function(cbx,trigger) {
+	    let option = optionMap[cbx.attr(ATTR_ID)];
 	    if(option) {
-		let selected=$(this).is(':checked');
+		let selected=cbx.is(':checked');
 		option.prop('selected',selected);
-		select.change();
+		if(trigger)
+		    select.change();
 	    }
+	}
+
+	let cbxChange = function() {
+	    handleChange($(this),true);
 	}
 	let makeDialog = anchor=>{
 	    let html = '';
@@ -5765,11 +5770,58 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), 'placeholder','Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let buttons = '';
+	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
+	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','selectshown'],'Select shown');	    
+	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showselected'],'Show selected');
+	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showall'],'Show all');	    	    
+	    input+=HU.div([ATTR_STYLE,
+			   HU.css('border-bottom','var(--basic-border)','padding','6px')],buttons);
+
+
+
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
+
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
 					draggable:true,header:true});
 	    dialog.find(":checkbox").change(cbxChange);
 	    let tags = dialog.find(".ramadda-select-tag");
+	    dialog.find('.ramadda-select-action').button().click(function() {
+		let action =$(this).attr('data-action');
+		if(action=='showall') {
+		    tags.show();
+		    return
+		}
+		if(action=='showselected') {
+		    tags.each(function() {
+			let cbx = $(this).find(':checkbox');
+			let selected=cbx.is(':checked');
+			if(!selected) $(this).hide();
+		    });
+		    return
+
+		}
+		if(action=='selectshown') {
+		    tags.each(function() {
+			if($(this).is(':visible')) {
+			    let cbx = $(this).find(':checkbox');
+			    cbx.prop('checked',true);
+			    handleChange(cbx,false);
+			}
+		    });
+		    select.change();
+		}
+
+
+		if(action=='clear') {
+		    tags.each(function() {
+			let cbx = $(this).find(':checkbox');
+			cbx.prop('checked',false);
+			handleChange(cbx,false);
+		    });
+		    select.change();
+		}
+	    });
 	    $("#"+inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() {
