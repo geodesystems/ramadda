@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jul 15 05:25:25 MDT 2024";
+var build_date="RAMADDA build date: Mon Jul 15 12:02:56 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -42461,28 +42461,35 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    info.addRecord(record);
 		    recordInfo.collisionInfo = info;
 		    recordInfo.visible = info.visible;		    
-		    let anglePer = 360/cntAtPoint;
-		    let lineOffset = CH.offset;
-		    let delta = cntAtPoint/8;
-		    if(delta>1)
-			lineOffset*=delta;
-		    let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,
-					  info.records.length*anglePer-180,true);
-		    let line = this.getMap().createLine("line-" + idx, "", collisionPoint.y,collisionPoint.x, ep.y,ep.x, {strokeColor:CH.lineColor,strokeWidth:CH.lineWidth});
+		    if(!collisionArgs.fixed) {
+			let anglePer = 360/cntAtPoint;
+			let lineOffset = CH.offset;
+			let delta = cntAtPoint/8;
+			if(delta>1)
+			    lineOffset*=delta;
+			let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,
+					      info.records.length*anglePer-180,true);
+			console.log('addline');
+			let line = this.getMap().createLine("line-" + idx, "", collisionPoint.y,collisionPoint.x, ep.y,ep.x, {strokeColor:CH.lineColor,strokeWidth:CH.lineWidth});
 
-		    if(!info.visible) {
-			line.featureVisible = false;
-			this.map.checkFeatureVisible(line,true);
+			if(!info.visible) {
+			    line.featureVisible = false;
+			    this.map.checkFeatureVisible(line,true);
+			}
+			info.addLine(line);
+			//set the rotated location of the point to use later
+			recordInfo.x=ep.x;
+			recordInfo.y=ep.y;
+		    } else {
+			recordInfo.dontShow = true;
 		    }
-		    info.addLine(line);
-		    //set the rotated location of the point to use later
-		    recordInfo.x=ep.x;
-		    recordInfo.y=ep.y;
 		});
 		CH.getCollisionInfos().forEach((info,idx)=>{
-                    featuresToAdd.push(...info.createDots(idx));
+		    let dots = info.createDots(idx);
+		    featuresToAdd.push(...dots);
 		});
 	    }
+
 
 	    let featureCnt=0;
 	    let sizeByFunc = function(percent, size) {
@@ -42620,7 +42627,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    //main loop
 	    recordInfos.forEach((recordInfo,idx)=>{
-
+		if(recordInfo.dontShow) return;
 
 		featureCnt++;
 		let record = recordInfo.record;
@@ -42972,10 +42979,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    });
 	    
 	    times.push(new Date());
-	    
 	    if(showPoints) {
 		this.addFeatures(pointsToAdd);
 	    }
+
 	    this.addFeatures(linesToAdd);
 	    this.myPoints = pointsToAdd;
 	    this.addFeatures(featuresToAdd);
