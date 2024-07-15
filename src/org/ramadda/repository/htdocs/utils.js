@@ -5764,7 +5764,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), 'placeholder','Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
 					draggable:true,header:true});
