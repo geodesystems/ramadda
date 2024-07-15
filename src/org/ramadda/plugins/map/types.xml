@@ -296,6 +296,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 +row
 +col-md-8
 {{map width="100%" height="450" showSearch="property:show_search"
+showLatLonPosition=true 
 featureLabelProperty="property:feature_label_property"
 viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -col
