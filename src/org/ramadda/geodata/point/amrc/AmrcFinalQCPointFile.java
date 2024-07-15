@@ -17,6 +17,7 @@
 package org.ramadda.geodata.point.amrc;
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
@@ -96,7 +97,7 @@ public class AmrcFinalQCPointFile extends CsvFile {
     public static final double MISSING = 444.0;
 
     /** date formatter */
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
+    private MyDateFormat sdf = makeDateFormat("yyyy-MM-dd HHmm");
 
     /** buffer */
     private StringBuffer dttm = new StringBuffer();

@@ -11,6 +11,8 @@ import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 
 import org.ramadda.util.IO;
+
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.WaterMLUtil;
 
 import org.w3c.dom.*;
@@ -34,7 +36,7 @@ import java.util.List;
 public class WaterMLFile extends PointFile {
 
     /** date parser */
-    private SimpleDateFormat sdf;
+    private MyDateFormat sdf;
 
     /** How many fields (lat,lon,...) before the data fields */
     private static final int OFFSET = 4;

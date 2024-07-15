@@ -14,6 +14,7 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 
 import org.ramadda.util.NamedChannel;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
@@ -643,8 +644,9 @@ public class TextRecord extends DataRecord {
             }
         }
         String unit = field.getUnit();
-        String sfmt = field.getSDateFormat();
-        if ( !Utils.stringDefined(sfmt) && (unit != null)
+	MyDateFormat sdf  = field.getDateFormat();
+	String sfmt=null;
+        if (unit != null
                 && unit.equals("s since 1970-01-01 00:00:00.000 UTC")) {
             sfmt = "sss";
         }
@@ -667,9 +669,17 @@ public class TextRecord extends DataRecord {
                     return new Date((long) l);
                 } else {
                     long l = Long.parseLong(tok) * 1000;
-
                     return new Date(l);
                 }
+            } else if (sfmt.equals("seconds")) {
+                if (tok.indexOf("E") >= 0) {
+                    double l = Double.parseDouble(tok);
+                    return new Date((long) l);
+                } else {
+                    long l = Long.parseLong(tok);
+                    return new Date(l);
+                }
+
             } else if (sfmt.equals("yyyy")) {
                 //              System.out.println("tok:" + tok + " dttm:" + yearFormat.parse(tok + "-06"));
                 return yearFormat.parse(tok + "-06");
@@ -694,9 +704,9 @@ public class TextRecord extends DataRecord {
         } catch (java.text.ParseException ignore) {
 	    if(debug) System.err.println("\terror:" + ignore);
             //Try to guess
-	    sdf = Utils.findDateFormat(tok);
-	    if(sdf!=null) {
-		return sdf.parse(tok);
+	    SimpleDateFormat sdf2 = Utils.findDateFormat(tok);
+	    if(sdf2!=null) {
+		return sdf2.parse(tok);
 	    }
             date = Utils.extractDate(tok);
 	    if(debug)System.err.println("\textract:" + date);
@@ -736,10 +746,8 @@ public class TextRecord extends DataRecord {
      *
      * @return _more_
      */
-    private SimpleDateFormat getDateFormat(RecordField field) {
-        SimpleDateFormat sdf = field.getDateFormat();
-	if(debugDate)
-	    System.err.println("TextRecord: date format:" + field.getSDateFormat());
+    private MyDateFormat getDateFormat(RecordField field) {
+        MyDateFormat sdf = field.getDateFormat();
         if (sdf == null) {
             field.setDateFormat(sdf =
                 getRecordFile().makeDateFormat(TextFile.DFLT_DATE_FORMAT));

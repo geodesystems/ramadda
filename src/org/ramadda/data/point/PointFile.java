@@ -9,6 +9,7 @@ package org.ramadda.data.point;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.IO;
@@ -1076,14 +1077,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 String timezone = getProperty(field, properties, "timezone",
                                       "UTC");
                 field.setType(field.TYPE_DATE);
-                SimpleDateFormat sdf = new SimpleDateFormat();
-                sdf.setTimeZone(TimeZone.getTimeZone(timezone));
-                try {
-                    sdf.applyPattern(fmt);
-                    field.setDateFormat(sdf, fmt);
+		try {
+		    MyDateFormat sdf = new MyDateFormat(fmt,TimeZone.getTimeZone(timezone));
+		    field.setDateFormat(sdf);
                 } catch (Exception exc) {
                     System.err.println("Error making date format:" + fmt);
-
                     throw exc;
                 }
             }

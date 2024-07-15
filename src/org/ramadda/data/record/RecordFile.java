@@ -7,6 +7,7 @@ package org.ramadda.data.record;
 
 
 import org.ramadda.data.record.filter.*;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
@@ -18,8 +19,8 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
-import java.text.SimpleDateFormat;
 
+import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -116,13 +117,13 @@ public abstract class RecordFile {
     private List<String[]> unitPatterns;
 
     /** _more_ */
-    private SimpleDateFormat[] mySdfs;
+    private MyDateFormat[] mySdfs;
 
     private SimpleDateFormat outputDateFormat;
 
 
     /** _more_ */
-    private static SimpleDateFormat[][] SDFS = {
+    private static MyDateFormat[][] SDFS = {
         { makeDateFormat("yyyy") },
         { makeDateFormat("yyyy-MM"), makeDateFormat("yyyy-MMM"),
           makeDateFormat("yyyy-MMMM"), }, { makeDateFormat("yyyy-MM-dd") },
@@ -1629,9 +1630,8 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    public static SimpleDateFormat makeDateFormat(String format) {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    public static MyDateFormat makeDateFormat(String format) {
+        MyDateFormat sdf = new MyDateFormat(format, TimeZone.getTimeZone("UTC"));
         return sdf;
     }
 
@@ -1699,7 +1699,7 @@ public abstract class RecordFile {
      *
      * @return _more_
      */
-    private SimpleDateFormat[] getDateFormat(int[] ymdhmsIndices) {
+    private MyDateFormat[] getDateFormat(int[] ymdhmsIndices) {
         int goodCnt = 0;
         for (int i = 0; i < ymdhmsIndices.length; i++) {
             if (ymdhmsIndices[i] < 0) {
@@ -1773,7 +1773,7 @@ public abstract class RecordFile {
      */
     private Date setDate(BaseRecord record, String dttm) throws Exception {
         if (mySdfs != null) {
-            for (SimpleDateFormat sdf : mySdfs) {
+            for (MyDateFormat sdf : mySdfs) {
                 try {
                     Date date = sdf.parse(dttm);
                     record.setRecordTime(date.getTime());
@@ -1915,7 +1915,7 @@ public abstract class RecordFile {
         if (timeIndex >= 0) {
             pattern += " HHmm";
         }
-        mySdfs = new SimpleDateFormat[] {
+        mySdfs = new MyDateFormat[] {
             makeDateFormat(getProperty(PROP_DATEFORMAT, pattern)) };
 
 
@@ -1928,8 +1928,8 @@ public abstract class RecordFile {
      *
      * @param value The new value for Sdf
      */
-    public void setSdf(SimpleDateFormat value) {
-        mySdfs = new SimpleDateFormat[] { value };
+    public void setSdf(MyDateFormat value) {
+        mySdfs = new MyDateFormat[] { value };
     }
 
     /**
@@ -1937,7 +1937,7 @@ public abstract class RecordFile {
      *
      * @return The Sdf
      */
-    public SimpleDateFormat[] getSdf() {
+    public MyDateFormat[] getSdf() {
         return mySdfs;
     }
 

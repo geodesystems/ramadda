@@ -11,6 +11,7 @@ import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.Utils;
@@ -2249,7 +2250,7 @@ public class RowCollector extends Processor {
             String sample;
 
             /** _more_ */
-            SimpleDateFormat sdf;
+            MyDateFormat sdf;
 
             /** _more_ */
             String format;
@@ -2333,11 +2334,17 @@ public class RowCollector extends Processor {
                     this.format = Utils.getProperty(props, name + ".format",
 						    Utils.getProperty(props, "format", this.format));
                     if (this.format != null) {
-                        sdf = new SimpleDateFormat(this.format);
+			//                        sdf = new SimpleDateFormat(this.format);
                     }
                 }
             }
 
+	    private MyDateFormat getSdf() {
+		if(sdf==null)
+		    sdf = new MyDateFormat(this.format);
+		return sdf;
+		    
+	    }
 	    public String toString() {
 		return name;
 	    }
@@ -2352,10 +2359,7 @@ public class RowCollector extends Processor {
              */
             public Date getDate(Object v) {
                 try {
-                    if (format.equals("SSS")) {
-                        return new Date(Long.parseLong(v.toString()) * 1000);
-                    }
-                    return sdf.parse(v.toString());
+                    return getSdf().parse(v.toString());
                 } catch (Exception exc) {
 		    if(!loggedError) {
 			System.err.println("Unable to parse date:" + v +" with format:" + this.format);

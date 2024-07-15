@@ -10,6 +10,7 @@ import org.ramadda.data.point.*;
 
 import org.ramadda.data.record.*;
 
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Station;
 
 import ucar.unidata.util.StringUtil;
@@ -39,7 +40,7 @@ public class MultiMonthRecord extends TextRecord {
     // 1948 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90 -99.90
 
     /** _more_ */
-    private SimpleDateFormat sdf;
+    private MyDateFormat sdf;
 
     /** _more_ */
     List<String> toks;

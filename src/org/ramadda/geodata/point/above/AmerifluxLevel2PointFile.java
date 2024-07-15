@@ -18,6 +18,7 @@ package org.ramadda.geodata.point.above;
 
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
@@ -48,7 +49,7 @@ import java.util.List;
 public class AmerifluxLevel2PointFile extends CsvFile {
 
     /** _more_ */
-    private SimpleDateFormat sdf = makeDateFormat("yyyy-D HHmm");
+    private MyDateFormat sdf = makeDateFormat("yyyy-D HHmm");
 
     /**
      * ctor

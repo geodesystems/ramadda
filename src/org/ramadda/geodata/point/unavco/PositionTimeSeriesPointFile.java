@@ -21,6 +21,8 @@ import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
+
 import org.ramadda.data.record.*;
 
 import ucar.unidata.util.StringUtil;
@@ -43,7 +45,7 @@ import java.util.List;
 public class PositionTimeSeriesPointFile extends CsvFile {
 
     /** _more_ */
-    private SimpleDateFormat sdf = makeDateFormat("yyyyMMdd-HHmmss");
+    private MyDateFormat sdf = makeDateFormat("yyyyMMdd-HHmmss");
 
     /** _more_ */
     boolean isPos = false;

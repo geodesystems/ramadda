@@ -20,6 +20,8 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.MyDateFormat;
+
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.*;
 import org.ramadda.util.seesv.*;
@@ -699,8 +701,8 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         private class MyRecord extends RowRecord {
 
             /** _more_ */
-            private SimpleDateFormat sdf =
-                RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
+            private MyDateFormat sdf =
+                makeDateFormat("yyyyMMdd'T'HHmmss");
 
             /** _more_ */
             Connection connection;

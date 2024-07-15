@@ -13,6 +13,8 @@ import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.MyDateFormat;
+
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -591,10 +593,8 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                             : Utils.makeLabel(id), desc, cnt, null);
                     field.setType(type);
                     if (type.equals("date")) {
-                        field.setDateFormat(
-                            getDateHandler().getSDF(
-                                "yyyy-MM-dd'T'HH:mm:ss Z",
-                                getEntryUtil().getTimezone(repository.getTmpRequest(), entry)));
+                        field.setDateFormat(new MyDateFormat("yyyy-MM-dd'T'HH:mm:ss Z",
+							     getEntryUtil().getTimezone(repository.getTmpRequest(), entry)));
                     }
 
                     if (type.equals("date") || field.isTypeNumeric()) {
@@ -640,20 +640,5 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String           s   = "2019-02-07T04:29:51 UTC";
-        SimpleDateFormat sdf =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z");
-        sdf.parse(s);
-
-    }
 
 }

@@ -8,13 +8,13 @@ package org.ramadda.data.record;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.MyDateFormat;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.util.Misc;
 
 import java.io.*;
 
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -149,10 +149,8 @@ public class RecordField {
     private boolean isAltitudeReverse = false;
 
     /** _more_ */
-    private SimpleDateFormat dateFormat;
+    private MyDateFormat dateFormat;
 
-    /** _more_ */
-    private String sDateFormat;
 
 
     /** _more_ */
@@ -1201,39 +1199,9 @@ public class RecordField {
      *
      *  @param value The new value for DateFormat
      */
-    public void setDateFormat(SimpleDateFormat value) {
+    public void setDateFormat(MyDateFormat value) {
         dateFormat = value;
     }
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     * @param fmt _more_
-     */
-    public void setDateFormat(SimpleDateFormat value, String fmt) {
-        dateFormat  = value;
-        sDateFormat = fmt;
-    }
-
-    /**
-     * Set the SDateFormat property.
-     *
-     * @param value The new value for SDateFormat
-     */
-    public void setSDateFormat(String value) {
-        sDateFormat = value;
-    }
-
-    /**
-     * Get the SDateFormat property.
-     *
-     * @return The SDateFormat
-     */
-    public String getSDateFormat() {
-        return sDateFormat;
-    }
-
 
 
 
@@ -1242,7 +1210,7 @@ public class RecordField {
      *
      *  @return The DateFormat
      */
-    public SimpleDateFormat getDateFormat() {
+    public MyDateFormat getDateFormat() {
         return dateFormat;
     }
 

@@ -18,6 +18,8 @@ package org.ramadda.geodata.point.eol;
 
 
 import org.ramadda.util.IO;
+import org.ramadda.util.MyDateFormat;
+
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -64,7 +66,7 @@ public class CeopSfcPointFile extends CsvFile {
 
 
     /** _more_ */
-    private SimpleDateFormat sdf = makeDateFormat("yyyy/MM/dd HH:mm");
+    private MyDateFormat sdf = makeDateFormat("yyyy/MM/dd HH:mm");
 
     /**
      * This gets called after a record has been read.
