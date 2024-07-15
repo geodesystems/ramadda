@@ -4155,6 +4155,15 @@ public class TypeHandler extends RepositoryManager {
 	}
 	sb.append(formEntry(request, msgLabel("Created by"),
 			    userSearchLink));
+
+	if(entry.hasAreaDefined(request)) {
+	    sb.append(formEntry(request, msgLabel("Bounds"),entry.getBoundsString(request,true)));
+	} else 	if(entry.hasLocationDefined(request)) {
+	    sb.append(formEntry(request, msgLabel("Location"),
+				"Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request)));
+	}
+
+
     }
 
 
