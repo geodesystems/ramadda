@@ -512,9 +512,15 @@ public class Entry implements Cloneable {
      * @return _more_
      */
     public String getBoundsString(Request request) {
+	return getBoundsString(request, false);
+    }
+	
+    public String getBoundsString(Request request,boolean addLabel) {	
         if ( !hasAreaDefined(request)) {
             return null;
         }
+	if(addLabel)
+	    return "North: " +getNorth(request) + " West: " + getWest(request) + " South: " + getSouth(request) + " East: " + getEast(request);
         return getNorth(request) + "," + getWest(request) + "," + getSouth(request) + "," + getEast(request);
     }
 
