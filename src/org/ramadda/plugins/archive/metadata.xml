@@ -16,6 +16,11 @@
       <element id="subject" name="Subject" datatype="enumerationplus"/>
     </type>
 
+    <type id="archive_term" name="Archive Term" displaygroup="Archive Terms" priority="1"
+	  cansearch="true"	  >
+      <element id="term" name="Term" datatype="enumerationplus"/>
+    </type>
+
     <type id="archive_time_period" name="Time period" cansearch="true" >
       <element id="period" name="Period" datatype="enumerationplus"
 	       suffix="e.g., 1920s, 1800s, etc."
