@@ -748,6 +748,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_MAPPOPUP = "mappopup";
 
     public static final String WIKI_TAG_QRCODE = "qrcode";
+    public static final String WIKI_TAG_BARCODE = "barcode";    
 
 
     /** property delimiter */

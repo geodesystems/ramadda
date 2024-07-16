@@ -2526,6 +2526,34 @@ public class WikiManager extends RepositoryManager
 
 
 	    return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
+        } else if (theTag.equals(WIKI_TAG_BARCODE)) {
+	    String field=getProperty(wikiUtil,props,"field",null);
+	    String value=getProperty(wikiUtil,props,"value",null);	    
+	    if(field!=null) {
+		value = entry.getStringValue(request, field,"");
+	    }
+	    if(!stringDefined(value)) {
+                return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
+	    }
+	    if (request.getExtraProperty("addedbarcode") == null) {
+		request.putExtraProperty("addedbarcode", "true");
+		sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/barcode/JsBarcode.all.min.js")));
+	    }
+
+	    String id = HU.getUniqueId("barcode");
+	    List<String> args = new ArrayList<String>();
+	    //https://github.com/lindell/JsBarcode?tab=readme-ov-file
+	    Utils.add(args,"width", getProperty(wikiUtil,props,"width","1.2"),
+		      "height", getProperty(wikiUtil,props,"height","30"),
+
+		      "displayValue", getProperty(wikiUtil,props,"displayValue","true"),
+		      "format", JU.quote(getProperty(wikiUtil,props,"format","CODE128")),
+		      "fontSize", JU.quote(getProperty(wikiUtil,props,"fontSize","18")),		      
+		      "lineColor", JU.quote(getProperty(wikiUtil,props,"lineColor","#000")));
+
+	    HU.tag(sb,"svg",HU.attr("id",id),"");
+	    sb.append(HU.script(HU.call("JsBarcode",HU.squote("#"+id),HU.quote(value),JU.map(args))));
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
             String url = null;
             boolean inline = getProperty(wikiUtil, props,
