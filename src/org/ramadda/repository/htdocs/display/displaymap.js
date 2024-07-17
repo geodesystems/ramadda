@@ -2413,10 +2413,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(recordMap[value]) {
 			    let other = recordMap[value];
 			    //Get the highest value
-			    if(Utils.isDefined(record.colorByValue) && Utils.isDefined(other.colorByValue)) {
-				if(record.colorByValue>other.colorByValue) {
+			    let v1 = record.getDisplayProperty(this.getId(),'colorByValue');
+			    let v2 = other.getDisplayProperty(this.getId(),'colorByValue');			    
+			    if(Utils.isDefined(v1) && Utils.isDefined(v2)) {
+				if(v1>v2) {
 				    recordMap[value] = record;
-				    console.log('dup',record.colorByValue);
 				}
 			    }
 
@@ -2463,6 +2464,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			feature.linkValue = value;
 			record = recordMap[value];
 			if(record) {
+			    let v =record.getDisplayProperty(this.getId(),'colorByValue');
 			    foundCnt++;
 			    if(debugFeatureLinking&& foundCnt<3)
 				console.log("%cfound record:" + value+": " + record.getId(),'color: green;');
@@ -2575,10 +2577,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    delete style.display;
 		    let newStyle = {};
 		    $.extend(newStyle,style);
-		    let circle = matchedFeature.circles[0];
-		    $.extend(newStyle, circle.style);
+		    let theCircle;
+		    let max=0;
+		    matchedFeature.circles.forEach((c,idx)=>{
+			if(idx==0 || c.colorByValue>max) {
+			    max = c.colorByValue;
+			    theCircle=c;
+			}
+		    });
+		    if(!theCircle) theCircle=matchedFeature.circles[0]
+		    $.extend(newStyle, theCircle.style);
 		    matchedFeature.newStyle=newStyle;
-		    matchedFeature.popupText = circle.text;
+		    matchedFeature.popupText = theCircle.text;
 		    matchedFeature.dataIndex = i;
 		}
 	    }
