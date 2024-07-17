@@ -66,6 +66,7 @@ if(!window.WikiUtil) {
 	},
 
 	chooseInsertText:function(id, attr,value) {
+	    value = value.replace(/&quot;/g,'').replace(/"/g,'');
 	    let values=value.split('|');
 	    let html = '';
 	    
@@ -2332,7 +2333,8 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	if(block) {
 	    let corpus = label +" " + (tag.tt??"");
 	    let call
-	    if(attr.indexOf('|')>0) {
+
+	    if(attr.indexOf('|')>0 && attr.indexOf('(')<0) {
 		call ='WikiUtil.chooseInsertText('+HU.squote(id)+','+HU.squote(tag.p)+','+
 		    HU.squote(value)+')';
 	    } else {
