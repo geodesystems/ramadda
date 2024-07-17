@@ -2410,7 +2410,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			});
 			value  = value.toString().trim();
 			record.linkValue = value;
-			recordMap[value] = record;
+			if(recordMap[value]) {
+			    let other = recordMap[value];
+			    //Get the highest value
+			    if(Utils.isDefined(record.colorByValue) && Utils.isDefined(other.colorByValue)) {
+				if(record.colorByValue>other.colorByValue) {
+				    recordMap[value] = record;
+				    console.log('dup',record.colorByValue);
+				}
+			    }
+
+			} else {
+			    recordMap[value] = record;
+			}
 		    }
 		});
 		if(debug) {

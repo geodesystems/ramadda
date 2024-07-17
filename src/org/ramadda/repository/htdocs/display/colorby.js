@@ -599,6 +599,7 @@ ColorByInfo.prototype = {
 		this.doingDates = true;
 	    }
 	    value = this.getDoCount()?records.length:value;
+	    record.colorByValue = value;
 	    this.lastValue = value;
 	    return  this.getColor(value, record,checkHistory);
 	} else if(this.timeField) {
