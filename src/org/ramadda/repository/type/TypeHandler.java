@@ -90,10 +90,6 @@ import java.util.function.BiConsumer;
 
 /**
  * Provide the core services around the entry types.
- *
- *
- *
- * @author RAMADDA Development Team
  */
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
@@ -115,11 +111,7 @@ public class TypeHandler extends RepositoryManager {
     public static boolean debug = false;
 
     public static final int COPY_LIMIT = 5000;
-
-    /** _more_ */
     static int xcnt;
-
-    /** _more_ */
     public String myid = "typehandler-" + (xcnt++);
 
     public static final String FIELD_COLUMNS ="_columns";
@@ -137,224 +129,92 @@ public class TypeHandler extends RepositoryManager {
     public static final String FIELD_FROMDATE = "fromdate";
     public static final String FIELD_TODATE = "todate";
     public static final String FIELD_DOWNLOADFILE ="downloadfile";
-    
-
-
 
     private String DEFAULT_EDIT_FIELDS  =
         ARG_NAME+"," +  ARG_DESCRIPTION+"," +  ARG_RESOURCE+"," +  ARG_TAGS+"," +  ARG_DATE+"," +  ARG_LOCATION+"," + FIELD_COLUMNS+"," + FIELD_HR+","+FIELD_ORDER;
 
-    /** _more_ */
     private String[] FIELDS_ENTRY = {
         ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
     };
 
-    /** _more_ */
     private String[] FIELDS_NOENTRY = {
         ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION,  /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
     };
 
-
-
-    /** _more_ */
     public static final String ID_DELIMITER = ":";
-
-    /** _more_ */
     public static final String TARGET_ATTACHMENT = "attachment";
-
-    /** _more_ */
     public static final String TARGET_CHILD = "child";
-
-    /** _more_ */
     public static final String TARGET_SIBLING = "sibling";
-
-
-    /** _more_ */
     public static final RequestArgument REQUESTARG_FROMDATE =
         new RequestArgument("ramadda.arg.fromdate");
-
-    /** _more_ */
+    
     public static final RequestArgument REQUESTARG_TODATE =
         new RequestArgument("ramadda.arg.todate");
-
-
-    /** _more_ */
+    
     public static final String CATEGORY_DEFAULT = "Information";
-
-    /** _more_ */
     public static final String TYPE_ANY = Constants.TYPE_ANY;
-
-    /** _more_ */
     public static final String TYPE_GUESS = "guess";
-
-    /** _more_ */
     public static final String TYPE_FINDMATCH = "findmatch";
-
-    /** _more_ */
     public static final String TYPE_FILE = Constants.TYPE_FILE;
-
-    /** _more_ */
     public static final String TYPE_GROUP = Constants.TYPE_GROUP;
-
-    /** _more_ */
     public static final String TYPE_HOMEPAGE = "homepage";
-
-    /** _more_ */
     public static final String TYPE_CONTRIBUTION = "contribution";
-
-
-    /** _more_ */
     public static final String TAG_COLUMN = "column";
-
-    /** _more_ */
     public static final String TAG_PROPERTY = "property";
-
-
-
-
-    /** _more_ */
     public static final String ATTR_NAME = "name";
-
-    /** _more_ */
     public static final String ATTR_METADATA = "metadata";
-
-    /** _more_ */
     public static final String ATTR_CHILDTYPES = "childtypes";
-
-
-    /** _more_ */
     public static final String ATTR_PATTERN = "pattern";
     public static final String ATTR_NOTPATTERN = "notpattern";        
-
-    /** _more_ */
     public static final String ATTR_WIKI = "wiki";
-
-
-    /** _more_ */
     public static final String ATTR_BUBBLE = "bubble";
-
-    /** _more_ */
     public static final String ATTR_WIKI_INNER = "wiki_inner";
-
-    /** _more_ */
     public static final String TAG_CHILDREN = "children";
-
-    /** _more_ */
     public static final String ATTR_VALUE = "value";
-
-    /** _more_ */
     public static final String ATTR_CATEGORY = "category";
-
-    /** _more_ */
     public static final String ATTR_SUPERCATEGORY = "supercategory";
-
-    /** _more_ */
     public static final String TAG_TYPE = "type";
-
-    /** _more_ */
     public static final String TAG_METADATA = "metadata";
-
-    /** _more_ */
     public static final String ATTR_HANDLER = "handler";
-
-    /** _more_ */
     public static final int MATCH_UNKNOWN = 0;
-
-    /** _more_ */
     public static final int MATCH_TRUE = 1;
-
-    /** _more_ */
     public static final int MATCH_FALSE = 2;
-
-    /** _more_ */
     public static String DFLT_WIKI_HEADER =
         "{{name}}\n{{description box.class=\"entry-page-description\"}}";
 
-
-    /** _more_ */
     public static final String PROP_FIELD_FILE_PATTERN = "field_file_pattern";
-
-
-    /** _more_ */
     public static final String PROP_INGEST_LINKS = "ingestLinks";
-
-
-
-    /** _more_ */
     public static final String ALL = "-all-";
-
-    /** _more_ */
     public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject(ALL,
 								       ALL);
-
-    /** _more_ */
     public static final TwoFacedObject NONE_OBJECT =
         new TwoFacedObject("None", "");
 
-
-
-    /** _more_ */
     private static List<DateArgument> dateArgs;
-
-
-    /** for debugging */
     static int cnt = 0;
-
-    /** for debugging */
     int mycnt = cnt++;
-
-    /** the type id */
     private String type;
-
-    /** The entry types hierarchy */
     private TypeHandler parent;
-
-    /** The entry types hierarchy */
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
-
-    /** _more_ */
     private String description="";
-
-    /** _more_ */
     private String editHelp = null;
     private String newHelp = null;
-
     private String[] editFields;
     private String[] newFields;    
     private List<String> displayFields;
-
     private List<WikiMacro> wikiMacros;
     private Hashtable<String,WikiMacro> wikiMacrosMap;    
     private List<Utils.Macro> startDateMacros;
     private List<Utils.Macro> endDateMacros;    
-
     private String embedWiki;
-
-    /**  */
     private String help = "";
-
-    /** _more_ */
     private String iconPath;
-
     private String mimeType = "unknown";
-
-
     Hashtable<String,Column> columnMap;
-
-
-
-    /** _more_ */
     private String category;
-
-    /** _more_ */
     private String superCategory = "";
-
-    /** _more_ */
     private Hashtable properties = new Hashtable();
-
-    /** every type has its own search service managed by the specialSearch */
     private SpecialSearch specialSearch;
-
 
     /**
      *   the pattern= attribute in types.xml. Used when trying to figure out what entry type
@@ -363,61 +223,35 @@ public class TypeHandler extends RepositoryManager {
     private String filePattern;
 
     private String fileNotPattern;    
-
     private String geoPosition;
-
 
     /**
      *   the field_file_pattern attribute in types.xml. Used when trying to figure out what entry type
      *   to use for a file and to set the entry values from
      */
     private Pattern fieldFilePattern;
-
-
-    /** _more_ */
     private List<String> fieldPatternNames;
-
-
     /** the wiki tag in types.xml. If defined then use this as the default html display for entries of this type */
     private String wikiTemplate;
-
     private String nameTemplate;
     private Hashtable<String,String> wikiText = new Hashtable<String,String>();
-
-
-    /** _more_ */
     private String defaultChildrenEntries;
-
-    /** _more_ */
     private String wikiTemplateInner;
-
-    /** _more_ */
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
-
-    /** _more_ */
     private String defaultCategory;
-
-    /** _more_ */
     private String displayTemplatePath;
-
 
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
     private boolean canCreate = true;
     private boolean isSynthType = false;    
-
-    /**  */
     private boolean adminOnly = false;
-
-    /**  */
     private boolean isGroup = false;
 
     /** can be set for abstract types */
     private boolean includeInSearch = false;
 
-    /** _more_ */
     private Boolean canCache;
-
 
     /** Default metadata types to show in Edit->Add Property menu */
     private List<String> metadataTypes=new ArrayList<String>();
@@ -425,41 +259,19 @@ public class TypeHandler extends RepositoryManager {
     /** The default child entry types to show in the File->New menu */
     private List<String> childTypes;
 
-    /** _more_ */
     private List<String[]> requiredMetadata = new ArrayList<String[]>();
-
-    /** _more_ */
     private List<Service> services = new ArrayList<Service>();
-
-    /** _more_ */
     private Entry synthTopLevelEntry;
-
-
-    /** _more_ */
     private int priority=999;
-
-
-    /**  */
     private List<Action> actions = new ArrayList<Action>();
     private     Hashtable<String,Action> actionMap = new Hashtable<String,Action>();
 
-
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     */
     public TypeHandler(Repository repository) {
         super(repository);
     }
 
 
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     * @param entryNode types.xml node
-     */
+    
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
         if (entryNode != null) {
@@ -468,37 +280,19 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     * @param type the type
-     */
+    
     public TypeHandler(Repository repository, String type) {
         this(repository, type, "");
     }
 
 
-    /**
-     * ctor
-     *
-     * @param repository ramadda
-     * @param type the type
-     * @param description type description
-     */
+    
     public TypeHandler(Repository repository, String type,
                        String description) {
         this(repository, type, description, CATEGORY_DEFAULT);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     * @param description _more_
-     * @param category _more_
-     */
+    
     public TypeHandler(Repository repository, String type,
                        String description, String category) {
         super(repository);
@@ -514,22 +308,14 @@ public class TypeHandler extends RepositoryManager {
 	return newType==NewType.NEW;
     }
 
-    /**
-     *
-     * @param parent _more_
-     */
+    
     public void setParentTypeHandler(TypeHandler parent) {
         this.parent = parent;
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     */
+    
     public void initTypeHandler(Element node) {
 
         try {
@@ -856,10 +642,7 @@ public class TypeHandler extends RepositoryManager {
     public void childrenChanged(Entry entry) {
     }
 
-    /**
-     *
-     * @param type _more_
-     */
+    
     private void checkAncestorTypes(String type) {
         if (type.equals(getType())) {
             throw new IllegalStateException(
@@ -877,11 +660,7 @@ public class TypeHandler extends RepositoryManager {
 			   + ContentMetadataHandler.TYPE_ALIAS,",");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getMetadataTypes() {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
@@ -936,13 +715,7 @@ public class TypeHandler extends RepositoryManager {
 	throws Exception {}
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getCanCache(Entry entry) {
         if (canCache != null) {
             return canCache;
@@ -954,14 +727,7 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getMediaUrl(Request request, Entry entry) throws Exception {
         List<Column> columns = getColumns();
         if (columns != null) {
@@ -982,15 +748,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getJson(Request request) throws Exception {
         List<String> items = new ArrayList<String>();
         items.add("id");
@@ -1035,32 +793,13 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param items _more_
-     * @param attrs _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToJson(Request request, Entry entry, List<String> items,
                           List<String> attrs)
 	throws Exception {}
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param topProps _more_
-     *
-     * @return _more_
-     */
+    
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
         return null;
@@ -1068,16 +807,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getWikiTemplate(Request request, Entry entry)
 	throws Exception {
         if (wikiTemplate != null) {
@@ -1103,28 +833,12 @@ public class TypeHandler extends RepositoryManager {
     }
     
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param wikiUtil _more_
-     * @param tag _more_
-     * @param props _more_
-     */
+    
     public void addWikiProperties(Entry entry, WikiUtil wikiUtil, String tag,
                                   Hashtable props) {}
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getBubbleTemplate(Request request, Entry entry)
 	throws Exception {
 	return getBubbleTemplate(request, entry, true);
@@ -1193,25 +907,13 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param wikiText _more_
-     *
-     * @return _more_
-     */
+    
     public String preProcessWikiText(Request request, Entry entry,
                                      String wikiText) {
         return wikiText;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getWikiTemplateInner() {
         return wikiTemplateInner;
     }
@@ -1221,11 +923,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getTotalNumberOfValues() {
         int cnt = getNumberOfMyValues();
         if (parent != null) {
@@ -1235,22 +933,12 @@ public class TypeHandler extends RepositoryManager {
         return cnt;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getNumberOfMyValues() {
         return 0;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public Object[] getEntryValues(Entry entry) {
         Object[] values = entry.getValues();
         if (values == null) {
@@ -1261,12 +949,7 @@ public class TypeHandler extends RepositoryManager {
         return values;
     }
 
-    /**
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
+    
     public int getValueIndex(String name) {
         for (Column column : getColumns()) {
             if (column.getName().equalsIgnoreCase(name)) {
@@ -1283,11 +966,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getValuesOffset() {
         if (parent != null) {
             return parent.getTotalNumberOfValues();
@@ -1296,16 +975,7 @@ public class TypeHandler extends RepositoryManager {
         return 0;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Comment> getComments(Request request, Entry entry)
 	throws Exception {
         return null;
@@ -1317,24 +987,13 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public int getDefaultQueryLimit(Request request, Entry entry) {
         return getRepository().getDefaultMaxEntries();
     }
 
 
-    /**
-     * _more_
-     *
-     * @param tableNames _more_
-     */
+    
     public void getTableNames(List<String> tableNames) {
         String tableName = getTableName();
         if ( !tableNames.contains(tableName)) {
@@ -1348,11 +1007,7 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param types _more_
-     */
+    
     public void getChildTypes(List<String> types) {
         if ( !types.contains(getType())) {
             types.add(getType());
@@ -1362,11 +1017,7 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param child _more_
-     */
+    
     public void addChildTypeHandler(TypeHandler child) {
         if ( !childrenTypes.contains(child)) {
             childrenTypes.add(child);
@@ -1374,25 +1025,13 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     *  Get the Parent property.
-     *
-     *  @return The Parent
-     */
+    
     public TypeHandler getParent() {
         return parent;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
 	if(isSynthType()) {
 	    if(entry.getTypeHandler().isSynthType()) {
@@ -1407,17 +1046,7 @@ public class TypeHandler extends RepositoryManager {
         return this;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param oldEntry _more_
-     * @param newEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Resource getResourceForCopy(Request request, Entry oldEntry,
                                        Entry newEntry)
 	throws Exception {
@@ -1461,17 +1090,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean addToMap(Request request, Entry entry, MapInfo map)
 	throws Exception {
         if (parent != null) {
@@ -1502,63 +1121,29 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean shouldShowPolygonInMap() {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
 	throws Exception {
         return true;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String getEntryText(Entry entry) {
         return entry.getDescription();
     }
 
-    /**
-     *
-     * @param entry _more_
-     *  @return _more_
-     */
+    
     public String getExtraText(Entry entry) {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getTextForWiki(Request request, Entry entry,
                                  Hashtable properties)
 	throws Exception {
@@ -1566,35 +1151,15 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void childEntryChanged(Request request,Entry entry, boolean isNew)
 	throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void metadataChanged(Request request, Entry entry)
 	throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
+    
     public String getTypePermissionName(String type) {
 	if(true) return null;
         if (type.equals(Permission.ACTION_TYPE1)) {
@@ -1605,13 +1170,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param sb _more_
-     */
+    
     public void handleNoEntriesHtml(Request request, Entry entry,
                                     Appendable sb) {
         if ( !Utils.stringDefined(entry.getDescription())
@@ -1623,57 +1182,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param tableName _more_
-     *
-     * @return _more_
-     */
+    
     public boolean shouldExportTable(String tableName) {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initAfterDatabaseImport() throws Exception {}
 
 
-    /**
-     * _more_
-     */
+    
     public void clearCache() {
         columnEnumValues = new Hashtable<String, HashSet>();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public InputStream getResourceInputStream(Entry entry) throws Exception {
         return new BufferedInputStream(
 				       getStorageManager().getFileInputStream(getFileForEntry(entry)));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result getHtmlDisplay(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -1683,33 +1213,14 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param wikiTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
 	throws Exception {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntryAccess(Request request, Entry entry)
 	throws Exception {
         return new Result("Error",
@@ -1717,17 +1228,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param action _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryActionUrl(Request request, Entry entry,
                                     String action)
 	throws Exception {
@@ -1736,16 +1237,7 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
 
@@ -1782,26 +1274,13 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param tabTitles _more_
-     * @param tabContents _more_
-     */
+    
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {}
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     public boolean isDefaultHtmlOutput(Request request) {
         return Misc.equals(
 			   OutputHandler.OUTPUT_HTML.getId(),
@@ -1876,16 +1355,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result xgetHtmlDisplay(Request request, Entry group,
 				  List<Entry> children)
 	throws Exception {
@@ -1907,16 +1377,7 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getInlineHtml(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -1927,13 +1388,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     public boolean canBeCreatedBy(Request request) {
         if (parent != null) {
             return parent.canBeCreatedBy(request);
@@ -1943,11 +1398,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean adminOnly() {
         if (adminOnly) {
             return true;
@@ -1959,11 +1410,7 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-    /**
-     *
-     * @param request _more_
-     *  @return _more_
-     */
+    
     public boolean canCreate(Request request) {
 	if(!canCreate) return false;
         if (adminOnly()) {
@@ -1978,11 +1425,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isSynthType() {
 	if(isSynthType)  return true;
         if (parent != null) {
@@ -2014,18 +1457,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param mainEntry _more_
-     * @param ancestor _more_
-     * @param synthId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry ancestor, String synthId)
 	throws Exception {
@@ -2039,17 +1471,7 @@ public class TypeHandler extends RepositoryManager {
 					   + " in class:" + getClass().getName());
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param parentEntry _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
 	throws Exception {
         if (parent != null) {
@@ -2064,13 +1486,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry getSynthTopLevelEntry() throws Exception {
         if (synthTopLevelEntry == null) {
             synthTopLevelEntry = doMakeSynthTopLevelEntry();
@@ -2079,13 +1495,7 @@ public class TypeHandler extends RepositoryManager {
         return synthTopLevelEntry;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry doMakeSynthTopLevelEntry() throws Exception {
         Entry parentEntry = new Entry(this, true);
         parentEntry.setUser(getUserManager().getLocalFileUser());
@@ -2107,17 +1517,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param parentEntry _more_
-     * @param entryNames _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry makeSynthEntry(Request request, Entry parentEntry,
                                 List<String> entryNames)
 	throws Exception {
@@ -2137,78 +1537,35 @@ public class TypeHandler extends RepositoryManager {
 	return getTypeProperty("file.cache",60*60);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getTypeProperty(String name, boolean dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getTypeProperty(String name, int dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     */
+    
     protected void setTypeProperty(String name, String value) {
         properties.put(name, value);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getTypeProperty(String name, String dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param name _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(Entry entry, String name) {
         return getProperty(entry, name, null);
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(Entry entry, String name, String dflt) {
         String result = (String) properties.get(name);
         if (result != null) {
@@ -2221,16 +1578,7 @@ public class TypeHandler extends RepositoryManager {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public int getProperty(Entry entry, String name, int dflt) {
         String s = getProperty(entry, name, null);
         if (s == null) {
@@ -2241,16 +1589,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getProperty(Entry entry, String name, boolean dflt) {
         String s = getProperty(entry, name, Boolean.toString(dflt));
 
@@ -2258,12 +1597,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     */
+    
     public void putProperty(String name, String value) {
         properties.put(name, value);
         if (parent != null) {
@@ -2274,16 +1608,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getFormLabel(Entry parentEntry,Entry entry, String arg, String dflt) {
         return getProperty(entry, "form." + arg + ".label", dflt);
     }
@@ -2296,16 +1620,6 @@ public class TypeHandler extends RepositoryManager {
 	return getTypeProperty("date.nullok",false);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public boolean okToShowInForm(Entry entry, String arg, boolean dflt) {
         String key   = "form." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
@@ -2314,15 +1628,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean okToShowInHtml(Entry entry, String arg, boolean dflt) {
         String key   = "html." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
@@ -2330,16 +1636,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param props _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean okToList(Entry entry, String arg, Hashtable props,
                             boolean dflt) {
         String key   = "list." + arg + ".show";
@@ -2356,16 +1653,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getFormDefault(Entry entry, String arg, String dflt) {
         String prop = getProperty(entry, "form." + arg + ".default");
         if (prop == null) {
@@ -2381,22 +1669,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
+    
     public Entry createEntry(String id) {
         return new Entry(id, this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean returnToEditForm() {
         if (parent != null) {
             return parent.returnToEditForm();
@@ -2407,16 +1685,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param node _more_
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
                                        Hashtable<String, File> files)
@@ -2429,14 +1698,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param idList _more_
-     *
-     * @return _more_
-     */
+    
     public String convertIdsFromImport(String s, List<String[]> idList) {
         if ( !Utils.stringDefined(s)) {
             return s;
@@ -2453,14 +1715,7 @@ public class TypeHandler extends RepositoryManager {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param newEntry _more_
-     * @param idList _more_
-     *
-     * @return _more_
-     */
+    
     public boolean convertIdsFromImport(Entry newEntry,
                                         List<String[]> idList) {
         boolean changed = false;
@@ -2484,14 +1739,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param newEntry _more_
-     * @param idList _more_
-     *
-     * @return _more_
-     */
+    
     public boolean convertIdsFromImportInFile(Entry newEntry,
 					      List<String[]> idList) {
         if (idList.size() == 0) {
@@ -2527,17 +1775,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fileWriter _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToEntryNode(Request request, Entry entry,
                                FileWriter fileWriter, Element node)
 	throws Exception {
@@ -2548,13 +1786,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param obj _more_
-     *
-     * @return _more_
-     */
+    
     public boolean equals(Object obj) {
         if ( !(obj.getClass().equals(getClass()))) {
             return false;
@@ -2563,11 +1795,7 @@ public class TypeHandler extends RepositoryManager {
         return Misc.equals(type, ((TypeHandler) obj).getType());
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getNodeType() {
         if (parent != null) {
             return parent.getNodeType();
@@ -2578,13 +1806,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param newType _more_
-     *
-     * @return _more_
-     */
+    
     public boolean canChangeTo(TypeHandler newType) {
         return true;
     }
@@ -2630,40 +1852,23 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public String getDefaultFilename() {
         return getTypeProperty("defaultFilename", "tmp.txt");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getType() {
         return type;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
+    
     public void setType(String value) {
         this.type = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isType(String type) {
         if (this.type.equals(type)) {
             return true;
@@ -2676,38 +1881,17 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public final Entry createEntryFromDatabase(Connection connection,ResultSet results)
 	throws Exception {
         return createEntryFromDatabase(connection,results, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
+    
     public void initEntryHasBeenCalled(Entry entry) {}
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
 	throws Exception {
@@ -2718,16 +1902,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param firstCall _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
 	throws Exception {
@@ -2749,26 +1924,14 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeEntryFromDatabase(Entry entry) throws Exception {
         if (parent != null) {
             parent.initializeEntryFromDatabase(entry);
         }
     }
 
-    /**
-     * This gets called after the entry has been created and everything has been stored into the database
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param fromImport _more_
-     */
+    
     public void doFinalEntryInitialization(Request request, Entry entry,
                                            boolean fromImport) {
         //Clear the column value cache?
@@ -2818,24 +1981,14 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     *
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void entryChanged(Entry entry) throws Exception {
         if (parent != null) {
             parent.entryChanged(entry);
         }
     }
 
-    /**
-     *
-     * @param id _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void entryDeleted(String id) throws Exception {
         if (parent != null) {
             parent.entryDeleted(id);
@@ -2843,11 +1996,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean anySuperTypesOfThisType() {
         Class       myClass = getClass();
         TypeHandler parent  = this.parent;
@@ -2863,21 +2012,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * @return _more_
-     */
+    
     public String getFilePattern() {
         return filePattern;
     }
 
-    /**
-     * Does this type match the file being harvester
-     *
-     * @param fullPath _more_
-     * @param name _more_
-     *
-     * @return is this one of my files
-     */
+    
     public boolean canHandleResource(String fullPath, String name) {
         if (filePattern == null) {
             return false;
@@ -2914,13 +2054,7 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
+    
     public String getDefaultEntryName(String path) {
         return IO.getFileTail(path);
     }
@@ -2942,16 +2076,7 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     * @param abbreviated _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public final Entry createEntryFromDatabase(Connection connection,
 					       ResultSet results, boolean abbreviated)
 	throws Exception {
@@ -3025,28 +2150,11 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param root _more_
-     * @param extraXml _more_
-     * @param metadataType _more_
-     */
+    
     public void addMetadataToXml(Entry entry, Element root,
                                  Appendable extraXml, String metadataType) {}
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param html _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String processDisplayTemplate(Request request, Entry entry,
                                          String html)
 	throws Exception {
@@ -3081,19 +2189,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param request The request
-     * @param showDescription _more_
-     * @param showResource _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public final void getEntryContent(Request request, Entry entry,
 				      boolean showDescription,
 				      boolean showResource,
@@ -3168,13 +2264,7 @@ public class TypeHandler extends RepositoryManager {
     public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry, Appendable sb,HashSet<String> seen) throws Exception {
     }
 
-    /**
-     * _more_
-     *
-     * @param columnName _more_
-     *
-     * @return _more_
-     */
+    
     public Column findColumn(String columnName) {
         return null;
     }
@@ -3183,11 +2273,7 @@ public class TypeHandler extends RepositoryManager {
 	return  null;
     }
 
-    /**
-     * _more_
-     *
-     * @param entryNode _more_
-     */
+    
     protected void setProperties(Element entryNode) {
         //        boolean debug = type.equals("type_fred_series");
         boolean debug = false;
@@ -3217,23 +2303,12 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Hashtable getProperties() {
         return properties;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param services _more_
-     *
-     */
+    
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
         for (OutputHandler handler : getRepository().getOutputHandlers()) {
@@ -3242,20 +2317,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param harvester _more_
-     * @param args _more_
-     * @param sb _more_
-     * @param files _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    
     public boolean processCommandView(
 				      org.ramadda.repository.harvester.CommandHarvester.CommandRequest request,
 				      Entry entry,
@@ -3277,11 +2339,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isGroup() {
         return isGroup;
     }
@@ -3312,16 +2370,7 @@ public class TypeHandler extends RepositoryManager {
 				
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param request The request
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
 	throws Exception {
 
@@ -3562,13 +2611,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param mask _more_
-     *
-     * @return _more_
-     */
+    
     private Link makeHRLink(int mask) {
         Link hr = new Link(true);
         hr.setLinkType(mask);
@@ -3576,19 +2619,7 @@ public class TypeHandler extends RepositoryManager {
         return hr;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param links _more_
-     * @param entries _more_
-     * @param seen _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private boolean addTypesFromEntries(Request request, Entry entry,
                                         List<Link> links,
                                         List<Entry> entries,
@@ -3611,19 +2642,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param links _more_
-     * @param types _more_
-     * @param seen _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private boolean addTypes(Request request, Entry entry, List<Link> links,
                              List<String> types, HashSet<String> seen)
 	throws Exception {
@@ -3662,13 +2681,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getIconProperty(String dflt) {
         String icon = iconPath;
         if (icon == null) {
@@ -3681,11 +2694,7 @@ public class TypeHandler extends RepositoryManager {
         return icon;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTypeIconUrl() {
         String icon = getIconProperty(null);
         if (icon != null) {
@@ -3696,16 +2705,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean canDownload(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -3720,17 +2720,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getPathForEntry(Request request, Entry entry,boolean forReading)
 	throws Exception {
         Resource resource = entry.getResource();
@@ -3752,13 +2742,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public File getFileForEntry(Entry entry)  {
 	try {
 	    return getStorageManager().getEntryFile(entry);
@@ -3770,37 +2754,17 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /** _more_ */
+    
     private HashSet seenIt = new HashSet();
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Link getEntryDownloadLink(Request request, Entry entry)
 	throws Exception {
         return getEntryDownloadLink(request, entry, "Download File");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param label _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Link getEntryDownloadLink(Request request, Entry entry,
                                      String label)
 	throws Exception {
@@ -3824,22 +2788,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param request The request
-     * @param typeHandler _more_
-     * @param output _more_
-     * @param showDescription _more_
-     * @param showResource _more_
-     * @param linkToDownload _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void getInnerEntryContent(Entry entry, Request request,
 				     TypeHandler typeHandler, OutputType output,
 				     boolean showDescription, boolean showResource,
@@ -4167,14 +3116,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     *
-     * @return _more_
-     */
+    
     public String formatLocation(double lat, double lon) {
         if (latLonFormat != null) {
             synchronized (latLonFormat) {
@@ -4188,13 +3130,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param desc _more_
-     *
-     * @return _more_
-     */
+    
     public static boolean isWikiText(String desc) {
         if (desc == null) {
             return false;
@@ -4206,16 +3142,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryResourceHref(Request request, Entry entry)
 	throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
@@ -4248,31 +3175,14 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryResourceUrl(Request request, Entry entry)
 	throws Exception {
         return getEntryResourceUrl(request, entry,
                                    EntryManager.ARG_INLINE_FALSE,false);
     }
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param inline _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean inline)
 	throws Exception {
@@ -4290,11 +3200,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean okToSetNewNameDefault() {
         return !getTypeProperty("name.raw",false);
     }
@@ -4337,16 +3243,7 @@ public class TypeHandler extends RepositoryManager {
 	return entries;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeNewEntry(Request request, Entry entry,
                                    NewType newType)
 	throws Exception {
@@ -4516,17 +3413,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param service _more_
-     * @param output _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
 	throws Exception {
@@ -4626,13 +3513,7 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isImage(Entry entry) {
         if (isType("type_image")) {
             return true;
@@ -4645,37 +3526,18 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isDescriptionWiki(Entry entry) {
         return getProperty(entry, "form.description.iswiki", false);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     public String getUploadedFile(Request request) {
         return request.getUploadedFile(ARG_FILE);
     }
 
-    /**
-     * _more_
-     *
-     * @param newEntry _more_
-     * @param oldEntry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeCopiedEntry(Entry newEntry, Entry oldEntry)
 	throws Exception {
         if (parent != null) {
@@ -4684,51 +3546,26 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param longName _more_
-     *
-     * @return _more_
-     */
+    
     public List<TwoFacedObject> getListTypes(boolean longName) {
         return new ArrayList<TwoFacedObject>();
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param what _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processList(Request request, String what) throws Exception {
         return new Result("Error",
                           new StringBuilder(msgLabel("Unknown listing type")
                                             + what));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTableName() {
         return Tables.ENTRIES.NAME;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     private String cleanQueryString(String s) {
         s = s.replace("\r\n", " ");
         s = StringUtil.stripAndReplace(s, "'", "'", "'dummy'");
@@ -4739,18 +3576,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param what _more_
-     * @param clause _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Statement select(Request request, String what, Clause clause,
                             String extra)
 	throws Exception {
@@ -4761,18 +3587,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param what _more_
-     * @param clauses _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Statement select(Request request, String what,
                             List<Clause> clauses, String extra)
 	throws Exception {
@@ -5994,11 +4809,7 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * get the columns to be used for point json
-     *
-     * @return _more_
-     */
+    
     public List<Column> getColumnsForPointJson() {
         return getColumns();
     }
@@ -6021,13 +4832,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param columnName _more_
-     *
-     * @return _more_
-     */
+    
     public Column getColumn(String columnName) {
         List<Column> columns = getColumns();
         if (columns == null) {
@@ -6080,17 +4885,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param propertyValue _more_
-     * @param delimiter _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<String> getColumnEnumerationProperties(Column column,
 						       String propertyValue, String delimiter)
 	throws Exception {
@@ -6113,17 +4908,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public final String getIconUrl(Request request, Entry entry)
 	throws Exception {
         return null;
@@ -6149,16 +4934,7 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String decorateValue(Request request, Entry entry, Column column,
                                 String s) {
         if (parent != null) {
@@ -6169,16 +4945,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getEntryIconUrl(Request request, Entry entry)
 	throws Exception {
 
@@ -6212,15 +4979,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getIconUrlFromPath(String path) throws Exception {
         String img = ICON_FILE;
         if (path != null) {
@@ -6234,15 +4993,7 @@ public class TypeHandler extends RepositoryManager {
         return getIconUrl(img);
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getLabelFromPath(String path) throws Exception {
         if (path != null) {
             String suffix = IO.getFileExtension(path.toLowerCase());
@@ -6261,15 +5012,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getUrlFromPath(String path) throws Exception {
         if (path != null) {
             String suffix = IO.getFileExtension(path.toLowerCase());
@@ -6285,13 +5028,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb _more_
-     * @param type _more_
-     */
+    
     public void addTextSearch(Request request, Appendable sb, String type) {
         try {
             String name           = (String) request.getString(ARG_TEXT, "");
@@ -6337,15 +5074,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param formBuffer _more_
-     * @param fieldsToShow _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToSpecialSearchForm(Request request,
                                        Appendable formBuffer,
                                        HashSet<String> fieldsToShow)
@@ -6356,18 +5085,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param titles _more_
-     * @param contents _more_
-     * @param where _more_
-     * @param advancedForm _more_
-     * @param showText _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToSearchForm(Request request, List<String> titles,
                                 List<String> contents, List<Clause> where,
                                 boolean advancedForm, boolean showText)
@@ -6499,34 +5217,7 @@ public class TypeHandler extends RepositoryManager {
                 }
             } else {
 
-                /**
-                 * Statement stmt =
-                 *   select(request,
-                 *          SqlUtil.distinct(Tables.ENTRIES.COL_PARENT_GROUP_ID),
-                 *          where, "");
-                 *
-                 * List<Entry> groups =
-                 *   getRepository().getGroups(SqlUtil.readString(stmt, 1));
-                 * getDatabaseManager().closeAndReleaseStatement(stmt);
-                 *
-                 * if (groups.size() > 1) {
-                 *   List groupList = new ArrayList();
-                 *   groupList.add(ALL_OBJECT);
-                 *   for (Entry group : groups) {
-                 *       groupList.add(
-                 *           new TwoFacedObject(group.getFullName(), group.getId()));
-                 *   }
-                 *   String groupSelect = HU.select(ARG_GROUP,
-                 *                            groupList, null, 100);
-                 *   advancedSB.append(formEntry(request,msgLabel("Folder"),
-                 *           groupSelect + searchChildren));
-                 * } else if (groups.size() == 1) {
-                 *   advancedSB.append(HU.hidden(ARG_GROUP,
-                 *           groups.get(0).getId()));
-                 *   advancedSB.append(formEntry(request,msgLabel("Folder"),
-                 *           groups.get(0).getFullName() + searchChildren));
-                 * }
-                 */
+                
             }
             advancedSB.append("\n");
         }
@@ -6569,17 +5260,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param request The request
-     * @param basicSB _more_
-     * @param arg _more_
-     * @param showTime _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void addDateSearch(Repository repository, Request request,
                                      Appendable basicSB, DateArgument arg,
                                      boolean showTime)
@@ -6675,13 +5356,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     public static String getSpatialSearchTypeWidget(Request request) {
 	//	String dflt = VALUE_AREA_OVERLAPS
 	String value = request.getString(ARG_AREA_MODE,VALUE_AREA_CONTAINS);
@@ -6695,13 +5370,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param what _more_
-     * @param sb _more_
-     */
+    
     public void addSearchField(Request request, String what, Appendable sb) {
         if (what.equals(ARG_FILESUFFIX)) {
             Utils.append(sb,
@@ -6714,11 +5383,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isAnyHandler() {
         return getType().equals(TypeHandler.TYPE_ANY);
     }
@@ -6727,15 +5392,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Clause> assembleWhereClause(Request request)
 	throws Exception {
         return assembleWhereClause(request, new StringBuilder());
@@ -6743,16 +5400,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param searchCriteria _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Clause> assembleWhereClause(Request request,
                                             Appendable searchCriteria)
 	throws Exception {
@@ -6798,21 +5446,7 @@ public class TypeHandler extends RepositoryManager {
 					request.getString(ARG_USER_ID, ""), where);
         }
 
-        /**
-         * if (request.defined(ARG_COLLECTION)) {
-         *   Entry collectionEntry = getEntryManager().getEntry(request,
-         *                               request.getString(ARG_COLLECTION,
-         *                                   ""));
-         *   if (collectionEntry != null) {
-         *       addCriteria(request,searchCriteria, "Collection=",
-         *                   collectionEntry.getName());
-         *   } else {
-         *       addCriteria(request,searchCriteria, "Collection=", "Unknown");
-         *   }
-         *   DatabaseManager.addOrClause(Tables.ENTRIES.COL_TOP_GROUP_ID,
-         *               request.getString(ARG_COLLECTION, ""), where);
-         *               }
-         */
+        
 
         if (request.defined(ARG_FILESUFFIX)) {
             addCriteria(request, searchCriteria, "File Suffix=",
@@ -7234,28 +5868,14 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
+    
     private Clause getSpatialDefinedClause(String column) {
         return Clause.neq(column, Double.valueOf(Entry.NONGEO));
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param group _more_
-     * @param select _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void getChildrenEntries(Request request, Entry group,
                                    List<Entry> children, SelectInfo select)
 	throws Exception {
@@ -7271,16 +5891,7 @@ public class TypeHandler extends RepositoryManager {
         children.addAll(postProcessEntries(request, myEntries));
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Entry> postProcessEntries(Request request,
                                           List<Entry> entries)
 	throws Exception {
@@ -7289,16 +5900,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param textToSearch _more_
-     * @param searchCriteria _more_
-     * @param where _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addTextDbSearch(Request request, String textToSearch,
                                 Appendable searchCriteria, List<Clause> where)
 	throws Exception {
@@ -7325,19 +5927,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param textToSearch _more_
-     * @param searchCriteria _more_
-     * @param where _more_
-     * @param doName _more_
-     * @param doDesc _more_
-     * @param doFile _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addTextDbSearch(Request request, String textToSearch,
                                 Appendable searchCriteria,
                                 List<Clause> where, boolean doName,
@@ -7503,38 +6093,18 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     public boolean isOrSearch(Request request) {
         return request.getString("search.or", "false").equals("true");
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param stmt _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void setStatement(Entry entry, PreparedStatement stmt,
                              boolean isNew)
 	throws Exception {}
 
-    /**
-     * _more_
-     *
-     *
-     * @param isNew _more_
-     * @param typeInserts _more_
-     */
+    
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {
         if (parent != null) {
@@ -7542,15 +6112,7 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param statement _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void deleteEntry(Request request, Statement statement, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -7559,17 +6121,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param statement _more_
-     * @param id _more_
-     * @param parentEntry _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parentEntry, Object[] values)
 	throws Exception {
@@ -7578,25 +6130,12 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
+    
     protected List getTablesForQuery(Request request) {
         return getTablesForQuery(request, new ArrayList());
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param initTables _more_
-     *
-     * @return _more_
-     */
+    
     protected List getTablesForQuery(Request request, List initTables) {
         if (parent != null) {
             parent.getTablesForQuery(request, initTables);
@@ -7610,14 +6149,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param columnName _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
+    
     public Object convert(String columnName, String value) {
         if (parent != null) {
             return parent.convert(columnName, value);
@@ -7626,13 +6158,7 @@ public class TypeHandler extends RepositoryManager {
         return value;
     }
 
-    /**
-     * _more_
-     *
-     * @param map _more_
-     *
-     * @return _more_
-     */
+    
     public Object[] makeEntryValues(Hashtable map) {
         if (parent != null) {
             return parent.makeEntryValues(map);
@@ -7641,11 +6167,7 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String[] getValueNames() {
         if (parent != null) {
             return parent.getValueNames();
@@ -7654,16 +6176,7 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param value _more_
-     * @param list _more_
-     * @param quoteThem _more_
-     *
-     * @return _more_
-     */
+    
     protected boolean addOr(String column, String value, List list,
                             boolean quoteThem) {
         if ((value != null) && (value.trim().length() > 0)
@@ -7681,15 +6194,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String getFileTypeDescription(Request request, Entry entry) {
         try {
             String desc = msg(entry.getTypeHandler().getDescription());
@@ -7743,18 +6248,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param property _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getTemplateContent(Request request, Entry entry,
                                      String property, String dflt)
 	throws Exception {
@@ -7767,15 +6261,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param value _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public int matchValue(String arg, Object value, Entry entry) {
         return MATCH_UNKNOWN;
     }
@@ -7791,17 +6277,7 @@ public class TypeHandler extends RepositoryManager {
         return getBubbleTemplate(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param props _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getSimpleDisplay(Request request, Hashtable props,
                                    Entry entry)
 	throws Exception {
@@ -7824,43 +6300,29 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String toString() {
         return type + " " + description;
     }
 
-    /**
-     *
-     * @param value _more_
-     */
+    
     public void setDefaultCategory(String value) {
         defaultCategory = value;
     }
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public String getDefaultCategory() {
         return defaultCategory;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean hasDefaultCategory() {
         return (defaultCategory != null) && (defaultCategory.length() > 0);
     }
 
 
 
-    /** _more_ */
+    
     private Hashtable<String, HashSet> columnEnumValues =
         new Hashtable<String, HashSet>();
 
@@ -8052,45 +6514,24 @@ public class TypeHandler extends RepositoryManager {
         return set;
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Clause getEnumValuesClause(Column column, Entry entry)
 	throws Exception {
         return null;
     }
 
 
-    /**
-     *  Set the Category property.
-     *
-     *  @param value The new value for Category
-     */
+    
     public void setCategory(String value) {
         this.category = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
+    
     public void setSuperCategory(String value) {
         this.superCategory = value;
     }
 
-    /**
-     *  Get the Category property.
-     *
-     *  @return The Category
-     */
+    
     public String getCategory() {
         if (Misc.equals(this.category, CATEGORY_DEFAULT)
 	    && (parent != null)) {
@@ -8101,11 +6542,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     *  Get the Category property.
-     *
-     *  @return The Category
-     */
+    
     public String getSuperCategory() {
         if ((this.superCategory.length() == 0) && (parent != null)) {
             return parent.getSuperCategory();
@@ -8119,20 +6556,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     *  Set the IncludeInSearch property.
-     *
-     *  @param value The new value for IncludeInSearch
-     */
+    
     public void setIncludeInSearch(boolean value) {
         includeInSearch = value;
     }
 
-    /**
-     *  Get the IncludeInSearch property.
-     *
-     *  @return The IncludeInSearch
-     */
+    
     public boolean getIncludeInSearch() {
         return includeInSearch;
     }
@@ -8147,21 +6576,13 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     */
+    
     public void setForUser(boolean v) {
         this.forUser = v;
     }
 
 
-    /**
-     *  Get the ForUser property.
-     *
-     *  @return The ForUser
-     */
+    
     public boolean getForUser() {
         if ( !forUser) {
             return false;
@@ -8178,13 +6599,7 @@ public class TypeHandler extends RepositoryManager {
         */
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean entryHasDefaultName(Entry entry) {
         return Misc.equals(getStorageManager().getFileTail(entry),
                            entry.getName());
@@ -8194,17 +6609,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param index _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public TimeZone getTimeZone(Request request, Entry entry, int index)
 	throws Exception {
         TimeZone timeZone = null;
@@ -8227,20 +6632,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     *  Set the SpecialSearch property.
-     *
-     *  @param value The new value for SpecialSearch
-     */
+    
     public void setSpecialSearch(SpecialSearch value) {
         specialSearch = value;
     }
 
-    /**
-     *  Get the SpecialSearch property.
-     *
-     *  @return The SpecialSearch
-     */
+    
     public SpecialSearch getSpecialSearch() {
         if (specialSearch == null) {
             specialSearch = new SpecialSearch(this);
@@ -8249,24 +6646,14 @@ public class TypeHandler extends RepositoryManager {
         return specialSearch;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String getEntryName(Entry entry) {
         return entry.getName();
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     private List<DateArgument> getDateArgs() {
         if (dateArgs == null) {
             List<DateArgument> tmp = new ArrayList<DateArgument>();
@@ -8303,20 +6690,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request The request
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -8327,12 +6701,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     * @param inner _more_
-     */
+    
     public static void addPropertyTags(Hashtable properties,
                                        Appendable inner) {
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
@@ -8345,23 +6714,13 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param mapInfo _more_
-     * @param sb _more_
-     */
+    
     public void initMapAttrs(Entry entry, MapInfo mapInfo,
                              StringBuilder sb) {}
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getLabel() {
         if ( !Utils.stringDefined(description)) {
             return getType();
@@ -8371,11 +6730,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getPriority() {
         return priority;
     }
@@ -8384,26 +6739,17 @@ public class TypeHandler extends RepositoryManager {
         priority = p;
     }    
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public String getDescription() {
         return description;
     }
 
-    /**
-     *
-     * @param d _more_
-     */
+    
     public void setDescription(String d) {
         description = d;
     }
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public String getHelp() {
         return help;
     }
@@ -8412,22 +6758,13 @@ public class TypeHandler extends RepositoryManager {
 	return mimeType;
     }
 
-    /**
-     *
-     * @param d _more_
-     */
+    
     public void setHelp(String d) {
         help = d;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void main(String[] args) throws Exception {
         String pattern = ".*\\.ggp$";
         System.err.println(args[0].toLowerCase().matches(pattern));
