@@ -2723,7 +2723,7 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Extract Date",
 		new Arg("date column", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
-			"era,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond,days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),
+			"era,decade,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond,days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),
         new Cmd(CMD_FORMATDATE, "Format date",
 		ARG_LABEL,"Format Date - use -outdateformat to set the date format",
                 new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),

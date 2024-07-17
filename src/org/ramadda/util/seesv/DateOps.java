@@ -49,7 +49,8 @@ public abstract class DateOps extends Processor {
     private static final int OFFSET_DAYS_IN_YEAR = OFFSET_IDX--;
     private static final int OFFSET_HOURS_IN_YEAR = OFFSET_IDX--;    
     private static final int OFFSET_MINUTES_IN_YEAR = OFFSET_IDX--;
-    private static final int OFFSET_SECONDS_IN_YEAR = OFFSET_IDX--;    
+    private static final int OFFSET_SECONDS_IN_YEAR = OFFSET_IDX--;
+    private static final int DECADE= OFFSET_IDX--;        
 
 
 
@@ -274,6 +275,8 @@ public abstract class DateOps extends Processor {
             this.what = getDatePart(what);
 	    if(this.what == OFFSET_DAYS_IN_YEAR)
 		whatLabel="Days in year";
+	    else if(this.what == DECADE)
+		whatLabel="Decade";	    
 	    else  if(this.what == OFFSET_HOURS_IN_YEAR)
 		whatLabel="Hours in year";
 	    else if(this.what == OFFSET_MINUTES_IN_YEAR)
@@ -300,6 +303,14 @@ public abstract class DateOps extends Processor {
             try {
                 String s = row.get(col).toString();
                 Date   d = ctx.parseDate(s);	
+		if(this.what==DECADE) {
+		    cal.setTime(d);
+		    int year = cal.get(Calendar.YEAR);
+		    int decade = (year / 10) * 10;
+		    add(ctx, row, decade+"s");
+		    return row;
+		}
+
 		if(this.what<=OFFSET_BASE) {
 		    Date start = Utils.getStartOfYear(d);
 		    long ms = d.getTime() - start.getTime();
@@ -864,6 +875,8 @@ public abstract class DateOps extends Processor {
 	    return  OFFSET_MINUTES_IN_YEAR;	    
 	} else if(what.equals("SECONDS_IN_YEAR")) {
 	    return  OFFSET_SECONDS_IN_YEAR;	    
+	} else if(what.equals("DECADE")) {
+	    return  DECADE;
         } else {
             throw new IllegalArgumentException("Unknown date part:" + what);
         }
