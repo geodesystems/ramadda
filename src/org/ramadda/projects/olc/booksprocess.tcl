@@ -6,19 +6,19 @@ puts $::terms  "<body><div style='font-size:70%;font-family:helvetica;line-heigh
 puts $::messy "<body><div style='font-size:70%;font-family:helvetica;line-height:1.2em;'>"
 
 
-source lib.tcl
+source ../lib.tcl
 set ::entries "<entries>\n";
 
 
 
 set ::cnt 0 
 
-set ::bp {name_type author call_nbr title item_type item_count publisher_info pub_year volume phys_char notes barcode other_terms isbn lccn series column1 _1}
+set ::bp {name_type author call_nbr title item_type item_count publisher pub_year volume phys_char notes barcode other_terms isbn lccn series column1 _1}
 
 
 proc book $::bp  {
     incr ::cnt
-#    if {$::cnt>10} return
+##    if {$::cnt>10} return
     foreach p $::bp {
 
 	set v [set $p]
@@ -29,13 +29,35 @@ proc book $::bp  {
 	
 	set $p [string trim [clean $v]]
     }
+    catch {
+	set isbn [format %.0f $isbn]
+    }	
     append ::entries [openEntry type_archive_book {} {} $title]    
+
+
+
+    set year $pub_year
+    regsub -all {^[^\d]*(\d\d\d\d).*} $year {\1} year
+    set year [string trim $year]
+#    puts "$pub_year -- $year"
+
+
+
+    if {$year !=""} {
+	append ::entries [col fromdate $year]    
+	
+    }
+
     append ::entries [col description $notes]    
     append ::entries [col item_type $item_type]
     append ::entries [col item_count $item_count]    
     append ::entries [col call_number $call_nbr]
+    append ::entries [col physical_characteristic $phys_char]
+    append ::entries [col authors $author]
+    append ::entries [col publisher $publisher]
     append ::entries [col isbn $isbn]
-    append ::entries [col lccn $lccn]    
+    append ::entries [col lccn $lccn]
+    append ::entries [col barcode $barcode]    
     append ::entries [col volume $volume]
     append ::entries [col series $series]        
     if {$other_terms!=""} {
@@ -57,9 +79,6 @@ proc book $::bp  {
 	}
 	array set seen {}
 
-
-
-
 	foreach term [split $other_terms .] {
 	    set term [string trim $term]
 	    if {$term==""} continue
@@ -70,6 +89,11 @@ proc book $::bp  {
 	    if {[info exists seen($term)]} continue
 	    set seen($term) 1
 	    puts $fp "<div style='padding:2px;border-bottom:1px solid #ccc;white-space: nowrap;margin-left:60px;'> $term</div>\n"
+	    if {!$messy} {
+		append ::entries [mtd1 archive_term $term]
+	    }
+
+
 	}
 	puts $fp "<div style='margin-top:10px;'></div>"
     }
