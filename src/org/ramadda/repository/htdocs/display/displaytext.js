@@ -517,8 +517,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{label:"Template"},
 	{p: "template",ex:'${default}'},
 	{p:"toggleTemplate",ex:"",tt:'Used as the toggle label for hiding/showing the main template'},
-	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
-	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount}"},
+	{p:"headerTemplate",ex:"... ${totalCount} ... ${selectedCount} ${filter_field} ..."},
+	{p:"footerTemplate",ex:"... ${totalCount} ... ${selectedCount} ${filter_.field} ... "},
 	{p:"templateStyle",ex:'display:inline-block;',tt:'Style for the wrapper div'},	
 	{p:"emptyMessage",tt:'Text to show when there are no records to show'},
 	{p:"select",ex:"max|min|<|>|=|<=|>=|contains"},
@@ -763,6 +763,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let attrs = {};
 	    attrs["selectedCount"] = selected.length;
 	    attrs["totalCount"] = records.length;
+
+
 	    for(var i=0;i<fields.length;i++) {
 		let f = fields[i];
 		let s = summary[f.getId()];
@@ -794,11 +796,37 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		footerTemplate = this.applyRecordTemplate(selected[0],row,fields,footerTemplate);
 	    }
 
+	    let replace = (pattern,value)=>{
+		headerTemplate = headerTemplate.replace(pattern,value);
+		footerTemplate = footerTemplate.replace(pattern,value);		    
+	    };
+
+	    fields.forEach(f=>{
+		if(!f.isNumeric()) return;
+		let total = 0;
+		let cnt = 0;
+		let min=0;
+		let max=0;
+		selected.forEach(record=>{
+		    let v= f.getValue(record);
+		    if(!isNaN(v)) {
+			if(cnt==0) {
+			    min=v;
+			    max=v;
+			}
+			min = Math.min(v,min);
+			max = Math.max(v,max);			
+			total+=v;
+			cnt++;
+		    }
+
+		});
+		replace('${'+ f.getId()+'_average}}', cnt==0?'NA':Utils.formatNumberComma(total/cnt));
+		replace('${'+ f.getId()+'_min}', Utils.formatNumberComma(min));
+		replace('${'+ f.getId()+'_max}', Utils.formatNumberComma(max));		
+		replace('${'+ f.getId()+'_total}', Utils.formatNumberComma(total));
+	    });
 	    if(this.filters) {
-		let replace = (pattern,value)=>{
-		    headerTemplate = headerTemplate.replace(pattern,value);
-		    footerTemplate = footerTemplate.replace(pattern,value);		    
-		};
 		for(let filterIdx=0;filterIdx<this.filters.length;filterIdx++) {
 		    let filter = this.filters[filterIdx];
 		    if(!filter.isEnabled()) {
