@@ -82,17 +82,19 @@
     </type>
   </handler>
 
-  <type id="archive_bio_alternate_name" name="Alternate Name"
+  <type id="archive_alternate_name" name="Alternate Name"
 	searchable="true"  textLengthLimit="200">
       <element id="type" name="Name Type" datatype="enumerationplus" searchable="true"/>
       <element id="name" name="Name"  columns="60" searchable="true"/>
   </type>
 
-  <type id="archive_bio_cultural_use" name="Cultural Use"
+  <type id="archive_cultural_use" name="Cultural Use"
 	searchable="true"  textLengthLimit="200">
       <element id="use" name="Use"  columns="60" rows="5" searchable="true"/>
     </type>          
 
-
+    <type id="archive_object_material" name="Archive Object Material" displaygroup="Materials" searchable="true">
+      <element id="material" name="Material" datatype="enumerationplus"/>
+    </type>        
 
 </metadata>

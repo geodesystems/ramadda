@@ -2,7 +2,7 @@
   <type name="type_archive_bio"  description="Archive Bio Record"
 	handler="org.ramadda.plugins.archive.BioRecordTypeHandler"  
 	editfields="name,common_name,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default"
-	metadata="archive_bio_alternate_name">
+	metadata="archive_alternate_name,archive_cultural_use">
     <property name="icon" value="/archive/leaf.png"/>
     <property name="form.tabs" value="true"/>    
     <property name="form.basic.group" value="Name and Taxonomy"/>    
