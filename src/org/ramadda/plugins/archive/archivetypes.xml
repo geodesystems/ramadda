@@ -263,35 +263,43 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 
 
 <type name="type_archive_book"  description="Archive Book"
-      super="type_archive_root"
-      newfields="name,description,_default"
-      editfields="name,description,_default">
+      handler="org.ramadda.repository.type.GenericTypeHandler"
+      xnewfields="name,description,_default"
+      xeditfields="name,description,_default"
+      metadata="archive_term,archive_note"     >
 
+    <property name="search.metadatatypes" value="archive_term,archive_note"/>
     <property name="icon" value="/archive/book.png"/>
+    <property name="form.date.label" value="Publication Date"/>
     <property name="form.name.label" value="Title"/>
-    <property name="xsearch.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property  name="html.type.show"  value="false" />
+
+    <property name="date.format" value="yyyy"/>
     <property name="date.format" value="yyyy"/>
     <property name="date.nullok" value="true"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
-    <column name="call_number" type="string"  label="Call Number" columns="30"/>
-    <column name="isbn" type="string"  label="ISBN" columns="30"/>
-    <column name="lccn" type="string"  label="LCCN" columns="30"/>    
-    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>        
+
+    <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
+    <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
     <column name="item_type"
 	    type="enumerationplus"  label="Item Type"
 	    cansearch="true" values="Book,CD,DVD,Government Document,Kit,Microfiche,Periodicals,Video"/>
-    <column name="item_count"
-	    type="int"  label="Item Count" default="0"/>
 
-    <column name="volume" type="string"  label="Volume" columns="8"/>
-    <column name="series" type="string"  label="Series" size="500" columns="30"/>            
     <column name="physical_characteristic"
-	    type="enumeration"  label="Physical Characteristic"
+	    type="enumerationplus"  label="Physical Characteristic"
 	    cansearch="true" values="New,Like New,Good,Fair,Damaged"/>
-/>
+
+    <column name="volume" type="string"  label="Volume" columns="30"/>
+    <column name="series" type="string"  label="Series" size="500" columns="30"/>            
+    <column name="item_count"   type="int"  label="Item Count" default="0"/>
+    <column name="call_number" type="string"  label="Call Number" columns="30"/>
+    <column name="isbn" type="string"  label="ISBN" columns="30"/>
+    <column name="lccn" type="string"  label="LCCN" columns="30"/>    
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
+    
+
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <wiki><![CDATA[
 +section  title="Book: {{name}}"
@@ -304,6 +312,7 @@ headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator="
 inherited="false"  }} 
 -col
 +col-4
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
 {{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 {{barcode field=barcode}}
