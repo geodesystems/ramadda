@@ -89,8 +89,8 @@
   </type>
 
   <type id="archive_cultural_use" name="Cultural Use"
-	searchable="true"  textLengthLimit="200">
-      <element id="use" name="Use"  columns="60" rows="5" searchable="true"/>
+	 textLengthLimit="200">
+      <element id="use" name="Use"  columns="60" rows="5"/>
     </type>          
 
     <type id="archive_object_material" name="Archive Object Material" displaygroup="Materials" searchable="true">
