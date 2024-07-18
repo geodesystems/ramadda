@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jul 18 04:10:44 MDT 2024";
+var build_date="RAMADDA build date: Thu Jul 18 08:46:00 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -18456,7 +18456,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	    if(this.isFieldEnumeration() && this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
 		let widgetId = this.getFilterId(this.getId());
-		HU.makeSelectTagPopup(jqid(widgetId),{hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
+		HU.makeSelectTagPopup(jqid(widgetId),{
+		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
+		    makeButton:false,
+		    hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
 	    }
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
