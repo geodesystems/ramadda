@@ -1033,11 +1033,15 @@ function DisplayThing(argId, argProperties) {
 	},
 	getFields: function(fields) {
             if (!fields) {
-                let pointData = this.pointData || this.getData();
-                if (pointData == null) {
-		    return null;
+		if(this.convertedFields) {
+		    return this.convertedFields;
+		} else {
+                    let pointData = this.pointData || this.getData();
+                    if (pointData == null) {
+			return null;
+		    }
+                    fields = pointData.getRecordFields();
 		}
-                fields = pointData.getRecordFields();
 	    }
 	    return fields;
 	},
@@ -1917,7 +1921,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'recordSelectField',tt:'Field to match selection on instead of date'},
 
 	{label:'Convert Data'},
-	{p:'applyConvertAfter'},
+	{p:'applyConvertAfter',ex:true},
 	{p:'offset1',canCache:true},
 	{p:'offset2',canCache:true},
 	{p:'scale',canCache:true},
@@ -3415,6 +3419,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
 		if(this.pointData) pointData = this.pointData;
                 let fields = this.getFieldsToSelect(pointData);
+		//xxx
 //		console.log(fields.map(f=>{return f.getId() + '-' + f.getLabel();}));
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
@@ -4053,6 +4058,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    records:filteredRecords
 		});
 	    }
+
+	    if(this.getApplyConvertAfter()) {
+		let tmp = new  PointData("pointdata", this.originalPointData.recordFields, filteredRecords);
+		//xxxx
+		tmp = this.convertPointData(tmp);
+		this.convertedFields = tmp.getRecordFields();
+		filteredRecords = tmp.getRecords();
+	    }	    
+
+
 	    return filteredRecords
 	},
         handleEventFilteredDataChanged: function(source, args) {
@@ -4526,6 +4541,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return false;
         },
         getFieldsToSelect: function(pointData) {
+	    if(this.convertedFields) return this.convertedFields;
             if (this.useChartableFields())
                 return pointData.getChartableFields(this);
             return pointData.getRecordFields();
