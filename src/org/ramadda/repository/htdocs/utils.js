@@ -5735,15 +5735,18 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    hide: true,
 	    addBreak:false,
 	    after:false,
-	    tooltip:'Select multiple'
+	    tooltip:'Select multiple',
+	    wrap:'${widget}',
+	    makeButton:true
 	}
 	if(args) $.extend(opts,args);
 	let label = opts.label??'Select';
 	if(opts.hide)
 	    select.hide();
 	let guid = HU.getUniqueId('btn');
-	let btn =HU.div([ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
+	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
 			opts.buttonLabel)+(opts.addBreak?'<br>':'');
+	btn = opts.wrap.replace('${widget}',btn);
 	if(opts.after)
 	    select.after(' ' +btn);
 	else
@@ -5847,7 +5850,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		});
 	    });
 	}
-	jqid(guid).button().click(function() {
+	if(opts.makeButton)
+	    jqid(guid).button();
+	jqid(guid).click(function() {
 	    makeDialog($(this));
 	});
     },

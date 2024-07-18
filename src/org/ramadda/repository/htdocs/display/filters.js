@@ -497,7 +497,10 @@ function RecordFilter(display,filterFieldId, properties) {
 	    }
 	    if(this.isFieldEnumeration() && this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
 		let widgetId = this.getFilterId(this.getId());
-		HU.makeSelectTagPopup(jqid(widgetId),{hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
+		HU.makeSelectTagPopup(jqid(widgetId),{
+		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
+		    makeButton:false,
+		    hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
 	    }
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
