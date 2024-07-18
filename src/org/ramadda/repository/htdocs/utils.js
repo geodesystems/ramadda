@@ -5731,16 +5731,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeSelectTagPopup:function(select,args) {
 	let opts ={
 	    label:'Select',
-	    hide: true
+	    buttonLabel:'Select',
+	    hide: true,
+	    addBreak:false,
+	    after:false,
+	    tooltip:'Select multiple'
 	}
 	if(args) $.extend(opts,args);
 	let label = opts.label??'Select';
 	if(opts.hide)
 	    select.hide();
 	let guid = HU.getUniqueId('btn');
-	let btn =HU.div([ATTR_ID,guid,ATTR_ID,guid],
-			'Select');
-	select.before(btn);
+	let btn =HU.div([ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
+			opts.buttonLabel)+(opts.addBreak?'<br>':'');
+	if(opts.after)
+	    select.after(' ' +btn);
+	else
+	    select.before(btn);
 	let optionMap = {};
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
