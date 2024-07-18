@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jul 17 14:33:03 MDT 2024";
+var build_date="RAMADDA build date: Thu Jul 18 03:23:57 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5008,11 +5008,15 @@ function DisplayThing(argId, argProperties) {
 	},
 	getFields: function(fields) {
             if (!fields) {
-                let pointData = this.pointData || this.getData();
-                if (pointData == null) {
-		    return null;
+		if(this.convertedFields) {
+		    return this.convertedFields;
+		} else {
+                    let pointData = this.pointData || this.getData();
+                    if (pointData == null) {
+			return null;
+		    }
+                    fields = pointData.getRecordFields();
 		}
-                fields = pointData.getRecordFields();
 	    }
 	    return fields;
 	},
@@ -5892,7 +5896,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'recordSelectField',tt:'Field to match selection on instead of date'},
 
 	{label:'Convert Data'},
-	{p:'applyConvertAfter'},
+	{p:'applyConvertAfter',ex:true},
 	{p:'offset1',canCache:true},
 	{p:'offset2',canCache:true},
 	{p:'scale',canCache:true},
@@ -7390,6 +7394,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//A hack in case we already have a pointData set (e.g., in the case of a convertDataPost)
 		if(this.pointData) pointData = this.pointData;
                 let fields = this.getFieldsToSelect(pointData);
+		//xxx
 //		console.log(fields.map(f=>{return f.getId() + '-' + f.getLabel();}));
                 if (fixedFields != null && fixedFields.length > 0) {
                     if (this.debugSelected)
@@ -8028,6 +8033,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    records:filteredRecords
 		});
 	    }
+
+	    if(this.getApplyConvertAfter()) {
+		let tmp = new  PointData("pointdata", this.originalPointData.recordFields, filteredRecords);
+		//xxxx
+		tmp = this.convertPointData(tmp);
+		this.convertedFields = tmp.getRecordFields();
+		filteredRecords = tmp.getRecords();
+	    }	    
+
+
 	    return filteredRecords
 	},
         handleEventFilteredDataChanged: function(source, args) {
@@ -8501,6 +8516,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return false;
         },
         getFieldsToSelect: function(pointData) {
+	    if(this.convertedFields) return this.convertedFields;
             if (this.useChartableFields())
                 return pointData.getChartableFields(this);
             return pointData.getRecordFields();
@@ -19851,7 +19867,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.setChartSelection(index);
         },
         getFieldsToSelect: function(pointData) {
-            //STRING return pointData.getChartableFields();
+	    if(this.convertedFields) return this.convertedFields;
 	    return pointData.getRecordFields();
         },
         canDoGroupBy: function() {
@@ -19946,9 +19962,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             //            let selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
 	    let records =this.filterData();
             let selectedFields = this.getSelectedFields();
+	    
 	    if(debug)
 		console.log("\tpointData #records:" +records.length);
-
 
 	    if(debug)
 		console.log("\tselectedFields:" + selectedFields);
@@ -19960,9 +19976,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
 
 
+
             if (selectedFields == null || selectedFields.length == 0) {
                 if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP) {
-                    selectedFields = this.dataCollection.getList()[0].getNonGeoFields();
+		    selectedFields = this.getFields().filter(field=>{
+			return !field.isFieldGeo();
+		    })
 		    if(debug)
 			console.log("\tfields from data collection:" + selectedFields);
                 } else {
@@ -19970,7 +19989,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(debug)
 			console.log("\tgetSelectedFields again:" + selectedFields);
 		    
-                    selectedFields = this.getSelectedFields();
+
 		    if(selectedFields.length==0) {
 			this.getFields().every(f=>{
 			    if(f.isNumeric() && !f.isFieldGeo()) {
@@ -19986,6 +20005,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
 
+
             if (selectedFields.length == 0) {
 		if(!this.getAcceptEventDataSelection()) {
 		    //                    this.setContents("No fields selected");
@@ -19994,19 +20014,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
 
-	    /*
-	      for(a in this) {
-	      let o = this[a];
-	      if(o==null || o.isDisplayThing) continue;
-	      let t = typeof o
-	      if(t == 'function' || t=='string' || t=='boolean' || t=='number' || t=='undefined') continue;
-	      if(Array.isArray(o)) {
-	      if(o.length==0) continue;
-	      console.log(a +  ' array:' + o.length);
-	      } else {
-	      console.log(a +  ' ' +t +' ' + Object.keys(o).length);
-	      }
-	      }*/
 
             //Check for the skip
             let tmpFields = [];
@@ -22050,6 +22057,7 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
     const SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     defineDisplay(this, SUPER, [], {
         getFieldsToSelect: function(pointData) {
+	    if(this.convertedFields) return this.convertedFields;
             return pointData.getNonGeoFields();
         },
     });
@@ -23064,6 +23072,7 @@ function TreemapDisplay(displayManager, id, properties) {
 	    return ['treemap'];
 	},
         getFieldsToSelect: function(pointData) {
+	    if(this.convertedFields) return this.convertedFields;
             return pointData.getRecordFields();
         },
         tooltips: {},
