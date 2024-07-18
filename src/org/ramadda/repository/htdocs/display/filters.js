@@ -495,6 +495,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 	    }
+	    if(this.isFieldEnumeration() && this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
+		let widgetId = this.getFilterId(this.getId());
+		HU.makeSelectTagPopup(jqid(widgetId),{hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
+	    }
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
 		let widgetId = this.getFilterId(this.getId());
