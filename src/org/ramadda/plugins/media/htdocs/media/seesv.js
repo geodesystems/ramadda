@@ -1301,20 +1301,20 @@ function  SeesvForm(inputId, entry,params) {
 		let desc = a.description||"";
 //		desc = desc.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
 		desc = desc.trim().replace(/\n/g,"<br>");		
-		let getExtra = (arg)=>{
-		    let extra = "";
-		    if((arg.type=="column" || arg.type=="columns") && this.allColumnIds.length>0) {
-			let plus = HU.span(['inputid',id,TITLE,"Add column",CLASS,"ramadda-clickable seesv-column-button","columnid",id],HU.getIconImage("fa-plus"));
-			extra  = plus+extra;
+		let getExtra = (arg,desc)=>{
+		    if((arg.type=='column' || arg.type=='columns') && this.allColumnIds.length>0) {
+			return HU.span(['inputid',id,TITLE,'Add column',CLASS,'ramadda-clickable seesv-column-button','columnid',id],HU.getIconImage('fa-plus') + ' ' +desc);
+
 		    }
-		    return extra;
+		    return '';
 		};
 		let getDesc = (arg,oneLine)=>{
-		    let extra = getExtra(arg);
-		    if(extra=="" && desc=="") return "";
-		    if((desc+':') == label) desc="";
+		    if((desc+':') == label) desc='';
+		    let extra = getExtra(arg,desc);
+		    if(extra=='' && desc=='') return '';
 		    if(Utils.stringDefined(extra)) {
-			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')],desc)));
+			desc = extra;
+//			desc = HU.table([],HU.tr(['valign','top'],HU.td(['width','1%'],extra)+HU.td([ATTR_STYLE,HU.css('max-height','100px','overflow-y','auto')],desc)));
 		    }
 		    let help = "";
 		    if(arg.type=="columns")
