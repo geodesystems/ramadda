@@ -15,28 +15,32 @@ import org.ramadda.data.record.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
+import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.StringUtil;
 
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import   org.mozilla.javascript.*;
 
 public class DataAction extends MonitorAction {
 
+    private boolean testMode = false;
+    private Request currentRequest;
+
     private  String script="";
     private String entryIds="";
     private String emails="";
     private String phoneNumbers="";    
-    private String emailTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}";
-    private String smsTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}";    
+    private String emailTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";
+    private String smsTemplate="";
 
-    private double windowHours = 0;
-    private Hashtable<String,Long> lastMessageSent = new Hashtable<String,Long>();
+   private double windowHours = 6;
+    private LinkedHashMap<String,Long> lastMessageSent = new LinkedHashMap<String,Long>();
     
 
     /**
@@ -100,6 +104,10 @@ public class DataAction extends MonitorAction {
     @Override
     public void checkLiveAction(EntryMonitor monitor) throws Throwable {
 	Request request = monitor.getRepository().getAdminRequest();
+	checkLiveAction(request,monitor,false);
+    }
+
+    public void checkLiveAction(Request request,EntryMonitor monitor, boolean test) throws Throwable {	
 	for(String id:Utils.split(entryIds,"\n",true,true)) {
 	    if(id.startsWith("#")) continue;
 	    Entry entry = monitor.getRepository().getEntryManager().getEntry(request, id);
@@ -107,11 +115,12 @@ public class DataAction extends MonitorAction {
 		monitor.getRepository().getLogManager().logMonitor(monitor +" could not find entry: " + id);
 		continue;
 	    }
-	    checkLiveAction(request, monitor,entry);
+	    checkLiveAction(request, monitor,entry,test);
 	}
     }
 
-    public void checkLiveAction(Request request, EntryMonitor monitor,Entry entry) throws Throwable {
+
+    public void checkLiveAction(Request request, EntryMonitor monitor,Entry entry,boolean test) throws Throwable {
 	this.monitor = monitor;
 	if(!(entry.getTypeHandler() instanceof RecordTypeHandler)) {
 	    logMessage(monitor +": skipping non point data entry :" + entry.getName());
@@ -142,23 +151,47 @@ public class DataAction extends MonitorAction {
 	}
 
 
-	Context ctx =Context.enter();
-	Scriptable scope =  ctx.initSafeStandardObjects();
-	Script script = ctx.compileString(this.script, "code", 0, null);
-	scope.put("action", scope, this);
-	scope.put("entry", scope, entry);
-	scope.put("record", scope, arecord[0]);	
-	script.exec(ctx, scope);
+	currentRequest=request;
+	testMode = test;
+
+	try {
+	    Context ctx =Context.enter();
+	    Scriptable scope =  ctx.initSafeStandardObjects();
+	    Script script = ctx.compileString(this.script, "code", 0, null);
+	    scope.put("testMode", scope, test);
+	    scope.put("action", scope, this);
+	    scope.put("entry", scope, entry);
+	    scope.put("record", scope, arecord[0]);	
+            ctx.evaluateString(scope, this.script, "script", 1, null);
+	    //	    script.exec(ctx, scope);
+	} finally {
+	    currentRequest=null;
+	    testMode = false;
+	}
     }
     
 
-    public void print(String message)     {
-	System.err.println(message);
+    public double getHoursSince(Object object)     {
+	Date date;
+	if(object instanceof BaseRecord) {
+	    date = ((BaseRecord)object).getDate();
+	} else {
+	    date = (Date) object;
+	}
+	Date now=new Date();
+	long diff = now.getTime()-date.getTime();
+	return Utils.millisToHours(diff);
     }
 
 
-    public void logMessage(String message)     {
-	monitor.getRepository().getLogManager().logMonitor(message);
+    public void print(Object message)     {
+	System.err.println(message.toString());
+	testModeMessage(message.toString());
+    }
+
+
+    public void logMessage(Object message)     {
+	monitor.getRepository().getLogManager().logMonitor(message.toString());
     }
     
     public boolean canTrigger(Entry entry) throws Throwable {
@@ -178,7 +211,6 @@ public class DataAction extends MonitorAction {
 	}
 	return true;
     }
-	
 
 
     public void clear(Entry entry) throws Throwable {
@@ -187,20 +219,27 @@ public class DataAction extends MonitorAction {
 	monitor.getRepository().getMonitorManager().updateMonitor(monitor);
     }
 
+    public void testModeMessage(String msg) {
+	if(testMode && currentRequest!=null) {
+	    monitor.getRepository().getSessionManager().addSessionErrorMessage(currentRequest,
+									       msg);
+	}
+    }
     public void trigger(Entry entry,String message,boolean...what)  throws Throwable {
-	if(!canTrigger(entry)) {
+	if(!testMode && !canTrigger(entry)) {
 	    return;
 	}
-	boolean sent = false;
+	testModeMessage("Data monitor triggered for:" + entry.getName());
+
+
+	int sent = 0;
 	if(what.length==0 || what[0]) {
-	    triggerEmail(entry,message);
-	    sent = true;
+	    sent+=triggerEmail(entry,message);
 	}
 	if(what.length==0 || (what.length>1&&what[2])) {
-	    triggerSms(entry,message);
-	    sent = true;
+	    sent +=triggerSms(entry,message);
 	}
-	if(sent) {
+	if(sent>0) {
 	    Date now = new Date();
 	    lastMessageSent.put(entry.getId(),now.getTime());
 	    //Save this off so the last time gets saved
@@ -210,6 +249,7 @@ public class DataAction extends MonitorAction {
 	}
     }
 
+
     public String applyTemplate(String template, Entry entry,String message)  {
 	template = template.replace("${message}",message).replace("${entryname}",entry.getName()).replace("${entryid}",entry.getId());
 	Request request = monitor.getRepository().getAdminRequest();
@@ -218,30 +258,49 @@ public class DataAction extends MonitorAction {
 	return template;
     }
 
-    public void triggerEmail(Entry entry,String message)  throws Throwable {
+
+    public int triggerEmail(Entry entry,String message)  throws Throwable {
 	if(!monitor.getRepository().getMailManager().isEmailEnabled())  {
+	    testModeMessage("Email not enabled");
 	    logMessage(monitor +" unable to send email for entry:" + entry +" message:" + message);
-	    return;
+	    return 0;
 	}
 	String contents = applyTemplate(emailTemplate,  entry, message);
-	logMessage(monitor +" sent email message for entry:" + entry +" message:" + message);
-	monitor.getRepository().getMailManager().sendEmail(Utils.split(emails,"\n",true,true),monitor.getName(),contents,false);
+	int cnt = monitor.getRepository().getMailManager().sendEmail(Utils.split(emails,"\n",true,true),monitor.getName(),contents,false);
+	if(cnt==0) {
+	    testModeMessage("No emails sent");
+	    logMessage(monitor +" no emails sent");
+	} else {
+	    testModeMessage(cnt +" email messages sent");
+	    logMessage(monitor +" sent " + cnt +" email messages for entry:" + entry +" message:" + message);
+	}
+	return cnt;
     }
 
 
-    public void triggerSms(Entry entry,String message)  throws Throwable {
+    public int triggerSms(Entry entry,String message)  throws Throwable {
 	if(!monitor.getRepository().getMailManager().isSmsEnabled())  {
+	    testModeMessage("SMS not enabled");
 	    logMessage(monitor +" unable to send SMS for entry:" + entry +" message:" + message);
-	    return;
+	    return 0;
 	}
 	String template=smsTemplate;
 	if(!Utils.stringDefined(template)) template = emailTemplate;
 	String contents = applyTemplate(template,  entry, message);
+	int cnt=0;
 	for(String phone: Utils.split(phoneNumbers,"\n",true,true)) {
 	    if(phone.startsWith("#")) continue;
 	    monitor.getRepository().getMailManager().sendTextMessage(null,phone,message);
 	    logMessage(monitor +" sent SMS message for entry:" + entry +" to:"+ phone+ " message:" + message);
+	    cnt++;
 	}
+	if(cnt==0) {
+	    testModeMessage("No SMS messages sent");
+	} else {
+	    testModeMessage(cnt+" SMS messages sent");
+	}
+	return cnt;
+
 
     }
     
@@ -257,8 +316,23 @@ public class DataAction extends MonitorAction {
 	smsTemplate = request.getString(getArgId("smstemplate"),smsTemplate);		
 	windowHours = request.get(getArgId("windowhours"),windowHours);
 	if(request.get(getArgId("clearhistory"),false)) {
-	    lastMessageSent = new Hashtable<String,Long>();	
+	    lastMessageSent = new LinkedHashMap<String,Long>();	
 	}
+
+	if(request.get(getArgId("test"),false)) {
+	    try {
+		checkLiveAction(request, monitor,true);
+	    } catch(Throwable thr) {
+	
+		thr = LogUtil.getInnerException(thr);
+		System.err.println("ERROR: "  +thr);
+		monitor.getRepository().getSessionManager().addSessionErrorMessage(request,
+										   "Error running test: " + thr);
+		
+	    }
+	}
+
+
 	
     }
 
@@ -267,14 +341,18 @@ public class DataAction extends MonitorAction {
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
 	throws Exception {
+
+        sb.append(HU.div("Data Monitor Information",HU.cssClass("formgroupheader")));
+
+	String cbx = 
+	    HU.labeledCheckbox(getArgId("test"),"true",false,"Test") + " - " + "This runs the monitor including sending messages";		
+	sb.append(HU.div(cbx,"style='margin-top:5px;'"));
+
         sb.append(HU.formTable());
-        sb.append(HU.colspan(HU.div("Data Monitor Information",HU.cssClass("formgroupheader")), 2));
-
-	sb.append(HU.formEntry("",HU.labeledCheckbox(getArgId("clearhistory"),"true",false,"Clear History")));
-
-
-
-	StringBuilder entriesInfo = new StringBuilder("One entry ID per line<br>");
+	StringBuilder entriesInfo = new StringBuilder();
+	String clearCbx = HU.labeledCheckbox(getArgId("clearhistory"),"true",false,"Clear History");
+	entriesInfo.append(clearCbx);
+	entriesInfo.append("<br>One entry ID per line<br>");
 	List<Entry> entries = new ArrayList<Entry>();
 	for(String id:Utils.split(entryIds,"\n",true,true)) {
 	    if(id.startsWith("#")) continue;
@@ -286,12 +364,26 @@ public class DataAction extends MonitorAction {
 		if(!(entry.getTypeHandler() instanceof RecordTypeHandler)) {
 		    entriesInfo.append(HU.b("Entry: " + entry.getName()+" is not a point data type<br>"));
 		} else {
-		    entriesInfo.append("Entry: " + entry.getName()+"<br>");
+		    String line = "Entry: " + entry.getName();
+		    Long l = lastMessageSent.get(entry.getId());
+		    if(l!=null) {
+			Date date = new Date(l);
+			line +="<br>Last trigger:" + date; 
+			Date nextRun = new Date(date.getTime()+Utils.hoursToMillis(windowHours));
+			line +="<br>Next trigger:" + nextRun;
+		    }
+		    entriesInfo.append(line+"<br>");
+
 
 		}
 		
 	    }
 	}
+
+	sb.append(HU.colspan(HU.div("Enter delay between message sends",HU.cssClass("ramadda-form-help")),3));
+	sb.append(HU.formEntry("Message Delay:",HU.input(getArgId("windowhours"),""+windowHours,
+							 " size=\"10\" ")+" hours. Enter 0 to only send 1 message until this action is cleared"));
+
 
         sb.append(HU.colspan(HU.div("Select entries to monitor",HU.cssClass("ramadda-form-help")),3));
         sb.append(
@@ -299,18 +391,27 @@ public class DataAction extends MonitorAction {
 				  "Entry IDs:",
 				  HU.textArea(getArgId(ARG_ENTRYIDS), entryIds, 5, 60), entriesInfo.toString()));
 
+	List help = Utils.makeListFromValues("Javascript:","//log or print a message",HU.italics("action.logMessage('message');"),
+				   HU.italics("action.print(record.getFields())"),
+				   "//Access the field value",
+				   HU.italics("record.getValue('field_name')"),
+				   "//access hours betwee the current time and the time of the record",
+				   HU.italics("action.getHoursSince(record.getDate())"),
+				   "//send email and sms if enabled",
+				   HU.italics("action.trigger(entry,'Some message');"),
+				   "//send email but not sms",
+				   HU.italics("action.triggger(entry,'Some message',true,false);"),
+				   "e.g.:<pre>if(record.getValue('atmos_temp')>300) {\n\taction.trigger(entry,'Test trigger');\n}\n");
+	String jsInfo = Utils.join(help,"<br>");
         sb.append(HU.colspan(HU.div("Specify Javascript to check data",HU.cssClass("ramadda-form-help")),3));
         sb.append(
 		  HU.formEntryTop(
 				  "Script:",
 				  HU.textArea(
-					      getArgId("script"), script, 5,
-					      60)));	
+					      getArgId("script"), script, 15,
+					      60),jsInfo.toString()));
 
 
-	sb.append(HU.colspan(HU.div("Enter delay between message sends",HU.cssClass("ramadda-form-help")),3));
-	sb.append(HU.formEntry("Message Delay:",HU.input(getArgId("windowhours"),""+windowHours,
-							 " size=\"10\" ")+" hours. Enter 0 to only send 1 message until this action is cleared"));
 	
 
 
@@ -492,7 +593,7 @@ public class DataAction extends MonitorAction {
 
        @param value The new value for LastMessageSent
     **/
-    public void setLastMessageSent (Hashtable<String,Long> value) {
+    public void setLastMessageSent (LinkedHashMap<String,Long> value) {
 	lastMessageSent = value;
     }
 
@@ -501,7 +602,7 @@ public class DataAction extends MonitorAction {
 
        @return The LastMessageSent
     **/
-    public Hashtable<String,Long> getLastMessageSent () {
+    public LinkedHashMap<String,Long> getLastMessageSent () {
 	return lastMessageSent;
     }
 

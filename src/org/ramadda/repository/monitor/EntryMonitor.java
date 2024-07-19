@@ -223,6 +223,7 @@ public class EntryMonitor implements Constants {
      * @throws Exception _more_
      */
     public void applyEditForm(Request request) throws Exception {
+
         if (request.get(ARG_CLEARERROR, false)) {
             lastError = "";
         }
@@ -755,16 +756,7 @@ public class EntryMonitor implements Constants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param isNew _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public boolean checkEntry(Entry entry, boolean isNew) throws Exception {
         boolean debug = false;
         if (debug) {

@@ -103,9 +103,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
 
     public void monitorLive() {
-	long delaySeconds = 60*5;
-	//	delaySeconds = 10;
-	Misc.sleepSeconds(6);
+	long delaySeconds = repository.getProperty("ramadda.monitor.live.sleepseconds",60*5);
+	Misc.sleepSeconds(10);
 	while(true) {
 	    checkLiveMonitors();
 	    Misc.sleepSeconds(delaySeconds);
@@ -115,7 +114,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     private void  checkLiveMonitors() {
 	for(EntryMonitor monitor: getEntryMonitors(true)) {
-	    if(!monitor.isLive() || !monitor.getEnabled()) continue;
+	    if(!monitor.isLive() || !monitor.isLive()) continue;
 	    try {
 		monitor.setLastError("");
 		monitor.checkLiveAction();
@@ -446,34 +445,34 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             updateMonitor(monitor);
 
             return new Result(
-                HtmlUtils.url(
+                HU.url(
 			      request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                     ARG_MONITOR_ID, monitor.getId()));
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.sectionOpen(null, false));
-        sb.append(HtmlUtils.h2(msgLabel("Monitor") + " "
+        sb.append(HU.sectionOpen(null, false));
+        sb.append(HU.h2(msgLabel("Monitor") + " "
                                + monitor.getName()));
         request.formPostWithAuthToken(sb,
                                       getAdmin().URL_ADMIN_MONITORS,
-                                      HtmlUtils.attr(HtmlUtils.ATTR_NAME,
+                                      HU.attr(HU.ATTR_NAME,
                                           "monitorform"));
-        sb.append(HtmlUtils.hidden(ARG_MONITOR_ID, monitor.getId()));
+        sb.append(HU.hidden(ARG_MONITOR_ID, monitor.getId()));
 
         if (request.exists(ARG_MONITOR_DELETE)) {
             StringBuffer fb = new StringBuffer();
             fb.append(
-                HtmlUtils.buttons(
-                    HtmlUtils.submit("OK", ARG_MONITOR_DELETE_CONFIRM),
-                    HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL)));
+                HU.buttons(
+                    HU.submit("OK", ARG_MONITOR_DELETE_CONFIRM),
+                    HU.submit(LABEL_CANCEL, ARG_CANCEL)));
             sb.append(
                 getPageHandler().showDialogQuestion(
                     msg("Are you sure you want to delete the monitor?"),
                     fb.toString()));
-            sb.append(HtmlUtils.formClose());
+            sb.append(HU.formClose());
 
-            sb.append(HtmlUtils.sectionClose());
+            sb.append(HU.sectionClose());
 
             return getAdmin().makeResult(request,
 					 msg("Monitor Delete"), sb);
@@ -481,17 +480,17 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
 
         StringBuffer buttons = new StringBuffer();
-        buttons.append(HtmlUtils.submit("Save", ARG_MONITOR_CHANGE));
-        buttons.append(HtmlUtils.space(1));
-        buttons.append(HtmlUtils.submit("Delete", ARG_MONITOR_DELETE));
+        buttons.append(HU.submit("Save", ARG_MONITOR_CHANGE));
+        buttons.append(HU.space(1));
+        buttons.append(HU.submit("Delete", ARG_MONITOR_DELETE));
         sb.append(buttons);
-        sb.append(HtmlUtils.br());
+        sb.append(HU.br());
         monitor.addToEditForm(request, sb);
         sb.append(buttons);
 
-        sb.append(HtmlUtils.formClose());
+        sb.append(HU.formClose());
 
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return getAdmin().makeResult(request,
                                            msg("Edit Entry Monitor"), sb);
@@ -539,7 +538,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         addNewMonitor(monitor);
 
         return new Result(
-            HtmlUtils.url(
+            HU.url(
 			  request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
                 ARG_MONITOR_ID, monitor.getId()));
     }
@@ -630,14 +629,14 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             return processMonitorCreate(request);
         }
 
-        sb.append(HtmlUtils.sectionOpen(null, false));
+        sb.append(HU.sectionOpen(null, false));
 
 
-        sb.append(HtmlUtils.b("New Monitor:"));
-        sb.append(HtmlUtils.space(2));
+        sb.append(HU.b("New Monitor:"));
+        sb.append(HU.space(2));
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TR));
+        sb.append(HU.open(HU.TAG_TABLE));
+        sb.append(HU.open(HU.TAG_TR));
         for (MonitorAction templateAction : actions) {
             if ( !templateAction.enabled(getRepository())) {
                 continue;
@@ -647,84 +646,75 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             }
 
 
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_TD));
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                     HtmlUtils.style("padding-left:10px;")));
+            sb.append(HU.open(HU.TAG_TD));
+            sb.append(HU.open(HU.TAG_DIV,
+                                     HU.style("padding-left:10px;")));
             sb.append(request.form(getAdmin().URL_ADMIN_MONITORS));
-            sb.append(HtmlUtils.submit(templateAction.getActionLabel(),
+            sb.append(HU.submit(templateAction.getActionLabel(),
                                        ARG_MONITOR_CREATE));
-            sb.append(HtmlUtils.hidden(ARG_MONITOR_TYPE,
+            sb.append(HU.hidden(ARG_MONITOR_TYPE,
                                        templateAction.getActionName()));
-            sb.append(HtmlUtils.formClose());
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
+            sb.append(HU.formClose());
+            sb.append(HU.close(HU.TAG_DIV));
+            sb.append(HU.close(HU.TAG_TD));
         }
 
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HU.close(HU.TAG_TR));
+        sb.append(HU.close(HU.TAG_TABLE));
 
-        sb.append(HtmlUtils.br());
+        sb.append(HU.br());
 
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE,
-                                 HtmlUtils.attrs(HtmlUtils.ATTR_CELLPADDING,
-                                     "4", HtmlUtils.ATTR_CELLSPACING, "0")));
+        sb.append(HU.open(HU.TAG_TABLE,
+                                 HU.attrs(HU.ATTR_CELLPADDING,
+                                     "4", HU.ATTR_CELLSPACING, "0")));
         if (monitors.size() > 0) {
-            sb.append(HtmlUtils.row(HtmlUtils.cols("", boldMsg("Monitor"),
+            sb.append(HU.row(HU.cols("", boldMsg("Monitor"),
 						   boldMsg("Search Criteria"),
 						   boldMsg("Action"))));
         }
         for (EntryMonitor monitor : monitors) {
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                     HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
+            sb.append(HU.open(HU.TAG_TR,
+                                     HU.attr(HU.ATTR_VALIGN,
                                          "top") + ( !monitor.isActive()
-                    ? HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR, "#cccccc")
-                    : "")));
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_TD,
-                                     HtmlUtils.cssClass("ramadda-td")));
-	    /*
-            sb.append(
-                HtmlUtils.href(
-                    HtmlUtils.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
-				  ARG_MONITOR_ID, monitor.getId(),
-				  HU.title("Edit monitor")), 
-		    HtmlUtils.img(
-                            getIconUrl(ICON_EDIT))));
-	    */
-            sb.append(HU.button(HtmlUtils.href(HtmlUtils.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
+						    ? HU.attrs(HU.ATTR_BGCOLOR, "#efefef","style","border-bottom:1px solid #ccc;")
+                    : 						    HU.attrs("style","border-bottom:1px solid #ccc;"))));
+            sb.append(HU.open(HU.TAG_TD,
+                                     HU.cssClass("ramadda-td")));
+            sb.append(HU.button(HU.href(HU.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
 							     ARG_MONITOR_ID, monitor.getId()), 
 					       "Edit",HU.title("Edit monitor"))));
-            sb.append(HtmlUtils.space(1));
+            sb.append(HU.space(1));
             sb.append(HU.button(
-				HtmlUtils.href(HtmlUtils.url(
+				HU.href(HU.url(
 							     request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
 							     ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
 							     monitor.getId()),  "Delete",HU.title("Delete monitor"))));
             if ( !monitor.isActive()) {
-                sb.append(HtmlUtils.space(1));
+                sb.append(HU.space(1));
                 sb.append(msg("not active"));
             }
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_TD));
-            sb.append(HtmlUtils.col(monitor.getName(),
-                                    HtmlUtils.cssClass("ramadda-td")));
-	    //            sb.append(HtmlUtils.col(monitor.getUser().getLabel(),
-	    //                                    HtmlUtils.cssClass("ramadda-td")));
-            sb.append(HtmlUtils.col(monitor.getSearchSummary(),
-                                    HtmlUtils.cssClass("ramadda-td")));
-            sb.append(HtmlUtils.col(monitor.getActionSummary(),
-                                    HtmlUtils.cssClass("ramadda-td")));
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
+            sb.append(HU.close(HU.TAG_TD));
+            sb.append(HU.col(monitor.getName(),
+                                    HU.cssClass("ramadda-td")));
+	    //            sb.append(HU.col(monitor.getUser().getLabel(),
+	    //                                    HU.cssClass("ramadda-td")));
+            sb.append(HU.col(monitor.getSearchSummary(),
+                                    HU.cssClass("ramadda-td")));
+            sb.append(HU.col(monitor.getActionSummary(),
+                                    HU.cssClass("ramadda-td")));
+            sb.append(HU.close(HU.TAG_TR));
 
             if (stringDefined(monitor.getLastError())) {
                 String msg = getPageHandler().showDialogError(monitor.getLastError());
-                sb.append(HtmlUtils.row(HtmlUtils.colspan(msg, 5)));
+                sb.append(HU.row(HU.colspan(msg, 5)));
             }
 
-            sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.hr(), 5)));
+	    //            sb.append(HU.row(HU.colspan(HU.hr(), 5)));
 
         }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
+        sb.append(HU.close(HU.TAG_TABLE));
 
-        sb.append(HtmlUtils.sectionClose());
+        sb.append(HU.sectionClose());
 
         return getAdmin().makeResult(request, "RAMADDA-Admin-Monitors", sb);
     }
