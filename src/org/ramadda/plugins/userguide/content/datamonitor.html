@@ -1,0 +1,105 @@
+[ht::head {Data Action Monitor}]
+
+<%nochildlist%>
+
+:navtop
+
+The Data Action Monitor is a special type of <a href=monitor.html>monitor</a>
+that allows you to monitor the latest values in a point data file and either
+send an email message or a text message when the value meets a certain criteria.
+This is useful for monitoring uptime or data values of real-time instruments.
+:p
+A Data Monitor contains one or more entry IDs and a criteria (in Javascript) for determining
+whether a message is sent. The message can be email or text message depending on your site
+configuration. Once a message a sent no other messages are sent until a message delay has been
+reached. This prevents too many messages from being sent.
+
+
+:heading Creating a Data Monitor
+To create a Data Monitor as a site administrator go to the Admin-&gt;Monitors page.
+Select "Data Action".
+Specify a name, whether the action is enabled and a valid date range for when the action can run.
+[ht::screenshot images/dataaction1.png]
+
+:heading Test and Message Delay
+The message delay is the number of hours to wait between messages. This can br fractional if desired. Entering "0" will result in only one message to be sent.
+:p
+The Test checkbox, when checked, will result in a single run of this Data Monitor irrespective
+of the message delay when changes to the Data Monitor are saved.
+
+
+
+:heading Entry IDs
+Next, specify one or more entry IDs that are to be monitored. Lines can be commented out with a "#".
+Once saved the entry or entries will be shown on the right. If there has been a message sent in the past then the time of the message send and the time of the next message will be shown as well.
+:p
+Selecting the "Clear" checkbox and saving the data monitor will clear any of the message sending
+history.
+
+[ht::screenshot images/dataaction2.png]
+
+:heading Specify Javascript
+The criteria for checking the values of a data file and triggering actions is specified
+using Javascript that runs on RAMADDA. On the right of the form is a set of available commands.
+For example to check if the time latest record is older than 2 hours do:
+[ht::screenshot images/dataaction3.png]
+
+This example checks if the value of the "atmos_field" is &gt; 300.
+[ht::screenshot images/dataaction4.png]
+
+Note: The checks can be a combination of any valid Javascript code. If you want to have
+a return you need to wrap the code in a function definition:
+[ht::screenshot images/dataaction5.png]
+
+The names of the field can be accessed through the Metadata page of the corresponding entry. Alternatively,you can use the following code, select "Test" and Save the monitor. The results will be
+shown at the top of the result page.
+<pre>
+  action.print(record.getFields())
+</pre>
+
+:heading Sending Email Messages
+To send an email message your RAMADDA has to be configured with an SMTP server through the
+<a href=admin.html#email>Admin</a> pages. Once configured you can entry one or more email
+addresses in the Data Action. The Email Message is a template of the form:
+<pre>
+A data monitor action has occurred for entry: ${entryname}. View entry at ${entryhref}.  Message: ${message}.
+</pre>
+
+:heading Sending Text Messages
+Sending messages makes use of the phone RAMADDA plugin (which is in the default plugins).
+Documentation is available at <a href=https://ramadda.org/repository/phone/configuration.html>
+  https://ramadda.org/repository/phone/configuration.html</a>.
+:p
+To send text messages you need to create an account at
+<a href=https://www.twilio.com/en-us>Twilio</a>.
+This includes an Application SID, Authorization token and an account phone number.
+Twilio does have a process for ensuring your sending of text messages follows
+regulations.
+:p
+Once you have Twilio configured configure your RAMADDA with the following properties from Twilio:
+
+<pre>
+#Twilio Application SID
+twilio.accountsid=
+
+#Twili authorization token (for reading the transcription)
+twilio.authtoken=
+
+#The phone number of your twilio account
+#twilio.phone=
+</pre>
+
+The text message can have its own message template or it will use the email template if not defined.
+
+:heading Monitor Frequency
+RAMADDA checks the Data Action Monitors by default every 5 minutes.
+This can be changed by specifying the property:
+<pre>
+ramadda.monitor.live.sleepseconds=number of seconds between checks
+</pre>
+
+
+:heading Logging
+Logging of monitor actions is writtin out the the monitor.log file in your ramadda_home/logs directory and can be viewed through the Admin-Logs page.
+
+[ht::foot]
