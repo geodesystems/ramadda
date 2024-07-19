@@ -18,6 +18,7 @@ import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
+
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
@@ -124,6 +125,11 @@ public class LogManager extends RepositoryManager {
     private static final LogManager.LogId REPOSITORY_SPECIAL_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.special");
 
+
+    /** _more_ */
+    private static final LogManager.LogId REPOSITORY_MONITOR_LOG_ID =
+        new LogManager.LogId("org.ramadda.repository.monitor");
+    
     /** _more_ */
     private static final LogManager.LogId REPOSITORY_REGISTRY_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.registry");        
@@ -298,7 +304,14 @@ public class LogManager extends RepositoryManager {
      */
     public MyLogger getSpecialLogger() {
         return getLogger(REPOSITORY_SPECIAL_LOG_ID);
-    }    
+    }
+
+    /**
+     *  @return _more_
+     */
+    public MyLogger getMonitorLogger() {
+        return getLogger(REPOSITORY_MONITOR_LOG_ID);
+    }        
 
 
     /**
@@ -555,6 +568,28 @@ public class LogManager extends RepositoryManager {
 	    exc.printStackTrace();
 	}
     }
+
+    public void logMonitorError(String message,Throwable...thr) {
+	message= encode(message);
+	System.err.println("Error:" + message);
+	if(thr.length>0)
+	    thr[0].printStackTrace();
+	logError(getMonitorLogger(),message, thr.length>0?thr[0]:null);
+    }
+
+
+    public void logMonitor(String message) {
+	try {
+	    message= encode(message);
+	    System.err.println(message);
+	    getMonitorLogger().info(message);
+	} catch(Exception exc) {
+	    System.err.println("LogManager: error in logMonitor:" + exc);
+	    exc.printStackTrace();
+	}
+    }
+
+
 
     public void logRegistry(String message,Throwable thr) {
 	logError(getRegistryLogger(),message,thr);
