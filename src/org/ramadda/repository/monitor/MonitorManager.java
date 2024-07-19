@@ -146,11 +146,10 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      * @throws Exception _more_
      */
     private void initActions() throws Exception {
+        actions.add(new DataAction());
         actions.add(new EmailAction());
         actions.add(new CopyAction());
         actions.add(new PublishAction());
-        actions.add(new DataAction());
-
         //        actions.add(new FtpAction());
 	//        actions.add(new ExecAction());
         for (Class c :
