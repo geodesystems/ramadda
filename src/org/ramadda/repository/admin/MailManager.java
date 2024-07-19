@@ -179,6 +179,23 @@ public class MailManager extends RepositoryManager {
         sendEmail(to, getAdminEmail(), subject, contents, asHtml);
     }
 
+    public void sendEmail(List<String> to, String subject, String contents,
+                          boolean asHtml)
+            throws Exception {
+	
+        List<Address> addresses = new ArrayList<Address>();
+	for(String address: to) {
+	    address = address.trim();
+	    if(address.startsWith("#")) continue;
+	    addresses.add(new InternetAddress(address));
+	}
+	if(addresses.size()==0) return;
+
+        sendEmail(addresses,
+                  new InternetAddress( getAdminEmail()), subject, contents, false,
+                  false,null);
+    }    
+
 
     /**
      * _more_
