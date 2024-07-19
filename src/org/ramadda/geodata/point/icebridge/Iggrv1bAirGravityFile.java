@@ -690,12 +690,12 @@ public static class Iggrv1bAirGravityRecord extends org.ramadda.data.point.Point
     }
 
 
-    public int getDate()  {
+    public int getIntDate()  {
         return date;
     }
 
 
-    public void setDate(int newValue)  {
+    public void setIntDate(int newValue)  {
         date = newValue;
     }
 
