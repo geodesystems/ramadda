@@ -12,6 +12,7 @@ import org.apache.commons.text.StringTokenizer;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -5834,19 +5835,19 @@ public class Utils extends IO {
      * @param minutes _more_
      *  @return _more_
      */
-    public static long minutesToMillis(long minutes) {
-        return  minutes * 60 * 1000;
+    public static long minutesToMillis(double minutes) {
+        return (long)(minutes * 60 * 1000);
     }
 
-    public static long hoursToMillis(long hours) {
+    public static long hoursToMillis(double hours) {
         return minutesToMillis(hours*60);
     }
 
-    public static long daysToMillis(long days) {
+    public static long daysToMillis(double days) {
         return hoursToMillis(days*24);
     }
 
-    public static long yearsToMillis(long years) {
+    public static long yearsToMillis(double years) {
         return daysToMillis(years*365);
     }            
 
@@ -5855,8 +5856,8 @@ public class Utils extends IO {
      * @param seconds _more_
      *  @return _more_
      */
-    public static long secondsToMillis(long seconds) {
-        return seconds * 1000;
+    public static long secondsToMillis(double seconds) {
+        return (long)(seconds * 1000);
     }
 
 
