@@ -175,11 +175,11 @@ public class MailManager extends RepositoryManager {
      */
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
-            throws Exception {
+	throws Exception {
         sendEmail(to, getAdminEmail(), subject, contents, asHtml);
     }
 
-    public void sendEmail(List<String> to, String subject, String contents,
+    public int sendEmail(List<String> to, String subject, String contents,
                           boolean asHtml)
             throws Exception {
 	
@@ -189,11 +189,12 @@ public class MailManager extends RepositoryManager {
 	    if(address.startsWith("#")) continue;
 	    addresses.add(new InternetAddress(address));
 	}
-	if(addresses.size()==0) return;
+	if(addresses.size()==0) return 0;
 
         sendEmail(addresses,
                   new InternetAddress( getAdminEmail()), subject, contents, false,
                   false,null);
+	return addresses.size();
     }    
 
 
