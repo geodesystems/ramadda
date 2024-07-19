@@ -114,7 +114,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     private void  checkLiveMonitors() {
 	for(EntryMonitor monitor: getEntryMonitors(true)) {
-	    if(!monitor.isLive() || !monitor.isLive()) continue;
+	    if(!monitor.isLive() || !monitor.isActive()) continue;
 	    try {
 		monitor.setLastError("");
 		monitor.checkLiveAction();
