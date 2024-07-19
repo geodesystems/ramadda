@@ -21,7 +21,7 @@ import org.ramadda.repository.auth.*;
  */
 public abstract class MonitorAction implements Constants, Cloneable {
 
-
+    public static final HtmlUtils HU = null;
 
 
     /** _more_ */
@@ -45,8 +45,6 @@ public abstract class MonitorAction implements Constants, Cloneable {
     protected Entry group;
 
 
-
-
     /**
      * _more_
      */
@@ -62,20 +60,24 @@ public abstract class MonitorAction implements Constants, Cloneable {
         this.id = id;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws CloneNotSupportedException _more_
-     */
+
     public MonitorAction cloneMe() throws CloneNotSupportedException {
         return (MonitorAction) super.clone();
     }
 
 
 
+    public boolean doSearch() {
+	return true;
+    }
 
+    public boolean isLive(EntryMonitor monitor) {
+	return false;
+    }    
+
+    public void checkLiveAction(EntryMonitor monitor) throws Throwable {
+    }
+    
     /**
      * _more_
      *
@@ -232,10 +234,10 @@ public abstract class MonitorAction implements Constants, Cloneable {
 	Entry  group      = getGroup(monitor);
 	String errorLabel = "";
 	if ((group != null) && !monitor.okToAddNew(group)) {
-	    errorLabel = HtmlUtils.span(
+	    errorLabel = HU.span(
 					monitor.getRepository().msg(
-								    "You cannot add to the folder"), HtmlUtils.cssClass(
-															HtmlUtils.CLASS_ERRORLABEL));
+								    "You cannot add to the folder"), HU.cssClass(
+															HU.CLASS_ERRORLABEL));
 	}
 	String groupName = ((group != null)
 			    ? group.getFullName()
@@ -244,30 +246,30 @@ public abstract class MonitorAction implements Constants, Cloneable {
 	String select =
 	    monitor.getRepository().getHtmlOutputHandler().getSelect(
 								     null, inputId,
-								     HtmlUtils.img(
+								     HU.img(
 										   monitor.getRepository().getIconUrl(
-														      ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
+														      ICON_FOLDER_OPEN)) + HU.space(1)
 								     + monitor.getRepository().msg(
 												   "Select"), false, "");
-	sb.append(HtmlUtils.hidden(inputId + "_hidden", parentGroupId,
-				   HtmlUtils.id(inputId + "_hidden")));
+	sb.append(HU.hidden(inputId + "_hidden", parentGroupId,
+				   HU.id(inputId + "_hidden")));
 	sb.append(
-		  HtmlUtils.formEntry(
+		  HU.formEntry(
 				      "Folder:",
-				      HtmlUtils.disabledInput(
+				      HU.disabledInput(
 							      inputId, groupName,
-							      HtmlUtils.SIZE_60 + HtmlUtils.id(inputId)) + select));
+							      HU.SIZE_60 + HU.id(inputId)) + select));
 
 
     }
 
 
     public void addPathTemplateEditForm(Request request, EntryMonitor monitor, Appendable sb) throws Exception {
-        sb.append(HtmlUtils.formEntry("Path Template:",
-				      HtmlUtils.input(getArgId(ARG_PATHTEMPLATE), pathTemplate,
-						      HtmlUtils.SIZE_60) + " "
+        sb.append(HU.formEntry("Path Template:",
+				      HU.input(getArgId(ARG_PATHTEMPLATE), pathTemplate,
+						      HU.SIZE_60) + " "
 				      + "<br>Path under the destination parent to create. " +
-				      HtmlUtils.href(monitor.getRepository().getUrlBase()+"/userguide/monitors.html#pathtemplate","(Help)","target=_help") +
+				      HU.href(monitor.getRepository().getUrlBase()+"/userguide/monitors.html#pathtemplate","(Help)","target=_help") +
 				      "<br>e.g.:<br>" +
 				      "<i>Collection/Sub Collection</i><br>" +
 				      "Add in a macro for the date<br>"  +

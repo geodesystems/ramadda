@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -32,14 +32,11 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.30 $
- */
+
 @SuppressWarnings("unchecked")
 public class EntryMonitor implements Constants {
+
+    public static final HtmlUtils HU = null;
 
 
     /** _more_ */
@@ -93,6 +90,8 @@ public class EntryMonitor implements Constants {
 
     /** _more_ */
     private boolean editable = true;
+
+
 
     /** _more_ */
     public static final String ARG_ADD_ACTION = "addaction";
@@ -239,6 +238,8 @@ public class EntryMonitor implements Constants {
         fromDate = dateRange[0];
         toDate   = dateRange[1];
 
+
+
         for (MonitorAction action : actions) {
             action.applyEditForm(request, this);
         }
@@ -249,39 +250,55 @@ public class EntryMonitor implements Constants {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    public MonitorAction getAction() {
+	return actions.size()>0?actions.get(0):null;
+    }
+
+
+    public boolean isLive() {
+	MonitorAction action = getAction();
+	if(action==null) return false;
+	return action.isLive(this);
+    }
+
+
+    public void checkLiveAction() throws Throwable {
+	MonitorAction action = getAction();
+	action.checkLiveAction(this);
+    }
+    
+
     public void addToEditForm(Request request, Appendable sb)
             throws Exception {
+	MonitorAction theAction = actions.size()>0?actions.get(0):null;
+
+
         StringBuffer stateSB = new StringBuffer();
 
-        stateSB.append(HtmlUtils.formTable());
+        stateSB.append(HU.formTable());
         stateSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 getRepository().msgLabel("Name"),
-                HtmlUtils.input(
+                HU.input(
                     MonitorManager.ARG_MONITOR_NAME, getName(),
-                    HtmlUtils.SIZE_70)));
-	HtmlUtils.formEntry(stateSB,
+                    HU.SIZE_70)));
+	HU.formEntry(stateSB,
 			    "",
-			    HtmlUtils.labeledCheckbox(
+			    HU.labeledCheckbox(
 						      MonitorManager.ARG_MONITOR_ENABLED, "true",
 						      getEnabled(),"Enabled"));
 
-	HtmlUtils.formEntry(stateSB,"",
-			    HtmlUtils.labeledCheckbox(
-						      MonitorManager.ARG_MONITOR_ONLYNEW, "true",
-						      getOnlyNew(),
-						      "Only check new entries"));
+	boolean doSearch = theAction== null || theAction.doSearch();
+	if(doSearch) {
+	    HU.formEntry(stateSB,"",
+				HU.labeledCheckbox(
+							  MonitorManager.ARG_MONITOR_ONLYNEW, "true",
+							  getOnlyNew(),
+							  "Only check new entries"));
+	}
 
         stateSB.append(
-            HtmlUtils.formEntry(
+            HU.formEntry(
                 getRepository().msgLabel("Valid Date Range"),
                 getRepository().getDateHandler().makeDateInput(
                     request, MonitorManager.ARG_MONITOR_FROMDATE,
@@ -291,10 +308,7 @@ public class EntryMonitor implements Constants {
                             request, MonitorManager.ARG_MONITOR_TODATE,
                             "monitorform", getToDate())));
 
-
-
-
-        stateSB.append(HtmlUtils.formTableClose());
+        stateSB.append(HU.formTableClose());
 
 
         StringBuffer searchSB = new StringBuffer();
@@ -305,30 +319,36 @@ public class EntryMonitor implements Constants {
             action.addToEditForm(request,this, actionsSB);
         }
 
-        sb.append(HtmlUtils.makeShowHideBlock("Settings", stateSB.toString(),
+        sb.append(HU.makeShowHideBlock("Settings", stateSB.toString(),
                 true));
 
         if ((getLastError() != null) && (getLastError().length() > 0)) {
             StringBuffer errorSB = new StringBuffer();
-            errorSB.append(HtmlUtils.labeledCheckbox(ARG_CLEARERROR, "true", true,
+            errorSB.append(HU.labeledCheckbox(ARG_CLEARERROR, "true", true,
 						    "Clear error"));
-            errorSB.append(HtmlUtils.pre(getLastError()));
+            errorSB.append(getRepository().getPageHandler().showDialogError(getLastError()));
             sb.append(
-                HtmlUtils.makeShowHideBlock(
-                    HtmlUtils.span(
+                HU.makeShowHideBlock(
+                    HU.span(
                         getRepository().msg("Error"),
-                        HtmlUtils.cssClass(
+                        HU.cssClass(
                             "errorlabel")), errorSB.toString(), true));
         }
 
 
+	if(doSearch) {
+	    sb.append(HU.makeShowHideBlock("Search Criteria",
+						  searchSB.toString(), false));
+	    sb.append(HU.makeShowHideBlock("Actions",
+						  actionsSB.toString(), false));
+
+	} else {
+	    sb.append(actionsSB.toString());
+	}
 
 
-        sb.append(HtmlUtils.makeShowHideBlock("Search Criteria",
-                searchSB.toString(), false));
-        sb.append(HtmlUtils.makeShowHideBlock("Actions",
-                actionsSB.toString(), false));
-        sb.append(HtmlUtils.p());
+
+        sb.append(HU.p());
 
     }
 
@@ -338,7 +358,10 @@ public class EntryMonitor implements Constants {
      * @return _more_
      */
     public String toString() {
-        return "Montior" + name + " filters:" + filters;
+	MonitorAction action = getAction();
+	if(action!=null && !action.doSearch())
+	    return "Monitor: " + name + " action:" + action;
+        return "Monitor" + name + " filters:" + filters;
     }
 
     /**
@@ -351,7 +374,7 @@ public class EntryMonitor implements Constants {
      */
     public void addSearchToEditForm(Request request, StringBuffer sb)
             throws Exception {
-        sb.append(HtmlUtils.formTable());
+        sb.append(HU.formTable());
         Hashtable<String, Filter> filterMap = new Hashtable<String, Filter>();
         for (Filter filter : filters) {
             filterMap.put(filter.getField(), filter);
@@ -362,7 +385,7 @@ public class EntryMonitor implements Constants {
         }
 
 
-        sb.append(HtmlUtils.formTableClose());
+        sb.append(HU.formTableClose());
 
     }
 
@@ -482,21 +505,21 @@ public class EntryMonitor implements Constants {
         boolean doNot  = ((filter == null)
                           ? false
                           : filter.getDoNot());
-        String notCbx = " " +HtmlUtils.labeledCheckbox(what + "_not", "true", doNot, "Not");
+        String notCbx = " " +HU.labeledCheckbox(what + "_not", "true", doNot, "Not");
 
         if (what.equals(ARG_FILESUFFIX)) {
             List<String> suffixes = ((filter == null)
                                      ? (List) new ArrayList()
                                      : (List) filter.getValue());
             sb.append(
-                HtmlUtils.formEntry(
+                HU.formEntry(
                     getRepository().msgLabel("File Suffix"),
-                    HtmlUtils.input(
+                    HU.input(
                         what, StringUtil.join(",", suffixes),
                         " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_TEXT)) {
-            sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Text"),
-                                          HtmlUtils.input(what,
+            sb.append(HU.formEntry(getRepository().msgLabel("Text"),
+                                          HU.input(what,
                                               ((filter == null)
                     ? ""
                     : filter.getValue()
@@ -505,8 +528,8 @@ public class EntryMonitor implements Constants {
             List<String> users = ((filter == null)
                                   ? (List) new ArrayList()
                                   : (List) filter.getValue());
-            sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Users"),
-                                          HtmlUtils.input(what,
+            sb.append(HU.formEntry(getRepository().msgLabel("Users"),
+                                          HU.input(what,
                                               StringUtil.join(",", users),
                                                   " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_ANCESTOR)) {
@@ -522,7 +545,7 @@ public class EntryMonitor implements Constants {
                                ? new double[] { Entry.NONGEO, Entry.NONGEO,
                     Entry.NONGEO, Entry.NONGEO }
                                : (double[]) filter.getValue());
-            String latLonForm = HtmlUtils.makeLatLonBox(ARG_AREA, ARG_AREA,
+            String latLonForm = HU.makeLatLonBox(ARG_AREA, ARG_AREA,
                                     (values[0] != Entry.NONGEO)
                                     ? values[0]
                                     : Double.NaN, (values[1] != Entry.NONGEO)
@@ -533,7 +556,7 @@ public class EntryMonitor implements Constants {
                     ? values[3]
                     : Double.NaN);
 
-            sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Area"),
+            sb.append(HU.formEntry(getRepository().msgLabel("Area"),
                                           latLonForm));
         } else if (what.equals(ARG_TYPE)) {
             List<TypeHandler> typeHandlers =
@@ -549,9 +572,9 @@ public class EntryMonitor implements Constants {
                 tmp.add(new TwoFacedObject(typeHandler.getLabel(),
                                            typeHandler.getType()));
             }
-            String typeSelect = HtmlUtils.select(ARG_TYPE, tmp, types,
+            String typeSelect = HU.select(ARG_TYPE, tmp, types,
                                     " MULTIPLE SIZE=4 ");
-            sb.append(HtmlUtils.formEntry(getRepository().msgLabel("Type"),
+            sb.append(HU.formEntry(getRepository().msgLabel("Type"),
                                           typeSelect + notCbx));
         }
     }
@@ -582,6 +605,7 @@ public class EntryMonitor implements Constants {
             throw new RuntimeException(exc);
         }
     }
+
 
 
     /**
@@ -617,14 +641,14 @@ public class EntryMonitor implements Constants {
 
         if (value == null) {
             if (filter.getValue() instanceof List) {
-                value = HtmlUtils.quote(StringUtil.join("\" OR \"",
+                value = HU.quote(StringUtil.join("\" OR \"",
                         (List) filter.getValue()));
             } else {
-                value = HtmlUtils.quote(filter.getValue().toString());
+                value = HU.quote(filter.getValue().toString());
             }
         }
 
-        return HtmlUtils.italics(desc) + " " + (filter.getDoNot()
+        return HU.italics(desc) + " " + (filter.getDoNot()
                 ? "!"
                 : "") + "= (" + value + ")";
     }

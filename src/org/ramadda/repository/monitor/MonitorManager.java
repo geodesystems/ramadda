@@ -95,10 +95,38 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         try {
             initActions();
             initMonitors();
+	    Misc.run(this, "monitorLive");
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
+
+
+    public void monitorLive() {
+	long delaySeconds = 60*5;
+	delaySeconds = 10;
+	Misc.sleepSeconds(6);
+	while(true) {
+	    checkLiveMonitors();
+	    Misc.sleepSeconds(delaySeconds);
+	}
+
+    }
+
+    private void  checkLiveMonitors() {
+	for(EntryMonitor monitor: getEntryMonitors(true)) {
+	    if(!monitor.isLive() || !monitor.getEnabled()) continue;
+	    try {
+		monitor.setLastError("");
+		monitor.checkLiveAction();
+	    } catch(Throwable exc) {
+		Throwable thr = LogUtil.getInnerException(exc);
+		monitor.setLastError("Error processing monitor:" +monitor +" Error: " + thr.getMessage());
+		getLogManager().logMonitorError("Error processing monitor:" +monitor,exc);
+	    }
+	}
+    }
+
 
 
     /**
@@ -122,6 +150,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         actions.add(new EmailAction());
         actions.add(new CopyAction());
         actions.add(new PublishAction());
+        actions.add(new DataAction());
+
         //        actions.add(new FtpAction());
 	//        actions.add(new ExecAction());
         for (Class c :
@@ -190,6 +220,14 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      * @return _more_
      */
     public List<EntryMonitor> getEntryMonitors() {
+	return getEntryMonitors(false);
+
+    }
+    public List<EntryMonitor> getEntryMonitors(boolean clone) {	
+	if(clone) {
+	    List<EntryMonitor> l = new ArrayList<EntryMonitor>(monitors);
+	    return l;
+	}
         return monitors;
     }
 
@@ -367,7 +405,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      *
      * @throws Exception _more_
      */
-    private void updateMonitor(EntryMonitor monitor) throws Exception {
+    public void updateMonitor(EntryMonitor monitor) throws Exception {
         if ( !monitor.getEditable()) {
             return;
         }
@@ -676,14 +714,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                     HtmlUtils.cssClass("ramadda-td")));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_TR));
 
-            if ((monitor.getLastError() != null)
-                    && (monitor.getLastError().length() > 0)) {
-                String msg = HtmlUtils.makeShowHideBlock(
-                                 HtmlUtils.span(
-                                     msg("Error"),
-                                     HtmlUtils.cssClass(
-                                         "errorlabel")), HtmlUtils.pre(
-                                             monitor.getLastError()), false);
+            if (stringDefined(monitor.getLastError())) {
+                String msg = getPageHandler().showDialogError(monitor.getLastError());
                 sb.append(HtmlUtils.row(HtmlUtils.colspan(msg, 5)));
             }
 

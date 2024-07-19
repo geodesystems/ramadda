@@ -93,6 +93,7 @@ public class CopyAction extends MonitorAction {
      * @param request _more_
      * @param monitor _more_
      */
+    @Override
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
 	applyGroupEditForm(request, monitor);
