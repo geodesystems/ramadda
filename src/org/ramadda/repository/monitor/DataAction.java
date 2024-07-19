@@ -353,11 +353,12 @@ public class DataAction extends MonitorAction {
 	String clearCbx = HU.labeledCheckbox(getArgId("clearhistory"),"true",false,"Clear History");
 	entriesInfo.append(clearCbx);
 	entriesInfo.append("<br>One entry ID per line<br>");
+	EntryManager em = monitor.getRepository().getEntryManager();
 	List<Entry> entries = new ArrayList<Entry>();
 	for(String id:Utils.split(entryIds,"\n",true,true)) {
 	    if(id.startsWith("#")) continue;
 	    
-	    Entry entry = monitor.getRepository().getEntryManager().getEntry(request, id);
+	    Entry entry = em.getEntry(request, id);
 	    if(entry==null) {
 		entriesInfo.append(HU.b("No entry: " + id+"<br>"));
 	    } else {
@@ -365,6 +366,8 @@ public class DataAction extends MonitorAction {
 		    entriesInfo.append(HU.b("Entry: " + entry.getName()+" is not a point data type<br>"));
 		} else {
 		    String line = "Entry: " + entry.getName();
+		    line = HU.href(em.getEntryUrl(request,entry),line,HU.attrs("target","entry"));
+
 		    Long l = lastMessageSent.get(entry.getId());
 		    if(l!=null) {
 			Date date = new Date(l);
