@@ -926,12 +926,15 @@ public class Column implements DataTypes, Constants, Cloneable {
     private static final double[]NULL_BBOX={Double.NaN,Double.NaN,Double.NaN,Double.NaN};
     private static final double[]NULL_LATLON={Double.NaN,Double.NaN,Double.NaN,Double.NaN};    
 
+
     public double[] getLatLonBbox(Request request,Entry entry) {
+	if(entry==null) return NULL_BBOX;
 	if(!accessOk(request, entry)) return NULL_BBOX;
 	return getLatLonBbox(request, entry.getValues());
     }
 
     public double[] getLatLon(Request request,Entry entry) {
+	if(entry==null) return NULL_LATLON;
 	if(!accessOk(request, entry)) return NULL_LATLON;
 	return getLatLon(request, entry.getValues());
     }
