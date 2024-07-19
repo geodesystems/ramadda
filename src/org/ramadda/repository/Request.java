@@ -311,6 +311,8 @@ public class Request implements Constants, Cloneable {
 
     Hashtable<String,Boolean> geoOk;
     public boolean geoOk(Entry entry) {
+	if(entry==null) return true;
+
 	if(geoOk==null) geoOk = new Hashtable<String,Boolean>();
 	Boolean ok = geoOk.get(entry.getId());
 	if(ok!=null) {
