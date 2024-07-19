@@ -104,7 +104,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     public void monitorLive() {
 	long delaySeconds = 60*5;
-	delaySeconds = 10;
+	//	delaySeconds = 10;
 	Misc.sleepSeconds(6);
 	while(true) {
 	    checkLiveMonitors();
