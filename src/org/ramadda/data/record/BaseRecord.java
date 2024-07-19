@@ -301,6 +301,39 @@ public class BaseRecord implements Cloneable {
     }
 
 
+
+
+
+    public int getIndex(String field) {
+	for(RecordField f: getFields()) {
+	    if(f.getName().equals(field)) return f.getParamId();
+	}
+	return -1;
+    }
+
+
+    public Date getDate() {
+	for(RecordField f: getFields()) {
+	    Object o = getObjectValue(f.getParamId());
+	    if(o!=null && o instanceof Date) return (Date) o;
+	}
+	return null;
+    }
+
+
+    public double getValue(String field) {
+	int index = getIndex(field);
+	if(index<0) throw new IllegalArgumentException("Unknown field: " + field);
+	return getValue(index);
+    }
+
+    public Object getObjectValue(String field) {
+	int index = getIndex(field);
+	if(index<0) throw new IllegalArgumentException("Unknown field: " + field);
+	return getObjectValue(index);
+    }	    
+
+
     /**
      * _more_
      *
@@ -326,7 +359,7 @@ public class BaseRecord implements Cloneable {
     public String getStringValue(int attrId) {
         Object object = getObjectValue(attrId);
         if (object == null) {
-            throw new IllegalArgumentException("Unknown attribute id:"
+            throw new IllegalArgumentException("Unknown attribute index:"
                     + attrId);
         }
 
