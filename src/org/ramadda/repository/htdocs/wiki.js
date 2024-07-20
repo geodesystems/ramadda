@@ -427,6 +427,7 @@ WikiEditor.prototype = {
 	}
 	let what = [];
 	const what_id = "ID";
+	const what_commaid = ",ID";	
 	const what_entry_id = "entry=ID" ;	    
 	const what_link = "Link";
 	const what_wiki_text = "Wiki Text";	    
@@ -457,11 +458,13 @@ WikiEditor.prototype = {
 	if(isNew) {
 	    if(opts.isImage) what.push(what_image);
 	    what.push(what_id);
+	    what.push(what_commaid);	    
 	    what.push(what_entry_id);
 	    what.push(what_link);
 	    what.push(what_nothing);
 	} else {
 	    what.push(what_id);
+	    what.push(what_commaid);
 	    what.push(what_entry_id);	    
 	    what.push(what_link);
 	    what.push(what_wiki_text);	    
@@ -523,6 +526,8 @@ WikiEditor.prototype = {
 		text = "{{tabletree entry=" + entryId+" }}";
 	    } else  if(what==what_id) {
 		text = entryId;
+	    } else  if(what==what_commaid) {
+		text = ','+entryId;
 	    } else  if(what==what_entry_id) {
 		text = " entry=" +entryId+" ";		
 	    } else  if(what==what_gallery) {
