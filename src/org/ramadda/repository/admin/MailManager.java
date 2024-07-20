@@ -93,6 +93,7 @@ public class MailManager extends RepositoryManager {
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HU.row(HU.colspan(msgHeader("Email"), 2)));
+	HU.formEntry(sb,msg("For sending password reset messages, etc. Define the SMTP user and password in a RAMADDA .properties file on your server:")+HU.pre("ramadda.admin.smtp.user=\nramadda.admin.smtp.password="));
         sb.append(
             HU.formEntry(
                 msgLabel("Administrator Email"),
@@ -100,13 +101,24 @@ public class MailManager extends RepositoryManager {
                     PROP_ADMIN_EMAIL,
                     formPropValue(request, PROP_ADMIN_EMAIL, ""),
                     HU.SIZE_40)));
-	HU.formEntry(sb,msg("For sending password reset messages")+HU.pre("Define the user and password in a .properties file:\nramadda.admin.smtp.user=\nramadda.admin.smtp.password="));
         sb.append(
             HU.formEntry(
                 msgLabel("Mail Server"), HU.input(
                     PROP_ADMIN_SMTP,
-		    formPropValue(request, PROP_ADMIN_SMTP, ""), HU.SIZE_40)));
+		    formPropValue(request, PROP_ADMIN_SMTP, ""), HU.SIZE_40+HU.attr("placeholder","smtp.example.com")
+)));
 
+	HU.formEntry(sb,msgLabel("Test Message"),
+		     HU.b("To: ")+
+		     HU.input("mailtest_to",request.getString("mailtest_to","")) +
+		     HU.space(1) +
+		     HU.b("Subject: ")+
+		     HU.input("mailtest_subject",
+			      request.getString("mailtest_subject","This is a test")) +
+		     HU.space(1) +
+		     HU.b("Message: ")+
+		     HU.input("mailtest_message",
+			      request.getString("mailtest_message","Test message")));
     }
 
     /**
@@ -120,6 +132,34 @@ public class MailManager extends RepositoryManager {
     public void applyAdminSettings(Request request) throws Exception {
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
+	if(!isEmailEnabled()) {
+	    getSessionManager().addSessionErrorMessage(request,"Email is not enabled");
+	    return;
+	}
+
+        String smtpUser = getSmtpUser();
+        String smtpPassword = getSmtpPassword();
+	if(!stringDefined(smtpUser)) {
+	    getSessionManager().addSessionErrorMessage(request,"No ramadda.admin.smtp.user property defined")
+	}
+	if(!stringDefined(smtpPassword)) {
+	    getSessionManager().addSessionErrorMessage(request,"No ramadda.admin.smtp.password property defined")
+	}	
+
+
+
+	if(request.defined("mailtest_to")) {
+	    String to = request.getString("mailtest_to","").trim();
+	    String subject = request.getString("mailtest_subject","");
+	    String msg = request.getString("mailtest_message","");	    	    
+	    try {
+		sendEmail(to, subject, msg,false);
+		getSessionManager().addSessionErrorMessage(request,"Test email sent");
+	    } catch(Exception exc) {
+		getSessionManager().addSessionErrorMessage(request,"Error sending test email: " + exc.getMessage());
+	    }
+	}
+
     }
 
 
@@ -131,6 +171,16 @@ public class MailManager extends RepositoryManager {
     public String getSmtpServer() {
         return getPropertyFromTree(PROP_ADMIN_SMTP, "");
     }
+
+    public String getSmtpUser() {
+        return getPropertyFromTree(PROP_SMTP_USER, (String) null);
+    }
+
+    public String getSmtpPassword() {
+        return  getPropertyFromTree(PROP_SMTP_PASSWORD,
+				    (String) null);
+    }
+
 
     /**
      * _more_
@@ -272,9 +322,8 @@ public class MailManager extends RepositoryManager {
 
 
         String smtpServer = getSmtpServer();
-        String smtpUser = getPropertyFromTree(PROP_SMTP_USER, (String) null);
-        String smtpPassword = getPropertyFromTree(PROP_SMTP_PASSWORD,
-                                  (String) null);
+        String smtpUser = getSmtpUser();
+        String smtpPassword = getSmtpPassword();
         boolean startTls = getPropertyFromTree(PROP_SMTP_STARTTLS,
                                "false").equals("true");
 
