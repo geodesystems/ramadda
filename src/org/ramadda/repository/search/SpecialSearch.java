@@ -575,12 +575,19 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	if(newWay) {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("{{display_entrylist ");
+
+	    for(String line:Utils.split(typeHandler.getTypeProperty("search.form.args",""),"\n",true,true)) {
+		sb.append(line);
+		sb.append("\n");
+	    }	    
+
 	    addAttr(sb, "searchDirect","false");
 	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
 	    if(stringDefined(providers)) {
 		addAttr(sb, "providers",providers);
 		addAttr(sb, "showProviders","true");
 	    }
+
 
 	    for(String prop:new String[]{"tooltip",
 					 "formHeight",
@@ -607,11 +614,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		    addAttr(sb, prop,v);
 	    }
 
-	    addAttr(sb, "showAncestor",
-		    Utils.getProperty(props,"showAncestor",""+showAncestor));
 	    addAttr(sb,"entryTypes",typeHandler.getType());
+	    addAttr(sb, "showAncestor",  Utils.getProperty(props,"showAncestor",""+showAncestor));
 	    addAttr(sb, "displayTypes",Utils.join(tabs,","));
-	    addAttr(sb,"orderByTypes",Utils.getProperty(props,"orderByTypes",orderByTypes));
+	    addAttr(sb, "orderByTypes",Utils.getProperty(props,"orderByTypes",orderByTypes));
 	    addAttr(sb, "showDate",Utils.getProperty(props,"showDate",showDate));
 	    addAttr(sb, "showArea",Utils.getProperty(props,"showArea",showArea));
 	    addAttr(sb, "showText",Utils.getProperty(props,"showText",showText));
@@ -620,20 +626,20 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    addAttr(sb, "showCreateDate",Utils.getProperty(props,"showCreateDate",
 							  typeHandler.getTypeProperty("search.form.createdate.show",null)));	    	    	    
 
-	    addAttr(sb,"startDateLabel",Utils.getProperty(props,"startDateLabel",
-							 typeHandler.getTypeProperty("search.form.startdate.label",
-										     typeHandler.getTypeProperty("form.startdate.label",null))));
+	    TypeHandler t = typeHandler;
+	    addAttr(sb,"startDateLabel",
+		    Utils.getProperty(props,"startDateLabel",
+				      t.getTypeProperty("search.form.startdate.label",
+							t.getTypeProperty("form.startdate.label",
+									  t.getTypeProperty("form.date.label",null)))));
+
 	    addAttr(sb,"createDateLabel",Utils.getProperty(props,"createDateLabel",
-							   typeHandler.getTypeProperty("search.form.createdate.label",null)));
+							   t.getTypeProperty("search.form.createdate.label",null)));
 	    addAttr(sb,"areaLabel",Utils.getProperty(props,"areaLabel",
-						     typeHandler.getTypeProperty("search.form.area.label",null)));
+						     t.getTypeProperty("search.form.area.label",null)));
 	    addAttr(sb,"orderByTypes",Utils.getProperty(props,"orderByTypes",
-							typeHandler.getTypeProperty("search.form.orderby",null)));
+							t.getTypeProperty("search.form.orderby",null)));
 	    	    	    
-	    for(String line:Utils.split(typeHandler.getTypeProperty("search.form.args",""),"\n",true,true)) {
-		sb.append(line);
-		sb.append("\n");
-	    }
 
 	    if(metadataTypes.size()>0) {
 		StringBuilder types=new StringBuilder();

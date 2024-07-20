@@ -161,10 +161,7 @@
 <wikimacro name="missing_flyer" label="Missing Person Flyer">
 <![CDATA[{{missing_flyer #entry="${entry}"}}]]></wikimacro>
 
-
 <property name="bubble"><![CDATA[{{missing_header includeImage=true}}]]></property>
-
-
 
 <wiki><![CDATA[
 +section

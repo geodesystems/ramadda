@@ -284,10 +284,12 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
     <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
     <column name="item_type"
+	    enumeration_show_checkboxes="true"
 	    type="enumerationplus"  label="Item Type"
 	    cansearch="true" values="Book,CD,DVD,Government Document,Kit,Microfiche,Periodicals,Video"/>
 
     <column name="physical_characteristic"
+	    enumeration_show_checkboxes="true"
 	    type="enumerationplus"  label="Physical Characteristic"
 	    cansearch="true" values="New,Like New,Good,Fair,Damaged"/>
 
@@ -299,6 +301,14 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="lccn" type="string"  label="LCCN" columns="30"/>    
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
     
+    <property name="search.form.orderby" value="name,date,createdate"/>
+    <property name="search.form.args"><![CDATA[
+    tooltip="${display_html}"
+    showAncestor=false
+    orderByLabel_date_descending="Pub. Date - most recent"
+    orderByLabel_date_ascending="Pub. Date - least recent"
+    ]]></property>
+
 
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <wiki><![CDATA[
