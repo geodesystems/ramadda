@@ -480,9 +480,11 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         StringBuffer buttons = new StringBuffer();
         buttons.append(HU.submit("Save", ARG_MONITOR_CHANGE));
-        buttons.append(HU.space(1));
+        buttons.append(HU.space(2));
         buttons.append(HU.submit("Delete", ARG_MONITOR_DELETE));
+	monitor.addButtons(request,buttons);
         sb.append(buttons);
+
         sb.append(HU.br());
         monitor.addToEditForm(request, sb);
         sb.append(buttons);
@@ -667,15 +669,16 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                  HU.attrs(HU.ATTR_CELLPADDING,
                                      "4", HU.ATTR_CELLSPACING, "0")));
         if (monitors.size() > 0) {
-            sb.append(HU.row(HU.cols("", boldMsg("Monitor"),
-						   boldMsg("Search Criteria"),
-						   boldMsg("Action"))));
+            sb.append(HU.row(HU.cols("",
+				     boldMsg("Monitor"),
+				     boldMsg("Action"),
+				     boldMsg("Search Criteria"))));
         }
         for (EntryMonitor monitor : monitors) {
             sb.append(HU.open(HU.TAG_TR,
                                      HU.attr(HU.ATTR_VALIGN,
-                                         "top") + ( !monitor.isActive()
-						    ? HU.attrs(HU.ATTR_BGCOLOR, "#efefef","style","border-bottom:1px solid #ccc;")
+					     "top") + ( !monitor.isActive()
+							? HU.attrs(HU.ATTR_BGCOLOR, "#efefef","style","border-bottom:1px solid #ccc;")
                     : 						    HU.attrs("style","border-bottom:1px solid #ccc;"))));
             sb.append(HU.open(HU.TAG_TD,
                                      HU.cssClass("ramadda-td")));
@@ -688,19 +691,12 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 							     request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
 							     ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
 							     monitor.getId()),  "Delete",HU.title("Delete monitor"))));
-            if ( !monitor.isActive()) {
-                sb.append(HU.space(1));
-                sb.append(msg("not active"));
-            }
+	    sb.append(HU.space(1));
+	    sb.append(monitor.isActive()?"active":"inactive");
             sb.append(HU.close(HU.TAG_TD));
-            sb.append(HU.col(monitor.getName(),
-                                    HU.cssClass("ramadda-td")));
-	    //            sb.append(HU.col(monitor.getUser().getLabel(),
-	    //                                    HU.cssClass("ramadda-td")));
-            sb.append(HU.col(monitor.getSearchSummary(),
-                                    HU.cssClass("ramadda-td")));
-            sb.append(HU.col(monitor.getActionSummary(),
-                                    HU.cssClass("ramadda-td")));
+            sb.append(HU.col(monitor.getName(), HU.cssClass("ramadda-td")));
+            sb.append(HU.col(monitor.getActionSummary(), HU.cssClass("ramadda-td")));
+            sb.append(HU.col(monitor.getSearchSummary(), HU.cssClass("ramadda-td")));
             sb.append(HU.close(HU.TAG_TR));
 
             if (stringDefined(monitor.getLastError())) {

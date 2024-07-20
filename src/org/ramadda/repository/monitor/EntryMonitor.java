@@ -269,6 +269,25 @@ public class EntryMonitor implements Constants {
     }
     
 
+
+    public void addButtons(Request request, Appendable sb) throws Exception {
+	MonitorAction action = getAction();
+	if(action!=null) {
+	    action.addButtons(request,sb);
+	}
+    }
+
+    public void addErrorMessage(Request request, Appendable sb) throws Exception {
+        if (Utils.stringDefined(getLastError())) {
+            StringBuffer errorSB = new StringBuffer();
+            sb.append(HU.labeledCheckbox(ARG_CLEARERROR, "true", true,
+						    "Clear error"));
+	    sb.append("<br>");
+            sb.append(getRepository().getPageHandler().showDialogError(getLastError()));
+	}
+    }
+
+
     public void addToEditForm(Request request, Appendable sb)
             throws Exception {
 	MonitorAction theAction = actions.size()>0?actions.get(0):null;
@@ -323,18 +342,8 @@ public class EntryMonitor implements Constants {
         sb.append(HU.makeShowHideBlock("Settings", stateSB.toString(),
                 true));
 
-        if ((getLastError() != null) && (getLastError().length() > 0)) {
-            StringBuffer errorSB = new StringBuffer();
-            errorSB.append(HU.labeledCheckbox(ARG_CLEARERROR, "true", true,
-						    "Clear error"));
-            errorSB.append(getRepository().getPageHandler().showDialogError(getLastError()));
-            sb.append(
-                HU.makeShowHideBlock(
-                    HU.span(
-                        getRepository().msg("Error"),
-                        HU.cssClass(
-                            "errorlabel")), errorSB.toString(), true));
-        }
+	addErrorMessage(request, sb);
+
 
 
 	if(doSearch) {

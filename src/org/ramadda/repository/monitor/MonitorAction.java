@@ -136,6 +136,10 @@ public abstract class MonitorAction implements Constants, Cloneable {
         return prefix + "_" + id;
     }
 
+    public void addButtons(Request request, Appendable sb) throws Exception {
+    }
+
+
     /**
      * _more_
      *

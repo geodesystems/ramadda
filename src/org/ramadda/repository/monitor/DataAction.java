@@ -6,6 +6,7 @@
 package org.ramadda.repository.monitor;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointEntry;
@@ -39,7 +40,7 @@ public class DataAction extends MonitorAction {
     private String emailTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";
     private String smsTemplate="";
 
-   private double windowHours = 6;
+    private double windowHours = 6;
     private LinkedHashMap<String,Long> lastMessageSent = new LinkedHashMap<String,Long>();
     
 
@@ -337,6 +338,14 @@ public class DataAction extends MonitorAction {
     }
 
 
+    @Override
+    public void addButtons(Request request, Appendable sb) throws Exception {
+	String cbx = 
+	    HU.labeledCheckbox(getArgId("test"),"true",false,"Test Data Monitor");		
+	sb.append(HU.space(3));
+	sb.append(cbx);
+
+    }
 
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
@@ -344,9 +353,18 @@ public class DataAction extends MonitorAction {
 
         sb.append(HU.div("Data Monitor Information",HU.cssClass("formgroupheader")));
 
-	String cbx = 
-	    HU.labeledCheckbox(getArgId("test"),"true",false,"Test") + " - " + "This runs the monitor including sending messages";		
-	sb.append(HU.div(cbx,"style='margin-top:5px;'"));
+        String helpLink =
+            HU.href(monitor.getRepository().getUrlBase()
+                           + "/userguide/datamonitor.html", "Help",
+		    HU.attrs("class","ramadda-button", HU.ATTR_TARGET, "_help"));
+
+
+
+	String top="";
+	top+=helpLink;
+	top+=HU.space(2);
+	//	top+=cbx;
+	sb.append(HU.div(top,"style='margin-top:5px;'"));
 
         sb.append(HU.formTable());
 	StringBuilder entriesInfo = new StringBuilder();
@@ -389,16 +407,25 @@ public class DataAction extends MonitorAction {
 
 
         sb.append(HU.colspan(HU.div("Select entries to monitor",HU.cssClass("ramadda-form-help")),3));
+	String textAreaId = HU.getUniqueId("input_");
+	HU.importJS(sb, monitor.getRepository().getPageHandler().getCdnPath("/wiki.js"));
+	String buttons = OutputHandler.getSelect(request, textAreaId,
+						 HU.span("Add entry id",HU.cssClass("ramadda-button")), true, "entryid", null,
+						 false,false);
+
+
         sb.append(
 		  HU.formEntryTop(
 				  "Entry IDs:",
-				  HU.textArea(getArgId(ARG_ENTRYIDS), entryIds, 5, 60), entriesInfo.toString()));
+				  buttons+"<br>"+
+				  HU.textArea(getArgId(ARG_ENTRYIDS), entryIds, 5, 60,HU.attrs("id",textAreaId)),
+				  entriesInfo.toString()));
 
 	List help = Utils.makeListFromValues("Javascript:","//log or print a message",HU.italics("action.logMessage('message');"),
 				   HU.italics("action.print(record.getFields())"),
 				   "//Access the field value",
 				   HU.italics("record.getValue('field_name')"),
-				   "//access hours betwee the current time and the time of the record",
+				   "//access hours between the current time and the time of the record",
 				   HU.italics("action.getHoursSince(record.getDate())"),
 				   "//send email and sms if enabled",
 				   HU.italics("action.trigger(entry,'Some message');"),
