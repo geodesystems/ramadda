@@ -88,7 +88,7 @@ if(!window.WikiUtil) {
 	    });
 	},
 
-	insertText:function(id, value) {
+	insertText:function(id, value,newLine) {
 	    HtmlUtils.hidePopupObject();
 	    let popup = HtmlUtils.getTooltip();
 	    if(popup)
@@ -105,13 +105,13 @@ if(!window.WikiUtil) {
 	    }
 	    let textComp = GuiUtils.getDomObject(id);
 	    if (textComp) {
-		WikiUtil.insertAtCursor(id, textComp.obj, value);
+		WikiUtil.insertAtCursor(id, textComp.obj, value,newLine);
 	    }
 	},
 
 
 
-	insertAtCursor:function(id, myField, value) {
+	insertAtCursor:function(id, myField, value,newLine) {
 	    let editor = WikiUtil.getWikiEditor(id);
 	    if(value.entryId && editor) {
 		editor.handleEntryLink(value.entryId, value.name,null,false,value);
@@ -125,7 +125,7 @@ if(!window.WikiUtil) {
 		return;
 	    }
 
-	    HtmlUtils.insertIntoTextarea(myField,value);
+	    HtmlUtils.insertIntoTextarea(myField,value,newLine);
 	},
 
 

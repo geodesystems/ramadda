@@ -3767,23 +3767,22 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	img.width/=2
 	$(img).css("display","inline-block").css("max-width","90vw");
     },
-    insertIntoTextarea:function(myField, value) {
+    insertIntoTextarea:function(myField, value,newLine) {
 	if(typeof myField=='string') {
 	    myField =  document.getElementById(myField);
 	}
 
-
 	value = Utils.decodeText(value);    
-	var textScroll = myField.scrollTop;
+	if(newLine) value='\n'+value;
+	let textScroll = myField.scrollTop;
 
 	//IE support
 	if (document.selection) {
             myField.focus();
             sel = document.selection.createRange();
             sel.text = value;
-	}
-	//MOZILLA/NETSCAPE support
-	else if (myField.selectionStart || myField.selectionStart == '0') {
+	} else if (myField.selectionStart || myField.selectionStart == '0') {
+	    //MOZILLA/NETSCAPE support
             var startPos = myField.selectionStart;
             var endPos = myField.selectionEnd;
             myField.value = myField.value.substring(0, startPos) +
@@ -3794,6 +3793,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	} else {
             myField.value += value;
 	}
+	if(newLine && myField.value) {
+	    myField.value = myField.value.trim();
+	}
+
+
 	myField.scrollTop = textScroll;
     },
 

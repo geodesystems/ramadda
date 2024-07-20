@@ -175,7 +175,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		if(selector.props && selector.props.callback) {
 		    selector.props.callback(entryId,opts);
 		} else {
-		    WikiUtil.insertText(selector.elementId,entryId);
+		    WikiUtil.insertText(selector.elementId,entryId,true);
 		}
 	    }
 	} else if (selector.selecttype == "entry:entryid") {
