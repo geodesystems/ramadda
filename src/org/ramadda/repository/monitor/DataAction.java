@@ -23,6 +23,7 @@ import ucar.unidata.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -35,10 +36,19 @@ public class DataAction extends MonitorAction {
 
     private  String script="";
     private String entryIds="";
+
+    private String execPath="";
+    private String execTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";    
+
+
     private String emails="";
     private String phoneNumbers="";    
     private String emailTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";
     private String smsTemplate="";
+
+
+
+
 
     private double windowHours = 6;
     private LinkedHashMap<String,Long> lastMessageSent = new LinkedHashMap<String,Long>();
@@ -226,18 +236,23 @@ public class DataAction extends MonitorAction {
 									       msg);
 	}
     }
-    public void trigger(Entry entry,String message,boolean...what)  throws Throwable {
+    public void trigger(Entry entry,String message,Object...what)  throws Throwable {
 	if(!testMode && !canTrigger(entry)) {
 	    return;
 	}
+	HashSet call = Utils.makeHashSet(what);
 	testModeMessage("Data monitor triggered for:" + entry.getName());
 
-
 	int sent = 0;
-	if(what.length==0 || what[0]) {
+
+
+	if(what.length==0 || call.contains("program")) {
+	    sent+=triggerExec(entry,message);
+	}
+	if(what.length==0 || call.contains("email")) {
 	    sent+=triggerEmail(entry,message);
 	}
-	if(what.length==0 || (what.length>1&&what[2])) {
+	if(what.length==0 || call.contains("sms")) {
 	    sent +=triggerSms(entry,message);
 	}
 	if(sent>0) {
@@ -251,6 +266,34 @@ public class DataAction extends MonitorAction {
     }
 
 
+    public int triggerExec(Entry entry,String message) throws Throwable {
+	Repository repository = monitor.getRepository();
+	if(!Utils.stringDefined(execPath)) {
+	    return 0;
+	}
+	repository.addScriptPath(execPath);
+	List<String>commands = new ArrayList<String>();
+	commands.add(execPath);
+	commands.add(entry.getId());	    
+	Request request = repository.getAdminRequest();
+	commands.add(HU.url(repository.getEntryManager().getFullEntryShowUrl(request),ARG_ENTRYID,entry.getId()));
+	commands.add(applyTemplate(execTemplate,entry,message));
+	String[]results = repository.runCommands(commands);
+	if(Utils.stringDefined(results[0])) {
+	    logMessage(monitor +" error calling program:" + execPath + " with entry:" + entry.getName() +"<br>Error:" + results[0]);
+	    throw new RuntimeException("Error calling program:" + execPath + " with entry:" + entry.getName() +"<br>Error:" + results[0]);
+	}
+	testModeMessage("Program called:"+ execPath + " on entry:" + entry.getName());
+	logMessage("Program called:"+ execPath + " on entry:" + entry.getName());
+	if(Utils.stringDefined(results[1])) {
+	    testModeMessage("Program returned:" + results[1]);
+	}
+	return 1;
+    }
+
+
+
+
     public String applyTemplate(String template, Entry entry,String message)  {
 	template = template.replace("${message}",message).replace("${entryname}",entry.getName()).replace("${entryid}",entry.getId());
 	Request request = monitor.getRepository().getAdminRequest();
@@ -261,6 +304,9 @@ public class DataAction extends MonitorAction {
 
 
     public int triggerEmail(Entry entry,String message)  throws Throwable {
+	if(!Utils.stringDefined(emails)) {
+	    return 0;
+	}
 	if(!monitor.getRepository().getMailManager().isEmailEnabled())  {
 	    testModeMessage("Email not enabled");
 	    logMessage(monitor +" unable to send email for entry:" + entry +" message:" + message);
@@ -280,6 +326,9 @@ public class DataAction extends MonitorAction {
 
 
     public int triggerSms(Entry entry,String message)  throws Throwable {
+	if(!Utils.stringDefined(phoneNumbers)) {
+	    return 0;
+	}
 	if(!monitor.getRepository().getMailManager().isSmsEnabled())  {
 	    testModeMessage("SMS not enabled");
 	    logMessage(monitor +" unable to send SMS for entry:" + entry +" message:" + message);
@@ -316,6 +365,8 @@ public class DataAction extends MonitorAction {
 	emailTemplate = request.getString(getArgId("emailtemplate"),emailTemplate);
 	smsTemplate = request.getString(getArgId("smstemplate"),smsTemplate);		
 	windowHours = request.get(getArgId("windowhours"),windowHours);
+	execPath = request.getString(getArgId("execpath"),execPath);
+	execTemplate = request.getString(getArgId("exectemplate"),execTemplate);			
 	if(request.get(getArgId("clearhistory"),false)) {
 	    lastMessageSent = new LinkedHashMap<String,Long>();	
 	}
@@ -324,7 +375,6 @@ public class DataAction extends MonitorAction {
 	    try {
 		checkLiveAction(request, monitor,true);
 	    } catch(Throwable thr) {
-	
 		thr = LogUtil.getInnerException(thr);
 		System.err.println("ERROR: "  +thr);
 		monitor.getRepository().getSessionManager().addSessionErrorMessage(request,
@@ -422,16 +472,18 @@ public class DataAction extends MonitorAction {
 				  entriesInfo.toString()));
 
 	List help = Utils.makeListFromValues("Javascript:","//log or print a message",HU.italics("action.logMessage('message');"),
-				   HU.italics("action.print(record.getFields())"),
-				   "//Access the field value",
-				   HU.italics("record.getValue('field_name')"),
-				   "//access hours between the current time and the time of the record",
-				   HU.italics("action.getHoursSince(record.getDate())"),
-				   "//send email and sms if enabled",
-				   HU.italics("action.trigger(entry,'Some message');"),
-				   "//send email but not sms",
-				   HU.italics("action.triggger(entry,'Some message',true,false);"),
-				   "e.g.:<pre>if(record.getValue('atmos_temp')>300) {\n\taction.trigger(entry,'Test trigger');\n}\n");
+					     HU.italics("action.print(record.getFields())"),
+					     "//Access the field value",
+					     HU.italics("record.getValue('field_name')"),
+					     "//access hours between the current time and the time of the record",
+					     HU.italics("action.getHoursSince(record.getDate())"),
+					     "//trigger program, email or sms if enabled",
+					     HU.italics("action.trigger(entry,'Some message');"),
+					     "//just send email or sms",
+					     HU.italics("action.triggger(entry,'Some message','email','sms');"),
+					     "//just call program",
+					     HU.italics("action.triggger(entry,'Some message','programl');"),
+					     "e.g.:<pre>if(record.getValue('atmos_temp')>300) {\n\taction.trigger(entry,'Test trigger');\n}\n");
 	String jsInfo = Utils.join(help,"<br>");
         sb.append(HU.colspan(HU.div("Specify Javascript to check data",HU.cssClass("ramadda-form-help")),3));
         sb.append(
@@ -446,6 +498,17 @@ public class DataAction extends MonitorAction {
 
 
 	Repository repository= monitor.getRepository();
+
+	sb.append(HU.colspan(HU.div("Path to program to execute. Will be called with arguments:<pre><i>program</i> &lt;entry id&gt; &lt;url to entry&gt; &lt;message&gt;",HU.cssClass("ramadda-form-help")),3));	
+	sb.append(HU.formEntry("Program:",    HU.input(getArgId("execpath"), execPath, HU.SIZE_60)));
+	sb.append(HU.formEntryTop(
+				  "Message:",
+				  HU.textArea(
+						  getArgId("exectemplate"), execTemplate, 5,
+						  60)));
+
+
+
 	if(repository.getMailManager().isEmailEnabled())  {
 	    sb.append(HU.colspan(HU.div("Enter emails to send",HU.cssClass("ramadda-form-help")),3));
 	    sb.append(HU.formEntryTop(
@@ -653,6 +716,43 @@ public class DataAction extends MonitorAction {
     public double getWindowHours () {
 	return windowHours;
     }
+
+/**
+Set the ExecPath property.
+
+@param value The new value for ExecPath
+**/
+public void setExecPath (String value) {
+	execPath = value;
+}
+
+/**
+Get the ExecPath property.
+
+@return The ExecPath
+**/
+public String getExecPath () {
+	return execPath;
+}
+
+/**
+Set the ExecTemplate property.
+
+@param value The new value for ExecTemplate
+**/
+public void setExecTemplate (String value) {
+	execTemplate = value;
+}
+
+/**
+Get the ExecTemplate property.
+
+@return The ExecTemplate
+**/
+public String getExecTemplate () {
+	return execTemplate;
+}
+
 
 
 
