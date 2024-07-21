@@ -6,13 +6,14 @@
 
 The Data Action Monitor is a special type of <a href=monitor.html>monitor</a>
 that allows you to monitor the latest values in a point data file and either
+execute an external program, 
 send an email message or a text message when the value meets a certain criteria.
 This is useful for monitoring uptime or data values of real-time instruments.
 :p
 A Data Monitor contains one or more entry IDs and a criteria (in Javascript) for determining
-whether a message is sent. The message can be email or text message depending on your site
-configuration. Once a message a sent no other messages are sent until a message delay has been
-reached. This prevents too many messages from being sent.
+whether the action is triggered. Once an action is triggered
+no other actions will be triggered until a  delay has been
+reached. This prevents too many actions from being triggered.
 
 
 :heading Creating a Data Monitor
@@ -56,6 +57,16 @@ shown at the top of the result page.
 <pre>
   action.print(record.getFields())
 </pre>
+
+:heading Executing external program
+You can specify a path to an external program or script. This script is called with the
+arguments:
+<pre>
+<i>program</i> &lt;entry id&gt; &lt;url to entry&gt; &lt;message&gt;
+</pre>
+
+[ht::screenshot images/dataaction_exec.png]
+
 
 :heading Sending Email Messages
 To send an email message your RAMADDA has to be configured with an SMTP server through the
