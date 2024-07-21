@@ -376,7 +376,7 @@ public class DataAction extends MonitorAction {
 		checkLiveAction(request, monitor,true);
 	    } catch(Throwable thr) {
 		thr = LogUtil.getInnerException(thr);
-		System.err.println("ERROR: "  +thr);
+		monitor.setLastError("Error running test: " + thr);
 		monitor.getRepository().getSessionManager().addSessionErrorMessage(request,
 										   "Error running test: " + thr);
 		
@@ -389,7 +389,16 @@ public class DataAction extends MonitorAction {
 
 
     @Override
-    public void addButtons(Request request, Appendable sb) throws Exception {
+    public void addStatusLine(Request request, EntryMonitor monitor,Appendable sb) throws Exception {
+	StringBuilder info = new StringBuilder();
+	addEntryInfo(request,  monitor,info);
+	if(info.length()>0) {
+	    sb.append(HU.row(HU.colspan(HU.insetDiv(info.toString(), 0,40,0,0),8)));
+	}
+    }
+
+    @Override
+    public void addButtons(Request request, EntryMonitor monitor,Appendable sb) throws Exception {
 	String cbx = 
 	    HU.labeledCheckbox(getArgId("test"),"true",false,"Test Data Monitor");		
 	sb.append(HU.space(3));
@@ -421,36 +430,7 @@ public class DataAction extends MonitorAction {
 	String clearCbx = HU.labeledCheckbox(getArgId("clearhistory"),"true",false,"Clear History");
 	entriesInfo.append(clearCbx);
 	entriesInfo.append("<br>One entry ID per line<br>");
-	EntryManager em = monitor.getRepository().getEntryManager();
-	List<Entry> entries = new ArrayList<Entry>();
-	for(String id:Utils.split(entryIds,"\n",true,true)) {
-	    if(id.startsWith("#")) continue;
-	    
-	    Entry entry = em.getEntry(request, id);
-	    if(entry==null) {
-		entriesInfo.append(HU.b("No entry: " + id+"<br>"));
-	    } else {
-		if(!(entry.getTypeHandler() instanceof RecordTypeHandler)) {
-		    entriesInfo.append(HU.b("Entry: " + entry.getName()+" is not a point data type<br>"));
-		} else {
-		    String line = "Entry: " + entry.getName();
-		    line = HU.href(em.getEntryUrl(request,entry),line,HU.attrs("target","entry"));
-
-		    Long l = lastMessageSent.get(entry.getId());
-		    if(l!=null) {
-			Date date = new Date(l);
-			line +="<br>Last trigger:" + date; 
-			Date nextRun = new Date(date.getTime()+Utils.hoursToMillis(windowHours));
-			line +="<br>Next trigger:" + nextRun;
-		    }
-		    entriesInfo.append(line+"<br>");
-
-
-		}
-		
-	    }
-	}
-
+	addEntryInfo(request,monitor,entriesInfo);
 	sb.append(HU.colspan(HU.div("Enter delay between message sends",HU.cssClass("ramadda-form-help")),3));
 	sb.append(HU.formEntry("Message Delay:",HU.input(getArgId("windowhours"),""+windowHours,
 							 " size=\"10\" ")+" hours. Enter 0 to only send 1 message until this action is cleared"));
@@ -553,6 +533,33 @@ public class DataAction extends MonitorAction {
         sb.append(HU.formTableClose());
     }
 
+
+    private void addEntryInfo(Request request, EntryMonitor monitor,StringBuilder entriesInfo) throws Exception {
+	EntryManager em = monitor.getRepository().getEntryManager();
+	for(String id:Utils.split(entryIds,"\n",true,true)) {
+	    if(id.startsWith("#")) continue;
+	    Entry entry = em.getEntry(request, id);
+	    if(entry==null) {
+		entriesInfo.append(HU.b("No entry: " + id+"<br>"));
+	    } else {
+		if(!(entry.getTypeHandler() instanceof RecordTypeHandler)) {
+		    entriesInfo.append(HU.b("Entry: " + entry.getName()+" is not a point data type<br>"));
+		} else {
+		    String line = "Entry: " + entry.getName();
+		    line = HU.href(em.getEntryUrl(request,entry),line,HU.attrs("target","entry"));
+		    Long l = lastMessageSent.get(entry.getId());
+		    if(l!=null) {
+			Date date = new Date(l);
+			line +="<br>Last trigger:" + date; 
+			Date nextRun = new Date(date.getTime()+Utils.hoursToMillis(windowHours));
+			line +="<br>Next trigger:" + nextRun;
+		    }
+		    entriesInfo.append(line+"<br>");
+		}
+		
+	    }
+	}
+    }
 
     /**
      * _more_

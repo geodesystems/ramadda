@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2024 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.monitor;
@@ -49,6 +49,8 @@ public class EntryMonitor implements Constants {
 
     /** _more_ */
     private String lastError;
+
+    private String currentStatus;    
 
     /** _more_ */
     private String id;
@@ -270,10 +272,18 @@ public class EntryMonitor implements Constants {
     
 
 
+
+    public void addStatusLine(Request request, Appendable sb) throws Exception {
+	MonitorAction action = getAction();
+	if(action!=null) {
+	    action.addStatusLine(request,this,sb);
+	}
+    }
+
     public void addButtons(Request request, Appendable sb) throws Exception {
 	MonitorAction action = getAction();
 	if(action!=null) {
-	    action.addButtons(request,sb);
+	    action.addButtons(request,this,sb);
 	}
     }
 
@@ -281,7 +291,7 @@ public class EntryMonitor implements Constants {
         if (Utils.stringDefined(getLastError())) {
             StringBuffer errorSB = new StringBuffer();
             sb.append(HU.labeledCheckbox(ARG_CLEARERROR, "true", true,
-						    "Clear error"));
+					 "Clear error"));
 	    sb.append("<br>");
             sb.append(getRepository().getPageHandler().showDialogError(getLastError()));
 	}
@@ -289,7 +299,7 @@ public class EntryMonitor implements Constants {
 
 
     public void addToEditForm(Request request, Appendable sb)
-            throws Exception {
+	throws Exception {
 	MonitorAction theAction = actions.size()>0?actions.get(0):null;
 
 
@@ -297,36 +307,36 @@ public class EntryMonitor implements Constants {
 
         stateSB.append(HU.formTable());
         stateSB.append(
-            HU.formEntry(
-                getRepository().msgLabel("Name"),
-                HU.input(
-                    MonitorManager.ARG_MONITOR_NAME, getName(),
-                    HU.SIZE_70)));
+		       HU.formEntry(
+				    getRepository().msgLabel("Name"),
+				    HU.input(
+					     MonitorManager.ARG_MONITOR_NAME, getName(),
+					     HU.SIZE_70)));
 	HU.formEntry(stateSB,
-			    "",
-			    HU.labeledCheckbox(
-						      MonitorManager.ARG_MONITOR_ENABLED, "true",
-						      getEnabled(),"Enabled"));
+		     "",
+		     HU.labeledCheckbox(
+					MonitorManager.ARG_MONITOR_ENABLED, "true",
+					getEnabled(),"Enabled"));
 
 	boolean doSearch = theAction== null || theAction.doSearch();
 	if(doSearch) {
 	    HU.formEntry(stateSB,"",
-				HU.labeledCheckbox(
-							  MonitorManager.ARG_MONITOR_ONLYNEW, "true",
-							  getOnlyNew(),
-							  "Only check new entries"));
+			 HU.labeledCheckbox(
+					    MonitorManager.ARG_MONITOR_ONLYNEW, "true",
+					    getOnlyNew(),
+					    "Only check new entries"));
 	}
 
         stateSB.append(
-            HU.formEntry(
-                getRepository().msgLabel("Valid Date Range"),
-                getRepository().getDateHandler().makeDateInput(
-                    request, MonitorManager.ARG_MONITOR_FROMDATE,
-                    "monitorform", getFromDate()) + " "
-                        + getRepository().msg("To") + " "
-                        + getRepository().getDateHandler().makeDateInput(
-                            request, MonitorManager.ARG_MONITOR_TODATE,
-                            "monitorform", getToDate())));
+		       HU.formEntry(
+				    getRepository().msgLabel("Valid Date Range"),
+				    getRepository().getDateHandler().makeDateInput(
+										   request, MonitorManager.ARG_MONITOR_FROMDATE,
+										   "monitorform", getFromDate()) + " "
+				    + getRepository().msg("To") + " "
+				    + getRepository().getDateHandler().makeDateInput(
+										     request, MonitorManager.ARG_MONITOR_TODATE,
+										     "monitorform", getToDate())));
 
         stateSB.append(HU.formTableClose());
 
@@ -340,7 +350,7 @@ public class EntryMonitor implements Constants {
         }
 
         sb.append(HU.makeShowHideBlock("Settings", stateSB.toString(),
-                true));
+				       true));
 
 	addErrorMessage(request, sb);
 
@@ -348,9 +358,9 @@ public class EntryMonitor implements Constants {
 
 	if(doSearch) {
 	    sb.append(HU.makeShowHideBlock("Search Criteria",
-						  searchSB.toString(), false));
+					   searchSB.toString(), false));
 	    sb.append(HU.makeShowHideBlock("Actions",
-						  actionsSB.toString(), false));
+					   actionsSB.toString(), false));
 
 	} else {
 	    sb.append(actionsSB.toString());
@@ -383,7 +393,7 @@ public class EntryMonitor implements Constants {
      * @throws Exception _more_
      */
     public void addSearchToEditForm(Request request, StringBuffer sb)
-            throws Exception {
+	throws Exception {
         sb.append(HU.formTable());
         Hashtable<String, Filter> filterMap = new Hashtable<String, Filter>();
         for (Filter filter : filters) {
@@ -408,21 +418,21 @@ public class EntryMonitor implements Constants {
      * @throws Exception _more_
      */
     private void applyEditFilterField(Request request, String what)
-            throws Exception {
+	throws Exception {
         boolean doNot = request.get(what + "_not", false);
         if (what.equals(ARG_AREA)) {
             double[] bbox = new double[] {
-                                request.get(ARG_AREA + "_south",
-                                            Entry.NONGEO),
-                                request.get(ARG_AREA + "_north",
-                                            Entry.NONGEO),
-                                request.get(ARG_AREA + "_east", Entry.NONGEO),
-                                request.get(ARG_AREA + "_west",
-                                            Entry.NONGEO) };
+		request.get(ARG_AREA + "_south",
+			    Entry.NONGEO),
+		request.get(ARG_AREA + "_north",
+			    Entry.NONGEO),
+		request.get(ARG_AREA + "_east", Entry.NONGEO),
+		request.get(ARG_AREA + "_west",
+			    Entry.NONGEO) };
 
             if ((bbox[0] != Entry.NONGEO) || (bbox[1] != Entry.NONGEO)
-                    || (bbox[2] != Entry.NONGEO)
-                    || (bbox[3] != Entry.NONGEO)) {
+		|| (bbox[2] != Entry.NONGEO)
+		|| (bbox[3] != Entry.NONGEO)) {
                 addFilter(new Filter(what, bbox, doNot));
             }
 
@@ -433,7 +443,7 @@ public class EntryMonitor implements Constants {
 
         if (what.equals(ARG_ANCESTOR)) {
             String ancestorId = request.getString(ARG_ANCESTOR + "_hidden",
-                                    "");
+						  "");
             if (Utils.stringDefined(ancestorId)) {
                 addFilter(new Filter(what, ancestorId, doNot));
             }
@@ -447,7 +457,7 @@ public class EntryMonitor implements Constants {
         }
         if (what.equals(ARG_FILESUFFIX)) {
             List<String> suffixes = Utils.split(request.getString(what, ""),
-                                        ",", true, true);
+						",", true, true);
             addFilter(new Filter(what, suffixes, doNot));
         } else if (what.equals(ARG_TEXT)) {
             addFilter(new Filter(what, request.getString(what, "").trim(),
@@ -510,7 +520,7 @@ public class EntryMonitor implements Constants {
     private void addFilterField(String what,
                                 Hashtable<String, Filter> filterMap,
                                 StringBuffer sb)
-            throws Exception {
+	throws Exception {
         Filter  filter = filterMap.get(what);
         boolean doNot  = ((filter == null)
                           ? false
@@ -522,26 +532,26 @@ public class EntryMonitor implements Constants {
                                      ? (List) new ArrayList()
                                      : (List) filter.getValue());
             sb.append(
-                HU.formEntry(
-                    getRepository().msgLabel("File Suffix"),
-                    HU.input(
-                        what, StringUtil.join(",", suffixes),
-                        " size=\"60\" ") + notCbx));
+		      HU.formEntry(
+				   getRepository().msgLabel("File Suffix"),
+				   HU.input(
+					    what, StringUtil.join(",", suffixes),
+					    " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_TEXT)) {
             sb.append(HU.formEntry(getRepository().msgLabel("Text"),
-                                          HU.input(what,
-                                              ((filter == null)
-                    ? ""
-                    : filter.getValue()
-                        .toString()), " size=\"60\" ") + notCbx));
+				   HU.input(what,
+					    ((filter == null)
+					     ? ""
+					     : filter.getValue()
+					     .toString()), " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_USER)) {
             List<String> users = ((filter == null)
                                   ? (List) new ArrayList()
                                   : (List) filter.getValue());
             sb.append(HU.formEntry(getRepository().msgLabel("Users"),
-                                          HU.input(what,
-                                              StringUtil.join(",", users),
-                                                  " size=\"60\" ") + notCbx));
+				   HU.input(what,
+					    StringUtil.join(",", users),
+					    " size=\"60\" ") + notCbx));
         } else if (what.equals(ARG_ANCESTOR)) {
             String id = (String) ((filter == null)
                                   ? ""
@@ -549,32 +559,32 @@ public class EntryMonitor implements Constants {
             Entry group =
                 (Entry) getRepository().getEntryManager().getEntry(getRequest(), id);
             getRepository().getPageHandler().addEntrySelect(getRequest(),
-                    group, ARG_ANCESTOR, sb, "Ancestor Folder", " " + notCbx);
+							    group, ARG_ANCESTOR, sb, "Ancestor Folder", " " + notCbx);
         } else if (what.equals(ARG_AREA)) {
             double[] values = ((filter == null)
                                ? new double[] { Entry.NONGEO, Entry.NONGEO,
-                    Entry.NONGEO, Entry.NONGEO }
+						Entry.NONGEO, Entry.NONGEO }
                                : (double[]) filter.getValue());
             String latLonForm = HU.makeLatLonBox(ARG_AREA, ARG_AREA,
-                                    (values[0] != Entry.NONGEO)
-                                    ? values[0]
-                                    : Double.NaN, (values[1] != Entry.NONGEO)
-                    ? values[1]
-                    : Double.NaN, (values[2] != Entry.NONGEO)
-                                  ? values[2]
-                                  : Double.NaN, (values[3] != Entry.NONGEO)
-                    ? values[3]
-                    : Double.NaN);
+						 (values[0] != Entry.NONGEO)
+						 ? values[0]
+						 : Double.NaN, (values[1] != Entry.NONGEO)
+						 ? values[1]
+						 : Double.NaN, (values[2] != Entry.NONGEO)
+						 ? values[2]
+						 : Double.NaN, (values[3] != Entry.NONGEO)
+						 ? values[3]
+						 : Double.NaN);
 
             sb.append(HU.formEntry(getRepository().msgLabel("Area"),
-                                          latLonForm));
+				   latLonForm));
         } else if (what.equals(ARG_TYPE)) {
             List<TypeHandler> typeHandlers =
                 getRepository().getTypeHandlers();
             List         tmp   = new ArrayList();
             List<String> types = (List<String>) ((filter == null)
-                    ? new ArrayList()
-                    : filter.getValue());
+						 ? new ArrayList()
+						 : filter.getValue());
             for (TypeHandler typeHandler : typeHandlers) {
                 if (typeHandler.getType().equals(TYPE_ANY)) {
                     continue;
@@ -583,9 +593,9 @@ public class EntryMonitor implements Constants {
                                            typeHandler.getType()));
             }
             String typeSelect = HU.select(ARG_TYPE, tmp, types,
-                                    " MULTIPLE SIZE=4 ");
+					  " MULTIPLE SIZE=4 ");
             sb.append(HU.formEntry(getRepository().msgLabel("Type"),
-                                          typeSelect + notCbx));
+				   typeSelect + notCbx));
         }
     }
 
@@ -605,7 +615,7 @@ public class EntryMonitor implements Constants {
                 return group;
             }
             group = (Entry) getRepository().getEntryManager().getEntry(getRequest(),
-                    (String) filter.getValue());
+								       (String) filter.getValue());
             if (group != null) {
                 filter.putProperty("ancestor", group);
             }
@@ -652,15 +662,15 @@ public class EntryMonitor implements Constants {
         if (value == null) {
             if (filter.getValue() instanceof List) {
                 value = HU.quote(StringUtil.join("\" OR \"",
-                        (List) filter.getValue()));
+						 (List) filter.getValue()));
             } else {
                 value = HU.quote(filter.getValue().toString());
             }
         }
 
         return HU.italics(desc) + " " + (filter.getDoNot()
-                ? "!"
-                : "") + "= (" + value + ")";
+					 ? "!"
+					 : "") + "= (" + value + ")";
     }
 
     /**
@@ -716,8 +726,8 @@ public class EntryMonitor implements Constants {
      */
     public void handleError(String message, Exception exc) {
         lastError = message + "<br>" + exc + "<br>" + ((exc != null)
-                ? LogUtil.getStackTrace(exc)
-                : "");
+						       ? LogUtil.getStackTrace(exc)
+						       : "");
         logError(null, message, exc);
     }
 
@@ -837,7 +847,7 @@ public class EntryMonitor implements Constants {
      * @throws Exception _more_
      */
     public boolean checkEntry(Filter filter, Entry entry, boolean isNew)
-            throws Exception {
+	throws Exception {
         boolean ok    = false;
         String  field = filter.getField();
         Object  value = filter.getValue();
@@ -863,12 +873,12 @@ public class EntryMonitor implements Constants {
             }
         } else if (field.equals(ARG_TEXT)) {
             ok = nameMatch(value.toString(), entry.getDescription())
-                 || nameMatch(value.toString(), entry.getName());
+		|| nameMatch(value.toString(), entry.getName());
             if ( !ok) {
                 ok = nameMatch(
-                    value.toString(),
-                    getRepository().getStorageManager().getOriginalFilename(
-                        entry.getResource().toString()));
+			       value.toString(),
+			       getRepository().getStorageManager().getOriginalFilename(
+										       entry.getResource().toString()));
             }
 
         } else if (field.equals(ARG_ANCESTOR)) {
@@ -891,9 +901,9 @@ public class EntryMonitor implements Constants {
             //            System.err.println ("got area filter");
             double[] bbox    = (double[]) filter.getValue();
             boolean  okSouth = true,
-                     okNorth = true,
-                     okEast  = true,
-                     okWest  = true;
+		okNorth = true,
+		okEast  = true,
+		okWest  = true;
             if (bbox[0] != Entry.NONGEO) {
                 okSouth = entry.hasSouth() && (entry.getSouth(request) >= bbox[0]);
             }
@@ -915,7 +925,7 @@ public class EntryMonitor implements Constants {
             ok = true;
         } else {
             int match = entry.getTypeHandler().matchValue(field, value,
-                            entry);
+							  entry);
             if (match == TypeHandler.MATCH_FALSE) {
                 ok = false;
             } else if (match == TypeHandler.MATCH_TRUE) {
@@ -965,7 +975,7 @@ public class EntryMonitor implements Constants {
         }
 
         return getRepository().getAccessManager().canDoNew(getRequest(),
-                group);
+							   group);
     }
 
     /**
@@ -983,7 +993,7 @@ public class EntryMonitor implements Constants {
         }
 
         return getRepository().getAccessManager().canDoView(getRequest(),
-                entry);
+							    entry);
     }
 
 
@@ -997,14 +1007,14 @@ public class EntryMonitor implements Constants {
      */
     protected void entryMatched(final Entry entry, final boolean isNew) {
         Misc.run(new Runnable() {
-            public void run() {
-                try {
-                    entryMatchedInner(entry, isNew);
-                } catch (Exception exc) {
-                    handleError("Error handle entry matched", exc);
-                }
-            }
-        });
+		public void run() {
+		    try {
+			entryMatchedInner(entry, isNew);
+		    } catch (Exception exc) {
+			handleError("Error handle entry matched", exc);
+		    }
+		}
+	    });
     }
 
 
@@ -1254,6 +1264,24 @@ public class EntryMonitor implements Constants {
      */
     public String getLastError() {
         return this.lastError;
+    }
+
+    /**
+       Set the CurrentStatus property.
+
+       @param value The new value for CurrentStatus
+    **/
+    public void setCurrentStatus (String value) {
+	currentStatus = value;
+    }
+
+    /**
+       Get the CurrentStatus property.
+
+       @return The CurrentStatus
+    **/
+    public String getCurrentStatus () {
+	return currentStatus;
     }
 
 

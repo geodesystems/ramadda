@@ -136,7 +136,9 @@ public abstract class MonitorAction implements Constants, Cloneable {
         return prefix + "_" + id;
     }
 
-    public void addButtons(Request request, Appendable sb) throws Exception {
+    public void addStatusLine(Request request, EntryMonitor monitor,Appendable sb) throws Exception {
+    }
+    public void addButtons(Request request, EntryMonitor monitor,Appendable sb) throws Exception {
     }
 
 
