@@ -271,7 +271,9 @@ public class DataAction extends MonitorAction {
 	if(!Utils.stringDefined(execPath)) {
 	    return 0;
 	}
-	repository.addScriptPath(execPath);
+	//For security The execPath needs to be added as a ramadda.programs property
+	//	repository.addScriptPath(execPath);
+
 	List<String>commands = new ArrayList<String>();
 	commands.add(execPath);
 	commands.add(entry.getId());	    

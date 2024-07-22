@@ -992,6 +992,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Toolkit.getDefaultToolkit().beep();
         }
 
+
+
+
         String script = (startupScript != null)
 	    ? startupScript
 	    : getScriptPath("ramadda.startupscript");
@@ -1015,6 +1018,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getProperty("ramadda.debug.stderr", false)) {
             IO.debugStderr();
         }
+
+	for(String path: Utils.split(getProperty("ramadda.programs",""),",",true,true)) {
+	    addScriptPath(path);
+	}
+
     }
 
     /**
