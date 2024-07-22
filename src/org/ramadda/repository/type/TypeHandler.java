@@ -3711,12 +3711,16 @@ public class TypeHandler extends RepositoryManager {
 	    header = header.replace("\\n","\n");
 	    sb.append(getWikiManager().wikify(request, header));
 	}
-	if(stringDefined(editHelp)) {
-	    sb.append(getWikiManager().wikify(request, editHelp));
+	if(entry==null) {
+	    if(stringDefined(newHelp)) {
+		sb.append(getWikiManager().wikify(request, HU.div(newHelp,HU.cssClass("ramadda-form-help"))));
+	    }	
+	} else {
+	    if(stringDefined(editHelp)) {
+		sb.append(getWikiManager().wikify(request, HU.div(editHelp,HU.cssClass("ramadda-form-help"))));
+	    }
 	}
-	if(entry==null && stringDefined(newHelp)) {
-	    sb.append(getWikiManager().wikify(request, newHelp));
-	}	
+
 
 
 
