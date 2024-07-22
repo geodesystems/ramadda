@@ -65,6 +65,17 @@ arguments:
 <i>program</i> &lt;entry id&gt; &lt;url to entry&gt; &lt;message&gt;
 </pre>
 
++callout-info
+Note: For security RAMADDA will not just run the program specified. It has to be added
+as a property in a RAMADDA .properties file:
+<pre>
+#comma separated list of scripts that be executed by various services, e.g. the Data Monitors
+ramadda.programs=/your/program
+</pre>
+
+
+
+-callout
 [ht::screenshot images/dataaction_exec.png]
 
 
