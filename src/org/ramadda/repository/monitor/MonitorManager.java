@@ -678,10 +678,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
         for (EntryMonitor monitor : monitors) {
             sb.append(HU.open(HU.TAG_TR,
-                                     HU.attr(HU.ATTR_VALIGN,
-					     "top") + ( !monitor.isActive()
-							? HU.attrs(HU.ATTR_BGCOLOR, "#efefef","style","border-bottom:1px solid #ccc;")
-                    : 						    HU.attrs("style","border-bottom:1px solid #ccc;"))));
+			      HU.attr(HU.ATTR_VALIGN,  "top")));
             sb.append(HU.open(HU.TAG_TD, HU.cssClass("ramadda-td")));
             sb.append(HU.button(HU.href(HU.url(request.makeUrl(getAdmin().URL_ADMIN_MONITORS),
 					       ARG_MONITOR_ID, monitor.getId()), 
@@ -693,7 +690,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 					       monitor.getId()),  "Delete",HU.title("Delete monitor"))));
             sb.append(HU.close(HU.TAG_TD));
             sb.append(HU.col(monitor.getName(), HU.cssClass("ramadda-td")));
-            sb.append(HU.col(monitor.isActive()?"active":"inactive", HU.cssClass("ramadda-td")));
+	    sb.append(HU.col(monitor.isActive()?"active":"inactive", HU.cssClass("ramadda-td")+
+			     HU.style("text-align","center","background",!monitor.isActive()?"#efefef":"lightgreen")));
             sb.append(HU.col(monitor.getActionSummary(), HU.cssClass("ramadda-td")));
             sb.append(HU.col(monitor.getSearchSummary(), HU.cssClass("ramadda-td")));
             sb.append(HU.close(HU.TAG_TR));
@@ -708,8 +706,10 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 sb.append(HU.row(HU.colspan(msg, 5)));
             }	    
 
-	    //            sb.append(HU.row(HU.colspan(HU.hr(), 5)));
-
+	    //Add the line
+            sb.append(HU.open(HU.TAG_TR, HU.attrs("style","border-bottom:1px solid #000;")));
+	    sb.append(HU.row(HU.colspan("", 5)));
+            sb.append(HU.close(HU.TAG_TR));
         }
         sb.append(HU.close(HU.TAG_TABLE));
 
