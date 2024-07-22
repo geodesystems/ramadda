@@ -362,6 +362,32 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 </wiki>
 </type>
 
+<type name="type_document_mermaid"  description="Mermaid Diagram" 
+      handler="org.ramadda.plugins.media.MermaidTypeHandler" 
+      edithelp="Provide a file with the mermaid text or enter it below.\n:br\nSee &lt;a href=https://mermaid.js.org/intro/ target=_help&gt;mermaid.js.org&lt;/a&gt; for help"
+      category="Data">
+     <property name="icon" value="/media/mermaid.png"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+
+     <column name="mermaid_text" label="Mermaid Text" type="string" size="10000" showinhtml="false"
+	     columns="60"
+	     rows="20"
+/>
+     <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{mermaid}}
+----
+{{information showTitle="false" details="true"}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
 <type name="type_document_ohms"  description="OHMS Oral History"
       pattern="(?i).*ohms.*\.xml"
       handler="org.ramadda.plugins.media.OhmsTypeHandler" 
