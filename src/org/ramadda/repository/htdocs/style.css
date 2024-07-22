@@ -3397,6 +3397,16 @@ pre {
     margin-top:5px;
 }
 
+.preplain {
+    border : 0px;
+    background:#fff;
+    padding:0px;
+    border-radius: 0px;
+    margin-bottom:0px;
+    margin-top:0px;
+}
+
+
 .ramadda-pre-undecorated {
     background:transparent;
     border:0px;
