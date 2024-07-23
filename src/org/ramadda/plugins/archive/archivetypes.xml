@@ -43,7 +43,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 :vspace 1em
 :heading Information
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!content.alias,!content.attachment,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.attachment,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -section
@@ -67,7 +67,7 @@ orderBy=createdate_ascending
 {{description wikify="true"}}
 <div class=metadata-full>
 +skip
-{{properties  propertyToggleLimit=3 message=""  metadata.types="archive_note" checkTextLength="true"
+{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_note" checkTextLength="true"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 -skip
@@ -75,7 +75,7 @@ inherited="false"  }}
 <div class=formgroupheader>{{typename}} Information</div>
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-{{properties  propertyToggleLimit=3 message=""  metadata.types="!archive_internal,!content.alias,!content.thumbnail,!content.license"
+{{properties  propertyToggleLimit=100 message=""  metadata.types="!archive_research_activity,!archive_internal,!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
@@ -97,7 +97,12 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
 {{archive_finding_aid_link}}
 -center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
-{{properties  propertyToggleLimit=3 message=""  metadata.types="archive_internal"
++if anonymous=false
++center
+{{barcode field=barcode message=""}}
+-center
+-if
+{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_internal"
 checkTextLength="true"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
@@ -192,12 +197,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 </type>
 
 
-  <type name="type_archive_file"  description="Archive File" super="type_archive_root"
-	childtypes="type_archive_item"
-	newfields="name,description,_default"
-	editfields="name,description,_default">
-
-
+<type name="type_archive_file"  description="Archive File" super="type_archive_root"
+      childtypes="type_archive_item"
+      newfields="name,description,_default"
+      editfields="name,description,_default">
     <property name="icon" value="/archive/file.png"/>
     <property name="search.metadatatypes" value="archive_subject,archive_area,archive_media_type,archive_category"/>
     <property name="form.resource.show" value="false"/>
@@ -210,6 +213,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.owner.show" value="false"/>                
     <column name="file_number" type="string"  label="File Number" columns="8"/>
     <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
 </type>
 
 <type name="type_archive_item"  description="Archive Item" super="type_archive_root"
@@ -234,13 +238,13 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +col-8
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -col
 +col-4
 +center
-{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image inherited="true"  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
@@ -296,7 +300,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="volume" type="string"  label="Volume" columns="30"/>
     <column name="series" type="string"  label="Series" size="500" columns="30"/>            
     <column name="item_count"   type="int"  label="Item Count" default="0"/>
-    <column name="call_number" type="string"  label="Call Number" columns="30"/>
+    <column name="call_number" type="string"  label="Call Number" columns="30" showinhtml="false"/>
     <column name="isbn" type="string"  label="ISBN" columns="30"/>
     <column name="lccn" type="string"  label="LCCN" columns="30"/>    
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
@@ -317,15 +321,22 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 +col-8
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.thumbnail,!content.license"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -col
 +col-4
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
-{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+
+<table class="formtable">
+{{field  name="call_number" row.label="Call #:"}}
+</table>
+
++if anonymous=false
 {{barcode field=barcode}}
+-if
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
@@ -342,9 +353,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 
 
+
 <type name="type_archive_object"  description="Archive Object"
       handler="org.ramadda.repository.type.GenericTypeHandler"
-      metadata="archive_alternate_name,archive_cultural_use,content.thumbnail">
+      metadata="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail">
 
 
     <property name="search.metadatatypes" value="archive_alternate_name,archive_cultural_use"/>
@@ -359,6 +371,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
+
+
 
 
     <column name="artist_maker" type="enumerationplus" size="500" label="Artist/Maker"  cansearch="true" />
@@ -383,18 +397,32 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +row
 +col-8
 {{description wikify="true"}}
+:vspace 1em
++toggleopen Information
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!archive_media_resource,!archive_research_activity,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }}
+-toggle
+:vspace 1em
++toggleopen Traditional Cultural Knowledge
+{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
+-toggle
 -col
 +col-4
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
-{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image inherited="true"  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 {{barcode field=barcode}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
++if anonymous=false
+{{properties  message=""  metadata.types="archive_research_activity"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }}
+-if
 :vspace 1em
 {{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
 xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}

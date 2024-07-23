@@ -2,7 +2,7 @@
   <type name="type_archive_bio"  description="Archive Bio Record"
 	handler="org.ramadda.plugins.archive.BioRecordTypeHandler"  
 	editfields="name,common_name,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default"
-	metadata="archive_alternate_name,archive_cultural_use">
+	metadata="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail">
     <property name="icon" value="/archive/leaf.png"/>
     <property name="form.tabs" value="true"/>    
     <property name="form.basic.group" value="Name and Taxonomy"/>    
@@ -88,19 +88,34 @@
 +row
 +col-8
 {{description wikify="true"}}
+:vspace 1em
++toggleopen Information
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-{{properties  propertyToggleLimit=3 message=""  metadata.types="!content.alias,!content.thumbnail,!content.license"
+{{properties  propertyToggleLimit=100 message=""  metadata.types="!archive_media_resource,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
+-toggle
+:vspace 1em
++toggleopen Traditional Cultural Knowledge
+{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }} 
+-toggle
+
 :vspace 1em
 -col
 +col-4
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
-{{ark short=true}}
 {{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
++if anonymous=false
+{{properties  message=""  metadata.types="archive_research_activity"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }}
+-if
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
 {{mapentry hideIfNoLocations=true width="100%" height="200px"}}

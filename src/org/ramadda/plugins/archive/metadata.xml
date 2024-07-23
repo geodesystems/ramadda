@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<metadata>
+<metadata category="Archive">
   <handler category="Archive" 	searchable="true" browsable="true">
     <type id="archive_internal" name="Archive Internal" restrictions="user" > 
       <element id="note" name="Internal note" datatype="string" rows="4"/>
@@ -82,13 +82,13 @@
     </type>
   </handler>
 
-  <type id="archive_alternate_name" name="Alternate Name"
+  <type id="archive_alternate_name" name="Alternate Name"   displaygroup="Alternate Names"
 	searchable="true"  textLengthLimit="200">
       <element id="type" name="Name Type" datatype="enumerationplus" searchable="true"/>
       <element id="name" name="Name"  columns="60" searchable="true"/>
   </type>
 
-  <type id="archive_cultural_use" name="Cultural Use"
+  <type id="archive_cultural_use" name="Cultural Use" displaygroup="Cultural Uses"
 	 textLengthLimit="200">
       <element id="use" name="Use"  columns="60" rows="5"/>
     </type>          
@@ -96,5 +96,24 @@
     <type id="archive_object_material" name="Archive Object Material" displaygroup="Materials" searchable="true">
       <element id="material" name="Material" datatype="enumerationplus"/>
     </type>        
+
+  <type id="archive_research_activity" name="Research Activity"   displaygroup="Research Activities"
+	searchable="true"  textLengthLimit="200">
+      <element id="institution" name="Institution" datatype="enumerationplus" searchable="true"/>
+      <element id="researcher" name="Researcher"  columns="60"/>
+      <element id="email" name="Email"  datatype="email"/>      
+      <element id="description" name="Description"  columns="60" rows="5"/>
+  </type>
+
+
+  <handler class="org.ramadda.plugins.archive.ArchiveMetadataHandler">
+    <type id="archive_media_resource" name="Media Resource"   displaygroup="Media Resources">
+      <element name="Media File" datatype="file"  istitle="true"/>
+      <element name="Alternate URL" datatype="url"/>
+      <element name="Caption" datatype="string" />
+
+    </type>
+  </handler>
+
 
 </metadata>
