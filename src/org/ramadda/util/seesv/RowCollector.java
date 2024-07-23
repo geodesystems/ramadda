@@ -1953,18 +1953,20 @@ public class RowCollector extends Processor {
         /** _more_ */
         private boolean interactive;
 
+        private boolean showSummary=true;
+
         /**
          * ctor
          *
          * @param util _more_
          * @param justStats _more_
          */
-        public Stats(TextReader ctx, Seesv util, boolean justStats) {
+        public Stats(TextReader ctx, Seesv util, boolean justStats,boolean showSummary) {
 	    super(ctx);
             this.util      = util;
             this.justStats = justStats;
             interactive    = util.getInteractive();
-	    //	    interactive=true;
+	    this.showSummary = showSummary;
         }
 
 
@@ -2083,7 +2085,6 @@ public class RowCollector extends Processor {
                 return html;
 
             };
-
             w.println("#rows:" + rowCnt);
             if(cols ==null) cols = new ArrayList<ColStat>();
             if (interactive) {
@@ -2093,7 +2094,8 @@ public class RowCollector extends Processor {
                 w.println("<table width='100%' class='stripe hover display nowrap ramadda-table ramadda-csv-table' >");
                 w.println("<thead>");
                 w.println("<tr valign=top class=csv-header>");
-                summary.append("<tr valign=top class=seesv-table-summary style='display:none;'>");	                for(int i=0;i<cols.size();i++) {
+                summary.append("<tr valign=top class=seesv-table-summary style='display:none;'>");
+		for(int i=0;i<cols.size();i++) {
                     ColStat col =  cols.get(i);
 		    //		    if(col.skip) continue;
                     String typeIcon = "";
@@ -2172,7 +2174,7 @@ public class RowCollector extends Processor {
                         }
                     }
                     extra = HU.div(extra,"");
-                    w.println(HU.th(label," nowrap " +HU.attr("align","center")+HU.style("padding:2px !important;")));
+		    w.println(HU.th(label," nowrap " +HU.attr("align","center")+HU.style("padding:2px !important;")));
 		    if(!col.skip) 
 			summary.append(HU.td(extra,extraAttrs+" nowrap " +HU.cssClass("seesv-table-summary-cell") + HU.style("padding:2px !important;")));
                 }
@@ -2180,16 +2182,15 @@ public class RowCollector extends Processor {
 		w.println("</thead>");
 		w.println("<tbody>");
                 summary.append("</tr>");		
-		w.println(summary);
-
-
+		if(showSummary) {
+		    w.println(summary);
+		}
 		boolean even= false;
 		for (Row row : rows) {
 		    even = !even;
 		    if(!justStats) {
 			if (cnt++ > 200) {
-			    w.println("<tr><td colspan=" + row.size()
-				      + ">...</td></tr>");
+			    //			    w.println("<tr><td colspan=" + row.size() + ">...</td></tr>");
 			    break;
 			}
 		    }
