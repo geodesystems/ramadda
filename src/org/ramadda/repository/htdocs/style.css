@@ -304,6 +304,10 @@ ramadda-heading, .ramadda-page-heading {
     overflow-x:auto;
 }
 
+.seesv-table-cell {
+    overflow-x:hidden;
+}
+
 .ramadda-shadow-box {
     background-color : #FFF; 
     display:inline-block;
