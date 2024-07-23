@@ -5669,7 +5669,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_STATS,0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
-		ctx.addProcessor(new RowCollector.Stats(ctx, this,true));
+		ctx.addProcessor(new RowCollector.Stats(ctx, this,true,true));
 		return i;
 	    });
 
@@ -5685,9 +5685,14 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_TABLE,0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
-		ctx.addProcessor(new RowCollector.Stats(ctx, this,false));
+		ctx.addProcessor(new RowCollector.Stats(ctx, this,false,true));
 		return i;
-	    });	
+	    });
+	defineFunction("-plaintable",0,(ctx,args,i) -> {
+		if(hasSink) return SKIP_INDEX;
+		ctx.addProcessor(new RowCollector.Stats(ctx, this,false,false));
+		return i;
+	    });		
 	
 
 
