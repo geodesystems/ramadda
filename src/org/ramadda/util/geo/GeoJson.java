@@ -324,14 +324,10 @@ public class GeoJson extends JsonUtil {
      *
      * @throws Exception _more_
      */
-    public static void geojsonSubsetByProperty(String file, PrintStream pw,
-					       String prop, String value)
-	throws Exception {
-        //      System.err.println("prop:" + prop);
-        //      System.err.println("value:" + value);   
+    public static void geojsonSubsetByProperty(String file, PrintStream pw, boolean matchAll,
+					       List<String>props) throws Exception {
         InputStream    is   = IOUtil.getInputStream(file, JsonUtil.class);
         BufferedReader br   = new BufferedReader(new InputStreamReader(is));
-
         StringBuilder  json = new StringBuilder();
         String         input;
         while ((input = br.readLine()) != null) {
@@ -353,41 +349,58 @@ public class GeoJson extends JsonUtil {
         pw.println("\"features\":[");
         JSONArray features = readArray(obj, "features");
         int       cnt      = 0;
+	for (int i = 0; i < features.length(); i++) {
+	    JSONObject feature   = features.getJSONObject(i);
+	    JSONObject jsonProps = feature.getJSONObject("properties");
+	    String[]   names     = JSONObject.getNames(jsonProps);
+	    boolean allOk = true;
+	    boolean anyOk = false;
+	    boolean haveProp =false;
 
-        boolean   isRegexp = StringUtil.containsRegExp(value);
-        for (int i = 0; i < features.length(); i++) {
-            JSONObject feature   = features.getJSONObject(i);
-            JSONObject jsonProps = feature.getJSONObject("properties");
-            String[]   names     = JSONObject.getNames(jsonProps);
-            boolean    haveIt    = false;
-            boolean    gotName   = false;
-            for (int j = 0; (j < names.length) && !haveIt; j++) {
-                String name = names[j];
-                if (name.equalsIgnoreCase(prop)) {
-                    gotName = true;
-                    String v = jsonProps.optString(names[j], "");
-                    if (isRegexp) {
-                        haveIt = v.matches(value);
-                    } else {
-                        haveIt = v.equals(value);
-                    }
-                }
-            }
+	    for(int pidx=0;pidx<props.size() && allOk && !anyOk;pidx+=2) {
+		String prop = props.get(pidx);
+		String value = props.get(pidx+1);
+		boolean   isRegexp = StringUtil.containsRegExp(value);
+		if(!Utils.stringDefined(prop)) continue;
+		haveProp=true;
+		boolean    gotName   = false;
+		for (int j = 0; (j < names.length) && !gotName; j++) {
+		    String name = names[j];
+		    if (name.equalsIgnoreCase(prop)) {
+			gotName = true;
+			String v = jsonProps.optString(names[j], "");
+			boolean matches;
+			if (isRegexp) {
+			    matches = v.matches(value);
+			} else {
+			    matches = v.equals(value);
+			}
+			if(matchAll) {
+			    allOk = matches;
+			} else {
+			    if(matches) anyOk  =true;
+			}
+		    }
+		}
+		if ( !gotName) {
+		    throw new IllegalArgumentException("Could not find property:"
+						       + prop + " properties:" + Arrays.asList(names));
+		}
+	    }
 
-            if ( !gotName) {
-                throw new IllegalArgumentException("Could not find property:"
-						   + prop + " properties:" + Arrays.asList(names));
-            }
-            if ( !haveIt) {
-                continue;
-            }
+	    if(matchAll) {
+		if(haveProp && !allOk) continue;
+	    } else {
+		if(haveProp && !anyOk) continue;
+	    }
+
             if (cnt > 0) {
                 pw.println(",");
             }
             cnt++;
             feature.put("id", cnt);
             pw.print(feature.toString());
-        }
+	}
         pw.println("");
         pw.println("]}");
     }
