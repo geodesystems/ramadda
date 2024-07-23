@@ -5726,8 +5726,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    alert('URL copied to clipboard');
 	});	
     },
+    preventSubmitOnEnter:function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+        }
+    },
+
     makeUrlShowingForm: function(entryId, formId, outputId, skip, hook,args) {
-        $("#" + formId + " :input").change(function() {
+        jqid(formId).find(':input').change(function() {
             HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
