@@ -6148,6 +6148,28 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     }
 
+    public static boolean isAudio(String file) {
+        String ext  = IOUtil.getFileExtension(file);
+	if(ext==null) return false;
+	ext = ext.toLowerCase();
+        if (ext.equals(".ogg") || ext.equals(".oga") || ext.equals(".wav") || ext.equals(".m4a") ||
+	    ext.equals(".mp4")) {
+	    return true;
+        }
+	return false;
+    }
+
+    public static boolean isPdf(String file) {
+        String ext  = IOUtil.getFileExtension(file);
+	if(ext==null) return false;
+	ext = ext.toLowerCase();
+        if (ext.equals(".pdf")) {
+	    return true;
+        }
+	return false;
+    }
+
+
     /**
      * _more_
      *
@@ -6161,17 +6183,19 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         String mime = "audio/wav";
         String ext  = IOUtil.getFileExtension(url);
-        if (ext.equals("ogg")) {
+        if (ext.equals(".ogg")) {
             mime = "audio/ogg";
-        } else if (ext.equals("oga")) {
+        } else if (ext.equals(".oga")) {
             mime = "audio/ogg";
-        } else if (ext.equals("wav")) {
+        } else if (ext.equals(".wav")) {
             mime = "audio/wav";
-        } else if (ext.equals("m4a")) {
+        } else if (ext.equals(".m4a")) {
             mime = "audio/mp4";
-        } else if (ext.equals("mp4")) {
+        } else if (ext.equals(".mp4")) {
             mime = "audio/mp4";
-        }
+        } else {
+	    return "Unknown audio:"  + url;
+	}
 
         html = html.replace("${url}", url);
         html = html.replace("${mime}", mime);
