@@ -178,10 +178,11 @@ public class GeoJsonOutputHandler extends OutputHandler {
                 StringBuilder sb = new StringBuilder();
                 getPageHandler().entrySectionOpen(request, entry, sb,
                         "Geojson Filter");
-                sb.append(HU.formTable());
-		HU.form(sb, getRepository().URL_ENTRY_SHOW.toString());
+		String formId = HU.getUniqueId("form_");
+		sb.append(HU.form(getRepository().URL_ENTRY_SHOW.toString(), HU.attrs("id",formId)));
                 sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
                 sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_GEOJSON_FILTER.toString()));
+                sb.append(HU.formTable());
 		String names = (String) entry.getValue(request,GeoJsonTypeHandler.IDX_COLUMNS);
 		List<String> properties = null;
 		if(stringDefined(names)) properties = Utils.split(names,",",true,true);
@@ -192,16 +193,33 @@ public class GeoJsonOutputHandler extends OutputHandler {
 			entry.putTransientProperty("geojsonproperties",properties);
 		    }
 		}
+                String tableUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+						   ARG_OUTPUT, OUTPUT_GEOJSON_TABLE.toString());
 
-                HU.formEntry(sb, msgLabel("Property"),
-				     HU.select("geojson_property",properties,
-					       request.getString("geojson_property", "")));
-                HU.formEntry(sb,msgLabel("Value"),
-				    HU.input("geojson_value",
-					     request.getString("geojson_value", "")) +HU.space(1) +msg("Can be regular expression"));
+		String help =HU.href(tableUrl,"View Table",HU.attrs("target","_help"))+HU.space(2)+
+		    msg("Note: Values can be regular expression");		    
+		HU.formEntry(sb,"",help);
+
+		HU.formEntry(sb,"",HU.labeledCheckbox("matchall","true",true,"Match All"));
+		for(int i=1;i<=3;i++) {
+		    if(i==2)
+			properties.add(0,"");
+		    HU.formEntry(sb, msgLabel("Property " + i),
+				 HU.select("geojson_property"+i,properties,
+					   request.getString("geojson_property"+i, "")) +HU.space(2) +
+				 HU.b("Value " +i+":") +HU.space(1) +
+				 HU.input("geojson_value"+i,
+					  request.getString("geojson_value" +i, ""),
+					  HU.attrs("onkeydown","HtmlUtils.preventSubmitOnEnter(event)")
+					  ));
+		}
+
 		HU.formEntry(sb, "", HU.submit("Subset","geojson_filter"));
-                sb.append(HU.formClose());
                 sb.append(HU.formTableClose());
+                sb.append(HU.formClose());
+		addUrlShowingForm(sb, null, formId,
+				  "null",
+				  null, "includeCopyArgs","false");
                 getPageHandler().entrySectionClose(request, entry, sb);
 
                 return new Result("", sb);
@@ -211,9 +229,14 @@ public class GeoJsonOutputHandler extends OutputHandler {
 		    public void run(OutputStream os) {
 			PrintStream           pw  = new PrintStream(os);
 			try {
-			    GJ.geojsonSubsetByProperty(entry.getResource().getPath(), pw,
-						       request.getString("geojson_property", ""),
-						       request.getString("geojson_value", ""));
+			    List<String> props=new ArrayList<String>();
+			    for(int i=1;true;i++) {
+				String prop =    request.getString("geojson_property"+i, null);
+				if(prop==null) break;
+				props.add(prop);
+				props.add(request.getString("geojson_value"+i, ""));
+			    }
+			    GJ.geojsonSubsetByProperty(entry.getResource().getPath(), pw,request.get("matchall",false),props);
 			} catch(Exception exc) {
 			    getLogManager().logError("Filtering geojson:" + entry,exc);
 			    pw.println("Filtering geojson:" + exc);
@@ -296,10 +319,10 @@ public class GeoJsonOutputHandler extends OutputHandler {
         }
 
         ByteArrayOutputStream bos2 = new ByteArrayOutputStream();
-        String[]              args = new String[] { "-table" };
+        String[]              args = new String[] { "-plaintable" };
 
         Seesv csvUtil = new Seesv(args, new BufferedOutputStream(bos2),
-                                      null);
+				  null);
 
         csvUtil.setInteractive(true);
         csvUtil.setInputStream(
