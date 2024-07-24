@@ -12,10 +12,13 @@ import org.apache.logging.log4j.Logger;
 
 
 import org.ramadda.repository.auth.*;
+import org.ramadda.util.SortableObject;
+import org.ramadda.util.seesv.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
+import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 
@@ -28,9 +31,11 @@ import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 import java.text.SimpleDateFormat;
-
+import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -1011,14 +1016,35 @@ public class LogManager extends RepositoryManager {
     public Result adminLogReport(Request request) throws Exception {
         StringBuilder sb       = new StringBuilder();
 	getPageHandler().sectionOpen(request,sb,"Entry Activity Report",false);
-	sb.append(request.form(URL_REPORT));
-	sb.append(HU.submit("Generate Access Report", "report"));
-	sb.append(HU.br());
-	sb.append(HU.div("Select one or more log files to generate a report"));
+	sb.append(request.formPost(URL_REPORT));
+	StringBuilder form = new StringBuilder();
+
+	form.append(HU.submit("Generate Access Report", "report"));
+	form.append(HU.formTable());
+	form.append(HU.formEntry("Date Range:",
+				 HU.b("From: ")+
+				 getDateHandler().makeDateInput(request, ARG_FROMDATE,
+								"",null,null,false,null) +
+				 HU.space(2) +
+				 HU.b("To: ")+
+				 getDateHandler().makeDateInput(request, ARG_TODATE,
+								"",null,null,false,null)));
+
+	List initItems = new ArrayList();
+	initItems.add(new TwoFacedObject("None",""));
+	HU.formEntry(form,msgLabel("Aggregate at Type"),
+		     getRepository().makeTypeSelect(initItems,
+						    request, ARG_TYPE, null,
+						    false,request.getString(ARG_TYPE,null),false,null,true));
+
+	form.append(HU.formTableClose());
+	form.append(HU.div("Select one or more log files to generate a report"));
+	boolean doReport = request.exists("report");
         File         logDir        = getLogDir();
         File[]       logFiles = IOUtil.sortFilesOnAge(logDir.listFiles(),true);
 	int cnt =0;
-	sb.append("<div style='max-height:400px;overflow-y:auto;'>");
+	form.append("<div style='max-height:250px;overflow-y:auto;'>");
+	List files = request.get("file",new ArrayList<String>());
 	for(File f: logFiles) {
 	    if(!f.getName().startsWith("entryactivity")) continue;
 	    cnt++;
@@ -1026,16 +1052,21 @@ public class LogManager extends RepositoryManager {
 	    label = label.replaceAll("\\.log.*","");
 	    label = label.replaceAll("-\\d\\d$","");		
 	    label  =label.replace("entryactivity-","");
-	    sb.append(HU.labeledCheckbox("entryactivity",f.getName(),false,label));
-	    sb.append(HU.br());
+	    form.append(HU.labeledCheckbox("file",f.getName(),files.contains(f.getName()),label));
+	    form.append(HU.br());
 	}
-	sb.append("</div>");
+	form.append("</div>");
+	if(doReport) {
+	    sb.append(HU.makeShowHideBlock("Form",form.toString(),false));
+	} else {
+	    sb.append(form);
+	}
 	if(cnt==0) {
 	    sb.append(HU.div("No entryactivity files are available"));
 	}
         sb.append(HU.formClose());
 
-	if(request.exists("report")) {
+	if(doReport) {
 	    processAdminLogReport(request,sb);
 	}
 
@@ -1044,7 +1075,108 @@ public class LogManager extends RepositoryManager {
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
-    public void processAdminLogReport(Request request,StringBuilder sb) throws Exception {
+    public void processAdminLogReport(final Request request,StringBuilder sb) throws Exception {
+	List<IO.Path> files = new ArrayList<IO.Path>();
+	for(Object f:request.get("file",new ArrayList<String>())) {
+	    String      file = getLogDir() + "/" + f;
+	    files.add(new IO.Path(file));
+	}
+	if(files.size()==0) {
+	    sb.append("No files selected");
+	    return;
+	}
+	String _type = request.getString(ARG_TYPE,null);
+	if(!stringDefined(_type)) _type=null;
+	final String type = _type;
+	final Date fromDate = request.getDate(ARG_FROMDATE,null);
+	final Date toDate = request.getDate(ARG_TODATE,null);	
+	final SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	List<Processor> suffix = new ArrayList<Processor>();
+	final LinkedHashMap<String,Integer> counts = new LinkedHashMap<String,Integer>();
+	final int[] cnt={0};
+	final Hashtable<String,Entry> entries = new Hashtable<String,Entry>();
+	suffix.add(new Processor() {
+		public Row processRow(TextReader ctx, Row row) throws Exception {
+		    String ip=row.getString(0);
+		    String client=row.getString(1);		    
+		    String id=row.getString(2);
+		    String name=row.getString(3);
+		    String action=row.getString(4);		    
+		    String date=row.getString(5);
+		    if(!action.equals("view") || id.equals("entryid")) return row;
+		    if(fromDate!=null || toDate!=null) {
+			Date dttm = sdf.parse(date);
+			if(fromDate!=null && fromDate.getTime()<dttm.getTime()) return row;
+			if(toDate!=null && toDate.getTime()>dttm.getTime()) return row;
+		    }
+		    Entry entry = entries.get(id);
+		    if(entry==null) {
+			entry = getEntryManager().getEntry(request,id);
+			if(entry!=null) entries.put(id,entry);
+		    }
+		    if(entry==null) {
+			//			System.err.println("no entry:" + id +" " + name);
+			return row;
+		    }
+
+		    if(type!=null) {
+			try {
+			    while(entry!=null) {
+				if(entry.getTypeHandler().isType(type)) {
+				    id = entry.getId();
+				    name = entry.getName();
+				    break;
+				}
+				entry=entry.getParentEntry();
+			    }
+			} catch(Exception exc) {
+			    System.err.println("Error:" + exc);
+			    exc.printStackTrace();
+			}
+		    }
+
+		    cnt[0]++;
+		    id = id +"name:"+name;
+		    Integer c = counts.get(id);
+		    if(c==null) {
+			counts.put(id,c=new Integer(0));
+		    }
+		    int n = c.intValue()+1;
+		    counts.put(id,new Integer(n));
+		    return row;
+		}
+	    });
+	String[]args = {"-header",
+	    "ip,client,entryid,name,action,date",
+	    "-match", "action", "view"};
+
+	Seesv seesv = new Seesv(args,suffix);
+	seesv.run(files);
+
+	sb.append(HU.div("# records:" + cnt[0]));
+	sb.append("<table>");
+	sb.append("<tr><td><b>Count</b></td><td><b>Entry</b></td></tr>");
+
+        List<SortableObject<String>> sort =
+            new ArrayList<SortableObject<String>>();	
+
+	for (String key : counts.keySet()) {
+	    Integer c = counts.get(key);
+	    sort.add(new SortableObject<String>(c,key));
+	}
+
+        java.util.Collections.sort(sort,Comparator.reverseOrder());
+        for (SortableObject<String> po : sort) {
+	    int  c = po.getPriority();
+	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
+	    sb.append("<tr><td align=right width=10%>");
+	    sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
+	    sb.append("</td><td>");
+	    sb.append(key);
+	    sb.append("</td></tr>");
+	}
+	sb.append("</table>");
 
     }
 
