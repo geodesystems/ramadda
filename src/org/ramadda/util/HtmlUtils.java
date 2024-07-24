@@ -6159,6 +6159,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	return false;
     }
 
+    public static boolean isVideo(String file) {
+        String ext  = IOUtil.getFileExtension(file);
+	if(ext==null) return false;
+	ext = ext.toLowerCase();
+	ext = ext.replaceAll("^\\.","");
+	if(ext.matches("(m4v|mp4|m4v|mov)")) {
+	    return true;
+	}
+	return false;
+    }
+
     public static boolean isPdf(String file) {
         String ext  = IOUtil.getFileExtension(file);
 	if(ext==null) return false;
@@ -6170,13 +6181,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+
     public static String getAudioEmbed(String url) {
         String html =
             "<audio controls preload=\"none\" style=\"width:480px;\">\n <source src=\"${url}\" type=\"${mime}\" />\n <p>Your browser does not support HTML5 audio.</p>\n </audio>";
