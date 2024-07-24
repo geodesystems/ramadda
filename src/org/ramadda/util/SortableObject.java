@@ -25,6 +25,8 @@ public class SortableObject<VALUE> implements Comparable {
     /**  */
     int priority;
 
+    boolean increasing = true;
+
     /**  */
     VALUE value;
 
@@ -40,8 +42,8 @@ public class SortableObject<VALUE> implements Comparable {
         this.value    = value;
     }
 
+
     /**
-     
      *
      * @param value _more_
      */
@@ -75,6 +77,10 @@ public class SortableObject<VALUE> implements Comparable {
         SortableObject<VALUE> po = (SortableObject<VALUE>) o;
 
         return this.value.equals(po.value);
+    }
+
+    public int getPriority() {
+	return priority;
     }
 
     /**
