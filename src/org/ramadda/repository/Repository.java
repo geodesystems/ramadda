@@ -471,7 +471,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private String repositoryDescription = "";
 
-    private boolean logActivityToFile = false;
+    private boolean logActivityToFile = true;
 
     private boolean logActivityToDatabase = false;    
 
@@ -4099,7 +4099,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
         cacheResources        = getProperty(PROP_CACHE_RESOURCES, false);
 	cacheHtdocs           = getProperty(PROP_CACHE_HTDOCS, true);
-	logActivityToFile     = getProperty("ramadda.logging.logactivityfile", false);
+	logActivityToFile     = getProperty("ramadda.logging.logactivityfile", true);
 	logActivityToDatabase = getProperty("ramadda.logging.logactivitydatabase", false);	
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
