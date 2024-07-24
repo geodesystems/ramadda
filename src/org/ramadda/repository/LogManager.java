@@ -45,6 +45,9 @@ import java.util.List;
 public class LogManager extends RepositoryManager {
 
 
+    public final RequestUrl URL_REPORT = new RequestUrl(this, "/admin/log/report");
+
+
     /** apache style log macro */
     public static final String LOG_MACRO_IP = "%h";
 
@@ -951,8 +954,10 @@ public class LogManager extends RepositoryManager {
 
         sb.append(HtmlUtils.sectionOpen());
         sb.append("Logs are in: " + HtmlUtils.italics(f.toString()));
-        sb.append(HtmlUtils.p());
-
+	sb.append(HU.br());
+	sb.append(HU.div(HU.href(URL_REPORT.toString(),"Generate Access Report"),
+			 HU.attrs("class","ramadda-button")));
+	sb.append(HU.br());
         if (log.equals("access")) {
             header.add(HtmlUtils.bold("Recent Access"));
         } else {
@@ -1002,6 +1007,48 @@ public class LogManager extends RepositoryManager {
 
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
+
+    public Result adminLogReport(Request request) throws Exception {
+        StringBuilder sb       = new StringBuilder();
+	getPageHandler().sectionOpen(request,sb,"Entry Activity Report",false);
+	sb.append(request.form(URL_REPORT));
+	sb.append(HU.submit("Generate Access Report", "report"));
+	sb.append(HU.br());
+	sb.append(HU.div("Select one or more log files to generate a report"));
+        File         logDir        = getLogDir();
+        File[]       logFiles = IOUtil.sortFilesOnAge(logDir.listFiles(),true);
+	int cnt =0;
+	sb.append("<div style='max-height:400px;overflow-y:auto;'>");
+	for(File f: logFiles) {
+	    if(!f.getName().startsWith("entryactivity")) continue;
+	    cnt++;
+	    String label  =f.getName();
+	    label = label.replaceAll("\\.log.*","");
+	    label = label.replaceAll("-\\d\\d$","");		
+	    label  =label.replace("entryactivity-","");
+	    sb.append(HU.labeledCheckbox("entryactivity",f.getName(),false,label));
+	    sb.append(HU.br());
+	}
+	sb.append("</div>");
+	if(cnt==0) {
+	    sb.append(HU.div("No entryactivity files are available"));
+	}
+        sb.append(HU.formClose());
+
+	if(request.exists("report")) {
+	    processAdminLogReport(request,sb);
+	}
+
+
+	getPageHandler().sectionClose(request,sb);
+        return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
+    }
+
+    public void processAdminLogReport(Request request,StringBuilder sb) throws Exception {
+
+    }
+
+
 
     /**
      * Get the log directory

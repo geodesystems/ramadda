@@ -214,6 +214,7 @@
 
   <group handler="logmanager" needs_ssl="true" admin="true">
     <api request="/admin/log"          method="adminLog"           />
+    <api request="/admin/log/report"   method="adminLogReport"           />    
   </group>
 
   <group handler="admin" needs_ssl="true" admin="true">
