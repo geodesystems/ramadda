@@ -74,51 +74,45 @@ public class ArchiveMetadataHandler extends MetadataHandler {
 	    return null;
 	}
 
-
-	String caption = metadata.getAttr3();
-
-
-
         MetadataType type = getType(metadata.getType());
         if (type == null) {
             return null;
         }
-
-
+	String caption = metadata.getAttr3();
+	String desc = metadata.getAttr4();	
+	if(desc==null) desc="";
+	if(Utils.stringDefined(desc)) desc = HU.div(desc);
 	StringBuilder sb = new StringBuilder();
-
+	String label = Utils.stringDefined(caption)?caption:"";
+	String contents = null;
 	if(!Utils.stringDefined(file) && Utils.stringDefined(altUrl)) {
 	    sb.append("@(");
 	    sb.append(altUrl);
 	    sb.append(")");
-	    String html = getWikiManager().wikifyEntry(request, entry, sb.toString());
-	    return new String[] { "Archive Media",HU.makeShowHideBlock(caption, html,false)};
-	}
-
-
-        String[] nameUrl = type.getFileUrl(request, entry, metadata);
-        if (nameUrl == null) {
-	    return null;
-        }
-
-
-	String _file = getRepository().getStorageManager().getOriginalFilename(file);
-	String label = Utils.stringDefined(caption)?caption:_file;
-
-
-	if(HU.isAudio(file)) {
-	    sb.append(HU.makeShowHideBlock(label,HU.getAudioEmbed(nameUrl[1]),false));
-	} else if(HU.isPdf(file)) {
-	    //	    sb.append("PDF FILE");
-	    sb.append(HU.makeShowHideBlock(label,HU.getPdfEmbed(nameUrl[1],null),false));
-	} else if(Utils.isImage(file)) {
-	    sb.append(HU.makeShowHideBlock(label,HU.image(nameUrl[1],"width","100%"),false));
+	    contents =  getWikiManager().wikifyEntry(request, entry, sb.toString());
 	} else {
-	    sb.append(HU.href(nameUrl[1],label));
+	    String[] nameUrl = type.getFileUrl(request, entry, metadata);
+	    if (nameUrl == null) {
+		return null;
+	    }
+	    String _file = getRepository().getStorageManager().getOriginalFilename(file);
+	    label = Utils.stringDefined(label)?label:_file;
+	    if(HU.isAudio(file)) {
+		contents  =HU.getAudioEmbed(nameUrl[1]);
+	    } else	if(HU.isVideo(file)) {
+		contents = HU.getMediaEmbed(nameUrl[1],"400","300");
+	    } else if(HU.isPdf(file)) {
+		contents = HU.getPdfEmbed(nameUrl[1],null);
+	    } else if(Utils.isImage(file)) {
+		contents = HU.image(nameUrl[1],"width","100%");
+	    } else {
+		contents  = HU.href(nameUrl[1],label)+desc;
+		return new String[]{"Archive Media",contents};
+	    }
 	}
-	return new String[]{"Archive Media",sb.toString()};
 
-
+	contents = HU.makeShowHideBlock(label, desc+contents,false);
+	return new String[]{"Archive Media",contents};
     }
 
 

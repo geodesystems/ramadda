@@ -398,18 +398,19 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +col-8
 {{description wikify="true"}}
 :vspace 1em
-+toggleopen Information
++tabs
++tab Information
 {{information  showDetails="true"  showTitle="false"   }} 
 {{properties  message=""  metadata.types="!archive_media_resource,!archive_research_activity,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }}
--toggle
-:vspace 1em
-+toggleopen Traditional Knowledge
-{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
+-tab
++tab Traditional Knowledge
+{{properties  stripe=false propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
--toggle
+-tab
+-tabs
 -col
 +col-4
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
@@ -419,7 +420,7 @@ inherited="false"  }}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 +if anonymous=false
-{{properties  message=""  metadata.types="archive_research_activity"
+{{properties  message=""  propertyToggleLimit=1 metadata.types="archive_research_activity"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }}
 -if

@@ -89,21 +89,21 @@
 +col-8
 {{description wikify="true"}}
 :vspace 1em
-+toggleopen Information
++tabs
++tab Information
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-T{{properties  propertyToggleLimit=100 message=""  metadata.types="!archive_media_resource,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use"
+{{properties  propertyToggleLimit=100 message=""  metadata.types="!archive_media_resource,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
--toggle
-:vspace 1em
-+toggleopen Traditional Knowledge
-{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
+-tab
++tab Traditional Knowledge
+{{properties stripe=false   propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
--toggle
-
+-tab
+-tabs
 :vspace 1em
 -col
 +col-4
@@ -112,7 +112,7 @@ inherited="false"  }}
 {{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
 +if anonymous=false
-{{properties  message=""  metadata.types="archive_research_activity"
+{{properties  message=""  propertyToggleLimit=1 metadata.types="archive_research_activity"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }}
 -if

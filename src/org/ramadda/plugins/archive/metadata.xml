@@ -111,7 +111,7 @@
       <element name="Media File" datatype="file"  istitle="true"/>
       <element name="Alternate URL" datatype="url"/>
       <element name="Caption" datatype="string" />
-
+      <element name="Description" datatype="string" rows="5"/>      
     </type>
   </handler>
 
