@@ -77,6 +77,8 @@ public class Seesv implements SeesvCommands {
     /** _more_ */
     private List<String> args;
 
+    private List<Processor> suffix;
+
     /** _more_ */
     private OutputStream outputStream = System.out;
 
@@ -161,6 +163,11 @@ public class Seesv implements SeesvCommands {
      * @throws Exception _more_
      */
     public Seesv(String[] args) throws Exception {
+	this(args,null);
+    }
+
+    public Seesv(String[] args,List<Processor> suffix) throws Exception {	
+	this.suffix =suffix;
         this.args = new ArrayList<String>();
         for (String arg : args) {
             this.args.add(arg);
@@ -196,6 +203,15 @@ public class Seesv implements SeesvCommands {
     public Seesv(List<String> args, File destDir) throws Exception {
         this(args);
         this.destDir = destDir;
+    }
+
+
+
+    public Seesv(String[]args,List<Processor>suffix,
+		 InputStream input, OutputStream output) throws Exception {
+	this(args,suffix);
+	this.inputStream = input;
+        this.outputStream = output;
     }
 
 
@@ -6011,6 +6027,12 @@ public class Seesv implements SeesvCommands {
 	    } catch (Exception exc) {
 		System.err.println("Error processing arg:" + arg);
 		throw exc;
+	    }
+	}
+
+	if(suffix!=null) {
+	    for(Processor processor: suffix) {
+		ctx.addProcessor(processor);
 	    }
 	}
 
