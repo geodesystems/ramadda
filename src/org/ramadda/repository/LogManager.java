@@ -1154,12 +1154,15 @@ public class LogManager extends RepositoryManager {
 	    "ip,client,entryid,name,action,date",
 	    "-match", "action", "view"};
 
+
+	long t1 = System.currentTimeMillis();
 	Seesv seesv = new Seesv(args,suffix);
 	seesv.run(files);
+	long t2 = System.currentTimeMillis();
 
 	sb.append(HU.div("# requests: " + cnt[0] +"  #entries:" + ecnt[0]));
-	sb.append("<table>");
-	sb.append("<tr><td><b>Count</b></td><td><b>Entry type</b></td><td><b>Entry</b></td></tr>");
+	sb.append("<table width=100%>");
+	sb.append("<tr><td width=10%><b>Count</b></td><td width=20%><b>Entry type</b></td><td><b>Entry</b></td></tr>");
         List<SortableObject<String>> sort =
             new ArrayList<SortableObject<String>>();	
 
@@ -1171,6 +1174,7 @@ public class LogManager extends RepositoryManager {
 	StringBuilder csv  = new StringBuilder();
 	if(asCsv)csv.append("count,type,id,entry\n");
         java.util.Collections.sort(sort,Comparator.reverseOrder());
+	long t3 = System.currentTimeMillis();
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
 	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
@@ -1208,6 +1212,8 @@ public class LogManager extends RepositoryManager {
 	    }
 	}
 	sb.append("</table>");
+	long t4 = System.currentTimeMillis();
+	Utils.printTimes("log",t1,t2,t3,t4);
 	if(asCsv) return csv;
 	return null;
 
