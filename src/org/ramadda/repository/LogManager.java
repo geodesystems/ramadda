@@ -1159,7 +1159,7 @@ public class LogManager extends RepositoryManager {
 
 	sb.append(HU.div("# requests: " + cnt[0] +"  #entries:" + ecnt[0]));
 	sb.append("<table>");
-	sb.append("<tr><td><b>Count</b></td><td><b>Entry</b></td></tr>");
+	sb.append("<tr><td><b>Count</b></td><td><b>Entry type</b></td><td><b>Entry</b></td></tr>");
         List<SortableObject<String>> sort =
             new ArrayList<SortableObject<String>>();	
 
@@ -1169,27 +1169,40 @@ public class LogManager extends RepositoryManager {
 	}
 
 	StringBuilder csv  = new StringBuilder();
-	if(asCsv)csv.append("count,entry\n");
+	if(asCsv)csv.append("count,type,id,entry\n");
         java.util.Collections.sort(sort,Comparator.reverseOrder());
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
 	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
+	    String entryType="";
+	    Entry entry = null;
+	    if(id!=null) {
+		entry= getEntryManager().getEntry(request,id);
+		if(entry!=null) {
+		    entryType=entry.getTypeHandler().getDescription();
+		}
+	    }
+
 	    if(asCsv){
 		csv.append(c);
 		csv.append(",");				
+		csv.append(Seesv.cleanColumnValue(entryType));
+		csv.append(",");
+		csv.append(Seesv.cleanColumnValue(id));
+		csv.append(",");						
 		csv.append(Seesv.cleanColumnValue(key));
 		csv.append("\n");				
 	    } else {
+		if(entry!=null) {
+		    key = HU.href(getEntryManager().getEntryUrl(request, entry),key,HU.attrs("target","_entry"));
+		}
+
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
 		sb.append("</td><td>");
-		if(id!=null) {
-		    Entry entry= getEntryManager().getEntry(request,id);
-		    if(entry!=null) {
-			key = HU.href(getEntryManager().getEntryUrl(request, entry),key,HU.attrs("target","_entry"));
-		    }
-		}
+		sb.append(entryType);
+		sb.append("</td><td>");
 		sb.append(key);
 		sb.append("</td></tr>");
 	    }
