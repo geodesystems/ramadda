@@ -13,6 +13,7 @@ proc object $::params  {
     foreach p $::params {
 	set v [set $p]
 	set $p [string trim  $v]
+	check object $::cnt $p [set $p]
     }
 
     set material [string totitle $material]

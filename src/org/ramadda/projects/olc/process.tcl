@@ -1,4 +1,5 @@
 
+source ../lib.tcl
 set ::entries "<entries>\n";
 array set ::cids {}
 array set ::sids {}
@@ -22,61 +23,6 @@ proc keyword {keyword} {
 }
 source keywords.tcl
 
-proc cdata {s} {
-    return "<!\[CDATA\[$s\]\]>"
-}
-
-proc col {name s} {
-    if {$s==""} {
-	return ""
-    }
-    return "<$name>[cdata [clean $s]]</$name>\n"
-}    
-
-
-proc pad {n} {
-    if {[string length $n]==1} {
-	set n "00$n"
-    }   elseif {[string length $n]==2} {
-	set n "0$n"
-    }    
-    set n
-}    
-
-proc clean {s} {
-    regsub -all {\[CR\]} $s "\n" s
-    regsub -all {â€œ} $s { } s
-    regsub -all {â€™} $s { } s
-    regsub -all {â€“} $s {-} s    
-    regsub -all {â€} $s { } s
-    regsub -all {__+} $s { } s
-    regsub -all {dialet} $s {dialect} s
-#    regsub -all {\[} $s {\\[} s
-#    regsub -all {\]} $s {\\]} s    	
-    set s [string trim $s]
-    set s
-}
-
-
-
-proc attrs {args} {
-    set e ""
-    foreach {key value} $args {
-	append e [col $key  $value]
-    }
-    set e
-}
-proc attr {key value} {
-    return " $key=\"[clean $value]\" "
-}
-
-proc openEntry {type id parent name} {
-    set e   "<entry [attr id $id] [attr type $type] ";
-    if {$parent !=""} {append e [attr  parent $parent];}
-    append e ">\n";
-    append e [attrs name $name]
-    set e
-}
 
 proc processSummary {summary} {
     set summary [clean $summary]
@@ -209,9 +155,7 @@ proc  mtd2 {type value1 value2} {
 }
 
 
-proc  cid {cid} {
-    return collection_$cid
-}
+
 
 proc  sid {cid sid} {
     return "[cid $cid]_series_$sid"
@@ -231,6 +175,7 @@ proc collection $::cp  {
     incr ::ccnt
     foreach p $::cp {
 	set $p [string trim [set $p]]
+	check collection $::ccnt $p [set $p]
     }
 
     set cid [cid $collection_nbr]
@@ -307,7 +252,10 @@ proc handleDate {date} {
 set ::sp {collection_nbr series_nbr series_title location scope_content notes user_1 bio_org_history organiz_arrange provenance bulk_dates name_type creator summary column1}
 proc series $::sp {
     incr ::scnt
-    foreach p $::sp {set $p [string trim [set $p]]}
+    foreach p $::sp {
+	set $p [string trim [set $p]]
+	check series $::scnt $p [set $p]
+    }
     set parent [cid $collection_nbr]
 ##    puts  "parent: $::cmap($parent)"
     set id [sid $collection_nbr $series_nbr]
@@ -340,7 +288,10 @@ set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates
 proc files $::fp {
     if {$file_unit_nbr==""} return
     incr ::fcnt
-    foreach p $::fp {set $p [string trim [set $p]]}
+    foreach p $::fp {
+	set $p [string trim [set $p]]
+	check file $::fcnt $p [set $p]
+    }
     set parent [sid $collection_nbr $series_nbr]
     if {![info exists   ::sids($parent)]} {
 	puts  stderr "file: $file_unit_nbr $title no parent series: $parent "
@@ -372,7 +323,10 @@ proc item $::ip {
 #	puts "$title $location"
 #	exit
     }
-    foreach p $::ip {set $p [string trim [set $p]]}
+    foreach p $::ip {
+	set $p [string trim [set $p]]
+	check item $::icnt $p [set $p]
+    }
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
     if {![info exists   ::fids($parent)]} {
@@ -409,5 +363,11 @@ source extra.tcl
 source items.tcl
 
 append ::entries "</entries>\n";
+set fp [open archiveentries.xml w]
+puts $fp $::entries
+close $fp
 #puts $::entries
 puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::icnt"
+
+
+

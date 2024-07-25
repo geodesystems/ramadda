@@ -15,20 +15,38 @@ set ::cnt 0
 
 set ::bp {name_type author call_nbr title item_type item_count publisher pub_year volume phys_char notes barcode other_terms isbn lccn series column1 _1}
 
+set ::spelling {}
+foreach line [split [read [open spelling.txt r]] "\n"] {
+    set line [string trim $line]
+    foreach {p w} [split $line :] break
+    lappend ::spelling [list $p $w]
+}
+
+
 
 proc book $::bp  {
     incr ::cnt
 ##    if {$::cnt>10} return
     foreach p $::bp {
-
 	set v [set $p]
-	foreach tuple {{{PercÂ©b} Perce} {{PercÂ©b} {Perce}} {{AmÂ©brique} {Amérique}} {{AmÃ©rique} {Amérique}} {{BrulÂ©b} {Brulé}}  {{Â© tats} {États}}} {
+	check books $::cnt $p [set $p]
+
+
+	foreach tuple $::spelling {
 	    foreach {pattern with} $tuple break
-	    regsub -all $pattern $v $with v
+	    if {[regsub -all $pattern $v $with v]} {
+	    }
 	}
-	
 	set $p [string trim [clean $v]]
     }
+    if {[regexp {©} $title]} {
+#	puts "Title: $title"
+    }
+    if {[regexp {©} $notes]} {
+#	puts "#$::cnt - $title - notes: $notes"
+    }    
+
+
     catch {
 	set isbn [format %.0f $isbn]
     }	
@@ -37,15 +55,25 @@ proc book $::bp  {
 
 
     set year $pub_year
-    regsub -all {^[^\d]*(\d\d\d\d).*} $year {\1} year
-    set year [string trim $year]
-#    puts "$pub_year -- $year"
-
-
+    set year1 ""
+    regsub -all "l" $year 1 year
+    regsub -all {^[^\d]*(\d\d\d\d).*} $year {\1} year1
+    
+    set year [string trim $year1]
+    if {![regexp {^\d\d\d\d$} $year]} {
+	set year ""
+    }
+    if {[string length $lccn]>20} {
+	set other_terms "$other_terms .  $lccn"
+	set lccn ""
+    }
 
     if {$year !=""} {
 	append ::entries [col fromdate $year]    
 	
+    }
+    if {[regexp Kurz $item_type]} {
+	set item_type ""
     }
 
     append ::entries [col description $notes]    
@@ -97,15 +125,6 @@ proc book $::bp  {
 	}
 	puts $fp "<div style='margin-top:10px;'></div>"
     }
-
-    if {0} {
-    if {$cultural_uses!=""} {
-	append ::entries [mtd1 archive_bio_cultural_use $cultural_uses]
-    }
-    }
-
-
-
     append ::entries "</entry>\n"
 }
 

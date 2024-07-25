@@ -10,6 +10,7 @@ proc bio $::bp  {
 
     foreach p $::bp {
 	set $p [string trim [clean [set $p]]]
+	check bio $::cnt $p [set $p]
 #	puts "$p= [set $p]"
     }
     if {[regexp -nocase {Does not require} $handling] || [regexp -nocase {Doesn't require special handling} $handling]} {
@@ -137,6 +138,9 @@ proc bio $::bp  {
 
 source bio.tcl
 append ::entries "</entries>\n";
-puts $::entries
+
+set fp [open bioentries.xml w]
+puts $fp $::entries
+close $fp
 
 
