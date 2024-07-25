@@ -1101,6 +1101,7 @@ public class LogManager extends RepositoryManager {
 	List<Processor> suffix = new ArrayList<Processor>();
 	final LinkedHashMap<String,Integer> counts = new LinkedHashMap<String,Integer>();
 	final int[] cnt={0};
+	final int[] ecnt={0};	
 	final Hashtable<String,Entry> entries = new Hashtable<String,Entry>();
 	suffix.add(new Processor() {
 		public Row processRow(TextReader ctx, Row row) throws Exception {
@@ -1142,6 +1143,7 @@ public class LogManager extends RepositoryManager {
 		    Integer c = counts.get(id);
 		    if(c==null) {
 			counts.put(id,c=new Integer(0));
+			ecnt[0]++;
 		    }
 		    int n = c.intValue()+1;
 		    counts.put(id,new Integer(n));
@@ -1155,10 +1157,9 @@ public class LogManager extends RepositoryManager {
 	Seesv seesv = new Seesv(args,suffix);
 	seesv.run(files);
 
-	sb.append(HU.div("# records:" + cnt[0]));
+	sb.append(HU.div("# requests: " + cnt[0] +"  #entries:" + ecnt[0]));
 	sb.append("<table>");
 	sb.append("<tr><td><b>Count</b></td><td><b>Entry</b></td></tr>");
-
         List<SortableObject<String>> sort =
             new ArrayList<SortableObject<String>>();	
 
