@@ -6725,6 +6725,25 @@ public class EntryManager extends RepositoryManager {
 
 
 
+    public TypeHandler getEntryTypeHandler(Request request, String entryId) throws Exception {
+	Connection connection = getDatabaseManager().getConnection();
+	Statement select = getDatabaseManager().select(Tables.ENTRIES.COL_TYPE,
+						       Tables.ENTRIES.NAME,
+						       Clause.eq(Tables.ENTRIES.COL_ID,entryId),"");
+	
+	try {
+	    ResultSet results = select.getResultSet();
+            if (!results.next()) {
+		return null;
+            }
+            String entryType = results.getString(Tables.ENTRIES.COL_NODOT_TYPE);
+	    return getRepository().getTypeHandler(entryType);
+	} finally {
+	    getDatabaseManager().closeAndReleaseConnection(select);
+	}
+    }
+
+
     public Entry getEntry(Request request, String entryId) throws Exception {
         return getEntry(request, entryId, true);
     }
@@ -9876,6 +9895,10 @@ public class EntryManager extends RepositoryManager {
         }
     }
 
+
+    public String getEntryUrl(Request request, String id) {
+	return HU.url(getRepository().URL_ENTRY_SHOW.toString(), ARG_ENTRYID,id);
+    }
 
     private static class Descendent {
 	Entry entry;
