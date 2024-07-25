@@ -2809,6 +2809,11 @@ public class Request implements Constants, Cloneable {
      */
     private boolean checkForRobot() {
         String userAgent = getUserAgent();
+	return checkForRobot(userAgent);
+    }
+
+
+    public  boolean checkForRobot(String userAgent) {
         if (userAgent == null) {
             return false;
         }
