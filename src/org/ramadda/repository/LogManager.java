@@ -1032,6 +1032,8 @@ public class LogManager extends RepositoryManager {
 
 	List initItems = new ArrayList();
 	initItems.add(new TwoFacedObject("None",""));
+	HU.formEntry(form,"",HU.labeledCheckbox("csv","true",request.get("csv",false),"As CSV"));
+
 	HU.formEntry(form,msgLabel("Aggregate at Type"),
 		     getRepository().makeTypeSelect(initItems,
 						    request, ARG_TYPE, null,
@@ -1067,7 +1069,10 @@ public class LogManager extends RepositoryManager {
         sb.append(HU.formClose());
 
 	if(doReport) {
-	    processAdminLogReport(request,sb);
+	    StringBuilder csv =processAdminLogReport(request,sb);
+	    if(csv!=null) {
+		return new Result("", csv,"text/csv");
+	    }
 	}
 
 
@@ -1075,7 +1080,7 @@ public class LogManager extends RepositoryManager {
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
-    public void processAdminLogReport(final Request request,StringBuilder sb) throws Exception {
+    public StringBuilder processAdminLogReport(final Request request,StringBuilder sb) throws Exception {
 	List<IO.Path> files = new ArrayList<IO.Path>();
 	for(Object f:request.get("file",new ArrayList<String>())) {
 	    String      file = getLogDir() + "/" + f;
@@ -1083,10 +1088,11 @@ public class LogManager extends RepositoryManager {
 	}
 	if(files.size()==0) {
 	    sb.append("No files selected");
-	    return;
+	    return null;
 	}
 	String _type = request.getString(ARG_TYPE,null);
 	if(!stringDefined(_type)) _type=null;
+	boolean asCsv = request.get("csv",false);
 	final String type = _type;
 	final Date fromDate = request.getDate(ARG_FROMDATE,null);
 	final Date toDate = request.getDate(ARG_TODATE,null);	
@@ -1166,10 +1172,18 @@ public class LogManager extends RepositoryManager {
 	    sort.add(new SortableObject<String>(c,key));
 	}
 
+	StringBuilder csv  = new StringBuilder();
+	if(asCsv)csv.append("count,entry\n");
         java.util.Collections.sort(sort,Comparator.reverseOrder());
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
+	    if(asCsv){
+		csv.append(c);
+		csv.append(",");				
+		csv.append(Seesv.cleanColumnValue(key));
+		csv.append("\n");				
+	    }
 	    sb.append("<tr><td align=right width=10%>");
 	    sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
 	    sb.append("</td><td>");
@@ -1177,6 +1191,8 @@ public class LogManager extends RepositoryManager {
 	    sb.append("</td></tr>");
 	}
 	sb.append("</table>");
+	if(asCsv) return csv;
+	return null;
 
     }
 
