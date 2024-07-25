@@ -29,6 +29,7 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.io.FileNotFoundException;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import java.text.SimpleDateFormat;
@@ -1183,13 +1184,14 @@ public class LogManager extends RepositoryManager {
 	if(asCsv)csv.append("count,type,id,entry\n");
         java.util.Collections.sort(sort,Comparator.reverseOrder());
 	long t3 = System.currentTimeMillis();
+	Connection connection = getDatabaseManager().getConnection();
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
 	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
 	    String entryType="";
 	    if(id!=null) {
-		TypeHandler typeHandler= getEntryManager().getEntryTypeHandler(request,id);
+		TypeHandler typeHandler= getEntryManager().getEntryTypeHandler(request,connection,id);
 		if(typeHandler!=null) entryType=typeHandler.getDescription();
 	    }
 
@@ -1213,6 +1215,7 @@ public class LogManager extends RepositoryManager {
 		sb.append("</td></tr>");
 	    }
 	}
+	getDatabaseManager().closeConnection(connection);
 	sb.append("</table>");
 	long t4 = System.currentTimeMillis();
 	Utils.printTimes("log",t1,t2,t3,t4);
