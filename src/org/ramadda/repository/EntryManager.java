@@ -6739,7 +6739,7 @@ public class EntryManager extends RepositoryManager {
             String entryType = results.getString(Tables.ENTRIES.COL_NODOT_TYPE);
 	    return getRepository().getTypeHandler(entryType);
 	} finally {
-
+	    select.close();
 	}
     }
 
