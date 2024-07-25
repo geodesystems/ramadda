@@ -1173,18 +1173,26 @@ public class LogManager extends RepositoryManager {
         java.util.Collections.sort(sort,Comparator.reverseOrder());
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
+	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
 	    if(asCsv){
 		csv.append(c);
 		csv.append(",");				
 		csv.append(Seesv.cleanColumnValue(key));
 		csv.append("\n");				
+	    } else {
+		sb.append("<tr><td align=right width=10%>");
+		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
+		sb.append("</td><td>");
+		if(id!=null) {
+		    Entry entry= getEntryManager().getEntry(request,id);
+		    if(entry!=null) {
+			key = HU.href(getEntryManager().getEntryUrl(request, entry),key,HU.attrs("target","_entry"));
+		    }
+		}
+		sb.append(key);
+		sb.append("</td></tr>");
 	    }
-	    sb.append("<tr><td align=right width=10%>");
-	    sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
-	    sb.append("</td><td>");
-	    sb.append(key);
-	    sb.append("</td></tr>");
 	}
 	sb.append("</table>");
 	if(asCsv) return csv;
