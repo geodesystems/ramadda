@@ -6726,9 +6726,10 @@ public class EntryManager extends RepositoryManager {
 
 
     public TypeHandler getEntryTypeHandler(Request request,     Connection connection,String entryId) throws Exception {
-	Statement select = getDatabaseManager().select(Tables.ENTRIES.COL_TYPE,
-						       Tables.ENTRIES.NAME,
-						       Clause.eq(Tables.ENTRIES.COL_ID,entryId),"");
+	Statement select = getDatabaseManager().select(connection,
+						       Tables.ENTRIES.COL_TYPE,
+						       Misc.newList(Tables.ENTRIES.NAME),
+						       Clause.eq(Tables.ENTRIES.COL_ID,entryId),"",1);
 	
 	try {
 	    ResultSet results = select.getResultSet();
@@ -6738,6 +6739,7 @@ public class EntryManager extends RepositoryManager {
             String entryType = results.getString(Tables.ENTRIES.COL_NODOT_TYPE);
 	    return getRepository().getTypeHandler(entryType);
 	} finally {
+
 	}
     }
 

@@ -1185,14 +1185,17 @@ public class LogManager extends RepositoryManager {
         java.util.Collections.sort(sort,Comparator.reverseOrder());
 	long t3 = System.currentTimeMillis();
 	Connection connection = getDatabaseManager().getConnection();
+	System.err.println("results:" + sort.size());
         for (SortableObject<String> po : sort) {
 	    int  c = po.getPriority();
 	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
 	    String entryType="";
 	    if(id!=null) {
+		System.err.println("before");
 		TypeHandler typeHandler= getEntryManager().getEntryTypeHandler(request,connection,id);
 		if(typeHandler!=null) entryType=typeHandler.getDescription();
+		System.err.println("after");
 	    }
 
 	    if(asCsv){
