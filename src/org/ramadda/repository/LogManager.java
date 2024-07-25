@@ -1034,6 +1034,8 @@ public class LogManager extends RepositoryManager {
 	initItems.add(new TwoFacedObject("None",""));
 	HU.formEntry(form,"",HU.labeledCheckbox("csv","true",request.get("csv",false),"As CSV"));
 
+	HU.formEntry(form,"",HU.labeledCheckbox("robots","true",request.get("robots",false),"Exclude Bots"));
+
 	HU.formEntry(form,msgLabel("Aggregate at Type"),
 		     getRepository().makeTypeSelect(initItems,
 						    request, ARG_TYPE, null,
@@ -1093,6 +1095,7 @@ public class LogManager extends RepositoryManager {
 	String _type = request.getString(ARG_TYPE,null);
 	if(!stringDefined(_type)) _type=null;
 	boolean asCsv = request.get("csv",false);
+	final boolean bots = request.get("robots",false);
 	final String type = _type;
 	final Date fromDate = request.getDate(ARG_FROMDATE,null);
 	final Date toDate = request.getDate(ARG_TODATE,null);	
@@ -1112,6 +1115,10 @@ public class LogManager extends RepositoryManager {
 		    String action=row.getString(4);		    
 		    String date=row.getString(5);
 		    if(!action.equals("view") || id.equals("entryid")) return row;
+		    if(bots && request.checkForRobot(client)) {
+			System.err.println("bot:" + client);
+			return row;
+		    }
 		    if(fromDate!=null || toDate!=null) {
 			Date dttm = sdf.parse(date);
 			if(fromDate!=null && fromDate.getTime()<dttm.getTime()) return row;
