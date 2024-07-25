@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.SortableObject;
 import org.ramadda.util.seesv.*;
 import org.ramadda.util.HtmlUtils;
@@ -1187,12 +1188,9 @@ public class LogManager extends RepositoryManager {
 	    String id = StringUtil.findPattern(po.getValue(),"(.*?)name:");
 	    String key = StringUtil.findPattern(po.getValue(),"name:(.*)");
 	    String entryType="";
-	    Entry entry = null;
 	    if(id!=null) {
-		entry= getEntryManager().getEntry(request,id);
-		if(entry!=null) {
-		    entryType=entry.getTypeHandler().getDescription();
-		}
+		TypeHandler typeHandler= getEntryManager().getEntryTypeHandler(request,id);
+		if(typeHandler!=null) entryType=typeHandler.getDescription();
 	    }
 
 	    if(asCsv){
@@ -1205,10 +1203,7 @@ public class LogManager extends RepositoryManager {
 		csv.append(Seesv.cleanColumnValue(key));
 		csv.append("\n");				
 	    } else {
-		if(entry!=null) {
-		    key = HU.href(getEntryManager().getEntryUrl(request, entry),key,HU.attrs("target","_entry"));
-		}
-
+		key = HU.href(getEntryManager().getEntryUrl(request, id),key,HU.attrs("target","_entry"));
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
 		sb.append("</td><td>");
