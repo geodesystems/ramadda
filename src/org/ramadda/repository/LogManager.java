@@ -1116,18 +1116,13 @@ public class LogManager extends RepositoryManager {
 			if(fromDate!=null && fromDate.getTime()<dttm.getTime()) return row;
 			if(toDate!=null && toDate.getTime()>dttm.getTime()) return row;
 		    }
-		    Entry entry = entries.get(id);
-		    if(entry==null) {
-			entry = getEntryManager().getEntry(request,id);
-			if(entry!=null) entries.put(id,entry);
-		    }
-		    if(entry==null) {
-			//			System.err.println("no entry:" + id +" " + name);
-			return row;
-		    }
-
 		    if(type!=null) {
 			try {
+			    Entry entry = entries.get(id);
+			    if(entry==null) {
+				entry = getEntryManager().getEntry(request,id);
+				if(entry!=null) entries.put(id,entry);
+			    }
 			    while(entry!=null) {
 				if(entry.getTypeHandler().isType(type)) {
 				    id = entry.getId();
