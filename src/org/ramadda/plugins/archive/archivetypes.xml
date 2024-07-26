@@ -96,8 +96,11 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
 +center
 {{archive_finding_aid_link}}
 -center
-{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +if anonymous=false
++center
+{{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+-center
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
 {{barcode field=barcode message=""}}
 -center
@@ -326,6 +329,9 @@ headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator="
 inherited="false"  }} 
 -col
 +col-4
++center
+{{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+-center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
 {{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
@@ -413,6 +419,9 @@ inherited="false"  }}
 -tabs
 -col
 +col-4
++center
+{{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+-center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
 {{image inherited="true"  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
