@@ -404,7 +404,7 @@ public class TypeHandler extends RepositoryManager {
 		metadataTypes = makeInitialMetadataTypes();
 
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
-							     ATTR_CHILDTYPES, ""));
+							     ATTR_CHILDTYPES, ""),",",true,true);
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
 					    ? ""
 					    : type));
@@ -1008,6 +1008,11 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
+    public List<String> getDefaultChildrenTypes() {
+	return childTypes;
+    }
+
+
     public void getChildTypes(List<String> types) {
         if ( !types.contains(getType())) {
             types.add(getType());
