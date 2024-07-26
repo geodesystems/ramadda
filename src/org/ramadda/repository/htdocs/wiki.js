@@ -2071,6 +2071,14 @@ WikiEditor.prototype = {
 	    tree: treeAttrs,	
 	    tabletree: treeAttrs,
 	    gallery_extra:this.groupAttributes,
+	    entries_template:Utils.mergeLists([
+		{label:'Entries Template'},
+		{p:'template',ex:'${name link=true}'},
+		{p:'before'},
+		{p:'after'}
+
+	    ],		
+		this.groupAttributes),
 	    links: Utils.mergeLists([
 		{label:'Links Properties'},
 		{p:'info',ex:'List children entries'},
