@@ -1984,36 +1984,34 @@ public class WikiManager extends RepositoryManager
 	    return getProperty(wikiUtil,props,"message","");
 
 	} else if(theTag.equals(WIKI_TAG_NEWBUTTON) || theTag.equals(WIKI_TAG_NEW_TYPE) || theTag.equals(WIKI_TAG_NEW_ENTRY)) {
-	    if(getAccessManager().canDoNew(request, entry)) {
-		List<String> types = new ArrayList<String>();
-		if(getProperty(wikiUtil,props,"fromEntry",false)) {
-		    types.addAll(entry.getTypeHandler().getDefaultChildrenTypes());
-		}
-		
-		String clazz = getProperty(wikiUtil,props,"class","");
-		String _type = getProperty(wikiUtil,props,"type",null);
-		boolean showToggle = getProperty(wikiUtil,props,"showToggle",false);
-		if(_type!=null) {
-		    types.add(_type);
-		}
-		if(types.size()==0) return getProperty(wikiUtil,props,"message","No type specified in new entry tag");
-		for(String type: types) {
-		    TypeHandler typeHandler = getRepository().getTypeHandler(type);
-		    if(typeHandler==null) return "Not a valid entry type:" + type;
-		    String url = request.makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, entry.getId(), ARG_TYPE, type);
-		    String label = getProperty(wikiUtil,props,"label","New " + typeHandler.getLabel());
-		    if(getProperty(wikiUtil,props,"addIcon",true)) {
-			String icon = HU.img(typeHandler.getIconUrl(typeHandler.getIconProperty(ICON_BLANK)),"",
-					     HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
-			label = icon +HU.space(1) +label;
-		    }
-		    sb.append(HU.href(url,label, HU.attrs("class","ramadda-button " + clazz,"role","button")));
-		}
-		return HU.div(sb.toString(),HU.attrs("class","ramadda-newentry-buttons"));
+	    if(!getAccessManager().canDoNew(request, entry)) {
+		return "";
 	    }
-	    return getProperty(wikiUtil,props,"message","");
-	    
-
+	    List<String> types = new ArrayList<String>();
+	    if(getProperty(wikiUtil,props,"fromEntry",false)) {
+		types.addAll(entry.getTypeHandler().getDefaultChildrenTypes());
+	    }
+		
+	    String clazz = getProperty(wikiUtil,props,"class","");
+	    String _type = getProperty(wikiUtil,props,"type",null);
+	    boolean showToggle = getProperty(wikiUtil,props,"showToggle",false);
+	    if(_type!=null) {
+		types.add(_type);
+	    }
+	    if(types.size()==0) return getProperty(wikiUtil,props,"message","No type specified in new entry tag");
+	    for(String type: types) {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		if(typeHandler==null) return "Not a valid entry type:" + type;
+		String url = request.makeUrl(getRepository().URL_ENTRY_FORM, ARG_GROUP, entry.getId(), ARG_TYPE, type);
+		String label = getProperty(wikiUtil,props,"label","New " + typeHandler.getLabel());
+		if(getProperty(wikiUtil,props,"addIcon",true)) {
+		    String icon = HU.img(typeHandler.getIconUrl(typeHandler.getIconProperty(ICON_BLANK)),"",
+					 HU.attr(HU.ATTR_WIDTH,ICON_WIDTH));
+		    label = icon +HU.space(1) +label;
+		}
+		sb.append(HU.href(url,label, HU.attrs("class","ramadda-button " + clazz,"role","button")));
+	    }
+	    return HU.div(sb.toString(),HU.attrs("class","ramadda-newentry-buttons"));
 	} else if(theTag.equals(WIKI_TAG_TYPECOUNT)) {
 	    final Request theRequest = request;
 	    final HashSet except = Utils.makeHashSet(Utils.split(getProperty(wikiUtil,props,"except",""),",",true,true));
