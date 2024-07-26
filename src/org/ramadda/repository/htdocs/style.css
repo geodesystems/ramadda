@@ -377,11 +377,6 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
     margin:4px;
 }
 
-.ramadda-newentry-buttons {
-    margin-top:4px;
-    margin-bottom:4px;    
-}
-
 .ramadda-button-disabled {
     background:#ccc;
 }
