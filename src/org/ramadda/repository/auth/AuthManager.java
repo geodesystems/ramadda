@@ -40,6 +40,8 @@ import javax.imageio.ImageIO;
  */
 @SuppressWarnings("unchecked")
 public class AuthManager extends RepositoryManager {
+    public static final String TOKEN_NO_SESSION = "nosession";
+
     private static final String ARG_EXTRA_PASSWORD = "extrapassword";
 
     private boolean doCaptcha;
@@ -321,7 +323,9 @@ public class AuthManager extends RepositoryManager {
                 String authToken = getAuthToken(sessionId,extra);
 		//		System.err.println("AUTHTOKEN:" + authToken);
                 sb.append(HU.hidden(ARG_AUTHTOKEN, authToken));
-            }
+            } else {
+                sb.append(HU.hidden(ARG_AUTHTOKEN, TOKEN_NO_SESSION));
+	    }
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -368,6 +372,9 @@ public class AuthManager extends RepositoryManager {
 			       " mySessionId:" + Utils.clip(mySessionId,10,"..."));
         }
 
+	if(mySessionId==null && authToken!=null) {
+	    if(authToken.equals(TOKEN_NO_SESSION))  return;
+	}
         if (authToken != null && mySessionId != null) {
             String sessionAuth = getAuthToken(mySessionId,extra);
             if (authToken.trim().equals(sessionAuth)) {
