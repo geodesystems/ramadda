@@ -167,7 +167,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 	    String url =
 		request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
 				 ARG_OUTPUT,"archive_finding_aid");
-	    return HU.div(HU.href(url,"Finding Aid"),HU.cssClass("ramadda-button"));
+	    return HU.div(HU.href(url,"Finding Aid"),HU.attrs("class","ramadda-button","style","margin-bottom:6px;"));
 	}
         if ( !tag.equals("archive_finding_aid")) {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
