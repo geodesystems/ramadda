@@ -551,9 +551,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     @Override
     public void addToEntryNode(Request request, Entry entry,
-                               final FileWriter fileWriter, Element node)
+                               final FileWriter fileWriter, Element node,boolean encode)
             throws Exception {
-        super.addToEntryNode(request, entry, fileWriter, node);
+        super.addToEntryNode(request, entry, fileWriter, node,encode);
         if ( !getAccessManager().canDoFile(request, entry)) {
             return;
         }
