@@ -183,6 +183,7 @@ public class XmlOutputHandler extends OutputHandler {
                                boolean includeParentId)
             throws Exception {
 
+	boolean encode  = request.get("encode",true);
 
         Element node = XmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
             ATTR_ID, entry.getId(), ATTR_NAME, entry.getName(), ATTR_PARENT,
@@ -275,14 +276,14 @@ public class XmlOutputHandler extends OutputHandler {
 
         if (Utils.stringDefined(entry.getDescription())) {
             Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
-            descNode.setAttribute("encoded", "true");
+            descNode.setAttribute("encoded", encode?"true":"false");
             descNode.appendChild(XmlUtil.makeCDataNode(doc,
-                    entry.getDescription(), true));
+                    entry.getDescription(), encode));
         }
         getMetadataManager().addMetadata(request, entry, fileWriter, doc,
-                                         node);
+                                         node,encode);
         entry.getTypeHandler().addToEntryNode(request, entry, fileWriter,
-					      node);
+					      node,encode);
 
 	getAccessManager().addEntryXml(entry, doc, node);
         return node;

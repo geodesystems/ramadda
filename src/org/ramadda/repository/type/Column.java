@@ -1522,7 +1522,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     
-    public void addToEntryNode(Request request,Entry entry, Object[] values, Element node)
+    public void addToEntryNode(Request request,Entry entry, Object[] values, Element node,boolean encode)
 	throws Exception {
 	if(!accessOk(request, entry)) return;
         if (values[offset] == null) {
@@ -1546,10 +1546,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         } else {
             stringValue = values[offset].toString();
         }
-        boolean encode    = true;
         Element valueNode = XmlUtil.create(node.getOwnerDocument(), name);
         node.appendChild(valueNode);
-        valueNode.setAttribute("encoded", "" + encode);
+        valueNode.setAttribute("encoded", encode?"true":"false");
         valueNode.appendChild(XmlUtil.makeCDataNode(node.getOwnerDocument(),
 						    stringValue, encode));
     }

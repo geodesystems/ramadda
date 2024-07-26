@@ -1777,10 +1777,10 @@ public class TypeHandler extends RepositoryManager {
 
     
     public void addToEntryNode(Request request, Entry entry,
-                               FileWriter fileWriter, Element node)
+                               FileWriter fileWriter, Element node,boolean encode)
 	throws Exception {
         if (parent != null) {
-            parent.addToEntryNode(request, entry, fileWriter, node);
+            parent.addToEntryNode(request, entry, fileWriter, node,encode);
         }
     }
 

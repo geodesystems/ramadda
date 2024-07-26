@@ -1607,7 +1607,7 @@ public class MetadataManager extends RepositoryManager {
      */
     public void addMetadata(Request request, Entry entry,
                             FileWriter fileWriter, Document doc,
-                            Element parent)
+                            Element parent,boolean encode)
             throws Exception {
         List<Metadata> metadataList = getMetadata(request,entry);
         for (Metadata metadata : metadataList) {
@@ -1616,7 +1616,7 @@ public class MetadataManager extends RepositoryManager {
                 continue;
             }
             metadataHandler.addMetadata(request, entry, fileWriter, metadata,
-                                        parent);
+                                        parent,encode);
 
         }
     }

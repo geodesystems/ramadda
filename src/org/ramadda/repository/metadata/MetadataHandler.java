@@ -515,7 +515,7 @@ public class MetadataHandler extends RepositoryManager {
      */
     public void addMetadata(Request request, Entry entry,
                             FileWriter fileWriter, Metadata metadata,
-                            Element node)
+                            Element node,boolean encode)
             throws Exception {
         MetadataType type = getType(metadata.getType());
         if (type == null) {
@@ -548,10 +548,13 @@ public class MetadataHandler extends RepositoryManager {
             }
             Element attrNode = XmlUtil.create(doc, Metadata.TAG_ATTR,
                                    metadataNode,
+					      encode?
                                    new String[] { Metadata.ATTR_INDEX,
-                    "" + index });
+						  "" + index}:
+                                   new String[] { Metadata.ATTR_INDEX,
+						  "" + index,"encoded","false"});					      
             //true means to base 64 encode the text
-            attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, true));
+            attrNode.appendChild(XmlUtil.makeCDataNode(doc, value, encode));
             if ((fileWriter != null)
                     && element.getDataType().equals(element.DATATYPE_FILE)) {
                 File f = type.getFile(entry, metadata, element);

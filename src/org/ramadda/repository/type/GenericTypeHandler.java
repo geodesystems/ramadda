@@ -1013,17 +1013,16 @@ public class GenericTypeHandler extends TypeHandler {
     
     @Override
     public void addToEntryNode(Request request, Entry entry,
-                               FileWriter fileWriter, Element node)
+                               FileWriter fileWriter, Element node,boolean encode)
             throws Exception {
-        super.addToEntryNode(request, entry, fileWriter, node);
-
+        super.addToEntryNode(request, entry, fileWriter, node,encode);
 
         if ( !haveDatabaseTable()) {
             return;
         }
         Object[] values = getEntryValues(entry);
         for (Column column : getMyColumns()) {
-            column.addToEntryNode(request,entry, values, node);
+            column.addToEntryNode(request,entry, values, node,encode);
         }
     }
 
