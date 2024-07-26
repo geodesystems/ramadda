@@ -541,6 +541,7 @@ public interface WikiConstants {
     public static final String WIKI_TAG_EDITBUTTON = "editbutton";
     public static final String WIKI_TAG_NEWBUTTON = "newbutton";
     public static final String WIKI_TAG_NEW_TYPE = "new_type";
+    public static final String WIKI_TAG_NEW_ENTRY = "new_entry";
     public static final String WIKI_TAG_NEW_PROPERTY = "new_property";    
 
     /** _more_ */
