@@ -289,11 +289,17 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-    public String applyPromptToDocument(Request request, Entry entry, String prompt,PromptInfo info)
+    public String applyPromptToDocument(Request request, Entry entry, boolean document, String prompt,PromptInfo info)
 	throws Exception {
 	try {
 	    if(info==null) info=new PromptInfo();
-	    String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
+	    String corpus=null;
+	    if(document) {
+		corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
+	    } else {
+		corpus = "The below text is  xml\n";
+		corpus +=getRepository().getXmlOutputHandler().getEntryXml(request, entry);
+	    }
 	    if(corpus==null) return null;
 	    info.corpusLength=corpus.length();
 	    if(info.offset>0 && info.offset<corpus.length()) {
@@ -913,10 +919,10 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    public Result processDocumentChat(Request request, Entry entry)
-	throws Exception {
+    public Result processDocumentChat(Request request, Entry entry,boolean document)
+	throws Exception {	
 	String pageUrl =request.toString();
-	String subLabel = HU.href(pageUrl,"Document Chat",HU.cssClass("ramadda-clickable"));
+	String subLabel = HU.href(pageUrl,document?"Document Chat":"Entry LLM",HU.cssClass("ramadda-clickable"));
         StringBuilder sb      = new StringBuilder();
         if (request.isAnonymous()) {
 	    if(request.exists("question")) {
@@ -937,6 +943,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		PromptInfo info = new PromptInfo(TOKEN_LIMIT_UNDEFINED,request.get("offset",0));
 		String r = applyPromptToDocument(request,
 						 entry,
+						 document,
 						 request.getString("question",""),
 						 info);
 		String s;
@@ -959,7 +966,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
-	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50%>");
+	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50% style='max-width:100%;overflow-x:hidden;'>");
 	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
@@ -989,6 +996,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	
 
 	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId()),
+			      JU.quote(document?"documentchat":"entryllm"),
 			      JsonUtil.list(models,false)));
         getPageHandler().entrySectionClose(request, entry, sb);
         return getEntryManager().addEntryHeader(request, entry,

@@ -1443,6 +1443,7 @@ public class ExtEditor extends RepositoryManager {
 		    
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
+									    true,
 									    prompt,null);
 		if(!Utils.stringDefined(r)) {
 		    ctx.warning("No results for entry:" + entry.getName());
@@ -1471,6 +1472,7 @@ public class ExtEditor extends RepositoryManager {
 	    try {
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
+									    true,
 									    prompt,null);
 		if(!Utils.stringDefined(r)) {
 		    ctx.warning("No results for entry:" + entry.getName());

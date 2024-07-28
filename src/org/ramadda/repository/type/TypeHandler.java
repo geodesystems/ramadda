@@ -499,6 +499,9 @@ public class TypeHandler extends RepositoryManager {
                 latLonFormat = new DecimalFormat(llf);
             }
 
+	    //Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
+	    addAction(new Action("entryllm","Apply LLM",null,true,false,"view"));
+
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
                 Element actionNode = (Element) actionNodes.get(i);
@@ -551,6 +554,7 @@ public class TypeHandler extends RepositoryManager {
 
     public void addAction(Action action) {
 	if(action.getId().equals("documentchat") ||
+	   action.getId().equals("entryllm") ||
 	   action.getId().equals("applyllm")) {
 	    if(!getRepository().getLLMManager().isLLMEnabled()) {
 		return;
@@ -1245,11 +1249,10 @@ public class TypeHandler extends RepositoryManager {
     
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
-
         String action = request.getString("action", "");
-
-	if (action.equals("documentchat")) {
-	    return getLLMManager().processDocumentChat(request,entry);
+	System.err.println("ACTION:" + action);
+	if (action.equals("entryllm") || action.equals("documentchat")) {
+	    return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
 	}
 
 

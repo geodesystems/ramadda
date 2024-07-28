@@ -1,5 +1,5 @@
 
-function DocumentChat(id,entryId,models) {
+function DocumentChat(id,entryId,action,models) {
     this.id = id;
     let cnt = 0;
     let div  =jqid(id);
@@ -60,7 +60,7 @@ function DocumentChat(id,entryId,models) {
 	let url =ramaddaBaseUrl+'/entry/action';
 
         let args = {
-	    action:'documentchat',
+	    action:action,
             entryid: entryId,
 	    question:q,
 	    offset:this.jq('chatoffset').val().trim(),
