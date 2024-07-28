@@ -15,29 +15,16 @@ set ::cnt 0
 
 set ::bp {name_type author call_nbr title item_type item_count publisher pub_year volume phys_char notes barcode other_terms isbn lccn series column1 _1}
 
-set ::spelling {}
-foreach line [split [read [open spelling.txt r]] "\n"] {
-    set line [string trim $line]
-    foreach {p w} [split $line :] break
-    lappend ::spelling [list $p $w]
-}
-
 
 
 proc book $::bp  {
     incr ::cnt
 ##    if {$::cnt>10} return
     foreach p $::bp {
-	set v [set $p]
-	check books $::cnt $p [set $p]
-
-
-	foreach tuple $::spelling {
-	    foreach {pattern with} $tuple break
-	    if {[regsub -all $pattern $v $with v]} {
-	    }
-	}
-	set $p [string trim [clean $v]]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check books $::cnt $p $v
     }
     if {[regexp {©} $title]} {
 #	puts "Title: $title"

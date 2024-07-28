@@ -1,4 +1,35 @@
 
+
+array set ::spellwords {}
+proc loadSpelling {} {
+    if {[info exists ::spelling]} {
+	return;
+    }
+    set ::spelling {}
+    set script_path [info script]
+    set script_dir [file dirname $script_path]
+    foreach line [split [read [open ../spelling.txt r]] "\n"] {
+	set line [string trim $line]
+	if {[regexp {^#} $line]} continue
+	if {$line=="quit"} break
+	foreach {p w} [split $line :] break
+	set ::spellwords($w) 1
+	lappend ::spelling [list $p $w]
+    }
+}
+
+proc spell {s} {
+    loadSpelling
+    set v $s
+    foreach tuple $::spelling {
+	foreach {pattern with} $tuple break
+	if {[regsub -all $pattern $v $with v]} {
+	    #puts "change: $s to:$v"
+	}
+    }
+    set v
+}
+
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
@@ -27,20 +58,48 @@ proc pad {n} {
 }    
 
 array set ::checkseen {}
-proc check {what row field s} {
+proc check {what row field _s} {
+    set s $_s
     regsub -all -- {[\[\]\(\)_,-\.]+} $s { } s
+    set words {}
+    set results ""
     foreach w1 [split $s { }] {
 	foreach w2 [split $w1 "\n"] {
-	    foreach word [split $w2 ","] {	    
-		if {[regexp {[^\x00-\x7F]} $word]} {
-		    if {![info exists ::checkseen($word)]} {
-			set ::checkseen($word) 1
-			puts "$what - #$row - $field: $word"
+	    foreach w3 [split $w2 ":"] {
+		foreach word [split $w3 ","] {
+		    if {[regexp {[^\x00-\x7F]} $word]} {
+			if {![info exists ::checkseen($word)] && ![info exists ::spellwords($word)]} {
+			    set ::checkseen($word) 1
+			    lappend words $word
+			    append results "$what - #$row - $field: $word\n"
+			}
 		    }
 		}
 	    }
 	}
     }
+    if {![info exists ::addedcss]} {
+	puts {<!DOCTYPE html>}
+	puts "<html><head><title>$what</title>"
+	puts {<style type="text/css">body {line-height:1.2em;font-family: Helvetica;} </style>}
+	puts {</head><body>}
+	puts "<h1>$what</h1>"
+
+	set ::addedcss 1
+    }
+    if {$results!=""} {
+	puts -nonewline "#$row: "
+	set cnt 0
+	set _s [string trim $_s]
+	foreach w $words {
+	    incr cnt
+	    if {$cnt>1} {puts -nonewline " - "}
+	    puts -nonewline "<i>$w</i> "
+	    regsub -all $w $_s "<b>$w</b>" _s
+	}
+	puts "<div style='border-bottom:1px solid #efefef;max-height:200px;overflow-y:auto;padding:5px;margin:5px;margin-bottom:10px;margin-left:40px;'>$_s</div>"
+    }
+
 }
 
 proc clean {s} {

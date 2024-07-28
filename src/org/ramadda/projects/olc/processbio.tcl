@@ -9,9 +9,10 @@ proc bio $::bp  {
 #    if {$::cnt>4} return
 
     foreach p $::bp {
-	set $p [string trim [clean [set $p]]]
-	check bio $::cnt $p [set $p]
-#	puts "$p= [set $p]"
+	set v [string trim [clean [set $p]]]'
+	set v [spell $v]
+	set $p $v
+	check "Bio Records" $::cnt $p $v
     }
     if {[regexp -nocase {Does not require} $handling] || [regexp -nocase {Doesn't require special handling} $handling]} {
 	set handling {Does not require special handling}

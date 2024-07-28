@@ -174,8 +174,10 @@ set ::cp {collection_title collection_nbr location organiz_arrange scope_content
 proc collection $::cp  {
     incr ::ccnt
     foreach p $::cp {
-	set $p [string trim [set $p]]
-	check collection $::ccnt $p [set $p]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check collection $::ccnt $p $v
     }
 
     set cid [cid $collection_nbr]
@@ -225,7 +227,7 @@ proc handlePhysicalDescription {phys_desc} {
 }
 
 
-proc handleDate {date} {
+proc handleDate {date what idx} {
     set date [clean $date]
     if {$date!="" && $date!="--"} {
 	regsub -all s $date {} date
@@ -240,7 +242,7 @@ proc handleDate {date} {
 	    append ::entries [col fromdate $date1]
 	    append ::entries [col todate $date2]	    
 	} else {
-	    puts stderr "bad date: $date"
+	    puts stderr "bad date: $date what: $what #$idx"
 #	    append ::entries [col fromdate $date]
 	}
     }
@@ -253,8 +255,10 @@ set ::sp {collection_nbr series_nbr series_title location scope_content notes us
 proc series $::sp {
     incr ::scnt
     foreach p $::sp {
-	set $p [string trim [set $p]]
-	check series $::scnt $p [set $p]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check series $::scnt $p $v
     }
     set parent [cid $collection_nbr]
 ##    puts  "parent: $::cmap($parent)"
@@ -272,9 +276,9 @@ proc series $::sp {
     append ::entries [mtd2 archive_note "Note" $column1]
     append ::entries [mtd2 archive_note "Note" $summary]        
     append ::entries [mtd1 archive_creator $creator]    
-    handleDate $bulk_dates
+    handleDate $bulk_dates series $::scnt
     if {[regexp {.*\d\d\d\d-.*} $name_type]} {
-	handleDate $name_type
+	handleDate $name_type series $::scnt
     } else {
 	if {$name_type!=""} {
 ##	    puts stderr "name_type:$name_type"
@@ -289,8 +293,10 @@ proc files $::fp {
     if {$file_unit_nbr==""} return
     incr ::fcnt
     foreach p $::fp {
-	set $p [string trim [set $p]]
-	check file $::fcnt $p [set $p]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check file $::fcnt $p $v
     }
     set parent [sid $collection_nbr $series_nbr]
     if {![info exists   ::sids($parent)]} {
@@ -304,7 +310,7 @@ proc files $::fp {
     append ::entries [col file_number [pad $file_unit_nbr]]
     append ::entries [col location $location]
     handlePhysicalDescription $phys_desc 
-    handleDate  $dates
+    handleDate  $dates file $::fcnt
     append ::entries [mtd2 archive_note "Summary" $summary_note]        
     append ::entries [mtd2 archive_note "Provenance" $notes_prov]
     append ::entries [mtd1 archive_creator $creator]
@@ -324,8 +330,10 @@ proc item $::ip {
 #	exit
     }
     foreach p $::ip {
-	set $p [string trim [set $p]]
-	check item $::icnt $p [set $p]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check item $::icnt $p $v
     }
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
@@ -348,7 +356,7 @@ proc item $::ip {
     append ::entries [mtd1 archive_media_type $media_type]
     append ::entries [mtd1 archive_creator $creator]    
     append ::entries [mtd1 archive_category $category]    
-    handleDate  $dates
+    handleDate  $dates item $::icnt
 #    puts $user_1
     processSubjectsAndKeywords $user_1
     set summary_note [processSummary $summary_note]
