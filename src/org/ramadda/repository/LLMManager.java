@@ -306,8 +306,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		    sb.append("\n");
 		}
 		sb.append("\nIn your response do not mention in any way that the source document is JSON. I repeat do not mention anything about JSON.\n");
-
-		request.put("encode","false");
 		List<Entry> entries= new ArrayList<Entry>();
 		entries.add(entry);
 		getRepository().getJsonOutputHandler().makeJson(request,entries,sb);
