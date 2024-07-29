@@ -129,12 +129,10 @@ mapVar="gpxMap${entryid}" }}
 {{display_linechart tooltip="${default}"
 propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  chartRight=75}}
 
-
 ----
 {{gallery message=""}}
 {{tabs message="" entries="children:type:media_video_quicktime_comma_media_audiofile"}}
-----
-{{tabletree}}
+{{tabletree message=""}}
 ----
 +row
 +col-6
