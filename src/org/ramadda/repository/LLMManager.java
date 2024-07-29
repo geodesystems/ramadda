@@ -933,9 +933,11 @@ public class LLMManager extends  AdminHandlerImpl {
     public Result processDocumentChat(Request request, Entry entry,boolean document)
 	throws Exception {	
 	String pageUrl =request.toString();
-	String subLabel = HU.href(pageUrl,document?"Document Chat":"Entry LLM",HU.cssClass("ramadda-clickable"));
+	String subTitle = document?"Document Chat":entry.getTypeHandler().getDescription() +" - LLM";
+
+	String subLabel = HU.href(pageUrl,subTitle,HU.cssClass("ramadda-clickable"));
         StringBuilder sb      = new StringBuilder();
-	String title = entry.getName() +" - " +(document?"Document Chat":"LLM Chat");
+	String title = entry.getName() +" - " +(document?"Document Chat":"LLM");
         if (request.isAnonymous()) {
 	    if(request.exists("question")) {
 		return makeJsonError("You must be logged in to use the document chat");
@@ -978,7 +980,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
-	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50% style='overflow: hidden;max-width:100%;overflow-x:hidden;'>");
+	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50% style='max-width:100%;'><div style='max-width:100%;overflow-x:auto;'>");
 	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
@@ -995,7 +997,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    String wiki = "<div style=border:var(--basic-border);'>{{import showTitle=false entry=" + entry.getId()+"}}</div>";
 	    sb.append(getWikiManager().wikifyEntry(request, entry, wiki));
 	}
-	sb.append("</td><td width=50%>");
+	sb.append("</div></td><td width=50%>");
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	sb.append("</td><tr></table>");

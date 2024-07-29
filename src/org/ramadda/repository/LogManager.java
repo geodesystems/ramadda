@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -42,18 +42,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- *
- *
- *  @author RAMADDA Development Team
- *  @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class LogManager extends RepositoryManager {
 
+    public static final String ARG_MATCH="match";
 
-    public final RequestUrl URL_REPORT = new RequestUrl(this, "/admin/log/report");
-
+    public final RequestUrl URL_LOG = new RequestUrl(this, "/admin/log");
+    public final RequestUrl URL_REPORT = new RequestUrl(this, "/admin/log/report");    
 
     /** apache style log macro */
     public static final String LOG_MACRO_IP = "%h";
@@ -108,70 +104,36 @@ public class LogManager extends RepositoryManager {
                                               + " " + LOG_MACRO_SIZE;
 
 
-    /** _more_ */
+
     public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
-
-    /** _more_ */
     private boolean LOGGER_OK = true;
-
-    /** _more_ */
     private final LogManager.LogId REPOSITORY_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.ramadda");
-
-    /** _more_ */
     private final LogManager.LogId REPOSITORY_ACCESS_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.access");
-
-    /** _more_ */
     private final LogManager.LogId REPOSITORY_ACTIVITY_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.entry.activity");
-
-    /** _more_ */
     private final LogManager.LogId REPOSITORY_LICENSE_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.license");    
-
-
-    /** _more_ */
     private static final LogManager.LogId REPOSITORY_SPECIAL_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.special");
-
-
-    /** _more_ */
     private static final LogManager.LogId REPOSITORY_MONITOR_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.monitor");
-    
-    /** _more_ */
     private static final LogManager.LogId REPOSITORY_REGISTRY_LOG_ID =
         new LogManager.LogId("org.ramadda.repository.registry");        
-
-
-    /** _more_ */
     private Hashtable<String, MyLogger> loggers = new Hashtable<String,
                                                       MyLogger>();
 
     /** the log directory */
     private File logDir;
 
-    /** _more_ */
     public static boolean debug = true;
-
-    /** _more_ */
     private PrintWriter testLogWriter;
-
-    /** _more_ */
     private List<LogEntry> log = new ArrayList<LogEntry>();
-
-    /** _more_ */
     private int requestCount = 0;
-
-    /** _more_ */
     private SimpleDateFormat sdf;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+
     public LogManager(Repository repository) {
         super(repository);
         LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
@@ -179,24 +141,15 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     */
     @Override
     public void initAttributes() {
         super.initAttributes();
         LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
     }
 
-    /**
-     * _more_
-     */
     public void init() {}
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initLogs() throws Exception {
         String testLog = getRepository().getProperty("ramadda.log.test",
                              (String) null);
@@ -207,11 +160,7 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     */
+    
     public void writeTestLog(Request request) {
         if ((testLogWriter != null) && !request.isPost()
                 && !request.getIsRobot() && request.isAnonymous()) {
@@ -223,12 +172,7 @@ public class LogManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param response _more_
-     */
+    
     public void logRequest(Request request, int response) {
         int count = 0;
         requestCount++;
@@ -292,70 +236,46 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MyLogger getAccessLogger() {
         return getLogger(REPOSITORY_ACCESS_LOG_ID);
     }
 
-    /**
-     *  @return _more_
-     */
+    
     public MyLogger getEntryActivityLogger() {
         return getLogger(REPOSITORY_ACTIVITY_LOG_ID);
     }
 
 
-    /**
-     *  @return _more_
-     */
+    
     public MyLogger getSpecialLogger() {
         return getLogger(REPOSITORY_SPECIAL_LOG_ID);
     }
 
-    /**
-     *  @return _more_
-     */
+    
     public MyLogger getMonitorLogger() {
         return getLogger(REPOSITORY_MONITOR_LOG_ID);
     }        
 
 
-    /**
-     *  @return _more_
-     */
+    
     public MyLogger getRegistryLogger() {
         return getLogger(REPOSITORY_REGISTRY_LOG_ID);
     }    
     
 
-    /**
-     *  @return _more_
-     */
+    
     public MyLogger getLicenseLogger() {
         return getLogger(REPOSITORY_LICENSE_LOG_ID);
     }    
     
 
-    /**
-     * _more_
-     *
-     * @param logId _more_
-     *
-     * @return _more_
-     */
+    
     public MyLogger getLogger(LogId logId) {
         return getLogger(logId.getId());
     }
 
-    /**
-     *
-     * @param logId _more_
-     *  @return _more_
-     */
+    
     public MyLogger getLogger(String logId) {
         if (getRepository().getParentRepository() != null) {
             return getRepository().getParentRepository().getLogManager()
@@ -409,32 +329,19 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isLoggingEnabled() {
         return LOGGER_OK && (getRepository().getParentRepository() == null);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void debug(String message) {
         debug(getLogger(), message);
     }
 
-    /**
-     * _more_
-     *
-     * @param logger _more_
-     * @param message _more_
-     */
+    
     public void debug(MyLogger logger, String message) {
         if (logger != null) {
             logger.debug(message);
@@ -444,75 +351,45 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<LogEntry> getLog() {
         synchronized (log) {
             return new ArrayList<LogEntry>(log);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getRequestCount() {
         return requestCount;
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param message _more_
-     */
+    
     public void log(Request request, String message) {
         logInfo("user:" + request.getUser() + " -- " + message);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logInfoAndPrint(String message) {
         logInfo(message);
         System.err.println(message);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logInfo(String message) {
         logInfo(getLogger(), message);
     }
 
-    /**
-     * _more_
-     *
-     * @param logId _more_
-     * @param message _more_
-     */
+    
     public void logInfo(LogId logId, String message) {
         logInfo(getLogger(logId), message);
     }
 
 
-    /**
-     *
-     * @param logId _more_
-     * @param message _more_
-     */
+    
     public void logInfo(String logId, String message) {
         logInfo(getLogger(logId), message);
     }
@@ -520,12 +397,7 @@ public class LogManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param logger _more_
-     * @param message _more_
-     */
+    
     public void logInfo(MyLogger logger, String message) {
         if (logger != null) {
             logger.info(message);
@@ -535,14 +407,7 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param activity _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void logActivity(Request request, Entry entry, String activity)
             throws Exception {
         MyLogger logger = getEntryActivityLogger();
@@ -635,21 +500,12 @@ public class LogManager extends RepositoryManager {
     }
     
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logError(String message) {
         logError(getLogger(), message);
     }
 
-    /**
-     * _more_
-     *
-     * @param logger _more_
-     * @param message _more_
-     */
+    
     public void logError(MyLogger logger, String message) {
         if (logger != null) {
             logger.error(message);
@@ -658,23 +514,14 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logWarning(String message) {
         MyLogger logger = getLogger();
         logWarning(logger, message);
 
     }
 
-    /**
-     * _more_
-     *
-     * @param logger _more_
-     * @param message _more_
-     */
+    
     public void logWarning(MyLogger logger, String message) {
         if (logger != null) {
             logger.warn(message);
@@ -683,34 +530,17 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param logId _more_
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logError(LogId logId, String message, Throwable exc) {
         logError(getLogger(logId), message, exc);
     }
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logError(String message, Throwable exc) {
         logError(getLogger(), message, exc);
     }
 
-    /**
-     * _more_
-     *
-     * @param log _more_
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logError(MyLogger log, String message, Throwable exc) {
         message = encode(message);
         Throwable thr = null;
@@ -770,13 +600,7 @@ public class LogManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     private String encode(String s) {
         //If we do an entityEncode then the log can only be shown through the web
         s = s.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
@@ -787,37 +611,28 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * Class LogEntry _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     */
+    
     public class LogEntry {
 
-        /** _more_ */
+        
         User user;
 
-        /** _more_ */
+        
         Date date;
 
-        /** _more_ */
+        
         String path;
 
-        /** _more_ */
+        
         String ip;
 
-        /** _more_ */
+        
         String userAgent;
 
-        /** _more_ */
+        
         String url;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         */
+        
         public LogEntry(Request request) {
             this.user = request.getUser();
             this.path = request.getRequestPath();
@@ -838,47 +653,27 @@ public class LogManager extends RepositoryManager {
         }
 
 
-        /**
-         *  Set the Ip property.
-         *
-         *  @param value The new value for Ip
-         */
+        
         public void setIp(String value) {
             ip = value;
         }
 
-        /**
-         *  Get the Ip property.
-         *
-         *  @return The Ip
-         */
+        
         public String getIp() {
             return ip;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public String getUrl() {
             return url;
         }
 
-        /**
-         *  Set the UserAgent property.
-         *
-         *  @param value The new value for UserAgent
-         */
+        
         public void setUserAgent(String value) {
             userAgent = value;
         }
 
-        /**
-         *  Get the UserAgent property.
-         *
-         *  @return The UserAgent
-         */
+        
         public String getUserAgent() {
             return userAgent;
         }
@@ -886,70 +681,38 @@ public class LogManager extends RepositoryManager {
 
 
 
-        /**
-         *  Set the User property.
-         *
-         *  @param value The new value for User
-         */
+        
         public void setUser(User value) {
             user = value;
         }
 
-        /**
-         *  Get the User property.
-         *
-         *  @return The User
-         */
+        
         public User getUser() {
             return user;
         }
 
-        /**
-         *  Set the Date property.
-         *
-         *  @param value The new value for Date
-         */
+        
         public void setDate(Date value) {
             date = value;
         }
 
-        /**
-         *  Get the Date property.
-         *
-         *  @return The Date
-         */
+        
         public Date getDate() {
             return date;
         }
 
-        /**
-         *  Set the Path property.
-         *
-         *  @param value The new value for Path
-         */
+        
         public void setPath(String value) {
             path = value;
         }
 
-        /**
-         *  Get the Path property.
-         *
-         *  @return The Path
-         */
+        
         public String getPath() {
             return path;
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
@@ -1068,7 +831,7 @@ public class LogManager extends RepositoryManager {
 	    sb.append(form);
 	}
 	if(cnt==0) {
-	    sb.append(HU.div("No entryactivity files are available"));
+	    sb.append(HU.div("No entry activity files are available"));
 	}
         sb.append(HU.formClose());
 
@@ -1123,8 +886,9 @@ public class LogManager extends RepositoryManager {
 		    }
 		    if(fromDate!=null || toDate!=null) {
 			Date dttm = sdf.parse(date);
-			if(fromDate!=null && fromDate.getTime()<dttm.getTime()) return row;
-			if(toDate!=null && toDate.getTime()>dttm.getTime()) return row;
+			long rowTime = dttm.getTime();
+			if(fromDate!=null && rowTime < fromDate.getTime()) return row;
+			if(toDate!=null && rowTime>toDate.getTime()) return row;
 		    }
 		    if(type!=null) {
 			try {
@@ -1205,12 +969,18 @@ public class LogManager extends RepositoryManager {
 		csv.append(Seesv.cleanColumnValue(key));
 		csv.append("\n");				
 	    } else {
+		String link = HU.href(HU.url(URL_LOG.toString(),ARG_MATCH,id,
+					     ARG_LOG,"entryactivity.log"),
+				      HU.getIconImage("fas fa-search"),
+				      HU.attrs("target","logsearch"));
 		key = HU.href(getEntryManager().getEntryUrl(request, id),key,HU.attrs("target","_entry"));
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
 		sb.append("</td><td>");
 		sb.append(entryType);
 		sb.append("</td><td>");
+		sb.append(link);
+		sb.append(" ");
 		sb.append(key);
 		sb.append("</td></tr>");
 	    }
@@ -1226,11 +996,7 @@ public class LogManager extends RepositoryManager {
 
 
 
-    /**
-     * Get the log directory
-     *
-     * @return  the log directory
-     */
+    
     public File getLogDir() {
         if (logDir != null) {
             return logDir;
@@ -1298,24 +1064,24 @@ public class LogManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param logFile _more_
-     *
-     * @throws Exception _more_
-     */
+
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
-        
+	String match=request.getString(ARG_MATCH,"");
+	sb.append(request.form(URL_LOG));
+	sb.append(HU.hidden(ARG_LOG,request.getString(ARG_LOG,"")));
+	sb.append(HU.submit("View Log", "viewlog"));
+	sb.append(HU.space(1));
+	sb.append(HU.input(ARG_MATCH,match,HU.attrs("placeholder","match")));
+        sb.append(HU.formClose());
+
         try(InputStream fis = getStorageManager().getFileInputStream(logFile)) {
             String log      = request.getString(ARG_LOG, "error");
             int    numBytes = request.get(ARG_BYTES, 10000);
             if (numBytes < 0) {
                 numBytes = 100;
             }
+
             long length = logFile.length();
             long offset = length - numBytes;
             if (numBytes < length) {
@@ -1323,7 +1089,7 @@ public class LogManager extends RepositoryManager {
                     HtmlUtils.href(
                         HtmlUtils.url(
                             getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
-                            log, ARG_BYTES,
+                            log, ARG_MATCH,match,ARG_BYTES,
                             "" + (numBytes + 2000)), "More..."));
             }
             sb.append(HtmlUtils.space(2));
@@ -1331,8 +1097,10 @@ public class LogManager extends RepositoryManager {
                 HtmlUtils.href(
                     HtmlUtils.url(
                         getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, log,
+			ARG_MATCH,match,
                         ARG_BYTES, "" + (numBytes - 2000)), "Less..."));
 
+	    if(!stringDefined(match)) match=null;
             sb.append(HtmlUtils.br());
             if (offset > 0) {
                 fis.skip(offset);
@@ -1342,11 +1110,13 @@ public class LogManager extends RepositoryManager {
             byte[] bytes = new byte[numBytes];
             fis.read(bytes);
             String       logString    = new String(bytes);
+	    bytes=null;
             boolean      didOne       = false;
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
 	    List<String> lines = Utils.split(logString, "\n", false, false);
             for (String line : lines) {
+		if(match!=null && line.indexOf(match)<0) continue;
 		line = HU.strictSanitizeString(line);
 		//When there are lots of lines then skip the first one since it might be partial
 		if ( !didOne && lines.size()>25) {
@@ -1400,14 +1170,7 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void getAccessLog(Request request, StringBuffer sb)
             throws Exception {
 
@@ -1466,53 +1229,29 @@ public class LogManager extends RepositoryManager {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Aug 20, '12
-     * @author         Enter your name here...
-     */
+    
     public static class LogId {
 
-        /** _more_ */
+        
         private String id;
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         */
+        
         public LogId(String id) {
             this.id = id;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public String getId() {
             return id;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         @Override
         public int hashCode() {
             return id.hashCode();
         }
 
-        /**
-         * _more_
-         *
-         * @param that _more_
-         *
-         * @return _more_
-         */
+        
         public boolean equals(Object that) {
             return id.equals(that);
         }
@@ -1520,48 +1259,29 @@ public class LogManager extends RepositoryManager {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 30, '22
-     * @author         Enter your name here...
-     */
+    
     private static class MyLogger {
 
-        /**  */
+        
         Logger logger;
 
-        /**  */
+        
         PrintWriter pw;
 
-        /**
-         *
-         *
-         * @param logger _more_
-         */
+        
         MyLogger(Logger logger) {
             this.logger = logger;
         }
 
-        /**
-         *
-         *
-         * @param pw _more_
-         */
+        
         MyLogger(PrintWriter pw) {
             this.pw = pw;
         }
 
-        /**
-         *
-         */
+        
         MyLogger() {}
 
-        /**
-         *
-         * @param message _more_
-         */
+        
         public void info(String message) {
             if (logger != null) {
                 logger.info(message);
@@ -1575,10 +1295,7 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        /**
-         *
-         * @param message _more_
-         */
+        
         public void debug(String message) {
             if (logger != null) {
                 logger.debug(message);
@@ -1590,10 +1307,7 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        /**
-         *
-         * @param message _more_
-         */
+        
         public void warn(String message) {
             if (logger != null) {
                 logger.warn(message);
@@ -1605,10 +1319,7 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        /**
-         *
-         * @param message _more_
-         */
+        
         public void error(String message) {
             if (logger != null) {
                 logger.error(message);
