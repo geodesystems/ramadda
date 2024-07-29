@@ -865,7 +865,10 @@ public class LogManager extends RepositoryManager {
 	final Date fromDate = request.getDate(ARG_FROMDATE,null);
 	final Date toDate = request.getDate(ARG_TODATE,null);	
 	final SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+	final SimpleDateFormat sdf2 =new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	final Date[] dateRange = {null,null};
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
 	List<Processor> suffix = new ArrayList<Processor>();
 	final LinkedHashMap<String,Integer> counts = new LinkedHashMap<String,Integer>();
 	final int[] cnt={0};
@@ -884,12 +887,15 @@ public class LogManager extends RepositoryManager {
 			System.err.println("bot:" + client);
 			return row;
 		    }
+		    Date dttm = sdf.parse(date);
 		    if(fromDate!=null || toDate!=null) {
-			Date dttm = sdf.parse(date);
 			long rowTime = dttm.getTime();
 			if(fromDate!=null && rowTime < fromDate.getTime()) return row;
 			if(toDate!=null && rowTime>toDate.getTime()) return row;
 		    }
+		    if(dateRange[0]==null) dateRange[0] = dttm;
+		    dateRange[1] = dttm;
+
 		    if(type!=null) {
 			try {
 			    Entry entry = entries.get(id);
@@ -933,7 +939,12 @@ public class LogManager extends RepositoryManager {
 	seesv.run(files);
 	long t2 = System.currentTimeMillis();
 
-	sb.append(HU.div("# requests: " + cnt[0] +"  #entries:" + ecnt[0]));
+	String header="# requests: " + cnt[0] +"  #entries:" + ecnt[0];
+	if(dateRange[0]!=null) {
+	    header+=" date range: " + sdf2.format(dateRange[0]) +" - " +sdf2.format(dateRange[1]);
+	}
+	sb.append(HU.div(header));
+
 	sb.append("<table width=100%>");
 	sb.append("<tr><td width=10%><b>Count</b></td><td width=20%><b>Entry type</b></td><td><b>Entry</b></td></tr>");
         List<SortableObject<String>> sort =
@@ -972,7 +983,7 @@ public class LogManager extends RepositoryManager {
 		String link = HU.href(HU.url(URL_LOG.toString(),ARG_MATCH,id,
 					     ARG_LOG,"entryactivity.log"),
 				      HU.getIconImage("fas fa-search"),
-				      HU.attrs("target","logsearch"));
+				      HU.attrs("target","logsearch","title","View log file"));
 		key = HU.href(getEntryManager().getEntryUrl(request, id),key,HU.attrs("target","_entry"));
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
@@ -1080,7 +1091,7 @@ public class LogManager extends RepositoryManager {
         try(InputStream fis = getStorageManager().getFileInputStream(logFile)) {
             String log      = request.getString(ARG_LOG, "error");
             if (numBytes < 0) {
-                numBytes = 100;
+                numBytes = 1000;
             }
 
             long length = logFile.length();
@@ -1091,7 +1102,7 @@ public class LogManager extends RepositoryManager {
                         HtmlUtils.url(
                             getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG,
                             log, ARG_MATCH,match,ARG_BYTES,
-                            "" + (numBytes + 2000)), "More..."));
+                            "" + (numBytes + 10000)), "More..."));
             }
             sb.append(HtmlUtils.space(2));
             sb.append(
@@ -1099,28 +1110,24 @@ public class LogManager extends RepositoryManager {
                     HtmlUtils.url(
                         getAdmin().URL_ADMIN_LOG.toString(), ARG_LOG, log,
 			ARG_MATCH,match,
-                        ARG_BYTES, "" + (numBytes - 2000)), "Less..."));
+                        ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
 
 	    if(!stringDefined(match)) match=null;
             sb.append(HtmlUtils.br());
             if (offset > 0) {
                 fis.skip(offset);
-            } else {
-                numBytes = (int) length;
             }
-            byte[] bytes = new byte[numBytes];
-            fis.read(bytes);
-            String       logString    = new String(bytes);
-	    bytes=null;
             boolean      didOne       = false;
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
-	    List<String> lines = Utils.split(logString, "\n", false, false);
-            for (String line : lines) {
-		if(match!=null && line.indexOf(match)<0) continue;
+	    if(match!=null) match = match.toLowerCase();
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
+	    String line=null;
+            while ((line = reader.readLine()) != null) {
+		if(match!=null && line.toLowerCase().indexOf(match)<0) continue;
 		line = HU.strictSanitizeString(line);
-		//When there are lots of lines then skip the first one since it might be partial
-		if ( !didOne && lines.size()>25) {
+		//skip the first one since it might be partial
+		if (offset>0 &&  !didOne) {
 		    didOne = true;
 		    continue;
 		}
