@@ -1067,9 +1067,11 @@ public class LogManager extends RepositoryManager {
 
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
+	int    numBytes = request.get(ARG_BYTES, 10000);
 	String match=request.getString(ARG_MATCH,"");
 	sb.append(request.form(URL_LOG));
 	sb.append(HU.hidden(ARG_LOG,request.getString(ARG_LOG,"")));
+	sb.append(HU.hidden(ARG_BYTES,""+numBytes));
 	sb.append(HU.submit("View Log", "viewlog"));
 	sb.append(HU.space(1));
 	sb.append(HU.input(ARG_MATCH,match,HU.attrs("placeholder","match")));
@@ -1077,7 +1079,6 @@ public class LogManager extends RepositoryManager {
 
         try(InputStream fis = getStorageManager().getFileInputStream(logFile)) {
             String log      = request.getString(ARG_LOG, "error");
-            int    numBytes = request.get(ARG_BYTES, 10000);
             if (numBytes < 0) {
                 numBytes = 100;
             }
