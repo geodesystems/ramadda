@@ -500,7 +500,9 @@ public class TypeHandler extends RepositoryManager {
             }
 
 	    //Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
-	    addAction(new Action("entryllm","Apply LLM",null,true,false,"view"));
+	    if(parent==null) {
+		addAction(new Action("entryllm","Entry LLM","/icons/chatbot.png",true,false,"view"));
+	    }
 
             List actionNodes = XmlUtil.findChildren(node, "action");
             for (int i = 0; i < actionNodes.size(); i++) {
@@ -1250,7 +1252,6 @@ public class TypeHandler extends RepositoryManager {
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
         String action = request.getString("action", "");
-	System.err.println("ACTION:" + action);
 	if (action.equals("entryllm") || action.equals("documentchat")) {
 	    return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
 	}

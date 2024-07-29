@@ -293,12 +293,25 @@ public class LLMManager extends  AdminHandlerImpl {
 	throws Exception {
 	try {
 	    if(info==null) info=new PromptInfo();
-	    String corpus=null;
+	    String corpus = null;
 	    if(document) {
 		corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    } else {
-		corpus = "The below text is  xml\n";
-		corpus +=getRepository().getXmlOutputHandler().getEntryXml(request, entry);
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("The below text is JSON describing a " + entry.getTypeHandler().getDescription()+"\n");
+		String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
+		if(typePrompt!=null) {
+		    sb.append(typePrompt);
+		    sb.append("\n");
+		}
+		sb.append("\nIn your response do not mention in any way that the source document is JSON. I repeat do not mention anything about JSON.\n");
+
+		request.put("encode","false");
+		List<Entry> entries= new ArrayList<Entry>();
+		entries.add(entry);
+		getRepository().getJsonOutputHandler().makeJson(request,entries,sb);
+		corpus=sb.toString();
 	    }
 	    if(corpus==null) return null;
 	    info.corpusLength=corpus.length();
@@ -924,6 +937,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	String pageUrl =request.toString();
 	String subLabel = HU.href(pageUrl,document?"Document Chat":"Entry LLM",HU.cssClass("ramadda-clickable"));
         StringBuilder sb      = new StringBuilder();
+	String title = entry.getName() +" - " +(document?"Document Chat":"LLM Chat");
         if (request.isAnonymous()) {
 	    if(request.exists("question")) {
 		return makeJsonError("You must be logged in to use the document chat");
@@ -935,7 +949,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						       "You must be logged in to do document chat"));
 	    getPageHandler().entrySectionClose(request, entry, sb);
 	    return getEntryManager().addEntryHeader(request, entry,
-						    new Result("Document Chat", sb));
+						    new Result(title, sb));
 	}
 
 	if(request.exists("question")) {
@@ -966,7 +980,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	} 
 
 	getPageHandler().entrySectionOpen(request, entry, sb, subLabel);
-	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50% style='max-width:100%;overflow-x:hidden;'>");
+	sb.append("<table class=ramadda-llm-chat width=100%><tr valign=top><td width=50% style='overflow: hidden;max-width:100%;overflow-x:hidden;'>");
 	//hacky
 	if(entry.getTypeHandler().isType("type_document_pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
@@ -1000,7 +1014,7 @@ public class LLMManager extends  AdminHandlerImpl {
 			      JsonUtil.list(models,false)));
         getPageHandler().entrySectionClose(request, entry, sb);
         return getEntryManager().addEntryHeader(request, entry,
-						new Result("Document Chat", sb));
+						new Result(title, sb));
     }
 
 

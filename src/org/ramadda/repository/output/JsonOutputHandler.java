@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -35,50 +35,22 @@ import java.util.Properties;
 
 
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class JsonOutputHandler extends OutputHandler {
-
-    // Parameters for the output
-
-    /** _more_ */
     public static final String ARG_EXTRACOLUMNS = "extracolumns";
-
-    /** _more_ */
     public static final String ARG_METADATA = "metadata";
-
-    /** _more_ */
     public static final String ARG_LINKS = "links";
-
-    /** _more_ */
     public static final String ARG_ONLYENTRY = "onlyentry";
-
-
-    /** _more_ */
     public static final OutputType OUTPUT_JSON = new OutputType("JSON",
                                                      "json",
                                                      OutputType.TYPE_FEEDS|
 								OutputType.TYPE_FORSEARCH,
                                                      "", ICON_JSON);
 
-    /** _more_ */
     public static final OutputType OUTPUT_JSON_POINT =
         new OutputType("JSON", "json.point", OutputType.TYPE_FEEDS, "",
                        ICON_JSON);
 
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public JsonOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -87,16 +59,6 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if ((state.getEntry() != null)
@@ -110,20 +72,6 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(final Request request, OutputType outputType,
                               final Entry group, final List<Entry> children)
@@ -133,8 +81,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (group.isDummy()) {
             request.setReturnFilename("Search_Results.json");
         } else {
-            request.setReturnFilename(IO.stripExtension(group.getName())
-                                      + ".json");
+            request.setReturnFilename(IO.stripExtension(group.getName())  + ".json");
         }
 	boolean doSort = !request.defined(ARG_ORDERBY);
         List<Entry> allEntries = new ArrayList<Entry>();
@@ -179,7 +126,7 @@ public class JsonOutputHandler extends OutputHandler {
 	    Result r = makeStream(request,group, is);
 	    return r;
         }
-        return new Result("", sb, JsonUtil.MIMETYPE);
+        return new Result("", sb, JU.MIMETYPE);
     }
 
     private Result makeStream(Request request, Entry entry, InputStream is) throws Exception {
@@ -188,18 +135,6 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -219,48 +154,27 @@ public class JsonOutputHandler extends OutputHandler {
         }
         StringBuilder sb = new StringBuilder();
         makeJson(request, allEntries, sb);
-        return new Result("", sb, JsonUtil.MIMETYPE);
+        return new Result("", sb, JU.MIMETYPE);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param header _more_
-     * @param name _more_
-     * @param label _more_
-     * @param type _more_
-     * @param attrs _more_
-     *
-     * @throws Exception _more_
-     */
     private void addPointHeader(List<String> header, String name,
                                 String label, String type, String... attrs)
             throws Exception {
         List<String> items = new ArrayList<String>();
-        JsonUtil.quoteAttr(items, "index", "" + header.size());
-        JsonUtil.quoteAttr(items, "id", name);
-        JsonUtil.quoteAttr(items, "type", type);
-        JsonUtil.quoteAttr(items, "label", label);
+        JU.quoteAttr(items, "index", "" + header.size());
+        JU.quoteAttr(items, "id", name);
+        JU.quoteAttr(items, "type", type);
+        JU.quoteAttr(items, "label", label);
         for (int i = 0; i < attrs.length; i += 2) {
-            JsonUtil.quoteAttr(items, attrs[i], attrs[i + 1]);
+            JU.quoteAttr(items, attrs[i], attrs[i + 1]);
         }
         if (name.indexOf("date") >= 0) {
-            JsonUtil.attr(items, "isDate", "true");
+            JU.attr(items, "isDate", "true");
         }
-        header.add(JsonUtil.map(items));
+        header.add(JU.map(items));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entries _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void makePointJson(Request request, Entry mainEntry,
                               List<Entry> entries, Appendable sb,boolean sort)
             throws Exception {
@@ -408,29 +322,20 @@ public class JsonOutputHandler extends OutputHandler {
                                        remote);
             entryArray.add("values");
             entryArray.add(array);
-            values.add(JsonUtil.map(entryArray));
+            values.add(JU.map(entryArray));
         }
 
         List<String> topItems = new ArrayList<String>();
         topItems.add("name");
-        topItems.add(JsonUtil.quote(mainEntry.getName()));
+        topItems.add(JU.quote(mainEntry.getName()));
         topItems.add("fields");
-        topItems.add(JsonUtil.list(null, fields, false).toString());
+        topItems.add(JU.list(null, fields, false).toString());
         topItems.add("data");
-        topItems.add(JsonUtil.list(null, values, false).toString());
-        JsonUtil.map(sb, topItems);
+        topItems.add(JU.list(null, values, false).toString());
+        JU.map(sb, topItems);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeJson(Request request, List<Entry> entries, Appendable sb)
             throws Exception {
 	sb.append(JU.listOpen());
@@ -444,31 +349,14 @@ public class JsonOutputHandler extends OutputHandler {
 
 
 
-    /** _more_ */
     private static SimpleDateFormat sdf;
-
-    /** _more_ */
     private static SimpleDateFormat ymdsdf;
     private static SimpleDateFormat hhmmsdf;    
 
-    /**
-     * _more_
-     *
-     * @param dttm _more_
-     *
-     * @return _more_
-     */
     private String formatDate(long dttm) {
         return formatDate(new Date(dttm));
     }
 
-    /**
-     * _more_
-     *
-     * @param dttm _more_
-     *
-     * @return _more_
-     */
     private String formatDate(Date dttm) {
 	if(DateHandler.isNullDate(dttm)) {
 	    return DateHandler.NULL_DATE_LABEL;
@@ -481,14 +369,6 @@ public class JsonOutputHandler extends OutputHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dttm _more_
-     *
-     * @return _more_
-     */
     private String formatYMD(long dttm) {
         if (ymdsdf == null) {
             ymdsdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
@@ -515,52 +395,41 @@ public class JsonOutputHandler extends OutputHandler {
         }
     }    
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     private void toJson(Request request, Entry entry,Appendable sb) throws Exception {
         List<String> items = new ArrayList<String>();
-        JsonUtil.quoteAttr(items, "id", entry.getId());
+        JU.quoteAttr(items, "id", entry.getId());
         String entryName = entry.getName();
-        JsonUtil.quoteAttr(items, "name", entryName);
+        JU.quoteAttr(items, "name", entryName);
 	ServerInfo server = entry.getRemoteServer();
 	String slug = server!=null?null:getRepository().getRepositorySlug();	
 	if(stringDefined(slug)) {
-	    JsonUtil.quoteAttr(items, "repositorySlug", slug);
+	    JU.quoteAttr(items, "repositorySlug", slug);
 	}
         String displayName = getEntryDisplayName(entry);
         if ( !displayName.equals(entryName)) {
-            JsonUtil.quoteAttr(items, "displayName", displayName);
+            JU.quoteAttr(items, "displayName", displayName);
         }
 	String embedWiki = entry.getTypeHandler().getEmbedWiki(request, entry);
 	if(embedWiki!=null)
-            JsonUtil.quoteAttr(items, "embedWikiText", embedWiki);
+            JU.quoteAttr(items, "embedWikiText", embedWiki);
 
 
         String snippet = getWikiManager().getSnippet(request, entry, true,
                              null);
         if (snippet != null) {
-            JsonUtil.quoteAttr(items, "snippet", snippet);
+            JU.quoteAttr(items, "snippet", snippet);
         }
 
 
 	String mapGlyphs = entry.getTypeHandler().getProperty(entry,"mapglyphs",null);
 	if(mapGlyphs!=null) {
-            JsonUtil.quoteAttr(items, "mapglyphs", mapGlyphs);
+            JU.quoteAttr(items, "mapglyphs", mapGlyphs);
 	}
 
 
         if (request.get("includecrumbs", false)) {
             if (entry.getParentEntry() != null) {
-                JsonUtil.quoteAttr(items, "breadcrumbs",
+                JU.quoteAttr(items, "breadcrumbs",
                                    getPageHandler().getBreadCrumbs(request,
                                        entry.getParentEntry(), null, null,
 								   60,-1));
@@ -568,84 +437,84 @@ public class JsonOutputHandler extends OutputHandler {
         }
 
         if (request.get("includedescription", true)) {
-            JsonUtil.quoteAttr(items, "description", entry.getDescription());
+            JU.quoteAttr(items, "description", entry.getDescription());
         }
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
-        JsonUtil.attr(items, "canedit", canEdit + "");
+        JU.attr(items, "canedit", canEdit + "");
 
         TypeHandler type = entry.getTypeHandler();
 
         /**
          *  Don't get the typeJson as it takes a *long* time for DbTypes
          * String      typeJson = type.getJson(request);
-         * typeJson = JsonUtil.mapAndQuote(Utils.makeListFromValues("id", type.getType(), "name", type.getLabel()));
+         * typeJson = JU.mapAndQuote(Utils.makeListFromValues("id", type.getType(), "name", type.getLabel()));
          */
-        JsonUtil.attr(items, "type", JsonUtil.quote(type.getType()));
-        JsonUtil.attr(items, "typeName", JsonUtil.quote(type.getLabel()));
+        JU.attr(items, "type", JU.quote(type.getType()));
+        JU.attr(items, "typeName", JU.quote(type.getLabel()));
         //
 	if(entry.getTypeHandler().isType("type_point")) {
-            JsonUtil.attr(items, "isPoint", "true");
+            JU.attr(items, "isPoint", "true");
 	}
         if (entry.isGroup()) {
-            JsonUtil.attr(items, "isGroup", "true");
+            JU.attr(items, "isGroup", "true");
             /*
             List<Entry> children = getEntryManager().getChildren(request, entry);
             List<String> ids = new ArrayList<String>();
             for(Entry child: children) {
-                ids.add(JsonUtil.quote(child.getId()));
+                ids.add(JU.quote(child.getId()));
             }
-            JsonUtil.attr(items, "childEntryIds", JsonUtil.list(ids));
+            JU.attr(items, "childEntryIds", JU.list(ids));
             */
         }
 
-        JsonUtil.quoteAttr(
+        JU.quoteAttr(
             items, "icon",
             request.getAbsoluteUrl(
                 getPageHandler().getIconUrl(request, entry)));
-        JsonUtil.quoteAttr(items, "iconRelative",
+        JU.quoteAttr(items, "iconRelative",
                            getPageHandler().getIconUrl(request, entry));
 
 	Entry parent = entry.getParentEntry();
 	if(parent!=null) {
-	    JsonUtil.quoteAttr(items, "parent", parent.getId());
-	    JsonUtil.quoteAttr(items, "parentName", parent.getName());
-	    JsonUtil.quoteAttr(
+	    JU.quoteAttr(items, "parent", parent.getId());
+	    JU.quoteAttr(items, "parentName", parent.getName());
+	    JU.quoteAttr(
 			       items, "parentIcon",
 			       request.getAbsoluteUrl(
 						      getPageHandler().getIconUrl(request, parent)));
 	}
         if (entry.getIsRemoteEntry()) {
-            JsonUtil.attr(items, "isRemote", "true");
-            JsonUtil.attr(items, "remoteRepository",
-                          JsonUtil.map(Utils.makeListFromValues("url",
-                              JsonUtil.quote(server.getUrl()), "name",
-                              JsonUtil.quote(server.getLabel()))));
-            JsonUtil.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
+            JU.attr(items, "isRemote", "true");
+            JU.attr(items, "remoteRepository",
+                          JU.map(Utils.makeListFromValues("url",
+                              JU.quote(server.getUrl()), "name",
+                              JU.quote(server.getLabel()))));
+            JU.quoteAttr(items, "remoteUrl", entry.getRemoteUrl());
             String remoteParent = entry.getRemoteParentEntryId();
             if (remoteParent != null) {
-                JsonUtil.quoteAttr(items, "remoteParent", remoteParent);
+                JU.quoteAttr(items, "remoteParent", remoteParent);
             }
         }
 
 
 
-        JsonUtil.quoteAttr(items, "startDate",
+        JU.quoteAttr(items, "startDate",
                            formatDate(entry.getStartDate()));
-        JsonUtil.quoteAttr(items, "ymd", formatYMD(entry.getStartDate()));
-        JsonUtil.quoteAttr(items, "hhmm", formatHHMM(entry.getStartDate()));
-        JsonUtil.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
-        JsonUtil.quoteAttr(items, "createDate",  formatDate(entry.getCreateDate()));
-        JsonUtil.quoteAttr(items, "changeDate", formatDate(entry.getChangeDate()));	
-        JsonUtil.quoteAttr(items, "startDateFormat",
+        JU.quoteAttr(items, "ymd", formatYMD(entry.getStartDate()));
+        JU.quoteAttr(items, "hhmm", formatHHMM(entry.getStartDate()));
+        JU.quoteAttr(items, "endDate", formatDate(entry.getEndDate()));
+        JU.quoteAttr(items, "createDate",  formatDate(entry.getCreateDate()));
+        JU.quoteAttr(items, "changeDate", formatDate(entry.getChangeDate()));	
+        JU.quoteAttr(items, "startDateFormat",
                            getDateHandler().formatDateShort(request, entry,
 							    entry.getStartDate()));
-        JsonUtil.quoteAttr(items, "endDateFormat",
+        JU.quoteAttr(items, "endDateFormat",
                            getDateHandler().formatDateShort(request, entry,
 							    entry.getEndDate()));
-        JsonUtil.quoteAttr(items, "createDateFormat",
+        JU.quoteAttr(items, "createDateFormat",
                            getDateHandler().formatDateShort(request, entry,
 							    entry.getCreateDate()));
-        JsonUtil.quoteAttr(items, "changeDateFormat",
+        JU.quoteAttr(items, "changeDateFormat",
                            getDateHandler().formatDateShort(request, entry,
                                entry.getChangeDate()));
 	
@@ -653,20 +522,20 @@ public class JsonOutputHandler extends OutputHandler {
 
 	String searchDisplay = entry.getTypeHandler().getSearchDisplayText(request,  entry);
 	if(searchDisplay!=null) {
-            JsonUtil.quoteAttr(items, "displayHtml", searchDisplay);
+            JU.quoteAttr(items, "displayHtml", searchDisplay);
 	}
 	    
 
 
         if (entry.getUser() != null) {
-            JsonUtil.quoteAttr(items, "creator", entry.getUser().getId());
-            JsonUtil.quoteAttr(items, "creatorName", entry.getUser().getName());	    
+            JU.quoteAttr(items, "creator", entry.getUser().getId());
+            JU.quoteAttr(items, "creatorName", entry.getUser().getName());	    
         }
         if (entry.getResource().isUrl()) {
 	    //Catch errors 
 	    try {
 		String jsonUrl = entry.getTypeHandler().getPathForEntry(request, entry,false);
-		JsonUtil.quoteAttr(items, "url",jsonUrl);
+		JU.quoteAttr(items, "url",jsonUrl);
 	    } catch(Exception exc) {
 		getLogManager().logError("Error reading path for entry:"+ entry + " " + entry.getId(),exc);
 	    }
@@ -675,39 +544,39 @@ public class JsonOutputHandler extends OutputHandler {
 
         if (entry.hasAreaDefined(request)) {
             double[] center = entry.getCenter(request);
-            JsonUtil.attr(items, "geometry",
-                          JsonUtil.map(Utils.makeListFromValues("type",
-                              JsonUtil.quote("Point"), "coordinates",
-                              JsonUtil.list("" + center[1],
+            JU.attr(items, "geometry",
+                          JU.map(Utils.makeListFromValues("type",
+                              JU.quote("Point"), "coordinates",
+                              JU.list("" + center[1],
                                             "" + center[0]))));
-            JsonUtil.attr(items, "bbox",
-                          JsonUtil.list("" + entry.getWest(request),
+            JU.attr(items, "bbox",
+                          JU.list("" + entry.getWest(request),
                                         "" + entry.getSouth(request),
                                         "" + entry.getEast(request),
                                         "" + entry.getNorth(request)));
         } else if (entry.hasLocationDefined(request)) {
-            JsonUtil.attr(items, "geometry",
-                          JsonUtil.map(Utils.makeListFromValues("type",
-                              JsonUtil.quote("Point"), "coordinates",
-                              JsonUtil.list("" + entry.getLongitude(request),
+            JU.attr(items, "geometry",
+                          JU.map(Utils.makeListFromValues("type",
+                              JU.quote("Point"), "coordinates",
+                              JU.list("" + entry.getLongitude(request),
                                             "" + entry.getLatitude(request)))));
-            JsonUtil.attr(items, "bbox",
-                          JsonUtil.list("" + entry.getLongitude(request),
+            JU.attr(items, "bbox",
+                          JU.list("" + entry.getLongitude(request),
                                         "" + entry.getLatitude(request),
                                         "" + entry.getLongitude(request),
                                         "" + entry.getLatitude(request)));
         }
 
         if (entry.hasAltitudeTop()) {
-            JsonUtil.attr(items, "altitudeTop", "" + entry.getAltitudeTop());
+            JU.attr(items, "altitudeTop", "" + entry.getAltitudeTop());
         }
 
         if (entry.hasAltitudeBottom()) {
-            JsonUtil.attr(items, "altitudeBottom",
+            JU.attr(items, "altitudeBottom",
                           "" + entry.getAltitudeBottom());
         }
 
-	JsonUtil.attr(items, "order",    ""+entry.getEntryOrder());
+	JU.attr(items, "order",    ""+entry.getEntryOrder());
 
 
         if (request.get("includeservices", true)) {
@@ -716,48 +585,48 @@ public class JsonOutputHandler extends OutputHandler {
             typeHandler.getServiceInfos(request, entry, services);
             List<String> jsonServiceInfos = new ArrayList<String>();
             for (ServiceInfo service : services) {
-                jsonServiceInfos.add(JsonUtil.map(Utils.makeListFromValues("url",
-                        JsonUtil.quote(service.getUrl()), "relType",
-                        JsonUtil.quote(service.getType()), "name",
-                        JsonUtil.quote(service.getName()), "mimeType",
-                        JsonUtil.quote(service.getMimeType()))));
+                jsonServiceInfos.add(JU.map(Utils.makeListFromValues("url",
+                        JU.quote(service.getUrl()), "relType",
+                        JU.quote(service.getType()), "name",
+                        JU.quote(service.getName()), "mimeType",
+                        JU.quote(service.getMimeType()))));
             }
 
             items.add("services");
-            items.add(JsonUtil.list(jsonServiceInfos));
+            items.add(JU.list(jsonServiceInfos));
         }
-        //        System.err.println("services:" + JsonUtil.list(jsonServiceInfos));
+        //        System.err.println("services:" + JU.list(jsonServiceInfos));
 
         Resource resource = entry.getResource();
         if (resource != null) {
             if (resource.isUrl()) {
                 String temp = resource.getPath();
-                JsonUtil.quoteAttr(items, "isurl", "true");
+                JU.quoteAttr(items, "isurl", "true");
                 if (temp == null) {
-                    JsonUtil.quoteAttr(items, "filename", "");
+                    JU.quoteAttr(items, "filename", "");
                 } else {
-                    JsonUtil.quoteAttr(items, "filename",
+                    JU.quoteAttr(items, "filename",
                                        java.net.URLEncoder.encode(temp,
                                            "UTF-8"));
                 }
 
-                JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
-                JsonUtil.quoteAttr(
+                JU.attr(items, "filesize", "" + resource.getFileSize());
+                JU.quoteAttr(
                     items, "fileSizeLabel",
                     "" + formatFileLength(resource.getFileSize()));
             } else if (resource.isFile()) {
-                JsonUtil.quoteAttr(items, "isfile", "true");
-                JsonUtil.quoteAttr(items, "filename",
+                JU.quoteAttr(items, "isfile", "true");
+                JU.quoteAttr(items, "filename",
                                    getStorageManager().getFileTail(entry));
-                JsonUtil.attr(items, "filesize", "" + resource.getFileSize());
+                JU.attr(items, "filesize", "" + resource.getFileSize());
                 if (Utils.stringDefined(resource.getMd5())) {
-                    JsonUtil.quoteAttr(items, "md5", resource.getMd5());
+                    JU.quoteAttr(items, "md5", resource.getMd5());
                 }
             }
         } else {
-            JsonUtil.quoteAttr(items, "filename", "no resource");
-            JsonUtil.attr(items, "filesize", "0");
-            JsonUtil.quoteAttr(items, "md5", "");
+            JU.quoteAttr(items, "filename", "no resource");
+            JU.attr(items, "filesize", "0");
+            JU.quoteAttr(items, "md5", "");
         }
 
         List<String> attrs = new ArrayList<String>();
@@ -783,15 +652,15 @@ public class JsonOutputHandler extends OutputHandler {
 		    String value = v.toString();
 		    columnNames.add(columnName);
 		    columnLabels.add(column.getLabel());
-		    //                    JsonUtil.attr(items, "column." + columnName, JsonUtil.quote(value));
-		    extraColumns.add(JsonUtil.map(Utils.makeListFromValues(columnName,
-									   JsonUtil.quote(value))));
+		    //                    JU.attr(items, "column." + columnName, JU.quote(value));
+		    extraColumns.add(JU.map(Utils.makeListFromValues(columnName,
+									   JU.quote(value))));
 		    ids.add(columnName);
-		    attrs.add(JsonUtil.map(Utils.makeListFromValues("id",
-								    JsonUtil.quote(columnName), "type",
-								    JsonUtil.quote("attribute"), "label",
-								    JsonUtil.quote(column.getLabel()), "value",
-								    JsonUtil.quote(value), "canshow",
+		    attrs.add(JU.map(Utils.makeListFromValues("id",
+								    JU.quote(columnName), "type",
+								    JU.quote("attribute"), "label",
+								    JU.quote(column.getLabel()), "value",
+								    JU.quote(value), "canshow",
 								    Boolean.toString(column.getCanShow()))));
 		}
             }
@@ -806,19 +675,19 @@ public class JsonOutputHandler extends OutputHandler {
                     repository.getEntryManager().getEntryLinks(request,
                         entry)) {
                 OutputType outputType = link.getOutputType();
-                links.add(JsonUtil.map(Utils.makeListFromValues("label",
-                        JsonUtil.quote(link.getLabel()), "type",
+                links.add(JU.map(Utils.makeListFromValues("label",
+                        JU.quote(link.getLabel()), "type",
                         (outputType == null)
                         ? "unknown"
-                        : JsonUtil.quote(outputType.toString()), "url",
+                        : JU.quote(outputType.toString()), "url",
                         (link.getUrl() == null)
-                        ? JsonUtil.quote("")
-                        : JsonUtil.quote(
+                        ? JU.quote("")
+                        : JU.quote(
                             java.net.URLEncoder.encode(
                                 link.getUrl(), "UTF-8")), "icon",
-                                    JsonUtil.quote(link.getIcon()))));
+                                    JU.quote(link.getIcon()))));
             }
-            JsonUtil.attr(items, "links", JsonUtil.list(links));
+            JU.attr(items, "links", JU.list(links));
         }
 
 
@@ -845,9 +714,9 @@ public class JsonOutputHandler extends OutputHandler {
 		    }
                     List<String> mapItems   = new ArrayList<String>();
                     List<String> valueItems = new ArrayList<String>();
-                    JsonUtil.quoteAttr(mapItems, "id", metadata.getId());
-                    JsonUtil.quoteAttr(mapItems, "type", metadata.getType());
-                    JsonUtil.quoteAttr(mapItems, "label",
+                    JU.quoteAttr(mapItems, "id", metadata.getId());
+                    JU.quoteAttr(mapItems, "type", metadata.getType());
+                    JU.quoteAttr(mapItems, "label",
                                        metadataType.getLabel());
 
                     int attrIdx = 1;
@@ -856,23 +725,23 @@ public class JsonOutputHandler extends OutputHandler {
                         String attr = metadata.getAttr(attrIdx);
                         if (attr != null) {
                             if (attr.length() > 0) {
-                                JsonUtil.quoteAttr(valueItems,
+                                JU.quoteAttr(valueItems,
                                         "attr" + attrIdx, attr);
                             } else {
-                                JsonUtil.quoteAttr(valueItems,
+                                JU.quoteAttr(valueItems,
                                         "attr" + attrIdx, "");
                             }
                         } else {
-                            JsonUtil.quoteAttr(valueItems, "attr" + attrIdx,
+                            JU.quoteAttr(valueItems, "attr" + attrIdx,
                                     "");
                         }
                         attrIdx++;
                     }
 
                     mapItems.add("value");
-                    mapItems.add(JsonUtil.map(valueItems));
+                    mapItems.add(JU.map(valueItems));
                     ids.add(metadata.getId());
-                    attrs.add(JsonUtil.map(mapItems));
+                    attrs.add(JU.map(mapItems));
                 }
             }
         }
@@ -880,7 +749,7 @@ public class JsonOutputHandler extends OutputHandler {
         if (request.get("includeproperties", true)) {
             entry.getTypeHandler().addToJson(request, entry, items, attrs);
         }
-        JsonUtil.attr(items, "properties", JsonUtil.list(attrs, false));
+        JU.attr(items, "properties", JU.list(attrs, false));
 	sb.append(JU.map(items));
     }
 
@@ -895,28 +764,28 @@ public class JsonOutputHandler extends OutputHandler {
             throws Exception {
 
         List<String> items = new ArrayList<String>();
-        items.add(JsonUtil.quote(entry.getName()));
-        items.add(JsonUtil.quote(entry.getDescription()));
+        items.add(JU.quote(entry.getName()));
+        items.add(JU.quote(entry.getDescription()));
         if (addSnippets) {
             String snippet = getWikiManager().getRawSnippet(request, entry,
                                  true);
-            items.add(JsonUtil.quote((snippet != null)
+            items.add(JU.quote((snippet != null)
                                      ? snippet
                                      : ""));
         }
-        items.add(JsonUtil.quote(entry.getId()));
-        items.add(JsonUtil.quote(entry.getTypeHandler().getType()));
-        items.add(JsonUtil.quote(entry.getTypeHandler().getLabel()));
-        items.add(JsonUtil.quote(formatDate(entry.getStartDate())));
-        items.add(JsonUtil.quote(formatDate(entry.getEndDate())));
-        items.add(JsonUtil.quote(formatDate(entry.getCreateDate())));
+        items.add(JU.quote(entry.getId()));
+        items.add(JU.quote(entry.getTypeHandler().getType()));
+        items.add(JU.quote(entry.getTypeHandler().getLabel()));
+        items.add(JU.quote(formatDate(entry.getStartDate())));
+        items.add(JU.quote(formatDate(entry.getEndDate())));
+        items.add(JU.quote(formatDate(entry.getCreateDate())));
         items.add(
-            JsonUtil.quote(
+            JU.quote(
                 request.getAbsoluteUrl(
                     getPageHandler().getIconUrl(request, entry))));
         String url;
         url = getEntryManager().getEntryUrl(request, entry);
-        items.add(JsonUtil.quote(remote
+        items.add(JU.quote(remote
                                  ? request.getAbsoluteUrl(url)
                                  : url));
 
@@ -925,7 +794,7 @@ public class JsonOutputHandler extends OutputHandler {
                     WikiConstants.WIKI_TAG_DISPLAY, new Hashtable(),
                     new ArrayList<String>());
 
-            items.add(JsonUtil.quote((url == null)
+            items.add(JU.quote((url == null)
                                      ? ""
                                      : remote
                                        ? request.getAbsoluteUrl(url)
@@ -937,7 +806,7 @@ public class JsonOutputHandler extends OutputHandler {
             getMetadataManager().getThumbnailUrls(request, entry, urls);
             if (urls.size() > 0) {
                 url = urls.get(0);
-                items.add(JsonUtil.quote((url == null)
+                items.add(JU.quote((url == null)
                                          ? ""
                                          : remote
                                            ? request.getAbsoluteUrl(url)
@@ -952,18 +821,18 @@ public class JsonOutputHandler extends OutputHandler {
             if (entry.isImage()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
                         entry);
-                items.add(JsonUtil.quote((url == null)
+                items.add(JU.quote((url == null)
                                          ? ""
                                          : remote
                                            ? request.getAbsoluteUrl(url)
                                            : url));
             } else {
-                items.add(JsonUtil.quote(""));
+                items.add(JU.quote(""));
             }
         }
         if (addMediaUrl) {
             url = entry.getTypeHandler().getMediaUrl(request, entry);
-            items.add(JsonUtil.quote((url == null)
+            items.add(JU.quote((url == null)
                                      ? ""
                                      : remote
                                        ? request.getAbsoluteUrl(url)
@@ -979,15 +848,15 @@ public class JsonOutputHandler extends OutputHandler {
 			if (column.isNumeric()) {
 			    items.add("null");
 			} else {
-			    items.add(JsonUtil.quote(""));
+			    items.add(JU.quote(""));
 			}
                     } else {
                         if (column.isDate()) {
-                            items.add(JsonUtil.quote(formatDate((Date) v)));
+                            items.add(JU.quote(formatDate((Date) v)));
                         } else if (column.isNumeric()) {
                             items.add(v.toString());
                         } else {
-                            items.add(JsonUtil.quote(v.toString()));
+                            items.add(JU.quote(v.toString()));
                         }
                     }
                 }
@@ -996,14 +865,14 @@ public class JsonOutputHandler extends OutputHandler {
 		    if (column.isNumeric()) {
 			items.add("null");
 		    } else {
-			items.add(JsonUtil.quote(""));
+			items.add(JU.quote(""));
 		    }
                 }
             }
         }
         if (showFileUrl) {
             url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
-            items.add(JsonUtil.quote((url == null)
+            items.add(JU.quote((url == null)
                                      ? ""
                                      : remote
                                        ? request.getAbsoluteUrl(url)
@@ -1019,17 +888,8 @@ public class JsonOutputHandler extends OutputHandler {
                         ? "null"
                         : entry.getAltitude()));
 
-        return JsonUtil.list(items);
+        return JU.list(items);
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
-    public static void main(String[] args) {}
 
 
 }

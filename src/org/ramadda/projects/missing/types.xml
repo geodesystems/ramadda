@@ -12,6 +12,7 @@
     <property name="search.tabs" value="list,images,map,timeline"/>
     <property name="form.description.iswiki" value="false"/>
     <property name="form.wikieditor.height" value="300px"/>
+    <property name="llm.prompt" value="This is information about a missing person."/>
     <property name="icon" value="/missing/missing.png"/>
     <property name="form.name.label" value="Last name"/>
     <property name="html.type.show" value="false"/>    
@@ -165,7 +166,7 @@
 
 <wiki><![CDATA[
 +section
-<div style="transform:rotate(45deg);color:#eee;z-index:0;position:absolute;left:0px;top:0px;font-size:80pt;">
+<div style="z-index:-1;transform:rotate(45deg);color:#f8f8f8;position:absolute;left:0px;top:0px;font-size:80pt;">
 For Example Only<br>
 &nbsp;For Example Only<br>
 &nbsp;&nbsp;For Example Only<br>

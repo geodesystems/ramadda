@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -25,14 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
 
-
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class XmlOutputHandler extends OutputHandler {
 
     /** XML Output type */

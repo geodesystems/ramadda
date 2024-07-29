@@ -28,7 +28,7 @@ function DocumentChat(id,entryId,action,models) {
     right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
-    let text= HU.textarea('','',['placeholder','Document chat input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
+    let text= HU.textarea('','',['placeholder','LLM Input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
 		  HU.div([ATTR_ID,this.domId('progress'),
