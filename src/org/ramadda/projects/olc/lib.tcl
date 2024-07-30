@@ -36,7 +36,6 @@ proc spell {s} {
 
 set ::xcnt 0
 proc fixme {v {debug 0} {label ""}} {
-    set debug 1
     set tmp $v
     foreach tuple $::spelling {
 	foreach {pattern with} $tuple break
@@ -45,15 +44,16 @@ proc fixme {v {debug 0} {label ""}} {
     }
 
     if {[regexp {[^\n\x00-\x7F]} $tmp]} {
+	regsub -all {fixme +} $v {} v
 	set v "fixme $v"
 	if {$debug} {
 	    incr ::xcnt
-	    check2  "" ""  "" $v
+	    check2  $label ""  "" $v
 	    #	    puts "fix: $v"
 	}
     } else {
 	regsub -all {fixme fixme} $v {} v
-	regsub -all {fixme  +} $v {} v
+	regsub -all {fixme +} $v {} v
 	regsub -all {fixme} $v {} v		
     }
     set v [string trim $v]
@@ -99,6 +99,7 @@ proc check {what row field _s} {
 }
 
 
+array set ::terms {}
 proc check2 {what row field _s} {
     set s $_s
     regsub -all -- {[\[\]\(\)_,-\.]+} $s { } s
@@ -124,25 +125,32 @@ proc check2 {what row field _s} {
 	}
     }
     if {![info exists ::addedcss]} {
-	puts {<!DOCTYPE html>}
-	puts "<html><head><title>$what</title>"
-	puts {<style type="text/css">body {line-height:1.2em;font-family: Helvetica;} </style>}
-	puts {</head><body>}
-	puts "<h1>$what</h1>"
-
+	puts "title,original phrase,correct phrase"
+	if {0} {
+	    puts {<!DOCTYPE html>}
+	    puts "<html><head><title>$what</title>"
+	    puts {<style type="text/css">body {line-height:1.2em;font-family: Helvetica;} </style>}
+	    puts {</head><body>}
+	    puts "<h1>$what</h1>"
+	}
 	set ::addedcss 1
     }
     if {$results!=""} {
-	puts -nonewline "#$row: "
+	puts -nonewline "$what,"
+#	puts -nonewline "#$row: "
 	set cnt 0
 	set _s [string trim $_s]
 	foreach w $words {
 	    incr cnt
 	    if {$cnt>1} {puts -nonewline " - "}
-	    puts -nonewline "<i>$w</i> "
+#	    puts -nonewline "<i>$w</i> "
 	    regsub -all $w $_s "<b>$w</b>" _s
 	}
-	puts "<div style='border-bottom:1px solid #efefef;max-height:200px;overflow-y:auto;padding:5px;margin:5px;margin-bottom:10px;margin-left:40px;'>$_s</div>"
+	if {![info exists ::terms($w)]} {
+	    set ::terms($w) 1
+	    puts "$w,$w"
+	}
+#	puts "<div style='border-bottom:1px solid #efefef;max-height:200px;overflow-y:auto;padding:5px;margin:5px;margin-bottom:10px;margin-left:40px;'>$_s</div>"
     }
 
 }

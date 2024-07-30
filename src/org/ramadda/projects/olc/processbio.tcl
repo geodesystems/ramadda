@@ -1,6 +1,20 @@
 source ../lib.tcl
 set ::entries "<entries>\n";
 
+array set ::parent {}
+proc getParent {family} {
+    set family [string trim $family]
+    if {$family==""} {set family NA}
+    if {![info exists ::parent($family)]} {
+	set ::parent($family)  1
+	append ::entries [openEntry group $family {} "Family - $family"]
+	append ::entries "</entry>\n"
+    }
+    return $family
+}    
+
+
+
 set ::cnt 0
 set ::bp {class_1 division kingdom class family order record_status taxon sci_name common_name catalog handling object_status quantity description status_date tsn condition_desc prep_material country county state lakota_names cultural_uses}
 proc bio $::bp  {
@@ -20,8 +34,12 @@ proc bio $::bp  {
     set seenLakota 0
     set desc ""
     set lakota {}
+#    set debug [regexp {similar to a feather} $description]
+    set debug 0 
+    regsub -all {fixme *} $description {} description
     foreach line [split $description "\n"] {
 	set line [string trim $line]
+	if $debug  {puts "line:$line"}
 	if {[regexp -nocase {^Lakota name:} $line]} {
 	    set seenLakota 1
 	    regsub -nocase {^Lakota name:} $line {} line
@@ -45,6 +63,7 @@ proc bio $::bp  {
     }
 
     set desc [string trim $desc]	    
+    set desc [fixme $desc]
     set name ""
     set cnames {}
     array set seen {}
@@ -62,7 +81,13 @@ proc bio $::bp  {
     }
     set common_name [join $cnames "\n"]
     if {$name==""} {set name $sci_name}
-    append ::entries [openEntry type_archive_bio {} {} $name]    
+    if {$name==""} {set name "Unknown"}    
+    set parent [getParent $family]
+    regsub -all {fixme *} $name {} name
+
+
+
+    append ::entries [openEntry type_archive_bio {} $parent $name]    
     set rand [expr {rand()}]
     append ::entries [col latitude [expr {40+($rand*20)}]]
     set rand [expr {rand()}]
@@ -73,9 +98,6 @@ proc bio $::bp  {
 	append ::entries [col fromdate $status_date]
 	append ::entries [col todate $status_date]	    
     }
-    set desc [fixme $desc]
-
-
 
 
     append ::entries [col description $desc]    
@@ -139,7 +161,7 @@ proc bio $::bp  {
 		    if {$l3==""} continue
 		    if {[info exists seenalt($l3)]} {continue}
 		    set seenalt($l3) 1
-		    append ::entries [mtd2 archive_alternate_name {Lakota Name} [fixme $l3 1 $name]]
+		    append ::entries [mtd2 archive_alternate_name {Lakota Name} [fixme $l3 0 $name]]
 		}
 	    }
 	}
