@@ -21,18 +21,55 @@ proc loadSpelling {} {
 proc spell {s} {
     loadSpelling
     set v $s
+    set debug [regexp {Loisel} $s]
+#    if {$debug} {puts $s}
     foreach tuple $::spelling {
 	foreach {pattern with} $tuple break
 	if {[regsub -all $pattern $v $with v]} {
-	    #puts "change: $s to:$v"
+	    #puts "\tchange: $pattern to:$with"
 	}
     }
+    return [fixme $v]
+}
+
+
+
+set ::xcnt 0
+proc fixme {v {debug 0} {label ""}} {
+    set debug 1
+    set tmp $v
+    foreach tuple $::spelling {
+	foreach {pattern with} $tuple break
+	if {$with==""} continue
+	regsub -all $with $tmp {XXX} tmp
+    }
+
+    if {[regexp {[^\n\x00-\x7F]} $tmp]} {
+	set v "fixme $v"
+	if {$debug} {
+	    incr ::xcnt
+	    check2  "" ""  "" $v
+	    #	    puts "fix: $v"
+	}
+    } else {
+	regsub -all {fixme fixme} $v {} v
+	regsub -all {fixme  +} $v {} v
+	regsub -all {fixme} $v {} v		
+    }
+    set v [string trim $v]
     set v
 }
+
+
+
+
+
 
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
+
+
 
 proc  cid {cid} {
     return collection_$cid
@@ -59,6 +96,10 @@ proc pad {n} {
 
 array set ::checkseen {}
 proc check {what row field _s} {
+}
+
+
+proc check2 {what row field _s} {
     set s $_s
     regsub -all -- {[\[\]\(\)_,-\.]+} $s { } s
     set words {}
@@ -71,7 +112,11 @@ proc check {what row field _s} {
 			if {![info exists ::checkseen($word)] && ![info exists ::spellwords($word)]} {
 			    set ::checkseen($word) 1
 			    lappend words $word
-			    append results "$what - #$row - $field: $word\n"
+			    append results "$what"
+			    if {$row!=""} {
+				append results " - #$row"
+			    }
+			    append results " - $field: $word\n"
 			}
 		    }
 		}

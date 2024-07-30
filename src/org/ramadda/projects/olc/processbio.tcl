@@ -6,10 +6,10 @@ set ::bp {class_1 division kingdom class family order record_status taxon sci_na
 proc bio $::bp  {
     incr ::cnt
 #    puts stderr "#$::cnt"
-#    if {$::cnt>4} return
+##    if {$::cnt>7} return
 
     foreach p $::bp {
-	set v [string trim [clean [set $p]]]'
+	set v [string trim [clean [set $p]]]
 	set v [spell $v]
 	set $p $v
 	check "Bio Records" $::cnt $p $v
@@ -19,7 +19,7 @@ proc bio $::bp  {
     }
     set seenLakota 0
     set desc ""
-    set lakota ""
+    set lakota {}
     foreach line [split $description "\n"] {
 	set line [string trim $line]
 	if {[regexp -nocase {^Lakota name:} $line]} {
@@ -37,16 +37,14 @@ proc bio $::bp  {
 	    if {[regexp {^-} $line]} {
 		set seenLakota 0
  	    } else {
-		append lakota "$line\n"
+		lappend lakota [string  trim "$line"]
 		continue
 	    }
 	}
 	append desc "$line\n"
     }
 
-    set lakota [string trim $lakota]	    
     set desc [string trim $desc]	    
-    regsub -all {\n} $lakota { } lakota
     set name ""
     set cnames {}
     array set seen {}
@@ -75,6 +73,11 @@ proc bio $::bp  {
 	append ::entries [col fromdate $status_date]
 	append ::entries [col todate $status_date]	    
     }
+    set desc [fixme $desc]
+
+
+
+
     append ::entries [col description $desc]    
     append ::entries [col catalog_number $catalog]    
     append ::entries [col common_name $common_name]
@@ -125,8 +128,21 @@ proc bio $::bp  {
 	append ::entries [mtd1 archive_cultural_use $cultural_uses]
     }
 
-    if {$lakota!=""} {
-	append ::entries [mtd2 archive_alternate_name {Lakota Name} $lakota]
+    array  set seenalt {}
+    if {[llength $lakota]} {
+	foreach l $lakota {
+	    foreach l2 [split $l ,] {
+		set l2 [string trim $l2]
+		if {$l2==""} continue
+		foreach l3 [split $l2 ;] {
+		    set l3 [string trim $l3]
+		    if {$l3==""} continue
+		    if {[info exists seenalt($l3)]} {continue}
+		    set seenalt($l3) 1
+		    append ::entries [mtd2 archive_alternate_name {Lakota Name} [fixme $l3 1 $name]]
+		}
+	    }
+	}
     }
 
     if {$lakota_names!=""} {

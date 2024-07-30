@@ -11,9 +11,10 @@ proc object $::params  {
     incr ::cnt
 #    if {$::cnt>2} return
     foreach p $::params {
-	set v [set $p]
-	set $p [string trim  $v]
-	check object $::cnt $p [set $p]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check object $::cnt $p $v]
     }
 
     set material [string totitle $material]

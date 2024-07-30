@@ -94,6 +94,7 @@ proc processSubjectsAndKeywords {v} {
     }
     regsub -all {;} $v {,} v
     foreach tok [split $v ,] {
+	set tok [fixme $tok]
 	set _what $what
 	set tok [string trim $tok]
 	if {$tok=="Disc"} {
@@ -196,6 +197,7 @@ proc collection $::cp  {
 
 proc handlePhysicalDescription {phys_desc} {
     foreach tok [split $phys_desc ,] {
+	set tok [fixme $tok]
 	set tok [string trim $tok]
 	if {$tok==""} continue;
 	set sentence ""
@@ -211,6 +213,7 @@ proc handlePhysicalDescription {phys_desc} {
 	if {[regexp {cd media} $_tok]} {set tok CD}	    	
 	if {[regexp {cd-r} $_tok]} {set tok CD}	    	    
 	foreach word  [split $tok] {
+	    set word [fixme $word]
 	    append sentence " "
 	    set word [string trim [string totitle $word]]
 	    set _word [string tolower $word]

@@ -15,29 +15,43 @@ set ::cnt 0
 
 set ::bp {name_type author call_nbr title item_type item_count publisher pub_year volume phys_char notes barcode other_terms isbn lccn series column1 _1}
 
+array set ::parent {}
 
+proc getParent {title} {
+    regsub -all fixme $title {} title
+    set title [string trim $title]
+    regexp {^(.)} $title p
+    set p [string toupper $p]
+    set id "Books - etc"
+    foreach key {A-D E-H I-L M-P Q-T U-Z} {
+	if {[regexp "\[$key\]" $p]} {
+	    set id "Books $key"
+	}
+    }
+    if {![info exists ::parent($id)]} {
+	set ::parent($id)  1
+	append ::entries [openEntry group $id {} $id]
+	append ::entries "</entry>\n"
+    }
+    return $id
+}    
 
 proc book $::bp  {
     incr ::cnt
-##    if {$::cnt>10} return
+#    if {$::cnt>100} return
     foreach p $::bp {
 	set v [string trim [set $p]]
 	set v [spell $v]
 	set $p $v
 	check books $::cnt $p $v
     }
-    if {[regexp {©} $title]} {
-#	puts "Title: $title"
-    }
-    if {[regexp {©} $notes]} {
-#	puts "#$::cnt - $title - notes: $notes"
-    }    
-
 
     catch {
 	set isbn [format %.0f $isbn]
     }	
-    append ::entries [openEntry type_archive_book {} {} $title]    
+
+    set parent [getParent $title]
+    append ::entries [openEntry type_archive_book {} $parent  $title]    
 
 
 
@@ -101,6 +115,7 @@ proc book $::bp  {
 	    regsub -all etc $term etc. term
 	    regsub -all {etc\.\.} $term etc. term	    
 	    regsub {^--} $term {} term
+	    set term [fixme $term]
 	    if {[info exists seen($term)]} continue
 	    set seen($term) 1
 	    puts $fp "<div style='padding:2px;border-bottom:1px solid #ccc;white-space: nowrap;margin-left:60px;'> $term</div>\n"
