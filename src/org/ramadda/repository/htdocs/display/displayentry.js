@@ -2028,6 +2028,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	},
 
         addExtraForm: function() {
+	    let popupLimit = this.getTagPopupLimit();
 	    let toggleClose = this.getColumnsToggleClose(this.getToggleClose(true));
             if (this.savedValues == null) this.savedValues = {};
             let extra = "";
@@ -2088,7 +2089,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let clazz = 'display-metadatalist';
 			let attrs = [ATTR_ID, id];
 			let optionAttrs = [ATTR_CLASS,"display-metadatalist-item", ATTR_TITLE, "", ATTR_VALUE, VALUE_NONE];
-			if(col.getSearchMultiples()) {
+			if(values.length>=popupLimit || col.getSearchMultiples()) {
 			    attrs.push('multiple','true');
 			    attrs.push('size','4');			    
 			} else {
@@ -2150,7 +2151,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 	    if(inGroup) extra+='</div></div>';
             this.writeHtml(ID_TYPEFIELDS, extra);
-	    let popupLimit = this.getTagPopupLimit();
 	    this.jq(ID_TYPEFIELDS).find('.display-metadatalist').each(function() {
 		let opts = $(this).find('option');
 		if(opts.length<popupLimit) return;
