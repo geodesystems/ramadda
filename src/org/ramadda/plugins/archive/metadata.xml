@@ -45,7 +45,7 @@
 	       values="Photograph,Audio,Video"/>
     </type>
     <type id="archive_physical_media" name="Archive Physical Media">
-      <element id="physical_description" name="Descriptiond" datatype="enumerationplus"
+      <element id="physical_description" name="Description" datatype="enumerationplus"
 	       values="CD Media,Analog,Photograph,Paper Copies,MP4 File,MP3 File,Audio File,Analogue Cassette Tape,Oversized Item"/>
     </type>    
 
@@ -97,13 +97,33 @@
       <element id="material" name="Material" datatype="enumerationplus"/>
     </type>        
 
-  <type id="archive_research_activity" name="Research Activity"   displaygroup="Research Activities"
+    <type id="archive_research_activity" name="Archive Research Activity"   displaygroup="Research Activities"
+	  restrictions="user"  	  
 	searchable="true"  textLengthLimit="200">
       <element id="institution" name="Institution" datatype="enumerationplus" searchable="true"/>
       <element id="researcher" name="Researcher"  columns="60"/>
       <element id="email" name="Email"  datatype="email"/>      
       <element id="description" name="Description"  columns="60" rows="5"/>
   </type>
+
+
+    <type id="archive_digitization" name="Archive Digitization"   displaygroup="Research Activities"
+	searchable="true"  textLengthLimit="200">
+      <element id="digitized" name="Digitized" datatype="boolean" searchable="true"/>
+      <element id="media" name="Media" datatype="enumerationplus" searchable="true"
+	       values="Image,CD,MP3,MP4,Audio"/>
+      <element id="note" name="Note"  columns="60" rows="5"/>
+  </type>
+
+
+    <type id="archive_donor" name="Archive Donor"   displaygroup="Archive Donors"
+	  restrictions="user"  	  
+	  searchable="true"  textLengthLimit="200">
+      <element id="donor" name="Donor" datatype="enumerationplus" searchable="true"/>
+      <element id="note" name="Note"  columns="60" rows="5"/>
+  </type>
+
+
 
 
   <handler class="org.ramadda.plugins.archive.ArchiveMetadataHandler">
