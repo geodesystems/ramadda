@@ -204,10 +204,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         subName = XmlUtil.getAttribute(node, ATTR_SUBNAME, "");
         id      = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
         max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
-        setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
-        setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, 60));
         setDataType(XmlUtil.getAttribute(node, ATTR_DATATYPE,
                                          MetadataElement.DATATYPE_STRING));
+	
+        setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
+        setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, isEnumeration()?20:60));
+
         attachment = XmlUtil.getAttribute(node, ATTR_ATTACHMENT, true);
         setDefault(XmlUtil.getAttribute(node, ATTR_DEFAULT, ""));
 
@@ -983,11 +985,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		}
 	    }
             boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
+	    
             return HU.select(arg, valuesToUse, value) + HU.space(2)
                    + msgLabel("Or")
                    + HU.input(arg + "_input", (contains
                     ? ""
-                    : value), HU.SIZE_20);
+					       : value), HU.attrs("size",""+columns));
         } else if (dataType.equals(DATATYPE_FILE)) {
             String image = (forEdit
                             ? getFileHtml(request, entry, metadata, this,

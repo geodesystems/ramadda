@@ -85,12 +85,12 @@
   <type id="archive_alternate_name" name="Alternate Name"   displaygroup="Alternate Names"
 	searchable="true"  textLengthLimit="200">
       <element id="type" name="Name Type" datatype="enumerationplus" searchable="true"/>
-      <element id="name" name="Name"  columns="60" searchable="true"/>
+      <element id="name" name="Name"  columns="80" searchable="true"/>
   </type>
 
   <type id="archive_cultural_use" name="Cultural Use" displaygroup="Cultural Uses"
 	 textLengthLimit="200">
-      <element id="use" name="Use"  columns="60" rows="5"/>
+      <element id="use" name="Use"  columns="100" rows="5"/>
     </type>          
 
     <type id="archive_object_material" name="Archive Object Material" displaygroup="Materials" searchable="true">
