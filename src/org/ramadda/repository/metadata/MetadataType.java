@@ -80,7 +80,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private String category = "Properties";
     private boolean adminOnly = false;
     private boolean isGeo = false;
-    private String restrictions;
+    private List<String> restrictions;
     private boolean addNot = false;
     private boolean canView = true;
     private boolean canDisplay = true;
@@ -261,7 +261,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         super.init(node);
         setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
         isGeo = XmlUtil.getAttributeFromTree(node, "isgeo",false);
-	restrictions=XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE);
+	restrictions=Utils.split(XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE),",",true,true);
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	addNot = XmlUtil.getAttributeFromTree(node, "addnot", false);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
@@ -955,7 +955,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     public boolean isPrivate(Request request, Entry entry,Metadata metadata) {
 	//Check for the missing type
-	if(restrictions==null) {
+	if(restrictions==null || restrictions.size()==0) {
 	    return false;
 	}
 
@@ -963,10 +963,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	if(isGeo && !request.geoOk(entry)) {
 	    return true;
 	}
-	if(restrictions.equals(RESTRICTIONS_ADMIN) && !request.isAdmin()) {
+	if(restrictions.contains(RESTRICTIONS_ADMIN) && !request.isAdmin()) {
 	    return false;
 	}
-	if(restrictions.equals(RESTRICTIONS_USER) && request.isAnonymous()) {
+	if(restrictions.contains(RESTRICTIONS_USER) && request.isAnonymous()) {
 	    return true;
 	}
 	List<Role> list = metadata.getAccessList();
