@@ -1024,7 +1024,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	    }
 
 	    if(children.size()==1 && cnt==1) {
-	    } else  if(!children.get(0).isEnumeration() || cnt>1) {
+	    } else  if((!children.get(0).isEnumeration() && !children.get(0).isBoolean())/* || cnt>1*/) {
 		makeSearchLink=false;
 	    }
 	}
@@ -1046,8 +1046,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             int                   cnt      = 1;
             boolean               didOne   = false;
             content.append(HU.formTable());
-
-
             for (MetadataElement element : children) {
                 MetadataElement.MetadataHtml formInfo =
                     element.getHtml(request, entry, this, metadata,

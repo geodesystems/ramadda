@@ -107,8 +107,8 @@
   </type>
 
 
-    <type id="archive_digitization" name="Archive Digitization"   displaygroup="Research Activities"
-	searchable="true"  textLengthLimit="200">
+    <type id="archive_digitization" name="Archive Digitization" 
+	  searchable="true"  textLengthLimit="200">
       <element id="digitized" name="Digitized" datatype="boolean" searchable="true"/>
       <element id="media" name="Media" datatype="enumerationplus" searchable="true"
 	       values="Image,CD,MP3,MP4,Audio"/>
