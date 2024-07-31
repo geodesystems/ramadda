@@ -256,8 +256,10 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         } else if (tag.equals("nws.details")) {
             addDetails(request, entry, sb, showHeader, cnt);
         } else if (tag.equals("nws.weather")) {
+	    sb.append("<div class='nws-weather'>");
             addCurrent(request, entry, sb, showHeader, vertical, showDetails,showLabel,showHazard);
             addForecast(request, entry, sb, showHeader, cnt);
+	    sb.append("</div>");
         } else if (tag.equals("nws.all")) {
             addHazard(request, entry, sb, showHeader);
             sb.append("<br>");
@@ -274,7 +276,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	sb = new StringBuilder();
 	sb.append(
 		  HU.cssBlock(
-			      ".nws-contents {max-width:100%;padding:5px;}\n.nws-header-label {font-weight:bold;margin:5px;}\n.nws-label {font-size:80%;white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {max-width:100%;display:inline-block;border: 0px red solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
+			      ".nws-weather .nws-block {display:table-cell;}\n .nws-contents {max-width:100%;padding:5px;}\n.nws-header-label {font-weight:bold;margin:5px;}\n.nws-label {font-size:80%;white-space:nowrap;max-width:90px;overflow-x:auto;}\n.nws-block {max-width:100%;display:inline-block;border: 0px red solid;  border-radius: 4px;}\n.nws-header {font-weight:bold;background:#eee; padding:5px;}\n.nws-block-hazard {border-color:#EED4D4;}\n.nws-block-hazard .nws-header {background:#EED4D4; color:#A80000}\n"));
 	sb.append(contents);
 	contents = sb.toString();
 
