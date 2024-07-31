@@ -803,6 +803,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return result.getResult();
 	}
 
+	if(!f.exists()) {
+	    return null;
+	}
+
 
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
