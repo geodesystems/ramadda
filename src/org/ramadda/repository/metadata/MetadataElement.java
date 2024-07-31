@@ -570,7 +570,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 name = HU.space(1);
             }
 
-	    System.err.println(name +" " + html);
             //            sb.append(HU.formEntry(name, html));
             return new MetadataHtml(name, html);
         }
