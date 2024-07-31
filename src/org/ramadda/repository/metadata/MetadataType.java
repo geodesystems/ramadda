@@ -77,6 +77,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private List<Column> databaseColumns;
     private String displayCategory = "Properties";
     private String displayGroup = null;
+    private String tag = null;
     private String category = "Properties";
     private boolean adminOnly = false;
     private boolean isGeo = false;
@@ -280,6 +281,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         setDisplayCategory(XmlUtil.getAttributeFromTree(node,
 							ATTR_DISPLAYCATEGORY, "Properties"));
 
+
+	tag = XmlUtil.getAttributeFromTree(node, "tag",  (String) null);
 
         setDisplayGroup(XmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
 						     (String) null));
@@ -1289,6 +1292,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return this.displayCategory;
     }
 
+    public String getTag() {
+	return tag;
+    }
 
 
     /**
@@ -1399,5 +1405,71 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public int getPriority() {
         return priority;
     }
+
+    public static class Checker {
+        List<String> onlyTypes = null;
+        List<String> notTypes  = null;
+        List<String> onlyTags = null;
+	List<String> notTags = null;	
+	public Checker(String types) {
+	    if (types != null) {
+		for (String type :Utils.split(types, ",", true, true)) {
+		    boolean negate = false;
+		    boolean tag=false;
+		    if (type.startsWith("!")) {
+			type=type.substring(1);
+			negate=true;
+		    }
+		    if (type.startsWith("tag:")) {
+			type=type.substring("tag:".length());
+			tag=true;
+		    }		    
+		    if(tag) {
+			if(negate) notTags = add(notTags,type);
+			else onlyTags = add(onlyTags,type);
+		    } else {
+			if(negate) notTypes = add(notTypes,type);
+			else onlyTypes = add(onlyTypes,type);
+		    }
+		}
+	    }
+	}
+
+	private List<String> add(List<String> l,String t) {
+	    if(l==null) l=new ArrayList<String>();
+	    l.add(t);
+	    return l;
+	}
+
+	public boolean typeOk(MetadataType type) {
+	    if(type==null) return true;
+            if (onlyTags != null) {
+		String tag = type.getTag();
+		if(tag==null) return false;
+		if(!onlyTags.contains(tag)) return false;
+	    }
+            if (notTags != null) {
+		String tag = type.getTag();
+		if(tag!=null && notTags.contains(tag)) return false;
+	    }	    
+
+            if (onlyTypes != null) {
+                if (!onlyTypes.contains(type.getId())) {
+		    return false;
+                }
+            }
+
+            if (notTypes != null) {
+                if (notTypes.contains(type.getId())) {
+		    return false;
+                }
+            }
+
+	    return true;
+	}
+
+    }
+
+
 
 }
