@@ -621,7 +621,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    if(metadataDisplay && metadataDisplay.length) {
 			let mtd = RamaddaUtil.formatMetadata(entry,metadataDisplay);
 			if(Utils.stringDefined(mtd)) {
-			    v +=HU.div([],mtd);
+			    v +=HU.div([ATTR_STYLE,'max-width:100%;overflow-wrap: break-word;'],mtd);
 			    hasMetadata=true;
 			}
 		    }

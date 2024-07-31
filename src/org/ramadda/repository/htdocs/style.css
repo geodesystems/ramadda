@@ -2765,6 +2765,9 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     margin-right:4px !important;
 }
 
+.entry-row td {
+}
+
 .entry-row-table  {
     table-layout: fixed;
 }
