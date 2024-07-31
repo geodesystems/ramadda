@@ -84,6 +84,7 @@
       <type name="Usage Tag"
 	    displaygroup="Usage Tags"
 	    id="content.license"
+	    tag="internal"
 	    searchable="true" browsable="true" priority="0">
 	<help>
 	  <![CDATA[More information at <a href="https://ramadda.org/repository/userguide/wiki/usagetags.html" target=_other>ramadda.org</a>]]>
@@ -185,6 +186,7 @@
            category="Thumbnails, Page Style,  Etc.">
     <type
        name="Thumbnail Image"
+       tag="internal"
        id="content.thumbnail">
       <element name="Thumbnail File" datatype="file" thumbnail="true" istitle="true"/>
       <element name="Caption" datatype="string" />
@@ -194,6 +196,7 @@
 
     <type
        name="File Attachment"
+       tag="internal"
        id="content.attachment">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
       <element name="Type" />
@@ -351,6 +354,7 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
        searchable="true" browsable="true"
        name="RAMADDA Alias"
        id="content.alias"
+       tag="internal"
        displaycategory="AKA"
        >
       <help>

@@ -43,7 +43,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 :vspace 1em
 :heading Information
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.attachment,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -section
@@ -75,7 +75,7 @@ inherited="false"  }}
 <div class=formgroupheader>{{typename}} Information</div>
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
-{{properties  propertyToggleLimit=100 message=""  metadata.types="!archive_research_activity,!archive_internal,!content.alias,!content.thumbnail,!content.license"
+{{properties  propertyToggleLimit=100 message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 </div>
@@ -105,15 +105,15 @@ metadataDisplay="archive_keyword:header=Keywords:delimiter=;,archive_subject:hea
 {{barcode field=barcode message=""}}
 -center
 -if
-{{properties  propertyToggleLimit=100 message=""  metadata.types="archive_internal"
-checkTextLength="true"
-headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
-inherited="false"  }} 
 +center
 {{image  inherited="true" showCaption=true
 message="" width="80%" style="margin-bottom:10px;"  useThumbnail="true" showPlaceholderImage=true}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+{{properties  propertyToggleLimit=100 message=""  metadata.types="tag:archiveinternal"
+checkTextLength="true"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }} 
 :vspace 1em
 {{mapentry hideIfNoLocations=true width="100%" height="200px"}}
 :vspace 1em
@@ -241,7 +241,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +col-8
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -col
@@ -324,7 +324,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 +col-8
 {{description wikify="true"}}
 {{information  showDetails="true"  showTitle="false"   }} 
-{{properties  message=""  metadata.types="!archive_research_activity,!content.alias,!content.thumbnail,!content.license"
+{{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
 -col
@@ -408,12 +408,12 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +tab Information
 {{information  showDetails="true"  showTitle="false"   }} 
 {{properties  message=""
-metadata.types="!archive_media_resource,!archive_research_activity,!content.alias,!content.thumbnail,!content.license,!archive_alternate_name,!archive_cultural_use,!archive_donor,!archive_digitization"
+metadata.types="!tag:archiveinternal,!tag:archivecultural,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }}
 -tab
 +tab Traditional Knowledge
-{{properties  stripe=false propertyToggleLimit=100 message=""  metadata.types="archive_alternate_name,archive_cultural_use,archive_media_resource"
+{{properties  stripe=false propertyToggleLimit=100 message=""  metadata.types="tag:archivecultural"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
 inherited="false"  }} 
 -tab
@@ -430,11 +430,7 @@ inherited="false"  }}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 +if anonymous=false
-{{properties  message=""  propertyToggleLimit=0 metadata.types="archive_donor"
-headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" inherited="true"  }}
-{{properties  message=""  propertyToggleLimit=0 metadata.types="archive_research_activity"
-headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" inherited="false"  }}
-{{properties  message=""  propertyToggleLimit=0 metadata.types="archive_digitization"
+{{properties  message=""  propertyToggleLimit=0 metadata.types="tag:archiveinternal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" inherited="true"  }}
 -if
 :vspace 1em
