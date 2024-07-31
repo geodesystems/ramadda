@@ -6345,11 +6345,11 @@ public class WikiManager extends RepositoryManager
         request = request.cloneMe();
         request.putExtraProperty("wiki.props", props);
 
-        List<String> onlyTheseTypes = null;
-        List<String> notTheseTypes  = null;
+
 
         String metadataTypesAttr = getProperty(wikiUtil, props,
 					       ATTR_METADATA_TYPES, (String) null);
+	MetadataType.Checker checker=new MetadataType.Checker(metadataTypesAttr);
         String separator = getProperty(wikiUtil, props, "separator",
                                        (String) null);
         boolean tags = getProperty(wikiUtil, props, "tags", false);
@@ -6357,18 +6357,6 @@ public class WikiManager extends RepositoryManager
 	    request.put("tags","true");
         boolean showSearch = getProperty(wikiUtil, props, "showSearch", false);	
 
-        if (metadataTypesAttr != null) {
-            onlyTheseTypes = new ArrayList<String>();
-            notTheseTypes  = new ArrayList<String>();
-            for (String type :
-		     Utils.split(metadataTypesAttr, ",", true, true)) {
-                if (type.startsWith("!")) {
-                    notTheseTypes.add(type.substring(1));
-                } else {
-                    onlyTheseTypes.add(type);
-                }
-            }
-        }
         List tabTitles   = new ArrayList<String>();
         List tabContents = new ArrayList<String>();
         boolean includeTitle = getProperty(wikiUtil, props,
@@ -6383,7 +6371,7 @@ public class WikiManager extends RepositoryManager
 	boolean inherited = getProperty(wikiUtil,props,"inherited",false);
         for (TwoFacedObject tfo :
 		 getRepository().getHtmlOutputHandler().getMetadataHtml(
-									request, entry, onlyTheseTypes, notTheseTypes,
+									request, entry, checker,
 									includeTitle, separator, decorate,stripe,inherited,props)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());

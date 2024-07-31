@@ -705,7 +705,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
-						List<String> onlyTheseTypes, List<String> notTheseTypes,
+						MetadataType.Checker checker,
 						boolean showTitle, String separator, boolean decorate,
 						boolean stripe,boolean inherited,Hashtable props)
             throws Exception {
@@ -736,23 +736,14 @@ public class HtmlOutputHandler extends OutputHandler {
         Hashtable<String, Boolean> typeRow = new Hashtable<String, Boolean>();
 
         for (Metadata metadata : metadataList) {
-            if ((onlyTheseTypes != null) && (onlyTheseTypes.size() > 0)) {
-                if ( !onlyTheseTypes.contains(metadata.getType())) {
-                    continue;
-                }
-            }
-
-            if ((notTheseTypes != null) && (notTheseTypes.size() > 0)) {
-                if (notTheseTypes.contains(metadata.getType())) {
-                    continue;
-                }
-            }
-
             MetadataType type = getRepository().getMetadataManager().findType(
                                     metadata.getType());
             if (type == null) {
                 continue;
             }
+	    if(checker!=null && !checker.typeOk(type)) {
+		continue;
+	    }
 
 	    if(!type.getCanDisplay()) {
 		continue;
@@ -1332,7 +1323,7 @@ public class HtmlOutputHandler extends OutputHandler {
         tabContents.add(basicSB.toString());
 
         for (TwoFacedObject tfo :
-		 getMetadataHtml(request, entry, null, null, true, null,
+		 getMetadataHtml(request, entry, null, true, null,
 				 false, true,false,props)) {
             tabTitles.add(tfo.toString());
             tabContents.add(tfo.getId());
