@@ -558,6 +558,8 @@ public class ExtEditor extends RepositoryManager {
 			final JsContext jsContext = new JsContext(walker,forReal);
 			holder[0] = jsContext;
 			scope.put("ctx", scope, jsContext);
+			scope.put("topLat", scope, new Double(finalEntry.getLatitude(request)));
+			scope.put("topLon", scope, new Double(finalEntry.getLongitude(request)));
 			visit(finalEntry,extEntries, walker);
 			jsContext.print("Done - Processed: #" +cnt[0] +" entries");
 			getActionManager().setContinueHtml(actionId,
