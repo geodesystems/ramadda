@@ -123,6 +123,8 @@ public class WikiUtil implements HtmlUtilsConstants {
     /** _more_ */
     private HashSet notTags;
 
+    private HashSet  seen = new HashSet();
+
 
     /** _more_          */
     private WikiPageHandler handler;
@@ -966,6 +968,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    String balloonAfter = null;
 	    Hashtable enlargeProps = null;
 	    Hashtable context = new Hashtable();
+	    boolean inMermaid=false;
+
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
@@ -1009,6 +1013,27 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 		if(skipping) {
+		    continue;
+		}
+
+		if(tline.startsWith("+mermaid")) {
+		    inMermaid=true;
+		    if(!seen.contains("addedmermaid")) {
+			seen.add("addedmermaid");
+			buff.append("\n<script type='module'>\nimport mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';\nmermaid.initialize({ startOnLoad: true });\n</script>\n");
+		    }
+		    buff.append("<pre class='mermaid preplain'>\n");
+		    continue;
+
+		}
+		if(tline.startsWith("-mermaid")) {
+		    inMermaid=false;
+		    buff.append("\n</pre>\n");
+		    continue;
+		}
+		if(inMermaid) {
+		    buff.append(line);
+		    buff.append("\n");
 		    continue;
 		}
 
@@ -1182,6 +1207,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    applySB.append("\n");
 		    continue;
 		}
+
 
 
 
