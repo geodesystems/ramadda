@@ -825,8 +825,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    schema.add("\"locations\":[<locations>]");
 	}
 	if(extractLatLon) {
-	    jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. "; 
-	    schema.add("\"latiude\":<latitude>,\"longitude\":<longitude>");
+	    jsonPrompt+="If you can, also extract the latitude and longitude of the area that this document describes. Only return the latitude and longitude if you are sure of the location. If you cannot extract the location then do not return an error. "; 
+	    schema.add("\"latitude\":<latitude>,\"longitude\":<longitude>");
 	}	
 
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
@@ -851,6 +851,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	    JSONObject obj;
 	    try {
+		//		System.err.println(json);
 		obj = new JSONObject(json);
 	    } catch(Exception exc) {
 		//Try capping it
@@ -915,6 +916,8 @@ public class LLMManager extends  AdminHandlerImpl {
 		double longitude = obj.optDouble("longitude",Double.NaN);		
 		if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
 		    entry.setLocation(latitude,longitude);
+		} else {
+		    getSessionManager().addSessionErrorMessage(request,"Could not extract lat/lon");
 		}
 	    }
 
