@@ -29,6 +29,7 @@ entriesListHeader=""  }}
 
 :heading List
 +center
+{{group}}
 {{display_simplesearch  doPageSearch=true autoFocus=false}} 
 -center
 {{tabletree  message="No entries" orderby=name ascending=true}}
