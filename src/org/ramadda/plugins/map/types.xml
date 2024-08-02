@@ -158,7 +158,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
       handler="org.ramadda.plugins.map.ShapefileTypeHandler"
       pattern="(.*\.shp$|.*shp.*\.zip|.*\.shz)"
       metadata="shapefile_display,shapefile_color,map_displaymap">
-  <newhelp>+callout-info\nHint: To use conversion services name your file .shz or .shp.zip\n-callout-info</newhelp>
+  <newhelp>Hint: To use conversion services name your file .shz or .shp.zip</newhelp>
      <property name="icon" value="/icons/mapfile.png"/>
      <property name="upload.zip" value="true"/>
      <property name="mimetype" value="application/zipped-shapefile"/>
