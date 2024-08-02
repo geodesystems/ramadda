@@ -64,8 +64,8 @@ public class GeoResource {
     /** _more_ */
     public static final GeoResource RESOURCE_COUNTIES =
         new GeoResource(RESOURCE_ROOT + "/counties.txt", new int[] {
-        3, 1, 1, 10, 11, -1, 0
-    }, "", 4);
+        3, 1, 1, 8, 9, -1, 0
+    }, "", -1);
 
     /** _more_ */
     public static final GeoResource RESOURCE_SUBDIVISIONS =
