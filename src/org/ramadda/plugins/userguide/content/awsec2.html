@@ -17,10 +17,12 @@ Here are the steps to create an AWS EC2 instance
 <li> From the EC2 Dashboard (e.g., <a href="https://us-west-2.console.aws.amazon.com/ec2/v2/home">https://us-west-2.console.aws.amazon.com/ec2/v2/home</a>)
 go to the  Instances page and select  "Launch Instance".
 
-<li> Choose an Amazon Machine Image (AMI)<br>
-Pick an image.
+<li> Choose an Operating System <br>
+RAMADDA can run on any operating system. 
 The RAMADDA installer has been tested on Amazon Linux,
-Ubuntu, Redhat and Centos.
+Ubuntu, Redhat and Centos. However, the PostgreSQL installation only works with Amazon Linux.
+You can configure RAMADDA to use other <a href=database.html>databases</a> (e.g. MySQL) but you
+will have to install them yourself.
   
 <li> Choose an Instance Type<br>
 The instance type depends on your expected load. For example 
@@ -28,7 +30,7 @@ The instance type depends on your expected load. For example
 
 <li>Key pair<br>
 Select "Create new key pair". 
-This is what you use to SSH to your instance. Do not lose it!
+This is what you use to SSH to your instance. <em>Do not lose it!</em>
 Once downloaded, you will need to change permissions on your pem file, e.g.
 +pre addCopy=true
 chmod 600 ramadda.pem
@@ -59,7 +61,13 @@ By default the IP address associated with your instance can change when the inst
 ssh -i &lt;.pem file&gt;  ec2-user@&lt;server IP address&gt;
 </pre>
 
-
+<li> Set up backup
+<br>
+Once you have RAMADDA installed you will want to set up backup of your main volume using the
+<a href=https://docs.aws.amazon.com/ebs/latest/userguide/ebs-creating-snapshot.html>
+  Snapshot service</a>. Once this is configured and running it is a very good idea to
+test it out by starting up a new test instance, initializing the volume with the snapshot
+and verifying that the snapshot works.
 </ol>
 
 
