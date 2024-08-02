@@ -1590,11 +1590,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 
-        //xx
         addToMap(request, map, entriesToUse, theProps);
-
-
-
 
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
@@ -1798,16 +1794,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
     
 
 
-    /**
-     * Add the entry to the map
-     *
-     * @param request      The request
-     * @param map          the map information
-     * @param entriesToUse the Entrys to use
-     * @param props _more_
-     *
-     * @throws Exception  problem adding entries to map
-     */
     public void addToMap(Request request, MapInfo map,
                          List<Entry> entriesToUse, Hashtable props)
 	throws Exception {
@@ -1843,39 +1829,43 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 	    }
 	}
 
-
-
         //            map.addLines(entry, "", polyLine, null);
-
-        if ((entriesToUse.size() == 1) && detailed) {
+        if (entriesToUse.size() >0) {
+	    //        if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request,
 						  entriesToUse.get(0), "map_displaymap", true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 for (Metadata metadata : metadataList) {
-                    if (Utils.stringDefined(metadata.getAttr1())) {
-                        Entry mapEntry =
-                            (Entry) getEntryManager().getEntry(request,
-							       metadata.getAttr1());
-                        if (mapEntry != null) {
-			    if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
-				String url =
-				    request.entryUrl(getRepository()
-						     .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
-						     ShapefileOutputHandler.OUTPUT_GEOJSON
-						     .toString(), "formap", "true");
-				map.addGeoJsonUrl(mapEntry.getName(), url, true,
-						  ShapefileOutputHandler.makeMapStyle(request, mapEntry));
-
-
-			    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
-				String url =
-				    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
-				map.addGeoJsonUrl(
-						  mapEntry.getName(), url, true,"");
-				
-			    }
-                        }
+                    if (!Utils.stringDefined(metadata.getAttr1())) continue;
+		    Entry mapEntry =
+			(Entry) getEntryManager().getEntry(request,
+							   metadata.getAttr1());
+		    if (mapEntry == null) continue;
+		    String fillColor = metadata.getAttr3();
+		    String fillOpacity = metadata.getAttr4();		    
+		    String strokeColor = metadata.getAttr(5);
+		    String strokeWidth = metadata.getAttr(6);    
+		    List<String> styles = new ArrayList<String>();
+		    ShapefileOutputHandler.makeMapStyle(request, mapEntry,styles);
+		    if(stringDefined(fillColor)) Utils.add(styles,"fillColor",JU.quote(fillColor));
+		    if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
+		    if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
+		    if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
+		    String mapStyle = JU.map(styles);
+		    if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
+			String url =
+			    request.entryUrl(getRepository()
+					     .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
+					     ShapefileOutputHandler.OUTPUT_GEOJSON
+					     .toString(), "formap", "true");
+			map.addGeoJsonUrl(mapEntry.getName(), url, true,mapStyle,false);
+		    } else if(mapEntry.getTypeHandler().isType("geo_geojson")) {
+			String url =
+			    request.entryUrl(getRepository().URL_ENTRY_GET, mapEntry).toString();
+			map.addGeoJsonUrl(
+					  mapEntry.getName(), url, true,mapStyle,false);
+			
                     }
                 }
             }

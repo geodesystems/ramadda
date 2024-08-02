@@ -1052,29 +1052,28 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @throws Exception _more_
      */
-    public static String makeMapStyle(Request request, Entry entry)
+    public static void makeMapStyle(Request request, Entry entry,List<String> values)
             throws Exception {
         List<Metadata> metadataList =
             request.getRepository().getMetadataManager().findMetadata(
                 request, entry, "map_style", true);
-        List<String> values = new ArrayList<String>();
         if ((metadataList != null) && (metadataList.size() > 0)) {
             Metadata kmlDisplay = metadataList.get(0);
             if (Utils.stringDefined(kmlDisplay.getAttr1())) {
                 values.add("strokeColor");
-                values.add(kmlDisplay.getAttr1());
+                values.add(JU.quote(kmlDisplay.getAttr1()));
             }
             if (Utils.stringDefined(kmlDisplay.getAttr2())) {
                 values.add("fillColor");
-                values.add(kmlDisplay.getAttr2());
+                values.add(JU.quote(kmlDisplay.getAttr2()));
             }
             if (Utils.stringDefined(kmlDisplay.getAttr3())) {
                 values.add("select_strokeColor");
-                values.add(kmlDisplay.getAttr3());
+                values.add(JU.quote(kmlDisplay.getAttr3()));
             }
             if (Utils.stringDefined(kmlDisplay.getAttr4())) {
                 values.add("select_fillColor");
-                values.add(kmlDisplay.getAttr4());
+                values.add(JU.quote(kmlDisplay.getAttr4()));
             }
             if (Utils.stringDefined(kmlDisplay.getAttr(5))) {
                 values.add("strokeWidth");
@@ -1085,8 +1084,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 values.add(kmlDisplay.getAttr(6));
             }
         }
-
-        return JsonUtil.mapAndQuote(values);
     }
 
 

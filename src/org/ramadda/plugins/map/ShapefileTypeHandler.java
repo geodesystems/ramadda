@@ -314,8 +314,10 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         if (bounds != null) {
             kmlUrl += "&selectBounds=" + bounds;
         }
-        map.addKmlUrl(entry.getName(), kmlUrl, true,
-                      ShapefileOutputHandler.makeMapStyle(request, entry));
+	List<String> styles = new ArrayList<String>();
+	ShapefileOutputHandler.makeMapStyle(request, entry,styles);
+        map.addKmlUrl(entry.getName(), kmlUrl, true,JU.map(styles));
+                      
 
         /*  For testing
         map.addGeoJsonUrl(
@@ -337,8 +339,10 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
 				 .URL_ENTRY_SHOW, entry, ARG_OUTPUT,
 				 ShapefileOutputHandler.OUTPUT_GEOJSON
 				 .toString(), "formap", "true");
-	    map.addGeoJsonUrl(entry.getName(), url, true,
-			      ShapefileOutputHandler.makeMapStyle(request, entry));
+	    List<String> styles = new ArrayList<String>();
+	    ShapefileOutputHandler.makeMapStyle(request, entry,styles);
+	    map.addGeoJsonUrl(entry.getName(), url, true,JU.map(styles));
+
 	}
         return super.addToMapSelector(request, entry, forEntry, map);
     }

@@ -180,9 +180,11 @@ public class GeoJsonTypeHandler extends ConvertibleTypeHandler
 	//        String url = getEntryManager().getEntryResourceUrl(request, entry);
 	String url = getEntryManager().getEntryResourceUrl(request, entry,ARG_INLINE_DFLT,ARG_FULL_DFLT,ARG_ADDPATH_TRUE,true);
 
-        map.addGeoJsonUrl(entry.getName(), url, true,
-                          ShapefileOutputHandler.makeMapStyle(request,
-							      entry));
+	List<String> styles = new ArrayList<String>();
+	ShapefileOutputHandler.makeMapStyle(request,
+					    entry,styles);
+        map.addGeoJsonUrl(entry.getName(), url, true,JU.map(styles));
+
 
         return false;
     }
