@@ -9474,6 +9474,10 @@ public class WikiManager extends RepositoryManager
                         continue;
                     }
 		    boolean matchData=Misc.equals("true",metadata.getAttr2());
+		    String fillColor = metadata.getAttr3();
+		    String fillOpacity = metadata.getAttr4();		    
+		    String strokeColor = metadata.getAttr(5);
+		    String strokeWidth = metadata.getAttr(6);    
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
 							   metadata.getAttr1());
@@ -9485,11 +9489,19 @@ public class WikiManager extends RepositoryManager
 			  mapEntry.getTypeHandler().isType("geo_editable_json"))) {
                         continue;
                     }
+		    List<String> styles = new ArrayList<String>();
+		    if(stringDefined(fillColor)) Utils.add(styles,"fillColor",JU.quote(fillColor));
+		    if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
+		    if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
+		    if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
+		    String mapStyle = JU.map(styles);
+
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
 			mapLayers.add(JU.map("match",""+matchData,
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
-					     "type",JU.quote("shapefile")));
+					     "type",JU.quote("shapefile"),
+					     "style",mapStyle));
 		    } else  if (mapEntry.getTypeHandler().isType("geo_editable_json")) {
                         if (annotatedIds == null) {
                             annotatedIds   = mapEntry.getId();
@@ -9508,7 +9520,8 @@ public class WikiManager extends RepositoryManager
 			mapLayers.add(JU.map("match",""+matchData,
 					     "name",JU.quote(mapEntry.getName()),
 					     "id",JU.quote(mapEntry.getId()),
-					     "type",JU.quote(type)));
+					     "type",JU.quote(type),
+					     "style",mapStyle));
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
                         Utils.add(propList, "displayAsMap", "true");

@@ -30,7 +30,11 @@
           datatype="boolean"
           default="true"
           name="Display data in map"
-          suffix="Should the map color by settings be displayed in the map sections"/>
+          suffix="Should the map color by settings be displayed in the map polygons"/>
+      <element name="Fill Color" />
+      <element name="Fill Opacity" />      
+      <element name="Stroke Color" />
+      <element name="Stroke Width" />            
     </type>
 
     <type id="map_selector_layer" name="Map Selector Layer">

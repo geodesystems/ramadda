@@ -728,7 +728,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
-			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match);
+			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match,layer.style);
 			};
 			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
 			mapLayers.forEach(layer=>{if(!layer.match) process(layer);});			
@@ -832,7 +832,8 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	},
         handleKeyDown:function(event) {
 	},	
-        addBaseMapLayer: function(url, label,isKml,matchData) {
+        addBaseMapLayer: function(url, label,isKml,matchData,style) {
+	    if(!style) style={};
             let _this = this;
             mapLoadInfo = displayMapUrlToVectorListeners[url];
             if (mapLoadInfo == null) {
@@ -857,15 +858,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 			this.getProperty('extraVectorLayerStrokeWidth',1),			
 		}
 
+		$.extend(attrs,style);
 		//For some reason the attrs don't get applied to kml layers so we pass the attrs to baseMapLoaded
 		let callback = (map, layer) =>{_this.baseMapLoaded(layer, url,isKml?attrs:null,matchData);}
 		let layer;
 		if (isKml)
                     layer = this.map.addKMLLayer(label??'Map', url, matchData &&this.doDisplayMap(), selectFunc,
-					 null, attrs, callback, !hasBounds);
+					 null, attrs, callback, !hasBounds && matchData);
                 else 
                     layer = this.map.addGeoJsonLayer(label??'Map', url, matchData&&this.doDisplayMap(), selectFunc,
-					     null,   attrs,  callback, !hasBounds);
+					     null,   attrs,  callback, !hasBounds && matchData);
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
             } else {
@@ -4301,7 +4303,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             let dfltEndPointSize = endPointSize;
             let segmentWidth = parseInt(this.getSegmentWidth(1));
             let dfltSegmentWidth = segmentWidth;
-	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer") || 	       this.getProperty("shapefileLayer") || this.getProperty('mapLayers'));
+	    let haveLayer = this.getShowLayers() && (this.getProperty("geojsonLayer") || this.getProperty("kmlLayer") || this.getProperty("shapefileLayer"));
+//	    if(haveLayer && Utils.isDefined(haveLayer.match) && 
+	    if(!haveLayer) {
+		if(this.getProperty('mapLayers')) {
+		    this.getProperty('mapLayers').forEach(layer=>{
+			if(layer.match) {
+			    haveLayer = true;
+			}
+		    });
+		}
+	    }
+
             let showPoints = this.getProperty("showPoints", !haveLayer);
             let lineColor = this.getProperty("lineColor", "green");
 	    let lineCap = this.getProperty('lineCap', 'round');
