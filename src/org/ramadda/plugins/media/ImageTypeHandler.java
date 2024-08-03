@@ -43,8 +43,8 @@ public class ImageTypeHandler extends GenericTypeHandler {
     }
 
     @Override
-    public void getFileExtras(Request request, Entry entry, StringBuilder sb)
-            throws Exception {
+    public void getFileExtras(Request request, Entry entry, Appendable sb)
+	throws Exception {
 	sb.append(HU.b("Image:"));
 	sb.append("<div style='margin-left:30px;'>");
         sb.append(HU.labeledCheckbox(ARG_IMAGE_RESIZE, "true", false,"Resize image"));
@@ -71,6 +71,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         super.initializeNewEntry(request, entry, newType);
+
 	if(!isNew(newType)) return;
 	if(!request.get(ARG_IMAGE_RESIZE,false) &&
 	   !request.get(ARG_STRIP_METADATA,false)) return;
