@@ -1542,6 +1542,12 @@ public class ExtEditor extends RepositoryManager {
 	    return entry.hasLocationDefined(request);
 	}
 
+	public void indexEntry() {
+	    changed=true;
+	    request.put(ARG_INDEX_IMAGE,true);
+	}
+
+
 	public void setLocation(double lat,double lon) {
 	    entry.setLocation(lat,lon);
 	    changed=true;
