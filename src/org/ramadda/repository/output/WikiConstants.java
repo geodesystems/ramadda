@@ -517,6 +517,7 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_GALLERY = "gallery";
+    public static final String WIKI_TAG_READER = "reader";    
 
     /**  */
     public static final String WIKI_TAG_ZIPFILE = "zipfile";
