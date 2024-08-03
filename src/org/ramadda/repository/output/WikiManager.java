@@ -4590,6 +4590,19 @@ public class WikiManager extends RepositoryManager
             makeGallery(request, wikiUtil, children, props, sb);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_READER)) {
+            List<Entry> children = getEntries(request, wikiUtil,
+					      originalEntry, entry, props);
+            if (children.size() == 0) {
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                             (String) null);
+                if (message != null) {
+                    return message;
+                }
+            }
+
+            makeReader(request, wikiUtil, entry, children, props, sb);
+            return sb.toString();
 	} else if(theTag.equals("loremipsum")) {
 	    int count = getProperty(wikiUtil, props, "count",1);
 	    String src  = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum";
@@ -7482,6 +7495,70 @@ public class WikiManager extends RepositoryManager
 
     }
 
+    public void makeReader(Request request, WikiUtil wikiUtil, Entry mainEntry,
+                            List<Entry> imageEntries, Hashtable props,
+                            StringBuilder sb)
+
+	throws Exception {
+	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.css")));	    
+	sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.js")));
+        String id = HU.getUniqueId("reader");
+	int num=0;
+	List<String> attrs = new ArrayList<String>();
+
+	StringBuilder js = new StringBuilder();
+	js.append("\nvar readerOptions = ");
+	Utils.add(attrs,"ppi","100");
+	List<String> data = new ArrayList<String>();
+        for (Entry child : imageEntries) {
+	    String url=null;
+	    if(child.isImage()) {
+		url = child.getTypeHandler().getEntryResourceUrl(request,
+								 child);
+	    }
+            if (url==null) {
+                List<String> urls = new ArrayList<String>();
+                getMetadataManager().getThumbnailUrls(request, child, urls);
+                if (urls.size() > 0) {
+                    url = urls.get(0);
+                }
+            }
+
+            if (url==null) {
+		String[]tuple = getMetadataManager().getThumbnailUrl(request, child);
+		if(tuple!=null) url = tuple[0];
+	    }
+	    if(url==null) {
+		continue;
+	    }
+
+            num++;
+	    data.add("[{ width: 800, height: 1200, uri: '"+url+"' }]");
+        }
+	if(num==0) {
+	    sb.append(getProperty(wikiUtil, props, ATTR_MESSAGE,"No images available"));
+	    return;
+	}
+	sb.append("\n");
+        String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
+        String height = getProperty(wikiUtil, props, ATTR_HEIGHT, "80vh");	
+
+	sb.append(HU.div("",HU.attrs("id",id,"class","ramadda-reader","style",HU.css("width",width,"height",height))));
+	Utils.add(attrs,"data",JU.list(data));
+	String url = getEntryManager().getEntryUrl(request, mainEntry);
+	//	Utils.add(attrs,"metadata",JU.list(JU.map("label",JU.quote(mainEntry.getName()))));
+	Utils.add(attrs,"bookTitle",JU.quote(mainEntry.getName()));
+	Utils.add(attrs,"bookUrl",JU.quote(url));
+	Utils.add(attrs,"imagesBaseURL",JU.quote(getRepository().getUrlBase()+"/lib/bookreader/images"));
+	Utils.add(attrs,"ui",JU.quote("full"));
+	Utils.add(attrs,"el",JU.quote("#"+id));
+	js.append(JU.map(attrs));
+	js.append(";\n");
+	js.append("var br = new BookReader(readerOptions);\nbr.init();\n");
+	HU.script(sb,js.toString());
+	js.append("\n");
+    }
+    
 
     /**
      * utility to get the htmloutputhandler
