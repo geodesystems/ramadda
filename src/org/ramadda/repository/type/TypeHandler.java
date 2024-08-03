@@ -3387,7 +3387,7 @@ public class TypeHandler extends RepositoryManager {
                     File workDir = getStorageManager().createProcessDir();
                     ServiceInput serviceInput = new ServiceInput(workDir, entry);
                     ServiceOutput output =
-                        service.evaluate(getRepository().getAdminRequest(),
+                        service.evaluate(getRepository().getAdminRequest(),null,
                                          serviceInput, null);
 		    if(output==null) {
 			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+
@@ -4617,7 +4617,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public void getFileExtras(Request request, Entry entry, StringBuilder extras)
+    public void getFileExtras(Request request, Entry entry, Appendable extras)
 	throws Exception {
 	String space = HU.space(3);
 	String uploadFlags = getTypeProperty("upload.flags",null);
@@ -4683,10 +4683,14 @@ public class TypeHandler extends RepositoryManager {
 
 	BiConsumer<String,String> extra = (label,contents)->{
 	    if(contents.length()==0) return;
-	    extras.append(HU.b(label));
-	    extras.append(HU.openInset(0, 30, 0, 0));
-	    extras.append(contents);
-	    extras.append(HU.closeInset());
+	    try {
+		extras.append(HU.b(label));
+		extras.append(HU.openInset(0, 30, 0, 0));
+		extras.append(contents);
+		extras.append(HU.closeInset());
+	    } catch(Exception exc) {
+		throw new RuntimeException(exc);
+	    }
 	};
 
 	extra.accept("Entry type:",extraMore);
