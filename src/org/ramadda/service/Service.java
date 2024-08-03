@@ -188,6 +188,7 @@ public class Service extends RepositoryManager {
 
     /** _more_ */
     private boolean outputToStderr = false;
+    private boolean asynch = false;
 
     /** _more_ */
     private boolean immediate = false;
@@ -387,6 +388,8 @@ public class Service extends RepositoryManager {
                                             (String) null);
         outputToStderr = XmlUtil.getAttributeFromTree(element,
                 "outputToStderr", outputToStderr);
+        asynch = XmlUtil.getAttributeFromTree(element,
+					      "asynchronous", asynch);	
 
         immediate = XmlUtil.getAttributeFromTree(element, "immediate", false);
 
@@ -2278,6 +2281,13 @@ public class Service extends RepositoryManager {
         label = l;
     }
 
+    public TypeHandler getOutputTypeHandler() throws Exception {
+        for (OutputDefinition output : getOutputs()) {
+	    return    getRepository().getTypeHandler(output.getEntryType());
+	}
+	return null;
+    }
+
 
     /**
      * _more_
@@ -2290,13 +2300,15 @@ public class Service extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public ServiceOutput evaluate(Request request, ServiceInput input,
+    public ServiceOutput evaluate(Request request, Object actionID,ServiceInput input,
                                   String argPrefix)
             throws Exception {
-	return evaluate(request, input,argPrefix,optional);
+	return evaluate(request, actionID,input,argPrefix,optional);
     }
 
-    public ServiceOutput evaluate(Request request, ServiceInput input,
+    
+    public ServiceOutput evaluate(Request request, Object actionID,
+				  ServiceInput input,
                                   String argPrefix,boolean optional)
             throws Exception {	
 
@@ -2309,7 +2321,7 @@ public class Service extends RepositoryManager {
         }
 
         if (haveLink()) {
-            return link.evaluate(request, input, myPrefix,optional);
+            return link.evaluate(request, actionID,input, myPrefix,optional);
         }
 
         ServiceOutput myOutput      = new ServiceOutput();
@@ -2327,7 +2339,7 @@ public class Service extends RepositoryManager {
 
             for (Service child : children) {
                 //                System.err.println("Input:" + childInput.getEntries());
-                childOutput = child.evaluate(request, childInput, myPrefix);
+                childOutput = child.evaluate(request, actionID,childInput, myPrefix);
                 if ( !childOutput.isOk()) {
                     return childOutput;
                 }
@@ -2423,7 +2435,7 @@ public class Service extends RepositoryManager {
 		JobManager.CommandResults results =
 		    getRepository().getJobManager().executeCommand(commands,
 								   null, input.getProcessDir(), -1,
-								   new PrintWriter(stdoutFile), new PrintWriter(stderrFile));
+								   new PrintWriter(stdoutFile), new PrintWriter(stderrFile),actionID);
 	    } catch(Exception exc) {
 		System.err.println("Error evaluating service:" + commands);
 		throw exc;
@@ -2432,8 +2444,6 @@ public class Service extends RepositoryManager {
         if (stderrFile.exists()) {
             errMsg = IOUtil.readContents(stderrFile);
         }
-	//	errMsg = "Mar 03, 2023 1:08:26 PM org.apache.pdfbox.pdmodel.font.PDType1Font <init>\nWARNING: Using fallback font LiberationSans for base font Symbol\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+72 (72) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+74 (74) in font SGGFTZ+HelveticaNeue-Light\nMar 03, 2023 1:46:41 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode\nWARNING: No Unicode mapping for CID+76 (76) in font SGGFTZ+HelveticaNeue-Light";
-	//	errMsg="Mar 03, 2023 2:01:55 PM org.apache.pdfbox.pdmodel.font.PDType0Font toUnicode";
 	boolean debugErr = false;
         if (Utils.stringDefined(errMsg)) {
 	    if(debugErr)
@@ -2510,6 +2520,9 @@ public class Service extends RepositoryManager {
 	if(debug)
 	    System.err.println("Service.evaluate");
 
+
+	
+
         for (OutputDefinition output : getOutputs()) {
             String depends = output.getDepends();
             if (depends != null) {
@@ -2579,8 +2592,15 @@ public class Service extends RepositoryManager {
             }
 
 
+	    IOUtil.FileWrapper[] _files =
+		IOUtil.sortFilesOnAge(IOUtil.FileWrapper.toArray(files,
+								 false));
 
-            for (File file : files) {
+
+	    Date now  = new Date();
+	    int cnt=0;
+            for (IOUtil.FileWrapper _file : _files) {
+		File file = _file.getFile();
 		if(debug)
 		    System.err.println("Service: file:" + file +" " + file.exists());
                 if (input.haveSeenFile(file)) {
@@ -2603,7 +2623,8 @@ public class Service extends RepositoryManager {
                     getRepository().getTypeHandler(output.getEntryType());
                 Entry newEntry =
                     typeHandler.createEntry(getRepository().getGUID());
-                newEntry.setDate(new Date().getTime());
+		newEntry.setEntryOrder(++cnt);
+                newEntry.setDate(now.getTime());
                 newEntry.setName(file.getName());
                 newEntry.setResource(new Resource(file, Resource.TYPE_FILE));
                 if (input.getPublish()) {
@@ -3002,5 +3023,8 @@ public class Service extends RepositoryManager {
 	return optional;
     }
 
+    public boolean getAsynch() {
+	return asynch;
+    }
 
 }
