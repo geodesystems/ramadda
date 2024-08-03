@@ -137,6 +137,12 @@ public class ProcessRunner extends Thread {
     }
 
 
+    public void kill() {
+	if(!finished) {
+	    process.destroyForcibly();
+	}
+    }
+
     /**
      * Wait for or kill the process
      *
