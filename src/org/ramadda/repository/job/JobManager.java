@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -64,109 +64,48 @@ import java.util.zip.*;
 
 
 
-/**
- */
+
 public class JobManager extends RepositoryManager {
-
-    /** _more_ */
-    public final RequestUrl URL_SERVICES_LIST = new RequestUrl(this,
-							       "/services/list");
-
-    /** _more_ */
-    public final RequestUrl URL_SERVICES_VIEW = new RequestUrl(this,
-							       "/services/view");
+    public final RequestUrl URL_SERVICES_LIST = new RequestUrl(this,  "/services/list");
+    public final RequestUrl URL_SERVICES_VIEW = new RequestUrl(this,   "/services/view");
     protected boolean debug = false;
-
     private int jobLimit;
-
-    /** _more_ */
     private long myTime = System.currentTimeMillis();
-
-    /** _more_ */
     private boolean running = true;
-
-    /** xml tag */
     public static final String TAG_JOB = "job";
-
-    /** xml tag */
     public static final String TAG_URL = "url";
-
-    /** xml tag */
     public static final String TAG_PRODUCTS = "products";
-
-    /** xml attribute */
     public static final String ATTR_STATUS = "status";
-
-    /** _more_ */
     public static final String ATTR_NUMBEROFPOINTS = "numberofpoints";
-
-    /** _more_ */
     public static final String ATTR_ELAPSEDTIME = "elapsedtime";
-
-    /** xml attribute */
     public static final String ATTR_TYPE = "type";
-
-    /** type */
     public static final String TYPE_STATUS = "status";
-
-    /** type */
     public static final String TYPE_CANCEL = "cancel";
-
-    /** status */
     public static final String STATUS_RUNNING = "running";
-
-    /** status */
     public static final String STATUS_DONE = "done";
-
-    /** status */
     public static final String STATUS_CANCELLED = "cancelled";
-
 
     /** Property name for the max number of threads to use */
     public static final String PROP_NUMTHREADS = "job.numberofthreads";
 
-
     /** The singleton thread pool */
     private ExecutorService executor;
 
-
-    /** _more_ */
-    private Hashtable<String, Service> serviceMap = new Hashtable<String,
-	Service>();
-
-    /** _more_ */
+    private Hashtable<String, Service> serviceMap = new Hashtable<String,Service>();
     private List<Service> services = new ArrayList<Service>();
-
-
-    /** _more_ */
     private Object MUTEX = new Object();
-
-    /** _more_ */
     protected int totalJobs = 0;
-
-    /** _more_ */
     protected int currentJobs = 0;
-
     private long callCnt=0;
-
-
-    /** _more_ */
     private TTLCache<Object, JobInfo> jobCache = new TTLCache<Object,
 	JobInfo>(60 * 24 * 60
 		 * 1000);
 
-    /** _more_ */
     private Hashtable<Object, JobInfo> runningJobs = new Hashtable<Object,
 	JobInfo>();
 
     private int numThreads;
 
-    /**
-     * ctor
-     *
-     *
-     * @param repository _more_
-     */
     public JobManager(Repository repository) {
         super(repository);
 	jobLimit = repository.getProperty("ramadda.job.limit",100);
@@ -184,18 +123,12 @@ public class JobManager extends RepositoryManager {
 	debug =v;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getNumberOfJobs() {
         return currentJobs;
     }
 
-    /**
-     * _more_
-     */
+    
     public void shutdown() {
         running = false;
         if (executor != null) {
@@ -207,24 +140,12 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<Service> getServices() {
         return services;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Service getService(String id) throws Exception {
         Service service = serviceMap.get(id);
         if (service != null) {
@@ -249,13 +170,7 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param service _more_
-     *
-     * @return _more_
-     */
+    
     public Service addService(Service service) {
         Service existingService = serviceMap.get(service.getId());
         if (existingService != null) {
@@ -269,11 +184,7 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    /**
-     * Get the singleton thread pooler
-     *
-     * @return thread  pool
-     */
+    
     public ExecutorService getExecutor() {
         if (executor == null) {
             synchronized (MUTEX) {
@@ -301,15 +212,7 @@ public class JobManager extends RepositoryManager {
 
 
 
-    /**
-     * create a JobInfo from the database for the given job id
-     *
-     * @param jobId The job ID
-     *
-     * @return the job id
-     *
-     * @throws Exception On badness
-     */
+    
     public JobInfo doMakeJobInfo(Object jobId) throws Exception {
         Statement stmt =
             getDatabaseManager().select(JobInfo.DB_COL_JOB_INFO_BLOB,
@@ -326,15 +229,7 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param blob _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private JobInfo makeJobInfo(String blob) throws Exception {
         blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo",
                                "org.ramadda.repository.job.JobInfo");
@@ -349,29 +244,13 @@ public class JobManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<JobInfo> readJobs(String type) throws Exception {
         return readJobs(Clause.eq(JobInfo.DB_COL_TYPE, type));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<JobInfo> readJobs(Clause clause) throws Exception {
         List<JobInfo> jobInfos = new ArrayList<JobInfo>();
         Statement stmt =
@@ -456,19 +335,11 @@ public class JobManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param jobInfo _more_
-     * @param error _more_
-     */
+    
     public void setError(JobInfo jobInfo, String error) {
         jobInfo.setError(error);
         writeJobInfo(jobInfo);
     }
-
-
-
 
 
     /**
@@ -1035,7 +906,7 @@ public class JobManager extends RepositoryManager {
                                          File workingDir,
                                          int timeOutInSeconds,
                                          PrintWriter stdOutPrintWriter,
-                                         PrintWriter stdErrPrintWriter)
+                                         PrintWriter stdErrPrintWriter,Object...actionID)
 	throws Exception {
         //        Trace.startTrace();
         //        Trace.call1("JobManager.executeCommand",  "timeout:" + timeOutInSeconds + " Commands:" + commands);
@@ -1056,18 +927,44 @@ public class JobManager extends RepositoryManager {
         }
         pb.directory(workingDir);
 
-        ProcessRunner runner = new ProcessRunner(pb, timeOutInSeconds,
-						 stdOutPrintWriter, stdErrPrintWriter);
-        int exitCode = runner.runProcess();
-        if (runner.getProcessTimedOut()) {
-            throw new InterruptedException("Process timed out");
-        }
+	final boolean[] running = {true};
+	final ProcessRunner []runner={null};
+	if(actionID.length>0 && actionID[0]!=null) {
+	    final Object _actionID = actionID[0];
+	    Misc.run(new Runnable() {
+		    public void run() {
+			while(running[0]) {
+			    Misc.sleep(200);
+			    if(!running[0]) {
+				System.err.println("done");
+				break;
+			    }
+			    if(!getActionManager().getActionOk(_actionID)) {
+				try {
+				    runner[0].kill();
+				} catch(Throwable thr) {
+				    break;
+				}				    
+			    }
+			}
+			
+		    }
+		});
+	}
 
+	try {
+	    runner[0] = new ProcessRunner(pb, timeOutInSeconds,
+					  stdOutPrintWriter, stdErrPrintWriter);
 
-        //        Trace.call2("JobManager.executeCommand");
-
-        return new CommandResults(outBuf.toString(), errorBuf.toString(),
-                                  exitCode);
+	    int exitCode = runner[0].runProcess();
+	    if (runner[0].getProcessTimedOut()) {
+		throw new InterruptedException("Process timed out");
+	    }
+	    return new CommandResults(outBuf.toString(), errorBuf.toString(),
+				      exitCode);
+	} finally {
+	    running[0] = false;
+	}
     }
 
 
