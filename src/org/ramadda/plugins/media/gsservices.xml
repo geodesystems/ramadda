@@ -18,9 +18,33 @@ Runs GS to make an image from a PDF
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf"
 	       matchPattern=".*\.pdf"
 	       primary="true" copy="true" label="Input PDF File"></arg>
-          <output type="file" pattern=".*\.jpg"/>
+          <output type="type_image" pattern=".*\.jpg"/>
     </service>
 
 
+   <service id="media_gs_images" label="Make images from PDF" outputToStderr="true" asynchronous="true">
+<process_description><![CDATA[<wiki>
+{{description}}
+{{gallery}}
+----
+{{tree}}
+]]></process_description>
+<description><![CDATA[
+Runs GS to make images from a PDF
+]]></description>
+          <arg value="-sDEVICE=jpeg"/>
+          <arg value="-sPAPERSIZE=a4"/>
+	  <arg type="integer"  label="First page" help=""  default="1" value="-dFirstPage=${value}"/>
+	  <arg type="integer"  label="Last page" help=""  default="500" value="-dLastPage=${value}"/>
+	  <arg type="integer"  label="Resolution" default="300" help=""  value="-r${value}"/>	  	  
+	  <arg value="-o"/>
+          <arg value="page-%03d.jpg" />
+          <arg value="${entry.file}" type="entry" entryType="type_document_pdf"
+	       matchPattern=".*\.pdf"
+	       primary="true" copy="true" label="Input PDF File"></arg>
+          <output type="type_image" pattern=".*\.jpg"/>
+    </service>
+
+    
 
 </services>
