@@ -147,6 +147,35 @@
 </wiki>
 </type>
 
+<type name="media_bookreader"
+      description="Book Reader" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+      help="A book reader interface to a collection of images"      >
+     <property name="icon" value="/media/book.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="show_table" type="boolean"   label="Show Table"  showinhtml="false" default="false"/>
+     <wiki><![CDATA[
++section title="{{name}}" #
+{{description wikify=true}}
+{{reader height=70vh orderby=entryorder ascending=true}}
+:vspace 1em
++if property=show_table
+:heading Table
+{{tabletree message="" orderby=entryorder ascending=true}}
+-if
+:vspace 1em
+----
+:vspace 1em
++center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+-center
+{{information details=true}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
 <type name="media_slideshow"  description="Slide Show" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
       help="A collection of images displayed as a photo album"      >
      <property name="icon" value="/media/slideshow.png"/>
