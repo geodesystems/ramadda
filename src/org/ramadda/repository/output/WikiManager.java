@@ -7495,20 +7495,25 @@ public class WikiManager extends RepositoryManager
 
     }
 
-    public void makeReader(Request request, WikiUtil wikiUtil, Entry mainEntry,
+    public void makeReader(Request request, WikiUtil wikiUtil, Entry entry,
                             List<Entry> imageEntries, Hashtable props,
                             StringBuilder sb)
 
 	throws Exception {
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.css")));	    
-	sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.js")));
-        String id = HU.getUniqueId("reader");
-	int num=0;
-	List<String> attrs = new ArrayList<String>();
+	checkProperties(request, entry, props);
+	if(props.get("orderby")==null) {
+	    imageEntries = getEntryUtil().sortEntriesOn(imageEntries,"entryorder,date",false);
+	}
 
-	StringBuilder js = new StringBuilder();
-	js.append("\nvar readerOptions = ");
-	Utils.add(attrs,"ppi","100");
+
+	if (request.getExtraProperty("addedreader") == null) {
+	    request.putExtraProperty("addedreader", "true");
+	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.css")));	    
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/bookreader/BookReader.js")));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/reader.js")));
+	}
+	String id = HU.getUniqueId("reader");
+	int num=0;
 	List<String> data = new ArrayList<String>();
         for (Entry child : imageEntries) {
 	    String url=null;
@@ -7533,28 +7538,30 @@ public class WikiManager extends RepositoryManager
 	    }
 
             num++;
-	    data.add("[{ width: 800, height: 1200, uri: '"+url+"' }]");
+	    List<String> eattrs =  new ArrayList<String>();
+	    Utils.add(eattrs,"width","800","height","1200","uri",JU.quote(url),"entryid",JU.quote(child.getId()));
+	    Utils.add(eattrs,"name",JU.quote(child.getName()));
+	    data.add("[" +JU.map(eattrs)+"]");
         }
 	if(num==0) {
 	    sb.append(getProperty(wikiUtil, props, ATTR_MESSAGE,"No images available"));
 	    return;
 	}
 	sb.append("\n");
-        String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
-        String height = getProperty(wikiUtil, props, ATTR_HEIGHT, "80vh");	
-
-	sb.append(HU.div("",HU.attrs("id",id,"class","ramadda-reader","style",HU.css("width",width,"height",height))));
-	Utils.add(attrs,"data",JU.list(data));
-	String url = getEntryManager().getEntryUrl(request, mainEntry);
-	//	Utils.add(attrs,"metadata",JU.list(JU.map("label",JU.quote(mainEntry.getName()))));
-	Utils.add(attrs,"bookTitle",JU.quote(mainEntry.getName()));
+	String showToc = getProperty(wikiUtil, props, "showToc","true");
+	String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
+	String height = getProperty(wikiUtil, props, ATTR_HEIGHT, "70vh");	
+	sb.append(HU.div("",HU.attrs("id",id)));
+	String url = getEntryManager().getEntryUrl(request, entry);
+	StringBuilder js = new StringBuilder();
+	List<String> attrs = new ArrayList<String>();
+	Utils.add(attrs,"entryid",JU.quote(entry.getId()),"width",JU.quote(width),"height",JU.quote(height),"showToc",showToc);
+	//	Utils.add(attrs,"metadata",JU.list(JU.map("label",JU.quote(entry.getName()))));
+	Utils.add(attrs,"bookTitle",JU.quote(entry.getName()));
 	Utils.add(attrs,"bookUrl",JU.quote(url));
-	Utils.add(attrs,"imagesBaseURL",JU.quote(getRepository().getUrlBase()+"/lib/bookreader/images"));
 	Utils.add(attrs,"ui",JU.quote("full"));
-	Utils.add(attrs,"el",JU.quote("#"+id));
-	js.append(JU.map(attrs));
-	js.append(";\n");
-	js.append("var br = new BookReader(readerOptions);\nbr.init();\n");
+	Utils.add(attrs,"data",JU.list(data));
+	js.append(HU.call("new RamaddaReader",HU.quote(id),JU.map(attrs),JU.list(data))); 
 	HU.script(sb,js.toString());
 	js.append("\n");
     }

@@ -7,7 +7,7 @@ ${innercontent}
 <div class="entry-page-info">
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 {{tools includeIcon="true" title="Services" message=""}}
-{{map width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
+{{map hideIfNoLocations=true width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
 <br>
 {{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
 </div>

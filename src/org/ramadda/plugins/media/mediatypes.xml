@@ -153,10 +153,13 @@
      <property name="icon" value="/media/book.png"/>
      <property name="form.resource.show" value="false"/>
      <column name="show_table" type="boolean"   label="Show Table"  showinhtml="false" default="false"/>
+     <column name="show_toc" type="boolean"   label="Show TOC"  showinhtml="false" default="true"/>
+    <wikimacro name="bookreader"  label="Book Reader">
+    <![CDATA[{{reader height=70vh showToc=true }}]]></wikimacro>    
      <wiki><![CDATA[
 +section title="{{name}}" #
 {{description wikify=true}}
-{{reader height=70vh orderby=entryorder ascending=true}}
+{{reader height=70vh showToc="${property:show_toc}"}}
 :vspace 1em
 +if property=show_table
 :heading Table
