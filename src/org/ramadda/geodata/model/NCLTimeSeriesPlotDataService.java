@@ -296,7 +296,7 @@ public class NCLTimeSeriesPlotDataService extends NCLDataService {
      * @throws Exception  problems generating the output
      */
     @Override
-    public ServiceOutput evaluate(Request request, ServiceInput input,
+    public ServiceOutput evaluate(Request request, Object actionID,ServiceInput input,
                                   String argPrefix)
             throws Exception {
 

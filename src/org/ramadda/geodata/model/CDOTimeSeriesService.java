@@ -159,7 +159,7 @@ public class CDOTimeSeriesService extends CDODataService {
      * @throws Exception problems
      */
     @Override
-    public ServiceOutput evaluate(Request request, ServiceInput input,
+    public ServiceOutput evaluate(Request request, Object actionID,ServiceInput input,
                                   String argPrefix)
             throws Exception {
 

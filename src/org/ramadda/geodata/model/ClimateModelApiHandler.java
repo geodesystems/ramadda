@@ -347,7 +347,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         "Processing: " + process.getLabel());
                 nextInput.putProperty("actionId", actionId);
             }
-            ServiceOutput output = process.evaluate(request, nextInput, null);
+            ServiceOutput output = process.evaluate(request, null,nextInput, null);
             //System.err.println("MODEL: " + process.getLabel() + " took "+(System.currentTimeMillis()-milli)+" ms");
             outputs.add(output);
 
@@ -559,7 +559,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                         "Processing: " + process.getLabel());
                 nextInput.putProperty("actionId", actionId);
             }
-            ServiceOutput output = process.evaluate(request, nextInput, null);
+            ServiceOutput output = process.evaluate(request, null, nextInput, null);
             outputs.add(output);
 
             //make a new input for the next process

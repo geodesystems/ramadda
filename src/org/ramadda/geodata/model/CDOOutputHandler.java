@@ -1793,7 +1793,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
          * @throws Exception  problem processing
          */
         @Override
-        public ServiceOutput evaluate(Request request, ServiceInput input,
+        public ServiceOutput evaluate(Request request, Object actionID, ServiceInput input,
                                       String argPrefix)
                 throws Exception {
 
