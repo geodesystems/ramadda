@@ -7549,13 +7549,15 @@ public class WikiManager extends RepositoryManager
 	}
 	sb.append("\n");
 	String showToc = getProperty(wikiUtil, props, "showToc","true");
+	String showSearch = getProperty(wikiUtil, props, "showSearch","false");	
 	String width = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
 	String height = getProperty(wikiUtil, props, ATTR_HEIGHT, "70vh");	
 	sb.append(HU.div("",HU.attrs("id",id)));
 	String url = getEntryManager().getEntryUrl(request, entry);
 	StringBuilder js = new StringBuilder();
 	List<String> attrs = new ArrayList<String>();
-	Utils.add(attrs,"entryid",JU.quote(entry.getId()),"width",JU.quote(width),"height",JU.quote(height),"showToc",showToc);
+	Utils.add(attrs,"entryid",JU.quote(entry.getId()),"width",JU.quote(width),"height",JU.quote(height),"showSearch",showSearch,
+		  "showToc",showToc);
 	//	Utils.add(attrs,"metadata",JU.list(JU.map("label",JU.quote(entry.getName()))));
 	Utils.add(attrs,"bookTitle",JU.quote(entry.getName()));
 	Utils.add(attrs,"bookUrl",JU.quote(url));
