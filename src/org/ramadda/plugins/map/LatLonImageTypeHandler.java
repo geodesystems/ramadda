@@ -169,7 +169,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public void getFileExtras(Request request, Entry entry, StringBuilder sb)
+    public void getFileExtras(Request request, Entry entry, Appendable sb)
             throws Exception {
         super.getFileExtras(request, entry,sb);
         String mine = "If data then:<br>"
