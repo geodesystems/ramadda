@@ -10,23 +10,31 @@ id=ocetisakowin
 ${imports}
 <style type="text/css">
   :root {
-      --olc-logo-width:80px;
+      --ocetisakowin-logo-width:80px;
       --header-height:70px;
  }
 
-.olc-pageheader {
+.ocetisakowin-pageheader {
       position:absolute;
       top:10px;
       right:10px;
       font-size: 9pt;
       /*font-size: min(2vw, 100%);*/
  }
-
-.olc-title {
+.ocetisakowin-title {
     font-size: min(2vw, 120%);
 }
+.ocetisakowin-title a {
+    color:#fff;
+}
 
-.olc-pageheader .ramadda-navbar {
+
+
+.ramadda-user-menu i {
+    color:#fff;
+}
+
+.ocetisakowin-pageheader .ramadda-navbar {
     padding:4px;
     border-radius:var(--default-radius);
     border:var(--basic-border);
@@ -36,13 +44,12 @@ ${imports}
 }
 
 .ramadda-logo-image {
-    width:var(--olc-logo-width);
+    width:var(--ocetisakowin-logo-width);
 }
 .ramadda-header {
     height:var(--header-height);
     padding: 1px;padding-left: 6px;padding-right: 6px;
-    background-color: #f5e9ce;
-    background-image: url(/olc/olcbg.gif);
+    background:#6C0000;
 }
 .ramadda-breadcrumbs {border-bottom : 0px transparent solid;}
 .ramadda-breadcrumbs {
@@ -64,18 +71,18 @@ ${imports}
 
 }
 
-
-.ramadda-user-menu i {color:#888;}
 </style>
 ${headfinal}
 </head>
 <body>
 <div class="ramadda-header">
 <div style="position:absolute;left:10px;top:20px;top:50%;    transform: translateY(-50%);">
-<img class="ramadda-logo-image"  src="${root}/olc/ocetisakowin.jpg" style="width:var(--olc-logo-width);">
+<a href="https://www.rosebudsiouxtribe-nsn.gov/" target="_other">
+<img class="ramadda-logo-image"  src="${root}/ocetisakowin/rosebudflag.png" style="width:var(--ocetisakowin-logo-width);">
+</a>
 </div>
-<div class="olc-pageheader">${pageheader}</div>
-<div class="olc-title" style="position:absolute;left:var(--olc-logo-width);margin-left:20px;bottom:0px;">
+<div class="ocetisakowin-pageheader">${pageheader}</div>
+<div class="ocetisakowin-title" style="position:absolute;left:var(--ocetisakowin-logo-width);margin-left:20px;bottom:0px;">
 <a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
 Oceti Sakowin Data Testbed
 </a>
