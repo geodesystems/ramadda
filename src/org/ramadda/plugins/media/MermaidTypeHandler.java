@@ -62,18 +62,17 @@ public class MermaidTypeHandler extends ConvertibleTypeHandler {
 	    request.putExtraProperty("addedmermaid", "true");
 	    sb.append("<script type='module'>\nimport mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';\nmermaid.initialize({ startOnLoad: true });\n</script>\n");
 	}
-        //          String width  = entry.getValue(request,IDX_WIDTH, "320");
-        //          String height = entry.getValue(request,IDX_HEIGHT, "256");
-
+	String width  = Utils.getProperty(props,"width",null);
 	String text;
-
 	if(entry.getResource().isFile()) {
 	    text = getStorageManager().readSystemResource(entry.getFile());
 	} else {
 	     text  = entry.getStringValue(request, "mermaid_text","");
 	}
 	
-	sb.append(HU.pre(text,HU.cssClass("mermaid preplain")));
+	String attrs = HU.cssClass("mermaid preplain");
+	if(width!=null) attrs+=HU.style("width:" + width);
+	sb.append(HU.pre(text,attrs));
         return sb.toString();
     }
 
