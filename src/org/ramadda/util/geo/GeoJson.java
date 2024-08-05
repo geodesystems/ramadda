@@ -728,6 +728,65 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
+    public static JSONObject filter(JSONObject obj,boolean matchAll,
+				    List<String>props) throws Exception {
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	double cnt = 0;
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    boolean debug = false;
+	    JSONObject feature   = features.getJSONObject(idx1);
+	    JSONObject            properties = feature.optJSONObject("properties");	
+	    String[]   names     = JSONObject.getNames(properties);
+	    boolean allOk = true;
+	    boolean anyOk = false;
+	    boolean haveProp =false;
+
+	    for(int pidx=0;pidx<props.size() && allOk && !anyOk;pidx+=2) {
+		String prop = props.get(pidx);
+		String value = props.get(pidx+1);
+		boolean   isRegexp = StringUtil.containsRegExp(value);
+		if(!Utils.stringDefined(prop)) continue;
+		haveProp=true;
+		boolean    gotName   = false;
+		for (int j = 0; (j < names.length) && !gotName; j++) {
+		    String name = names[j];
+		    if (name.equalsIgnoreCase(prop)) {
+			gotName = true;
+			String v = properties.optString(names[j], "");
+			boolean matches;
+			if (isRegexp) {
+			    matches = v.matches(value);
+			} else {
+			    matches = v.equals(value);
+			}
+			if(matchAll) {
+			    allOk = matches;
+			} else {
+			    if(matches) anyOk  =true;
+			}
+		    }
+		}
+		if ( !gotName) {
+		    throw new IllegalArgumentException("Could not find property:"
+						       + prop + " properties:" + Arrays.asList(names));
+		}
+	    }
+
+	    if(matchAll) {
+		if(haveProp && !allOk) continue;
+	    } else {
+		if(haveProp && !anyOk) continue;
+	    }
+	    objects.add(feature);
+	}
+	features.clear();
+	features.putAll(objects);
+	return obj;
+    }
+
+
+
     public static JSONObject keep(JSONObject obj,List<String> keepers) throws Exception {
         JSONArray             features = readArray(obj, "features");
 	double cnt = 0;
@@ -798,6 +857,13 @@ public class GeoJson extends JsonUtil {
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  stride(obj,stride);}});
 		continue;
 	    }
+	    if(arg.equals("-filter")) {
+		final List<String> props = Utils.split(args[++i],",");
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  filter(obj,true,props);}});
+		continue;
+	    }	    
+
+
 	    if(arg.equals("-contained")) {
 		final Bounds b = new Bounds(parse(args[++i]),
 					    parse(args[++i]),
