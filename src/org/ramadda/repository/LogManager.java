@@ -999,7 +999,7 @@ public class LogManager extends RepositoryManager {
 	getDatabaseManager().closeConnection(connection);
 	sb.append("</table>");
 	long t4 = System.currentTimeMillis();
-	Utils.printTimes("log",t1,t2,t3,t4);
+	//	Utils.printTimes("log",t1,t2,t3,t4);
 	if(asCsv) return csv;
 	return null;
 
@@ -1112,17 +1112,26 @@ public class LogManager extends RepositoryManager {
 			ARG_MATCH,match,
                         ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
 
-	    if(!stringDefined(match)) match=null;
+	    int maxLines=  -1;
+	    if(!stringDefined(match)) {
+		match=null;
+		if (offset > 0) {
+		    fis.skip(offset);
+		}
+	    } else {
+		maxLines = 5000;
+	    }
+
+
+
             sb.append(HtmlUtils.br());
-            if (offset > 0) {
-                fis.skip(offset);
-            }
             boolean      didOne       = false;
             StringBuffer stackSB      = null;
             boolean      lastOneBlank = false;
 	    if(match!=null) match = match.toLowerCase();
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
 	    String line=null;
+	    int cnt = 0;
             while ((line = reader.readLine()) != null) {
 		if(match!=null && line.toLowerCase().indexOf(match)<0) continue;
 		line = HU.strictSanitizeString(line);
@@ -1140,6 +1149,8 @@ public class LogManager extends RepositoryManager {
                 } else {
                     lastOneBlank = false;
                 }
+		cnt++;
+		if(maxLines>0 && cnt> maxLines) break;
                 if (line.startsWith("</stack>") && (stackSB != null)) {
                     sb.append(
                         HtmlUtils.insetLeft(
