@@ -725,7 +725,7 @@ public class LogManager extends RepositoryManager {
         sb.append(HtmlUtils.sectionOpen());
         sb.append("Logs are in: " + HtmlUtils.italics(f.toString()));
 	sb.append(HU.br());
-	sb.append(HU.div(HU.href(URL_REPORT.toString(),"Generate Access Report"),
+	sb.append(HU.div(HU.href(getRepository().getUrlPath(request, URL_REPORT),"Generate Access Report"),
 			 HU.attrs("class","ramadda-button")));
 	sb.append(HU.br());
         if (log.equals("access")) {
