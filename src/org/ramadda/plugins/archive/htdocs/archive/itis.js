@@ -8,40 +8,43 @@ var Itis = {
 
     init:function() {
 	let _this=this;
-	let doSearch=()=>{
-	    let v = this.input.val();
+	let doSearch=(fromNameInput,v)=>{
+	    if(!v) v = this.nameInput.val();
 	    if(!Utils.stringDefined(v)) return;
             let url = this.getUrl('searchByCommonName?srchKey=' + encodeURIComponent(v));
 	    let success=(data)=>{
-		_this.showNamesPopup(data);
+		_this.showNamesPopup(fromNameInput,data);
 	    };
 	    this.fetch(url,success);
 	}
 
 	let name = 'edit_type_archive_bio_common_name';
 	this.commonNames= $('[name="'+ name+'"]');
-//	this.input= $('[name="'+ name+'"]');
-	this.input= jqid('entrynameinput');
+	this.nameInput= jqid('entrynameinput');
 	
 	$(document).ready(()=>{
+	    let _this = this;
 	    let uid = HU.getUniqueId('');
 	    let puid = HU.getUniqueId('');
 	    let extra='';
 	    extra+=HU.span([ATTR_ID,uid],"Search Taxonomy");
 	    extra += HU.span([ATTR_ID, puid, ATTR_STYLE,
 				 'margin-left:5px;height:20px;width:25px;padding:5px;min-width:25px;'],this.spacer);
-	    this.input.after(HU.div([],extra));
+	    this.nameInput.after(HU.div([],extra));
 	    this.searchButton =    jqid(uid);
-	    this.searchButton.button().click(function() {
-		doSearch();
+	    this.searchButton.button().click(() =>{
+		let v = prompt("Search term:",this.nameInput.val());
+		if(v) {
+		    doSearch(false,v);
+		}
 	    });
 	    this.progress = jqid(puid);
 	});
-	this.input.on('keypress', (event) =>{
+	this.nameInput.on('keypress', (event) =>{
             if (event.which != 13) return;
             event.preventDefault(); 
-	    doSearch();
-	    });
+	    doSearch(true);
+	});
     },
     fetch:function(url,callback) {
 	let _url = '/repository/proxy?url='+encodeURIComponent(url);
@@ -56,7 +59,7 @@ var Itis = {
 	    console.dir(data);
 	});
     },
-    showNamesPopup:function(data) {
+    showNamesPopup:function(fromNameInput,data) {
 	let _this=this;
 	if(!data.commonNames || data.commonNames.length==0 || (
 	    data.commonNames.length==1 && !data.commonNames[0])) {
@@ -76,7 +79,9 @@ var Itis = {
 	    dialog.remove();
 	    let item = _this.items[$(this).attr('index')];
 	    if(!item) return;
-	    _this.input.val(item.commonName);
+	    if(fromNameInput) {
+		_this.nameInput.val(item.commonName);
+	    }
 	    _this.loadTsn(item);
 	});
     },
@@ -96,11 +101,11 @@ var Itis = {
 	    let map = {};
 	    let inputs = [this.getInput('tsn_number')];
 	    this.getInput('tsn_number',true).val(data.tsn);
-	    data.hierarchyList.forEach(h=>{
-		let rank = h.rankName.toLowerCase();
-		console.log("RANK:"+ rank);
+	    data.hierarchyList.forEach(hierarchyElement=>{
+		if(!hierarchyElement) return;
+		let rank = hierarchyElement.rankName.toLowerCase();
 		let input = this.getInput('taxon_'+rank);
-		input.val(h.taxonName??'');
+		input.val(hierarchyElement.taxonName??'');
 		inputs.push(input);
 	    });
 
@@ -114,9 +119,9 @@ var Itis = {
 		this.getInput('scientific_name',true).val(data.combinedName);
 	    }
 	};
-	let success3=(data)=>{
+	let applyCommonNames=(data)=>{
 	    if(!data.commonNames) return
-	    let name = this.input.val().trim();
+	    let name = this.nameInput.val().trim();
 	    let names = [];
 	    let seen={};
 	    seen[name]=true;
@@ -135,7 +140,7 @@ var Itis = {
 	};	
 	this.fetch(url1,success1);
 	this.fetch(url2,success2);
-	this.fetch(url3,success3);    	
+	this.fetch(url3,applyCommonNames);    	
     },
     getInput:function(taxa,plain) {
 	let name = 'edit_type_archive_bio_'+ taxa+(plain?'':'_plus');
