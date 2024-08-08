@@ -39,6 +39,7 @@
 
     <type id="archive_creator" name="Archive Creator">
       <element id="creator" name="Creator" datatype="enumerationplus"/>
+      <element id="role" name="Role" datatype="enumerationplus"/>      
     </type>        
     
     <type id="archive_media_type" name="Archive Media Type">
