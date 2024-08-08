@@ -40,8 +40,9 @@ proc fixme {v {debug 0} {label ""}} {
     foreach tuple $::spelling {
 	foreach {pattern with} $tuple break
 	if {$with==""} continue
-	regsub -all $with $tmp {XXX} tmp
+	regsub -all -- $with $tmp {XXX} tmp
     }
+    set debug 1
 
     if {[regexp {[^\n\x00-\x7F]} $tmp]} {
 	regsub -all {fixme +} $v {} v
@@ -71,11 +72,6 @@ proc cdata {s} {
 
 
 
-proc  cid {cid} {
-    return collection_$cid
-}
-
-
 proc col {name s {clean 1}} {
     if {$s==""} {
 	return ""
@@ -101,6 +97,7 @@ proc check {what row field _s} {
 
 array set ::terms {}
 proc check2 {what row field _s} {
+    return
     set s $_s
     regsub -all -- {[\[\]\(\)_,-\.]+} $s { } s
     set words {}
@@ -215,3 +212,12 @@ proc  mtd2 {type value1 value2} {
 }
 
 
+array set ::names {}
+proc name {name} {
+    set ::names($name) 1
+}
+
+array set ::keywords {}
+proc keyword {keyword} {
+    set ::keywords($keyword) 1
+}
