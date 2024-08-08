@@ -4,7 +4,7 @@
     <type
 	id="map_layer"
 	name="Map Layer"
-	showinhtml="true">
+	tag="internal" 	     showinhtml="false">
 
       <element
           datatype="enumeration"
@@ -15,7 +15,10 @@
     </type>
 
 
-    <type id="map_displaymap" name="Extra Map Layer Entry"        showinhtml="false"       >
+    <type
+	id="map_displaymap" name="Extra Map Layer Entry" 
+	tag="internal" 	     showinhtml="false"	
+ >
       <help>
 	<![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display]]>
       </help>
@@ -37,7 +40,9 @@
       <element name="Stroke Width" />            
     </type>
 
-    <type id="map_selector_layer" name="Map Selector Layer">
+    <type id="map_selector_layer" name="Map Selector Layer"
+	tag="internal" 	     showinhtml="false"
+	  >
       <help>
 	<![CDATA[
 		 A Lat/Lon Image entry, GeoJson or KML Entry to display as a base layer in any map display 
@@ -53,8 +58,8 @@
 
     <type isgeo="true"
 	  name="Extra Map Layer File"
-	  showinhtml="false"      	  
-       id="map_displaymap_file">
+	  tag="internal" 	     showinhtml="false"
+	  id="map_displaymap_file">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
       <element name="Fill Color" />
       <element name="Fill Opacity" />      
@@ -68,7 +73,7 @@
     <type
 	id="content.mapbubble"
 	name="Entry Map Bubble"
-	showinhtml="false">
+	tag="internal" 	     showinhtml="false">
       <help>
 	<![CDATA[
 		 Specify a wiki template to use for the map bubble shown for an entry
@@ -106,6 +111,7 @@
     <type
 	foruser="false"
 	id="spatial.region"
+	tag="internal" 	     showinhtml="false"
 	tagstyle="background:#EBDFC5;border:1px solid #000;"
 	name="Region">
       <element name="value"           datatype="enumerationplus"/>
@@ -114,9 +120,10 @@
 
     <type
 	foruser="true"
+	tag="internal" 	     showinhtml="false"
 	id="map_marker"
 	name="Map Marker"
-	showinhtml="false">
+	>
 
       <!-- todo: sometime implement a change facility 
 	   <change generation="1" type="insert" index="0" value=""/>
@@ -152,7 +159,7 @@
 	foruser="true"
 	id="spatial.polygon"
 	name="Spatial Polygon Coordinates"
-	showinhtml="false">
+	tag="internal" 	     showinhtml="false">
 
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
 
@@ -173,7 +180,7 @@
 	foruser="false"
 	id="spatial.kmlpolycoords"
 	name="KML Polygon Coordinates"
-	showinhtml="false">
+	tag="internal" 	     showinhtml="false">
 
       <element name="polygon1" suffix="lon,lat"/>
 
@@ -185,7 +192,7 @@
     <type
 	id="shapefile_display"
 	name="Map Balloon Text"
-	showinhtml="false"
+	tag="internal" 	     showinhtml="false"
 	values="">
 
       <help>

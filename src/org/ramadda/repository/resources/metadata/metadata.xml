@@ -212,6 +212,7 @@
 
     <type
        name="Page Style"
+       tag="internal"
        showinhtml="false"       
        id="content.pagestyle">
       <help>
@@ -235,6 +236,7 @@ Control how entries are displayed.
 
     <type
        name="Page Template"
+       tag="internal"
        showlabel="false"
        showinhtml="false"
        id="content.pagetemplate">
@@ -247,6 +249,8 @@ Override the page template
     </type>
 
     <type
+	tag="internal"
+	showinhtml="false"       
        name="Logo"
        id="content.logo">
       <help>
@@ -260,6 +264,8 @@ Override the logo icon and URL used in the default page templates.
     </type>
 
     <type
+	tag="internal"
+	showinhtml="false"
        name="Page Header"
        id="content.pageheader"
        showlabel="false"
@@ -271,6 +277,7 @@ Override the logo icon and URL used in the default page templates.
     </type>
 
     <type
+	tag="internal" 	showinhtml="false"
        name="Header"
        id="content.header"
        candisplay="false">
@@ -284,6 +291,7 @@ Override the logo icon and URL used in the default page templates.
     <type
        name="Footer"
        id="content.footer"
+	tag="internal" 	showinhtml="false"
        showlabel="false"
        candisplay="false">
       <help>
@@ -293,7 +301,9 @@ Override the logo icon and URL used in the default page templates.
     </type>
 
 
-    <type name="Display Timezone" id="content.timezone">
+    <type
+	tag="internal" 	showinhtml="false"	
+	name="Display Timezone" id="content.timezone">
       <element
          default="America/New_York"
          name="Timezone"
@@ -303,7 +313,8 @@ Override the logo icon and URL used in the default page templates.
     </type>
 
 
-    <type name="Sort Order" id="content.sort">
+    <type name="Sort Order" id="content.sort"
+	  tag="internal" 	showinhtml="false">
       <help>
 <![CDATA[
 Change how entries are sorted. e.g., by name, by date, ascending, etc.
@@ -334,7 +345,7 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
 
     <type
        name="Wiki Property"
-       showinhtml="false"
+       tag="internal" 	     showinhtml="false"
        id="wikiproperty">
       <help>
 <![CDATA[
@@ -367,6 +378,7 @@ Specify a short hand alias for the entry. Will link to /repository/alias/&lt;ali
     </type>
 
     <type
+	tag="internal" 	     showinhtml="false"
        searchable="false" browsable="false"
        name="Prevent deletion"
        id="preventdeletion"
@@ -382,6 +394,7 @@ If inherited=true then the children entries cannot be deleted
 
 
     <type
+	tag="internal" 	     showinhtml="false"
        searchable="true" browsable="true"
        name="Is In Site Map"
        id="isinsitemap"
@@ -396,6 +409,7 @@ If set to true then this entry is included in the sitemap
 
 
     <type
+       tag="internal" 	     showinhtml="false"
        name="Tool outputs"
        class="org.ramadda.repository.metadata.ContentMetadataHandler" 
        id="output_tools">
@@ -423,7 +437,7 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type
        name="Cache Time"
-       showinhtml="false"
+	tag="internal" 	     showinhtml="false"
        id="cachetime">
       foruser="true"
       <element name="cachetime"  label="Cache Time" datatype="int" default="" suffix="Cache time in seconds. 0 for no cache"/>
@@ -433,7 +447,7 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type
        name="Exclude in XML Output"
-       showinhtml="false"
+	tag="internal" 	     showinhtml="false"
        id="display.exclude">
       foruser="false"
       <element name="output"  datatype="string" default="*" />
@@ -445,9 +459,10 @@ Add an output that shows up in the list of tools/services for an entry
 <!--
     <type name="Page Template" id="admin.template"/>
 -->
-    <type name="Local File Pattern" id="admin.localfile.pattern"/>
-    <type name="Anonymous Upload" id="admin.anonymousupload">
-      <element name="From" />
+<type name="Local File Pattern" id="admin.localfile.pattern"/>
+<type name="Anonymous Upload" id="admin.anonymousupload"
+	tag="internal" 	     showinhtml="false">
+  <element name="From" />
       <element name="IP" />
       <element name="Type" />
       <element name="Email" />
@@ -500,6 +515,7 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
 
     <type
+	tag="internal" 	     showinhtml="false"
        name="Jython Script"
        id="content.jython">
       <element name="Jython File" datatype="file" thumbnail="false"/>
@@ -517,10 +533,10 @@ Add an output that shows up in the list of tools/services for an entry
     </type>
 
     <type
+	tag="internal" 	     showinhtml="false"
        name="Wiki Label"
        id="wiki_label"
        searchable="false"
-       showinhtml="false"
        xdisplaygroup="References" 
        >
       <element datatype="string" name="ID" suffix="Use this ID in a wiki page to override text that is shown"/>
@@ -533,6 +549,7 @@ Add an output that shows up in the list of tools/services for an entry
     <type
        name="Entry Type Patterns"
        class="org.ramadda.repository.metadata.ContentMetadataHandler" 
+       tag="internal" 	     showinhtml="false"
        id="entry_type_patterns">
       <element name="entrytype"  label="Entry Type" datatype="enumeration" suffix="The entry type to use"/>
       <element name="patterns"  label="Patterns" rows="10" suffix="Patterns to match. One per line. Use &quot;file:&quot; to match any file and &quot;folder:&quot; to match any non file "/>
@@ -541,6 +558,7 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type
        name="Convert file"
+	tag="internal" 	     showinhtml="false"
        id="convert_file">
       <element istitle="true" name="for" label="For" datatype="enumeration" values="alias:Alias,location:Location,template:Template" default="alias"/>
       <element istitle="true" name="type" label="Match Type" datatype="enumeration" values="exact:Exact,patttern:Pattern" default="exact"/>      
@@ -552,6 +570,7 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type
        name="Wiki Notebook"
+	tag="internal" 	     showinhtml="false"
        id="wiki_notebook">
       <element name="ID" />
       <element name="File" datatype="file" thumbnail="false"/>
@@ -560,13 +579,16 @@ Add an output that shows up in the list of tools/services for an entry
 
     <type
        name="CSV Convert Commands"
+	tag="internal" 	     showinhtml="false"
        id="csv_commands">
       <element name="Name"/>
       <element name="Commands" 	 rows="10"/>
     </type>
     
 
-    <type name="Point Data Units" id="pointdata_units">
+    <type name="Point Data Units" id="pointdata_units"
+	tag="internal" 	     showinhtml="false"
+	  >
       <element
          default=""
          name="Types"
@@ -588,6 +610,7 @@ e.g.:
 
     <type
 	xforuser="false"
+	tag="internal" 	     showinhtml="false"
        name="Entry Votes"
        id="content.votes">
       <element name="File" datatype="file" thumbnail="false" istitle="true"/>
@@ -595,6 +618,7 @@ e.g.:
 
 
     <type
+	tag="internal" 	     showinhtml="false"
        searchable="false" browsable="false"
        name="Request Information"
        id="requestinformation"
