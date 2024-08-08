@@ -1,28 +1,28 @@
 
-source lib.tcl
+source ../lib.tcl
 set ::entries "<entries>\n";
 array set ::cids {}
 array set ::sids {}
 array set ::fids {}
+array set ::iids {}
+
 
 set ::ccnt 0
 set ::scnt 0
 set ::fcnt 0
 set ::icnt 0
+
+set ::m_ccnt 0
+set ::m_scnt 0
+set ::m_fcnt 0
+set ::m_icnt 0
+
+
 array set ::cmap {}
 
-array set ::names {}
-proc name {name} {
-    set ::names($name) 1
-}
-source names.tcl
-
-array set ::keywords {}
-proc keyword {keyword} {
-    set ::keywords($keyword) 1
-}
-source keywords.tcl
-
+source ../names.tcl
+source ../keywords.tcl
+source media.tcl
 
 proc processSummary {summary} {
     set summary [clean $summary]
@@ -94,6 +94,7 @@ proc processSubjectsAndKeywords {v} {
     }
     regsub -all {;} $v {,} v
     foreach tok [split $v ,] {
+	set tok [fixme $tok]
 	set _what $what
 	set tok [string trim $tok]
 	if {$tok=="Disc"} {
@@ -155,33 +156,55 @@ proc  mtd2 {type value1 value2} {
 }
 
 
+
+proc makeId {id} {
+    set i {}
+    foreach tok [split $id .] {
+	set tok [string trim $tok]
+	while {[string length $tok]<3} {
+	    set tok "0$tok"
+	}
+	lappend i $tok
+    }
+    set id [join $i .]
+#    puts $id
+    set id
+}
+
 proc  cid {cid} {
-    return collection_$cid
+    set cid [makeId $cid]
+    regsub -all {\.} $cid _ cid
+    return $cid
 }
 
 proc  sid {cid sid} {
-    return "[cid $cid]_series_$sid"
+    set sid [makeId $sid]
+    return "[cid $cid].$sid"
 }
 
-
 proc  fid {cid sid fid} {
-    return "[sid $cid $sid]_file_$fid"
+    set fid [makeId $fid]
+    return "[sid $cid $sid].$fid"
 }
 
 proc  iid {cid sid fid iid} {
-    return "[fid $cid $sid $fid]_item_$iid"
+    set iid [makeId $iid]
+    return "[fid $cid $sid $fid].$iid"
 }
 
 set ::cp {collection_title collection_nbr location organiz_arrange scope_content bio_org_history user_1 notes provenance column1 _1 _2 _3}
 proc collection $::cp  {
     incr ::ccnt
     foreach p $::cp {
-	set $p [string trim [set $p]]
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check collection $::ccnt $p $v
     }
 
     set cid [cid $collection_nbr]
     set ::cmap($cid) $collection_title
-    set ::cids($cid) 1
+    set ::cids($cid) $collection_title
     append ::entries [openEntry type_archive_collection $cid "" $collection_title]
     append ::entries [col collection_number [pad $collection_nbr]]
     append ::entries [col location $location]
@@ -195,6 +218,7 @@ proc collection $::cp  {
 
 proc handlePhysicalDescription {phys_desc} {
     foreach tok [split $phys_desc ,] {
+	set tok [fixme $tok]
 	set tok [string trim $tok]
 	if {$tok==""} continue;
 	set sentence ""
@@ -210,6 +234,7 @@ proc handlePhysicalDescription {phys_desc} {
 	if {[regexp {cd media} $_tok]} {set tok CD}	    	
 	if {[regexp {cd-r} $_tok]} {set tok CD}	    	    
 	foreach word  [split $tok] {
+	    set word [fixme $word]
 	    append sentence " "
 	    set word [string trim [string totitle $word]]
 	    set _word [string tolower $word]
@@ -226,12 +251,72 @@ proc handlePhysicalDescription {phys_desc} {
 }
 
 
-proc handleDate {date} {
+proc handleDate {date what idx} {
     set date [clean $date]
+    regsub -all 19696 $date 1969 date
+    regsub {\? - 2017} $date 2017 date
+    regsub {1957 & } $date {} date
+    regsub {08/27/966} $date 08/27/1966 date
+    if {$date=="?"} return
     if {$date!="" && $date!="--"} {
 	regsub -all s $date {} date
 	regsub -all {^\?\-}  $date {} date	
-	if {[regexp {(\d\d\d\d) *- *(\d\d\d\d)} $date match date1 date2]} {
+	if {[regexp {^(\d\d?)/(\d\d?)/(\d\d\d\d)$} $date match mm dd yyyy]} {
+	    set date1 "${yyyy}-${mm}-${dd}"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    
+	} elseif {[regexp {10/08/1987, 10/27/1987, 11/2/1987} $date]} {
+	    append ::entries [col fromdate 1988-10-08]
+	    append ::entries [col todate 1988-11-02]	    
+	}  elseif {[regexp {2/1-2/26/88} $date]} {
+	    append ::entries [col fromdate 1988-02-01]
+	    append ::entries [col todate 1988-02-26]	    
+	} elseif {[regexp {^(\d\d?)/(\d\d?)/(\d\d)$} $date match mm dd yy]} {
+	    set yyyy "19$yy"
+	    set date1 "${yyyy}-${mm}-${dd}"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]
+	} elseif {[regexp {^(\d\d?)-(\d\d?)-(\d\d)$} $date match mm dd yy]} {
+	    set yyyy "19$yy"
+	    set date1 "${yyyy}-${mm}-${dd}"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]
+	} elseif {[regexp {^(\d\d\d\d) *, *(\d\d\d\d)$} $date match y1 y2]} {
+#	    puts "DATE: $y1 - $y2"
+	    set date1 "${y1}-01-01"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]
+	} elseif {[regexp {1976\?} $date match]} {
+	    set date1 "1976-01-01"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    	    
+	} elseif {[regexp {^(\d\d?)-(\d\d?)-(\d\d\d\d)$} $date match mm dd yyyy]} {
+	    set date1 "${yyyy}-${mm}-${dd}"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    	    
+	} elseif {[regexp {^(\d\d?)/(\d\d\d\d)$} $date match mm yyyy]} {
+	    set dd 01
+	    set date1 "${yyyy}-${mm}-${dd}"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    	    
+	} elseif {[regexp {^xxx(\d\d?)-22/23-75$} $date match yyyy]} {
+	    set date1 "${yyyy}-06-01"
+	    set date2 "${yyyy}-09-01"	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+	} elseif {[regexp {^Summer.*(\d\d\d\d)$} $date match yyyy]} {
+	    set date1 "${yyyy}-06-01"
+	    set date2 "${yyyy}-09-01"	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+	} elseif {[regexp {^(June|September|December).*(\d\d\d\d)$} $date match m yyyy]} {
+	    set mm 06
+	    if {$m=="September"} {set mm 09}
+	    if {$m=="December"} {set mm 12}	    
+	    set date1 "${yyyy}-$mm-01"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date1]	    	    
+	} elseif {[regexp {(\d\d\d\d) *- *(\d\d\d\d)} $date match date1 date2]} {
 	    append ::entries [col fromdate $date1]
 	    append ::entries [col todate $date2]	    
 	} elseif {[regexp {^(\d\d\d\d)$} $date match date1]} {
@@ -239,9 +324,44 @@ proc handleDate {date} {
 	    append ::entries [col todate $date1]	    
 	} elseif {[regexp {^(\d\d\d\d)(\d\d\d\d)$} $date match date1 date2]} {
 	    append ::entries [col fromdate $date1]
-	    append ::entries [col todate $date2]	    
+	    append ::entries [col todate $date2]
+
+
+	} elseif {[regexp {^(\d\d?)-(\d\d?)/(\d\d?)-(\d\d\d?\d?)$} $date match m d1 d2 y ]} {
+	    if {[string length $y]==2} {
+		set y "19$y"
+	    }
+	    set date1 "$y-$m-$d1"
+	    set date2 "$y-$m-$d2"	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+	} elseif {[regexp {^(\d\d\d\d) +(\d\d\d\d)} $date match y1 y2]} {
+	    set date1 "$y1-01-01"
+	    set date2 "$y2-12-30"
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+
+	} elseif {[regexp {^(\d\d?)/(\d\d?)/(\d\d\d\d) *- *(\d\d?)/(\d\d?)/(\d\d\d\d)} $date match m1 d1 y1 m2 d2 y2 ]} {
+	    set date1 $y1-$m1-$d1
+	    set date2 $y2-$m2-$d2	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+	} elseif {[regexp {^(\d\d?)/(\d\d?)-(\d\d?)/(\d\d\d?\d?)$} $date match m d1 d2 y ]} {
+	    if {[string length $y]==2} {
+		set y "19$y"
+	    }
+	    set date1 "$y-$m-$d1"
+	    set date2 "$y-$m-$d2"	    
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
+	    
+	} elseif {[regexp {^1950'.*$} $date match]} {
+	    set date1 1950-01-01
+	    set date2 1959-12-30
+	    append ::entries [col fromdate $date1]
+	    append ::entries [col todate $date2]	    	    
 	} else {
-	    puts stderr "bad date: $date"
+	    puts  "bad date: $what :$date:"
 #	    append ::entries [col fromdate $date]
 	}
     }
@@ -253,11 +373,16 @@ proc handleDate {date} {
 set ::sp {collection_nbr series_nbr series_title location scope_content notes user_1 bio_org_history organiz_arrange provenance bulk_dates name_type creator summary column1}
 proc series $::sp {
     incr ::scnt
-    foreach p $::sp {set $p [string trim [set $p]]}
+    foreach p $::sp {
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check series $::scnt $p $v
+    }
     set parent [cid $collection_nbr]
 ##    puts  "parent: $::cmap($parent)"
     set id [sid $collection_nbr $series_nbr]
-    set ::sids($id) 1
+    set ::sids($id) $series_title
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
     set summary [processSummary $summary]
     append ::entries [col series_number [pad $series_nbr]]
@@ -270,9 +395,9 @@ proc series $::sp {
     append ::entries [mtd2 archive_note "Note" $column1]
     append ::entries [mtd2 archive_note "Note" $summary]        
     append ::entries [mtd1 archive_creator $creator]    
-    handleDate $bulk_dates
+    handleDate $bulk_dates series $::scnt
     if {[regexp {.*\d\d\d\d-.*} $name_type]} {
-	handleDate $name_type
+	handleDate $name_type series $::scnt
     } else {
 	if {$name_type!=""} {
 ##	    puts stderr "name_type:$name_type"
@@ -286,20 +411,25 @@ set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates
 proc files $::fp {
     if {$file_unit_nbr==""} return
     incr ::fcnt
-    foreach p $::fp {set $p [string trim [set $p]]}
+    foreach p $::fp {
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check file $::fcnt $p $v
+    }
     set parent [sid $collection_nbr $series_nbr]
     if {![info exists   ::sids($parent)]} {
 	puts  stderr "file: $file_unit_nbr $title no parent series: $parent "
     }
     set id [fid $collection_nbr $series_nbr $file_unit_nbr]
-    set ::fids($id) 1
+    set ::fids($id) $title
     append ::entries [openEntry type_archive_file $id $parent $title]
     set summary_note [processSummary $summary_note]
 
     append ::entries [col file_number [pad $file_unit_nbr]]
     append ::entries [col location $location]
     handlePhysicalDescription $phys_desc 
-    handleDate  $dates
+    handleDate  $dates file $::fcnt
     append ::entries [mtd2 archive_note "Summary" $summary_note]        
     append ::entries [mtd2 archive_note "Provenance" $notes_prov]
     append ::entries [mtd1 archive_creator $creator]
@@ -312,13 +442,12 @@ array set ::seen {}
 
 set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
 proc item $::ip {
-    incr ::icnt
-    if {[string length $location]>300} {
-#	puts "$collection_nbr $series_nbr $file_unit_nbr $item_nbr length: [string length $location]"
-#	puts "$title $location"
-#	exit
+    foreach p $::ip {
+	set v [string trim [set $p]]
+	set v [spell $v]
+	set $p $v
+	check item $::icnt $p $v
     }
-    foreach p $::ip {set $p [string trim [set $p]]}
     if {$item_nbr==""} return
     set parent [fid $collection_nbr $series_nbr $file_unit_nbr]
     if {![info exists   ::fids($parent)]} {
@@ -327,8 +456,13 @@ proc item $::ip {
 	return
     }
 
-
+    incr ::icnt
     set id [iid $collection_nbr $series_nbr $file_unit_nbr $item_nbr]
+    set ::iids($id) $title
+    ##TODO - uncomment this
+    return
+
+
     append ::entries [openEntry type_archive_item $id $parent $title]
     append ::entries [col item_number [pad $item_nbr]]
     append ::entries [col location $location]
@@ -340,7 +474,7 @@ proc item $::ip {
     append ::entries [mtd1 archive_media_type $media_type]
     append ::entries [mtd1 archive_creator $creator]    
     append ::entries [mtd1 archive_category $category]    
-    handleDate  $dates
+    handleDate  $dates item $::icnt
 #    puts $user_1
     processSubjectsAndKeywords $user_1
     set summary_note [processSummary $summary_note]
@@ -349,14 +483,21 @@ proc item $::ip {
 }
 
 source collections.tcl
+source media_collection.tcl
 source series.tcl
+source media_series.tcl
 source files.tcl
+source media_file.tcl
 source extra.tcl
 source items.tcl
+source media_item.tcl
 
 append ::entries "</entries>\n";
+set fp [open archiveentries.xml w]
+puts $fp $::entries
+close $fp
 #puts $::entries
-puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::icnt"
+puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::icnt #media items: $::m_icnt"
 
 
 
