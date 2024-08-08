@@ -2781,6 +2781,10 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     vertical-align:bottom;
 }
 
+.entry-row .ramadda-metadata-display {
+    margin-bottom:5px;
+}
+
 a.noline {
     text-decoration:none;
 }
