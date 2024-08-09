@@ -706,7 +706,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         }
 
         List<RecordField> fields = metadata.getFields();
-        if (fields != null) {
+        if (fields != null && entry.getTypeHandler().getTypeProperty("addinitialmetadata",true)) {
             for (RecordField field : fields) {
                 String unit = field.getUnit();
                 Metadata fieldMetadata =
