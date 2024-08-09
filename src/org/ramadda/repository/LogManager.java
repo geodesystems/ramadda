@@ -759,6 +759,13 @@ public class LogManager extends RepositoryManager {
                             ARG_LOG, name), label));
             }
         }
+	for (File logFile : logFiles) {
+            String name  = logFile.getName();
+            if (log.equals(name)) {
+                theFile = logFile;
+		break;
+	    }
+	}
 
 
         sb.append(HtmlUtils.br());
@@ -936,6 +943,7 @@ public class LogManager extends RepositoryManager {
 
 	long t1 = System.currentTimeMillis();
 	Seesv seesv = new Seesv(args,suffix);
+
 	seesv.run(files);
 	long t2 = System.currentTimeMillis();
 
@@ -980,10 +988,15 @@ public class LogManager extends RepositoryManager {
 		csv.append(Seesv.cleanColumnValue(key));
 		csv.append("\n");				
 	    } else {
-		String link = HU.href(HU.url(URL_LOG.toString(),ARG_MATCH,id,
-					     ARG_LOG,"entryactivity.log"),
-				      HU.getIconImage("fas fa-search"),
-				      HU.attrs("target","logsearch","title","View log file"));
+		String link = "";
+		if(files.size()==1) {
+		    link = HU.href(HU.url(URL_LOG.toString(),ARG_MATCH,id,
+					  ARG_LOG,files.get(0).getFile().getName()),
+				   HU.getIconImage("fas fa-search"),
+				   HU.attrs("target","logsearch","title","View log file"));
+		}
+
+
 		key = HU.href(getEntryManager().getEntryUrl(request, id),key,HU.attrs("target","_entry"));
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
