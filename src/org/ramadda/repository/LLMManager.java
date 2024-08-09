@@ -40,7 +40,7 @@ import java.util.concurrent.*;
 @SuppressWarnings("unchecked")
 public class LLMManager extends  AdminHandlerImpl {
 
-    public static boolean  debug = true;
+    public static boolean  debug = false;
 
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";
@@ -48,7 +48,8 @@ public class LLMManager extends  AdminHandlerImpl {
     
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
-    public static final int TOKEN_LIMIT_GEMINI = 30000;
+    public static final int TOKEN_LIMIT_GEMINI_PRO = 30000;
+    public static final int TOKEN_LIMIT_GEMINI_FLASH = 500_000;
     public static final int TOKEN_LIMIT_GPT3 = 2000;    
     public static final int TOKEN_LIMIT_GPT4 = 4000;
     public static final int TOKEN_LIMIT_CLAUDE = 200000;
@@ -61,7 +62,8 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String MODEL_GPT_3_5="gpt-3.5-turbo-1106";
     public static final String MODEL_GPT_4="gpt-4";
     public static final String MODEL_GPT_VISION  = "gpt-4-vision-preview";
-    public static final String MODEL_GEMINI = "gemini";
+    public static final String MODEL_GEMINI_PRO = "gemini-pro";
+    public static final String MODEL_GEMINI_FLASH = "gemini-flash";    
     public static final String MODEL_CLAUDE = "claude";    
 
     public static final String ARG_USEGPT4  = "usegpt4";
@@ -78,7 +80,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
     public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
-    public static final String URL_GEMINI="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+    public static final String URL_GEMINI_PRO="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+    public static final String URL_GEMINI_FLASH="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";    
 
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
 
@@ -225,7 +228,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	    }
 	}
 	if(isGeminiEnabled()) {
-	    models.add(new HtmlUtils.Selector("Google Gemini",MODEL_GEMINI));
+	    models.add(new HtmlUtils.Selector("Google Gemini Flash",MODEL_GEMINI_FLASH));	    
+	    models.add(new HtmlUtils.Selector("Google Gemini Pro",MODEL_GEMINI_PRO));
 	}
 	if(isClaudeEnabled()) {
 	    models.add(new HtmlUtils.Selector("Claude",MODEL_CLAUDE));
@@ -361,12 +365,13 @@ public class LLMManager extends  AdminHandlerImpl {
 	      "contents": [{
 	      "parts":[{"text": "Write a story about a magic backpack."}]}]}'
 	    */
+	    String url = model.equals(MODEL_GEMINI_FLASH)?URL_GEMINI_FLASH:URL_GEMINI_PRO;
 	    String geminiKey = getRepository().getProperty(PROP_GEMINI_KEY);	
 	    String contents = JU.list(JU.map("parts",JU.list(JU.map("text",JU.quote(gptText)))));
 	    String body = JU.map("contents",contents);
 	    //		System.err.println(body);
 	    return call(geminiJobManager,
-			new URL(URL_GEMINI+"?key=" + geminiKey), body,
+			new URL(url +"?key=" + geminiKey), body,
 			"Content-Type","application/json");
 	}
     }	
@@ -467,8 +472,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 
 	if(info.tokenLimit<=0) {
-	    if(model.equals(MODEL_GEMINI)) 
-		info.tokenLimit = TOKEN_LIMIT_GEMINI;
+	    if(model.equals(MODEL_GEMINI_PRO)) 
+		info.tokenLimit = TOKEN_LIMIT_GEMINI_PRO;
+	    else    if(model.equals(MODEL_GEMINI_FLASH)) 
+		info.tokenLimit = TOKEN_LIMIT_GEMINI_FLASH;
 	    else if(model.equals(MODEL_GPT_4)) 
 		info.tokenLimit = TOKEN_LIMIT_GPT4;
 	    else if(model.equals(MODEL_CLAUDE)) 
@@ -518,7 +525,7 @@ public class LLMManager extends  AdminHandlerImpl {
 						 " token limit:" + info.tokenLimit);
 
 	    IO.Result  result=null; 
-	    if(model.equals(MODEL_GEMINI)) {
+	    if(model.equals(MODEL_GEMINI_PRO) || model.equals(MODEL_GEMINI_FLASH)) {
 		long t1 = System.currentTimeMillis();
 		result = callGemini(model,gptText);
 		long t2 = System.currentTimeMillis();
