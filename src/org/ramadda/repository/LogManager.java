@@ -26,6 +26,7 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
+import java.util.zip.*;
 import java.io.*;
 import java.io.FileNotFoundException;
 
@@ -1101,7 +1102,13 @@ public class LogManager extends RepositoryManager {
 	sb.append(HU.input(ARG_MATCH,match,HU.attrs("placeholder","match")));
         sb.append(HU.formClose());
 
-        try(InputStream fis = getStorageManager().getFileInputStream(logFile)) {
+        try(InputStream fis1 = getStorageManager().getFileInputStream(logFile)) {
+	    InputStream fis = fis1;
+	    if (logFile.getName().toLowerCase().endsWith(".gz")) {
+		fis = new GZIPInputStream(fis1);
+	    }
+	    
+
             String log      = request.getString(ARG_LOG, "error");
             if (numBytes < 0) {
                 numBytes = 1000;
