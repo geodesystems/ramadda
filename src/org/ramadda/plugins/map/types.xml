@@ -260,7 +260,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 
 <type name="geo_geojson"  super="type_convertible"
 	priority="12"      
-	mimetype="application/json" description="GeoJson File"
+	mimetype="application/json" description="GeoJson Map"
       handler="org.ramadda.plugins.map.GeoJsonTypeHandler"
       pattern="(.*\.geojson$)" metadata="map_style">
   <property name="form.properties.show" value="false"/>
