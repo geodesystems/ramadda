@@ -4643,11 +4643,13 @@ public class TypeHandler extends RepositoryManager {
 					   "false"), "Add properties") + space+
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
 			       "Just spatial/temporal properties") +
-	    space + 
+	    "<br>" + 
 	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
 			       request.get(ARG_STRIPEXIF,false),
 			       "Strip metadata from images");
-	    
+	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
+	    addMetadata+=space+HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
+	}	    
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 

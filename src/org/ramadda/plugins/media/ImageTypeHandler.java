@@ -55,9 +55,11 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	sb.append("<br>");
         sb.append(HU.labeledCheckbox(ARG_STRIP_METADATA, "true", false,"Strip metadata"));
 	sb.append("<br>");
+	/*
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from image"));
 	}
+	*/
 	sb.append("</div>");
 
 

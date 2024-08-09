@@ -48,11 +48,13 @@ public class PdfTypeHandler extends GenericTypeHandler {
     @Override
     public void getFileExtras(Request request, Entry entry, Appendable sb)
 	throws Exception {
+	/*
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    sb.append("<div style='margin-left:30px;'>");
 	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images in PDF"));
 	    sb.append("</div>");
 	}
+	*/
         super.getFileExtras(request, entry,sb);
 
     }
