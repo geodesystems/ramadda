@@ -6,16 +6,20 @@ var Itis = {
         return  'https://www.itis.gov/ITISWebService/jsonservice/ITISService/' + service;
     },
 
+    doSearch:function(fromNameInput,v) {
+	let _this=this;
+	if(!v) v = this.nameInput.val();
+	if(!Utils.stringDefined(v)) return;
+        let url = this.getUrl('searchByCommonName?srchKey=' + encodeURIComponent(v));
+	let success=(data)=>{
+	    _this.showNamesPopup(fromNameInput,data,v);
+	};
+	this.fetch(url,success);
+    },
     init:function() {
 	let _this=this;
 	let doSearch=(fromNameInput,v)=>{
-	    if(!v) v = this.nameInput.val();
-	    if(!Utils.stringDefined(v)) return;
-            let url = this.getUrl('searchByCommonName?srchKey=' + encodeURIComponent(v));
-	    let success=(data)=>{
-		_this.showNamesPopup(fromNameInput,data);
-	    };
-	    this.fetch(url,success);
+	    this.doSearch(fromNameInput,v);
 	}
 
 	let name = 'edit_type_archive_bio_common_name';
@@ -59,11 +63,14 @@ var Itis = {
 	    console.dir(data);
 	});
     },
-    showNamesPopup:function(fromNameInput,data) {
+    showNamesPopup:function(fromNameInput,data,v) {
 	let _this=this;
 	if(!data.commonNames || data.commonNames.length==0 || (
 	    data.commonNames.length==1 && !data.commonNames[0])) {
-	    alert('No information found');
+	    v = prompt("No information found. Search term:",v);
+	    if(v) {
+		this.doSearch(fromNameInput,v);
+	    }
 	    return
 	}
 	let html=HU.div([ATTR_STYLE,HU.css('text-weight','bold')],'Select an item to set the taxonomy:');
