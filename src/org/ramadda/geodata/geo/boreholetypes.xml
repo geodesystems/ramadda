@@ -155,7 +155,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}
 
 <wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
    <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}]]></wikimacro>
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}]]></wikimacro>
 
 <wiki>
 <![CDATA[
@@ -167,7 +167,7 @@ profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}]]></wikimacro>
 {{description wikify=true}}
 :heading Chart
 {{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}         
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}         
 
 :heading Table
 {{display_download}}
@@ -231,12 +231,12 @@ csvcommands2=0,0,-change,0-10,-999.*,NaN
 +section  title="Log ASCII: {{name}}"
 {{group}}
 {{display_profile showMenu=true yAxisReverse=true marginTop=25
-profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}         
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}         
 ]]></property>
 
 <wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
    <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField=".*depth.*"  fields="#2,#3"}}]]></wikimacro>
+profileMode="lines" indexField=".*depth.*"  #fields="#2,#3"}}]]></wikimacro>
 
 
 <wiki>
@@ -258,7 +258,7 @@ loadingMessage="icon_progress"
 showMenu=false requestFieldsShow=true
 noDataMessage="No data available"}}
 {{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  
-profileMode="lines" indexField=".*depth.*"  fields="#2"}}         
+profileMode="lines" indexField=".*depth.*"  #fields="#2"}}         
 
 :heading Table
 {{display_download}}
@@ -287,6 +287,90 @@ profileMode="lines" indexField=".*depth.*"  fields="#2"}}
 ]]>
 </wiki>
 
+
+
+</type>
+
+
+
+<type name="type_borehole_xrf"  super="type_borehole_point" description="Borehole XRF File" 
+      pattern="(?i).*xrv.*\.csv"
+      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <property name="form.date.label" value="Scan Date"/>
+  <property name="form.todate.show" value="false"/>
+  <property name="form.resource.extra.show" value="false"/>  
+  <property name="form.time.show" value="false"/>  
+  <property name="form.tags.show" value="false"/>
+  <property name="addinitialmetadata" value="false"/>      
+  <property name="borehole.fields" value="o_wt,al_int,si_int,p_int"/>
+
+
+
+  <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA"
+	   values="NA,1 ft,10 cm, 1m"/>
+  <column  name="xrf_current"  default="NaN" label="Current" type="double" unit="mA"/>
+  <column  name="xrf_voltage"  default="NaN" label="Voltage" type="double" unit="kV"/>  
+
+<property name="record.properties">
+xccsvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
+xcsvcommands2=-addheader,
+</property>
+<property name="bubble">
+<![CDATA[
++section  title="Borehole Log: {{name}}"
+{{group}}
+{{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  }}         
+]]></property>
+
+<wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
+   <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField=".*depth.*"  }}]]></wikimacro>
+
+<wiki>
+<![CDATA[
++section title="Borehole XRF: {{name}}"
+:navtop 
++row
++col-8
+{{property max="10000"}}
+{{group}}
+{{description wikify=true}}
+:heading Chart
+{{group}}
+{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
+profileMode="lines" indexField="depth_start_mm"  }}         
+-col
++col-4
+{{resource  title="Download"  showIcon="true"  simple="false"  }}
+<table class="formtable">
+{{field name="depth_level"  row.label="Depth:"}}
+{{field name="xrf_current"  row.label="Current:"}}
+{{field name="xrf_voltage"  row.label="Voltage:"}}
+</table>
+:vspace 1em
+{{properties  message=""  metadata.types="!tag:internal"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }} 
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+:heading Table
++hbox                                                                                                              
+{{group max="1000" noDataMessage="" requestFieldsShow=false requestFields="skip,limit" requestFieldsDefault="true"}}     {{display_filter max="1000"  noDataMessage="No data available" loadingMessage="" requestFieldsShow=true}}                      
+-hbox                                                                                                              
+{{display_table height="70vh"  maxColumns=50 max="1000"}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"  }}
+
+-section
+]]>
+</wiki>
 
 
 </type>

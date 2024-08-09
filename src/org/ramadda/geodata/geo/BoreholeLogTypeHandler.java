@@ -72,7 +72,15 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	throws Exception {
         if (tag.equals("borehole_profiles")) {
 	    StringBuilder sb = new StringBuilder();
-	    String fields=(String) entry.getValue(request,"fields_to_show");
+	    String fields= Utils.getProperty(props,"fields","");
+	    if(!stringDefined(fields)) {
+		fields = (String) entry.getValue(request,"fields_to_show");
+	    }
+
+	    if(!stringDefined(fields)) {
+		fields = getTypeProperty("borehole.fields","");
+	    }
+
 	    if(!stringDefined(fields)) {
 		//Hacky way to get the number of fields since the metadata can be edited/changed
 		List<Metadata> metadata= getMetadataManager().findMetadata(request, entry, "thredds.variable",false);
