@@ -42,10 +42,17 @@
       <element id="role" name="Role" datatype="enumerationplus"/>      
     </type>        
     
-    <type id="archive_media_type" name="Archive Media Type">
-      <element id="type" name="Media Type" datatype="enumerationplus"
-	       values="Photograph,Audio,Video"/>
+    <type id="archive_media_description" name="Archive Media Description">
+      <element id="format" name="Format" datatype="enumerationplus"
+	       values="Photograph,Audio,Video,Reel to Reel Tape,CD,MP4,Digital scan of black and white photo"/>
+      <element id="quality" name="Quality" datatype="enumerationplus"
+	       values="great,good,poor,bad,distorted,noisy"/>
+      <element id="length" name="Media Length" datatype="string" suffix="e.g,0:03:50.810"/>        
+      <element id="width" name="Width" datatype="int"/>
+      <element id="height" name="Height" datatype="int"/>      
+
     </type>
+
     <type id="archive_physical_media" name="Archive Physical Media">
       <element id="physical_description" name="Description" datatype="enumerationplus"
 	       values="CD Media,Analog,Photograph,Paper Copies,MP4 File,MP3 File,Audio File,Analogue Cassette Tape,Oversized Item"/>
