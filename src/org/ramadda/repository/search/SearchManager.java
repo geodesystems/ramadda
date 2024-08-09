@@ -721,8 +721,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
-    public TikaConfig getTikaConfig() throws Exception {
-	return indexImages?TikaUtil.getConfig():TikaUtil.getConfigNoImage();
+    private TikaConfig getTikaConfig(boolean force) throws Exception {
+	return (force || indexImages)?TikaUtil.getConfig():TikaUtil.getConfigNoImage();
     }
 
 
@@ -814,7 +814,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    Parser parser = new AutoDetectParser(getTikaConfig());
+	    Parser parser = new AutoDetectParser(getTikaConfig(request.get(ARG_INDEX_IMAGE,false)));
             BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    long t1 = System.currentTimeMillis();
             parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());

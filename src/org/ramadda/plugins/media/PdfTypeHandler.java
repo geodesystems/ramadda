@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -38,38 +38,25 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-
-/**
- *
- *
- */
 public class PdfTypeHandler extends GenericTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public PdfTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param service _more_
-     * @param output _more_
-     *
-     * @throws Exception _more_
-     */
+    @Override
+    public void getFileExtras(Request request, Entry entry, Appendable sb)
+	throws Exception {
+	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
+	    sb.append("<div style='margin-left:30px;'>");
+	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images in PDF"));
+	    sb.append("</div>");
+	}
+        super.getFileExtras(request, entry,sb);
+
+    }
+
     @Override
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
@@ -153,13 +140,6 @@ public class PdfTypeHandler extends GenericTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private String clean(String s) {
         if (s == null) {
             return s;
@@ -172,18 +152,6 @@ public class PdfTypeHandler extends GenericTypeHandler {
         return s;
     }
 
-    /**
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-      * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
