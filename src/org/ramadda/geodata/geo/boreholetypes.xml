@@ -296,6 +296,7 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 <type name="type_borehole_xrf"  super="type_borehole_point" description="Borehole XRF File" 
       pattern="(?i).*xrv.*\.csv"
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <property name="icon" value="/geo/xray.png"/>
   <property name="form.date.label" value="Scan Date"/>
   <property name="form.todate.show" value="false"/>
   <property name="form.resource.extra.show" value="false"/>  
