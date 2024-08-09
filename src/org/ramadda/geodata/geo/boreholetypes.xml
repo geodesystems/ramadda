@@ -309,8 +309,9 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 
   <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA"
 	   values="NA,1 ft,10 cm, 1m"/>
-  <column  name="xrf_current"  default="NaN" label="Current" type="double" unit="mA"/>
-  <column  name="xrf_voltage"  default="NaN" label="Voltage" type="double" unit="kV"/>  
+  <column  name="xrf_current"  default="NaN" label="Current" type="double" unit="mA" suffix="mA"/>
+  <column  name="xrf_voltage"  default="NaN" label="Voltage" type="double" unit="kV" suffix="kV"/>
+  <column  name="test_scan_rate"  default="NA" label="Scan Rate" type="enumerationplus" values="NA,1 cm/s"/>    
 
 <property name="record.properties">
 xccsvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
@@ -345,9 +346,10 @@ profileMode="lines" indexField="depth_start_mm"  }}
 +col-4
 {{resource  title="Download"  showIcon="true"  simple="false"  }}
 <table class="formtable">
-{{field name="depth_level"  row.label="Depth:"}}
-{{field name="xrf_current"  row.label="Current:"}}
-{{field name="xrf_voltage"  row.label="Voltage:"}}
+{{field name="depth_level"  row.label="Depth:" }}
+{{field name="xrf_current"  row.label="Current:" fieldSuffix="&nbsp;mA"}}
+{{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix="&nbsp;kV"}}
+{{field name="test_scan_rate"  row.label="Scan Rate:"}}
 </table>
 :vspace 1em
 {{properties  message=""  metadata.types="!tag:internal"
@@ -432,7 +434,6 @@ inherited="false"  }}
 {{field name="tool"  row.label="Tool:"}}
 {{field name="measurement"  row.label="Measurement:"}}
 </table>
-</table>
 +center
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
@@ -441,8 +442,42 @@ inherited="false"  }}
 -section
 ]]>
 </wiki>
+</type>
 
+<type name="type_borehole_coreimage"   description="Core Image"
+      handler="org.ramadda.repository.type.GenericTypeHandler">            
+  <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"
+	  candisplay="false" editable="false" canlist="false"/>     
 
+<wiki>
+<![CDATA[
++section title="Core Image: {{name}}"
+:navtop 
++row
++col-8
+{{group}}
+{{description wikify=true}}
+{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+]]>
+</wiki>
 </type>
 
 <type name="type_borehole_fieldplot"   description="Borehole Field Plot"
