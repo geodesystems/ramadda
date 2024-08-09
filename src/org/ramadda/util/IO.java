@@ -2217,6 +2217,10 @@ public class IO {
 	    return new File(getPath()).exists();
 	}
 
+	public File getFile() {
+	    return new File(getPath());
+	}
+
 	public String toString() {
 	    return path + (method!=null?" method:" + method:"") + (body!=null?" body:" + body:"");
 	}
