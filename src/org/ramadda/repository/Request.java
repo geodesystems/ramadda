@@ -2830,6 +2830,7 @@ public class Request implements Constants, Cloneable {
 	}
 
 	return Utils.indexOf(userAgent,
+			     "go-http-client",
 			     "yandex.com/bots",
 			     "www.facebook.com/externalhit_uatext",
 			     "expanse",
