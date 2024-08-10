@@ -42,6 +42,9 @@ import java.util.LinkedHashMap;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.lang3.text.StrTokenizer;
+import org.apache.commons.text.StringTokenizer;
+
 
 
 @SuppressWarnings("unchecked")
@@ -1094,13 +1097,31 @@ public class LogManager extends RepositoryManager {
             throws Exception {
 	int    numBytes = request.get(ARG_BYTES, 10000);
 	String match=request.getString(ARG_MATCH,"");
+	boolean isEntryActivity = logFile.getName().indexOf("entryactivity")>=0;
+	String field = request.getString("field",null);
+	boolean showSummary = stringDefined(field);
+        StringTokenizer tokenizer = StringTokenizer.getCSVInstance();
+	LinkedHashMap<String,Integer> counts = new LinkedHashMap<String,Integer>();
+
 	sb.append(request.form(URL_LOG));
 	sb.append(HU.hidden(ARG_LOG,request.getString(ARG_LOG,"")));
 	sb.append(HU.hidden(ARG_BYTES,""+numBytes));
 	sb.append(HU.submit("View Log", "viewlog"));
 	sb.append(HU.space(1));
+	if(isEntryActivity) {
+	    List fields = new ArrayList();
+	    fields.add(new TwoFacedObject("---",""));
+	    fields.add(new TwoFacedObject("IP Address","ipaddress"));
+	    fields.add(new TwoFacedObject("Entry","entry"));	    
+	    sb.append(HU.space(1));
+	    sb.append(HU.b("Summarize on:"));
+	    sb.append(HU.space(1));
+	    sb.append(HU.select("field",fields,field));
+	    sb.append(HU.space(1));
+	}
 	sb.append(HU.input(ARG_MATCH,match,HU.attrs("placeholder","match")));
         sb.append(HU.formClose());
+
 
         try(InputStream fis1 = getStorageManager().getFileInputStream(logFile)) {
 	    InputStream fis = fis1;
@@ -1133,13 +1154,13 @@ public class LogManager extends RepositoryManager {
                         ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
 
 	    int maxLines=  -1;
-	    if(!stringDefined(match)) {
+	    if(!showSummary && !stringDefined(match)) {
 		match=null;
 		if (offset > 0) {
 		    fis.skip(offset);
 		}
 	    } else {
-		maxLines = 5000;
+		maxLines = 10000;
 	    }
 
 
@@ -1171,6 +1192,20 @@ public class LogManager extends RepositoryManager {
                 }
 		cnt++;
 		if(maxLines>0 && cnt> maxLines) break;
+		if(showSummary) {
+		    tokenizer.reset(line);
+		    String tokens[] = tokenizer.getTokenArray();
+		    String key = tokens[0];
+		    if(field.equals("entry")) key = tokens[2]+"::" + tokens[3];
+		    Integer count = counts.get(key);
+		    if(count==null) {
+			count=new Integer(0);
+		    }
+		    counts.put(key,count.intValue()+1);
+		    continue;
+		}
+
+
                 if (line.startsWith("</stack>") && (stackSB != null)) {
                     sb.append(
                         HtmlUtils.insetLeft(
@@ -1206,6 +1241,38 @@ public class LogManager extends RepositoryManager {
                             HtmlUtils.cssClass(CSS_CLASS_STACK)), false));
             }
 	}
+
+	if(showSummary) {
+	    List<SortableObject<String>> sort =
+		new ArrayList<SortableObject<String>>();	
+	    for (String key : counts.keySet()) {
+		Integer c = counts.get(key);
+		sort.add(new SortableObject<String>(c,key));
+	    }
+	    java.util.Collections.sort(sort,Comparator.reverseOrder());
+	    sb.append("<table>");
+	    String fieldLabel = "IP Address";
+	    if(field.equals("entry")) fieldLabel = "Entry";
+	    sb.append("<tr><td>&nbsp;<b>Count&nbsp;</b></td><td><b>&nbsp;"+fieldLabel+"</b>&nbsp;</td></tr>");
+
+	    for (SortableObject<String> po : sort) {
+		int  c = po.getPriority();
+		String label = po.getValue();
+		if(field.equals("entry")) {
+		    List<String>toks = Utils.split(label,"::");
+		    label= HU.href(getEntryManager().getEntryUrl(request,toks.get(0)),toks.get(1),HU.attrs("target","_entry"));		    
+		}
+		sb.append("<tr><td align=right>");
+		sb.append(c);
+		sb.append("&nbsp;&nbsp;</td><td>");
+
+		sb.append(label);
+		sb.append("</td></tr>");
+	    }
+	    sb.append("</table>");
+	}
+
+
     }
 
 
