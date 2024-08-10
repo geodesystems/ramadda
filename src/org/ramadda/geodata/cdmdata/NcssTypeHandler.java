@@ -225,7 +225,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
         properties.append(
-            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
+            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
 	//        properties.append(
 	//            "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],station[type=string],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         if (addVertCoord) {
@@ -318,6 +318,7 @@ public class NcssTypeHandler extends PointTypeHandler {
 					 Hashtable requestProperties)
             throws Exception {
         String url = getUrl(entry);
+
         //subst the times
 	String dateType = entry.getStringValue(request,IDX_DATE_TYPE,DATE_TYPE_RELATIVE);
 	//	System.err.println("start:" + start +" end:" + end);
