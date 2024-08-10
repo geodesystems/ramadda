@@ -6183,6 +6183,12 @@ public class EntryManager extends RepositoryManager {
             entry.setXmlNode(node);
             entry.getTypeHandler().initializeEntryFromXml(request, entry,
 							  node, filesMap);
+
+	    if(XmlUtil.getAttribute(node,"isnew",false)) {
+		entry.getTypeHandler().initializeNewEntry(request, entry, TypeHandler.NewType.NEW);
+	    }
+
+
             entries.add(entry);
         }
 
