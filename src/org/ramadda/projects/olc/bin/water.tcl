@@ -10,5 +10,5 @@ proc well {well url lat lon} {
     puts "<entry isnew=\"true\" type=\"type_document_pdf\" name=\"$file\" latitude=\"$lat\" longitude=\"$lon\" file=\"$file\" />"
 }
 
-source sites.tcl
+source wqsites.tcl
 puts "</entries>"
