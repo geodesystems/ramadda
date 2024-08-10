@@ -728,10 +728,6 @@ public class LogManager extends RepositoryManager {
 
         sb.append(HtmlUtils.sectionOpen());
         sb.append("Logs are in: " + HtmlUtils.italics(f.toString()));
-	sb.append(HU.br());
-	sb.append(HU.div(HU.href(getRepository().getUrlPath(request, URL_REPORT),"Generate Access Report"),
-			 HU.attrs("class","ramadda-button")));
-	sb.append(HU.br());
         if (log.equals("access")) {
             header.add(HtmlUtils.bold("Recent Access"));
         } else {
@@ -777,6 +773,14 @@ public class LogManager extends RepositoryManager {
         sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
                 HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), header));
         sb.append(HtmlUtils.hr());
+
+	if(log.indexOf("entryactivity")>=0) {
+	    sb.append(HU.div(HU.href(getRepository().getUrlPath(request, URL_REPORT),"Generate Entry Access Report"),
+			     HU.attrs("style","margin-bottom:5px;","class","ramadda-button")));
+	    sb.append(HU.br());
+	}
+
+
 
         if (log.equals("access")) {
             getAccessLog(request, sb);
