@@ -301,6 +301,19 @@ public class NcssTypeHandler extends PointTypeHandler {
 
     
     @Override
+    public String getResourcePath(Request request, Entry entry) {
+	return getUrl(entry);
+    }
+
+
+    @Override
+    public String getUrlForWiki(Request request, Entry entry, String tag,
+                                Hashtable props, List<String> topProps) {
+	return super.getUrlForWiki(request,entry,tag,props,topProps);
+    }
+
+
+    @Override
     public IO.Path getPathForRecordEntry(Request request, Entry entry,
 					 Hashtable requestProperties)
             throws Exception {
