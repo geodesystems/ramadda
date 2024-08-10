@@ -230,6 +230,13 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
+
+    public String getResourcePath(Request request, Entry entry) {
+	return entry.getResource().getPath();
+
+    }
+
+
     /**
      *
      * @param request _more_

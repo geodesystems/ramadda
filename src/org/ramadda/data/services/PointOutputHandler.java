@@ -988,7 +988,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-        String path = entry.getResource().getPath();
+
+        String path = typeHandler.getResourcePath(request, entry);
         if ((path != null) && (path.indexOf("${latitude}") >= 0)) {
             extra += "&latitude=${latitude}&longitude=${longitude}";
         } else if(entry.getTypeHandler().getTypeProperty("data.url.addlaton",false)) {
