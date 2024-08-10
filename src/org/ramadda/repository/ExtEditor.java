@@ -1303,7 +1303,9 @@ public class ExtEditor extends RepositoryManager {
 	public void makeThumbnail(boolean deleteExisting) throws Exception {
 	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting)) {
 		changed=true;
-		ctx.print("Thumnbail added:" + entry.getName());
+		ctx.print("Thumbnail added:" + entry.getName());
+	    } else {
+		ctx.print("Thumbnail not added:" + entry.getName());
 	    }
 	}
 
