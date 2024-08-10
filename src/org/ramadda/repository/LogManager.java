@@ -1164,7 +1164,8 @@ public class LogManager extends RepositoryManager {
 		    fis.skip(offset);
 		}
 	    } else {
-		maxLines = 10000;
+		if(showSummary) maxLines = 100000;
+		else maxLines = 10000;
 	    }
 
 
