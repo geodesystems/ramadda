@@ -795,7 +795,11 @@ public class RowCollector extends Processor {
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             PrintWriter writer = ctx.getWriter();
+	    int cnt = 0;
             for (Row row : rows) {
+		cnt++;
+		if(cnt==1) continue;
+
                 List values = row.getValues();
                 writer.print(prefix);
                 for (Object o : values) {
