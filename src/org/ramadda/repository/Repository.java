@@ -2914,7 +2914,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append("<types>\n");
 	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
 	sb.append("<type ");
-	sb.append(XU.attrs("name","id","description",name,"handler",handler));
+	sb.append(XU.attrs("name",id,"description",name,"handler",handler));
 	
 
 
@@ -2936,6 +2936,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 	sb.append(XU.comment("Properties"));
+	sb.append("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>\n");
 	if(request.defined("icon"))  {
 	    sb.append(XU.tag("property",XU.attrs("name","icon","value",request.getString("icon",""))));
 	    sb.append("\n");
