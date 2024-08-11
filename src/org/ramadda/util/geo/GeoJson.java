@@ -744,8 +744,13 @@ public class GeoJson extends JsonUtil {
 	    boolean haveProp =false;
 
 	    for(int pidx=0;pidx<props.size() && allOk && !anyOk;pidx+=2) {
+		boolean doNot = false;
 		String prop = props.get(pidx);
 		String value = props.get(pidx+1);
+		if(value.startsWith("!")) {
+		    doNot = true;
+		    value = value.substring(1);
+		}
 		double dvalue=0;
 		String operator = null;
 		if(value.startsWith("<")) {
@@ -782,6 +787,8 @@ public class GeoJson extends JsonUtil {
 			} else {
 			    matches = v.equals(value);
 			}
+			if(doNot) matches = !matches;
+			if(matches) System.err.println(v);
 			if(matchAll) {
 			    allOk = matches;
 			} else {
@@ -880,7 +887,9 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }
 	    if(arg.equals("-filter")) {
-		final List<String> props = Utils.split(args[++i],",");
+		String p = args[++i];
+		p = p.replace("\\!","!");
+		final List<String> props = Utils.split(p,",");
 		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  filter(obj,true,props);}});
 		continue;
 	    }	    
