@@ -529,6 +529,7 @@ public class GeoJson extends JsonUtil {
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray   coords2 = coords1.getJSONArray(idx1);
+		System.out.println(coords2.length());
                 List<Point> p2      = new ArrayList<Point>();
                 bounds = getBounds(coords2, bounds, p2);
                 if (pts != null) {
@@ -745,6 +746,18 @@ public class GeoJson extends JsonUtil {
 	    for(int pidx=0;pidx<props.size() && allOk && !anyOk;pidx+=2) {
 		String prop = props.get(pidx);
 		String value = props.get(pidx+1);
+		double dvalue=0;
+		String operator = null;
+		if(value.startsWith("<")) {
+		    operator="lt";
+		    dvalue = Double.parseDouble(value.substring(1));
+		} else 	if(value.startsWith(">")) {
+		    operator="gt";
+		    dvalue = Double.parseDouble(value.substring(1));
+		} else 	if(value.startsWith("=")) {
+		    operator="eq";
+		    dvalue = Double.parseDouble(value.substring(1));		    
+		}
 		boolean   isRegexp = StringUtil.containsRegExp(value);
 		if(!Utils.stringDefined(prop)) continue;
 		haveProp=true;
@@ -754,8 +767,17 @@ public class GeoJson extends JsonUtil {
 		    if (name.equalsIgnoreCase(prop)) {
 			gotName = true;
 			String v = properties.optString(names[j], "");
-			boolean matches;
-			if (isRegexp) {
+			boolean matches=false;
+			if(operator!=null) {
+			    try {
+				double d = Double.parseDouble(v);
+				if(operator.equals("lt")) matches = d<dvalue;
+				else if(operator.equals("gt")) matches = d>dvalue;
+				else matches = d==dvalue;				
+			    } catch (NumberFormatException nfe) {
+				matches=false;
+			    }
+			} else if (isRegexp) {
 			    matches = v.matches(value);
 			} else {
 			    matches = v.equals(value);
