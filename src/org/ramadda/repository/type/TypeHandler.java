@@ -3253,13 +3253,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
+    public void initializeColumns(Request request, Entry entry,
+				  NewType newType) throws Exception {
+	if(!isNew(newType)) return;
+	List<Column> columns = entry.getTypeHandler().getColumns();
+	if (columns != null) {
+	    String fileName = getStorageManager().getFileTail(entry);
+	    for(Column column: columns) {
+		column.initializeNew(request,entry,fileName);
+	    }
+	}
+    }
+
     public void initializeNewEntry(Request request, Entry entry,
                                    NewType newType)
 	throws Exception {
 
+
         if (parent != null) {
             parent.initializeNewEntry(request, entry, newType);
-        }
+        } else 	{
+	    initializeColumns(request, entry, newType);
+	}
 
 
         //Check if we're supposed to extract urls from the file

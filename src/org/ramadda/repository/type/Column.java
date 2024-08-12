@@ -52,6 +52,8 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 
 @SuppressWarnings("unchecked")
@@ -156,6 +158,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String editGroup;    
     private List oldNames;
     private String label;
+    private Pattern initPattern;
     private String searchLabel;    
     private String description;
     private String htmlTemplate;
@@ -257,7 +260,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	delimiter= XmlUtil.getAttribute(element, "delimiter",",");
 	addRawInput= XmlUtil.getAttribute(element, "addrawinput",false);
         unit = XmlUtil.getAttribute(element, ATTR_UNIT, (String) null);
-
+        String sinitPattern = XmlUtil.getAttribute(element, "initpattern",(String)null);
+	if(sinitPattern!=null) {
+	    initPattern  = Pattern.compile(sinitPattern);
+	}
         String group  = XmlUtil.getAttribute(element, "group",(String)null);
         displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
         editGroup = XmlUtil.getAttribute(element, "editgroup", group);
@@ -445,6 +451,22 @@ public class Column implements DataTypes, Constants, Cloneable {
     public TypeHandler getTypeHandler() {
 	return typeHandler;
     }
+
+    public void initializeNew(Request request, Entry entry,String fileName) throws Exception {
+	if(initPattern==null) return;
+	Matcher matcher = initPattern.matcher(fileName);
+        if (!matcher.find()) {
+	    return;
+	}
+	String v = matcher.group(1);	
+	if(v==null) return;
+	//	System.err.println("column:" + this +" init value:" + v);
+        Object[] values = entry.getTypeHandler().getEntryValues(entry);
+	setValue( entry,  values, v);
+
+    }
+
+
 
     public String getDisplayAttribute(String attr, Object v) {
         Display d = getDisplay(v);
@@ -3823,8 +3845,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             return v;
         }
     }
-
-    
 
 
 
