@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Aug  8 07:27:25 MDT 2024";
+var build_date="RAMADDA build date: Sun Aug 11 18:35:18 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5776,6 +5776,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'headerLabel',ex:''},
 	{p:'max',ex:'1000',tt:'Specify the max number of records to fetch from the server'},
 	{p:'lastRecords',ex:'1',tt:'Only get the last N records from the server'},	
+	{p:'maxRecords',tt:'only use this number of records'},
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
@@ -8111,6 +8112,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    } 
 
 
+
 	    let filterDate = this.getProperty("filterDate");
 	    if(filterDate) {
 		let date = $("#"+ this.getFilterId(ID_FILTER_DATE)).val();
@@ -8136,6 +8138,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!records) {
 		return null;
 	    }
+
+	    let maxRecords  = this.getMaxRecords();
+	    if(Utils.isDefined(maxRecords)) {
+		let tmp =[];
+		records.every((r,idx)=>{
+		    if(idx>=maxRecords) return false;
+		    tmp.push(r);
+		    return true;
+		});
+		records = tmp;
+	    }
+
 
             if (!fields) {
                 fields = this.getFields();
