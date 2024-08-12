@@ -529,7 +529,6 @@ public class GeoJson extends JsonUtil {
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray   coords2 = coords1.getJSONArray(idx1);
-		System.out.println(coords2.length());
                 List<Point> p2      = new ArrayList<Point>();
                 bounds = getBounds(coords2, bounds, p2);
                 if (pts != null) {
