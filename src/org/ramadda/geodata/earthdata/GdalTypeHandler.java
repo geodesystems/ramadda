@@ -86,6 +86,13 @@ public class GdalTypeHandler extends GenericTypeHandler {
                                         entry, tag, props);
         }
 
+	if(Utils.getProperty(props,"useThumbnail",false)) {
+	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
+	    if(tuple!=null) {
+		String imageUrl  = tuple[0];
+		return HU.image(imageUrl,"width","90%");
+	    }
+	}
 	int size= Utils.getProperty(props,"maxSize",-1);
 	if(size>=0 && entry.getResource().getFileSize()>size) {
 	    return Utils.getProperty(props,"message","");

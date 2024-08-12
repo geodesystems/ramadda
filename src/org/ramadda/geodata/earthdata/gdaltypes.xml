@@ -20,7 +20,7 @@
 {{description wikify="true"}}
 {{information showTitle="false" details="true"}}
 +center
-{{geotiffproxy maxSize="50000000" message=""}}
+{{geotiffproxy maxSize="50000000" message="" useThumbnail="true"}}
 -center
 -section
 ]]>
