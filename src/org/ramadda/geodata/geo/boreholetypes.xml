@@ -308,12 +308,15 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
   <property name="form.time.show" value="false"/>  
   <property name="form.tags.show" value="false"/>
   <property name="addinitialmetadata" value="false"/>      
-  <property name="borehole.fields" value="o_wt,al_int,si_int,p_int"/>
-  <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA" group="XRF Metadata"
-	   values="NA,1 ft,10 cm, 1m"/>
-  <column  name="xrf_current"  default="" label="Current" type="double" unit="mA" suffix="mA"/>
-  <column  name="xrf_voltage"  default="" label="Voltage" type="double" unit="kV" suffix="kV"/>
-  <column  name="scan_rate"    default="" label="Scan Rate" type="double" suffix="cm/s"/>    
+  <property name="borehole.fields" value="k_wt,fe_wt,ca_wt,si_wt"/>
+  <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="XRF Metadata" initpattern="hole_?([^_]+)_"/>
+
+  <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA" 
+	   values="NA,1 ft,10 cm, 1m" initpattern="depth_?([^_\.]+)(_|\.)"/>
+  <column  name="xrf_current"  default="" label="Current" type="double" unit="mA" suffix="mA" initpattern="current_?(\d+\.?\d*)"/>
+  <column  name="xrf_voltage"  default="" label="Voltage" type="double" unit="kV" suffix="kV"
+	   initpattern="(?i)(\d+)kV"	   />
+  <column  name="scan_rate"    default="" label="Scan Rate" type="double" suffix="cm/s" initpattern="scan_?(\d+)"/>    
   <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
 	   suffix="Comma separated list of fields, e.g., k_wt,fe_wt,ca_wt,si_wt"
 	   showinhtml="false"   candisplay="false" canlist="false"/>     
@@ -351,6 +354,7 @@ profileMode="lines" indexField="depth_start_mm"  }}
 +col-3
 {{resource  title="Download"  showIcon="true"  simple="false"  }}
 <table class="formtable">
+{{field name="hole"  row.label="Hole:" }}
 {{field name="depth_level"  row.label="Depth:" }}
 {{field name="xrf_current"  row.label="Current:" fieldSuffix="&nbsp;mA"}}
 {{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix="&nbsp;kV"}}

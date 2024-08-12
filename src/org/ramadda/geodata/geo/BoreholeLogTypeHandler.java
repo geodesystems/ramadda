@@ -45,18 +45,13 @@ public class BoreholeLogTypeHandler extends PointTypeHandler {
 	if(!isNew(newType)) return;
 
 	if(isType("type_borehole_xrf")) {
-	    File  file = entry.getFile();
-	    if(file!=null) {
-		String v = StringUtil.findPattern(file.toString(),"(?i)(\\d+)kV");
-		if(v!=null) {
-		    double voltage = Double.parseDouble(v);
-		    if(voltage==15) {
-			entry.setValue("fields_to_show","k_wt,fe_wt,ca_wt,si_wt");
-		    } else if (voltage==40) {
-			entry.setValue("fields_to_show","fe_wt,cu_wt,sr_wt,ba_wt");
-		    }
-		    entry.setValue("xrf_voltage",new Double(voltage));
-		    
+	    Double d=(Double)entry.getValue(request, "xrf_voltage");
+	    if(d!=null) {	    
+		double voltage = d;
+		if(voltage==15) {
+		    entry.setValue("fields_to_show","k_wt,fe_wt,ca_wt,si_wt");
+		} else if (voltage==40) {
+		    entry.setValue("fields_to_show","fe_wt,cu_wt,sr_wt,ba_wt");
 		}
 	    }
 	}
