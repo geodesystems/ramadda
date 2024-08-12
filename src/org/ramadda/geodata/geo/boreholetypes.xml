@@ -293,25 +293,30 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 
 
 
-<type name="type_borehole_xrf"  super="type_borehole_point" description="Borehole XRF File" 
+<type name="type_borehole_xrf"  super="type_point" description="Borehole XRF File" 
       pattern="(?i).*xrv.*\.csv"
+      newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
+      editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"      
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
   <property name="icon" value="/geo/xray.png"/>
+  <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.date.label" value="Scan Date"/>
+  <property name="form.properties.show" value="false"/>
   <property name="form.todate.show" value="false"/>
+  <property name="form.url.show" value="false"/>  
   <property name="form.resource.extra.show" value="false"/>  
   <property name="form.time.show" value="false"/>  
   <property name="form.tags.show" value="false"/>
   <property name="addinitialmetadata" value="false"/>      
   <property name="borehole.fields" value="o_wt,al_int,si_int,p_int"/>
-
-
-
-  <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA"
+  <column  name="depth_level"  label="Depth Level" type="enumerationplus" default="NA" group="XRF Metadata"
 	   values="NA,1 ft,10 cm, 1m"/>
-  <column  name="xrf_current"  default="NaN" label="Current" type="double" unit="mA" suffix="mA"/>
-  <column  name="xrf_voltage"  default="NaN" label="Voltage" type="double" unit="kV" suffix="kV"/>
-  <column  name="test_scan_rate"  default="NA" label="Scan Rate" type="enumerationplus" values="NA,1 cm/s"/>    
+  <column  name="xrf_current"  default="" label="Current" type="double" unit="mA" suffix="mA"/>
+  <column  name="xrf_voltage"  default="" label="Voltage" type="double" unit="kV" suffix="kV"/>
+  <column  name="scan_rate"    default="" label="Scan Rate" type="double" suffix="cm/s"/>    
+  <column  name="fields_to_show"  label="Fields to show" type="string"  cansearch="false" group="Display"
+	   suffix="Comma separated list of fields, e.g., k_wt,fe_wt,ca_wt,si_wt"
+	   showinhtml="false"   candisplay="false" canlist="false"/>     
 
 <property name="record.properties">
 xccsvcommands1=-start,(?i)depth_tab_,-delimiter,tab&gt;space,-trimline,-unitrow,-change,0-10,-999.*,NaN
@@ -327,14 +332,14 @@ profileMode="lines" indexField=".*depth.*"  }}
 
 <wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
    <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField=".*depth.*"  }}]]></wikimacro>
+	    profileMode="lines" indexField=".*depth.*"  }}]]></wikimacro>
 
 <wiki>
 <![CDATA[
 +section title="Borehole XRF: {{name}}"
 :navtop 
 +row
-+col-8
++col-9
 {{property max="10000"}}
 {{group}}
 {{description wikify=true}}
@@ -343,13 +348,13 @@ profileMode="lines" indexField=".*depth.*"  }}]]></wikimacro>
 {{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
 profileMode="lines" indexField="depth_start_mm"  }}         
 -col
-+col-4
++col-3
 {{resource  title="Download"  showIcon="true"  simple="false"  }}
 <table class="formtable">
 {{field name="depth_level"  row.label="Depth:" }}
 {{field name="xrf_current"  row.label="Current:" fieldSuffix="&nbsp;mA"}}
 {{field name="xrf_voltage"  row.label="Voltage:" fieldSuffix="&nbsp;kV"}}
-{{field name="test_scan_rate"  row.label="Scan Rate:"}}
+{{field name="scan_rate"  row.label="Scan Rate:"}}
 </table>
 :vspace 1em
 {{properties  message=""  metadata.types="!tag:internal"
@@ -361,10 +366,7 @@ inherited="false"  }}
 -col
 -row
 :heading Table
-+hbox                                                                                                              
-{{group max="1000" noDataMessage="" requestFieldsShow=false requestFields="skip,limit" requestFieldsDefault="true"}}     {{display_filter max="1000"  noDataMessage="No data available" loadingMessage="" requestFieldsShow=true}}                      
--hbox                                                                                                              
-{{display_table height="70vh"  maxColumns=50 max="1000"}} 
+{{display_table height="70vh"  maxColumns=50 maxRecords=500}} 
 :vspace 1em
 ----
 :vspace 1em
