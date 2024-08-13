@@ -5,12 +5,12 @@
 
 
 function RepositoryMap(mapId, params) {
-    ramaddaMapAdd(this);
-
     let _this = this;
     if (!params) params = {};
     this.params = params;
     this.mapId = mapId || "map";
+
+    ramaddaMapAdd(this);
 
     [ARG_MAPCENTER,ARG_ZOOMLEVEL].forEach(prop=>{
 	if(Utils.stringDefined(HU.getUrlArgument(prop))) {
@@ -1375,6 +1375,7 @@ RepositoryMap.prototype = {
         this.checkFeatureVisible(feature, true);
     },
     handleEntrySelect: function(id, name, type) {
+	id = id.replace(/_/g,'-');
         if (type != "geo_kml" && type != "geo_json" && type != "geo_shapefile") return null;
         var layer;
         if (type == "geo_kml") {
@@ -1384,7 +1385,8 @@ RepositoryMap.prototype = {
             var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
             layer = this.addGeoJsonLayer(name, url, true, null, null, null, null, true);
         } else {
-            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
+            let url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
+	    console.log(url);
             layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
         }
         return layer;
