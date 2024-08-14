@@ -4122,7 +4122,7 @@ public class WikiManager extends RepositoryManager
             for (Entry child : children) {
 		String text = "";
 		if (showSnippet || showDescription) {
-		    String snippet = showDescription? child.getDescription():getSnippet(request, entry, false,null);
+		    String snippet = showDescription? child.getDescription():getSnippet(request, child, false,null);
 		    if (stringDefined(snippet)) {
 			text = wikifyEntry(request, child, snippet, false, 
 					   wikiUtil.getNotTags());
@@ -6095,6 +6095,7 @@ public class WikiManager extends RepositoryManager
             if (Utils.stringDefined(snippet)) {
                 snippet = wikifyEntry(request, entry, snippet, false, 
                                       wikiUtil.getNotTags());
+
                 if (showSnippet) {
                     HU.div(card, snippet,"");
                 } else if (showSnippetHover) {
