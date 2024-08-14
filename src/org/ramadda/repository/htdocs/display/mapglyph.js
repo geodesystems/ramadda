@@ -3916,10 +3916,9 @@ MapGlyph.prototype = {
 			return {value:sample.value,label:label}
 		    });
 
-	    
-
+		    let size = info.filterSize();
 		    let line=label+":<br>" +
-			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
+			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
 
 
 		    add(info,'enums',line);
@@ -4006,7 +4005,11 @@ MapGlyph.prototype = {
 
 	    this.zoomonchangeid = HU.getUniqueId("andzoom");
 
-	    widgets = HU.div([ATTR_STYLE,'padding-bottom:5px;max-height:200px;overflow-y:auto;'], widgets);
+	    let maxHeight=this.getProperty('filters.height');
+	    widgets = HU.div([ATTR_STYLE,
+			      HU.css('padding-bottom','5px',
+				     'max-height',maxHeight??'200px',
+				     'overflow-y','auto')], widgets);
 	    let filtersHeader ='';
 	    if(this.getProperty('filter.zoomonchange.show',true)) {
 		filtersHeader = HU.checkbox(this.zoomonchangeid,
@@ -5948,6 +5951,10 @@ FeatureInfo.prototype= {
 	let show =   this.getProperty('filter.show',dflt);
 	return show;
     },
+    filterSize: function() {
+	let dflt = this.mapGlyph.getProperty('filter.size');
+	return   this.getProperty('filter.size',dflt);
+    },    
     showTable: function() {
 	return this.getProperty('table.show',this.mapGlyph.getProperty('table.show',this.show()));
     },
