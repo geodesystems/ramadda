@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 13 18:12:35 MDT 2024";
+var build_date="RAMADDA build date: Tue Aug 13 21:07:29 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -50869,6 +50869,11 @@ var ID_DATAICON_SHOWING = 'dataIconShowing';
 var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
 var ID_LEGEND_TEXT = 'legendText';
 
+var ID_MAPFILTERS = 'mapfilters';
+var ID_MAPFILTERS_OUTER = 'mapfiltersouter';
+var ID_MAPLEGEND = 'maplegend';
+
+
 function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     if(!type) {
 	console.log("no type given for MapGlyph");
@@ -50946,8 +50951,7 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
 }
 
 
-var ID_MAPFILTERS = 'mapfilters';
-var ID_MAPLEGEND = 'maplegend';
+
 
 
 MapGlyph.prototype = {
@@ -50970,7 +50974,7 @@ MapGlyph.prototype = {
 	    let info = _this.getFeatureInfo(id);
 	    if(!info) return;
 	    let html = HU.b(info.getLabel());
-	    let items =   ['filter.show=true','label=','filter.first=true','type=enum','filter.top=true']
+	    let items =   ['filter.show=true','label=','filter.first=true','type=enum','filter.top=true','filter.showInMap=true']
 	    if(info.isNumeric()) {
 		items.push('format.decimals=0',
 			   'filter.min=0',
@@ -52543,14 +52547,15 @@ MapGlyph.prototype = {
 	let args = {
 	    forLegend:false,
 	    addDecorator:false,
-	    addIcon:true
+	    addIcon:true,
+	    simple:false
 	}
 	$.extend(args,opts);
 	let name = this.getName();
 	let label;
 	let theLabel;
 	if(Utils.stringDefined(name)) {
-	    if(!args.forLegend)
+	    if(!args.forLegend && !args.simple)
 		theLabel= this.getType()+': '+name;
 	    else
 		theLabel = name;
@@ -52560,6 +52565,10 @@ MapGlyph.prototype = {
 	} else {
 	    theLabel =  this.getType();
 	}
+	if(args.simple) {
+	    return theLabel;
+	}
+
 	label = theLabel;
 	let url = null;
 	let glyphType = this.getGlyphType();
@@ -52751,6 +52760,14 @@ MapGlyph.prototype = {
 	this.applyChildren(mapGlyph=>{level = mapGlyph.setLayerLevel(level);});
 	return level;
     },
+    findFilter:function(clazz) {
+	if(this.getProperty('filter.showInMap',false)) {
+	    return this.jq(ID_MAPFILTERS).find(clazz);
+	}
+	return this.findInLegend(clazz);
+    },
+
+
     findInLegend:function(clazz) {
 	if(clazz.startsWith('imdv-'))  clazz='.'+ clazz;
 	let sel = '#' + this.domId(ID_GLYPH_LEGEND) +' '+clazz;
@@ -53115,7 +53132,16 @@ MapGlyph.prototype = {
 	    body+=colorTableLegend;
 
 	//Put the placeholder here for map filters
-	body+=HU.div([ATTR_ID,this.domId(ID_MAPFILTERS)]);
+	if(this.getProperty('filter.showInMap',false)) {
+	    this.jq(ID_MAPFILTERS_OUTER).remove();
+	    let label = HU.b(this.getLabel({simple:true}));
+	    let inMap=HU.div([ATTR_ID,this.domId(ID_MAPFILTERS_OUTER),ATTR_STYLE,HU.css('background','#fff','position','absolute','top','10px','left','50px','padding','5px'),ATTR_CLASS,'ramadda-popup'],
+			     label+HU.div([ATTR_ID,this.domId(ID_MAPFILTERS)]));
+	    this.display.jq(ID_MAP_CONTAINER).append(inMap);
+	    this.jq(ID_MAPFILTERS_OUTER).draggable();
+	} else {
+	    body+=HU.div([ATTR_ID,this.domId(ID_MAPFILTERS)]);
+	}
 
 	if(this.type==GLYPH_LABEL && this.style.label) {
 	    item(this.style.label.replace(/\"/g,"\\"));
@@ -54867,7 +54893,7 @@ MapGlyph.prototype = {
 		_this.setZoomOnChange($(this).is(':checked'));
 	    });
 
-	    this.findInLegend('.imdv-legend-clearall').click(()=>{
+	    this.findFilter('.imdv-legend-clearall').click(()=>{
 		this.display.featureChanged();
 		this.attrs.featureFilters = {};
 		this.applyMapStyle();
@@ -54877,7 +54903,7 @@ MapGlyph.prototype = {
 		}
 	    });
     
-	    this.findInLegend(CLASS_FILTER_STRING).keypress(function(event) {
+	    this.findFilter(CLASS_FILTER_STRING).keypress(function(event) {
 		let keycode = (event.keyCode ? event.keyCode : event.which);
                 if (keycode == 13) {
 		    let key = $(this).attr('filter-property');
@@ -54888,7 +54914,7 @@ MapGlyph.prototype = {
 		    update();
 		}
 	    });
-	    this.findInLegend('.imdv-filter-enum').change(function(event) {
+	    this.findFilter('.imdv-filter-enum').change(function(event) {
 		let key = $(this).attr('filter-property');
 		let filter = filters[key]??{};
 		filter.property = key;
@@ -54899,7 +54925,9 @@ MapGlyph.prototype = {
 
 	    let sliderMap = {};
 	    
-	    this.findInLegend(CLASS_FILTER_SLIDER).each(function() {
+	    console.log('filters');
+	    
+	    this.findFilter(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
 		let featureInfo = _this.getFeatureInfo(theFeatureId);
 		let onSlide = function( event, ui, force) {
@@ -54960,7 +54988,7 @@ MapGlyph.prototype = {
 		$(this).slider(args);		
 	    });
 
-	    this.findInLegend(CLASS_FILTER_PLAY).click(function() {
+	    this.findFilter(CLASS_FILTER_PLAY).click(function() {
 		let playing = $(this).attr('playing');
 		let info = _this.filterInfo[$(this).attr('feature-id')];
 		if(!info) return;
