@@ -635,7 +635,6 @@ public class GeoJson extends JsonUtil {
 	    JSONObject feature = features.getJSONObject(idx1);
 	    JSONObject properties= feature.getJSONObject("properties");
 	    String id = properties.getString(prop);
-	    System.err.println(id);
 	    id = id.replaceAll(".*US","");
 	    StringBuilder sb = new StringBuilder("{\n\"type\": \"FeatureCollection\",\"features\": [");
 	    sb.append(feature.toString());
@@ -787,7 +786,6 @@ public class GeoJson extends JsonUtil {
 			    matches = v.equals(value);
 			}
 			if(doNot) matches = !matches;
-			if(matches) System.err.println(v);
 			if(matchAll) {
 			    allOk = matches;
 			} else {
