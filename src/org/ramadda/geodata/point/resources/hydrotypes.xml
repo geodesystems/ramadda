@@ -129,7 +129,8 @@ You just need to specify the Site Number. The name and other metadata will be lo
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="form.altitude.show" value="true"/>
-     <property name="form.date.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>     
      <property name="form.file.show" value="true"/>
  <property name="record.properties">
 picky=false
@@ -151,6 +152,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
      <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>
      <column  name="period"  label="Period" type="int"  default="30" suffix="Number of days"/>
+     <column  name="use_date_range"  label="Use date range" type="boolean"  default="false" suffix="If set use the entry date range"/>     
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
      <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
@@ -165,7 +167,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 :rem If you use this as the description then remove the description tag below
 {{description wikify=true}}
 :heading Charts
-{{property max=10000}}
+{{property max=30000}}
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
 {{display type=linechart showMenu=true fields=discharge}}
@@ -173,7 +175,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 :vspace 0.5em
 :heading Table
 {{display_download showMenu=false}}
-{{display_table showMenu=false}}
+{{display_table showMenu=false maxRows="5000"}}
 :vspace 1em
 ----
 :heading Information

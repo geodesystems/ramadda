@@ -11,6 +11,7 @@ import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
+
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -100,12 +101,14 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    
     }
 
-    private static final String URL_TEMPLATE_FLOWxxn =
+    private static final String OLD_URL_TEMPLATE_FLOW =
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
 
     private static final String URL_TEMPLATE_FLOW =
 	"https://nwis.waterdata.usgs.gov/usa/nwis/uv/?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
 
+    private static final String URL_TEMPLATE_FLOW_DATE =
+	"https://waterservices.usgs.gov/nwis/iv/?format=rdb&site=${station_id}&startDT=${startDate}&endDT=${endDate}&parameterCd=00060,00065";
 
     private static final String URL_TEMPLATE_PEAK =
 	"https://nwis.waterdata.usgs.gov/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";
@@ -147,12 +150,25 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    return entry.getResource().getPath();
 	}
         String url = URL_TEMPLATE_FLOW;
-	if(entry.getTypeHandler().getType().equals("type_usgs_gauge_peak")) {
+	if(entry.getTypeHandler().isType("type_usgs_gauge_peak")) {
 	    url = URL_TEMPLATE_PEAK;
 	} else {
-	    url = url.replace("${period}", ("" + entry.getValue(request,"period")).trim());
+	    if(Misc.equals(entry.getStringValue(request,"use_date_range",null),"true")) {
+		url =  URL_TEMPLATE_FLOW_DATE;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date start = DateHandler.checkDate(new Date(entry.getStartDate()));
+		Date end = DateHandler.checkDate(new Date(entry.getEndDate()));		
+		if(start==null || end==null) {
+		    throw new IllegalStateException("The entry: " + entry +" does not have a date range set");
+		}
+		url = url.replace("${startDate}", sdf.format(start));
+		url = url.replace("${endDate}", sdf.format(end));		
+	    } else {
+		url = url.replace("${period}", ("" + entry.getValue(request,"period")).trim());
+	    }
 	}
 	url = url.replace("${station_id}",("" + entry.getValue(request,"station_id")).trim());
+	//	System.err.println("Date URL: "+ url);
         return url;
     }
 
