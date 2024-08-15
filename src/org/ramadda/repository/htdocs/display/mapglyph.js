@@ -3168,7 +3168,72 @@ MapGlyph.prototype = {
 	    });
 	});
     },
+    groupMakeGeoJson:function() {
+	let mergePts = [];
+	let allPts = [];	
+	let names =[];
+	let separateFeatures = !this.jq('mergepolygons').is(':checked');
+	this.applyChildren(child=>{
+	    let geometry=child.getGeometry();
+	    if(!geometry) return;
+	    let pts = this.display.getLatLonPoints(geometry);
+	    if(pts==null) return null;
+	    mergePts = Utils.mergeLists(mergePts,pts);
+	    allPts.push(pts);
+	    names.push(child.name);
+	});
+	let features = [];
+	if(!separateFeatures) {
+	    let coords =mergePts.map(p=>{
+		return [p.x,p.y]
+	    });
+	    let name='Polygon';
+	    features.push({
+		type: "Feature",
+		properties: {
+		    name: name
+		},
+		geometry: {
+		    type: "Polygon",
+		    coordinates: [coords]
+		}});
+	} else {
+	    allPts.forEach((pts,idx)=>{
+		let coords =pts.map(p=>{
+		    return [p.x,p.y]
+		});
+		let name=names[idx]??'Polygon ' + idx;
+		features.push({
+		    type: "Feature",
+		    properties: {
+			name: name
+		    },
+		    geometry: {
+			type: coords.length==1?'Point':'LineString',
+			coordinates: coords.length==1?coords[0]:coords
+		    }});
+	    });
+	}
+
+
+	let json = {
+	    type: "FeatureCollection",
+	    "features": features
+	}
+	let file = Utils.makeID(this.name)+'.geojson';
+	Utils.makeDownloadFile(file,JSON.stringify(json));
+
+
+    },
     initPropertiesComponent: function(dialog) {
+
+	if (this.isGroup()) {
+	    this.jq('makegeojson').button().click(()=>{
+		this.groupMakeGeoJson();
+	    });
+	}
+
+
 	let props = [
 	    [ID_DATAICON_FIELDS,  DEFAULT_DATAICON_FIELDS],
 	    [ID_DATAICON_INIT_FIELD,DEFAULT_DATAICON_FIELD],
@@ -3513,6 +3578,15 @@ MapGlyph.prototype = {
 	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
+
+	if(this.isGroup()) {
+	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
+	    html+=SPACE;
+	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
+	    content.push({header:'Grouping',contents:html});
+	}
+
+
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.getExampleMapLayer()?.features[0].attributes ?? {};
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();
@@ -3686,6 +3760,28 @@ MapGlyph.prototype = {
 
 	ex = HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], ex);
 	content.push({header:'Sample Values',contents:ex});
+
+	let features= this.getMapFeatures();
+	if(features && features.length>0) {
+	    let sizes = '';
+	    features.forEach((feature,idx)=>{
+		if(idx>1000) return;
+		let distances = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true);
+		if(!distances) return;
+		let name=null;
+		if(feature.attributes) {
+		    name = feature.attributes.name;
+		}
+		if(!name)name = 'Polygon ' + idx;
+		distances = distances.replace(/<br>/g,'&nbsp;');
+		sizes+=HU.div([],HU.b(name)+': '+distances);
+	    });
+	    sizes=HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], sizes);
+	    content.push({header:'Sizes',contents:sizes});
+	}
+
+
+
     },
     getStyleGroups: function() {
 	if(!this.attrs.styleGroups) {

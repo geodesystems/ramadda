@@ -983,17 +983,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	getLatLonPoints:function(geometry) {
 	    let components = geometry.components;
-	    if(components==null) return null;
+	    if(components==null) {
+		if(geometry.x && geometry.y) {
+		    let pt = MapUtils.createPoint(geometry.x,geometry.y);
+		    pt = this.getMap().transformProjPoint(pt);
+		    return [pt];
+		}
+		return null;
+	    }
+	    console.dir(components)
 	    if(components.length) {
 		if(components[0].components) components = components[0].components;
 	    }
 	    let pts = components.map(pt=>{
+		console.log(pt);
 		return  this.getMap().transformProjPoint(pt)
 	    });
 	    return pts;
 	},
 
-	getDistances:function(geometry,glyphType,justDistance) {
+	getDistances:function(geometry,glyphType,justDistance,forceAcres) {
 	    if(!geometry) return null;
 	    let pts = this.getLatLonPoints(geometry);
 	    if(pts==null) return null;
@@ -1061,6 +1070,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    area = area/MapUtils.squareFeetInASquareMile;
 		    msg+=   '<br>' +
 			'Area: ' + Utils.formatNumber(area) +' sq ' + unit;
+		    if(forceAcres) {
+			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
+		    }
 		} else {
 		    msg+=   '<br>' +
 			'Area: ' + Utils.formatNumber(acres) +' acres';
