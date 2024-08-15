@@ -3,14 +3,7 @@
 :navleft
 
 
-
-+callout-info
-There are lots of ways  of configuring your RAMADDA server.
-Along with these configuration options there are a number of other
-services that can be configured. See <a href=services.html>here</a> for more information.
--callout
-
-<a name="cdn"></a>
+a<a name="cdn"></a>
 :heading Using a CDN
 By default RAMADDA serves up all of its HTML resources (javascript, css, images etc) 
 from its own server. However, for performance, RAMADDA can be configured to use
@@ -77,6 +70,69 @@ You can change the contact with the following property:
 +pre addCopy=true
 ramadda.security.contact=mailto:youremail@foo.com
 -pre
+
++callout-info
+There are lots of ways  of configuring your RAMADDA server.
+Along with these configuration options there are a number of other
+services that can be configured. See <a href=services.html>here</a> for more information.
+-callout
+
+<a name="zoomable"></a>
+:heading Zoomable Images
+The Zoomable Image entry type uses an external script, magick-slicer.sh,
+that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
+
++pre addCopy=true
+ramadda.image.slicer=/path/to/magick-slicer.sh
+-pre
+
+
+<a name="tesseract"></a>
+:heading Tesseract OCR
+When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
+This text can then be used for searching. To configure this first install
+<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
+Once installed add the below property to your repository.properties file:
+
++pre addCopy=true
+ramadda.tesseract=/path/to/tesseract
+-pre
+
+
+<a name="pdf"></a>
+:heading Generating thumbnails of PDFs
+Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
+package to automatically generate a thumbnail image of the the page of a PDF file by
+setting the property:
+
++pre addCopy=true
+service.gs=/path/to/bin/gs
+-pre
+
+
+
+<a name="jupyter"></a>
+:heading Rendering Jupyter Notebooks
+RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
+of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
+by setting the following property value:
++pre addCopy=true
+ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
+-pre
+
+
+:heading GDAL services
+RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this installd GDAL and set the following properties:
+<pre>
+service.gdal=/usr/local/bin
+service.gdal.gdal_translate=/usr/local/bin/gdal_translate
+service.gdal.gdalinfo=/usr/local/bin/gdalinfo
+service.gdal.gdalwarp=/usr/local/bin/gdalwarp
+service.gdal.gdaldem=/usr/local/bin/gdaldem
+service.gdal.ogr2ogr=/usr/local/bin/ogr2ogr
+</pre>
+
+
 
 :heading Disabling remote search
 RAMADDA has the ability to perform remote searches on a number of external data repositories, e.g., CKAN, Socrata, Federal Reserve, REDDIT, etc. This can be disabled by setting the property
@@ -155,26 +211,6 @@ to a file:<br>
 
 
 
-<a name="zoomable"></a>
-:heading Zoomable Images
-The Zoomable Image entry type uses an external script, magick-slicer.sh,
-that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.image.slicer=/path/to/magick-slicer.sh
--pre
-
-
-<a name="tesseract"></a>
-:heading Tesseract OCR
-When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
-This text can then be used for searching. To configure this first install
-<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
-Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.tesseract=/path/to/tesseract
--pre
 
 :heading Search Providers
 RAMADDA has a number of external search providers that are not RAMADDA  servers, e.g. Bureau of Labor Statistics, FRED, etc
@@ -190,27 +226,6 @@ See <a href=llm.html>llm.html</a>
 :heading PurpleAir
 See <a href=/repository/point/purpleair_index.html>purpleair_index.html</a>
 
-
-<a name="pdf"></a>
-:heading Generating thumbnails of PDFs
-Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
-package to automatically generate a thumbnail image of the the page of a PDF file by
-setting the property:
-
-+pre addCopy=true
-service.gs=/path/to/bin/gs
--pre
-
-
-
-<a name="jupyter"></a>
-:heading Rendering Jupyter Notebooks
-RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
-of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
-by setting the following property value:
-+pre addCopy=true
-ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
--pre
 
 :heading NEON Data
 You can add NEON data entries but if you want to have a higher rate limit you should obtain an API key from NEON. Go and sign in to <a href=https://data.neonscience.org/home>NEON</a>. Once signed in create an API key and add it as a RAMADDA property:
