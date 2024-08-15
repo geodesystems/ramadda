@@ -4094,7 +4094,6 @@ MapGlyph.prototype = {
 
 	    let sliderMap = {};
 	    
-	    console.log('filters');
 	    
 	    this.findFilter(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
