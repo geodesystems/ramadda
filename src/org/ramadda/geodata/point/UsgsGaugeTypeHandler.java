@@ -100,8 +100,12 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    
     }
 
-    private static final String URL_TEMPLATE_FLOW =
+    private static final String URL_TEMPLATE_FLOWxxn =
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
+
+    private static final String URL_TEMPLATE_FLOW =
+	"https://nwis.waterdata.usgs.gov/usa/nwis/uv/?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
+
 
     private static final String URL_TEMPLATE_PEAK =
 	"https://nwis.waterdata.usgs.gov/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";

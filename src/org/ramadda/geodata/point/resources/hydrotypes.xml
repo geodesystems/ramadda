@@ -150,7 +150,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 	      addbulkupload="true"
 	      suffix="Find a site at the &lt;a href=https://maps.waterdata.usgs.gov/mapper/index.html target=_map&gt;USGS&lt;/a&gt; and copy its Site Number"/>
      <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>
-     <column  name="period"  label="Period" type="int"  default="30"/>
+     <column  name="period"  label="Period" type="int"  default="30" suffix="Number of days"/>
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
      <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
@@ -165,6 +165,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-print
 :rem If you use this as the description then remove the description tag below
 {{description wikify=true}}
 :heading Charts
+{{property max=10000}}
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
 {{display type=linechart showMenu=true fields=discharge}}
