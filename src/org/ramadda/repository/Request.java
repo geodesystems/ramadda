@@ -280,6 +280,7 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
+	    this.count = COUNTER++;
             that.cloned             = true;
             that.pageStyle          = null;
             that.canStreamResult    = false;
@@ -2009,6 +2010,12 @@ public class Request implements Constants, Cloneable {
     }
 
 
+
+    public boolean onlyHasEntryId() {
+	if(parameters==null) return true;
+	if(parameters.size()>1) return false;
+	return exists(ARG_ENTRYID);
+    }
 
     /**
      * _more_
