@@ -4,7 +4,7 @@
 ##Get the 9.4.x release as 10.x+ uses jvm v11
 ##Extract the jar cd into the dir
 ##cd jetty-...
-##tclsh <path>/unjarjetty.jar
+##tclsh <path>/unjarjetty.tcl
 
 ##Read the generated classpath
 puts stderr "making jars.txt"
