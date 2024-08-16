@@ -3405,15 +3405,15 @@ public class TypeHandler extends RepositoryManager {
                         service.evaluate(getRepository().getAdminRequest(),null,
                                          serviceInput, null);
 		    if(output==null) {
-			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+
+			getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
 								   " for entry:" + entry.getName() +" id:" + entry.getId() +
 								   " Error: no service output"); 
 			continue;
 		    }
                     if ( !output.isOk()) {
-			getSessionManager().addSessionErrorMessage(request, "Error processing service:" + service.getLabel()+
-								   " for entry:" + entry.getName() +" id:" + entry.getId() +
-								   " Error: service output is not ok"); 
+			getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
+							      " for entry:" + entry.getName() +" id:" + entry.getId() +
+							      " Error: service output is not ok"); 
                         continue;
                     }
 
@@ -3423,7 +3423,7 @@ public class TypeHandler extends RepositoryManager {
                     entry.getTypeHandler().handleServiceResults(request,
 								entry, service, output);
                 } catch (Exception exc) {
-		    getSessionManager().addSessionErrorMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
+		    getSessionManager().addSessionMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
 
                     getLogManager().logError(
 					     "ERROR: TypeHandler calling service:" + service.getLabel()
@@ -4623,9 +4623,9 @@ public class TypeHandler extends RepositoryManager {
 	    entry.setResource(new Resource(file,Resource.TYPE_STOREDFILE));
 	} catch(Exception exc) {
 	    String entryUrl = getEntryManager().getEntryUrl(request,entry);
-	    getSessionManager().addSessionErrorMessage(request,"Error downloading file:" +
-						       HU.href(entryUrl,fileName,
-							       HU.attrs("target","_entry")) +"<br>&nbsp;&nbsp;" +exc.getMessage());
+	    getSessionManager().addSessionMessage(request,"Error downloading file:" +
+						  HU.href(entryUrl,fileName,
+							  HU.attrs("target","_entry")) +"<br>&nbsp;&nbsp;" +exc.getMessage());
 	    return false;
 	}
 	return true;

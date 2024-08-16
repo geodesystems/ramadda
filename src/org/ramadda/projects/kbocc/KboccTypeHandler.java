@@ -75,7 +75,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 	if(isHydro) {
 	    entry.setValue("datayear",dataYear);
 	    if(year!=null && !year.equals(dataYear)) {
-		getSessionManager().addSessionErrorMessage(request,"Warning: "  + entry.getName() +" Year in filename does not match year in data " + year   +" " + dataYear);
+		getSessionManager().addSessionMessage(request,"Warning: "  + entry.getName() +" Year in filename does not match year in data " + year   +" " + dataYear);
 	    }
 	    String inst = StringUtil.findPattern(fileName,".*\\d\\d\\d\\d_(\\d\\d)\\..*");
 	    if(inst!=null) {
@@ -133,7 +133,7 @@ public class KboccTypeHandler extends PointTypeHandler {
 	    
 	} else {
 	    String msg = "Could not find site info for file:" + fileName;
-	    getSessionManager().addSessionErrorMessage(request,msg);
+	    getSessionManager().addSessionMessage(request,msg);
 	    System.err.println("KBOCC:" + msg);
 	}
 	

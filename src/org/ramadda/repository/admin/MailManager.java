@@ -133,17 +133,17 @@ public class MailManager extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
 	if(!isEmailEnabled()) {
-	    getSessionManager().addSessionErrorMessage(request,"Email is not enabled");
+	    getSessionManager().addSessionMessage(request,"Email is not enabled");
 	    return;
 	}
 
         String smtpUser = getSmtpUser();
         String smtpPassword = getSmtpPassword();
 	if(!stringDefined(smtpUser)) {
-	    getSessionManager().addSessionErrorMessage(request,"No ramadda.admin.smtp.user property defined");
+	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.user property defined");
 	}
 	if(!stringDefined(smtpPassword)) {
-	    getSessionManager().addSessionErrorMessage(request,"No ramadda.admin.smtp.password property defined");
+	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.password property defined");
 	}	
 
 
@@ -154,9 +154,9 @@ public class MailManager extends RepositoryManager {
 	    String msg = request.getString("mailtest_message","");	    	    
 	    try {
 		sendEmail(to, subject, msg,false);
-		getSessionManager().addSessionErrorMessage(request,"Test email sent");
+		getSessionManager().addSessionMessage(request,"Test email sent");
 	    } catch(Exception exc) {
-		getSessionManager().addSessionErrorMessage(request,"Error sending test email: " + exc.getMessage());
+		getSessionManager().addSessionMessage(request,"Error sending test email: " + exc.getMessage());
 	    }
 	}
 

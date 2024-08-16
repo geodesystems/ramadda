@@ -100,7 +100,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    }
 	}
 	if(vsn==null) {
-	    getSessionManager().addSessionErrorMessage(request,"Could not find node:" + nodeId + " from: " + url);
+	    getSessionManager().addSessionMessage(request,"Could not find node:" + nodeId + " from: " + url);
 	    return;
 	}
 	if(!stringDefined(entry.getName())) entry.setName(nodeId +" - "+ vsn.getString("address"));

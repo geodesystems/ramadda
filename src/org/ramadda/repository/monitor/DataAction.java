@@ -232,7 +232,7 @@ public class DataAction extends MonitorAction {
 
     public void testModeMessage(String msg) {
 	if(testMode && currentRequest!=null) {
-	    monitor.getRepository().getSessionManager().addSessionErrorMessage(currentRequest,
+	    monitor.getRepository().getSessionManager().addSessionMessage(currentRequest,
 									       msg);
 	}
     }
@@ -379,7 +379,7 @@ public class DataAction extends MonitorAction {
 	    } catch(Throwable thr) {
 		thr = LogUtil.getInnerException(thr);
 		monitor.setLastError("Error running test: " + thr);
-		monitor.getRepository().getSessionManager().addSessionErrorMessage(request,
+		monitor.getRepository().getSessionManager().addSessionMessage(request,
 										   "Error running test: " + thr);
 		
 	    }

@@ -602,7 +602,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			entryChanged |= getLLMManager().applyEntryExtract(request, entry, llmCorpus);
 		    } catch(Throwable thr) {
 			//log the error and carry on
-			getSessionManager().addSessionErrorMessage(request,
+			getSessionManager().addSessionMessage(request,
 								   
 								   "An error occurred doing the LLM extraction for the entry: " + entry.getName()+
 								   "<br><b>Error</b>: " + thr.getMessage());
@@ -767,6 +767,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) {
 	    //Don't do this since the max size should be capped by tika below
+	    getSessionManager().addSessionMessage(request,"Document to big to index");
+
 	    if(debugCorpus)System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
 	    //	    return null;
 	}
@@ -2881,7 +2883,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 			}
 		    } catch (Exception exc) {
 			logException("Error doing search:" + provider, exc);
-			getSessionManager().addSessionErrorMessage(request,"Error doing search at:" + provider+"<br>Error:" + exc.getMessage());
+			getSessionManager().addSessionMessage(request,"Error doing search at:" + provider+"<br>Error:" + exc.getMessage());
 
 		    } finally {
 			if (runnableCnt != null) {

@@ -13,11 +13,13 @@
 
 
   <type name="type_documentation"  description="Documentation"  childtypes="type_documentation"
-	priority="2"
-	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"
+	isgroup="true"
+	priority="3"
+	handler="org.ramadda.repository.type.GenericTypeHandler"
+	xhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"
 	help="A collection of documentation pages"	>
     <property name="form.description.iswiki" value="true"/>
-     <property name="icon" value="/icons/book-solid.png"/>
+    <property name="icon" value="/icons/book-solid.png"/>
 <wiki>
 <![CDATA[
 <link rel='stylesheet' type='text/css' href='{{root}}/userguide.css'>
@@ -57,7 +59,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 </type>
 
 
-  <type name="homepage"  description="Home Page" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+<type name="homepage"  description="Home Page"
+      handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
      <property name="icon" value="/icons/homepage.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.resource.show" value="false"/>
@@ -65,7 +68,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
    </type>
 
 
-  <type name="type_virtual"  description="Virtual Group" handler="org.ramadda.repository.type.VirtualTypeHandler" priority="2"
+   <type name="type_virtual"  description="Virtual Group"
+	 handler="org.ramadda.repository.type.VirtualTypeHandler" priority="2"
 	editfields="name,entry_ids,_default"
 >
      <property name="icon" value="/icons/chart_organisation.png"/>
@@ -81,7 +85,8 @@ message="" prefix="----_nl_:h3 Pages" showIcon=false details=false sort=entryord
 
 
 
- <type name="localfiles"  description="Server Side Files" handler="org.ramadda.repository.type.LocalFileTypeHandler"
+ <type name="localfiles"  description="Server Side Files"
+       handler="org.ramadda.repository.type.LocalFileTypeHandler"
 priority="2"       >
      <property name="icon" value="/icons/servers.png"/>
      <property name="form.resource.show" value="false"/>
@@ -122,7 +127,8 @@ priority="2"       >
 
 
 
-  <type name="ftp"  description="Remote FTP File View" handler="org.ramadda.repository.type.FtpTypeHandler">
+ <type name="ftp"  description="Remote FTP File View"
+       handler="org.ramadda.repository.type.FtpTypeHandler">
      <property name="icon" value="/icons/server_go.png"/>
 
 
@@ -237,6 +243,7 @@ priority="2"       >
 
 
 <type name="type_document_collection"  isgroup="true" description="Document Collection"
+      priority="2"
       handler="org.ramadda.repository.type.GenericTypeHandler" category="Documents"
       help="A collection of documents"      >
      <property name="form.ark.show" value="true"/>    

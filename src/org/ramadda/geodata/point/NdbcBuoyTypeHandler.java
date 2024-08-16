@@ -103,7 +103,7 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	    if(name!=null && !stringDefined(entry.getName())) entry.setName(name);
 	} catch(Exception exc) {
 	    getLogManager().logError("Error reading buoy metadata for id:" + id +" url:" + url,exc);
-	    getSessionManager().addSessionErrorMessage(request,"Error reading buoy metadata for station:" +  id +"<br>Url:" + url +
+	    getSessionManager().addSessionMessage(request,"Error reading buoy metadata for station:" +  id +"<br>Url:" + url +
 						       "<br>Error:" +exc.getMessage());
 
 

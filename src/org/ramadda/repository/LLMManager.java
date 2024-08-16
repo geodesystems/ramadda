@@ -428,7 +428,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	    args.add(extraArgs[i+1]);
 	}
 	Utils.add(args,"model",JsonUtil.quote(model));
-	System.err.println(gptText.length());
 	Utils.add(args,"messages",JsonUtil.list(JsonUtil.map(
 							     "role",JsonUtil.quote("user"),
 							     "content",JsonUtil.quote(gptText))));
@@ -753,10 +752,10 @@ public class LLMManager extends  AdminHandlerImpl {
 	    try {
 		return applyEntryExtractInner(request, entry,llmCorpus);
 	    } catch(CallException exc) {
-		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
+		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 		return false;
 	    } catch(Throwable thr) {
-		getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
+		getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + thr.getMessage());
 		throw new RuntimeException(thr);
 	    } finally {
 		getEntryManager().clearEntryState(entry,"message");
@@ -842,7 +841,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
 	if(!stringDefined(json)) {
 	    String msg = "Failed to extract information for entry:" + entry.getName();
-	    getSessionManager().addSessionErrorMessage(request,msg);
+	    getSessionManager().addSessionMessage(request,msg);
 	    return false;
 	}
 
@@ -924,13 +923,13 @@ public class LLMManager extends  AdminHandlerImpl {
 		if(!Double.isNaN(latitude) && !Double.isNaN(longitude)){
 		    entry.setLocation(latitude,longitude);
 		} else {
-		    getSessionManager().addSessionErrorMessage(request,"Could not extract lat/lon");
+		    getSessionManager().addSessionMessage(request,"Could not extract lat/lon");
 		}
 	    }
 
 	    return true;
 	} catch(Exception exc) {
-	    getSessionManager().addSessionErrorMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
+	    getSessionManager().addSessionMessage(request,"Error doing LLM extraction:" + entry+" " + exc.getMessage());
 	    getLogManager().logSpecial("LLMManager:Error parsing JSON:" + exc+" json:" + json);
 	    exc.printStackTrace();
 	}

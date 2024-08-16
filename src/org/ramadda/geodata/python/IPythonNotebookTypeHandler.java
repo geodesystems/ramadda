@@ -78,7 +78,7 @@ public class IPythonNotebookTypeHandler extends GenericTypeHandler {
 	    initializeNewEntryInner(request, entry);
 	} catch(Exception exc) {
 	    exc.printStackTrace();
-	    getSessionManager().addSessionErrorMessage(request,"Error initializing notebook:" +  exc); 
+	    getSessionManager().addSessionMessage(request,"Error initializing notebook:" +  exc); 
 	    
 	}
     }

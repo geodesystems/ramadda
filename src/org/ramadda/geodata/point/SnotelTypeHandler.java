@@ -111,7 +111,7 @@ public class SnotelTypeHandler extends PointTypeHandler {
 	    entry.setResource(new Resource(dataUrl));
 	    return true;
         } catch (Exception exc) {
-	    getSessionManager().addSessionErrorMessage(request,"Error reading SNOTEL metadata for site:" +  id); 
+	    getSessionManager().addSessionMessage(request,"Error reading SNOTEL metadata for site:" +  id); 
             getLogManager().logError("Error reading SNOTEL URL:" + url, exc);
 	    return false;
         }

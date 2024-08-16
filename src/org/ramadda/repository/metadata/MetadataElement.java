@@ -846,7 +846,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if (getThumbnail() && request.get(ARG_THUMBNAIL_SCALEDOWN, false)) {
             Image image = ImageUtils.readImage(theFile);
 	    if(image==null) {
-		getSessionManager().addSessionErrorMessage(request,"Error processing image:" + entry);
+		getSessionManager().addSessionMessage(request,"Error processing image:" + entry);
 	    } else {
 		int   width = request.get(ARG_THUMBNAIL_WIDTH, THUMBNAIL_WIDTH);
 		if (image.getWidth(null) > width) {

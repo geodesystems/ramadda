@@ -145,7 +145,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    } catch(Exception imageExc){
 	    }
 	} catch(Exception exc) {
-	    getSessionManager().addSessionErrorMessage(request,"Error reading station metadata for station:" +  id +"<br>Error:" +exc.getMessage());
+	    getSessionManager().addSessionMessage(request,"Error reading station metadata for station:" +  id +"<br>Error:" +exc.getMessage());
 	    System.err.println("Error:" + exc +" url:" + url);
 	    exc.printStackTrace();
 	}

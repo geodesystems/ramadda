@@ -57,7 +57,7 @@ public class SessionManager extends RepositoryManager {
 
 
 
-    public static final String SESSION_PROPERTY_ERRORMESSAGES = "errormessages";
+    public static final String SESSION_PROPERTY_MESSAGES = "messages";
 
     /** The number of days a session is active in the database */
     private static final double SESSION_DAYS = 2.0;
@@ -295,16 +295,45 @@ public class SessionManager extends RepositoryManager {
     }
 
 
-    public void addSessionErrorMessage(Request request, String message)  {
+    public List getSessionMessages(Request request) throws Exception {
+	List<SessionMessage> messages=(List<SessionMessage>)
+	    getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
+	if(messages==null) return null;
+	return messages;
+    }
+
+    public void clearSessionMessage(Request request)  {
 	try {
-	    List<String> messages=(List<String>)
-		getSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES);
+	    removeSessionProperty(request, SESSION_PROPERTY_MESSAGES);
+	} catch(Exception ignore) {
+	    getLogManager().logError("Clearing session message",ignore);
+	}
+    }
+
+    public static class SessionMessage {
+	boolean sticky = true;
+	String message;
+	public SessionMessage(String message,boolean sticky) {
+	    this.message = message;
+	    this.sticky=sticky;
+	}
+
+	
+	public String toString() {
+	    return message;
+	}
+    }
+
+    public void addSessionMessage(Request request, String message,boolean...sticky)  {
+	try {
+	    List<SessionMessage> messages=(List<SessionMessage>)
+		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	    if(messages==null) {
-		messages= new ArrayList<String>();
-		putSessionProperty(request,SessionManager.SESSION_PROPERTY_ERRORMESSAGES,
+		messages= new ArrayList<SessionMessage>();
+		putSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES,
 				   messages);
 	    }
-	    messages.add(message);
+	    messages.add(new SessionMessage(message,(sticky.length==0?false:sticky[0])));
 	    getLogManager().logSpecial(message);
 	} catch(Exception ignore) {
 	    getLogManager().logError("Error putting session error message:" + message,ignore);
