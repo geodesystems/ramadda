@@ -912,14 +912,40 @@ public class JobManager extends RepositoryManager {
         //        Trace.call1("JobManager.executeCommand",  "timeout:" + timeOutInSeconds + " Commands:" + commands);
         StringWriter outBuf   = new StringWriter();
         StringWriter errorBuf = new StringWriter();
-        if (stdOutPrintWriter == null) {
+	if (stdOutPrintWriter == null) {
             stdOutPrintWriter = new PrintWriter(outBuf);
-        }
-        if (stdErrPrintWriter == null) {
+	}
+	if (stdErrPrintWriter == null) {
             stdErrPrintWriter = new PrintWriter(errorBuf);
-        }
+	}
+	final Object _actionId = actionID.length>0?actionID[0]:null;
+	final String _pattern= actionID.length>1?(String)actionID[1]:null;	
+	final PrintWriter[] writers ={stdOutPrintWriter,stdErrPrintWriter};
+	if(_actionId!=null && _pattern!=null) {
+	    stdOutPrintWriter =new PrintWriter(outBuf) {
+		    public void println(String s) {
+			if(_actionId!=null && _pattern!=null && s.matches(_pattern)) {
+			    getActionManager().setActionMessage(_actionId,s);
+			}
+			writers[0].println(s);
+		    }
+		};
+	    stdErrPrintWriter = new PrintWriter(errorBuf) {
+		    public void println(String s) {
+			if(_actionId!=null && _pattern!=null && s.matches(_pattern)) {
+			    getActionManager().setActionMessage(_actionId,s);
+			}
+			writers[1].println(s);
+		    }
+		};
+
+	}
+
+
 
         ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
+	pb.redirectErrorStream(false);
+
         if (envVars != null) {
             Map<String, String> env = pb.environment();
             //env.clear();
@@ -936,7 +962,6 @@ public class JobManager extends RepositoryManager {
 			while(running[0]) {
 			    Misc.sleep(200);
 			    if(!running[0]) {
-				System.err.println("done");
 				break;
 			    }
 			    if(!getActionManager().getActionOk(_actionID)) {
@@ -955,6 +980,8 @@ public class JobManager extends RepositoryManager {
 	try {
 	    runner[0] = new ProcessRunner(pb, timeOutInSeconds,
 					  stdOutPrintWriter, stdErrPrintWriter);
+
+
 
 	    int exitCode = runner[0].runProcess();
 	    if (runner[0].getProcessTimedOut()) {

@@ -313,6 +313,8 @@ public class ServiceOutputHandler extends OutputHandler {
         if (asynchronous) {
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(Object actionId) throws Exception {
+		    request.putExtraProperty("actionid",actionId);
+		    getActionManager().setActionMessage(actionId,"Running service:" + service.getLabel());
                     List<ServiceOutput> outputs =
                         new ArrayList<ServiceOutput>();
                     List<Entry> outputEntries = new ArrayList<Entry>();
@@ -340,6 +342,7 @@ public class ServiceOutputHandler extends OutputHandler {
                         }
                     }
 
+		    getActionManager().setActionMessage(actionId,"Service complete");
                     String url = processDirUrl;
                     if (doingPublish && (outputEntries.size() > 0)) {
                         url = request.entryUrl(

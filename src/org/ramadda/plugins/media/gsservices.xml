@@ -22,7 +22,9 @@ Runs GS to make an image from a PDF
     </service>
 
 
-   <service id="media_gs_images" label="Make images from PDF" outputToStderr="true" asynchronous="true">
+    <service id="media_gs_images" label="Make images from PDF"
+	     action_pattern="Page.*"	     	     
+	     outputToStderr="true" asynchronous="true">
 <process_description><![CDATA[<wiki>
 {{description}}
 {{gallery}}
