@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Aug 13 21:07:29 MDT 2024";
+var build_date="RAMADDA build date: Thu Aug 15 20:47:56 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -45606,17 +45606,26 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	getLatLonPoints:function(geometry) {
 	    let components = geometry.components;
-	    if(components==null) return null;
+	    if(components==null) {
+		if(geometry.x && geometry.y) {
+		    let pt = MapUtils.createPoint(geometry.x,geometry.y);
+		    pt = this.getMap().transformProjPoint(pt);
+		    return [pt];
+		}
+		return null;
+	    }
+	    console.dir(components)
 	    if(components.length) {
 		if(components[0].components) components = components[0].components;
 	    }
 	    let pts = components.map(pt=>{
+		console.log(pt);
 		return  this.getMap().transformProjPoint(pt)
 	    });
 	    return pts;
 	},
 
-	getDistances:function(geometry,glyphType,justDistance) {
+	getDistances:function(geometry,glyphType,justDistance,forceAcres) {
 	    if(!geometry) return null;
 	    let pts = this.getLatLonPoints(geometry);
 	    if(pts==null) return null;
@@ -45684,6 +45693,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    area = area/MapUtils.squareFeetInASquareMile;
 		    msg+=   '<br>' +
 			'Area: ' + Utils.formatNumber(area) +' sq ' + unit;
+		    if(forceAcres) {
+			msg+=   SPACE + Utils.formatNumber(acres) +' acres';
+		    }
 		} else {
 		    msg+=   '<br>' +
 			'Area: ' + Utils.formatNumber(acres) +' acres';
@@ -53999,7 +54011,72 @@ MapGlyph.prototype = {
 	    });
 	});
     },
+    groupMakeGeoJson:function() {
+	let mergePts = [];
+	let allPts = [];	
+	let names =[];
+	let separateFeatures = !this.jq('mergepolygons').is(':checked');
+	this.applyChildren(child=>{
+	    let geometry=child.getGeometry();
+	    if(!geometry) return;
+	    let pts = this.display.getLatLonPoints(geometry);
+	    if(pts==null) return null;
+	    mergePts = Utils.mergeLists(mergePts,pts);
+	    allPts.push(pts);
+	    names.push(child.name);
+	});
+	let features = [];
+	if(!separateFeatures) {
+	    let coords =mergePts.map(p=>{
+		return [p.x,p.y]
+	    });
+	    let name='Polygon';
+	    features.push({
+		type: "Feature",
+		properties: {
+		    name: name
+		},
+		geometry: {
+		    type: "Polygon",
+		    coordinates: [coords]
+		}});
+	} else {
+	    allPts.forEach((pts,idx)=>{
+		let coords =pts.map(p=>{
+		    return [p.x,p.y]
+		});
+		let name=names[idx]??'Polygon ' + idx;
+		features.push({
+		    type: "Feature",
+		    properties: {
+			name: name
+		    },
+		    geometry: {
+			type: coords.length==1?'Point':'LineString',
+			coordinates: coords.length==1?coords[0]:coords
+		    }});
+	    });
+	}
+
+
+	let json = {
+	    type: "FeatureCollection",
+	    "features": features
+	}
+	let file = Utils.makeID(this.name)+'.geojson';
+	Utils.makeDownloadFile(file,JSON.stringify(json));
+
+
+    },
     initPropertiesComponent: function(dialog) {
+
+	if (this.isGroup()) {
+	    this.jq('makegeojson').button().click(()=>{
+		this.groupMakeGeoJson();
+	    });
+	}
+
+
 	let props = [
 	    [ID_DATAICON_FIELDS,  DEFAULT_DATAICON_FIELDS],
 	    [ID_DATAICON_INIT_FIELD,DEFAULT_DATAICON_FIELD],
@@ -54344,6 +54421,15 @@ MapGlyph.prototype = {
 	    doSequence:doSequence});
     },
     getPropertiesComponent: function(content) {
+
+	if(this.isGroup()) {
+	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
+	    html+=SPACE;
+	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
+	    content.push({header:'Grouping',contents:html});
+	}
+
+
 	if(!this.canDoMapStyle()) return;
 	let attrs = this.getExampleMapLayer()?.features[0].attributes ?? {};
 	let featureInfo = this.featureInfo = this.getFeatureInfoList();
@@ -54517,6 +54603,28 @@ MapGlyph.prototype = {
 
 	ex = HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], ex);
 	content.push({header:'Sample Values',contents:ex});
+
+	let features= this.getMapFeatures();
+	if(features && features.length>0) {
+	    let sizes = '';
+	    features.forEach((feature,idx)=>{
+		if(idx>1000) return;
+		let distances = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true);
+		if(!distances) return;
+		let name=null;
+		if(feature.attributes) {
+		    name = feature.attributes.name;
+		}
+		if(!name)name = 'Polygon ' + idx;
+		distances = distances.replace(/<br>/g,'&nbsp;');
+		sizes+=HU.div([],HU.b(name)+': '+distances);
+	    });
+	    sizes=HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], sizes);
+	    content.push({header:'Sizes',contents:sizes});
+	}
+
+
+
     },
     getStyleGroups: function() {
 	if(!this.attrs.styleGroups) {
@@ -54925,7 +55033,6 @@ MapGlyph.prototype = {
 
 	    let sliderMap = {};
 	    
-	    console.log('filters');
 	    
 	    this.findFilter(CLASS_FILTER_SLIDER).each(function() {
 		let theFeatureId = $(this).attr('feature-id');
