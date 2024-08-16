@@ -79,9 +79,13 @@ visad.jar:
   org/ramadda/geodata/fits plugin
 
 jetty.jar:
+This is version 9.4.55
 
 This is the combination of the following all the jetty modules:
     jetty-<module>-<version>.jar
+
+See the file <root>/bin/unjarjetty.tcl
+
 
 abom.jar:
 This holds the Barnes analysis code from the IDV release
