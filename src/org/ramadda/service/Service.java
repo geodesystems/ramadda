@@ -196,6 +196,8 @@ public class Service extends RepositoryManager {
     /** _more_ */
     private boolean ignoreStderr = false;
 
+    private String actionPattern;
+
     /** _more_ */
     private String errorPattern;
 
@@ -375,6 +377,8 @@ public class Service extends RepositoryManager {
         maxFileSize = Double.parseDouble(XmlUtil.getAttributeFromTree(element,
                 ATTR_MAXFILESIZE, "-1.0"));
 
+
+
         String ignoreString  = XmlUtil.getGrandChildText(element, "ignoreerrors",null);
 	if(Utils.stringDefined(ignoreString)) {
 	    ignore = Utils.split(ignoreString,"\n",true,true);
@@ -423,12 +427,10 @@ public class Service extends RepositoryManager {
         description = XmlUtil.getGrandChildText(element, ATTR_DESCRIPTION,
                 XmlUtil.getGrandChildText(element, ATTR_HELP, ""));
 
-        processDesc = XmlUtil.getGrandChildText(element,
-                "process_description", "");
+        processDesc = XmlUtil.getGrandChildText(element, "process_description", "");
         label  = XmlUtil.getAttribute(element, ATTR_LABEL, (String) null);
         serial = XmlUtil.getAttribute(element, ATTR_SERIAL, true);
-
-
+	actionPattern = XmlUtil.getAttributeFromTree(element,"action_pattern",null);
         NodeList nodes;
 
         Element  params = XmlUtil.findChild(element, TAG_PARAMS);
@@ -574,6 +576,7 @@ public class Service extends RepositoryManager {
         attr(attrs, "outputToStderr", outputToStderr);
         attr(attrs, "immediate", immediate);
         attr(attrs, "ignoreStderr", ignoreStderr);
+        attr(attrs, "actionPattern", actionPattern);	
         attr(attrs, ATTR_CLEANUP, cleanup);
         attr(attrs, "category", category);
         attr(attrs, ATTR_LINK, linkId);
@@ -2435,7 +2438,8 @@ public class Service extends RepositoryManager {
 		JobManager.CommandResults results =
 		    getRepository().getJobManager().executeCommand(commands,
 								   null, input.getProcessDir(), -1,
-								   new PrintWriter(stdoutFile), new PrintWriter(stderrFile),actionID);
+								   new PrintWriter(stdoutFile),
+								   new PrintWriter(stderrFile),actionID,actionPattern);
 	    } catch(Exception exc) {
 		System.err.println("Error evaluating service:" + commands);
 		throw exc;
