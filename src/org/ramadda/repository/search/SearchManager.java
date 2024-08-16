@@ -739,6 +739,16 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		long t1= System.currentTimeMillis();
 		File tmp  =getStorageManager().getUniqueScratchFile("output");
 		List<String> commands = new ArrayList<String>();
+
+		Object actionId = request.getExtraProperty("actionid");
+		if(actionId!=null) {
+		    getActionManager().setActionMessage(actionId,
+							"Running image-to-text on: " +entry.getName());
+
+		}
+		
+
+
 		Utils.add(commands, tesseractPath,f.toString(), tmp.toString());
 		ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 		pb.redirectErrorStream(true);
@@ -749,9 +759,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		long t2= System.currentTimeMillis();
 		if(debugCorpus)
 		    System.err.println("SearchManager.readContents: from image:" + f.getName());
-
 		System.err.println("tesseract:" + f.getName() +" time:" + (t2-t1));
-		
 		return imageText;
 	    } catch(Exception exc) {
 		getLogManager().logError("Error running tesseract for:" + f.getName(), exc);
