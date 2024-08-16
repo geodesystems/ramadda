@@ -7613,7 +7613,7 @@ public class EntryManager extends RepositoryManager {
 		    String msg = "Error initializing entry:" + theNewEntry.getName();
 		    String fileTail = getStorageManager().getFileTail(theNewEntry);
 		    msg+="<br>File:" + fileTail;
-		    getSessionManager().addSessionErrorMessage(request,msg);
+		    getSessionManager().addSessionMessage(request,msg);
 		    throw exc;
 		}
                 String name = theNewEntry.getName();
@@ -8437,7 +8437,8 @@ public class EntryManager extends RepositoryManager {
 	boolean debug = false;
 	String debugName = request.getString("debug",null);
 	if(debugName!=null && group.getName().indexOf(debugName)>=0) debug = true;
-	boolean canCache = where==null || where.size()==0;
+	boolean canCache = (where==null || where.size()==0) && request.onlyHasEntryId();
+	System.err.println("GROUP: " + group +" canCache:" + canCache +" r:"+ request);
 	boolean addToCache = false;
 	String orderBy = getQueryOrderAndLimit(request, true, group, select);
 	boolean canDoSelectOffset = getDatabaseManager().canDoSelectOffset();
