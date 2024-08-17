@@ -4121,7 +4121,8 @@ public class WikiManager extends RepositoryManager
 	    boolean  linkTop = getProperty(wikiUtil, props, "linkTop",false);
             for (Entry child : children) {
 		String text = "";
-		if (showSnippet || showDescription) {
+		//If it is the card that we are displaying then don't show the snippet since makeCard does
+		if (!tag.equals(WIKI_TAG_CARD) && (showSnippet || showDescription)) {
 		    String snippet = showDescription? child.getDescription():getSnippet(request, child, false,null);
 		    if (stringDefined(snippet)) {
 			text = wikifyEntry(request, child, snippet, false, 
@@ -4140,16 +4141,22 @@ public class WikiManager extends RepositoryManager
 		}
                 titles.add(title);
                 //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
-                urls.add(getEntryManager().getEntryUrl(request, child));
 
+                urls.add(getEntryManager().getEntryUrl(request, child));
                 tmpProps.put("defaultToCard", "true");
+
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
-		if(showTextTop && stringDefined(text)) content.append(text);
+		if(showTextTop && stringDefined(text)) {
+		    content.append(text);
+		}
 		//		content.append(HU.center(inner));
 		content.append(inner);		
-		if(!showTextTop && stringDefined(text)) content.append(text);
+
+		if(!showTextTop && stringDefined(text)) {
+		    content.append(text);
+		}
                 if (showLink) {
                     String url;
                     if (linkResource
@@ -5892,9 +5899,9 @@ public class WikiManager extends RepositoryManager
     }
 
     
-    public String getSnippet(Request request, Entry child, boolean wikify, String dflt)
+    public String getSnippet(Request request, Entry entry, boolean wikify, String dflt)
 	throws Exception {
-        String snippet = getRawSnippet(request, child, wikify);
+        String snippet = getRawSnippet(request, entry, wikify);
         if (snippet == null) {
             return dflt;
         }
