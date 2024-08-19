@@ -3038,6 +3038,7 @@ MapGlyph.prototype = {
 	    }
 	}
 
+
 	if(this.isMap()) {
 	    this.attrs.subsetSkip = jqid(this.domId('subsetSkip')).val();
 	    this.attrs.subsetReverse = jqid(this.domId('subsetReverse')).is(':checked');
@@ -3169,18 +3170,26 @@ MapGlyph.prototype = {
 	});
     },
     groupMakeGeoJson:function() {
-	let mergePts = [];
-	let allPts = [];	
-	let names =[];
 	let separateFeatures = !this.jq('mergepolygons').is(':checked');
+	let data=[];
 	this.applyChildren(child=>{
 	    let geometry=child.getGeometry();
 	    if(!geometry) return;
-	    let pts = this.display.getLatLonPoints(geometry);
-	    if(pts==null) return null;
+	    data.push({
+		geometry:geometry,
+		name:child.name
+	    });
+	});
+	this.makeGeoJson(separateFeatures,data);
+    },
+    makeGeoJson:function(separateFeatures,data) {
+	let mergePts = [];
+	data.forEach((d,idx)=>{
+	    if(!d.geometry) return;
+	    let pts = this.display.getLatLonPoints(d.geometry);
+	    if(pts==null) return;
 	    mergePts = Utils.mergeLists(mergePts,pts);
-	    allPts.push(pts);
-	    names.push(child.name);
+	    d.points=pts;
 	});
 	let features = [];
 	if(!separateFeatures) {
@@ -3198,16 +3207,18 @@ MapGlyph.prototype = {
 		    coordinates: [coords]
 		}});
 	} else {
-	    allPts.forEach((pts,idx)=>{
-		let coords =pts.map(p=>{
+	    data.forEach((d,idx)=>{
+		if(!d.points) return;
+		let coords =d.points.map(p=>{
 		    return [p.x,p.y]
 		});
-		let name=names[idx]??'Polygon ' + idx;
+		let name=d.name??'Polygon ' + idx;
+		let properties;
+		if(d.attributes) properties=d.attributes;
+		else properties={name: name };
 		features.push({
 		    type: "Feature",
-		    properties: {
-			name: name
-		    },
+		    properties: properties,
 		    geometry: {
 			type: coords.length==1?'Point':'LineString',
 			coordinates: coords.length==1?coords[0]:coords
@@ -3222,9 +3233,10 @@ MapGlyph.prototype = {
 	}
 	let file = Utils.makeID(this.name)+'.geojson';
 	Utils.makeDownloadFile(file,JSON.stringify(json));
-
-
     },
+
+
+
     initPropertiesComponent: function(dialog) {
 
 	if (this.isGroup()) {
@@ -3396,6 +3408,104 @@ MapGlyph.prototype = {
 		}
 	    }
 	    jqid('mapvalue_' + index).attr(ATTR_TITLE,tt);
+	});
+
+	HU.initPageSearch(dialog.find('.dialog-feature'),
+			  null,null,null,{target:this.jq('dialog_features_top')});
+
+	dialog.find('.feature-name').click(function() {
+	    let feature = getFeature($(this));
+	    if(feature)
+		_this.display.getMap().centerOnFeatures([feature]);
+	});
+	dialog.find('.feature-name').tooltip({
+	    show: { delay: 1000 },
+	    open: function(event, ui) {
+		ui.tooltip.css("max-width", "600px"); 
+            },
+	    content: function() {
+		let feature = getFeature($(this));
+		let html = _this.getFeatureText(feature.attributes);
+		html = HU.div([ATTR_STYLE,'font-size:9pt;width:600px;'],html);
+		return html;
+
+	    }});
+	let visCbxs = dialog.find('.feature-visible');
+	let selectCbxs = dialog.find('.feature-select');
+
+	let cbxToggle = cbx=>{
+	    let visible = cbx.is(':checked');
+	    let index = cbx.attr('feature-index');
+	    let feature = _this.indexToFeature[index];
+	    if(!feature) return;
+	    MapUtils.setFeatureVisible(feature,visible);
+	    feature.isVisible=visible;
+	    if(!visible)  {
+		feature.forceHidden=true;
+	    } else {
+		feature.forceHidden=false;
+	    }
+	};
+
+	this.jq('features_select_all').change(function() {
+	    let visible = $(this).is(':checked');
+	    selectCbxs.each(function() {
+		if($(this).is(':visible')) {
+		    $(this).prop('checked',visible);
+		}
+	    });
+	});
+
+
+	this.jq('features_visible_all').change(function() {
+	    let visible = $(this).is(':checked');
+	    visCbxs.each(function() {
+		if($(this).is(':visible')) {
+		    $(this).prop('checked',visible);
+		    cbxToggle($(this));
+		}
+	    });
+	    ImdvUtils.scheduleRedraw(_this.mapLayer);
+	});
+
+
+
+	visCbxs.change(function(){
+	    cbxToggle($(this));
+	    ImdvUtils.scheduleRedraw(_this.mapLayer);
+	});
+
+	let getFeature=ele=>{
+	    let index = ele.attr('feature-index');
+	    return  _this.indexToFeature[index];
+
+	};
+
+
+	dialog.find('.dialog-features-size').click(function(){
+	    let feature = getFeature($(this));
+	    if(!feature) return;
+	    let name = $(this).attr('feature-name');
+	    _this.display.handleNewFeature(feature,null, {type:GLYPH_POLYLINE,name:name});
+	});
+
+
+	this.jq('dialog_features_makemap').button().click(()=>{
+	    let data=[];
+	    visCbxs.each(function() {
+		if(!$(this).is(':checked'))return;
+		let feature = getFeature($(this));
+		if(!feature)return;
+		data.push({
+		    geometry:feature.geometry,
+		    attributes:feature.attributes
+		});
+	    });
+	    if(data.length==0) {
+		alert('No features selected');
+		return;
+	    }
+	    this.makeGeoJson(true,data);
 	});
 
 
@@ -3577,13 +3687,63 @@ MapGlyph.prototype = {
 	this.display.createRoute(provider,mode,pts,{
 	    doSequence:doSequence});
     },
-    getPropertiesComponent: function(content) {
+    applyTemplate:function(template,attrs) {
+	if(!attrs || !template) return null;
+	Object.keys(attrs).forEach(key=>{
+	    let _key = key.toLowerCase();
+	    template = template.replace('{' + _key+'}',attrs[key]);
+	    template = template.replace('{' + key+'}',attrs[key]);		
+	});
+	return template;
+    },
+    getFeatureText:function(attrs) {
+	let template =this.getProperty('textTemplate');
+	if(template) {
+	    return this.applyTemplate(template,attrs);
+	}
+	
+	if(!attrs) return null;
+	let html = '';
+	Object.keys(attrs).forEach(key=>{
+	    if(!attrs[key]) return;
+	    let v = String(attrs[key]);
+	    if(v.length>100) v = v.substring(0,99)+'...';
+	    html+=HU.b(key)+': '+ v+'<br>';
+	});
+	return html;
 
+    },
+
+    getFeatureName:function(attrs) {
+	let template =this.getProperty('nameTemplate');
+	if(template) {
+	    return this.applyTemplate(template,attrs);
+	}
+	
+	if(!attrs) return null;
+	let name = attrs.name;
+	if(!name) {
+	    Object.keys(attrs).every(key=>{
+		let _key = key.toLowerCase();
+		if(_key.indexOf('name')>0) {
+		    name = attrs[key];
+		    if(name) {
+			return false;
+		    }
+		}
+		return true;
+	    });
+	}
+	return name;
+    },
+
+
+    getPropertiesComponent: function(content) {
 	if(this.isGroup()) {
 	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
 	    html+=SPACE;
 	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
-	    content.push({header:'Grouping',contents:html});
+	    content.push({header:'Make Map',contents:html});
 	}
 
 
@@ -3763,21 +3923,60 @@ MapGlyph.prototype = {
 
 	let features= this.getMapFeatures();
 	if(features && features.length>0) {
-	    let sizes = '';
+	    let limit=2000;
+	    let table = '';
+	    table+='Total features: ' + features.length;
+	    if(limit<features.length) table+=' Showing: ' + limit;
+	    table+=SPACE4;
+	    table+=HU.div([ATTR_ID,this.domId('dialog_features_makemap')],'Make Map');
+	    table+='<br>';
+	    table+=HU.div([ATTR_ID,this.domId('dialog_features_top')]);
+	    table+='<table>\n';
+	    let selectId  = this.domId('features_select_all');
+	    let allId  = this.domId('features_visible_all');
+	    let selectCbx = HU.checkbox(selectId,[ATTR_ID,selectId],true,'Select');
+	    let allCbx = HU.checkbox(allId,[ATTR_ID,allId],true,'Visible');
+	    table+='<tr>' + HU.tds([ATTR_STYLE,'padding-right:20px;font-weight:bold;'],[
+		allCbx,
+		'length miles/mile&sup2;/acres']) +'</tr>';
+		 
+	    this.indexToFeature={};
 	    features.forEach((feature,idx)=>{
-		if(idx>1000) return;
-		let distances = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true);
-		if(!distances) return;
-		let name=null;
-		if(feature.attributes) {
-		    name = feature.attributes.name;
+		this.indexToFeature[idx] = feature;
+//		if(idx>10) return
+		if(idx>limit) return;
+		let distance = this.display.getDistances(feature.geometry,GLYPH_POLYGON,false,true,true);
+		let name=this.getFeatureName(feature.attributes);
+		if(!name) {
+		    name = 'Polygon ' + (idx+1)
 		}
-		if(!name)name = 'Polygon ' + idx;
-		distances = distances.replace(/<br>/g,'&nbsp;');
-		sizes+=HU.div([],HU.b(name)+': '+distances);
+		let row = HU.open('tr',
+				  ['feature-index',idx,
+				   'feature-name',name,
+				   'data-corpus',feature.isVisible?'visible':'hidden',
+				   ATTR_CLASS,'dialog-feature','data-feature',idx]);
+
+		let id1=HU.getUniqueId('cbx');
+		let id2=HU.getUniqueId('cbx');		
+//		row+=HU.td(HU.checkbox(id1,[ATTR_ID,id1,ATTR_CLASS,'feature-select','feature-index',idx],true));
+		name = HU.span([ATTR_CLASS,'ramadda-clickable feature-name','feature-index',idx,
+				ATTR_TITLE,'Click to center',ATTR_STYLE,'margin-right:10px;margin-left:10px;'], name);
+		row+=HU.td(HU.checkbox(id2,[ATTR_ID,id2,ATTR_CLASS,'feature-visible','feature-index',idx],
+				       !feature.forceHidden && feature.isVisible)+name);
+		row+='<td>';
+		if(distance) {
+		    row+=Utils.join([Utils.formatNumberComma(distance.feet/5280),
+				     Utils.formatNumberComma(distance.sqmiles),
+				     Utils.formatNumberComma(distance.acres)],'/');
+		}
+		row+='</td>';
+
+		row+='</tr>\n';
+		table+=row;
 	    });
-	    sizes=HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], sizes);
-	    content.push({header:'Sizes',contents:sizes});
+	    table+='</table>';
+	    table=HU.div([ATTR_STYLE,HU.css('max-height','400px','overflow-y','auto')], table);
+	    content.push({header:'Features',contents:table});
 	}
 
 
@@ -5001,13 +5200,11 @@ MapGlyph.prototype = {
 		    return visible;
 		});
 	    }		
-
 	    
-
 	    if(visible) this.visibleFeatures++;
 	    f.isVisible  = visible;
 	    f.isFiltered=!visible;
-	    MapUtils.setFeatureVisible(f,visible);
+	    MapUtils.setFeatureVisible(f,visible && !f.forceHidden);
 	    if(f.mapLabel) {
 		redrawFeatures = true;
 		f.mapLabel.isFiltered=!visible;
@@ -5332,11 +5529,15 @@ MapGlyph.prototype = {
 	    }
 	}
 
+
+
 	this.attrs.visible = visible;
 	this.checkInMapLabel();
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
+
+
 	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
 	if(this.canHaveChildren()) {
@@ -5344,8 +5545,12 @@ MapGlyph.prototype = {
 	    this.checkLayersAnimationButton();
 	}
 
-	if(callCheck)
+
+	if(callCheck) {
 	    this.checkVisible();
+	}
+
+
 	this.checkMapLayer();
 
 	let legend = this.getLegendDiv();
@@ -5391,6 +5596,8 @@ MapGlyph.prototype = {
 	    range = displayRange;
 	    showMarker  = this.display.getMapProperty('showMarkerWhenNotVisible');
 	}
+
+
 	let level = this.display.getCurrentLevel();
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
@@ -5411,6 +5618,7 @@ MapGlyph.prototype = {
 		this.showMarkerMarker.mapGlyph = this;
 	    }
 	}
+
 
 	if(this.features) {
 	    this.features.forEach(f=>{
@@ -5483,7 +5691,7 @@ MapGlyph.prototype = {
 	let featuresToGrid = [];
 	//If the label wasn't filtered then turn them all on
 	features.forEach(feature=>{
-	    if(!feature.isFiltered) {
+	    if(!feature.isFiltered && !feature.forceHidden) {
 		featuresToGrid.push(feature);
 		MapUtils.setFeatureVisible(feature,true);
 	    }

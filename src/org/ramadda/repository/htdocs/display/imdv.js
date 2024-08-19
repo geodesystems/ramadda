@@ -991,18 +991,16 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		}
 		return null;
 	    }
-	    console.dir(components)
 	    if(components.length) {
 		if(components[0].components) components = components[0].components;
 	    }
 	    let pts = components.map(pt=>{
-		console.log(pt);
 		return  this.getMap().transformProjPoint(pt)
 	    });
 	    return pts;
 	},
 
-	getDistances:function(geometry,glyphType,justDistance,forceAcres) {
+	getDistances:function(geometry,glyphType,justDistance,forceAcres,asObject) {
 	    if(!geometry) return null;
 	    let pts = this.getLatLonPoints(geometry);
 	    if(pts==null) return null;
@@ -1022,12 +1020,14 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    if(glyphType == GLYPH_CIRCLE || glyphType == GLYPH_BOX ||  glyphType == GLYPH_TRIANGLE  || glyphType==GLYPH_IMAGE) {
 		distancePrefix = 'Perimeter: ';
 	    }
+	    let feet=0;
 
 	    let msg = 'Distance: ';
 	    if(glyphType == GLYPH_BOX || glyphType == GLYPH_IMAGE) {
 		msg = '';
 		let w = MapUtils.distance(pts[0].y,pts[0].x,pts[1].y,pts[1].x);
 		let h = MapUtils.distance(pts[1].y,pts[1].x,pts[2].y,pts[2].x);		
+		feet = w*2+h*2;
 		let unit = UNIT_FT;
 		if(w>5280 || h>5280) {
 		    unit = UNIT_MILES;
@@ -1043,6 +1043,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let pt1 = pts[i];
 		    let pt2 = pts[i+1];		
 		    let d = MapUtils.distance(pt1.y,pt1.x,pt2.y,pt2.x);
+		    if(!isNaN(d)) {
+			feet+=d;
+		    }
 		    total+=d;
 		    let unit = UNIT_FT;
 		    if(d>5280) {
@@ -1062,6 +1065,15 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 //		    msg+='<br>Segments:' + segments;
 		}
 		if(pts.length<=1) msg='';
+	    }
+	    if(asObject) {
+		return {
+		    feet:feet,
+		    sqfeet:area,
+		    sqmiles:area/MapUtils.squareFeetInASquareMile,
+		    acres:acres
+
+		}
 	    }
 	    if(!justDistance&&area>0) {
 		unit=UNIT_FT;
@@ -2029,7 +2041,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		else if(command==PROP_LAYERS_ANIMATION_PLAY) mapGlyph.toggleLayersAnimation(event);
 		else if(command=='tofront') _this.changeOrder(true,mapGlyph);		
 		else if(command=='popup')   _this.handleMapGlyphClick(mapGlyph);
-		else if(command=='edit')  _this.editFeatureProperties(mapGlyph);
+		else if(command=='edit')  _this.editFeatureProperties(mapGlyph,$(this));
 		else if(command=="addisoline")  _this.addIsolineForMarker(mapGlyph);
 		else if(command==ID_SELECT) {
 		    if(mapGlyph.isSelected()) 
@@ -2060,7 +2072,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','popup'],
 				     icon('fas fa-arrow-up-from-bracket')));
 	    }
-	    if(this.canChange() && includeEdit) {
+	    if(true||(this.canChange() && includeEdit)) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
@@ -2475,8 +2487,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }
 	    return  HU.div([ID,id,ATTR_CLASS,CLASS_CLICKABLE],label);
 	},
-	editFeatureProperties:function(mapGlyph) {
-	    this.doProperties(mapGlyph.getStyle(), this.getFeaturePropertyApply(), mapGlyph);
+	editFeatureProperties:function(mapGlyph,anchor) {
+	    this.doProperties(mapGlyph.getStyle(), this.getFeaturePropertyApply(), mapGlyph,anchor);
 	},
 
 
@@ -2809,7 +2821,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	    return widget+container;
 	},
-	doProperties: function(style, apply,mapGlyph) {
+	doProperties: function(style, apply,mapGlyph,_anchor) {
 	    let _this = this;
 	    style = style ?? mapGlyph?mapGlyph.getStyle():style;
 	    let props;
@@ -2884,7 +2896,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    html+=buttons;
 	    html  = HU.div([ATTR_STYLE,HU.css('min-width','700px','min-height','400px'),ATTR_CLASS,"wiki-editor-popup"], html);
 	    this.map.ignoreKeyEvents = true;
-	    let dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_FILE),title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
+	    let anchor = this.jq(ID_MENU_FILE);
+	    if(anchor.length==0) {
+		anchor = _anchor;
+	    }
+	    let dialog = HU.makeDialog({content:html,anchor:anchor,title:"Map Properties" + (mapGlyph?": "+mapGlyph.getName():""),header:true,draggable:true,resizable:true});
 	    if(accord) 
 		accord.init();
 	    if(mapGlyph)
@@ -5592,7 +5608,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 
 	makeControls:function() {
 	    let _this = this;
-	    if(!this.canChange()) return;
+//	    if(!this.canChange()) return;
 	    if(this.haveMadeControls) return;
 	    this.haveMadeControls = true;
 	    
