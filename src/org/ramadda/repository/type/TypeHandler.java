@@ -1823,7 +1823,7 @@ public class TypeHandler extends RepositoryManager {
     public String getCorpus(Request request, Entry entry,CorpusType type) throws Exception {
 	//	if(type!=CorpusType.LLM) return null;
 	String path = entry.getResource().getPath();
-	return  getSearchManager().extractCorpus(request, path, null);
+	return  getSearchManager().extractCorpus(request, entry,path, null);
     }
 	
 
