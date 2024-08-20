@@ -702,15 +702,15 @@ public class PageHandler extends RepositoryManager {
 	}
 
 	if(suffix || fullTemplate) {
-	    List messages= getSessionManager().getSessionMessages(request);
+	    List messages= getSessionManager().getSessionMessages(request,thisEntry!=null?thisEntry.getId():null);
 	    Object tmpMessage=getEntryManager().getEntryState(thisEntry,"message");
 	    if(tmpMessage!=null) {
 		if(messages==null) messages=new ArrayList();
 		messages.add(0,tmpMessage.toString());
 	    }
 	    
-	    if(messages!=null) {
-		getSessionManager().clearSessionMessage(request);
+	    if(messages!=null && messages.size()>0) {
+		getSessionManager().clearSessionMessages(request);
 		HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
 	    }
 	}

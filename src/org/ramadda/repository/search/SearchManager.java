@@ -1,6 +1,6 @@
 /**
    Copyright (c) 2008-2024 Geode Systems LLC
-   SPDX-License-Identifier: Apache-2.0
+d   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.search;
@@ -614,6 +614,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		if(entryChanged) {
 		    List<Entry> tmp = new ArrayList<Entry>();
 		    tmp.add(entry);
+		    request.putExtraProperty("reindexing","true");
 		    getEntryManager().updateEntries(request, tmp,false);
 		    //IMPORTANT: We end up calling back into this method. To keep this section of code from
 		    //being called, thus leading to an infinite loop, pass in isNew=false
@@ -722,7 +723,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private TikaConfig getTikaConfig(boolean force) throws Exception {
-	return (force || indexImages)?TikaUtil.getConfig():TikaUtil.getConfigNoImage();
+	if(force || indexImages){
+	    return TikaUtil.getConfig();
+	} 
+	return TikaUtil.getConfigNoImage();
     }
 
 
@@ -791,17 +795,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
 	if(corpus!=null) return corpus;
-	return extractCorpus(request, f.toString(),metadataList);
+	return extractCorpus(request, entry,f.toString(),metadataList);
 
     }	
 
 
-    public String extractCorpus(Request request,
+    public String extractCorpus(Request request, Entry entry,
 				String path,
 				List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
-
+	boolean reIndexing =   request.getExtraProperty("reindexing")!=null;
 	File f = new File(path);
-	File corpusFile = TikaUtil.getTextCorpusCacheFile(f);
+	File corpusFile = getStorageManager().getTmpFilePath(request,"text_" + entry.getId()+"_" + f.length()+"_"+f.getName());
 	if(corpusFile.exists()) {
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
@@ -828,16 +832,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		metadataList.add(metadata);
 	    Parser parser = new AutoDetectParser(getTikaConfig(request.get(ARG_INDEX_IMAGE,false)));
             BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
+	    String sessionMessage = "Extracting text from: " + entry.getName();
 	    long t1 = System.currentTimeMillis();
-            parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+	    if(!reIndexing) {
+		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+	    }
+	    try {
+		//		Misc.sleepSeconds(5);
+		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+	    } finally {
+		if(!reIndexing) {
+		    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
+		}
+	    }
 	    long t2= System.currentTimeMillis();
+	    //	    String corpus = "Hello there this is the text";
 	    String corpus = handler.toString();
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
+	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
 	    return  corpus;
 	}  catch(Throwable exc) {
-	    System.err.println("Error reading contents:" + f.getName() +" error:" + exc);
-	    exc.printStackTrace();
+	    getLogManager().logError("Error extracting text corpus for entry:" + entry +" file:" + f.getName() +" error:" + exc,exc);
 	    return null;
 	}
     }
@@ -1201,6 +1217,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             if ( !request.defined(arg)) {
                 continue;
             }
+
 	    //xxxx
 	    List<String> values = (List<String>) request.get(arg,new ArrayList());
             arg = arg.substring(metadataPrefix.length());

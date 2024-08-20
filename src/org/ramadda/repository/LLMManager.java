@@ -741,11 +741,6 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
-
-
-
-
-
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
 	if(true) {
@@ -790,9 +785,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
 	if(!(extractKeywords || extractSummary || extractTitle || extractAuthors||extractLocations||extractLatLon)) return false;
-	getEntryManager().putEntryState(entry,"message","Performing LLM extraction");
-
-
 	String jsonPrompt= "You are a skilled document editor and I want you to extract the following information from the given text. Assume the reader of your result has a college education. The text is a document. ";
 	String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 	if(typePrompt!=null) {
@@ -838,7 +830,19 @@ public class LLMManager extends  AdminHandlerImpl {
 	jsonPrompt +="\nThe result JSON must adhere to the following schema. It is imperative that nothing is added to the result that does not match. \n{" + Utils.join(schema,",")+"}\n";
 	if(debug) System.err.println("Prompt:" + jsonPrompt);
 
-	String json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
+	if(!stringDefined(llmCorpus)) {
+	    String msg = "Unable to extract any text from the document:" + entry.getName();
+	    getSessionManager().addSessionMessage(request,msg);
+	    return false;
+	}
+	String sessionMessage = "Performing LLM extraction for: " + entry.getName();
+	getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+	String json;
+	try {
+	    json = callLLM(request, jsonPrompt+"\nThe text:\n","",llmCorpus,2000,true,info);
+	} finally {
+	    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
+	}
 	if(!stringDefined(json)) {
 	    String msg = "Failed to extract information for entry:" + entry.getName();
 	    getSessionManager().addSessionMessage(request,msg);
