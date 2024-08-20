@@ -721,7 +721,11 @@ public class LogManager extends RepositoryManager {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
         File         f        = getLogDir();
-        File[]       logFiles = f.listFiles();
+        File[]       logFiles = f.listFiles(new FileFilter(){
+		public boolean accept(File f) {
+		    return f.getName().endsWith(".log") && f.length() > 0;
+		}
+	    });
         String       log      = request.getString(ARG_LOG, "access");
         File         theFile  = null;
         boolean      didOne   = false;
@@ -735,29 +739,32 @@ public class LogManager extends RepositoryManager {
                 HtmlUtils.href(
                     HtmlUtils.url(
 				  request.makeUrl(getAdmin().URL_ADMIN_LOG), ARG_LOG,
-                        "access"), "Recent Access"));
+				  "access"), "Recent Access"));
         }
 
         for (File logFile : logFiles) {
-            if ( !logFile.toString().endsWith(".log")) {
-                continue;
-            }
-            if (logFile.length() == 0) {
-                continue;
-            }
             String name  = logFile.getName();
             String label = IO.stripExtension(name);
-            label = StringUtil.camelCase(label);
+	    boolean first = false;
+	    if(label.equals("entryactivity")) {
+		label="Entry Activity";
+		first=  true;
+	    } else {
+		label = StringUtil.camelCase(label);
+	    }
+	    String link;
             if (log.equals(name)) {
-                header.add(HtmlUtils.bold(label));
+		link = HtmlUtils.bold(label);
                 theFile = logFile;
             } else {
-                header.add(
+		link=
                     HtmlUtils.href(
-                        HtmlUtils.url(
-                            request.makeUrl(getAdmin().URL_ADMIN_LOG),
-                            ARG_LOG, name), label));
+				   HtmlUtils.url(
+						 request.makeUrl(getAdmin().URL_ADMIN_LOG),
+						 ARG_LOG, name), label);
             }
+	    if(first) header.add(1,link);
+	    else header.add(link);
         }
 	for (File logFile : logFiles) {
             String name  = logFile.getName();
@@ -775,7 +782,12 @@ public class LogManager extends RepositoryManager {
         sb.append(HtmlUtils.hr());
 
 	if(log.indexOf("entryactivity")>=0) {
-	    sb.append(HU.div(HU.href(getRepository().getUrlPath(request, URL_REPORT),"Generate Entry Access Report"),
+	    String link = getRepository().getUrlPath(request, URL_REPORT);
+	    if(request.defined(ARG_FROMDATE))
+		link=HU.url(link,ARG_FROMDATE,request.getString(ARG_FROMDATE,""));
+	    if(request.defined(ARG_TODATE))
+		link=HU.url(link,ARG_TODATE,request.getString(ARG_TODATE,""));	    
+	    sb.append(HU.div(HU.href(link,"Generate Entry Access Report"),
 			     HU.attrs("style","margin-bottom:5px;","class","ramadda-button")));
 	    sb.append(HU.br());
 	}
@@ -793,6 +805,21 @@ public class LogManager extends RepositoryManager {
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
+    private void addDateRange(Request request,Appendable form,boolean inTable) throws Exception {
+	String widget = HU.b("From: ")+
+	    getDateHandler().makeDateInput(request, ARG_FROMDATE,
+					   request.getString(ARG_FROMDATE,""),null,null,false,null) +
+	    HU.space(2) +
+	    HU.b("To: ")+
+	    getDateHandler().makeDateInput(request, ARG_TODATE,
+					   request.getString(ARG_TODATE,""),null,null,false,null);
+
+	if(inTable)
+	    form.append(HU.formEntry("Date Range:",widget));
+	else
+	    form.append(widget);
+    }
+
     public Result adminLogReport(Request request) throws Exception {
         StringBuilder sb       = new StringBuilder();
 	getPageHandler().sectionOpen(request,sb,"Entry Activity Report",false);
@@ -801,14 +828,7 @@ public class LogManager extends RepositoryManager {
 
 	form.append(HU.submit("Generate Access Report", "report"));
 	form.append(HU.formTable());
-	form.append(HU.formEntry("Date Range:",
-				 HU.b("From: ")+
-				 getDateHandler().makeDateInput(request, ARG_FROMDATE,
-								"",null,null,false,null) +
-				 HU.space(2) +
-				 HU.b("To: ")+
-				 getDateHandler().makeDateInput(request, ARG_TODATE,
-								"",null,null,false,null)));
+	addDateRange(request,form,true);
 
 	List initItems = new ArrayList();
 	initItems.add(new TwoFacedObject("None",""));
@@ -998,7 +1018,13 @@ public class LogManager extends RepositoryManager {
 	    } else {
 		String link = "";
 		if(files.size()==1) {
-		    link = HU.href(HU.url(URL_LOG.toString(),ARG_MATCH,id,
+		    String url = getRepositoryBase().getUrlBase() + URL_LOG.getPath();
+		    if(request.defined(ARG_FROMDATE))
+			url=HU.url(url,ARG_FROMDATE,request.getString(ARG_FROMDATE,""));
+		    if(request.defined(ARG_TODATE))
+			url=HU.url(url,ARG_TODATE,request.getString(ARG_TODATE,""));	    
+		    link = HU.href(HU.url(url,
+					  ARG_MATCH,id,
 					  ARG_LOG,files.get(0).getFile().getName()),
 				   HU.getIconImage("fas fa-search"),
 				   HU.attrs("target","logsearch","title","View log file"));
@@ -1102,6 +1128,10 @@ public class LogManager extends RepositoryManager {
 	int    numBytes = request.get(ARG_BYTES, 10000);
 	String match=request.getString(ARG_MATCH,"");
 	boolean isEntryActivity = logFile.getName().indexOf("entryactivity")>=0;
+	Date fromDate = request.getDate(ARG_FROMDATE,null);
+	Date toDate = request.getDate(ARG_TODATE,null);	
+	final SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 	String field = request.getString("field",null);
 	boolean showSummary = stringDefined(field);
         StringTokenizer tokenizer = StringTokenizer.getCSVInstance();
@@ -1124,6 +1154,11 @@ public class LogManager extends RepositoryManager {
 	    sb.append(HU.space(1));
 	}
 	sb.append(HU.input(ARG_MATCH,match,HU.attrs("placeholder","match")));
+	if(isEntryActivity) {
+	    sb.append(HU.space(1));
+	    addDateRange(request, sb,false);
+	}
+
         sb.append(HU.formClose());
 
 
@@ -1158,7 +1193,7 @@ public class LogManager extends RepositoryManager {
                         ARG_BYTES, "" + (numBytes - 10000)), "Less..."));
 
 	    int maxLines=  -1;
-	    if(!showSummary && !stringDefined(match)) {
+	    if(!showSummary && !stringDefined(match) && fromDate==null && toDate==null) {
 		match=null;
 		if (offset > 0) {
 		    fis.skip(offset);
@@ -1197,6 +1232,14 @@ public class LogManager extends RepositoryManager {
                 }
 		cnt++;
 		if(maxLines>0 && cnt> maxLines) break;
+		if(fromDate!=null || toDate!=null) {
+		    tokenizer.reset(line);
+		    String tokens[] = tokenizer.getTokenArray();
+		    Date dttm = sdf.parse(tokens[5]);
+		    long rowTime = dttm.getTime();
+		    if(fromDate!=null && rowTime < fromDate.getTime()) continue;
+		    if(toDate!=null && rowTime>toDate.getTime())  continue;
+		}
 		if(showSummary) {
 		    tokenizer.reset(line);
 		    String tokens[] = tokenizer.getTokenArray();
