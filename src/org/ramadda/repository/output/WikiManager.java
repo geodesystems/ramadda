@@ -5604,7 +5604,7 @@ public class WikiManager extends RepositoryManager
 	StringBuilder sb = new StringBuilder();
         int max = request.get(ARG_MAX, -1);
         if (max == -1) {
-            max = getProperty(wikiUtil, props, ATTR_MAX, -1);
+            max = getProperty(wikiUtil, props, ATTR_MAX, getRepository().getDefaultMaxEntries());
         }
 	getRepository().getHtmlOutputHandler().showNext(request,
 							children.size(), max,sb);
