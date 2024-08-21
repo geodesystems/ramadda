@@ -298,6 +298,19 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
       newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
       editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"      
       handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+  <header_metadata>
+    <![CDATA[
+xray_kv=column:xrf_voltage
+xray_ma=column:xrf_current
+processed_date=column:date
+scan_rate_mm_s=column:scan_rate
+scan_rate=column:scan_rate
+depth_level=column:depth_level
+instrument=metadata2:property
+*=metadata2:property
+    ]]>
+  </header_metadata>     
+
   <property name="icon" value="/geo/xray.png"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
   <property name="form.date.label" value="Scan Date"/>
