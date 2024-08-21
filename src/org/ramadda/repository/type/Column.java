@@ -2858,7 +2858,14 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    public void setValue(Entry entry, Object[] values, String value)
+    public void setValue(Entry entry,  Object value)
+	throws Exception {
+	setValue(entry,entry.getTypeHandler().getEntryValues(entry), value);
+    }
+
+
+
+    public void setValue(Entry entry, Object[] values, Object value)
 	throws Exception {
 
 	if (isSynthetic()) {
@@ -2887,19 +2894,19 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    values[offset + 3] = Double.parseDouble(toks.get(3));
         } else if (isDate()) {
             fullDateTimeFormat.setTimeZone(RepositoryBase.TIMEZONE_UTC);
-            values[offset] = parseDate(value);
+            values[offset] = parseDate(value.toString());
         } else if (isEnumeration()) {
             values[offset] = value;
         } else if (isType(DATATYPE_BOOLEAN)) {
             if (Utils.stringDefined(value)) {
-                values[offset] = Boolean.parseBoolean(value);
+                values[offset] = Boolean.parseBoolean(value.toString());
             } else {
                 values[offset] = Boolean.FALSE;
             }
         } else if (isType(DATATYPE_INT)) {
             try {
                 if (Utils.stringDefined(value)) {
-                    values[offset] = Integer.parseInt(value);
+                    values[offset] = Integer.parseInt(value.toString());
                 } else {
                     values[offset] = Integer.valueOf(0);
                 }
@@ -2910,7 +2917,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_PERCENTAGE) || isDouble()) {
             if (Utils.stringDefined(value)) {
-                values[offset] = Double.parseDouble(value);
+                values[offset] = Double.parseDouble(value.toString());
             } else {
                 values[offset] = Double.valueOf(0);
             }
