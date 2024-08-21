@@ -3130,6 +3130,16 @@ public class EntryManager extends RepositoryManager {
 		    public int compare(Object o1, Object o2) {
 			TypeHandler t1 = (TypeHandler)o1;
 			TypeHandler t2 = (TypeHandler)o2;			
+			//A hack
+			if(t1.getType().equals("type_image")) {
+			    if(t2.getType().equals("type_image")) {
+				return 0;
+			    }
+			    return 1;
+			}
+			if(t2.getType().equals("type_image")) {
+			    return -1;
+			}			
 			String p1 = t1.getFilePattern();
 			String p2 = t2.getFilePattern();			
 			if(p1==null) p1="";
