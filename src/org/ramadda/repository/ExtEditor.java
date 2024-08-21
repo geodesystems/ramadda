@@ -1593,7 +1593,7 @@ public class ExtEditor extends RepositoryManager {
 	    changed=true;
 	}	
 
-	public void setColumnValue(String key, Object value) {
+	public void setColumnValue(String key, Object value) throws Exception {
 	    entry.setValue(key, value);
 	    changed=true;
 	}	
