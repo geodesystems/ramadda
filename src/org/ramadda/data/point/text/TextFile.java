@@ -778,12 +778,15 @@ public abstract class TextFile extends PointFile {
         }
         StringBuffer textHeader = new StringBuffer();
         for (String line : getHeaderLines()) {
+	    /*
             List<String> toks = Utils.splitUpTo(line, "=", 2);
+
             if (toks.size() == 2) {
                 if (toks.get(0).trim().indexOf(" ") < 0) {
                     continue;
                 }
             }
+	    */
             textHeader.append(line);
             textHeader.append("\n");
         }
