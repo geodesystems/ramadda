@@ -35,6 +35,7 @@ import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -100,9 +101,56 @@ public class PointTypeHandler extends RecordTypeHandler {
     public PointTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+	if(node!=null) {
+	    initMetadataMapping(node);
+	}
     }
 
+    private MetadataMapping wildCardMapping;
+    private List<MetadataMapping> metadataMapping;
+    private Hashtable<String,MetadataMapping> metadataMappingMap;    
 
+    public static class MetadataMapping {
+	String key;
+	String target;
+	boolean isColumn;
+	boolean isMetadata2;
+	MetadataMapping(String key,String target,boolean isColumn,boolean isMetadata2) {
+	    this.key = key;
+	    this.target= target;
+	    this.isColumn = isColumn;
+	    this.isMetadata2= isMetadata2;
+	}
+    }
+
+    private void initMetadataMapping(Element node) {
+	String mappingText =  XmlUtil.getGrandChildText(node,"header_metadata",null);
+	if(mappingText==null) return;
+	for(String line:Utils.split(mappingText,"\n",true,true)) {
+	    List<String> toks = StringUtil.splitUpTo(line,"=",2);
+	    if(toks.size()!=2) continue;
+	    if(metadataMapping==null) {
+		metadataMapping = new ArrayList<MetadataMapping>();
+		metadataMappingMap = new Hashtable<String,MetadataMapping>();
+	    }
+	    String key = toks.get(0);
+	    String target = toks.get(1);
+	    boolean isColumn = false;
+	    boolean isMetadata2 = false;	    
+	    if(target.startsWith("column:")) {
+		target= target.substring("column:".length()).trim();
+		isColumn=true;
+	    } else    if(target.startsWith("metadata2:")) {
+		target= target.substring("metadata2:".length()).trim();
+		isMetadata2=true;
+	    }
+	    MetadataMapping mapping = new MetadataMapping(key,target,isColumn,isMetadata2);
+	    metadataMappingMap.put(key,mapping);
+	    metadataMapping.add(mapping);
+	    if(key.equals("*")) wildCardMapping=mapping;
+	}
+
+    }
 
 
     /**
@@ -787,9 +835,71 @@ public class PointTypeHandler extends RecordTypeHandler {
         String header = pointEntry.getRecordFile().getTextHeader();
 	if(debug)
 	    System.err.println("HEADER:" + header);
-        if ((header != null) && (header.length() > 0)
-                && getTypeProperty("point.initialize", true)) {
+        if (!stringDefined(header)) return;
+	if(metadataMapping!=null) {
+	    Date startDate =null;
+	    Date endDate =null;	    
+	    //	    System.err.println("HEADER:" + header);
 
+	    for(String line:Utils.split(header,"\n",true,true)) {
+		if(!line.startsWith("#")) {
+		    continue;
+		}
+		line =line.substring(1);
+		List<String> toks = StringUtil.splitUpTo(line,"=",2);
+		if(toks.size()!=2) {
+		    continue;
+		}
+		String key = Utils.makeID(toks.get(0).trim());
+		String value = toks.get(1).trim();
+		int idx = value.indexOf(",");
+		if(idx>=0) value= value.substring(0,idx);
+		MetadataMapping mapping = metadataMappingMap.get(key);
+		if(mapping==null) {
+		    mapping = wildCardMapping;
+		}
+		if(mapping==null) {
+		    System.err.println("no map:" + key);
+		    continue;
+		}
+		if(mapping.isColumn) {
+		    System.err.println("column:" + key);
+		    if(mapping.target.equals("date")) {
+			startDate= endDate  = Utils.parseDate(value);
+			continue;
+		    }
+		    if(mapping.target.equals("startdate")) {
+			startDate=  Utils.parseDate(value);
+			continue;
+		    } 		    
+		    if(mapping.target.equals("enddate")) {
+			endDate  = Utils.parseDate(value);
+			continue;
+		    } 
+		    entry.setValue(mapping.target,value);
+		    continue;
+		}
+		System.err.println("metadata: " + mapping.target +"=" + value);
+		MetadataType type = getMetadataManager().findType(mapping.target);
+		if(type==null) {
+		    System.err.println("Could not find metadata:" + mapping.target);
+		    continue;
+		}
+		Metadata mtd  =
+                    new Metadata(getRepository().getGUID(), entry.getId(),
+                                 type, false,
+                                 mapping.isMetadata2?key:value, mapping.isMetadata2?value:null, null, null, null);
+                getMetadataManager().addMetadata(request,entry, mtd);
+	    }
+
+	    System.err.println("date:" + startDate +" - " + endDate);
+	    if(startDate!=null) entry.setStartDate(startDate.getTime());
+	    if(endDate!=null) entry.setEndDate(endDate.getTime());	    
+	}
+
+
+
+	if(getTypeProperty("point.initialize", true)) {
             String patterns = (String) getTypeProperty("record.patterns",
                                   (String) null);
 
