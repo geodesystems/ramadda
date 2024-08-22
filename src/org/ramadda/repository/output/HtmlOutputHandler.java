@@ -710,7 +710,7 @@ public class HtmlOutputHandler extends OutputHandler {
 						boolean stripe,boolean inherited,Hashtable props)
             throws Exception {
 
-	String headingClass=Utils.getProperty(props,"headingClass","ramadda-lheading");
+	String headingClass=Utils.getProperty(props,"headingClass","ramadda-metadata-heading");
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
         int toggleLimit        = Utils.getProperty(props,"propertyToggleLimit",100);
