@@ -3504,9 +3504,7 @@ pre {
 }
 
 .metadata-block {
-    margin-top:5px;
-    /*max-height:300px;
-    overflow-y:auto;*/
+    margin-left:15px;
 }
 
 .hideshowblock .metadata-block {
