@@ -116,7 +116,7 @@ message="" width="80%"  useThumbnail="true" }}
 </type>
 
 <type name="type_borehole_point"  super="type_point" description="Borehole Log File"  foruser="false"
-      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+      handler="org.ramadda.geodata.geo.BoreholeTypeHandler">      
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="icon" value="/geo/drilling-rig.png"/>
   <property name="date.nullok" value="true"/>
@@ -132,7 +132,7 @@ message="" width="80%"  useThumbnail="true" }}
 
 <type name="type_borehole_log"  super="type_borehole_point" description="Borehole Log File" 
       metadata="geo_stratigraphy,geo_measurement"
-      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+      handler="org.ramadda.geodata.geo.BoreholeTypeHandler">      
   <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true" group="Borehole Metadata"
 />
   <column  name="top"  label="Top" type="double" />
@@ -294,10 +294,10 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
 
 
 <type name="type_borehole_xrf"  super="type_point" description="Borehole XRF File" 
-      pattern="(?i).*xrv.*\.csv"
+      pattern="(?i).*core(_|-)xrf.*\.csv"
       newfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"
       editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"      
-      handler="org.ramadda.geodata.geo.BoreholeLogTypeHandler">      
+      handler="org.ramadda.geodata.geo.BoreholeTypeHandler">      
   <header_metadata>
     <![CDATA[
 xray_kv=column:xrf_voltage
@@ -464,7 +464,8 @@ inherited="false"  }}
 </type>
 
 <type name="type_borehole_coreimage"   description="Core Image"
-      handler="org.ramadda.repository.type.GenericTypeHandler">            
+      pattern="(?i).*annotated-core-photo.*\.jpg"
+      handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
   <property name="icon" value="/geo/drilling-rig.png"/>
   <property name="date.nullok" value="true"/>
   <property name="inheritlocationfromtype" value="type_geo_site"/>
@@ -477,14 +478,14 @@ inherited="false"  }}
 <![CDATA[
 +section title="Core Image: {{name}}"
 :navtop 
-+row
-+col-8
 {{group}}
 {{description wikify=true}}
 {{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"}}
 :vspace 1em
 ----
 :vspace 1em
++row
++col-8
 :heading Information
 {{information  details="true"  showTitle="false"   showResource=false}}
 -col

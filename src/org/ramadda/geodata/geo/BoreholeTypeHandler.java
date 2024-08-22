@@ -30,9 +30,11 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class BoreholeLogTypeHandler extends PointTypeHandler {
+public class BoreholeTypeHandler extends PointTypeHandler {
+
     private JSONArray holes;
-    public BoreholeLogTypeHandler(Repository repository, Element node)
+
+    public BoreholeTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
