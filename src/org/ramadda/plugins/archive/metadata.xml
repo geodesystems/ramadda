@@ -18,17 +18,17 @@
     </type>
 
     <type id="archive_term" name="Archive Term" displaygroup="Archive Terms" priority="1"
-	  cansearch="true"	  >
+	  searchable="true"	  >
       <element id="term" name="Term" datatype="enumerationplus"/>
     </type>
 
-    <type id="archive_time_period" name="Time period" cansearch="true" >
+    <type id="archive_time_period" name="Time period" searchable="true" >
       <element id="period" name="Period" datatype="enumerationplus"
 	       suffix="e.g., 1920s, 1800s, etc."
 	       />
     </type>
 
-    <type id="archive_language" name="Language" cansearch="true" >
+    <type id="archive_language" name="Language" searchable="true" >
       <element id="language" name="Language" datatype="enumerationplus"
 	       values="English,Spanish,French"/>
     </type>    
