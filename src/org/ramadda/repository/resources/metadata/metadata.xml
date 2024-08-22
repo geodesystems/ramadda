@@ -26,7 +26,8 @@
     </type>
 -->
 
-    <type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords">
+<type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords"
+      makesearchlink="true">
       <element name="Tag Value" searchable="true"/>
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
@@ -34,8 +35,9 @@
     </type>
 
 
-    <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Tags and Keywords"  >
-      <element name="Keyword"  searchable="true"/>
+    <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Tags and Keywords"
+	  makesearchlink="true">
+      <element name="Keyword"  searchable="true" />
       <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
       <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
       <template type="oaidc"><![CDATA[<dc:subject>${attr1 cdata=true}</dc:subject>]]></template>
@@ -164,9 +166,10 @@
 
 
     <type name="Property" id="property"  searchable="true" browsable="true"
+	  makesearchlink="true"
           displaygroup="Properties" >
-      <element name="Name"  searchable="true"/>
-      <element name="Value"  searchable="true"/>
+      <element name="Name"  searchable="true" />
+      <element name="Value"  searchable="true" />
       <template type="thredds"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
       <template type="atom"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
       <template type="html"><![CDATA[${Name}=${Value}]]></template>

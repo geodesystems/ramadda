@@ -203,6 +203,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         subName = XmlUtil.getAttribute(node, ATTR_SUBNAME, "");
         id      = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
+	if(id==null && getName()!=null)
+	    id = Utils.makeID(getName());
         max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
         setDataType(XmlUtil.getAttribute(node, ATTR_DATATYPE,
                                          MetadataElement.DATATYPE_STRING));
@@ -281,12 +283,15 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     @Override
     public int hashCode() {
-	if(parent!=null && id!=null)
+	if(parent!=null && id!=null) {
 	    return id.hashCode() ^ parent.hashCode();
-	if(id!=null)
+	}
+	if(id!=null) {
 	    return id.hashCode();
-	if(parent!=null)
+	}
+	if(parent!=null) {
 	    return parent.hashCode();
+	}
 	return 0;
     }
 

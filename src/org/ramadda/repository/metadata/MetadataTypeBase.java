@@ -87,8 +87,6 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
-
-
     /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
 
@@ -411,7 +409,7 @@ public class MetadataTypeBase extends RepositoryManager {
 	entryType = XmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
-                false));
+						   false));
 
         setIsTitle(XmlUtil.getAttribute(node, "istitle",false));
 

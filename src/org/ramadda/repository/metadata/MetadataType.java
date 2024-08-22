@@ -82,6 +82,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     private boolean adminOnly = false;
     private boolean isGeo = false;
     private List<String> restrictions;
+    private boolean makeSearchLink = false;
     private boolean addNot = false;
     private boolean canView = true;
     private boolean canDisplay = true;
@@ -265,6 +266,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	restrictions=Utils.split(XmlUtil.getAttributeFromTree(node,"restrictions",RESTRICTIONS_NONE),",",true,true);
 	canView = XmlUtil.getAttributeFromTree(node, "canview", true);
 	addNot = XmlUtil.getAttributeFromTree(node, "addnot", false);
+	makeSearchLink = XmlUtil.getAttributeFromTree(node, "makesearchlink", false);
 	canDisplay = XmlUtil.getAttributeFromTree(node, "candisplay", true);    	
 	showLabel = XmlUtil.getAttributeFromTree(node, "showlabel", true);    	
         setForUser(XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, true));
@@ -1019,20 +1021,20 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
 
 	List<MetadataElement> children = getChildren();
-	boolean makeSearchLink =  !smallDisplay && getSearchable() && children.size()>=1;
+	boolean makeSearchLink =  !smallDisplay && (this.makeSearchLink ||getSearchable()) && children.size()>=1;
 	if(makeSearchLink) {
-	    int cnt=0;
-	    for(MetadataElement element: children) {
-		if(element.getSearchable()) cnt++;
-	    }
-
-	    if(children.size()==1 && cnt==1) {
-	    } else  if((!children.get(0).isEnumeration() && !children.get(0).isBoolean())/* || cnt>1*/) {
-		makeSearchLink=false;
+	    if(children.size()==1) {
+		MetadataElement element= children.get(0);
+		if(element.isEnumeration() || element.isBoolean()) makeSearchLink = true;
+		else makeSearchLink = this.makeSearchLink;
+	    } else  {
+		makeSearchLink = this.makeSearchLink;
 	    }
 	}
+
+
 	makeSearchLink = Utils.getProperty(props,"addLink",makeSearchLink);
-        String htmlTemplate = getTemplate(TEMPLATETYPE_HTML);
+
 	String html = applyTemplate(request, TEMPLATETYPE_HTML,entry,metadata,null);
 	int lengthLimit = Utils.getProperty(props,"textLengthLimit",textLengthLimit);
         if (html!=null) {
@@ -1048,7 +1050,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         } else {
             int                   cnt      = 1;
             boolean               didOne   = false;
-            content.append(HU.formTable());
+            content.append("<table>");
+	    //            content.append(HU.formTable());
             for (MetadataElement element : children) {
                 MetadataElement.MetadataHtml formInfo =
                     element.getHtml(request, entry, this, metadata,
@@ -1078,7 +1081,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 cnt++;
                 content.append("\n");
             }
-            content.append(HU.formTableClose());
+            content.append("</table>");
+	    //            content.append(HU.formTableClose());
             if ( !didOne) {
                 return null;
             }
