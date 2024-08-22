@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2021 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -43,83 +43,34 @@ import java.util.HashSet;
 import java.util.List;
 
 
-/**
- *
- *
- * @author Jeff McWhirter
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
-        RecordFileContext {
-
-    /**  */
+									   RecordFileContext {
     public static boolean debug = false;
-
-    /** _more_ */
     private static int IDX = 0;
-
-    /** _more_ */
     public static final int IDX_RECORD_COUNT = IDX++;
-
-    /** _more_ */
     public static final int IDX_PROPERTIES = IDX++;
-
-    /** _more_ */
     public static final int IDX_LAST = IDX_PROPERTIES;
-
-    /** _more_ */
     private RecordFileFactory recordFileFactory;
-
-    /** _more_ */
     private RecordOutputHandler recordOutputHandler;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     * @param description _more_
-     */
     public RecordTypeHandler(Repository repository, String type,
                              String description) {
         super(repository, type, description);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param repository ramadda
-     * @param node _more_
-     * @throws Exception On badness
-     */
+    
     public RecordTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getContextNamespace() {
         return getTypeProperty("record.namespace", "record");
     }
 
-    /**
-     * _more_
-     *
-     * @param field _more_
-     * @param key _more_
-     *
-     * @return _more_
-     */
+    
     public String getFieldProperty(String field, String key) {
         key = getContextNamespace() + "." + field + "." + key;
         String v = getRepository().getProperty(key);
@@ -130,21 +81,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public PropertyProvider getPropertyProvider() {
         return getRepository();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RecordOutputHandler getRecordOutputHandler() {
         if (recordOutputHandler == null) {
             try {
@@ -158,20 +101,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -192,41 +122,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public RecordOutputHandler doMakeRecordOutputHandler() throws Exception {
         return new RecordOutputHandler(getRepository(), null);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToProcessingForm(Request request, Entry entry,
                                     Appendable sb)
             throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param recordEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public boolean includedInRequest(Request request, RecordEntry recordEntry)
             throws Exception {
         return true;
@@ -234,14 +141,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tabTitles _more_
-     * @param tabContents _more_
-     */
+    
     @Override
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
@@ -270,15 +170,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param originalFile _more_
-     * @param force _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initializeRecordEntry(Entry entry, File originalFile,
                                       boolean force)
             throws Exception {
@@ -302,20 +194,19 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         String   contents = makePropertiesString(properties);
         Object[] values   = entry.getTypeHandler().getEntryValues(entry);
         //Append the properties file contents
-        if (values[IDX_PROPERTIES] != null) {
-            values[IDX_PROPERTIES] = "\n" + contents;
-        } else {
-            values[IDX_PROPERTIES] = contents;
+        Column column = entry.getTypeHandler().getColumn("properties");
+
+	if(column!=null) {
+	    int index = column.getOffset();
+	    if (values[index] != null) {
+		values[index] = "\n" + contents;
+	    } else {
+		values[index] = contents;
+	    }
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     *
-     * @return _more_
-     */
+    
     public String makePropertiesString(Hashtable properties) {
         StringBuffer sb = new StringBuffer();
         for (java.util.Enumeration keys = properties.keys();
@@ -331,35 +222,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
+    
     public void log(String msg) {
         getRepository().getLogManager().logInfo("RecordTypeHandler:" + msg);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String getEntryCategory(Entry entry) {
         return getTypeProperty("entry.category", "");
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param originalEntry _more_
-     *
-     * @throws Exception On badness
-     */
+    
     @Override
     public void initializeCopiedEntry(Entry entry, Entry originalEntry)
             throws Exception {
@@ -368,22 +242,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
+    
     public Hashtable getRecordProperties(Entry entry) throws Exception {
         Object[]  values = entry.getTypeHandler().getEntryValues(entry);
 	//Some of the types have an empty values array?
 	if(values.length==0) return null;
-        String    propertiesString = (values[IDX_PROPERTIES] != null)
-                                     ? values[IDX_PROPERTIES].toString()
-                                     : "";
+        String    propertiesString = entry.getStringValue(getRepository().getAdminRequest(),
+							  "properties","");
+	//(values[IDX_PROPERTIES] != null)                                     ? values[IDX_PROPERTIES].toString()                                     : "";
 
         String    typeProperties   = getRecordPropertiesFromType(null,entry);
 
@@ -408,15 +274,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return p;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getRecordPropertiesFromType(Request request,Entry entry) throws Exception {
 	String props = getTypeProperty("record.properties", (String) null);
 	if(props!=null) {
@@ -439,29 +297,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean okToCacheRecordFile(Request request, Entry entry) {
         return getTypeProperty("record.file.cacheok", true);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getCacheFileName(Request request, Entry entry)
             throws Exception {
         String      suffix = "";
@@ -488,17 +330,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * main top level entry point to make the RecordFile
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
+    
     public final RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
         Hashtable properties = getRecordProperties(entry);
@@ -521,18 +353,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param recordFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected RecordFile initRecordFile(Request request, Entry entry,
                                         Hashtable properties,
                                         RecordFile recordFile)
@@ -553,16 +374,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
         String thePath = getPathForEntry(request, entry,true);
@@ -617,15 +429,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Macro> getMacros(Entry entry) throws Exception {
         List<Macro> macros = null;
         Hashtable   props  = getRecordProperties(entry);
@@ -642,17 +446,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return macros;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param path _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String convertPath(Request request, Entry entry, String path,
 			      Hashtable requestProperties)
             throws Exception {
@@ -744,19 +538,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
@@ -775,18 +557,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param className _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public RecordFile doMakeRecordFile(Entry entry, String className,
                                        Hashtable properties,
                                        Hashtable requestProperties)
@@ -819,26 +590,12 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param recordFile _more_
-     * @param filters _more_
-     */
+    
     public void getFilters(Request request, Entry entry,
                            RecordFile recordFile,
                            List<RecordFilter> filters) {}
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     * @param filename _more_
-     *
-     * @return _more_
-     */
+    
     @Override
     public boolean canHandleResource(String path, String filename) {
         try {
@@ -855,11 +612,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RecordFileFactory getRecordFileFactory() {
         if (recordFileFactory == null) {
             recordFileFactory = doMakeRecordFileFactory();
@@ -869,50 +622,25 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RecordFileFactory doMakeRecordFileFactory() {
         return new RecordFileFactory();
     }
 
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
+    
     public boolean isRecordFile(String path) throws Exception {
         return getRecordFileFactory().canLoad(path);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String macro(String s) {
         return "${" + s + "}";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     *
-     */
+    
     @Override
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
@@ -922,14 +650,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean shouldProcessResource(Request request, Entry entry) {
 	if(entry.getResource().hasResource()) 
 	    return entry.getTypeHandler().getTypeProperty("record.processresource",true);
@@ -938,82 +659,54 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param icon _more_
-     *
-     * @return _more_
-     */
+    
     public String getAbsoluteIconUrl(Request request, String icon) {
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getChartProperty(Request request, Entry entry, String prop,
                                    String dflt) {
         return getTypeProperty(prop, dflt);
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Feb 17, '20
-     * @author         Enter your name here...
-     */
+    
     public static class Macro {
 
-        /** _more_ */
+        
         String name;
 
-        /** _more_ */
+        
         String dflt;
 
-        /** _more_ */
+        
         String type;
 
-        /** _more_ */
+        
         String label;
 
-        /** _more_ */
+        
         String values;
 
-        /** _more_ */
+        
         boolean multiple = false;
 
-        /** _more_ */
+        
         String delimiter;
 
-        /** _more_ */
+        
         String template;
 
-        /** _more_ */
+        
         String multitemplate;
 
-        /** _more_ */
+        
         String nonetemplate;
 
-        /** _more_ */
+        
         String rows;
 
-        /**
-         * _more_
-         *
-         * @param macro _more_
-         * @param props _more_
-         */
+        
         public Macro(String macro, Hashtable props) {
             this.name = macro;
             type = Utils.getProperty(props, "request." + macro + ".type",
@@ -1042,11 +735,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
                                      null);
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public String toString() {
             return name;
         }
