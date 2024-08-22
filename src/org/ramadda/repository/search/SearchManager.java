@@ -640,6 +640,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//	MetadataManager.debugGetMetadata = true;
 	//	getMetadataManager().getMetadata(request,entry);
 	//	MetadataManager.debugGetMetadata = false;	
+	//	debugIndex=true;
 
         for (Metadata metadata : getMetadataManager().getMetadata(request,entry)) {
 	    MetadataType type = getMetadataManager().getType(metadata);
@@ -1223,6 +1224,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             arg = arg.substring(metadataPrefix.length());
 	    List<String> toks = Utils.splitUpTo(arg,"_",2);
 	    if(toks.size()!=2) continue;
+
             String type = toks.get(1);
 	    int index = Integer.parseInt(toks.get(0));
 	    MetadataType metadataType=getMetadataManager().findType(type);
@@ -1243,10 +1245,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		infos.add(typeInfo);
 	    }
 	    MetadataElementSearchInfo info =  typeInfo.get(element);
-	    //            String type = toks.get(1)+"_"+index;
 	    for(String value: values) {
 		info.addValue(value);
-		//		cats.add(type,value);
 	    }
 	}
 	for(MetadataTypeSearchInfo typeInfo: infos) {
