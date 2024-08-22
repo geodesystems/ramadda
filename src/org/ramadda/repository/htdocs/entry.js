@@ -843,9 +843,18 @@ function Entry(props) {
 				      [ATTR_TITLE,'Search for entries of this type created by this user']);
 		return created;
 	    }
+	    
+	    if(what=="latitude") {
+		return this.getLatitude();
+	    }		
+	    if(what=="longitude") {
+		return this.getLongitude();
+	    }
 	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat);
 	    if(what=="changedate") return HU.span(['class','ramadda-datetime','title',this.changeDate],this.changeDateFormat);
-	    if(what=="size") return this.getFilesize()?this.getFormattedFilesize():"---";
+	    if(what=="size") {
+		return this.getFilesize()?this.getFormattedFilesize():"---";
+	    }
 	    if(what=="type") return this.typeName;
 	    return "Unknown:" + what;
 	},

@@ -3490,8 +3490,12 @@ pre {
     background-color:#f8f8f8;    
 }
 
+.ramadda-metadata-heading {
+    font-weight:bold;
+}    
+
 .metadata-group .metadata-row {
-    margin-left: 20px;
+    /*margin-left: 20px;*/
 }
 
 

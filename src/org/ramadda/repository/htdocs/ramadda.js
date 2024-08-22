@@ -291,8 +291,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(c=='name' && props.showName)
 		cols.push({id:"name",label:"Name",width:props.nameWidth});
 	    else if(c=='date' && props.showDate)
-		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});		    
-	    else if(c=='createdate' && props.showCreateDate)
+		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
+	    else if(c=='geo') {
+		cols.push({id:"latitude",label:"Latitude",width:100});
+		cols.push({id:"longitude",label:"Longitude",width:100});		
+	    }  else if(c=='createdate' && props.showCreateDate)
 		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='download' && props.showDownload)
 		cols.push({id:c,label:"&nbsp;Download&nbsp;",width:100,align:'left'});
@@ -300,7 +303,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:c,label:"&nbsp;Time&nbsp;",width:100,align:'right'});	    	    
 	    else if(c=='creator' && props.showCreator)
 		cols.push({id:c,label:"Creator",width:props.creatorWidth??200});	    
-
 	    else if(c=='entryorder' && props.showEntryOrder)
 		cols.push({id:c,label:"Order",width:75});
 
