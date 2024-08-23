@@ -8369,7 +8369,7 @@ public class EntryManager extends RepositoryManager {
     public List<String> getChildIds(Request request, Entry group, SelectInfo select)
 	throws Exception {
 
-	boolean debug = group.getId().equals("a86d071a-f098-4354-839f-1f58e2656854");
+	boolean debug = false;
 	if(select==null) select = new SelectInfo(request, group);
 
         boolean isSynthEntry = isSynthEntry(group.getId());
