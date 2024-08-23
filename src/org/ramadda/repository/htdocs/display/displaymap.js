@@ -722,12 +722,16 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    let mapLayers = this.getProperty('mapLayers');
 		    //Check to make sure it is an array
 		    if(mapLayers && mapLayers.forEach) {
+			this.displayingMapLayer = false;
+
 			let process=(layer)=>{
 			    let url
 			    if(layer.type=='shapefile')
 				url = RamaddaUtil.getUrl('/entry/show?output=shapefile.kml&entryid=' + layer.id);
 			    else 
 				url =  this.getRamadda().getEntryDownloadUrl(layer.id);
+			    if(layer.match)
+				this.displayingMapLayer = true;
 			    this.addBaseMapLayer(url, layer.name, layer.type=='kml'||layer.type=='shapefile',layer.match,layer.style);
 			};
 			mapLayers.forEach(layer=>{if(layer.match) process(layer);});
@@ -1756,7 +1760,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if(this.getProperty("kmlLayer") ||
 	       this.getProperty("shapefileLayer") ||
 	       this.getProperty("geojsonLayer") ||
-	       this.getProperty('mapLayers')) {
+	       this.displayingMapLayer) {
 		if(this.getShowLayers()) {
 		    return this.showVectorLayer;
 		}
@@ -2117,6 +2121,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(debug)    console.log("\tclick:no map")
                 return;
             }
+
             if (this.doDisplayMap()) {
 		if(debug)    console.log("\tclick: no display map")
                 return;
