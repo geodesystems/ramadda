@@ -34,7 +34,7 @@ import java.util.Hashtable;
 
 /**
  */
-public class LasTypeHandler extends BoreholeLogTypeHandler {
+public class LasTypeHandler extends BoreholeTypeHandler {
 
 
 
