@@ -2834,7 +2834,7 @@ MapGlyph.prototype = {
 	this.attrs[ID_SHOWDATAICONS] = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
-	console.log('xxx',url);
+//	console.log('xxx',url);
 	this.style.legendUrl = legendUrl;
 	this.attrs.mapServerUrl = url;
 	this.attrs.wmsLayer = wmsLayer;
