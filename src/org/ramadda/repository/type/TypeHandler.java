@@ -2248,8 +2248,8 @@ public class TypeHandler extends RepositoryManager {
 		    addDateToHtml(request,typeHandler,entry,sb);		
 		else if(field.equals("owner"))
 		    addOwnerToHtml(request,typeHandler,entry,sb);								
-		else if(field.equals("altitude"))
-		    addAltitudeToHtml(request,typeHandler,entry,sb);
+		//		else if(field.equals("altitude"))
+		//		    addAltitudeToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("_columns")) {
 		    addColumnsToHtml(request,typeHandler, entry, sb,seen);
 		} else if(field.equals("_default")) {
@@ -2901,8 +2901,8 @@ public class TypeHandler extends RepositoryManager {
 		addDateToHtml(request,typeHandler,entry,sb);
 	}
 
-	if(!seen.contains("altitude"))
-	    addAltitudeToHtml(request,typeHandler,entry,sb);
+	//	if(!seen.contains("altitude"))
+	//	    addAltitudeToHtml(request,typeHandler,entry,sb);
     }
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
@@ -3120,8 +3120,8 @@ public class TypeHandler extends RepositoryManager {
 	    sb.append(formEntry(request, msgLabel("Location"),
 				"Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request)));
 	}
-
-
+	//	seen.add("altitude");
+	addAltitudeToHtml(request,this,entry,sb);
     }
 
 
