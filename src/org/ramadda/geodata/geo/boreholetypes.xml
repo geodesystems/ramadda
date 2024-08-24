@@ -75,7 +75,8 @@ includeNonImages=false
       >
     <property name="icon" value="/geo/site.png"/>
     <property name="form.area.show" value="false"/>
-    <property name="form.location.show" value="true"/>    
+    <property name="form.location.show" value="true"/>
+    <property name="form.altitude.show" value="true"/>    
     <property name="search.metadatatypes"      value=""/>
     <property name="date.nullok" value="true"/>
     <property name="form.resource.show" value="false"/>
