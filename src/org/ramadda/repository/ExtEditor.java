@@ -1553,7 +1553,12 @@ public class ExtEditor extends RepositoryManager {
 	public void setLocation(double lat,double lon) {
 	    entry.setLocation(lat,lon);
 	    changed=true;
-	}	
+	}
+
+	public void setAltiude(double alt) {
+	    entry.setAltitude(alt);
+	    changed=true;
+	}		
 
 
 	public void setLocationFromParent() {
