@@ -710,6 +710,9 @@ function EntryType(props) {
 }
 
 
+var ENTRY_NONGEO = -9999;
+
+
 //class:Entry
 function Entry(props) {
     if (props.repositoryId == null) {
@@ -719,7 +722,7 @@ function Entry(props) {
         props.repositoryId = ramaddaBaseUrl;
     }
 
-    let NONGEO = -9999;
+    let NONGEO = ENTRY_NONGEO;
     if (props.typeObject) {
         props.type = new EntryType(props.typeObject);
     } else if (props.type) {
@@ -850,6 +853,10 @@ function Entry(props) {
 	    if(what=="longitude") {
 		return this.getLongitude();
 	    }
+
+	    if(what=="altitude") {
+		return this.getAltitude();
+	    }	    
 	    if(what=="createdate") return HU.span(['class','ramadda-datetime','title',this.createDate],this.createDateFormat);
 	    if(what=="changedate") return HU.span(['class','ramadda-datetime','title',this.changeDate],this.changeDateFormat);
 	    if(what=="size") {
@@ -955,6 +962,10 @@ function Entry(props) {
 		return getRamadda(this.remoteRepository.url);
             return getRamadda(this.repositoryId);
         },
+	checkGeo:function(v) {
+	    if(v==ENTRY_NONGEO) return NaN;
+	    return v;
+	},
         getLocationLabel: function() {
             return "n: " + this.getNorth() + " w:" + this.getWest() + " s:" + this.getSouth() + " e:" + this.getEast();
         },
@@ -978,43 +989,49 @@ function Entry(props) {
         },
         getNorth: function() {
             if (this.bbox) {
-                return this.bbox[3];
+                return this.checkGeo(this.bbox[3]);
             }
             if (this.geometry) {
-                return this.geometry.coordinates[1];
+                return this.checkGeo(this.geometry.coordinates[1]);
             }
-            return NONGEO;
+            return NaN;
         },
         getWest: function() {
-            if (this.bbox) return this.bbox[0];
+            if (this.bbox) return this.checkGeo(this.bbox[0]);
             if (this.geometry) {
-                return this.geometry.coordinates[0];
+                return this.checkGeo(this.geometry.coordinates[0]);
             }
-            return NONGEO;
+            return NaN;
         },
         getSouth: function() {
-            if (this.bbox) return this.bbox[1];
+            if (this.bbox) return this.checkGeo(this.bbox[1]);
             if (this.geometry) {
-                return this.geometry.coordinates[1];
+                return this.checkGeo(this.geometry.coordinates[1]);
             }
-            return NONGEO;
+            return NaN;
         },
         getEast: function() {
-            if (this.bbox) return this.bbox[2];
+            if (this.bbox) return this.checkGeo(this.bbox[2]);
             if (this.geometry) {
-                return this.geometry.coordinates[0];
+                return this.checkGeo(this.geometry.coordinates[0]);
             }
-            return NONGEO;
+            return NaN;
         },
+        getAltitude: function() {
+	    if(Utils.isDefined(this.altitudeTop)) return this.altitudeTop;
+	    if(Utils.isDefined(this.altitudeBottom)) return this.altitudeBottom;	    
+	    return NaN;
+	},
+
         getLatitude: function() {
             if (this.geometry) {
-                return this.geometry.coordinates[1];
+                return this.checkGeo(this.geometry.coordinates[1]);
             }
             return this.getNorth();
         },
         getLongitude: function() {
             if (this.geometry) {
-                return this.geometry.coordinates[0];
+                return this.checkGeo(this.geometry.coordinates[0]);
             }
             return this.getWest();
         },

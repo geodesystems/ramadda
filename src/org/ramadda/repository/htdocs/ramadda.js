@@ -294,7 +294,13 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		cols.push({id:"fromdate",label:"Date",width:props.fromDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='geo') {
 		cols.push({id:"latitude",label:"Latitude",width:100});
-		cols.push({id:"longitude",label:"Longitude",width:100});		
+		cols.push({id:"longitude",label:"Longitude",width:100});
+		cols.push({id:"altitude",label:"Altitude",width:100});
+	    } else if(c=='altitude') {
+		cols.push({id:"altitude",label:"Altitude",width:100});		
+	    }	else if(c=='latlon') {
+		cols.push({id:"latitude",label:"Latitude",width:100});
+		cols.push({id:"longitude",label:"Longitude",width:100});
 	    }  else if(c=='createdate' && props.showCreateDate)
 		cols.push({id:c,label:"Create Date",width:props.createDateWidth??props.dateWidth??dateWidth});
 	    else if(c=='download' && props.showDownload)
@@ -619,6 +625,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let last = idx==cols.length-1;
 		let attrs = [ATTR_CLASS,'entry-row'];
 		let v = entry.getProperty(col.id,{},props.inlineEdit)??'';
+		if(typeof v=='number' && isNaN(v))
+		    v ='NA'
 		let _v = v;
 		let title = null;
 		v  = HU.span([ATTR_CLASS,this.props.textClass??'',ATTR_STYLE,this.props.textStyle??''],v);
