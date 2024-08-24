@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Aug 23 04:26:56 MDT 2024";
+var build_date="RAMADDA build date: Sat Aug 24 05:40:17 EDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -51319,6 +51319,22 @@ MapGlyph.prototype = {
 				HU.hbox([HU.textarea('',this.attrs.rangeRingStyle??'',[ATTR_ID,this.domId('rangeringstyle'),'rows',5,'cols', 40]),
 					 'Format:<br>ring #,style:value,style:value  e.g.:<br>1,fillColor:red,strokeColor:blue<br>2,strokeDashstyle:dot|dash|dashdot|longdash<br>N,strokeColor:black<br>*,strokeWidth:5<br>even,...<br>odd,...']));
 	}
+	if(this.isMapServer()) {
+	    let url = this.getMapServerUrl();
+	    if(Utils.stringDefined(url)) {
+		let extra = HU.formEntry("Server URL:",
+				    HU.input('',url,[ATTR_ID,this.domId('serverurl'),'size','60']));
+
+		if(Utils.stringDefined(this.attrs.wmsLayer)) {
+		    extra += HU.formEntry("WMS Layer:",
+					  HU.input('',this.attrs.wmsLayer,[ATTR_ID,this.domId('wmslayer'),'size','20']));
+		}
+		return extra;
+	    }
+
+	}
+
+
 	if(this.isMapServer() && this.getDatacubeVariable()) {
 	    return HU.formEntry('Color Table:',HU.div([ATTR_ID,this.domId('colortableproperties')]));
 	}	    
@@ -51530,6 +51546,14 @@ MapGlyph.prototype = {
 	    this.checkVisible();
 	}
 	this.setShowMarkerWhenNotVisible(this.display.jq('showmarkerwhennotvisible').is(':checked'));
+
+	if(this.isMapServer()) {
+	    let url = this.jq('serverurl').val();
+	    console.log(this.mapServerLayer);
+	    if(url) {
+		console.log(url);
+	    }
+	}
 
 	if(this.isMapServer()  && this.getDatacubeVariable()) {
 	    if(this.currentColorbar!=this.getDatacubeVariable().colorBarName) {
@@ -53674,6 +53698,7 @@ MapGlyph.prototype = {
 	this.attrs[ID_SHOWDATAICONS] = v;
     },
     setMapServerUrl:function(url,wmsLayer,legendUrl,predefined,mapOptions) {
+	console.log('xxx',url);
 	this.style.legendUrl = legendUrl;
 	this.attrs.mapServerUrl = url;
 	this.attrs.wmsLayer = wmsLayer;
