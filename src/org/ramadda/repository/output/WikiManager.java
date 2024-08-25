@@ -7370,7 +7370,7 @@ public class WikiManager extends RepositoryManager
 
             if (thumbnail) {
                 List<String> urls = new ArrayList<String>();
-                getMetadataManager().getThumbnailUrls(request, child, urls);
+                getMetadataManager().getThumbnailUrls(request, child, urls,false);
                 if (urls.size() > 0) {
                     url = urls.get(0);
                 }
