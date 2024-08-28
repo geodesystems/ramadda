@@ -508,6 +508,22 @@ public class UserManager extends RepositoryManager {
         //Use localProperties so plugins can't slide in an admin password
         String adminFromProperties =
             getRepository().getLocalProperty(PROP_ADMIN, null);
+
+
+	//Check if we should generate an admin password
+        if (adminFromProperties == null && getRepository().getProperty("ramadda.admin.setpassword",false)) {
+	    adminFromProperties = "admin:" + Utils.generatePassword(8);
+	    File file = new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),
+						"admin.properties"));
+
+	    try (FileOutputStream fos = new FileOutputStream(file)) {
+		IOUtil.write(fos, "#This is the generated password for the admin account\n#You can either: \n#change the password here and it will be set to this every time RAMADDA starts up \n#or:\n#login with this password, change your password through RAMADDA then delete this file\n" +
+			     "ramadda.admin=" + adminFromProperties+"\n");
+		logInfo("RAMADDA: the admin user password has been generated and written to:" + file);
+	    }
+	}
+								       
+
         if (adminFromProperties != null) {
             List<String> toks = Utils.split(adminFromProperties, ":");
             if (toks.size() != 2) {
@@ -524,7 +540,7 @@ public class UserManager extends RepositoryManager {
             }
             user.setPassword(hashPassword(rawPassword));
             if ( !userExistsInDatabase(user)) {
-                System.err.println("Creating new admin user:" + user);
+                logInfo("RAMADDA: Creating new admin user:" + user);
                 makeOrUpdateUser(user, true);
             } else {
                 //                System.err.println("Updating password for admin user:" + user);
