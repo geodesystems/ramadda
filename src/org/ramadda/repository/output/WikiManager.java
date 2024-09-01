@@ -4247,7 +4247,7 @@ public class WikiManager extends RepositoryManager
 		    if(weights.size()==0) weights=null;
                 }
 
-                int innerHeight = getProperty(wikiUtil, props, "inner-height", 200);
+                int innerHeight = getProperty(wikiUtil, props, "inner-height", getProperty(wikiUtil,props,"innerHeight",200));
                 int minHeight = getProperty(wikiUtil, props,  "inner-minheight", -1);
                 int maxHeight = getProperty(wikiUtil, props, "inner-maxheight", 300);
                 StringBuilder innerStyle = new StringBuilder();
@@ -4433,9 +4433,7 @@ public class WikiManager extends RepositoryManager
                 return sb.toString();
             } else {
                 //TABS
-                int innerHeight = getProperty(wikiUtil, props,
-					      "inner-height", -1);
-
+                int innerHeight = getProperty(wikiUtil, props, "inner-height", getProperty(wikiUtil,props,"innerHeight",-1));
                 if (innerHeight > 1) {
                     List<String> tmp = new ArrayList<String>();
                     for (String content : contents) {
