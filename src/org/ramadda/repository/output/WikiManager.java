@@ -4062,8 +4062,7 @@ public class WikiManager extends RepositoryManager
 
 	    if(embedLink) headingClass+=" ramadda-subheading-embed";
 	    headingClass=HU.cssClass(headingClass);
-            boolean showLink = !flipCards && getProperty(wikiUtil, props, ATTR_SHOWLINK,
-							 true);
+            boolean showLink = !flipCards && getProperty(wikiUtil, props, ATTR_SHOWLINK, true);
 
             boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
                                              false);
