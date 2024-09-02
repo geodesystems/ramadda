@@ -1,6 +1,6 @@
 /**
    Copyright (c) 2008-2024 Geode Systems LLC
-d   SPDX-License-Identifier: Apache-2.0
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.search;
@@ -806,7 +806,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	boolean reIndexing =   request.getExtraProperty("reindexing")!=null;
 	File f = new File(path);
-	File corpusFile = getStorageManager().getTmpFilePath(request,"text_" + entry.getId()+"_" + f.length()+"_"+f.getName());
+
+	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
+        File corpusFile = new File(IOUtil.joinDir(getStorageManager().getEntryDir(entry.getId(),
+										  true), corpusFileName));
+	//	System.err.println("corpus:" + corpusFile.exists() +" " + corpusFile);
+
 	if(corpusFile.exists()) {
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus file exists:" + f.getName());
