@@ -89,7 +89,7 @@
  {"name":"Puerto Rico Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/puerto_rico.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
  {"name":"Rhode Island Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/rhode_island.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
  {"name":"South Carolina Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/south_carolina.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
- {"name":"South Ddakota Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/south_dakota.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
+ {"name":"South Dakota Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/south_dakota.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
  {"name":"Tennessee Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/tennessee.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
  {"name":"Texas Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/texas.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
  {"name":"Utah Cities",   "type":"geo_geojson",   "url":"${root}/resources/uscities/utah.geojson","style":{"strokeWidth":0,"pointRadius":3,"fillColor":"blue"}},
