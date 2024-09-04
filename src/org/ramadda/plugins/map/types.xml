@@ -159,7 +159,14 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
       handler="org.ramadda.plugins.map.ShapefileTypeHandler"
       pattern="(.*\.shp$|.*shp.*\.zip|.*\.shz)"
       metadata="shapefile_display,shapefile_color,map_displaymap">
-  <newhelp>Hint: To use conversion services name your file .shz or .shp.zip</newhelp>
+<newhelp><![CDATA[
+Note: RAMADDA only displays WGS84 Shapefiles. If your map doesn't project correctly
+you will need to convert it to WGS84 projection.
+<br>
+Hint: To use conversion services name your file .shz or .shp.zip
+]]>
+</newhelp>
+<property name="form.properties.show" value="false"/>
   <property name="icon" value="/icons/mapfile.png"/>
   <property name="upload.zip" value="true"/>
   <property name="mimetype" value="application/zipped-shapefile"/>
