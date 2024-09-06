@@ -359,9 +359,9 @@ public class GeoJson extends JsonUtil {
 
 	    for(int pidx=0;pidx<props.size() && allOk && !anyOk;pidx+=2) {
 		String prop = props.get(pidx);
+		if(!Utils.stringDefined(prop)) continue;
 		String value = props.get(pidx+1);
 		boolean   isRegexp = StringUtil.containsRegExp(value);
-		if(!Utils.stringDefined(prop)) continue;
 		haveProp=true;
 		boolean    gotName   = false;
 		for (int j = 0; (j < names.length) && !gotName; j++) {
@@ -373,7 +373,11 @@ public class GeoJson extends JsonUtil {
 			if (isRegexp) {
 			    matches = v.matches(value);
 			} else {
-			    matches = v.equals(value);
+			    if(value.startsWith("=")) {
+				matches = v.equals(value.substring(1));
+			    } else {
+				matches = v.toLowerCase().indexOf(value.toLowerCase())>=0;
+			    }
 			}
 			if(matchAll) {
 			    allOk = matches;
