@@ -3836,6 +3836,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		}
 
 		let popup = '<center><h2>Current Location</h2></center>';
+
 		if(this.isIsolineEnabled()) {
 		    popup+=HU.onClick('ImdvUtils.getImdv(\'' + this.getId() +'\').addIsolineForCurrentMarker()',	    HU.getIconImage('fa-regular fa-circle-dot')+' ' +'Add Isoline');
 		}
@@ -5284,6 +5285,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    Utils.bufferedCall(this.getId()+'_checkvisible', ()=>{this.checkVisible();});
 		},true);
 	    },500);
+
 	    this.getMap().featureClickHandler = e=>{
 		let debug = false;
 		let feature = e.feature;
@@ -5295,7 +5297,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
  		    if(debug)console.log('\tno mapGlyph');
 		    return true;
 		}
-		return this.handleMapGlyphClick(mapGlyph,e.event? e.event.xy:null);
+		return this.handleMapGlyphClick(mapGlyph,e.event? e.event.xy:null,e);
 	    };
 
 	    /*
@@ -5355,10 +5357,13 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    }
 	},
 
-	handleMapGlyphClick:function(mapGlyph,xy) {	
+	handleMapGlyphClick:function(mapGlyph,xy,event) {	
 	    if(mapGlyph==null) return false;
 	    let debug = false;
 	    if(mapGlyph.isMap()) {
+		if(event && event.event && event.feature && event.event.altKey) {
+//		    return false;
+		}
  		if(debug)console.log('\tis map');
 		return true;
 	    }
