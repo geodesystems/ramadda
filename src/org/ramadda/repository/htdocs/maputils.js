@@ -751,25 +751,33 @@ new MapLayer('google.satellite','Google Maps - Satellite','https://mt0.google.co
 new MapLayer('naip','NAIP - USDA',
 	     'https://gis.apfo.usda.gov/arcgis/rest/services/NAIP/USDA_CONUS_PRIME/ImageServer/tile/${z}/${y}/${x}?blankTile=false',{attribution:'Map courtesy of USDA'});
 
-new MapLayer('naip-esri','NAIP - ESRI',
+new MapLayer('naip.esri','NAIP - ESRI',
 	     'https://naip.maptiles.arcgis.com/arcgis/rest/services/NAIP/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 
-new MapLayer('naip-caltopo','NAIP - CalTopo',
+new MapLayer('naip.caltopo','NAIP - CalTopo',
 	     'https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
 
 
-
-
-
-
-
 new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+
+new MapLayer('usgs.imagery.topo','USGS Imagery-Topo',
+	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+
+
+new MapLayer('usgs.hydro','USGS Hydro',
+	     'https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+
+
+
 new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 new MapLayer('esri.lightgray','ESRI Light Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 new MapLayer('esri.darkgray','ESRI Dark Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 new MapLayer('esri.terrain','ESRI Terrain','https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 new MapLayer('shadedrelief','Shaded Relief','https://caltopo.com/tile/hs_m315z45s3/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+
+new MapLayer('world.hillshade','World Hillshade','https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
+
 new MapLayer('publiclands','Public Lands','https://caltopo.com/tile/sma/${z}/${x}/${y}.png',
 	     {attribution:'Map courtesy of Caltopo',isOverlay:true,legend:ramaddaBaseUrl+'/images/publiclands.png'});
 new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer/tile/${z}/${y}/${x}'],

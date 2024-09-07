@@ -930,9 +930,9 @@ RepositoryMap.prototype = {
 	let center =   this.transformProjPoint(this.getMap().getCenter())
 
 	if(toConsole) {
-	    console.log(latlon.top, latlon.left,latlon.bottom,latlon.right);
-	    console.log(this.getMap().getZoom());
-	    console.log(r(center.lat),r(center.lon));
+	    console.log('bounds:',latlon.top, latlon.left,latlon.bottom,latlon.right);
+	    console.log('zoom:',this.getMap().getZoom());
+	    console.log('center:',r(center.lat),r(center.lon));
 	    return
 	} 
 	if(this.params.addToUrl) {
@@ -3166,9 +3166,10 @@ RepositoryMap.prototype = {
 	if(this.keyDownListener) {
 	    if(this.keyDownListener(evt)) return;
 	}
-
-
 	if(evt.ctrlKey && evt.shiftKey) {
+	    if(evt.key=='L') {
+		console.log('map layer:',this.getMap().baseLayer?.ramaddaId);
+	    }
 	    if(evt.key=='B') {
 		this.locationChangedInner(true);
 	    }
