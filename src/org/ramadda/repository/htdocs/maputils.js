@@ -730,27 +730,6 @@ new MapLayer('osm','OSM',['//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
 	     {attribution:'Map courtesy of OSM'});
 
 
-/*
-https://geoint.nrlssc.navy.mil/#/
-let cvrt = (layer,m)=>{
-    let url = '//geoint.nrlssc.navy.mil/nrltileserver/wmts/1.0.0/{layer}/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png';
-    url = 'https://geoint.nrlssc.navy.mil/nrltileserver/wmts/DBDBV/1.0.0/{layer}/default/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.png'
-    m=m??'GoogleMapsCompatible';
-//    m='GlobalCRS84Pixel';
-//    m='GlobalCRS84Scale';
-//    m='GoogleCRS84Quad';
-//    m='NRLTileScheme';
-//    m='NRLTileScheme256';
-//    m='NRLTileSchemeAlt1';
-//    m='UPSNorthTileSet';
-//    m='UPSSouthTileSet';
-    return url.replace(/{layer}/,layer).replace(/{TileMatrixSet}/,m).replace(/{TileMatrix}/,'\${z}').replace(/{TileRow}/,'\${y}').replace(/{TileCol}/,'\${x}');
-};
-new MapLayer('test','Test',[cvrt()]);
-new MapLayer('bluemarble','Blue Marble',[cvrt('bluemarble','GoogleMapsCompatible')]);
-*/
-
-
 new MapLayer('esri.topo','ESRI Topo','https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}',
 	     {isForMap:true,attribution:'Map courtesy of ESRI'});
 new MapLayer('google.roads','Google Maps - Roads','https://mt0.google.com/vt/lyrs=m&hl=en&x=${x}&y=${y}&z=${z}',{attribution:'Map courtesy of Google'});
@@ -769,7 +748,22 @@ new MapLayer('google.terrain','Google Maps - Terrain','https://mt0.google.com/vt
 	     {attribution:'Map courtesy of Google'});
 new MapLayer('google.satellite','Google Maps - Satellite','https://mt0.google.com/vt/lyrs=s&hl=en&x=${x}&y=${y}&z=${z}',{attribution:'Map courtesy of Google'});
 
-new MapLayer('naip','NAIP Imagery','https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+new MapLayer('naip','NAIP - USDA',
+	     'https://gis.apfo.usda.gov/arcgis/rest/services/NAIP/USDA_CONUS_PRIME/ImageServer/tile/${z}/${y}/${x}?blankTile=false',{attribution:'Map courtesy of USDA'});
+
+new MapLayer('naip-esri','NAIP - ESRI',
+	     'https://naip.maptiles.arcgis.com/arcgis/rest/services/NAIP/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
+
+new MapLayer('naip-caltopo','NAIP - CalTopo',
+	     'https://caltopo.com/tile/n/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+
+
+
+
+
+
+
+
 new MapLayer('usgs.imagery','USGS Imagery','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}', {attribution:'USGS - The National Map'});
 new MapLayer('esri.shaded','ESRI Shaded Relief','https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
 new MapLayer('esri.lightgray','ESRI Light Gray','https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}',{attribution:'Map courtesy of ESRI'});
