@@ -2768,11 +2768,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    }
 		}
 
-		private boolean fileListingOK(Request request) {
-		    return request.getUser().getAdmin()
-			|| ( !request.getUser().getAnonymous()
-			     && getProperty(PROP_ENABLE_FILE_LISTING, false));
-		}
 
 		public Result outputEntry(Request request, OutputType outputType,
 					  Entry entry)
@@ -2787,55 +2782,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     throws Exception {
 		    return outputFileListing(request, group, children);
 
-		}
-		public Result outputFileListing(Request request, Entry entry,
-						List<Entry> entries)
-                    throws Exception {
-
-		    if ( !fileListingOK(request)) {
-			throw new AccessException("File listing not enabled",
-						  request);
-		    }
-		    StringBuilder sb = new StringBuilder();
-		    getPageHandler().entrySectionOpen(request, entry, sb,
-						      "File Listing");
-		    boolean       didOne   = false;
-		    StringBuilder forAdmin = new StringBuilder();
-		    for (Entry child : entries) {
-			Resource resource = child.getResource();
-			if (resource == null) {
-			    continue;
-			}
-			if ( !resource.isFile()) {
-			    continue;
-			}
-			forAdmin.append(resource.getTheFile().toString());
-			forAdmin.append(HU.br());
-
-			sb.append(
-				  child.getTypeHandler().getEntryResourceHref(
-									      request, child));
-			sb.append(
-				  formatFileLength(
-						   child.getResource().getFileSize(), true));
-			sb.append(HU.br());
-			didOne = true;
-		    }
-		    if (request.getUser().getAdmin()) {
-			sb.append("<hr>");
-			sb.append(getPageHandler().msgHeader("File Paths"));
-			sb.append(forAdmin);
-		    }
-		    if ( !didOne) {
-			sb.append(
-				  getPageHandler().showDialogNote(
-								  "No files available"));
-		    }
-
-		    getPageHandler().entrySectionClose(request, entry, sb);
-
-		    return makeLinksResult(request, msg("File Listing"), sb,
-					   new State(entry));
 		}
 
 		public String toString() {
@@ -2884,6 +2830,69 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         getUserManager().initOutputHandlers();
 
+    }
+
+    private boolean fileListingOK(Request request) {
+	return request.getUser().getAdmin()
+	    || ( !request.getUser().getAnonymous()
+		 && getProperty(PROP_ENABLE_FILE_LISTING, false));
+    }
+
+
+    public Result outputFileListing(Request request, Entry entry,  List<Entry> entries)
+	throws Exception {
+	if ( !fileListingOK(request)) {
+	    throw new AccessException("File listing not enabled",
+				      request);
+	}
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "File Listing");
+	StringBuilder sb2 = new StringBuilder();
+	int length = sb.length();
+	boolean recurse = request.get("recurse",false);
+	StringBuilder forAdmin = new StringBuilder();
+	long size = outputFileListingInner(request, entry,  entries, sb2,  forAdmin,recurse);
+
+	if(sb2.length()==0) {
+	    sb.append(getPageHandler().showDialogNote("No files available"));
+	} else {
+	    sb.append("Total size: " + getPageHandler().formatFileLength(size));
+	    sb.append("<br>");
+	    sb.append(sb2);
+	    if (request.getUser().getAdmin()) {
+		sb.append("<hr>");
+		sb.append(getPageHandler().msgHeader("File Paths"));
+		sb.append(forAdmin);
+	    }
+	}
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return getHtmlOutputHandler().makeLinksResult(request, msg("File Listing"), sb,
+						      new OutputHandler.State(entry));
+    }
+
+
+    private long outputFileListingInner(Request request, Entry entry,  List<Entry> entries,StringBuilder sb, StringBuilder forAdmin,boolean recurse) throws Exception {
+	long size =  0;
+	for (Entry child : entries) {
+	    Resource resource = child.getResource();
+	    if (resource != null && resource.isFile()) {
+		forAdmin.append(resource.getTheFile().toString());
+		forAdmin.append(HU.br());
+		sb.append(child.getTypeHandler().getEntryResourceHref(request, child));
+		long fileSize = child.getResource().getFileSize();
+		size+=fileSize;
+		sb.append(getPageHandler().formatFileLength(fileSize, true));
+		sb.append(HU.br());
+	    }
+
+	    if(recurse) {
+		List<Entry> children= getEntryManager().getChildren(request, child);
+		if(children.size()>0) {
+		    size+=outputFileListingInner(request,child,children, sb,forAdmin,recurse);
+		}
+	    }
+	}
+	return size;
     }
 
     private boolean createTypeOK(Request request) {
