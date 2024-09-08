@@ -2854,7 +2854,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	int []entryCnt={0};
 	int []fileCnt={0};	
 
-	long size = outputFileListingInner(request, entry,  entries, sb2,  "&nbsp;&nbsp;",forAdmin,recurse,entryCnt,fileCnt);
+	long size = outputFileListingInner(request, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt);
 
 	if(sb2.length()==0) {
 	    sb.append(getPageHandler().showDialogNote("No files available"));
@@ -2876,7 +2876,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    private long outputFileListingInner(Request request, Entry entry,  List<Entry> entries,StringBuilder sb, String indent,
+    private long outputFileListingInner(Request request, Entry entry,  List<Entry> entries,StringBuilder sb, 
 					StringBuilder forAdmin,boolean recurse,    int []entryCnt,int []fileCnt) throws Exception {
 	long size =  0;
 	for (Entry child : entries) {
@@ -2886,19 +2886,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		fileCnt[0]++;
 		forAdmin.append(resource.getTheFile().toString());
 		forAdmin.append(HU.br());
-		sb.append(indent);
 		//		sb.append(child.getTypeHandler().getEntryResourceHref(request, child));
 		sb.append(getEntryManager().getEntryLink(request, child,true,""));
 		long fileSize = child.getResource().getFileSize();
 		size+=fileSize;
-		sb.append(getPageHandler().formatFileLength(fileSize, true));
+		sb.append("&nbsp;");
+		sb.append(getPageHandler().formatFileLength(fileSize));
 		sb.append(HU.br());
 	    }
 
 	    if(recurse) {
 		List<Entry> children= getEntryManager().getChildren(request, child);
 		if(children.size()>0) {
-		    size+=outputFileListingInner(request,child,children, sb,indent+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",forAdmin,recurse,entryCnt,fileCnt);
+		    StringBuilder sb2 = new StringBuilder();
+		    long size2=0;
+		    size2+=outputFileListingInner(request,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt);
+		    size+=size2;
+		    if(sb2.length()>0) {
+			sb.append(getEntryManager().getEntryLink(request, child,true,""));
+			sb.append(" total size: " + getPageHandler().formatFileLength(size2));
+			sb.append("<div style='margin-left:20px;'>");
+			sb.append(sb2);
+			sb.append("</div>");
+		    }
+
 		}
 	    }
 	}
