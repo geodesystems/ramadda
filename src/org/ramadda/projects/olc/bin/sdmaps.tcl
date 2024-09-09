@@ -1,6 +1,6 @@
 
 
-array set ::types {hyd Hydropgraphy bound {County Boundary} tnrg {Township Lines} quads {Quadrangle Boundaries} bnd {Political Boundaries} sec {Section Lines} rds Roads hypsography Hypsography}
+array set ::types {hyd Hydropgraphy bound {County Boundary} tnrg {Township Lines} quads {Quadrangle Boundaries} bnd {Political Boundaries} sec {Section Lines} rds Roads hypsography Hypsography rr Railroads}
 set ::shapeFiles {}
 
 set ::entries "<entries>\n"
@@ -20,7 +20,7 @@ proc fetchMaps {id name} {
 }
 
 proc makeShapes {mapId dir countyName} {
-    append ::entries "<entry type=\"type_map_folder\" name=\"$countyName Maps\" id=\"$mapId\"/>\n"
+    append ::entries "<entry type=\"group\" name=\"$countyName Maps\" id=\"$mapId\"/>\n"
     foreach shp [glob $dir/*.shp] {
 	set id [file rootname [file tail $shp]]
 	set files [glob $dir/$id.*]
@@ -38,6 +38,15 @@ proc makeShapes {mapId dir countyName} {
 
 
 fetchMaps td {Todd County}
+fetchMaps tr {Tripp County}
+fetchMaps mt {Mellette County}
+fetchMaps bt {Bennett County}
+fetchMaps mt {Mellette County}
+fetchMaps sn {Oglala Lakota County}
+fetchMaps ja {Jackson County}
+
+
+
 append ::entries "</entries>\n"
 set fp [open entries.xml w]
 puts $fp $::entries
