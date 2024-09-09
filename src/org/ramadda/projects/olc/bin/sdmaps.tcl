@@ -1,6 +1,6 @@
 
 
-array set ::types {hyd Hydropgraphy bound {County Boundary} tnrg {Township Lines} quads {Quadrangle Boundaries} bnd {Political Boundaries} sec {Section Lines} rds Roads hypsography Hypsography rr Railroads}
+array set ::types {hyd Hydrography bound {County Boundary} tnrg {Township Lines} quads {Quadrangle Boundaries} bnd {Political Boundaries} sec {Section Lines} rds Roads hypsography Hypsography rr Railroads}
 set ::shapeFiles {}
 
 set ::entries "<entries>\n"
@@ -41,7 +41,6 @@ fetchMaps td {Todd County}
 fetchMaps tr {Tripp County}
 fetchMaps mt {Mellette County}
 fetchMaps bt {Bennett County}
-fetchMaps mt {Mellette County}
 fetchMaps sn {Oglala Lakota County}
 fetchMaps ja {Jackson County}
 
