@@ -2754,8 +2754,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-        OutputHandler fileListingHandler = new OutputHandler(getRepository(),
-							     "File Listing") {
+        OutputHandler fileListingHandler = new OutputHandler(getRepository(), "File Listing") {
 		public boolean canHandleOutput(OutputType output) {
 		    return output.equals(OUTPUT_FILELISTING);
 		}
@@ -2763,8 +2762,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 					  List<Link> links)
                     throws Exception {
 		    if (fileListingOK(request)) {
-			links.add(makeLink(request, state.getEntry(),
-					   OUTPUT_FILELISTING));
+			links.add(makeLink(request, state.getEntry(), OUTPUT_FILELISTING));
 		    }
 		}
 
@@ -2848,8 +2846,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb, "File Listing");
 	StringBuilder sb2 = new StringBuilder();
-	int length = sb.length();
 	boolean recurse = request.get("recurse",false);
+	if(!recurse) {
+	    String url = request.entryUrl(
+					  getRepository().URL_ENTRY_SHOW, entry,
+					  ARG_OUTPUT, OUTPUT_FILELISTING.toString());
+	    sb.append(HU.center(HU.href(HU.url(url,"recurse","true"),"Recurse File Listing")));
+	}
 	StringBuilder forAdmin = new StringBuilder();
 	int []entryCnt={0};
 	int []fileCnt={0};	
