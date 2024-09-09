@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -53,100 +53,36 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ShapefileTypeHandler extends PointTypeHandler implements WikiConstants {
 
-    /** _more_ */
     public static final String PROP_ADD_SHAPES = "addShapes";
-
-    /** _more_ */
     public static final String PROP_ADD_POINTS = "addPoints";
-
-
-    /** _more_ */
     public static final String PROP_FIELDS = "fields";
-
-    /** _more_ */
     public static final String PROP_FIELDS_NOGEO = "fieldsNoGeo";
-
-    /** _more_ */
     public static final String PROP_FIELDS_WITHSHAPES = "fieldsWithShapes";
-
-    /** _more_ */
     public static final String PROP_FIELDS_WITHPOINTS = "fieldsWithPoints";
-
-
-
-
-    /** _more_ */
     public static int MAX_POINTS = 200000;
 
-
-    /** _more_ */
     private static final int IDX_LON = 0;
-
-    /** _more_ */
     private static final int IDX_LAT = 1;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public ShapefileTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
 
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public EsriShapefile getShapefile(Entry entry) throws Exception {
         return getOutputHandler().getShapefile(entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean shouldProcessResource(Request request, Entry entry) {
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
-    public void initializeEntryFromForm(Request request, Entry entry,
-                                        Entry parent, boolean newEntry)
-            throws Exception {
-        super.initializeEntryFromForm(request, entry, parent, newEntry);
-
-
-        if ( !newEntry) {
-            return;
-        }
+    @Override
+    public void initializeNewEntry(Request request, Entry entry,NewType newType)
+	throws Exception {
+        super.initializeNewEntry(request, entry, newType);
+        if(!isNew(newType)) return;
         if ( !entry.isFile()) {
 	    //            System.err.println("Shapefile not a file");
 	    //            return;
@@ -187,17 +123,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         entry.setEast(lonlat[IDX_LON][0]);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param firstCall _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
@@ -208,14 +133,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void metadataChanged(Request request, Entry entry)
             throws Exception {
@@ -223,14 +140,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         getEntryManager().updateEntry(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tabTitles _more_
-     * @param tabContents _more_
-     */
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {
@@ -256,17 +165,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         }
     }
 
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param map _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
@@ -347,19 +245,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         return super.addToMapSelector(request, entry, forEntry, map);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param topProps _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
@@ -384,18 +269,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         return super.getUrlForWiki(request, entry, tag, props, topProps);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getCacheFileName(Request request, Entry entry)
             throws Exception {
@@ -410,20 +283,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
-
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
@@ -432,75 +292,24 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                        new IO.Path(entry.getResourcePath(request)), null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private ShapefileOutputHandler getOutputHandler() throws Exception {
         return (ShapefileOutputHandler) getRepository().getOutputHandler(
             ShapefileOutputHandler.class);
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public class ShapefileRecordFile extends CsvFile {
-
-        /** _more_ */
         Request request;
-
-        /** _more_ */
         Entry entry;
-
-        /** _more_ */
         EsriShapefile shapefile;
-
-        /** _more_ */
         Hashtable props;
-
-
-
-        /** _more_ */
         String fields;
-
-
-        /** _more_ */
         String fieldsNoGeo;
-
-
-        /** _more_ */
         String fieldsWithShapes;
-
-        /** _more_ */
         String fieldsWithPoints;
-
-
-        /** _more_ */
         boolean addShapes;
+	boolean addPoints;
 
-        /** _more_ */
-        boolean addPoints;
-
-        /**
-         * _more_
-         *
-         *
-         * @param request _more_
-         * @param entry _more_
-         * @param entryProperties _more_
-         * @param filename _more_
-         * @param shapefile _more_
-         * @throws Exception _more_
-         */
         public ShapefileRecordFile(Request request, Entry entry,
                                    Hashtable entryProperties,
                                    IO.Path path, EsriShapefile shapefile)
@@ -533,28 +342,11 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             }
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         @Override
         public boolean shouldCreateCsvFile() {
             return true;
         }
 
-        /**
-         * _more_
-         *
-         * @param file _more_
-         * @param fos _more_
-         * @param buffered _more_
-         * @param commands _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         protected void doCreateCsvFile(File file, OutputStream fos,
                                        boolean buffered,
@@ -567,16 +359,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
                                             false, addPoints, addShapes);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
@@ -595,17 +377,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return visitInfo;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param addPoints _more_
-         * @param addShapes _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         private String makeFields(boolean addPoints, boolean addShapes)
                 throws Exception {
             List<String[]> fileFields = getFields(request, entry);
@@ -631,15 +402,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return makeFields(fields);
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @param failureOk _more_
-         *
-         * @return _more_
-         */
         @Override
         public List<RecordField> doMakeFields(boolean failureOk) {
             try {
@@ -660,14 +422,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public String getEntryFieldsProperties() throws Exception {
             fieldsNoGeo = makeFields(false, false);
             String result = "#fields for data access. do not change\n"
@@ -676,16 +430,6 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
             return result;
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param entry _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public List<String[]> getFields(Request request, Entry entry)
                 throws Exception {
             List<String[]> fields = new ArrayList<String[]>();
