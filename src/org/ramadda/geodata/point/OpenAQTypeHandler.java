@@ -74,8 +74,15 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
 	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
+	String key = getRepository().getProperty("openaq.api.key",null);
+	if(key==null) {
+	    throw new IllegalStateException("No OpenAQ API key is defined");
+	}
+
 	String url = HU.url("https://api.openaq.org/v2/locations/" + id,"limit","100","page","1","offset","0");
-	IO.Result result = IO.doGetResult(new URL(url));
+	IO.Path path  =new IO.Path(url);
+	path.setRequestArgs(new String[]{"X-API-Key",key});
+	IO.Result result = IO.getHttpResult(path);
 	if(result.getError()) {
 	    getLogManager().logError("OpenAQTypeHandler: Error reading location:" +url+" error:" + result.getResult());
 	    throw new IllegalArgumentException("Error reading location:" + result.getResult());
@@ -102,7 +109,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
 	throws Exception {
-        return new OpenAQRecordFile(entry, new IO.Path(getPathForEntry(request, entry,true)));
+	IO.Path path = new IO.Path(getPathForEntry(request, entry,true));
+	String key = getRepository().getProperty("openaq.api.key",null);
+	if(key==null) {
+	    throw new IllegalStateException("No OpenAQ API key is defined");
+	}
+	path.setRequestArgs(new String[]{"X-API-Key",key});
+	return new OpenAQRecordFile(entry, path);
     }
 
     @Override
