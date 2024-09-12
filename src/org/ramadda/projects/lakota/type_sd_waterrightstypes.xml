@@ -23,7 +23,7 @@ csvcommands2=-addheader, daterecord.type date   daterecord.format SSS
 {{description wikify=true}}
 +row
 +col-8
-{{display_linechart fields=reading height=250px}} 
+{{display_linechart fields=reading height=250px pointSize=2  lineWidth=0.5}} 
 :heading Table
 {{display_download}}
 {{display_table}}
