@@ -4,7 +4,8 @@ proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
 proc well {id lat lon url1 url2 url3} {
-    set url "https://sdgis.sd.gov/danr/rest/services/BIT_Systems/NR69_Observation_Wells_Public/MapServer/1/query?f=geojson&text=${id}&where=IsManual%20%3D%201%20and%20IsExpired%20%3D%200%20and%20Reading%20%3C%3E%200%20and%20IsApproved%20%3D%201%20and%20ObsWell%20%3D%20%27CN-57BR%27&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CObsWell%2CReading%2CDateRecord%2CLatitude%2CLongitude%2CIsManual&orderByFields=DateRecord%20DESC"
+    set url "https://sdgis.sd.gov/danr/rest/services/BIT_Systems/NR69_Observation_Wells_Public/MapServer/1/query?f=json&text=${id}&where=IsManual%20%3D%201%20and%20IsExpired%20%3D%200%20and%20Reading%20%3C%3E%200%20and%20IsApproved%20%3D%201%20and%20ObsWell%20%3D%20%27${id}%27&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CObsWell%2CReading%2CDateRecord%2CLatitude%2CLongitude%2CIsManual&orderByFields=DateRecord%20ASC" 
+
     regsub -all "&" $url "&amp;" url
     set desc "+note\nData is from \[https://apps.sd.gov/NR69ObsWell/default.aspx?$id apps.sd.gov\]\n-note\n"
     puts "<entry type=\"type_sd_waterrights\" latitude=\"$lat\" longitude=\"$lon\" url=\"$url\" well=\"$id\" name=\"SD Water Rights Well  - $id\">"

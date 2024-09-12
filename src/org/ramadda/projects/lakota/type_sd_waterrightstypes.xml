@@ -1,0 +1,40 @@
+<types>
+<!-- Copy this into your ramadda home/plugins directory and restart RAMADDA-->
+<type  name="type_sd_waterrights"  description="South Dakota Water Rights"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point"  supercategory="Geoscience" >
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/emojis/1f6b0.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.properties.show"  value="false" />
+
+<!-- Columns-->
+<column  name="well"  label="Well"  type="string"  help="" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-json,features,attributes,-columns,daterecord\,reading\,latitude\,longitude
+csvcommands2=-addheader, daterecord.type date   daterecord.format SSS
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="{{name}}"
+{{description wikify=true}}
++row
++col-8
+{{display_linechart fields=reading height=250px}} 
+:heading Table
+{{display_download}}
+{{display_table}}
+-col
++col-4
+{{field name=well fieldPrefix="<b>Well:</b> "}}
+{{map  width=90%  hideIfNoLocations="true" }}
+-col
+-row
+:heading Information
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }} 
+-section]]></wiki>
+</type>
+</types>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../" default="plugin" name="ramadda plugin">
+    <target name="plugin">
+      <property name="plugin" value="lakota"/>
+      <property name="plugin_jar" value="${plugin}plugin.jar"/>
+      <property name="plugin_dir" value="org/ramadda/projects/${plugin}"/>
+      <property name="plugin_group" value="projectplugins"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build"/>
+      <copy overwrite="true" file="${basedir}/dist/plugins/projectplugins/${plugin_jar}" tofile="${basedir}/src/${plugin_dir}/${plugin_jar}"/>
+    </target>
+</project>
