@@ -427,6 +427,8 @@ inherited="false"  }}
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
+
+
   <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
   <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
@@ -472,6 +474,11 @@ inherited="false"  }}
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
+  <!-- NBCP_1993_Titusville_1.annotated-core-photo_B001.jpg -->
+
+  <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
+  <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
+  <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
   <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"
 	  candisplay="false" editable="false" canlist="false"/>     
 
@@ -491,6 +498,10 @@ inherited="false"  }}
 {{information  details="true"  showTitle="false"   showResource=false}}
 -col
 +col-4
+{{properties  message=""  metadata.types="geo_project,geo_site"
+oneLine="true"
+xheadingClass="formgroupheader" xlayout="linear"  includeTitle="false"  separator=""  decorate="false" 
+inherited="true"  }} 
 +center
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center

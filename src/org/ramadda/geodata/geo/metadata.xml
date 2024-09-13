@@ -7,6 +7,11 @@
     </type>
 
 
+    <type id="geo_site" name="Geo Site"> 
+      <element id="site" name="Site" datatype="enumerationplus" />
+    </type>
+    
+
     <type id="geo_measurement" name="Geo Measurement"> 
       <element id="measurement" name="Measurement" datatype="enumerationplus"
 	       values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
