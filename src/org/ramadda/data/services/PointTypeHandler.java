@@ -121,12 +121,18 @@ public class PointTypeHandler extends RecordTypeHandler {
 	    this.isColumn = isColumn;
 	    this.isMetadata2= isMetadata2;
 	}
+	public boolean isWildcard() {
+	    return key.equals("*");
+	}
     }
 
     private void initMetadataMapping(Element node) {
 	String mappingText =  XmlUtil.getGrandChildText(node,"header_metadata",null);
 	if(mappingText==null) return;
+
+
 	for(String line:Utils.split(mappingText,"\n",true,true)) {
+	    if(line.startsWith("#")) continue;
 	    List<String> toks = StringUtil.splitUpTo(line,"=",2);
 	    if(toks.size()!=2) continue;
 	    if(metadataMapping==null) {
@@ -147,7 +153,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 	    MetadataMapping mapping = new MetadataMapping(key,target,isColumn,isMetadata2);
 	    metadataMappingMap.put(key,mapping);
 	    metadataMapping.add(mapping);
-	    if(key.equals("*")) wildCardMapping=mapping;
+	    if(mapping.isWildcard()) wildCardMapping=mapping;
 	}
 
     }
@@ -863,7 +869,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 		    continue;
 		}
 		if(mapping.isColumn) {
-		    System.err.println("column:" + key);
 		    if(mapping.target.equals("date")) {
 			startDate= endDate  = Utils.parseDate(value);
 			continue;
@@ -879,7 +884,6 @@ public class PointTypeHandler extends RecordTypeHandler {
 		    entry.setValue(mapping.target,value);
 		    continue;
 		}
-		System.err.println("metadata: " + mapping.target +"=" + value);
 		MetadataType type = getMetadataManager().findType(mapping.target);
 		if(type==null) {
 		    System.err.println("Could not find metadata:" + mapping.target);
