@@ -714,6 +714,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<TwoFacedObject> result = new ArrayList<TwoFacedObject>();
         boolean showMetadata        = request.get(ARG_SHOWMETADATA, false);
         int toggleLimit        = Utils.getProperty(props,"propertyToggleLimit",100);
+        boolean oneLine       = Utils.getProperty(props,"oneLine",false);
         boolean              tags   = request.get("tags", false);
         List<Metadata> metadataList = getMetadataManager().findMetadata(request,entry,(String)null,inherited);
         if (metadataList.size() == 0) {
@@ -811,6 +812,16 @@ public class HtmlOutputHandler extends OutputHandler {
                                  contents));
                 sb.append(HU.close("td"));
                 sb.append(HU.close("tr"));
+
+            } else if(oneLine) {
+		StringBuilder sb = new StringBuilder();
+		list.add(sb);
+		sb.append("<table><tr><td valign=right>");
+		sb.append(HU.b(label));
+		sb.append("<td><td>");
+		sb.append(contents);
+		sb.append("</td></tr><table>");
+
             } else {
 		StringBuilder sb = new StringBuilder();
 		list.add(sb);
