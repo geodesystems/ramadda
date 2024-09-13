@@ -94,6 +94,7 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("unchecked")
 public class TypeHandler extends RepositoryManager {
 
+    public static final XmlUtil XU = null;
     public enum CorpusType {
 	LLM,
 	SEARCH
@@ -224,6 +225,7 @@ public class TypeHandler extends RepositoryManager {
 
     private String fileNotPattern;    
     private String geoPosition;
+    private List<MetadataPattern> metadataPatterns;
 
     /**
      *   the field_file_pattern attribute in types.xml. Used when trying to figure out what entry type
@@ -326,6 +328,23 @@ public class TypeHandler extends RepositoryManager {
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN, filePattern);
+
+	    List nodes = XmlUtil.findChildren(node, "filename_metadata");
+	    for (int i = 0; i < nodes.size(); i++) {
+		Element pnode= (Element) nodes.get(i);
+		if(metadataPatterns==null)
+		    metadataPatterns= new ArrayList<MetadataPattern>();
+		MetadataPattern mp = new MetadataPattern(
+							 XU.getAttribute(pnode,"pattern",(String)null),
+							 XU.getAttribute(pnode,"column",(String)null),
+							 XU.getAttribute(pnode,"metadata_type",(String)null));
+		metadataPatterns.add(mp);
+	    }
+
+
+
+
+
 	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             help     = Utils.getAttributeOrTag(node, "help", help);
@@ -3274,6 +3293,61 @@ public class TypeHandler extends RepositoryManager {
             parent.initializeNewEntry(request, entry, newType);
         } else 	{
 	    initializeColumns(request, entry, newType);
+	}
+
+	if(metadataPatterns!=null     && entry.getResource().isFile()) {
+	    String fileName = getStorageManager().getOriginalFilename(entry.getFile().getName());
+	    Date startDate = null,endDate = null; 
+	    for(MetadataPattern mp: metadataPatterns) {
+		Matcher matcher = mp.pattern.matcher(fileName);
+		if ( !matcher.find()) {
+		    System.err.println("filename pattern: no match:" + mp.spattern +" file:" + fileName);
+		    continue;
+		}
+		    
+		String v1 = matcher.group(1);
+		String v2 = matcher.groupCount()>1?matcher.group(2):null;
+		String v3 = matcher.groupCount()>2?matcher.group(3):null;		
+		System.err.println("filename pattern: match:" + v1 + " " + v2 +" " + v3);
+		if(mp.column!=null) {
+		    try {
+			if(mp.column.equals("date")) {
+			    startDate= endDate  = Utils.parseDate(v1);
+			    continue;
+			}
+			if(mp.column.equals("startdate")) {
+			    startDate=  Utils.parseDate(v1);
+			    continue;
+			} 		    
+			if(mp.column.equals("enddate")) {
+			    endDate  = Utils.parseDate(v1);
+			    continue;
+			} 
+			entry.setValue(mp.column,v1);
+		    } catch(Exception exc) {
+			String message = "Error extracting metadata from filename:" + fileName +
+			    " for entry:" + entry.getName() +" id:" + entry.getId() +
+			    " Error: " + exc;
+			getSessionManager().addSessionMessage(request, message);
+			getLogManager().logError(message,exc);
+		    }
+		    continue;
+		}
+		MetadataType type = getMetadataManager().findType(mp.metadataType);
+		if(type==null) {
+		    System.err.println("filename pattern: could not find metadata:" + mp.metadataType);
+		    continue;
+		}
+		Metadata mtd  =
+                    new Metadata(getRepository().getGUID(), entry.getId(),
+                                 type, false,
+				 v1, v2, v3, null, null);
+                getMetadataManager().addMetadata(request,entry, mtd);
+	    }
+	    if (startDate != null) 
+		entry.setStartDate(startDate.getTime());
+	    if (endDate != null) 
+		entry.setEndDate(endDate.getTime());		
 	}
 
 
@@ -6837,5 +6911,19 @@ public class TypeHandler extends RepositoryManager {
 
     }
     
+    public static class MetadataPattern {
+	String spattern;
+	Pattern pattern;
+	String column;
+	String metadataType;
+	MetadataPattern(String spattern,String column, String metadataType) {
+	    this.spattern = spattern;
+	    pattern =  Pattern.compile(this.spattern);
+	    this.column = column;
+	    this.metadataType = metadataType;
+	}
+    }
+
+
 
 }
