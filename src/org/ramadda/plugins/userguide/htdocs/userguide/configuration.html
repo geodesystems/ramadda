@@ -33,74 +33,14 @@ pre {
 
 :navleft
 
-
-a<a name="cdn"></a>
-:heading Using a CDN
-By default RAMADDA serves up all of its HTML resources (javascript, css, images etc) 
-from its own server. However, for performance, RAMADDA can be configured to use
-external content delivery networks (CDN) by setting this property:
-
-+pre addCopy=true
-ramadda.cdnok=true
--pre
-
-
-For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
-<pre>
-https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
-</pre>
-
-For other resources RAMADDA uses the standard CDN for the resource, e.g.:
-<pre>
-https://code.jquery.com/jquery-3.3.1.min.js
-</pre>
-
-There are also a number of other flags
-+pre addCopy=true
-#Chunk all of the css together
-ramadda.css.all=true
-
-#Serve the javascript minified and chunked 
-ramadda.minified=true
-
-#When displaying an entry serve up the beginning of the page before
-#any processing of the contents of the page
-ramadda.streamoutput=true
-
-#cache the web resources in memory
-ramadda.cachehtdocs=true
--pre
++center
+:pagesearch selector=.configitem
+-center
 
 
 
 
 
-:heading Page Templates
-See <a href=templates.html>templates.html</a>
-
-:heading RAMADDA version, contact and security.txt
-To see the server info go to the <a href="${root}/info">${root}/info</a> link.
-:p
-If you want to add a contact for your site then set the property in a
-.properties file in your RAMADDA home directory:
-+pre addCopy=true
-ramadda.contact=...
--pre
-
-You can add any other information for this page with:
-+pre addCopy=true
-ramadda.information=This  is my server...
--pre
-
-
-RAMADDA also provides a security.txt file that follows the specification
-from <a href=https://securitytxt.org/>https://securitytxt.org/</a>. The URL is:
-<a href="${root}/well-known/security.txt">${root}/well-known/security.txt</a>.
-<br>
-You can change the contact with the following property:
-+pre addCopy=true
-ramadda.security.contact=mailto:youremail@foo.com
--pre
 
 +callout-info
 There are lots of ways  of configuring your RAMADDA server.
@@ -108,30 +48,10 @@ Along with these configuration options there are a number of other
 services that can be configured. See <a href=services.html>here</a> for more information.
 -callout
 
-<a name="zoomable"></a>
-:heading Zoomable Images
-The Zoomable Image entry type uses an external script, magick-slicer.sh,
-that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.image.slicer=/path/to/magick-slicer.sh
--pre
-
-
-<a name="tesseract"></a>
-:heading Tesseract OCR
-When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
-This text can then be used for searching. To configure this first install
-<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
-Once installed add the below property to your repository.properties file:
-
-+pre addCopy=true
-ramadda.tesseract=/path/to/tesseract
--pre
-
-
 <a name="pdf"></a>
+<div class=configitem>
 :heading Generating thumbnails of PDFs
+
 Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
 package to automatically generate a thumbnail image of the the page of a PDF file by
 setting the property:
@@ -140,47 +60,114 @@ setting the property:
 service.gs=/path/to/bin/gs
 -pre
 
+If on Amazon AWS you can do:
++pre addCopy=true
+sudo yum install ghostscript
+-pre
+
+To find out where GS is located do:
++pre addCopy=true
+which gs
+-pre
+
+
+</div>
+
+
+<div class=configitem>
+:heading Using LLM Models
+See <a href=llm.html>llm.html</a></div>
+
+
+<a name="zoomable"></a>
+<div class=configitem>
+:heading Zoomable Images
+
+The Zoomable Image entry type uses an external script, magick-slicer.sh,
+that is available on <a href=https://github.com/geodesystems/ramadda/blob/master/bin/magick-slicer.sh>Github</a>. This script requires <a href=https://imagemagick.org/index.php>ImageMagic</a> to be installed. Once installed add the below property to your repository.properties file:
+
++pre addCopy=true
+ramadda.image.slicer=/path/to/magick-slicer.sh
+-pre
+
+If running on Amazon AWS you can install ImageMagick with:
++pre addCopy=true
+sudo yum install -y ImageMagick ImageMagick-devel
+-pre
+
+</div>
+
+
+<a name="tesseract"></a>
+<div class=configitem>
+:heading Tesseract OCR
+
+When ingesting images RAMADDA can extract text from the image using the Tesserarct OCR package.
+This text can then be used for searching. To configure this first install
+<a href=https://github.com/tesseract-ocr/tesseract>https://github.com/tesseract-ocr/tesseract</a>.
+Once installed add the below property to your repository.properties file:
+
++pre addCopy=true
+ramadda.tesseract=/path/to/tesseract
+-pre
+</div>
+
+
+
 
 
 <a name="jupyter"></a>
+<div class=configitem>
 :heading Rendering Jupyter Notebooks
+
 RAMADDA supports a Jupyter Notebook entry type. It will do its own custom rendering
 of the notebook. You can also configure RAMADDA to use jupyter to do the rendering
 by setting the following property value:
 +pre addCopy=true
 ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
 -pre
+</div>
 
-
+<div class=configitem>
 :heading GDAL services
+
 RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this installd GDAL and set the following properties:
-<pre>
++pre addCopy=true
 service.gdal=/usr/local/bin
 service.gdal.gdal_translate=/usr/local/bin/gdal_translate
 service.gdal.gdalinfo=/usr/local/bin/gdalinfo
 service.gdal.gdalwarp=/usr/local/bin/gdalwarp
 service.gdal.gdaldem=/usr/local/bin/gdaldem
 service.gdal.ogr2ogr=/usr/local/bin/ogr2ogr
-</pre>
-
-
-
-:heading Disabling remote search
-RAMADDA has the ability to perform remote searches on a number of external data repositories, e.g., CKAN, Socrata, Federal Reserve, REDDIT, etc. This can be disabled by setting the property
-in a repository.properties file:
-+pre
-ramadda.search.providers.show=false
 -pre
 
+If running on Amazon AWS you can install ImageMagick with:
++pre addCopy=true
+sudo amazon-linux-extras install epel -y
+sudo yum install -y gdal gdal-devel gdal-python
+-pre
+
+To find out where gdal is installed do:
++pre addCopy=true
+which gdal_translate
+-pre
+
+</div>
 
 
+
+<div class=configitem>
 :heading Archival Resource Keys (ARKS)
-To configure your RAMADDA to provide [https://arks.org/ Archival Resource Keys (ARKS)] see
-[arkids.html here].
+
+To configure your RAMADDA to provide \[https://arks.org/ Archival Resource Keys (ARKS)\] see
+\[arkids.html here\].
+</div>
 
 
 
+<div class=configitem>
 :heading Multiple Languages
+
 RAMADDA supports multiple languages. To enable this set the following property:
 +pre addCopy=true
 ramadda.languages.enabled = true
@@ -196,87 +183,45 @@ The translations for each language are defined in a ".pack" file.
 There are language packs defined in the RAMADDA source (on 
 <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/languages>Github</a>) for Spanish, French and Chinese. You can define your own language packs and place them
 in the htdocs/languages directory under your RAMADDA home directory.
-
-
-:heading Custom HTTP headers
-You can specify one or more properties in a .properties file in your RAMADDA home directory.
-
-+pre addCopy=true
-ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
-ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
-...
--pre
-
-e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
-
-+pre addCopy=true
-ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
--pre
-
-Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
-+pre addCopy=true
-curl -v "http://localhost:8080" &gt; foo
--pre
-
-
-
-:heading Embed JSON-LD Metadata
-<a href="https://json-ld.org/">JSON-LD</a> is the JSON for Linking Data  metadata standard and
-is used by Google and others to extract structured metadata from a web page.
-To enable this embedding in entry pages in RAMADDA set the following property in one of the .properties
-files in your RAMADDA home directory:
-+pre addCopy=true
-ramadda.showjsonld=true
--pre
-
-:heading Tracking Entry access
-You can enable logging of entry activities by setting the property:
-+pre addCopy=true
-ramadda.logging.logactivityfile=true
--pre
-
-When set various entry activities - view, file, data (providing data to a display) - are logged
-to a file:<br>
-&lt;ramadda home&gt;/logs/entryactivity.log
+</div>
 
 
 
 
-
-:heading Search Providers
-RAMADDA has a number of external search providers that are not RAMADDA  servers, e.g. Bureau of Labor Statistics, FRED, etc
-To disable these set:
-+pre addCopy=true
-ramadda.search.providers.show=false
--pre
+<div class=configitem>
+:heading PurpleAir Air Quality
+See <a href=/repository/point/purpleair_index.html>purpleair_index.html</a></div>
 
 
-:heading Using LLM Models
-See <a href=llm.html>llm.html</a>
-
-:heading PurpleAir
-See <a href=/repository/point/purpleair_index.html>purpleair_index.html</a>
-
-
+<div class=configitem>
 :heading NEON Data
+
 You can add NEON data entries but if you want to have a higher rate limit you should obtain an API key from NEON. Go and sign in to <a href=https://data.neonscience.org/home>NEON</a>. Once signed in create an API key and add it as a RAMADDA property:
 
 +pre addCopy=true
 neon.api.key=YOUR KEY
 -pre
+</div>
 
-:heading  Census data
+
+<div class=configitem>
+:heading Census data
 For configuring Census data see
 <a href=/repository/census/index.html>/repository/census/index.html</a>
+</div>
 
 
+<div class=configitem>
 :heading FRED, EIA, Quandl, Census data
+
 For Federal Reserve, Energy Information Agency, Quandl integration 
 see <a href=/repository/biz/index.html>/repository/biz/index.html</a>
-
+</div>
 
 <a name="otherapis"></a>
+<div class=configitem>
 :heading Other API keys
+
 
 There are a number of other services that access external APIs and require
 an API key. Here are some of them.
@@ -326,10 +271,11 @@ enigma.api.key=
 wolfram.api.key=
 
 </pre>  
-
+</div>
 
 
 <a name=twittercard></a>
+<div class=configitem>
 :heading Twitter Integration
 RAMADDA can support the <a href="https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards">Twitter Card</a> metadata standard. This embeds metadata in an entry page like the below. When a URL to a RAMADDA
 page is pasted into a post then Twitter will harvest the metadata to provide a display in the post.
@@ -349,12 +295,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=616"><img  src="images/twittercard1.png?version=616"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=616" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=300"><img  src="images/twittercard1.png?version=300"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=300" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=616"><img  src="images/twittercard2.png?version=616"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=616" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=300"><img  src="images/twittercard2.png?version=300"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=300" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
@@ -365,11 +311,12 @@ home directory:
 <pre>
 ramadda.showtwittercard=false
 </pre>
-
+</div>
 
 
 
 <a name="github"></a>
+<div class=configitem>
 :heading Embedding Github checkins
 RAMADDA supports embedding Github checkins into wiki text with the form:
 <pre>
@@ -383,6 +330,155 @@ token through Github and set the following RAMADDA property:
 +pre addCopy=true
 github.token=your token
 -pre
+</div>
+
+
+<a name="cdn"></a>
+<div class=configitem>
+:heading Using a CDN
+
+By default RAMADDA serves up all of its HTML resources (javascript, css, images etc) 
+from its own server. However, for performance, RAMADDA can be configured to use
+external content delivery networks (CDN) by setting this property:
+
++pre addCopy=true
+ramadda.cdnok=true
+-pre
+
+
+For the core resources RAMADDA uses cdn.jsdeliver.net using the latest Github version tag, e.g.:
+<pre>
+https://cdn.jsdelivr.net/gh/geodesystems/ramadda@6.60.0/...
+</pre>
+
+For other resources RAMADDA uses the standard CDN for the resource, e.g.:
+<pre>
+https://code.jquery.com/jquery-3.3.1.min.js
+</pre>
+
+There are also a number of other flags
++pre addCopy=true
+#Chunk all of the css together
+ramadda.css.all=true
+
+#Serve the javascript minified and chunked 
+ramadda.minified=true
+
+#When displaying an entry serve up the beginning of the page before
+#any processing of the contents of the page
+ramadda.streamoutput=true
+
+#cache the web resources in memory
+ramadda.cachehtdocs=true
+-pre
+
+</div>
+
+
+
+<div class=configitem>
+:heading Page Templates
+See <a href=templates.html>templates.html</a></div>
+
+<div class=configitem>
+:heading RAMADDA version, contact and security.txt
+
+To see the server info go to the <a href="${root}/info">${root}/info</a> link.
+:p
+If you want to add a contact for your site then set the property in a
+.properties file in your RAMADDA home directory:
++pre addCopy=true
+ramadda.contact=...
+-pre
+
+You can add any other information for this page with:
++pre addCopy=true
+ramadda.information=This  is my server...
+-pre
+
+
+RAMADDA also provides a security.txt file that follows the specification
+from <a href=https://securitytxt.org/>https://securitytxt.org/</a>. The URL is:
+<a href="${root}/well-known/security.txt">${root}/well-known/security.txt</a>.
+<br>
+You can change the contact with the following property:
++pre addCopy=true
+ramadda.security.contact=mailto:youremail@foo.com
+-pre
+</div>
+
+<div class=configitem>
+:heading Custom HTTP headers
+
+You can specify one or more properties in a .properties file in your RAMADDA home directory.
+
++pre addCopy=true
+ramadda.httpheader1=&lt;header name&gt;:&lt;header value&gt;
+ramadda.httpheader2=&lt;header name&gt;:&lt;header value&gt;  
+...
+-pre
+
+e.g: For specifying <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security">HSTS</a> Strict-Transport-Security header you would do:
+
++pre addCopy=true
+ramadda.httpheader1=Strict-Transport-Security:max-age=86400; includeSubDomains
+-pre
+
+Once you restart your RAMADDA it is a good idea to check the headers, e.g. with curl:
++pre addCopy=true
+curl -v "http://localhost:8080" &gt; foo
+-pre
+</div>
+
+
+<div class=configitem>
+:heading Embed JSON-LD Metadata
+
+<a href="https://json-ld.org/">JSON-LD</a> is the JSON for Linking Data  metadata standard and
+is used by Google and others to extract structured metadata from a web page.
+To enable this embedding in entry pages in RAMADDA set the following property in one of the .properties
+files in your RAMADDA home directory:
++pre addCopy=true
+ramadda.showjsonld=true
+-pre
+</div>
+
+<div class=configitem>
+:heading Tracking Entry access
+
+You can enable logging of entry activities by setting the property:
++pre addCopy=true
+ramadda.logging.logactivityfile=true
+-pre
+
+When set various entry activities - view, file, data (providing data to a display) - are logged
+to a file:<br>
+&lt;ramadda home&gt;/logs/entryactivity.log
+</div>
+
+
+
+<div class=configitem>
+:heading Search Providers
+
+RAMADDA has a number of external search providers that are not RAMADDA  servers, e.g. Bureau of Labor Statistics, FRED, etc
+To disable these set:
++pre addCopy=true
+ramadda.search.providers.show=false
+-pre
+</div>
+
+<div class=configitem>
+:heading Disabling remote search
+
+RAMADDA has the ability to perform remote searches on a number of external data repositories, e.g., CKAN, Socrata, Federal Reserve, REDDIT, etc. This can be disabled by setting the property
+in a repository.properties file:
++pre
+ramadda.search.providers.show=false
+-pre
+</div>
+
+
 
 
 
