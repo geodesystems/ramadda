@@ -63,6 +63,8 @@ picky=false
 
 <type name="type_file_text"  description="Text File" pattern="(.*\.txt)"  category="Documents">
 <property name="icon" value="/icons/text.png"/>
+<action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+
 <wiki><![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
