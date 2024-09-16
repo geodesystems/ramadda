@@ -2622,7 +2622,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_URLDECODE, "URL decode the columns",
 		ARG_LABEL,"URL Decode",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
-        new Cmd(CMD_MAP, "Change values in column to new values",
+	new Cmd(CMD_MAP, "Change values in column to new values",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("new column name"),
                 new Arg("value","old_value new_value old_value new_value")),
@@ -4930,8 +4930,22 @@ public class Seesv implements SeesvCommands {
 
 	
 	defineFunction(CMD_MAP, 3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnMapper(getCols(args.get(++i)), args.get(++i),
-							    Utils.parseCommandLine(args.get(++i))));
+		List<String> values;
+		List<String> cols  = getCols(args.get(++i));
+		String name = args.get(++i);
+		String v = args.get(++i);
+		if(v.indexOf(":")>=0) {
+		    values = new ArrayList<String>();
+		    for(String tok:Utils.split(v,",",true,true)) {
+			List<String> toks2=  Utils.split(tok,":");
+			System.err.println("T:" + toks2.size());
+			values.addAll(toks2);
+		    }
+		} else {
+		    values = Utils.parseCommandLine(v);
+		}
+
+		ctx.addProcessor(new Converter.ColumnMapper(cols, name, values));
 		return i;
 	    });
 
