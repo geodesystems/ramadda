@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep  8 06:31:41 MDT 2024";
+var build_date="RAMADDA build date: Mon Sep 16 09:12:40 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8139,17 +8139,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		return null;
 	    }
 
-	    let maxRecords  = this.getMaxRecords();
-	    if(Utils.isDefined(maxRecords)) {
-		let tmp =[];
-		records.every((r,idx)=>{
-		    if(idx>=maxRecords) return false;
-		    tmp.push(r);
-		    return true;
-		});
-		records = tmp;
-	    }
-
 
             if (!fields) {
                 fields = this.getFields();
@@ -8268,7 +8257,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(debug)   this.logMsg("R-3:" + records.length);
             }
 
+
+
 	    records = this.filterDataPhase2(records);
+	    let maxRecords  = this.getMaxRecords();
+	    if(Utils.isDefined(maxRecords)) {
+		let tmp =[];
+		records.every((r,idx)=>{
+		    if(idx>=maxRecords) return false;
+		    tmp.push(r);
+		    return true;
+		});
+		records = tmp;
+	    }
+
+
+
 
 	    if(debug)   this.logMsg("filterData-3 #records:" + records.length);
 	    if(this.getFilterPaginate()) {
