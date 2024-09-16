@@ -2605,10 +2605,12 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
-                if (tline.startsWith("+callout")) {
+                if (tline.startsWith("+callout")|| tline.startsWith("+credit") ) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
+		    boolean credit = tline.startsWith("+credit");
                     String what =
-                        toks.get(0).trim().substring("+callout".length());
+                        toks.get(0).trim().substring((credit?"+credit":"+callout").length());
+		    if(credit) what = "-info";
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
                             ? toks.get(1)
                             : "");
@@ -2646,7 +2648,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     continue;
                 }
 
-                if (tline.startsWith("-callout")) {
+                if (tline.startsWith("-callout") || tline.startsWith("-credit")) {
                     HU.close(buff, TAG_DIV);
                     buff.append("</td></tr></table>");
                     HU.close(buff, TAG_DIV);
