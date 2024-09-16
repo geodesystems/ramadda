@@ -3308,7 +3308,7 @@ public class TypeHandler extends RepositoryManager {
 		String v1 = matcher.group(1);
 		String v2 = matcher.groupCount()>1?matcher.group(2):null;
 		String v3 = matcher.groupCount()>2?matcher.group(3):null;		
-		System.err.println("filename pattern: match:" + v1 + " " + v2 +" " + v3);
+		//		System.err.println("filename pattern: match:" + v1 + " " + v2 +" " + v3);
 		if(mp.column!=null) {
 		    try {
 			if(mp.column.equals("date")) {
