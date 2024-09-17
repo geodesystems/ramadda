@@ -639,7 +639,8 @@
     <copy overwrite="true" file="${release_dir}/installer/awscli.sh" todir="${installer_dir}"/>
     <copy overwrite="true" file="${release_dir}/installer/updateimage.sh" todir="${installer_dir}"/>
 -->
-    <copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}"/>
+<copy overwrite="true" file="${release_dir}/installer/README" todir="${installer_dir}"/>
+    <copy overwrite="true" file="${release_dir}/installer/README_ENV" todir="${installer_dir}"/>
     <zip destfile="${dist_dir}/ramaddainstaller.zip">
       <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
     </zip>
