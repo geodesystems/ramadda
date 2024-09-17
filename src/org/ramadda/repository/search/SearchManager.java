@@ -227,6 +227,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
 	tesseractPath = getRepository().getScriptPath("ramadda.tesseract");
 	indexImages = getRepository().getProperty("ramadda.indeximages",false);
+	String tikaConfig =  getRepository().getProperty("ramadda.tika.config",null);
+	if(tikaConfig!=null ) {
+	    System.err.println("SearchManager: set config file:" + tikaConfig);
+	    TikaUtil.setConfigFile(new File(tikaConfig));
+	}
+
+
+
     }
 
     public List<String> getSynonyms(String word) throws Exception {
@@ -856,7 +864,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t2= System.currentTimeMillis();
 	    //	    String corpus = "Hello there this is the text";
 	    String corpus = handler.toString();
-	    System.err.println("corpus:" + corpus);
+	    if(corpus!=null)
+		System.err.println("corpus:" + Utils.clip(corpus.trim(),100,""));
+	    else
+		System.err.println("no corpus extracted" );
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
