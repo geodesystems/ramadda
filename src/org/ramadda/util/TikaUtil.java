@@ -61,12 +61,7 @@ public class TikaUtil {
 
     public static TikaConfig getConfigNoImage() throws Exception {
 	if(tikaConfigNoImage == null) {
-	    InputStream inputStream;
-	    if(configFile!=null) {
-		inputStream  = new FileInputStream(configFile);
-	    } else {
-		inputStream = TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml");
-	    }
+	    InputStream inputStream = TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml");
 	    tikaConfigNoImage = new TikaConfig(inputStream);
 	}
 	return tikaConfigNoImage;
@@ -74,10 +69,13 @@ public class TikaUtil {
 
     public static TikaConfig getConfig() throws Exception {
 	if(tikaConfig == null) {
-	    tikaConfig =
-		new TikaConfig(
-			       TikaUtil.class.getResourceAsStream(
-							      "/org/ramadda/util/resources/tika-config.xml"));
+	    InputStream inputStream;
+	    if(configFile!=null) {
+		inputStream  = new FileInputStream(configFile);
+	    }   else {
+		inputStream = TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config.xml");
+	    }
+	    tikaConfig =new TikaConfig(inputStream);
 	}
 	return tikaConfig;
     }
