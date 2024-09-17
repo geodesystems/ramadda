@@ -732,6 +732,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     private static TikaConfig getTikaConfigTest() throws Exception {
+	if(true)    return TikaUtil.getConfig();
+
 	File f = new File("tika.xml");
 	if(!f.exists()) {
 	    f = new File("/mnt/ramadda/ramaddahome/tika.xml");
@@ -883,15 +885,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    else
 		System.err.println("no corpus extracted" );
 
-	    String corpus2 = getCorpus(f.toString());
+	    /*	    String corpus2 = getCorpus(f.toString());
 	    System.err.println("corpus 2 file:" + f);
 	    System.err.println("corpus 2:" + corpus2);
+	    */
 
 	    
-	    String corpus3 = getCorpus("/home/ec2-user/test.pdf");
-	    System.err.println("corpus 3:" + corpus3);
-	    
-
 
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
