@@ -69,10 +69,14 @@ else
 fi
 
 #stop ramadda
+echo "stopping RAMADDA"
 startstop stop
 
 #install the new ramadda
+echo "removing old install ${RAMADDA_INSTALL_DIR}/ramaddaserver"
 rm -r -f ${RAMADDA_INSTALL_DIR}/ramaddaserver
+
+echo "installing ramaddaserver"
 unzip -q ramaddaserver.zip -d ${RAMADDA_INSTALL_DIR}
 
 #start ramadda
