@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 16 09:12:40 MDT 2024";
+var build_date="RAMADDA build date: Mon Sep 16 19:59:32 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -51374,9 +51374,14 @@ MapGlyph.prototype = {
 	}
 	html+=HU.formTable();
 	html+=HU.formEntry('Name:',nameWidget);
-	if(this.isMap() && this.attrs.resourceUrl) {
-	    html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),'size','60']));
-//	    opts.resourceUrl
+	if(this.isMap()) {
+	    if(this.attrs.entryId) {
+		html+=HU.formEntry('Entry ID:',HU.input('',this.attrs.entryId,
+							[ATTR_ID,this.domId('entryid'),'size','60']));
+	    }
+	    if(this.attrs.resourceUrl) {
+		html+=HU.formEntry('Map URL:',HU.input('',this.attrs.resourceUrl,[ATTR_ID,this.domId('resourceurl'),'size','60']));
+	    }
 	}	    
 	html+=HU.formTableClose();
 
@@ -51406,6 +51411,9 @@ MapGlyph.prototype = {
 	    HU.textarea('',this.attrs[ID_LEGEND_TEXT]??'',
 			[ATTR_ID,this.domId(ID_LEGEND_TEXT),'rows',4,'cols', 40]);
 	
+
+
+
 
 	content.push({header:'Properties',contents:html});
 
@@ -51527,6 +51535,12 @@ MapGlyph.prototype = {
 	//Make sure we do this after we set the above style properties
 	this.setName(this.jq("mapglyphname").val());
 	if(this.isMap()) {
+	    let newEntryId = this.jq('entryid').val();
+	    if(newEntryId && this.attrs.entryId!=newEntryId) {
+		this.attrs.entryId = newEntryId;
+		setTimeout(()=>{this.checkMapLayer(false,true);},10);
+	    }
+
 	    let newUrl = this.jq('resourceurl').val();
 	    if(newUrl!=this.attrs.resourceUrl) {
 		this.attrs.resourceUrl = newUrl;
