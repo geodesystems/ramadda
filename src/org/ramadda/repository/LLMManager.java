@@ -73,7 +73,8 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String ARG_EXTRACT_SUMMARY = "extract_summary";    
 
     public static final String ARG_EXTRACT_AUTHORS = "extract_authors";
-    public static final String ARG_EXTRACT_TITLE = "extract_title";	        
+    public static final String ARG_EXTRACT_TITLE = "extract_title";
+    public static final String ARG_INCLUDE_DATE = "include_date_in_title";	            
     public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
     public static final String ARG_EXTRACT_LATLON = "extract_latlon";
 
@@ -157,6 +158,8 @@ public class LLMManager extends  AdminHandlerImpl {
     public void processArgs(Request request, String...args) {
 	for(String a:args) {
 	    if(a.equals("title")) request.put(LLMManager.ARG_EXTRACT_TITLE,"true");
+	    else if(a.equals("include_date"))
+		request.put(LLMManager.ARG_INCLUDE_DATE,"true");	    
 	    else if(a.equals("summary")) request.put(LLMManager.ARG_EXTRACT_SUMMARY,"true");
 	    else if(a.equals("authors")) request.put(LLMManager.ARG_EXTRACT_AUTHORS,"true");
 	    else if(a.equals("locations")) request.put(LLMManager.ARG_EXTRACT_LOCATIONS,"true");	    
@@ -255,6 +258,8 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
 	sb.append(space);
+	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include data in title");
+	sb.append(space);	
 	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary");
 	sb.append(space);
 	HU.labeledCheckbox(sb, ARG_EXTRACT_KEYWORDS, "true", request.get(ARG_EXTRACT_KEYWORDS, false),  "","Extract keywords");
@@ -781,6 +786,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	boolean extractKeywords = request.get(ARG_EXTRACT_KEYWORDS,false);
 	boolean extractSummary = request.get(ARG_EXTRACT_SUMMARY,false);	
 	boolean extractTitle = request.get(ARG_EXTRACT_TITLE,false);	
+	boolean includeDate = request.get(ARG_INCLUDE_DATE,false);	
 	boolean extractAuthors = request.get(ARG_EXTRACT_AUTHORS,false);
 	boolean extractLocations = request.get(ARG_EXTRACT_LOCATIONS,false);
 	boolean extractLatLon = request.get(ARG_EXTRACT_LATLON,false);				
@@ -803,7 +809,9 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	List<String> schema =new ArrayList<String>();
 	if(extractTitle) {
-	    jsonPrompt+="You should include a title. ";
+	    jsonPrompt+="You should include a title.";
+	    if(includeDate)
+		jsonPrompt+="If the document describes a meeting or a dated event then include the date of the meeting in the title in the form yyyy-mm-dd. ";
 	    schema.add("\"title\":\"<the title>\"");
 	}
 	if(extractSummary) {

@@ -856,7 +856,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
-		    "<span>entry.applyLLM(true,'title','summary','keywords','model:gpt4')</span>\n" +
+		    "<span>entry.applyLLM(true,'title','summary','keywords','model:gpt3.5')</span>\n" +
 		    "<span>entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon',false -> don't check if on exists)</span>\n" +
 		    "<span>entry.addLLMGeo('optional prompt')</span>\n" +		    		    
 		    "//ctx is the context object\n" +
@@ -1510,7 +1510,7 @@ public class ExtEditor extends RepositoryManager {
 
 	public void applyLLM(boolean ifDescEmpty,String...args)  throws Exception {
 	    if(ifDescEmpty && Utils.stringDefined(entry.getDescription())) {
-		ctx.print("Has description:" + getName());
+		ctx.print("Entry has description:" + getName());
 		return;
 	    }
 	    repository.getLLMManager().processArgs(request,args);
