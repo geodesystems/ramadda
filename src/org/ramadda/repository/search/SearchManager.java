@@ -3084,6 +3084,24 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     }
+    public static void main(String[]args) throws Exception {
+	for(String file: args) {
+	    try(InputStream stream = new FileInputStream(file)) {
+		TikaConfig config = TikaUtil.getConfig();
+		Parser parser = new AutoDetectParser(config);
+		BufferedInputStream bis = new BufferedInputStream(stream);
+		org.apache.tika.metadata.Metadata metadata =
+		    new org.apache.tika.metadata.Metadata();
+		BodyContentHandler handler =  new BodyContentHandler(1000000);
+		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+		String corpus = handler.toString();
+		if(corpus!=null) corpus=corpus.trim();
+		System.err.println("File:" + file);
+		System.err.println("Corpus: " + corpus);
+	    } finally {
+	    }
+	}
 
+    }
 
 }
