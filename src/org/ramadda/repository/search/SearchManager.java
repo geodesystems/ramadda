@@ -731,6 +731,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    private static TikaConfig getTikaConfigTest() throws Exception {
+	File f = new File("tika.xml");
+	if(!f.exists()) {
+	    f = new File("/mnt/ramadda/ramaddahome/tika.xml");
+	}
+	System.err.println("Tika config:" + f);
+	return new TikaConfig(new FileInputStream(f));
+    }
+
     private TikaConfig getTikaConfig(boolean force) throws Exception {
 	if(force || indexImages){
 	    System.err.println("using TikaConfig");
@@ -846,7 +855,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    TikaConfig config = TikaUtil.getConfig();
+	    TikaConfig config = getTikaConfigTest();
+	    //	    TikaConfig config = TikaUtil.getConfig();	    
+
 	    //TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
 	    Parser parser = new AutoDetectParser(config);
             BodyContentHandler handler =  new BodyContentHandler(1000000);	
@@ -3101,7 +3112,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static String getCorpus(String file) throws Exception {
 	try(InputStream stream = new FileInputStream(file)) {
-	    TikaConfig config = TikaUtil.getConfig();
+	    TikaConfig config = getTikaConfigTest();
 	    Parser parser = new AutoDetectParser(config);
 	    BufferedInputStream bis = new BufferedInputStream(stream);
 	    org.apache.tika.metadata.Metadata metadata =
