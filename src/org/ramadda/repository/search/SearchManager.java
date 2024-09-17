@@ -733,7 +733,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private static TikaConfig getTikaConfigTest() throws Exception {
 	if(true)    return TikaUtil.getConfig();
-
 	File f = new File("tika.xml");
 	if(!f.exists()) {
 	    f = new File("/mnt/ramadda/ramaddahome/tika.xml");
@@ -857,20 +856,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    TikaConfig config = getTikaConfigTest();
-	    //	    TikaConfig config = TikaUtil.getConfig();	    
-
-	    //TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
+	    //	    TikaConfig config = getTikaConfigTest();
+	    TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
 	    Parser parser = new AutoDetectParser(config);
-            BodyContentHandler handler =  new BodyContentHandler(1000000);	
-	    //            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
+	    //            BodyContentHandler handler =  new BodyContentHandler(1000000);	
+	    BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    String sessionMessage = "Extracting text from: " + entry.getName();
 	    long t1 = System.currentTimeMillis();
 	    if(!reIndexing) {
 		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
 	    }
 	    try {
-		//		Misc.sleepSeconds(5);
 		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    } finally {
 		if(!reIndexing) {
@@ -885,12 +881,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    else
 		System.err.println("no corpus extracted" );
 
-	    /*	    String corpus2 = getCorpus(f.toString());
-	    System.err.println("corpus 2 file:" + f);
-	    System.err.println("corpus 2:" + corpus2);
-	    */
+	    //	    String corpus2 = getCorpus(f.toString());
+	    //	    System.err.println("corpus 2 file:" + f);
+	    //	    System.err.println("corpus 2:" + corpus2);
 
-	    
 
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
