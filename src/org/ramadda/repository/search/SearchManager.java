@@ -807,9 +807,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) {
 	    //Don't do this since the max size should be capped by tika below
-	    getSessionManager().addSessionMessage(request,"Document to big to index");
+	    //	    getSessionManager().addSessionMessage(request,"Document too big to index");
 
-	    if(debugCorpus)System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
 	    //	    return null;
 	}
 
@@ -3123,7 +3124,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    ParseContext parseContext = new ParseContext();
             parseContext.set(TikaConfig.class, config);
 	    PDFParser pdfParser = new PDFParser();
-	    //	    System.err.println(PDFParserConfig.OCR_STRATEGY.OCR_AND_TEXT_EXTRACTION );
+    //	    System.err.println(PDFParserConfig.OCR_STRATEGY.OCR_AND_TEXT_EXTRACTION );
 	    pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
 	    BufferedInputStream bis = new BufferedInputStream(stream);
 	    org.apache.tika.metadata.Metadata metadata =
