@@ -846,8 +846,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    Parser parser = new AutoDetectParser(getTikaConfig(request.get(ARG_INDEX_IMAGE,false)));
-            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
+	    TikaConfig config = TikaUtil.getConfig();
+	    //TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
+	    Parser parser = new AutoDetectParser(config);
+            BodyContentHandler handler =  new BodyContentHandler(1000000);	
+	    //            BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    String sessionMessage = "Extracting text from: " + entry.getName();
 	    long t1 = System.currentTimeMillis();
 	    if(!reIndexing) {
@@ -865,7 +868,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    //	    String corpus = "Hello there this is the text";
 	    String corpus = handler.toString();
 	    if(corpus!=null)
-		System.err.println("corpus:" + Utils.clip(corpus.trim(),100,""));
+		System.err.println("corpus:" + corpus.trim());
 	    else
 		System.err.println("no corpus extracted" );
 	    if(debugCorpus)
