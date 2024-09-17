@@ -71,10 +71,10 @@ public class TikaUtil {
 	if(tikaConfig == null) {
 	    InputStream inputStream;
 	    if(configFile!=null) {
-		System.err.println("TikaConfig:" +configFile);
+		//		System.err.println("TikaConfig:" +configFile);
 		inputStream  = new FileInputStream(configFile);
 	    }   else {
-		System.err.println("TikaConfig:" +"/org/ramadda/util/resources/tika-config.xml");
+		//		System.err.println("TikaConfig:" +"/org/ramadda/util/resources/tika-config.xml");
 		inputStream = TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config.xml");
 	    }
 	    tikaConfig =new TikaConfig(inputStream);
