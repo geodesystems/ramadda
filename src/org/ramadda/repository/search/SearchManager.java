@@ -107,8 +107,13 @@ import org.ramadda.repository.job.JobManager;
 
 import org.apache.tika.sax.BodyContentHandler;
 import org.apache.tika.config.TikaConfig;
-import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.AutoDetectParser;
+
+import org.apache.tika.parser.pdf.PDFParser;
+import org.apache.tika.parser.pdf.PDFParserConfig;
+
 
 
 @SuppressWarnings("unchecked")
@@ -858,7 +863,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		metadataList.add(metadata);
 	    //	    TikaConfig config = getTikaConfigTest();
 	    TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
-	    Parser parser = new AutoDetectParser(config);
+	    Parser parser;
+	    if(f.getName().toLowerCase().endsWith("pdf")) {
+		PDFParser pdfParser = new PDFParser();
+		//	    System.err.println(PDFParserConfig.OCR_STRATEGY.OCR_AND_TEXT_EXTRACTION );
+		pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
+		parser = pdfParser;
+	    } else {
+		parser = new AutoDetectParser(config);
+	    }
+	    ParseContext parseContext = new ParseContext();
+            parseContext.set(TikaConfig.class, config);
 	    //            BodyContentHandler handler =  new BodyContentHandler(1000000);	
 	    BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
 	    String sessionMessage = "Extracting text from: " + entry.getName();
@@ -867,7 +882,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
 	    }
 	    try {
-		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+		parser.parse(bis, handler, metadata, parseContext);
+		//		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    } finally {
 		if(!reIndexing) {
 		    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
@@ -3107,11 +3123,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	try(InputStream stream = new FileInputStream(file)) {
 	    TikaConfig config = getTikaConfigTest();
 	    Parser parser = new AutoDetectParser(config);
+	    ParseContext parseContext = new ParseContext();
+            parseContext.set(TikaConfig.class, config);
+	    PDFParser pdfParser = new PDFParser();
+	    //	    System.err.println(PDFParserConfig.OCR_STRATEGY.OCR_AND_TEXT_EXTRACTION );
+	    pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
 	    BufferedInputStream bis = new BufferedInputStream(stream);
 	    org.apache.tika.metadata.Metadata metadata =
 		new org.apache.tika.metadata.Metadata();
 	    BodyContentHandler handler =  new BodyContentHandler(1000000);
-	    parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+	    pdfParser.parse(bis, handler, metadata,parseContext);
+	    //	    parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    String corpus = handler.toString();
 	    if(corpus!=null) corpus=corpus.trim();
 	    return corpus;
