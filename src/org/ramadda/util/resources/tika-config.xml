@@ -25,11 +25,12 @@
         <param name="resize" type="int">200</param>
         <param name="skipOcr" type="bool">false</param>
 <!--
-        <param name="imageMagickPath" type="string">/my/custom/imageMagicPath</param>
-        <param name="tessdataPath" type="string">/my/custom/data</param>
-        <param name="tesseractPath" type="string">/my/custom/path</param>
+    <param name="imageMagickPath" type="string">/my/custom/imageMagicPath</param>
+    -->
+        <param name="tessdataPath" type="string">/usr/local/share/tessdata</param>
+        <param name="tesseractPath" type="string">/usr/local/bin/tesseract</param>
         <param name="timeoutSeconds" type="int">120</param>
--->
+
       </params>
     </parser>
   </parsers>
