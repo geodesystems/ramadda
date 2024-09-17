@@ -27,8 +27,10 @@
 <!--
     <param name="imageMagickPath" type="string">/my/custom/imageMagicPath</param>
     -->
-        <param name="tessdataPath" type="string">/usr/local/share/tessdata</param>
+<!--
+        <param name="tessdataPath" type="string">/usr/local/share</param>
         <param name="tesseractPath" type="string">/usr/local/bin/tesseract</param>
+	-->
         <param name="timeoutSeconds" type="int">120</param>
 
       </params>
