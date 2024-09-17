@@ -873,8 +873,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		System.err.println("no corpus extracted" );
 
 	    String corpus2 = getCorpus(f.toString());
-	    System.err.println("corpus 2 file:" + f.getName());
+	    System.err.println("corpus 2 file:" + f);
 	    System.err.println("corpus 2:" + corpus2);
+
+	    
+	    String corpus3 = getCorpus("/home/ec2-user/test.pdf");
+	    System.err.println("corpus 3:" + corpus3);
+	    
+
 
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
