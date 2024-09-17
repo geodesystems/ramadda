@@ -1,0 +1,89 @@
+
+########################################
+## Main disk and directories
+########################################
+
+The main volume is mounted at /mnt/ramadda
+This is the only disk that needs to be backed up (in the AWS console)
+
+The RAMADDA home directory is at:
+/mnt/ramadda/ramaddahome/
+This is where the data files are stored, etc
+
+The PostGRES database is stored at:
+/mnt/ramadda/pgsql
+
+The RAMADDA server software is installed at:
+/mnt/ramadda/ramaddainstall/
+
+
+########################################
+## RAMADDA properties
+########################################
+RAMADDA needs to have some properties defined, e.g., paths to programs,
+API keys, etc. This is done by editing the file:
+/mnt/ramadda/ramaddahome/repository.properties
+
+
+
+########################################
+## RAMADDA plugins
+########################################
+
+RAMADDA uses plugins to add functionality. All of the plugins are stored in:
+/mnt/ramadda/ramaddahome/plugins
+
+
+########################################
+## RAMADDA Logs
+########################################
+The server runtime log is at:
+/mnt/ramadda/ramaddainstall/ramadda.log
+
+The web logs are in 
+/mnt/ramadda/ramaddahome/logs
+
+
+########################################
+## Starting and stopping RAMADDA
+########################################
+RAMADDA is installed as a service. To start/stop RAMADDA:
+sudo service stop ramadda
+sudo service start ramadda
+
+
+########################################
+## Updating the OS
+########################################
+To update the OS:
+sudo yum update -y
+
+########################################
+## Updating RAMADDA
+########################################
+To update RAMADDA:
+cd ramaddainstaller
+sudo sh update.sh
+
+
+
+########################################
+## https certificate
+########################################
+A https certificate  can be created using letsencrypt. 
+
+Install certbot:
+sudo amazon-linux-extras install epel -y
+
+Create the certificate
+cd ramaddainstaller
+To see the arguments
+sudo sh letsencrypt.sh  -help
+
+To create a certificate
+sudo sh letsencrypt.sh  -renew -domain yourdomain.org -other <other domains if needed>
+
+
+The certificate needs to be renewed every 3 months. To renew it do:
+cd ramaddainstaller
+sudo sh letsencrypt.sh  -renew -domain yourdomain.org  -other <other domains if needed>
