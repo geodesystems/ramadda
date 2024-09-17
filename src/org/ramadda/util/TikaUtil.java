@@ -53,9 +53,21 @@ public class TikaUtil {
 
 
 
+    private  static File configFile;
+
+    public static void setConfigFile(File file) {
+	configFile = file;
+    }
+
     public static TikaConfig getConfigNoImage() throws Exception {
 	if(tikaConfigNoImage == null) {
-	    tikaConfigNoImage = new TikaConfig(TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml"));
+	    InputStream inputStream;
+	    if(configFile!=null) {
+		inputStream  = new FileInputStream(configFile);
+	    } else {
+		inputStream = TikaUtil.class.getResourceAsStream("/org/ramadda/util/resources/tika-config-no-image.xml");
+	    }
+	    tikaConfigNoImage = new TikaConfig(inputStream);
 	}
 	return tikaConfigNoImage;
     }
