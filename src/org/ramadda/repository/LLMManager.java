@@ -258,7 +258,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	HU.labeledCheckbox(sb,ARG_EXTRACT_TITLE, "true", request.get(ARG_EXTRACT_TITLE,false),  "","Extract title");
 	sb.append(space);
-	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include data in title");
+	HU.labeledCheckbox(sb,ARG_INCLUDE_DATE, "true", request.get(ARG_INCLUDE_DATE,false),  "","Include date in title");
 	sb.append(space);	
 	HU.labeledCheckbox(sb, ARG_EXTRACT_SUMMARY, "true", request.get(ARG_EXTRACT_SUMMARY,false), "","Extract summary");
 	sb.append(space);
