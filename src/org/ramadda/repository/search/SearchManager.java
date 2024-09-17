@@ -871,6 +871,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		System.err.println("corpus:" + corpus.trim());
 	    else
 		System.err.println("no corpus extracted" );
+
+	    String corpus2 = getCorpus(f.toString());
+	    System.err.println("corpus 2 file:" + f.getName());
+	    System.err.println("corpus 2:" + corpus2);
+
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
@@ -3087,22 +3092,28 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
     }
+
+    public static String getCorpus(String file) throws Exception {
+	try(InputStream stream = new FileInputStream(file)) {
+	    TikaConfig config = TikaUtil.getConfig();
+	    Parser parser = new AutoDetectParser(config);
+	    BufferedInputStream bis = new BufferedInputStream(stream);
+	    org.apache.tika.metadata.Metadata metadata =
+		new org.apache.tika.metadata.Metadata();
+	    BodyContentHandler handler =  new BodyContentHandler(1000000);
+	    parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
+	    String corpus = handler.toString();
+	    if(corpus!=null) corpus=corpus.trim();
+	    return corpus;
+	}
+    }
+
+
     public static void main(String[]args) throws Exception {
 	for(String file: args) {
-	    try(InputStream stream = new FileInputStream(file)) {
-		TikaConfig config = TikaUtil.getConfig();
-		Parser parser = new AutoDetectParser(config);
-		BufferedInputStream bis = new BufferedInputStream(stream);
-		org.apache.tika.metadata.Metadata metadata =
-		    new org.apache.tika.metadata.Metadata();
-		BodyContentHandler handler =  new BodyContentHandler(1000000);
-		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
-		String corpus = handler.toString();
-		if(corpus!=null) corpus=corpus.trim();
-		System.err.println("File:" + file);
-		System.err.println("Corpus: " + corpus);
-	    } finally {
-	    }
+	    String corpus = getCorpus(file);
+	    System.err.println("File:" + file);
+	    System.err.println("Corpus: " + corpus);
 	}
 
     }
