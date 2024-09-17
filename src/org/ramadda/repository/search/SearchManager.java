@@ -725,8 +725,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private TikaConfig getTikaConfig(boolean force) throws Exception {
 	if(force || indexImages){
+	    System.err.println("using TikaConfig");
 	    return TikaUtil.getConfig();
 	} 
+	System.err.println("using TikaConfig no image");
 	return TikaUtil.getConfigNoImage();
     }
 
@@ -854,6 +856,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t2= System.currentTimeMillis();
 	    //	    String corpus = "Hello there this is the text";
 	    String corpus = handler.toString();
+	    System.err.println("corpus:" + corpus);
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
