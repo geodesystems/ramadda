@@ -87,3 +87,40 @@ sudo sh letsencrypt.sh  -renew -domain yourdomain.org -other <other domains if n
 The certificate needs to be renewed every 3 months. To renew it do:
 cd ramaddainstaller
 sudo sh letsencrypt.sh  -renew -domain yourdomain.org  -other <other domains if needed>
+
+
+
+
+########################################
+## Notes on building tesseract
+########################################
+
+Build leptonica
+wget https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.83.1.tar.gz
+tar -xvzf 1.83.1.tar.gz
+cd leptonica-1.83.1
+./autobuild
+./configure
+make
+sudo make install
+
+
+Call:
+export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
+
+Download tesseract:
+wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.3.1.tar.gz
+tar -xvzf 5.3.1.tar.gz
+cd tesseract-5.3.1
+./autogen.sh
+./configure
+make
+sudo make install
+sudo ldconfig
+
+
+Tesserarct also needs a training dataset installed
+sudo wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata -P /usr/local/share/tessdata/
+
+In /mnt/ramadda/ramaddainstall edit ramaddaenv.sh and add:
+export TESSDATA_PREFIX=/usr/local/share/tessdata
