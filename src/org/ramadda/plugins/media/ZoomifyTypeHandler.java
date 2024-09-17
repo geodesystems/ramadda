@@ -98,8 +98,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
                   entry.getResource().getPath(), "-o", imagesDir.toString());
         ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
         pb.redirectErrorStream(true);
+	getLogManager().logSpecial("Zoomify: creating image tiles for:" + entry.getName());
         Process     process = pb.start();
         InputStream is      = process.getInputStream();
+	getLogManager().logSpecial("Zoomify: done creating image tiles for:" + entry.getName());
 	byte[] bytes = IO.readBytes(is,100000);
         String      result  = new String(bytes);
         if (result.indexOf("unable to open image")<0 && result.trim().length() > 0) {
