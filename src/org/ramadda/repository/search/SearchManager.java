@@ -748,10 +748,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private TikaConfig getTikaConfig(boolean force) throws Exception {
 	if(force || indexImages){
-	    System.err.println("using TikaConfig");
+	    //	    System.err.println("using TikaConfig");
 	    return TikaUtil.getConfig();
 	} 
-	System.err.println("using TikaConfig no image");
+	//	System.err.println("using TikaConfig no image");
 	return TikaUtil.getConfigNoImage();
     }
 
@@ -861,13 +861,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    //	    TikaConfig config = getTikaConfigTest();
-	    TikaConfig config = getTikaConfig(request.get(ARG_INDEX_IMAGE,false));
+	    boolean doImage = request.get(ARG_INDEX_IMAGE,false);
+	    TikaConfig config = getTikaConfig(doImage);
 	    Parser parser;
 	    if(f.getName().toLowerCase().endsWith("pdf")) {
 		PDFParser pdfParser = new PDFParser();
-		//	    System.err.println(PDFParserConfig.OCR_STRATEGY.OCR_AND_TEXT_EXTRACTION );
-		pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
+		if(doImage) {
+		    pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
+		}
 		parser = pdfParser;
 	    } else {
 		parser = new AutoDetectParser(config);
@@ -890,17 +891,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		}
 	    }
 	    long t2= System.currentTimeMillis();
-	    //	    String corpus = "Hello there this is the text";
 	    String corpus = handler.toString();
+	    /*
 	    if(corpus!=null)
 		System.err.println("corpus:" + corpus.trim());
 	    else
 		System.err.println("no corpus extracted" );
-
-	    //	    String corpus2 = getCorpus(f.toString());
-	    //	    System.err.println("corpus 2 file:" + f);
-	    //	    System.err.println("corpus 2:" + corpus2);
-
+	    */
 
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
