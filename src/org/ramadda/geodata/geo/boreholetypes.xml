@@ -578,8 +578,10 @@ description="Borehole Lithology"  handler="org.ramadda.data.services.PointTypeHa
 
 <!-- SeeSV commands-->
 <property  name="record.properties" ><![CDATA[
-csvcommands1=-map,color,color_description,0:red\,1:purple (green or white=purple)\,2:gray\,3:black,-map
-csvcommands2=grain_size,grain_size_description,0:claystone\,1:mudstone (poorly sorted clay and silt)\,2:siltstone\,3:fine sandstone\,4:medium sandstone\,5:coarse sandstone\,6:gravel\,7:fine conglomerate\,8:medium conglomerate,-columns,depth\,color\,color_description\,grain_size\,grain_size_description\,depth_rank
+csvcommands1=-map,color,color_description,file:/org/ramadda/geodata/geo/lithology_color.txt
+csvcommands2=-map,grain_size,grain_size_description,file:/org/ramadda/geodata/geo/lithology_grainsize.txt
+csvcommands3=-map,depth_rank,depth_rank_description,file:/org/ramadda/geodata/geo/lithology_depthrank.txt
+csvcommands4=-columns,depth\,color\,color_description\,grain_size\,grain_size_description\,depth_rank\,depth_rank_description
 ]]></property>
 
 <!-- Wiki text-->
