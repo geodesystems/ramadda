@@ -203,7 +203,7 @@ inherited="false"  }}
 </type>
 
 
-<type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" pattern=".*\.las"
+<type name="type_borehole_las"  super="type_borehole_point" description="Log ASCII Standard" 
       metadata="geo_stratigraphy,geo_measurement"
       handler="org.ramadda.geodata.geo.LasTypeHandler">      
 <property name="icon" value="/geo/drilling-rig.png"/>
@@ -556,6 +556,55 @@ inherited="true"  }}
 </wiki>
 
 
+</type>
+
+<type  name="type_geo_lithology"
+pattern=".*lith.csv"      
+description="Borehole Lithology"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
+<!-- Properties-->
+<filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
+<filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
+<filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
+
+<property name="inheritlocationfromtype" value="type_geo_site"/>
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.properties.show"  value="false" />
+<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-map,color,color_description,0:red\,1:purple (green or white=purple)\,2:gray\,3:black,-map
+csvcommands2=grain_size,grain_size_description,0:claystone\,1:mudstone (poorly sorted clay and silt)\,2:siltstone\,3:fine sandstone\,4:medium sandstone\,5:coarse sandstone\,6:gravel\,7:fine conglomerate\,8:medium conglomerate,-columns,depth\,color\,color_description\,grain_size\,grain_size_description\,depth_rank
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{display_download}}
+{{display_htmltable   scrollY=800px
+ colorRowBy="color_description" colorByLiteral=true  colorFullRow=false showColorFooter=false
+}}
+----
+:heading Information
++row
++col-8                                                                                                                        
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+{{properties  message=""  metadata.types="geo_project,geo_site"                                                            
+oneLine="true"   includeTitle="false"  separator=""  decorate="false"                         
+inherited="true"  }}
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center                                                                                                                       
+-col                                                                                                                          
+-row       
+-section]]></wiki>
 </type>
 
 
