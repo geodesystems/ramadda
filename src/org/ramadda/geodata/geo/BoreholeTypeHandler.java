@@ -51,9 +51,11 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	    if(d!=null) {	    
 		double voltage = d;
 		if(voltage==15) {
-		    entry.setValue("fields_to_show","k_wt,fe_wt,ca_wt,si_wt");
+		    entry.setValue("fields_to_show","na_pct,mg_pct");
 		} else if (voltage==40) {
-		    entry.setValue("fields_to_show","fe_wt,cu_wt,sr_wt,ba_wt");
+		    entry.setValue("fields_to_show","na_pct,mg_pct");
+		} else {
+		    entry.setValue("fields_to_show","na_pct,mg_pct");
 		}
 	    }
 	}
@@ -89,6 +91,8 @@ public class BoreholeTypeHandler extends PointTypeHandler {
         if (tag.equals("borehole_profiles")) {
 	    StringBuilder sb = new StringBuilder();
 	    String fields= Utils.getProperty(props,"fields","");
+	    String indexField= Utils.getProperty(props,"indexField",".*depth.*");
+						 
 	    if(!stringDefined(fields)) {
 		fields = (String) entry.getValue(request,"fields_to_show");
 	    }
@@ -116,7 +120,8 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	    if(!stringDefined(fields)) fields="#2";
 	    List<String> ids = Utils.split(fields,",",true,true);
 	    sb.append("+row tight=true\n");
-	    String template = "{{display_profile loadingMessage=\"\" width=100% height=500px displayInnerStyle=\"border-right:1px solid #000;\" showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=0  profileMode=lines indexField=\".*depth.*\"  fields=\"{field}\"}}\n";
+	    String template = "{{display_profile loadingMessage=\"\" width=100% height=500px displayInnerStyle=\"border-right:1px solid #000;\" showLegend=false marginRight=0 {extra} max=10000 showMenu=true yAxisReverse=true marginTop=0  profileMode=lines indexField=\"${indexField}\"  fields=\"{field}\"}}\n";
+	    template = template.replace("${indexField}",indexField);
 	    String height=Utils.getProperty(props,"height",null);
 	    for(int i=0;i<ids.size();i++) {
 		String id = ids.get(i);

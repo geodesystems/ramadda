@@ -345,12 +345,12 @@ xcsvcommands2=-addheader,
 +section  title="Borehole Log: {{name}}"
 {{group}}
 {{display_profile showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField=".*depth.*"  }}         
+profileMode="lines" indexField="from_m"  }}         
 ]]></property>
 
 <wikimacro name="borehole_profiles" label="Borehole Profiles" tags="forchild">
    <![CDATA[{{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-	    profileMode="lines" indexField=".*depth.*"  }}]]></wikimacro>
+	    profileMode="lines" indexField="from_m"  }}]]></wikimacro>
 
 <wiki>
 <![CDATA[
@@ -364,7 +364,7 @@ profileMode="lines" indexField=".*depth.*"  }}
 :heading Chart
 {{group}}
 {{borehole_profiles showMenu=true yAxisReverse=true marginTop=25  profileMode=markers
-profileMode="lines" indexField="depth_start_mm"  }}         
+profileMode="lines" indexField="from_m"  }}         
 -col
 +col-3
 {{resource  title="Download"  showIcon="true"  simple="false"  }}
