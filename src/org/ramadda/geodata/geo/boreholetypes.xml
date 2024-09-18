@@ -376,9 +376,11 @@ profileMode="lines" indexField="from_m"  }}
 {{field name="scan_rate"  row.label="Scan Rate:"}}
 </table>
 :vspace 1em
+<div style="max-height:450px;overflow-y:auto">
 {{properties  message=""  metadata.types="!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }} 
+</div>
 +center
 {{mapentry hideIfNoLocations=true width="90%" height="200px"}}
 -center
