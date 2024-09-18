@@ -816,11 +816,11 @@ public class HtmlOutputHandler extends OutputHandler {
             } else if(oneLine) {
 		StringBuilder sb = new StringBuilder();
 		list.add(sb);
-		sb.append("<table><tr><td valign=right>");
+		sb.append("\n<table><tr><td valign=right>\n");
 		sb.append(HU.b(label));
-		sb.append("<td><td>");
+		sb.append("\n</td><td>\n");
 		sb.append(contents);
-		sb.append("</td></tr><table>");
+		sb.append("</td></tr></table>");
 
             } else {
 		StringBuilder sb = new StringBuilder();
