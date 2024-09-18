@@ -1,0 +1,6 @@
+0:intense breccia fabric
+1:breccia fabric
+2:mudcracked mudstone
+3:thin-bedded non-mudcracked mudstone
+4:finely laminated mudstone
+5:microlaminated mudstone

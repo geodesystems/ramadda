@@ -1,0 +1,9 @@
+0:claystone
+1:mudstone (poorly sorted clay and silt)
+2:siltstone
+3:fine sandstone
+4:medium sandstone
+5:coarse sandstone
+6:gravel
+7:fine conglomerate
+8:medium conglomerate

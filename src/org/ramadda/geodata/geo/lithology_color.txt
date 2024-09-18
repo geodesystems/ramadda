@@ -1,0 +1,4 @@
+0:red
+1:purple (green or white=purple)
+2:gray
+3:black
