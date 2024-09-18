@@ -4938,7 +4938,6 @@ public class Seesv implements SeesvCommands {
 		    values = new ArrayList<String>();
 		    for(String tok:Utils.split(v,",",true,true)) {
 			List<String> toks2=  Utils.split(tok,":");
-			System.err.println("T:" + toks2.size());
 			values.addAll(toks2);
 		    }
 		} else {
