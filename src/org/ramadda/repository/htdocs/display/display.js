@@ -1991,6 +1991,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
 	{p:'colorByLog',ex:'true',tt:'Use a log scale for the color by'},
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
+	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
 	{p:'colorTableInverse',ex:true,tt:'Inverse the color table'},
 	{p:'colorTablePruneLeft',ex:'N',tt:'Prune first N colors'},
