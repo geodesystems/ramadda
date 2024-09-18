@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Sep 16 19:59:32 MDT 2024";
+var build_date="RAMADDA build date: Wed Sep 18 06:53:20 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -2568,6 +2568,7 @@ function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColor
 	fields:fields,
         field: theField,
 	colorThresholdField:display.getFieldById(null, display.getProperty("colorThresholdField")),
+	literal:display.getProperty("colorByLiteral"),
 	aboveColor: display.getProperty("colorThresholdAbove","red"),
 	belowColor:display.getProperty("colorThresholdBelow","blue"),
 	nullColor:display.getProperty("nullColor"),	
@@ -3154,6 +3155,13 @@ ColorByInfo.prototype = {
 	return this.index>=0;
     },
     getColor: function(value, pointRecord, checkHistory) {
+	if(this.literal) {
+	    value = String(value);
+	    if(value.indexOf('(')) {
+		value = value.replace(/\(.*\)/,'');
+	    }
+	    return value;
+	}
 	if(this.colorScaleInterval)
 	    return this.colorScaleInterval(value);
 	let c = this.getColorInner(value, pointRecord);
@@ -5966,6 +5974,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'colorByFields',ex:'',tt:'Show color by fields in a menu'},
 	{p:'colorByLog',ex:'true',tt:'Use a log scale for the color by'},
 	{p:'colorByMap',ex:'value1:color1,...,valueN:colorN',tt:'Specify colors for color by text values'},
+	{p:'colorByLiteral',ex:'true',tt:'use the value as a color'},
 	{p:'colorTableAlpha',ex:0.5,tt:'Set transparency on color table values'},
 	{p:'colorTableInverse',ex:true,tt:'Inverse the color table'},
 	{p:'colorTablePruneLeft',ex:'N',tt:'Prune first N colors'},
@@ -58412,6 +58421,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	{p:'categoryField'},
 	{p:'colorRowBy'},
 	{p:'colorFullRow',d:true,tt:'If doing color row by do we color the full row or just the start'},	
+	{p:'showColorFooter',d:true},
 	{p:'colorHeaderLabel',tt:'Label for the color header'},
 	{p:'colorHeaderTemplate',tt:'Template to show in row color header'},
 	{p:'colorHeaderStyle',tt:'CSS for color header. defaults to rotated text'},	
@@ -58556,7 +58566,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		    let tmp =   this.getFieldById(null, c);
 		    if(tmp) {
 			let template = this.getProperty(c+'.colorHeaderTemplate',this.getProperty('colorHeaderTemplate'));
-			let label = this.getProperty(c+'.colorHeaderLabel',this.getProperty('colorHeaderLabel'));			
+			let label = this.getProperty(c+'.colorHeaderLabel',this.getProperty('colorHeaderLabel'));
 			colorRowBy.push({
 			    template:template,
 			    label:label,
@@ -58780,7 +58790,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 			    label = this.getRecordHtml(record, null, template);
 			    label = HU.div(['style',colorHeaderStyle], label);
 			}
-			addColumn(HU.td(['class','display-td display-htmltable-td','style','width:16px;max-width:16px;border-right:1px solid #444;background:' + color+';width:10px;'],label));
+			addColumn(HU.td(['class','display-td display-htmltable-td','style','width:24px;max-width:24px;border-right:1px solid #444;background:' + color+';width:24px;'],label));
 		    });
 		}
 
@@ -58991,7 +59001,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		dom.append(HU.div([ID,id]));
 		cb.displayColorTable(null,true,ID_COLORTABLE+idx);
 	    });
-	    if(colorRowBy) {
+	    if(colorRowBy && this.getShowColorFooter()) {
 		colorRowBy.forEach((cb,idx)=>{
 		    if(idx>0)
 			dom.append(HU.div(['style','border-bottom:1px solid #ccc']));
