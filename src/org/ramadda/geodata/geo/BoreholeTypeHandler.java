@@ -51,11 +51,11 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	    if(d!=null) {	    
 		double voltage = d;
 		if(voltage==15) {
-		    entry.setValue("fields_to_show","na_pct,mg_pct");
+		    entry.setValue("fields_to_show","k_int,si_int,fe_int,s_int");
 		} else if (voltage==40) {
-		    entry.setValue("fields_to_show","na_pct,mg_pct");
+		    entry.setValue("fields_to_show","fe_int,sr_int,zr_int,ba_int");
 		} else {
-		    entry.setValue("fields_to_show","na_pct,mg_pct");
+		    entry.setValue("fields_to_show","k_int,si_int,fe_int,s_int");
 		}
 	    }
 	}
