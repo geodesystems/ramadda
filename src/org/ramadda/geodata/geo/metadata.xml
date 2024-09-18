@@ -12,6 +12,11 @@
     </type>
     
 
+    <type id="geo_box_number" name="Geo Box Number"> 
+      <element id="number" name="Box Number" datatype="enumerationplus"/>
+    </type>
+
+
     <type id="geo_measurement" name="Geo Measurement"> 
       <element id="measurement" name="Measurement" datatype="enumerationplus"
 	       values="file:/org/ramadda/geodata/geo/resources/measurements.txt"/>
