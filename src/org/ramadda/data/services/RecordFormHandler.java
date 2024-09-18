@@ -319,7 +319,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         }
         StringBuilder forDisplay =
             new StringBuilder("fields=\"");
-        sb.append("<div style=max-height:300px;overflow-y:auto;>\n");
+        sb.append("<div style=max-height:1000px;overflow-y:auto;>\n");
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Field Name")),
