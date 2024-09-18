@@ -4934,7 +4934,21 @@ public class Seesv implements SeesvCommands {
 		List<String> cols  = getCols(args.get(++i));
 		String name = args.get(++i);
 		String v = args.get(++i);
-		if(v.indexOf(":")>=0) {
+		if(v.startsWith(PREFIX_FILE)) {
+		    values = new ArrayList<String>();
+		    try {
+			String c = readFile(v);
+			for(String line: Utils.split(c,"\n",true,true)) {
+			    if(line.startsWith("#")) continue;
+			    List<String> toks2=  Utils.split(line,":",true,true);
+			    if(toks2.size()==2) {
+				values.addAll(toks2);
+			    }
+			}
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
+		    }
+		} else if(v.indexOf(":")>=0) {
 		    values = new ArrayList<String>();
 		    for(String tok:Utils.split(v,",",true,true)) {
 			List<String> toks2=  Utils.split(tok,":");
