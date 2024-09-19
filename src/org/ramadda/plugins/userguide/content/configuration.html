@@ -75,8 +75,40 @@ ramadda.tesseract=/path/to/tesseract
 -pre
 }]
 
+Some systems have Tesseract available via package manager. Unfortunately Amazon Linux is not one of those. Here
+are the instructions on how to build Tessearct.
+:p
+<b>Build leptonica</b>
++pre addCopy=true
+wget https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.83.1.tar.gz
+tar -xvzf 1.83.1.tar.gz
+cd leptonica-1.83.1
+./autobuild
+./configure
+make
+sudo make install
+-pre
 
+Then call:
++pre addCopy=true
+export PKG_CONFIG_PATH='/usr/local/lib/pkgconfig'
+-pre
 
+Download tesseract and build Tesseract
++pre addCopy=true
+wget https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.3.1.tar.gz
+tar -xvzf 5.3.1.tar.gz
+cd tesseract-5.3.1
+./autogen.sh
+./configure
+make
+sudo make install
+sudo ldconfig
+-pre
+
+You can override where Tika looks for Tesseract by copying the
+extra <a href=tika.xml>tika.xml</a> file onto your server. Consult
+the file for what needs to be set.
 
 
 <a name="jupyter"></a>

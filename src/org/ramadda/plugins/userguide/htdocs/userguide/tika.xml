@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file lets you override the default tika configuration. Set the below tessdataPath and tesserarctPath
+to where Tesseract is installed
+Copy this file onto your server and set the below property in repository.properties
+ramadda.tika.config=/mnt/ramadda/ramaddahome/tika.xml
+-->
+
+<!-- from https://cwiki.apache.org/confluence/display/tika/tikaocr -->
+
+
+
+
+
+<properties>
+
+  <parsers>
+    <parser class="org.apache.tika.parser.DefaultParser">
+      <!-- this is not formally necessary, but prevents loading of unnecessary parser -->
+      <parser-exclude class="org.apache.tika.parser.ocr.TesseractOCRParser"/>
+    </parser>
+    <parser class="org.apache.tika.parser.ocr.TesseractOCRParser">
+      <params>
+	<!-- Set these to where the tessdata directory is and where tesseract is installed -->
+	<param name="tessdataPath" type="string">/usr/local/share/tessdata</param>
+	<param name="tesseractPath" type="string">/usr/local/bin</param>
+
+	<!-- If you have imagemagick  installed uncomment this line -->
+	<!-- <param name="imageMagickPath" type="string">/usr/bin</param> -->
+
+
+        <param name="applyRotation" type="bool">false</param>
+        <param name="colorSpace" type="string">gray</param>
+        <param name="density" type="int">300</param>
+        <param name="depth" type="int">4</param>
+        <param name="enableImagePreprocessing" type="bool">false</param>
+        <param name="filter" type="string">triangle</param>
+        <param name="language" type="string">eng</param>
+        <param name="maxFileSizeToOcr" type="long">2147483647</param>
+        <param name="minFileSizeToOcr" type="long">0</param>
+        <param name="pageSegMode" type="string">1</param>
+        <param name="pageSeparator" type="string"></param>
+        <param name="preserveInterwordSpacing" type="bool">false</param>
+        <param name="resize" type="int">200</param>
+        <param name="skipOcr" type="bool">false</param>
+	<param name="timeoutSeconds" type="int">120</param>
+      </params>
+    </parser>
+  </parsers>
+</properties>
+
+
+
+
+
+
