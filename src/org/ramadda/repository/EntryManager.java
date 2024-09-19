@@ -3426,10 +3426,16 @@ public class EntryManager extends RepositoryManager {
 					      new String[]{AdminMetadataHandler.TYPE_PREVENTDELETION}, true);
         //Reset the category
         if (metadataList != null) {
+	    //Look for the first prevent deletion and use that
+	    //that way we can have a top-level prevent delete
+	    //but override it on descendent entries
 	    for(Metadata mtd: metadataList) {
 		if(Utils.equals("true",mtd.getAttr1())) {
 		    return false;
 		}
+		if(Utils.equals("false",mtd.getAttr1())) {
+		    return true;
+		}		
 	    }
 	}
 	return true;
