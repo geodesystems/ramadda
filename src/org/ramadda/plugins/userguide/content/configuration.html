@@ -106,6 +106,18 @@ sudo make install
 sudo ldconfig
 -pre
 
+Download the Tesseract training data
++pre addCopy=true
+# Navigate to the tessdata directory
+sudo mkdir -p /usr/local/share/tessdata
+cd /usr/local/share/tessdata
+
+# Download the English language training data, for example
+sudo wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata
+-pre
+
+
+
 You can override where Tika looks for Tesseract by copying the
 extra <a href=tika.xml>tika.xml</a> file onto your server. Consult
 the file for what needs to be set.
