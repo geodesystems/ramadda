@@ -198,6 +198,7 @@ public class TypeHandler extends RepositoryManager {
     private TypeHandler parent;
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
     private String description="";
+    private String dictionary="";
     private String editHelp = null;
     private String newHelp = null;
     private String[] editFields;
@@ -348,6 +349,7 @@ public class TypeHandler extends RepositoryManager {
 	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             help     = Utils.getAttributeOrTag(node, "help", help);
+            dictionary = Utils.getAttributeOrTag(node, "data_dictionary", null);
             editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
 	    if(editHelp!=null)
 		editHelp = editHelp.replace("\\n","\n");
@@ -5052,6 +5054,9 @@ public class TypeHandler extends RepositoryManager {
         return column.decorate(s);
     }
 
+    public String getDictionary() {
+	return dictionary;
+    }
 
     
     public String getEntryIconUrl(Request request, Entry entry)
