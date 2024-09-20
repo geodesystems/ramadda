@@ -198,7 +198,7 @@ public class TypeHandler extends RepositoryManager {
     private TypeHandler parent;
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
     private String description="";
-    private String dictionary="";
+    private String dictionary=null;
     private String editHelp = null;
     private String newHelp = null;
     private String[] editFields;
@@ -5055,7 +5055,12 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String getDictionary() {
-	return dictionary;
+	if(dictionary!=null)
+	    return dictionary;
+        if (parent != null) {
+	    return parent.getDictionary();
+	}
+	return null;
     }
 
     
