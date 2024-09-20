@@ -1325,7 +1325,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	String dd = entry.getTypeHandler().getDictionary();
 	if(stringDefined(dd)) {
 	    tabTitles.add("Data Description");
-	    tabContents.add(dd);
+	    tabContents.add(HU.div(dd,HU.style("min-height:200px;")));
 	}
 
         tabTitles.add("Information");
