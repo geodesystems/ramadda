@@ -1296,17 +1296,6 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param includeSnippet _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getInformationTabs(Request request, Entry entry,
                                      boolean includeSnippet,
 				     List<LabeledObject>extras,
@@ -1332,6 +1321,16 @@ public class HtmlOutputHandler extends OutputHandler {
 
         tabTitles.add("Information");
         tabContents.add(basicSB.toString());
+
+	String dd = entry.getTypeHandler().getDictionary();
+	if(stringDefined(dd)) {
+	    tabTitles.add("Data Description");
+	    tabContents.add(dd);
+	}
+
+        tabTitles.add("Information");
+        tabContents.add(basicSB.toString());
+
 
         for (TwoFacedObject tfo :
 		 getMetadataHtml(request, entry, null, true, null,
