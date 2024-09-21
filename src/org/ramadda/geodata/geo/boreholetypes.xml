@@ -55,7 +55,7 @@ message="" width="80%"  useThumbnail="true" }}
 {{display_entrylist   startWithAny=true
 showAncestor=false ancestor=this
 metadataTypes=""
-entryTypes="type_borehole_log,type_borehole_las,type_borehole_image,type_borehole_fieldplot,type_borehole_wcl,type_borehole_dlis"  
+entryTypes="type_borehole_xrf,type_borehole_coreimage,type_borehole_log,type_borehole_las,type_borehole_image,type_borehole_fieldplot,type_borehole_wcl,type_borehole_dlis"  
 orderByTypes="name,relevant,createdate,date,size"  
 displayTypes="list,map,images" 
 includeNonImages=false
