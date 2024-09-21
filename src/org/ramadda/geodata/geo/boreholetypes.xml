@@ -300,7 +300,7 @@ profileMode="lines" indexField=".*depth.*"  #fields="#2"}}
       editfields="name,resource,depth_level,xrf_current,xrf_voltage,scan_rate,_default"      
       handler="org.ramadda.geodata.geo.BoreholeTypeHandler">      
   <data_dictionary><![CDATA[
-  This is the description of the Borehole XRF data type
+  This is the description of the Core XRF data type
 ]]></data_dictionary>
   <header_metadata>
     <![CDATA[
@@ -357,7 +357,7 @@ profileMode="lines" indexField="from_m"  }}
 
 <wiki>
 <![CDATA[
-+section title="Borehole XRF: {{name}}"
++section title="Core XRF: {{name}}"
 :navtop 
 +row
 +col-9
