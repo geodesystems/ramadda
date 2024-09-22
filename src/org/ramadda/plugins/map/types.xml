@@ -198,6 +198,9 @@ Hint: To use conversion services name your file .shz or .shp.zip
 +tab Metadata
 {{information details=true}}
 -tab
++tab Information
+{{information}}
+-tab
 -tabs
 -section
 ]]>
