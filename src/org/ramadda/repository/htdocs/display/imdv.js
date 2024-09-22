@@ -56,6 +56,8 @@ var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
+			  'filter.sortOnCount=true',
+			  'filter.showRawValues=true',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
 			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
