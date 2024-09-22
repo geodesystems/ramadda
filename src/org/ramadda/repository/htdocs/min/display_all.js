@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 22 04:44:28 MDT 2024";
+var build_date="RAMADDA build date: Sun Sep 22 05:20:22 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -53601,18 +53601,22 @@ MapGlyph.prototype = {
 			slices.css('cursor','pointer');
 			slices.click(function() {
 			    let ct = Utils.ColorTables[obj.colorTable];
-			    let html = Utils.getColorTableDisplay(ct, 0,0, {
+			    let searchId = HU.getUniqueId('');
+			    let html = HU.center(HU.div([ATTR_ID,searchId]));
+			    html += Utils.getColorTableDisplay(ct, 0,0, {
 				tooltips:strings,
 				showColorTableDots:true,
 				horizontal:false,
 				showRange: false,
 			    });
-			    html = HU.div([ATTR_STYLE,'max-width:400px;max-height:200px;overflow-y:auto;margin:2px;'], html);
+			    html = HU.div([ATTR_STYLE,'min-width:400px;max-width:400px;max-height:200px;overflow-y:auto;margin:2px;'], html);
 			    let dialog = HU.makeDialog({content:html,
 							title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),
 							header:true,
 							my:"left top",at:"left bottom",
 							draggable:true,anchor:$(this)});
+			    HU.initPageSearch('.display-colortable-dot-item',null,'Search',false,{target:'#'+ searchId}); 
+
 			    _this.initColorTableDots(obj, dialog);
 			});
 		    }
