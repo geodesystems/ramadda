@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Sep 18 07:23:09 MDT 2024";
+var build_date="RAMADDA build date: Sun Sep 22 04:44:28 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -153,7 +153,8 @@ $.extend(Utils,{
             horizontal:true,
             colorWidth:"20px",
             stride:1,
-	    dotWidth:null
+	    dotWidth:null,
+	    showLabels:true
         }
         if (args) $.extend(options, args);
 	let colorInfo={};
@@ -320,7 +321,7 @@ $.extend(Utils,{
         }
         html += HU.close(DIV);
         html += HU.open(DIV, [CLASS, "display-colortable-extra"]);
-        if (Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+        if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
             let colCnt =0;
@@ -44704,6 +44705,8 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'showViewInLegend=true',
 			  'showLayerSelectInLegend=true',			  
 			  'inMapLabel=',			  			  
+			  'showLegendInMap=true',			  
+			  'mapLegendHeight=300px',
 			  'showLegendBox=true',
 			  'showButtons=false',
 			  'showMeasures=false',
@@ -51581,9 +51584,8 @@ MapGlyph.prototype = {
 
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
-	    console.log(this.mapServerLayer);
 	    if(url) {
-		console.log(url);
+		this.attrs.mapServerUrl = url;
 	    }
 	}
 
@@ -53583,7 +53585,9 @@ MapGlyph.prototype = {
 		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings,obj.stringValues);
 		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
 		    if(obj.isEnumeration) {
-			html+=HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;'],div);
+			let maxHeight = this.getProperty('mapLegendHeight','150px');
+			html+='\n';
+			html+=HU.div([ATTR_STYLE,'max-height:' + maxHeight+';overflow-y:auto;'],div);
 		    } else {
 			html+=HU.center(div);
 		    }
@@ -53603,8 +53607,12 @@ MapGlyph.prototype = {
 				horizontal:false,
 				showRange: false,
 			    });
-			    html = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;margin:2px;'], html);
-			    let dialog = HU.makeDialog({content:html,title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
+			    html = HU.div([ATTR_STYLE,'max-width:400px;max-height:200px;overflow-y:auto;margin:2px;'], html);
+			    let dialog = HU.makeDialog({content:html,
+							title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),
+							header:true,
+							my:"left top",at:"left bottom",
+							draggable:true,anchor:$(this)});
 			    _this.initColorTableDots(obj, dialog);
 			});
 		    }
@@ -53883,11 +53891,12 @@ MapGlyph.prototype = {
 		    layers: wmsLayer,
 		    format: "image/png",
 		    isBaseLayer: false,
-		    srs: "epse:4326",
+		    srs: "epsg:4326",
 		    transparent: true
 		}, {
 		    opacity:1.0
 		});
+		console.dir(this.mapServerLayer);
 	    } else if(Utils.stringDefined(url)) {
 		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
@@ -54037,6 +54046,8 @@ MapGlyph.prototype = {
 	    return "----";
 	}
 	let showDots = isEnum&& strings.length<=30;
+	//For now don't show the labels on the colortable
+	let showLabels = false;
      	if(this.getProperty('colortable.showDots'))
 	    showDots = true;
         let display = Utils.getColorTableDisplay(ct,  min??0, max??1, {
@@ -54046,7 +54057,8 @@ MapGlyph.prototype = {
 	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
             height: "20px",
-	    showRange:showRange
+	    showRange:showRange,
+	    showLabels:showLabels
         });
 	let attrs = [TITLE,id,ATTR_STYLE,'margin-right:4px;',"colortable",id]
 	//	if(ct.colors.length>20)   attrs.push(STYLE,HU.css(ATTR_WIDTH,'400px'));
