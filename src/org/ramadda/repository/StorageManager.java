@@ -2478,19 +2478,26 @@ public class StorageManager extends RepositoryManager implements PointFile
 
     /**
      *  Implement the global Utils.checkFile
+     * This only allows files under storage to be read
      *
      * @param file _more_
-      * @return _more_
+     * @return _more_
      */
-    public boolean canReadFile(String file) {
+    public boolean canReadFile(boolean external, String file) {
         try {
             //Check if its a file:// url
             file = new URL(file).toURI().toString();
         } catch (Exception exc) {}
         File f = new File(file);
+	if(external) {
+	    if (!IO.isADescendent(new File(getStorageDir()), f)) {
+		return false;
+	    }
+	    return true;
+	}
+
         if (f.exists()) {
-            //this throws an exception if file cannot be read
-            checkReadFile(f);
+	    checkReadFile(f);
         }
 
         return true;
