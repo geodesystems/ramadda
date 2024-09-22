@@ -2722,8 +2722,12 @@ MapGlyph.prototype = {
 				horizontal:false,
 				showRange: false,
 			    });
-			    html = HU.div([ATTR_STYLE,'max-height:200px;overflow-y:auto;margin:2px;'], html);
-			    let dialog = HU.makeDialog({content:html,title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),header:true,my:"left top",at:"left bottom",draggable:true,anchor:$(this)});
+			    html = HU.div([ATTR_STYLE,'max-width:400px;max-height:200px;overflow-y:auto;margin:2px;'], html);
+			    let dialog = HU.makeDialog({content:html,
+							title:HU.div([ATTR_STYLE,'margin-left:20px;margin-right:20px;'], _this.makeLabel(obj.property,true)+' Legend'),
+							header:true,
+							my:"left top",at:"left bottom",
+							draggable:true,anchor:$(this)});
 			    _this.initColorTableDots(obj, dialog);
 			});
 		    }
@@ -3157,6 +3161,8 @@ MapGlyph.prototype = {
 	    return "----";
 	}
 	let showDots = isEnum&& strings.length<=30;
+	//For now don't show the labels on the colortable
+	let showLabels = false;
      	if(this.getProperty('colortable.showDots'))
 	    showDots = true;
         let display = Utils.getColorTableDisplay(ct,  min??0, max??1, {
@@ -3166,7 +3172,8 @@ MapGlyph.prototype = {
 	    horizontal:!isEnum || strings.length>15,
 	    showRange: false,
             height: "20px",
-	    showRange:showRange
+	    showRange:showRange,
+	    showLabels:showLabels
         });
 	let attrs = [TITLE,id,ATTR_STYLE,'margin-right:4px;',"colortable",id]
 	//	if(ct.colors.length>20)   attrs.push(STYLE,HU.css(ATTR_WIDTH,'400px'));

@@ -151,7 +151,8 @@ $.extend(Utils,{
             horizontal:true,
             colorWidth:"20px",
             stride:1,
-	    dotWidth:null
+	    dotWidth:null,
+	    showLabels:true
         }
         if (args) $.extend(options, args);
 	let colorInfo={};
@@ -318,7 +319,7 @@ $.extend(Utils,{
         }
         html += HU.close(DIV);
         html += HU.open(DIV, [CLASS, "display-colortable-extra"]);
-        if (Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
+        if (options.showLabels && Object.keys(colorInfo).length && options.horizontal && !options.showColorTableDots) {
             let tdw = (100 / ct.length) + "%";
             html += "<div style='width:100%;vertical-align:top;text-align:center;'>"
             let colCnt =0;
