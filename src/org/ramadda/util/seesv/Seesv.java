@@ -61,7 +61,8 @@ import org.ramadda.util.sql.SqlUtil;
 @SuppressWarnings("unchecked")
 public class Seesv implements SeesvCommands {
 
-    private static final String PREFIX_FILE = "file:";
+    public static final String PREFIX_FILE = "file:";
+    public static final String PREFIX_RESOURCE = "resource:";    
 
     /** _more_          */
     private static boolean debugFiles = false;
@@ -1304,12 +1305,22 @@ public class Seesv implements SeesvCommands {
       Throw an error if we're not allows to read the file
     */
     public static void checkOkToRead(String file) {
-	if(!IO.okToReadFrom(file)) 
+	if(!IO.okToReadFrom(true, file)) {
 	    throw new IllegalArgumentException("Cannot read file:"   + file);
+	}
     }
 
 
     public String readFile(String file) throws Exception {
+	if (file.startsWith(PREFIX_RESOURCE)) {
+	    file = file.substring(PREFIX_RESOURCE.length());
+	    if(file.indexOf("/resources/")<0) {
+		throw new IllegalArgumentException("Cannot read resource:"   + file);
+	    }
+	    return IO.readResource(file,Seesv.class);
+	}
+
+
 	if (file.startsWith(PREFIX_FILE)) {
 	    file = file.substring(PREFIX_FILE.length());
 	}
@@ -3563,7 +3574,7 @@ public class Seesv implements SeesvCommands {
 
     private String getText(String v)  {
 	try {
-	    if (v.startsWith(PREFIX_FILE)) {
+	    if (v.startsWith(PREFIX_FILE) || v.startsWith(PREFIX_RESOURCE)) {
 		v = readFile(v);
 	    }
 	    return v;
@@ -4934,7 +4945,7 @@ public class Seesv implements SeesvCommands {
 		List<String> cols  = getCols(args.get(++i));
 		String name = args.get(++i);
 		String v = args.get(++i);
-		if(v.startsWith(PREFIX_FILE)) {
+		if(v.startsWith(PREFIX_FILE)||v.startsWith(PREFIX_RESOURCE)) {
 		    values = new ArrayList<String>();
 		    try {
 			String c = readFile(v);
@@ -4952,7 +4963,9 @@ public class Seesv implements SeesvCommands {
 		    values = new ArrayList<String>();
 		    for(String tok:Utils.split(v,",",true,true)) {
 			List<String> toks2=  Utils.split(tok,":");
-			values.addAll(toks2);
+			if(toks2.size()==2) {
+			    values.addAll(toks2);
+			}
 		    }
 		} else {
 		    values = Utils.parseCommandLine(v);
