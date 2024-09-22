@@ -785,7 +785,9 @@ new MapLayer('federallands','Federal Lands',['//gis.blm.gov/arcgis/rest/services
 	      attribution:'Map courtesy of BLM'});
 new MapLayer('seafloor','Seafloor',['//tiles.arcgis.com/tiles/C8EMgrsFcRFL6LrL/arcgis/rest/services/GEBCO_basemap_NCEI/MapServer/tile/${z}/${y}/${x}']);
 new MapLayer('historic','Historic','https://caltopo.com/tile/1900/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo',isOverlay:true});
-new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec',attribution:'Map courtesy of ESRI'});
+/**
+   new MapLayer('esri.aeronautical','ESRI Aeronautical','https://wms.chartbundle.com/mp/service',{type:'wms',layer:'sec',attribution:'Map courtesy of ESRI'});
+   **/
 //https://docs.stadiamaps.com/guides/migrating-from-stamen-map-tiles/
 /*
 new MapLayer('osm.toner','OSM-Toner','https://tiles.stadiamaps.com/tiles/stamen_toner/${z}/${x}/${y}.png',{attribution:'Map courtesy of OSM'});
