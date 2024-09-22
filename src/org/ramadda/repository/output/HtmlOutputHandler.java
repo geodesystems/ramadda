@@ -1328,9 +1328,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    tabContents.add(HU.div(dd,HU.style("min-height:200px;")));
 	}
 
-        tabTitles.add("Information");
-        tabContents.add(basicSB.toString());
-
 
         for (TwoFacedObject tfo :
 		 getMetadataHtml(request, entry, null, true, null,
