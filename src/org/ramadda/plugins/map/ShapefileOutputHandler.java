@@ -436,6 +436,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";
         String filename = forMap + "_" + returnFile;
+	filename+="_"+entry.getChangeDate();
         if (boundsArg != null) {
             filename = boundsArg.replaceAll(",", "_") + filename;
         }
