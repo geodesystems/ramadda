@@ -101,7 +101,7 @@ public class ConvertibleTypeHandler extends PointTypeHandler {
                     throw new IllegalArgumentException("Entry not a file  "
                             + arg);
                 }
-                arg = fileEntry.getFile().toString();
+                arg = Seesv.PREFIX_FILE+fileEntry.getFile().toString();
             } else if (arg.equals("-run")) {
                 continue;
             }
