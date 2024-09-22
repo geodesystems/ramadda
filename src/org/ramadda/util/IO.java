@@ -201,8 +201,12 @@ public class IO {
      * @return _more_
      */
     public static boolean okToReadFrom(String file) {
+	return okToReadFrom(false,file);
+    }
+
+    public static boolean okToReadFrom(boolean external, String file) {	
         for (FileChecker checker : fileCheckers) {
-            if (checker.canReadFile(file)) {
+            if (checker.canReadFile(external, file)) {
                 return true;
             }
         }
@@ -291,6 +295,12 @@ public class IO {
 
         return IOUtil.getInputStream(filename, origin);
     }
+
+    public  static String readResource(String path, Class origin) throws Exception{
+	InputStream is =  origin.getResourceAsStream(path);
+	return readInputStream(is);
+    }
+
 
     /**
      *
@@ -1503,7 +1513,7 @@ public class IO {
          * @param file _more_
          * @return _more_
          */
-        public boolean canReadFile(String file);
+        public boolean canReadFile(boolean external, String file);
     }
 
 
