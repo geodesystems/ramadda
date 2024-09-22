@@ -815,6 +815,33 @@ public class GeoJson extends JsonUtil {
 	return obj;
     }
 
+    public static JSONObject remove(JSONObject obj,boolean matchAll,
+				    List<String>props) throws Exception {
+        JSONArray             features = readArray(obj, "features");
+	List<Object> objects = new ArrayList<Object>();
+	double cnt = 0;
+	for (int idx1 = 0; idx1 < features.length(); idx1++) {
+	    boolean debug = false;
+	    JSONObject feature   = features.getJSONObject(idx1);
+	    JSONObject            properties = feature.optJSONObject("properties");	
+	    for(String prop: props) {
+		if(prop.equals("dodebug")) {
+		    if(idx1==0)
+			System.err.println(properties.keySet());
+		}
+		properties.remove(prop);
+		if(idx1==0) {
+		    System.err.println("removing:" + prop);
+		    System.err.println(properties);
+		}
+	    }
+	    objects.add(feature);
+	}
+	features.clear();
+	features.putAll(objects);
+	return obj;
+    }
+    
 
 
     public static JSONObject keep(JSONObject obj,List<String> keepers) throws Exception {
@@ -895,6 +922,14 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }	    
 
+	    if(arg.equals("-remove")) {
+		String p = args[++i];
+		final List<String> props = Utils.split(p,",");
+		commands.add(new Command() {public JSONObject apply(JSONObject obj) throws Exception {return  remove(obj,true,props);}});
+		continue;
+	    }	    
+
+
 
 	    if(arg.equals("-contained")) {
 		final Bounds b = new Bounds(parse(args[++i]),
@@ -942,7 +977,7 @@ public class GeoJson extends JsonUtil {
 	    }	    
 
 	    if(arg.startsWith("-")) {
-		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-print (Print the GeoJson to stdout)\n\t-bounds (print out the bounds)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
+		System.err.println("Unknown arg:" +arg +" usage commands may be chained together: \n\t-print (Print the GeoJson to stdout)\n\t-bounds (print out the bounds)\n\t-csv (write out the GeoJson as CSV)\n\t-split <property, e.g, GEOID> Split the file to individual features based on property value\n\t\n\t-filter <prop1,value1,prop2,value2>\n\t-keep <prop1,prop2>\n\t-remove <prop1,prop2,...>\n\t-reverse (reverse the feature order)\n\t-first <count> (print out the first count features)\n\t-stride 10 (if stride<0 then it is used to sample) \n\t-intersects north west south east (subset)  \n\t-contained north west south east (subset)\n\t-reduce");
 		continue;
 	    }
 
