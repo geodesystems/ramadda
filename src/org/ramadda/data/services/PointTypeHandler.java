@@ -13,6 +13,7 @@ import org.ramadda.data.record.RecordFile;
 import org.ramadda.data.record.RecordFileFactory;
 import org.ramadda.data.record.RecordVisitorGroup;
 import org.ramadda.util.WikiUtil;
+import org.ramadda.util.seesv.Seesv;
 import org.ramadda.data.docs.*;
 
 import org.ramadda.data.record.VisitInfo;
@@ -1217,7 +1218,7 @@ public class PointTypeHandler extends RecordTypeHandler {
 		if (!file.exists()) {
 		    throw new IllegalArgumentException("Entry not a file  " + arg);
 		}
-		arg = arg.replace("entry:" + fileEntryId,file.toString());
+		arg = arg.replace("entry:" + fileEntryId,Seesv.PREFIX_FILE+file.toString());
 	    }
 	    args.add(arg);
 	}
