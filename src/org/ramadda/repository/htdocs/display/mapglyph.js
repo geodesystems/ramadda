@@ -699,9 +699,8 @@ MapGlyph.prototype = {
 
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
-	    console.log(this.mapServerLayer);
 	    if(url) {
-		console.log(url);
+		this.attrs.mapServerUrl = url;
 	    }
 	}
 
@@ -2701,7 +2700,9 @@ MapGlyph.prototype = {
 		    let div = this.getColorTableDisplay(obj.colorTable,obj.min,obj.max,true,obj.isEnumeration, strings,obj.stringValues);
 		    let html = HU.b(HU.center(this.makeLabel(obj.property,true)));
 		    if(obj.isEnumeration) {
-			html+=HU.div([ATTR_STYLE,'max-height:150px;overflow-y:auto;'],div);
+			let maxHeight = this.getProperty('mapLegendHeight','150px');
+			html+='\n';
+			html+=HU.div([ATTR_STYLE,'max-height:' + maxHeight+';overflow-y:auto;'],div);
 		    } else {
 			html+=HU.center(div);
 		    }
@@ -3001,11 +3002,12 @@ MapGlyph.prototype = {
 		    layers: wmsLayer,
 		    format: "image/png",
 		    isBaseLayer: false,
-		    srs: "epse:4326",
+		    srs: "epsg:4326",
 		    transparent: true
 		}, {
 		    opacity:1.0
 		});
+		console.dir(this.mapServerLayer);
 	    } else if(Utils.stringDefined(url)) {
 		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
