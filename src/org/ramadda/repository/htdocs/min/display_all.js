@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Sep 22 05:20:22 MDT 2024";
+var build_date="RAMADDA build date: Sun Sep 22 09:01:25 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44698,6 +44698,8 @@ var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
 			  'filter.toggle.show=false',
+			  'filter.sortOnCount=true',
+			  'filter.showRawValues=true',
 			  'legendTooltip=',
 			  'showLabelInMap=true',
 			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
@@ -55164,9 +55166,19 @@ MapGlyph.prototype = {
 		filter.type="enum";
 
 		if(info.samples.length>1) {
-		    let sorted = info.samples.sort((a,b)=>{
-			return a.value.localeCompare(b.value);
-		    });
+		    let sorted;
+		    if(this.getProperty('filter.sortOnCount',false)) {
+			sorted = info.samples.sort((a,b)=>{
+			    let cnt1 = info.seen[a.value];
+			    let cnt2 = info.seen[b.value];			    
+			    return cnt2-cnt1;
+			});
+			sorted = info.samples;
+		    } else {
+			sorted = info.samples.sort((a,b)=>{
+			    return a.value.localeCompare(b.value);
+			});
+		    }
 		    let options = sorted.map(sample=>{
 			let label = sample.label +' (' + info.seen[sample.value]+')';
 			if(sample.value=='')
@@ -57304,9 +57316,15 @@ FeatureInfo.prototype= {
 
     finishInit:function() {
 	if(this.samples.length) {
-	    let items = this.samples.map(item=>{
-		return {value:item,label:this.getValueLabel(item)};
-//		return {value:item,label:Utils.makeLabel(item)};
+	    let getLabel = (item)=>{
+		return this.getValueLabel(item);
+	    }
+	    
+	    if(this.mapGlyph.getProperty('filter.showRawValues',false)) {
+		getLabel = item=>{return item;}
+	    }
+	    let items = this.samples.map((item,idx)=>{
+		return {value:item,label:getLabel(item)};
 	    });
 	    this.samples =  items.sort((a,b)=>{
 		return a.label.localeCompare(b.label);
