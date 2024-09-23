@@ -72,6 +72,7 @@ public class Seesv implements SeesvCommands {
 
     private static File tmpCacheDir;
 
+    private boolean externalAccess = true;
 
     private boolean interactive = false;
     
@@ -1301,11 +1302,15 @@ public class Seesv implements SeesvCommands {
     }
 
 
+    public void setExternalAccess(boolean v) {
+	externalAccess = v;
+    }
+
     /*
       Throw an error if we're not allows to read the file
     */
-    public static void checkOkToRead(String file) {
-	if(!IO.okToReadFrom(true, file)) {
+    public void checkOkToRead(String file) {
+	if(!IO.okToReadFrom(externalAccess, file)) {
 	    throw new IllegalArgumentException("Cannot read file:"   + file);
 	}
     }

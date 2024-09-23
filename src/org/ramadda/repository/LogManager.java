@@ -971,7 +971,7 @@ public class LogManager extends RepositoryManager {
 
 	long t1 = System.currentTimeMillis();
 	Seesv seesv = new Seesv(args,suffix);
-
+	seesv.setExternalAccess(false);
 	seesv.run(files);
 	long t2 = System.currentTimeMillis();
 
