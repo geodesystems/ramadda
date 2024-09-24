@@ -2477,7 +2477,8 @@ public class TypeHandler extends RepositoryManager {
         }
 
 
-        if (getAccessManager().canDoEdit(request, entry)) {
+	boolean canEdit = getAccessManager().canDoEdit(request, entry);
+        if (canEdit) {
             links.add(
 		      new Link(
 			       request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
@@ -2498,17 +2499,19 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-            if ((request.getUser() != null)
-		&& !request.getUser().getAnonymous()) {
-                links.add(
-			  new Link(
-				   request.entryUrlWithArg(
-							   getRepository().URL_ENTRY_COPY, entry,
-							   ARG_FROM), ICON_MOVE, "Move/Copy/Link",
-				   OutputType.TYPE_EDIT));
-            }
+	}
+	if ((request.getUser() != null)
+	    && !request.getUser().getAnonymous()) {
+	    links.add(
+		      new Link(
+			       request.entryUrlWithArg(
+						       getRepository().URL_ENTRY_COPY, entry,
+						       ARG_FROM), ICON_MOVE, "Move/Copy/Link",
+			       OutputType.TYPE_EDIT));
+	}
 
 
+	if(canEdit) {
 
             List<String> metadataTypes =
                 entry.getTypeHandler().getMetadataTypes();
