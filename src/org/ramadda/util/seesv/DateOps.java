@@ -87,8 +87,8 @@ public abstract class DateOps extends Processor {
         /**
          * @param col _more_
          */
-        public DateConverter(String col) {
-            super(col);
+        public DateConverter(List<String> cols) {
+            super(cols);
         }
 
         /**
@@ -101,13 +101,14 @@ public abstract class DateOps extends Processor {
             if (rowCnt++ == 0) {
                 return row;
             }
-            int col = getIndex(ctx);
-	    //Check for an OK index
-	    if(!row.indexOk(col)) return row;
-            String s = row.get(col).toString();
-	    if(Utils.stringDefined(s)) {
-		Date  d = ctx.parseDate(s);
-		row.set(col, ctx.formatDate(d));
+            List<Integer> indices = getIndices(ctx);
+            for (Integer col : indices) {
+		if(!row.indexOk(col)) continue;
+		String s = row.get(col).toString();
+		if(Utils.stringDefined(s)) {
+		    Date  d = ctx.parseDate(s);
+		    row.set(col, ctx.formatDate(d));
+		}
 	    }
             return row;
         }

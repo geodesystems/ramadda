@@ -4712,7 +4712,7 @@ public class Seesv implements SeesvCommands {
 	    });	
 
 	defineFunction(CMD_CONVERTDATE,1,(ctx,args,i) -> {
-		ctx.addProcessor(new DateOps.DateConverter(args.get(++i)));
+		ctx.addProcessor(new DateOps.DateConverter(getCols(args.get(++i))));
 		return i;
 	    });
 
