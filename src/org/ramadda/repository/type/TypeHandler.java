@@ -421,9 +421,13 @@ public class TypeHandler extends RepositoryManager {
 	    for(String mtd: Utils.split(XmlUtil.getAttributeFromTree(node,ATTR_METADATA,""),",",true,true)) {
 		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
 	    }
-	    if(metadataTypes.size()==0)
+	    if(metadataTypes.size()==0) {
 		metadataTypes = makeInitialMetadataTypes();
-
+	    }  else {
+		for(String dflt:new String[]{"content.thumbnail","content.alias","content.keyword"}) {
+		    if(!metadataTypes.contains(dflt)) metadataTypes.add(dflt);
+		}
+	    }
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
 							     ATTR_CHILDTYPES, ""),",",true,true);
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
