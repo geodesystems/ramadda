@@ -21,6 +21,11 @@
   </group>
 
 
+  <group handler="datehandler">
+    <api request="/datetest"
+	 method="processDateTest"  />
+  </group>
+
   <group handler="entrymanager">
     <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
     <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>

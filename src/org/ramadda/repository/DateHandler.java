@@ -116,6 +116,40 @@ public class DateHandler extends RepositoryManager {
 
 
 
+    public Result processDateTest(Request request) throws Exception {
+	StringBuilder sb =new StringBuilder();
+	getPageHandler().sectionOpen(request,  sb, "Date Test",false);
+	sb.append(HU.form(getRepository().getUrlBase()+"/datetest"));
+	sb.append(HU.formTable());
+	HU.formEntry(sb,"Format:",
+		     HU.input("format",request.getString("format",""),
+			      HU.attrs("size","30","placeholder","e.g., yyyy-MM-dd")) +
+		     " " + HU.href("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html","Help",HU.attrs("target","_help")));
+
+	HU.formEntry(sb,"Date:",
+		     HU.input("date",request.getString("date",""),
+			      HU.attrs("size","30")));
+	sb.append(HU.formTableClose());
+        sb.append(HU.submit("Test date format", "test"));
+
+        sb.append(HU.formClose());
+
+	if(request.defined("format") && request.defined("date")) {
+	    try {
+		SimpleDateFormat sdf = new SimpleDateFormat(request.getString("format",""));
+		sb.append(sdf.parse(request.getString("date","")));
+	    } catch(Exception exc) {
+		sb.append("Error:" + exc);
+	    }
+	}
+	getPageHandler().sectionClose(request,  sb);
+	return  new Result("Date Test", sb);
+
+    }
+
+
+
+
     /**
      * _more_
      *

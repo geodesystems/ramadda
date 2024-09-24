@@ -201,6 +201,8 @@ public class ApiManager extends RepositoryManager {
                 handler = getRepository().getLLMManager();		
             } else if (handlerName.equals("searchmanager")) {
                 handler = getRepository().getSearchManager();
+            } else if (handlerName.equals("datehandler")) {
+                handler = getRepository().getDateHandler();		
             } else if (handlerName.equals("entrymanager")) {
                 handler = getRepository().getEntryManager();
             } else if (handlerName.equals("exteditor")) {
