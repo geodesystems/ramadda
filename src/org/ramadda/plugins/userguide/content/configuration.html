@@ -134,7 +134,7 @@ ramadda.jupyter.path=/path/to/anaconda/bin/jupyter
 }]
 
 [item {GDAL services} {
-RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this installd GDAL and set the following properties:
+RAMADDA integrates a number of <a href=https://gdal.org/>GDAL</a> based geospatial and raster services. To enable this install GDAL and set the following properties:
 +pre addCopy=true
 service.gdal=/usr/local/bin
 service.gdal.gdal_translate=/usr/local/bin/gdal_translate
@@ -144,15 +144,44 @@ service.gdal.gdaldem=/usr/local/bin/gdaldem
 service.gdal.ogr2ogr=/usr/local/bin/ogr2ogr
 -pre
 
-If running on Amazon AWS you can install GDAL with:
+You can use pixi to easily install gdal.
+See <a href=https://www.youtube.com/watch?v=2GNmhmoIiJs>https://www.youtube.com/watch?v=2GNmhmoIiJs</a>
+:p
+
+Install pixi:
 +pre addCopy=true
-sudo amazon-linux-extras install epel -y
-sudo yum install -y gdal gdal-devel gdal-python
+curl -fsSL https://pixi.sh/install.sh | bash
 -pre
 
-To find out where gdal is installed do:
+Make a geo dir and init pixi:
 +pre addCopy=true
-which gdal_translate
+mkdir geo
+cd geo
+pixi init
+-pre
+
+Add gdal:
++pre addCopy=true
+pixi add gdal
+-pre
+
+pixi will install gdal into:
++pre addCopy=true
+/home/ec2-user/geo/.pixi/envs/default/bin
+-pre
+You can add it to your PATH in the .bashrc
++pre addCopy=true
+set PATH="$PATH:/home/ec2-user/geo/.pixi/envs/default/bin"
+-pre
+
+Then add the properties to repository.properties
++pre addCopy=true
+service.gdal=/home/ec2-user/geo/.pixi/envs/default/bin
+service.gdal.gdal_translate=/home/ec2-user/geo/.pixi/envs/default/bin/gdal_translate
+service.gdal.gdalinfo=/home/ec2-user/geo/.pixi/envs/default/bin/gdalinfo
+service.gdal.gdalwarp=/home/ec2-user/geo/.pixi/envs/default/bin/gdalwarp
+service.gdal.gdaldem=/home/ec2-user/geo/.pixi/envs/default/bin/gdaldem
+service.gdal.ogr2ogr=/home/ec2-user/geo/.pixi/envs/default/bin/ogr2ogr
 -pre
 
 }]
