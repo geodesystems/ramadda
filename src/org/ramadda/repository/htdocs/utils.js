@@ -4633,6 +4633,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    animate:false,
 	    animateSpeed:300,
             title:"",
+	    rightSideTitle:"",
             inPlace:true,
             fit:true
         };
@@ -4698,6 +4699,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let closeImage = HtmlUtils.div([TITLE,'Close',CLASS,'ramadda-popup-close'],
 					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ID,id+'_close',STYLE,HU.css('cursor','pointer')]));
             let title = HU.div([CLASS,'ramadda-popup-title'],opts.title);
+	    if(opts.rightSideTitle)
+		title+=HU.div([ATTR_CLASS,'ramadda-popup-title-right'],opts.rightSideTitle);
             let hdr = closeImage+title
 	    if(opts.headerRight) {
 		hdr = hdr+HU.div(['style',HU.css('position','absolute','top','0px','right','0px')], opts.headerRight);
