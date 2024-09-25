@@ -4734,19 +4734,22 @@ public class TypeHandler extends RepositoryManager {
             HU.labeledCheckbox(ARG_FILE_PRESERVEDIRECTORY, "true", false,
 			       "Make folders from archive");
 
-	unzipWidget+="<br>"+HU.b("Match pattern: ") + HU.input(ARG_ZIP_PATTERN,"");
+	unzipWidget+=HU.space(1)+ HU.input(ARG_ZIP_PATTERN,"",
+					   HU.attrs("placeholder","Match pattern"));
         String addMetadata =
             HU.labeledCheckbox(ARG_METADATA_ADD, "true",
 			       Misc.equals(getFormDefault(entry, ARG_METADATA_ADD, "false"),
 					   "false"), "Add properties") + space+
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
-			       "Just spatial/temporal properties") +
-	    "<br>" + 
-	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
-			       request.get(ARG_STRIPEXIF,false),
-			       "Strip metadata from images");
+			       "Just spatial/temporal properties");
+
+	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
+					       request.get(ARG_STRIPEXIF,false),
+					       "Strip metadata from images");
+
+
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
-	    addMetadata+=space+HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
+	    images +=space+HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
 	}	    
 
 	String extract = getLLMManager().getNewEntryExtract(request);
@@ -4781,28 +4784,36 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+	extras.append("<table>");
 	BiConsumer<String,String> extra = (label,contents)->{
 	    if(contents.length()==0) return;
 	    try {
+		extras.append("<tr valign=top><td width=1% style='white-space:nowrap;' align=right>");
 		extras.append(HU.b(label));
-		extras.append(HU.openInset(0, 30, 0, 0));
+		extras.append("</td><td>");
+		//		extras.append(HU.openInset(0, 30, 0, 0));
 		extras.append(contents);
-		extras.append(HU.closeInset());
+		extras.append("</td></tr>");
+		//		extras.append(HU.closeInset());
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
 	    }
 	};
 
 	extra.accept("Entry type:",extraMore);
-	extra.accept("Zip Files:",unzipWidget);	
-	extra.accept("Metadata:",addMetadata);
+	extra.accept("Zip files:",unzipWidget);	
+	extra.accept("Images:",images);
 	if(stringDefined(extract)) 
 	    extra.accept("Use LLM:",extract);
 
+	extra.accept("Metadata:",addMetadata);
 	extra.accept("Entry name:",makeNameWidget);
 	extra.accept("Date format:",dateFormatWidget);	
 	if(entry==null)
 	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
+
+	extras.append("</table>");	
+
 	extras.append(deleteFileWidget);
     }
 

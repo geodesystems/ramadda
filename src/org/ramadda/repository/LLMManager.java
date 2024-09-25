@@ -271,7 +271,7 @@ public class LLMManager extends  AdminHandlerImpl {
 	HU.labeledCheckbox(sb, ARG_EXTRACT_LATLON, "true", request.get(ARG_EXTRACT_LATLON,false),"","Extract latitude/longitude");		
 	sb.append("<br>");
 
-	getWikiManager().makeCallout(sb,request,"When extracting keywords, title, etc., the file text is sent to the selected LLM (e.g., <a href=https://openai.com/api/>OpenAI GPT API</a>) for processing.<br>There will also be a delay before the results are shown for the new entry.");
+	getWikiManager().makeCallout(sb,request,"When extracting title, summary, etc., the file text is sent to the selected LLM for processing");
 	return sb.toString();
     }
 
