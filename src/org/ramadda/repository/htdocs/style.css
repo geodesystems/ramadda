@@ -106,6 +106,7 @@ inlineblock {
     padding:2px;
     cursor:pointer;
     margin-right:10px;
+    vertical-align:top;
 }
 
 .fileinput_wrapper:hover {
@@ -6449,10 +6450,12 @@ a.wiki-link-noexist {
 .ramadda-file-dnd-target {
     min-width:400px;
     display:inline-block;
-    padding:2px;
     border: 2px dashed #ccc;    
-    margin-top:2px;
     cursor:pointer;
+    /*padding:2px;
+    margin-top:2px;
+*/
+
 
 }
 
