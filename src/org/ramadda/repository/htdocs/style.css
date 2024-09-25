@@ -3851,7 +3851,12 @@ a.btn-primary:link, a.btn-primary  {
     text-align:center;
 }
 
-
+.ramadda-popup-title-right {
+    display:inline-block;
+    position:absolute;
+    right:10px;
+    
+}
 
 .ramadda-popup-link  {
     display:inline-block;
