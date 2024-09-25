@@ -6,6 +6,7 @@
 package org.ramadda.repository;
 
 import org.ramadda.repository.auth.AccessException;
+import org.ramadda.repository.auth.User;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 
@@ -843,6 +844,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.getStartDate()</span> <span>entry.getEndDate()</span>\n" +
 		    "<span>entry.setStartDate(String)</span> <span>entry.setEndDate(String)</span>\n" +
 		    "<span>entry.hasLocationDefined()</span> <span>entry.setLocation(lat,lon)</span>\n"+
+		    "<span>entry.setOwner(username)</span>\n" +
 		    "<span>entry.getChildren()</span>\n" +
 		    "<span>entry.setColumnValue(name,value)</span>\n" +
 		    "<span>entry.isImage()</span> <span>entry.resizeImage(400)</span> <span>entry.grayscaleImage()</span>\n" +
@@ -1309,6 +1311,13 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
+
+	public void setOwner(String userID) throws Exception {
+	    User user = repository.getUserManager().findUser(userID);
+	    if(user==null) throw new IllegalArgumentException("Could not find user:" + userID);
+	    entry.setUser(user);
+	    changed= true;
+	}
 
 	public void grayscaleImage() throws Exception {
 	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
