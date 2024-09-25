@@ -1208,7 +1208,8 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    } else {
 		fileName =  clean(input.val()); 
 	    }
-	    if(fileName=="") fileName = HU.span([CLASS,"fileinput_label_empty"],"Please select a file");
+	    if(fileName=="")
+		fileName = HU.span([CLASS,"fileinput_label_empty"],"Click to select a file");
 	    $('#' + fileInputId+"_filename").html(fileName); 
 	};
 	input.bind('change', inputChanger);

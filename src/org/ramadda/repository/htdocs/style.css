@@ -120,8 +120,14 @@ inlineblock {
 
 .fileinput_label_empty {
     margin-left:4px;
-    color:#ccc;
+    display:block;
+    color:#aaa;
 }
+
+.fileinput_label_empty:hover {
+    color:#000;
+}
+
 
 .ramadda-dict {
     display:none;
