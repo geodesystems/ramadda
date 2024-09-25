@@ -124,10 +124,6 @@ inlineblock {
     color:#aaa;
 }
 
-.fileinput_label_empty:hover {
-    color:#000;
-}
-
 
 .ramadda-dict {
     display:none;
@@ -6456,6 +6452,8 @@ a.wiki-link-noexist {
     padding:2px;
     border: 2px dashed #ccc;    
     margin-top:2px;
+    cursor:pointer;
+
 }
 
 .ramadda-file-dnd-target:hover {
@@ -6472,14 +6470,18 @@ a.wiki-link-noexist {
     display: inline-block;
     padding:5px;
     margin-bottom:25px;
+    color:#aaa;
 }
 
+
 .ramadda-file-dnd-label .fas {
-    font-size:24pt;
+    xfont-size:24pt;
     color:#ccc;    
     margin-left:5px;
     margin-right:5px;
 }
+
+
 
 .ramadda-file-dnd-target.ramadda-drop-active {
     border: 2px solid #aaa !important;        

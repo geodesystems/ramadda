@@ -1181,7 +1181,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(multiple)
 	    input.attr('multiple','');
 	let form = input.closest('form');
-	let custom = HU.div([TITLE,"Click to select a file", ID,fileInputId+"_filewrapper",CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-cloud-upload-alt") +" " +HU.div([ID,fileInputId+"_filename",CLASS,"fileinput_label"]));
+	let custom = HU.div([TITLE,"Click to select a file", ID,fileInputId+"_filewrapper",CLASS, 'fileinput_wrapper'],HU.getIconImage("fas fa-upload") +" " +HU.div([ID,fileInputId+"_filename",CLASS,"fileinput_label"]));
 	input.after(custom);
 	input.hide();
 	let inputWrapper = $("#" +fileInputId+"_filewrapper");
