@@ -2253,6 +2253,13 @@ public class PageHandler extends RepositoryManager {
                     + getEntryDisplayName(entry));
 
 
+        String printLink =
+            HU.href(HU.url(getEntryManager().getEntryUrl(request, entry),ARG_TEMPLATE,"empty"),
+		    HU.img("fas fa-print"),
+		    HU.attrs("title","Display with no template"));
+
+	
+
 
         String        menuId = HU.getUniqueId("menulink");
         String menuLinkImg =      HU.img("fas fa-caret-down");
@@ -2267,7 +2274,8 @@ public class PageHandler extends RepositoryManager {
                     HU.onMouseClick(HU.call("RamaddaUtils.showEntryPopup",
                                             HU.squote(menuId),
                                             HU.squote(entry.getId()),
-                                            HU.squote(headerLabel))));
+                                            HU.squote(headerLabel),
+					    HU.squote(printLink))));
 
 	entryMenu.append(menuLink);
         List<Entry>  parents = getEntryManager().getParents(request, entry);

@@ -1368,7 +1368,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
         return object;
     },
 
-    showEntryPopup:function(id,entryId,label) {
+    showEntryPopup:function(id,entryId,label,extra) {
 	let html = RamaddaUtils.contents[entryId];
 	if(html) {
 	    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
@@ -1379,7 +1379,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
                 dataType: 'text',
                 success: function(html) {
 		    RamaddaUtils.contents[entryId] = html;
-		    RamaddaUtils.showEntryPopupInner(id,entryId,label,html);
+		    RamaddaUtils.showEntryPopupInner(id,entryId,label,html,extra);
                 }
             }).fail((jqxhr, settings, exc) => {
                 console.log("/entry/menu failed:" + exc);
@@ -1388,7 +1388,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
     },
 
-    showEntryPopupInner:function(id,entryId,label,html) {
+    showEntryPopupInner:function(id,entryId,label,html,extraLink) {
 	let anchor = $("#" + id);
 	let headerRight=null;
 	/*
@@ -1398,7 +1398,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	}
 	*/
 
-	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
+
+	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,
+		       rightSideTitle:extraLink,
+		       anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
     },
 
     initEntryListForm:function(formId) {
