@@ -244,6 +244,7 @@ priority="2"       >
 
 <type name="type_document_collection"  isgroup="true" description="Document Collection"
       priority="2"
+      childtypes="type_document_pdf,type_document_doc,type_document_ppt"
       handler="org.ramadda.repository.type.GenericTypeHandler" category="Documents"
       help="A collection of documents"      >
      <property name="form.ark.show" value="true"/>    
@@ -311,6 +312,8 @@ showHeading=true
 :navtop
 {{description wikify=true}}
 +center
+{{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+:vspace 0.5em
 +if property=show_text_search
 {{display_simplesearch width=200px  inputSize=100% ancestor=this placeholder="Search in documents" orderBy=createdate_ascending}}
 -if
