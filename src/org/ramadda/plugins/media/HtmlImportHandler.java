@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -35,61 +35,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-/**
- */
+@SuppressWarnings("unchecked")
 public class HtmlImportHandler extends ImportHandler {
-
-    /** _more_ */
     public static final String ARG_IMPORT_PATTERN = "import.pattern";
-
-    /** _more_ */
     public static final String ARG_IMPORT_RECURSE = "import.recurse";
-
-    /** _more_ */
     public static final String ARG_IMPORT_RECURSE_PATTERN =
         "import.recurse.pattern";
 
-    /** _more_ */
     public static final String ARG_IMPORT_RECURSE_DEPTH =
         "import.recurse.depth";
 
-    /** _more_ */
     public static final String ARG_IMPORT_DOIT = "import.doit";
-
-    /** _more_ */
     public static final String ARG_IMPORT_PROVENANCE = "import.addprovenance";
-
-    /** _more_ */
     public static final String ARG_IMPORT_UNCOMPRESS = "import.uncompress";
-
-    /** _more_ */
     public static final String ARG_IMPORT_HANDLE = "import.handle";
-
-    /** _more_ */
     public static final String TYPE_HTML = "html";
 
-    /**
-     * _more_
-     */
     public HtmlImportHandler() {
         super(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+
     public HtmlImportHandler(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
+
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -98,26 +69,9 @@ public class HtmlImportHandler extends ImportHandler {
                                            TYPE_HTML));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param actionId _more_
-     * @param depth _more_
-     * @param sb _more_
-     * @param url _more_
-     * @param parentEntry _more_
-     * @param recursePattern _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean importHtmlInner(Request request, Object actionId,
                                     int depth, StringBuilder sb, URL url,
+				    List<String> okLinks,
                                     Entry parentEntry, String recursePattern,
                                     String pattern)
             throws Exception {
@@ -168,7 +122,8 @@ public class HtmlImportHandler extends ImportHandler {
                             child), child.getName()));
                 sb.append("<ul>");
                 boolean ok = importHtmlInner(request, actionId, depth - 1,
-                                             sb, link.getUrl(), child,
+                                             sb, link.getUrl(),
+					     okLinks,child,
                                              recursePattern, pattern);
                 sb.append("</ul>");
                 getActionManager().setActionMessage(actionId,
@@ -180,6 +135,13 @@ public class HtmlImportHandler extends ImportHandler {
         }
 
         for (HtmlUtils.Link link : links) {
+	    if(okLinks.size()>0) {
+		if(!okLinks.contains(link.getUrl().toString())) {
+		    continue;
+		}
+	    }
+	    
+
             if ((pageLinks != null) && pageLinks.contains(link)) {
                 continue;
             }
@@ -210,6 +172,8 @@ public class HtmlImportHandler extends ImportHandler {
 
                 continue;
             }
+
+
 
             try {
                 if (addFile) {
@@ -313,24 +277,9 @@ public class HtmlImportHandler extends ImportHandler {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param url _more_
-     * @param parentEntry _more_
-     * @param recursePattern _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result importHtml(final Request request,
                               final Repository repository, URL url,
+			      final List<String> okLinks,
                               final Entry parentEntry,
                               final String recursePattern,
                               final String pattern)
@@ -343,7 +292,7 @@ public class HtmlImportHandler extends ImportHandler {
                 int           depth = request.get(ARG_IMPORT_RECURSE_DEPTH,
                                           1);
                 sb.append("<ul>");
-                importHtmlInner(request, actionId, depth, sb, url,
+                importHtmlInner(request, actionId, depth, sb, url,okLinks,
                                 parentEntry, recursePattern, pattern);
                 sb.append("</ul>");
                 getActionManager().setActionMessage(actionId, sb.toString());
@@ -355,20 +304,6 @@ public class HtmlImportHandler extends ImportHandler {
                                            "", parentEntry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param url _more_
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleUrlRequest(Request request, Repository repository,
                                    String url, Entry parentEntry)
             throws Exception {
@@ -378,6 +313,9 @@ public class HtmlImportHandler extends ImportHandler {
             return null;
         }
         StringBuilder sb = new StringBuilder();
+	List  <String> okLinks = (List<String>) request.get("linkok",new ArrayList<String>());
+	boolean anySelected = okLinks.size()>0;
+
 
         getPageHandler().entrySectionOpen(request, parentEntry, sb, "HTML Import");
 
@@ -392,7 +330,8 @@ public class HtmlImportHandler extends ImportHandler {
         List<HtmlUtils.Link> links     = null;
         URL                  rootUrl   = new URL(url);
         if (doit) {
-            return importHtml(request, repository, rootUrl, parentEntry,
+            return importHtml(request, repository, rootUrl, okLinks,
+			      parentEntry,
                               recurse
                               ? recursePattern
                               : null, pattern);
@@ -407,7 +346,7 @@ public class HtmlImportHandler extends ImportHandler {
             links = HU.extractLinks(rootUrl, pattern);
         }
 
-        TypeHandler typeHandler = getRepository().getTypeHandler(request);
+        TypeHandler typeHandler = getRepository().getTypeHandler(request.getString(ARG_TYPE,TypeHandler.TYPE_FINDMATCH),false);
 
 
         String buttons =
@@ -430,10 +369,13 @@ public class HtmlImportHandler extends ImportHandler {
 		     HU.labeledCheckbox(ARG_IMPORT_RECURSE,
 					"true", recurse,"Recurse"));
 
+	HU.formEntry(sb, "",HU.div("Regular expression pattern to match on links to other pages",
+				   HU.cssClass("ramadda-form-help")));
+
         HU.formEntry(sb,msgLabel("Recurse Pattern"),
 		     HU.input(ARG_IMPORT_RECURSE_PATTERN, recursePattern,
-			      HU.SIZE_50) + " "
-		     + "Regular expression pattern to match on links to other pages.");
+			      HU.SIZE_50));
+
 
 	HU.formEntry(sb, msgLabel("Recurse Depth"),
 		     HU.input(ARG_IMPORT_RECURSE_DEPTH,
@@ -441,12 +383,14 @@ public class HtmlImportHandler extends ImportHandler {
 			      HU.SIZE_5));
 
 
+	HU.formEntry(sb, "",HU.div("Link regular expression - e.g. \".*\\.pdf\"",HU.cssClass("ramadda-form-help")));
+
 	HU.formEntry(sb, msgLabel("Entry Pattern"),
-		     HU.input(ARG_IMPORT_PATTERN, pattern, HU.SIZE_50) + " "
-		     + msg("regular expression - add .*"));
+		     HU.input(ARG_IMPORT_PATTERN, pattern, HU.attrs("size","50","placeholder","e.g. .*\\.pdf")));
+
 
         boolean addFile = request.getString(ARG_IMPORT_HANDLE,
-                                            "").equals("file");
+                                            "file").equals("file");
 	HU.formEntry(sb,
 		     msgLabel("What to do"),
 		     HU.labeledRadio(ARG_IMPORT_HANDLE, "file", addFile,
@@ -468,8 +412,9 @@ public class HtmlImportHandler extends ImportHandler {
 
 
 
+	HU.formEntry(sb, "",HU.div("What type of entry to create",HU.cssClass("ramadda-form-help")));
 	HU.formEntry(sb, msgLabel("Entry type"),
-		     getPageHandler().makeFileTypeSelector(request, typeHandler, true));
+		     getPageHandler().makeFileTypeSelector(request, typeHandler, false));
 
         sb.append(HU.formTableClose());
 	StringBuilder mtdSb = new StringBuilder();
@@ -484,9 +429,12 @@ public class HtmlImportHandler extends ImportHandler {
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 	if(stringDefined(extract)) {
+	    mtdSb.append("\n");
 	    mtdSb.append(HU.b("Extract metadata using GPT") +":<br>");
 	    mtdSb.append(extract);
-	    sb.append(HU.makeShowHideBlock("Metadata extraction",mtdSb.toString(),false));
+	    mtdSb.append("\n");
+	    String mtd = HU.insetDiv(mtdSb.toString(),0,30,0,0);
+	    sb.append(HU.makeShowHideBlock("Metadata extraction",mtd,false));
 	} else {
 	    sb.append(mtdSb);
 	}
@@ -504,7 +452,7 @@ public class HtmlImportHandler extends ImportHandler {
                 sb.append("<ul>");
                 for (HtmlUtils.Link link : pageLinks) {
                     sb.append("<li> ");
-                    sb.append(link.getHref());
+                    sb.append(link.getHref(true));
                     if (link.getSize() > 0) {
                         sb.append("  --  ");
                         sb.append(
@@ -524,20 +472,25 @@ public class HtmlImportHandler extends ImportHandler {
             }
 
         }
+
         if (links != null) {
             if (links.size() > 0) {
                 if ((pageLinks != null) && (pageLinks.size() > 0)) {
                     sb.append(
                         msgHeader(
                             "Example links import for recursed page: "
-                            + pageLinks.get(0).getHref()));
+                            + pageLinks.get(0).getHref(true)));
                 } else {
                     sb.append(msgHeader("Links Import"));
                 }
                 sb.append("<ul>");
                 for (HtmlUtils.Link link : links) {
                     sb.append("<li> ");
-                    sb.append(link.getHref());
+
+		    String lurl = link.getUrl().toString();
+	    
+		    sb.append(HU.labeledCheckbox("linkok",lurl,anySelected?okLinks.contains(lurl):true,link.getLabel()));
+		    sb.append(HU.space(1));
                     if (link.getSize() > 0) {
                         sb.append("  --  ");
                         sb.append(
@@ -546,7 +499,7 @@ public class HtmlImportHandler extends ImportHandler {
                                 link.getSize()));
                     }
                     sb.append("  --  ");
-                    sb.append(link.getUrl());
+                    sb.append(HU.href(link.getUrl().toString(),link.getUrl().toString(),HU.attrs("target","link")));
                     sb.append(HU.br());
                 }
                 sb.append("</ul>");
@@ -567,32 +520,6 @@ public class HtmlImportHandler extends ImportHandler {
         //        return getEntryManager().addEntryHeader(request, parentEntry, new Result("",sb));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String url =
-            "https://www.aoncadis.org/download/fileDownload.htm?logicalFileId=71073a32-dbb1-11e3-85a2-00c0f03d5b7c";
-        url = args[0];
-        url = "ftp://n5eil01u.ecs.nsidc.org/SAN2/ICEBRIDGE/ILATM1B.002/2013.03.21";
-        System.out.println(IOUtil.readContents(url, HtmlUtils.class));
-        //        List<HU.Link> links = HU.extractLinks(new URL(url), args.length>1?args[1]:null);
-        //        System.err.println ("Links:"  + links);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
     public static void test(String file) throws Exception {
         String html = IOUtil.readContents(file, HtmlUtils.class);
         //        String pattern = "(?i)<\\s*a href\\s*=\\s*\"?([^\">]+)\"?>(.+?)</a>";
