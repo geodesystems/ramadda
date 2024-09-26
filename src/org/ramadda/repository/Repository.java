@@ -242,9 +242,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                        OutputType.TYPE_ACTION | OutputType.TYPE_EDIT, "",
                        ICON_MOVE);
 
-    /** File Listing OutputType */
-    public static final OutputType OUTPUT_FILELISTING =
-        new OutputType("File Listing", "repository.filelisting",
+    /** Entry Listing OutputType */
+    public static final OutputType OUTPUT_ENTRYLISTING =
+        new OutputType("Entry Listing", "repository.entrylisting",
                        OutputType.TYPE_OTHER, "",
                        ICON_FILELISTING);
 
@@ -2754,15 +2754,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
-        OutputHandler fileListingHandler = new OutputHandler(getRepository(), "File Listing") {
+        OutputHandler entryListingHandler = new OutputHandler(getRepository(), "Entry Listing") {
 		public boolean canHandleOutput(OutputType output) {
-		    return output.equals(OUTPUT_FILELISTING);
+		    return output.equals(OUTPUT_ENTRYLISTING);
 		}
 		public void getEntryLinks(Request request, State state,
 					  List<Link> links)
                     throws Exception {
-		    if (fileListingOK(request)) {
-			links.add(makeLink(request, state.getEntry(), OUTPUT_FILELISTING));
+		    if (entryListingOK(request)) {
+			links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYLISTING));
 		    }
 		}
 
@@ -2770,7 +2770,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		public Result outputEntry(Request request, OutputType outputType,
 					  Entry entry)
                     throws Exception {
-		    return outputFileListing(request, entry,
+		    return outputEntryListing(request, entry,
 					     (List<Entry>) Misc.newList(entry));
 		}
 
@@ -2778,17 +2778,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		public Result outputGroup(Request request, OutputType outputType,
 					  Entry group, List<Entry> children)
                     throws Exception {
-		    return outputFileListing(request, group, children);
+		    return outputEntryListing(request, group, children);
 
 		}
 
 		public String toString() {
-		    return "File listing handler";
+		    return "Entry listing handler";
 		}
 
 	    };
-        fileListingHandler.addType(OUTPUT_FILELISTING);
-        addOutputHandler(fileListingHandler);
+        entryListingHandler.addType(OUTPUT_ENTRYLISTING);
+        addOutputHandler(entryListingHandler);
 
 
         OutputHandler createTypeHandler = new OutputHandler(getRepository(),
@@ -2819,7 +2819,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    return outputCreateType(request, group);
 		}
 		public String toString() {
-		    return "File listing handler";
+		    return "Entry listing handler";
 		}
 
 	    };
@@ -2830,57 +2830,67 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    private boolean fileListingOK(Request request) {
+    private boolean entryListingOK(Request request) {
 	return request.getUser().getAdmin()
 	    || ( !request.getUser().getAnonymous()
 		 && getProperty(PROP_ENABLE_FILE_LISTING, false));
     }
 
 
-    public Result outputFileListing(Request request, Entry entry,  List<Entry> entries)
+    public Result outputEntryListing(Request request, Entry entry,  List<Entry> entries)
 	throws Exception {
-	if ( !fileListingOK(request)) {
-	    throw new AccessException("File listing not enabled",
+	if ( !entryListingOK(request)) {
+	    throw new AccessException("Entry listing not enabled",
 				      request);
 	}
+	Request anon = getAnonymousRequest();
 	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "File Listing");
+	getPageHandler().entrySectionOpen(request, entry, sb, "Entry Listing");
 	StringBuilder sb2 = new StringBuilder();
 	boolean recurse = request.get("recurse",false);
 	if(!recurse) {
 	    String url = request.entryUrl(
 					  getRepository().URL_ENTRY_SHOW, entry,
-					  ARG_OUTPUT, OUTPUT_FILELISTING.toString());
-	    sb.append(HU.center(HU.href(HU.url(url,"recurse","true"),"Recurse File Listing")));
+					  ARG_OUTPUT, OUTPUT_ENTRYLISTING.toString());
+	    sb.append(HU.center(HU.href(HU.url(url,"recurse","true"),"Recurse Entry Listing")));
 	}
 	StringBuilder forAdmin = new StringBuilder();
 	int []entryCnt={0};
 	int []fileCnt={0};	
 
-	long size = outputFileListingInner(request, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt);
+	long size = outputEntryListingInner(request, anon, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt);
 
 	if(sb2.length()==0) {
 	    sb.append(getPageHandler().showDialogNote("No files available"));
 	} else {
-	    sb.append("Total size: " + getPageHandler().formatFileLength(size));
-	    sb.append("&nbsp;#Entries: " + entryCnt[0]);
+	    sb.append("#Entries: " + entryCnt[0]);
 	    sb.append("&nbsp;#Files: " + fileCnt[0]);	    
+	    sb.append("&nbsp;Total size: " + getPageHandler().formatFileLength(size));
+
+	    sb.append(HU.space(3));
+	    sb.append("Anonymous user - ");
+	    sb.append("&nbsp;<i title='No access' style='color:red' class='fa-solid fa-ban'></i>: no access"); 
+	    sb.append("&nbsp;<i title='Can access' style='color:green' class='fa-solid fa-circle'></i>: can access");
 	    sb.append("<br>");
 	    sb.append(sb2);
+	    /**
 	    if (request.getUser().getAdmin()) {
 		sb.append("<hr>");
 		sb.append(getPageHandler().msgHeader("File Paths"));
 		sb.append(forAdmin);
 	    }
+	    **/
 	}
 	getPageHandler().entrySectionClose(request, entry, sb);
-	return getHtmlOutputHandler().makeLinksResult(request, msg("File Listing"), sb,
+	return getHtmlOutputHandler().makeLinksResult(request, msg("Entry Listing"), sb,
 						      new OutputHandler.State(entry));
     }
 
 
-    private long outputFileListingInner(Request request, Entry entry,  List<Entry> entries,StringBuilder sb, 
-					StringBuilder forAdmin,boolean recurse,    int []entryCnt,int []fileCnt) throws Exception {
+    private long outputEntryListingInner(Request request, Request anon,Entry entry,
+					 List<Entry> entries,StringBuilder sb, 
+					 StringBuilder forAdmin,boolean recurse,
+					 int []entryCnt,int []fileCnt) throws Exception {
 	long size =  0;
 	for (Entry child : entries) {
 	    entryCnt[0]++;
@@ -2889,32 +2899,48 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		fileCnt[0]++;
 		forAdmin.append(resource.getTheFile().toString());
 		forAdmin.append(HU.br());
-		//		sb.append(child.getTypeHandler().getEntryResourceHref(request, child));
-		sb.append(getEntryManager().getEntryLink(request, child,true,""));
-		long fileSize = child.getResource().getFileSize();
-		size+=fileSize;
-		sb.append("&nbsp;");
-		sb.append(getPageHandler().formatFileLength(fileSize));
-		sb.append(HU.br());
 	    }
 
+	    long size2=0;
+	    StringBuilder sb2 = new StringBuilder();
 	    if(recurse) {
 		List<Entry> children= getEntryManager().getChildren(request, child);
 		if(children.size()>0) {
-		    StringBuilder sb2 = new StringBuilder();
-		    long size2=0;
-		    size2+=outputFileListingInner(request,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt);
+		    size2+=outputEntryListingInner(request,anon,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt);
 		    size+=size2;
-		    if(sb2.length()>0) {
-			sb.append(getEntryManager().getEntryLink(request, child,true,""));
-			sb.append(" total size: " + getPageHandler().formatFileLength(size2));
-			sb.append("<div style='margin-left:20px;'>");
-			sb.append(sb2);
-			sb.append("</div>");
-		    }
-
 		}
 	    }
+	    
+
+	    sb.append(getPageHandler().getEntryIconImage(request, child));
+	    if(!getAccessManager().canDoView(anon,child)) {
+		sb.append("&nbsp;<i title='No access' style='color:red' class='fa-solid fa-ban'></i>");
+	    } else {
+		sb.append("&nbsp;<i title='Can access' style='color:green' class='fa-solid fa-circle'></i>");
+	    }
+	    sb.append("&nbsp;");
+	    sb.append(getEntryManager().getEntryLink(request, child,false,""));
+	    long fileSize =0;
+	    if (resource != null && resource.isFile()) {
+		fileSize = child.getResource().getFileSize();
+		size+=fileSize;
+		sb.append("&nbsp;");
+		sb.append(getPageHandler().formatFileLength(fileSize));
+	    }
+	    if(size2!=0) {
+		sb.append("&nbsp;total size: ");
+		sb.append(getPageHandler().formatFileLength(size2+fileSize));
+	    }
+
+
+	    if(sb2.length()>0) {
+		sb.append("<div style='margin-left:20px;'>");
+		sb.append(sb2);
+		sb.append("</div>");
+	    } else {
+		sb.append("<br>");
+	    }
+
 	}
 	return size;
     }
