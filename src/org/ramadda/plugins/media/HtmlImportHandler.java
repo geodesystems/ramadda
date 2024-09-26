@@ -478,6 +478,9 @@ public class HtmlImportHandler extends ImportHandler {
 					"Add the source URL as provenance metadata"));
 
 	mtdSb.append("<br>");
+	mtdSb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images"));
+	mtdSb.append("<br>");
+
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 	if(stringDefined(extract)) {
