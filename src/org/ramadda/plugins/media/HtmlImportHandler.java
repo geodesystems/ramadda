@@ -365,6 +365,8 @@ public class HtmlImportHandler extends ImportHandler {
                                       HU.input(ARG_URL, url,
                                           HU.SIZE_70)));
 
+
+
         HU.formEntry(sb, "",
 		     HU.labeledCheckbox(ARG_IMPORT_RECURSE,
 					"true", recurse,"Recurse"));
@@ -489,7 +491,20 @@ public class HtmlImportHandler extends ImportHandler {
 
 		    String lurl = link.getUrl().toString();
 	    
-		    sb.append(HU.labeledCheckbox("linkok",lurl,anySelected?okLinks.contains(lurl):true,link.getLabel()));
+		    String cbxId = HU.getUniqueId("cbx");
+		    String cbxCall =
+			HU.attr(HU.ATTR_ONCLICK,
+				HU.call("HU.checkboxClicked",
+					HU.comma("event",
+						 HU.squote("linkok"),
+						 HU.squote(cbxId))));
+
+
+
+		    sb.append(HU.labeledCheckbox("linkok",lurl,
+						 anySelected?okLinks.contains(lurl):true,
+						 cbxCall + HU.id(cbxId),
+						 link.getLabel()));
 		    sb.append(HU.space(1));
                     if (link.getSize() > 0) {
                         sb.append("  --  ");
