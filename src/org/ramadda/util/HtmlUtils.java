@@ -6116,7 +6116,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
          * @return _more_
          */
         public String getHref() {
-            return HtmlUtils.href(this.url.toString(), this.label);
+	    return getHref(false);
+	}
+
+        public String getHref(boolean target) {
+	    if(!target)return HtmlUtils.href(this.url.toString(), this.label);
+	    return HtmlUtils.href(this.url.toString(), this.label,attrs("target","link"));
         }
 
         /**
