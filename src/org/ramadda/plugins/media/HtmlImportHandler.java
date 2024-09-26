@@ -70,6 +70,7 @@ public class HtmlImportHandler extends ImportHandler {
     }
 
     private boolean importHtmlInner(Request request, Object actionId,
+				    int[]cnt,
                                     int depth, StringBuilder sb, URL url,
 				    List<String> okLinks,
                                     Entry parentEntry, String recursePattern,
@@ -121,7 +122,7 @@ public class HtmlImportHandler extends ImportHandler {
                             getRepository().URL_ENTRY_SHOW,
                             child), child.getName()));
                 sb.append("<ul>");
-                boolean ok = importHtmlInner(request, actionId, depth - 1,
+                boolean ok = importHtmlInner(request, actionId, cnt,depth - 1,
                                              sb, link.getUrl(),
 					     okLinks,child,
                                              recursePattern, pattern);
@@ -169,10 +170,8 @@ public class HtmlImportHandler extends ImportHandler {
                 sb.append(" ");
                 sb.append(link.getUrl());
                 sb.append("\n");
-
                 continue;
             }
-
 
 
             try {
@@ -227,6 +226,9 @@ public class HtmlImportHandler extends ImportHandler {
                     }
                 }
 
+		cnt[0]++;
+		getActionManager().setActionMessage(actionId,
+						    "Processed: " + cnt[0] +" links. Current:" + name);
                 Entry entry = getEntryManager().makeEntry(request, resource,
                                   parentEntry, name, "", request.getUser(),
                                   typeHandler, null);
@@ -288,11 +290,12 @@ public class HtmlImportHandler extends ImportHandler {
         getAuthManager().ensureAuthToken(request);
         ActionManager.Action action = new ActionManager.Action() {
             public void run(Object actionId) throws Exception {
+		int []cnt={0};
                 StringBuilder sb    = new StringBuilder("");
                 int           depth = request.get(ARG_IMPORT_RECURSE_DEPTH,
                                           1);
                 sb.append("<ul>");
-                importHtmlInner(request, actionId, depth, sb, url,okLinks,
+                importHtmlInner(request, actionId, cnt,depth, sb, url,okLinks,
                                 parentEntry, recursePattern, pattern);
                 sb.append("</ul>");
                 getActionManager().setActionMessage(actionId, sb.toString());
