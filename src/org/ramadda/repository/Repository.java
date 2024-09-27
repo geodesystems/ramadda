@@ -2904,6 +2904,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return size;
 	}
 
+	System.err.println("list:" + entry.getName());
 
 	for (Entry child : entries) {
 	    entryCnt[0]++;
