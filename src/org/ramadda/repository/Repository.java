@@ -2858,11 +2858,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	int []entryCnt={0};
 	int []fileCnt={0};	
 
-	long size = outputEntryListingInner(request, anon, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt);
+	long size = outputEntryListingInner(request, anon, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt,"");
 
 	if(sb2.length()==0) {
-	    sb.append(getPageHandler().showDialogNote("No files available"));
+	    sb.append(getPageHandler().showDialogNote("No entries available"));
 	} else {
+	    HU.addPageSearch(sb,".entry-listing",null,"Search");
 	    sb.append("#Entries: " + entryCnt[0]);
 	    sb.append("&nbsp;#Files: " + fileCnt[0]);	    
 	    sb.append("&nbsp;Total size: " + getPageHandler().formatFileLength(size));
@@ -2890,7 +2891,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private long outputEntryListingInner(Request request, Request anon,Entry entry,
 					 List<Entry> entries,StringBuilder sb, 
 					 StringBuilder forAdmin,boolean recurse,
-					 int []entryCnt,int []fileCnt) throws Exception {
+					 int []entryCnt,int []fileCnt,String indent) throws Exception {
 	long size =  0;
 	for (Entry child : entries) {
 	    entryCnt[0]++;
@@ -2904,19 +2905,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    long size2=0;
 	    StringBuilder sb2 = new StringBuilder();
 	    if(recurse) {
+		String indent2= indent+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 		List<Entry> children= getEntryManager().getChildren(request, child);
 		if(children.size()>0) {
-		    size2+=outputEntryListingInner(request,anon,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt);
+		    size2+=outputEntryListingInner(request,anon,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt,indent2);
 		    size+=size2;
 		}
 	    }
 	    
+	    sb.append("<div class=entry-listing>");
+	    sb.append(indent);
 
 	    sb.append(getPageHandler().getEntryIconImage(request, child));
 	    if(!getAccessManager().canDoView(anon,child)) {
-		sb.append("&nbsp;<i title='No access' style='color:red' class='fa-solid fa-ban'></i>");
+		sb.append("&nbsp;<i title='private' style='color:red' class='fa-solid fa-ban'></i>");
 	    } else {
-		sb.append("&nbsp;<i title='Can access' style='color:green' class='fa-solid fa-circle'></i>");
+		sb.append("&nbsp;<i title='public' style='color:green' class='fa-solid fa-circle'></i>");
 	    }
 	    sb.append("&nbsp;");
 	    sb.append(getEntryManager().getEntryLink(request, child,false,""));
@@ -2933,12 +2937,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    }
 
 
+	    sb.append("</div>");
 	    if(sb2.length()>0) {
-		sb.append("<div style='margin-left:20px;'>");
 		sb.append(sb2);
-		sb.append("</div>");
-	    } else {
-		sb.append("<br>");
 	    }
 
 	}
