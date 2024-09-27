@@ -38,6 +38,21 @@ csvcommands1=-addheader, timestamp.type date   timestamp.format {yyyy-MM-dd'T'HH
 
 <wiki><![CDATA[
 +section title={{name}}
+Sap flow measurement data from the  [https://sapfluxnet.creaf.cat/ SAPFLUXNET] project.
+:br
+{{description wikify=true}}
+:br
++box
+<i>
+Rafael Poyatos, Víctor Granda, Víctor Flo, Roberto Molowny-Horas, Kathy Steppe, Maurizio Mencuccini, & Jordi Martínez-Vilalta. (2020). SAPFLUXNET: A global database of sap flow measurements (0.1.5) . Zenodo. Data: [https://doi.org/10.5281/zenodo.3971689 https://doi.org/10.5281/zenodo.3971689]
+</i>
+:p
+<i>
+Rafael Poyatos, et. al. 
+(2021)
+[https://essd.copernicus.org/articles/13/2607/2021/essd-13-2607-2021.html Global transpiration data from sap flow measurements: the SAPFLUXNET database.]
+Earth System Science Data. [https://doi.org/10.5194/essd-13-2607-2021 https://doi.org/10.5194/essd-13-2607-2021]
+-box
 +row
 +col-8
 {{display_linechart fields=#3}} 
