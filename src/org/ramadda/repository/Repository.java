@@ -2870,8 +2870,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	    sb.append(HU.space(3));
 	    sb.append("Anonymous user - ");
-	    sb.append("&nbsp;<i title='No access' style='color:red' class='fa-solid fa-ban'></i>: no access"); 
-	    sb.append("&nbsp;<i title='Can access' style='color:green' class='fa-solid fa-circle'></i>: can access");
+	    sb.append("&nbsp;<i title='No access' style='color:red' class='fa-solid fa-ban'></i>: private"); 
+	    sb.append("&nbsp;<i title='Can access' style='color:green' class='fa-solid fa-circle'></i>: public");
 	    sb.append("<br>");
 	    sb.append(sb2);
 	    /**
