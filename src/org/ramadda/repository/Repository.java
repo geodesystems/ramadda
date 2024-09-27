@@ -11,6 +11,7 @@ package org.ramadda.repository;
 
 import org.ramadda.util.HttpFormEntry;
 
+
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.admin.AdminHandler;
 import org.ramadda.repository.admin.MailManager;
@@ -51,6 +52,7 @@ import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.service.Service;
@@ -2843,6 +2845,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    throw new AccessException("Entry listing not enabled",
 				      request);
 	}
+	SelectInfo select= new SelectInfo(request);
+	select.setSyntheticOk(false);
+
 	Request anon = getAnonymousRequest();
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb, "Entry Listing");
@@ -2858,7 +2863,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	int []entryCnt={0};
 	int []fileCnt={0};	
 
-	long size = outputEntryListingInner(request, anon, entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt,"");
+
+	long size = outputEntryListingInner(request, anon, select,entry,  entries, sb2,forAdmin,recurse,entryCnt,fileCnt,"");
 
 	if(sb2.length()==0) {
 	    sb.append(getPageHandler().showDialogNote("No entries available"));
@@ -2888,11 +2894,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    private long outputEntryListingInner(Request request, Request anon,Entry entry,
+    private long outputEntryListingInner(Request request, Request anon,SelectInfo select,Entry entry,
 					 List<Entry> entries,StringBuilder sb, 
 					 StringBuilder forAdmin,boolean recurse,
 					 int []entryCnt,int []fileCnt,String indent) throws Exception {
 	long size =  0;
+	if(entryCnt[0]>5000) {
+	    sb.append("<div>...</div>");
+	    return size;
+	}
+
+
 	for (Entry child : entries) {
 	    entryCnt[0]++;
 	    Resource resource = child.getResource();
@@ -2906,9 +2918,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    StringBuilder sb2 = new StringBuilder();
 	    if(recurse) {
 		String indent2= indent+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		List<Entry> children= getEntryManager().getChildren(request, child);
+		List<Entry> children= getEntryManager().getChildren(request, child,select);
 		if(children.size()>0) {
-		    size2+=outputEntryListingInner(request,anon,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt,indent2);
+		    size2+=outputEntryListingInner(request,anon,select,child,children, sb2,forAdmin,recurse,entryCnt,fileCnt,indent2);
 		    size+=size2;
 		}
 	    }
