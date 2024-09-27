@@ -2686,7 +2686,16 @@ public class WikiManager extends RepositoryManager
 			       typeHandler.getType()), img + " " + msg(label));
 
         } else if (theTag.equals(WIKI_TAG_SNIPPET)) {
-	    return getSnippet(request, entry, true,"");
+	    //	    String snippet = getSnippet(request, entry, true,"");
+	    String snippet = getRawSnippet(request, entry, false);
+	    if(!stringDefined(snippet)) return "";
+            boolean toggle = getProperty(wikiUtil, props, "showToggle",   false);
+	    if(toggle) {
+		boolean toggleOpen = getProperty(wikiUtil, props, "toggleOpen",   false);
+		String toggleLabel=getProperty(wikiUtil,props,"toggleLabel","Details");
+                snippet = HU.makeShowHideBlock(toggleLabel, snippet, toggleOpen);
+	    }
+	    return snippet;
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
             String prefix = getProperty(wikiUtil, props, "prefix",
                                         (String) null);
@@ -4706,6 +4715,7 @@ public class WikiManager extends RepositoryManager
 		if(i>0) sb.append(delimiter);
 		String url = getEntryManager().getEntryUrl(request, child);
 		String text =  processMacros(request, macros, child);
+		text = wikifyEntry(request, child,text);
 		sb.append(text);
 	    }
 	    sb.append(suffix);
