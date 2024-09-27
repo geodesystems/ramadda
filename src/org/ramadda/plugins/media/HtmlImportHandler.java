@@ -227,12 +227,11 @@ public class HtmlImportHandler extends ImportHandler {
                 }
 
 		cnt[0]++;
-		getActionManager().setActionMessage(actionId,
-						    "Processed: " + cnt[0] +" links. Current:" + name);
                 Entry entry = getEntryManager().makeEntry(request, resource,
                                   parentEntry, name, "", request.getUser(),
                                   typeHandler, null);
 
+		entry.setEntryOrder(cnt[0]*5);
                 if (addProvenance) {
                     getMetadataManager().addMetadata(request,entry,
                             new Metadata(getRepository().getGUID(),
@@ -264,9 +263,11 @@ public class HtmlImportHandler extends ImportHandler {
                 sb.append("\n");
                 sb.append("" + exc);
             }
+	    String message =   "Processed: " + cnt[0]+"/" + links.size() +" links<br>";
+	    message+=sb;
             getActionManager().setActionMessage(actionId,
-                    "<h2>Imported entries</h2>" + sb.toString());
-        }
+						message);
+	}
         if (errors.size() > 0) {
             sb.append(
                 getPageHandler().showDialogError(
