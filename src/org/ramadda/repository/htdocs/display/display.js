@@ -6170,9 +6170,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    table+=HU.close('table');
 	    let message= HU.div([ID,this.domId(ID_DISPLAY_MESSAGE),CLASS,"display-output-message", STYLE,HU.css("display","none","position","absolute","top","10px","left","50%",
 									"-webkit-transform","translateX(-50%)","transform","translateX(-50%)")],"");
-            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
+            let html =  HU.div([ATTR_CLASS, 'ramadda-popup', ATTR_STYLE,"display:none;", ATTR_ID, this.getDomId(ID_MENU_OUTER)], '');
             let style = this.getProperty('displayStyle', '');
-            html += HU.div(['id',this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',CLASS, 'display-contents display-' + this.type +'-contents', STYLE, HU.css('position','relative') + style],table + message);
+            html += HU.div([ATTR_ID,this.domId(ID_DISPLAY_CONTAINER),'spellcheck', 'false',ATTR_CLASS, 'display-contents display-' + this.type +'-contents', ATTR_STYLE, HU.css('position','relative') + style],table + message);
             return html;
         },
         getWidthForStyle: function(dflt) {
