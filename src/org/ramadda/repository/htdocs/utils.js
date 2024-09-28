@@ -3681,12 +3681,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     toggleAllInit:function() {
 	let id = Utils.getUniqueId('toggleall');
 	document.write(HU.div([ATTR_ID,id],'Toggle Details'));
+	let visible = false;
 	jqid(id).button().click(function() {
+	    visible = !visible;
 	    $('.toggleblocklabel').each(function() {
 		let blockId = $(this).attr('block-id');
 		let imgId = $(this).attr('block-image-id');
-		toggleBlockVisibility(blockId,imgId,
-				      'fa-regular fa-square-minus','fa-regular fa-square-plus');
+		HU.toggleBlockVisibility(blockId,imgId,
+					 'fa-regular fa-square-minus','fa-regular fa-square-plus',null,visible);
 	    });
 					
 	});
@@ -6130,9 +6132,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return HU.div([STYLE,HU.css('display','inline-block',"min-width","10px")], HtmlUtils.getIconImage(img, ["align", "bottom"],[STYLE,style]));
     },
     toggleBlockListeners:{},
-    toggleBlockVisibility:function(id, imgid, showimg, hideimg,anim) {
+    toggleBlockVisibility:function(id, imgid, showimg, hideimg,anim,forceVisible) {
 	let visible = true;
-	if (toggleVisibility(id, 'block',anim)) {
+	if(!Utils.isDefined(visible)) visible = true;
+	if (toggleVisibility(id, 'block',anim,forceVisible)) {
             if(HU.isFontAwesome(showimg)) {
 		$("#" + imgid).html(HU.makeToggleImage(showimg));
             } else {

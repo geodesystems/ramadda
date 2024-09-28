@@ -1925,8 +1925,8 @@ function getChildText(node) {
 }
 
 
-function toggleBlockVisibility(id, imgid, showimg, hideimg) {
-    HtmlUtils.toggleBlockVisibility(id, imgid, showimg, hideimg);
+function toggleBlockVisibility(id, imgid, showimg, hideimg,visible) {
+    HtmlUtils.toggleBlockVisibility(id, imgid, showimg, hideimg,null,visible);
 }
 
 
@@ -1948,8 +1948,15 @@ function toggleInlineVisibility(id, imgid, showimg, hideimg) {
 }
 
 
-function toggleVisibility(id, style,anim) {
+function toggleVisibility(id, style,anim,forceVisible) {
     let display = $("#" + id).css('display');
+    if(Utils.isDefined(forceVisible)) {
+	if(forceVisible)
+	    $("#" + id).show();
+	else
+	    $("#" + id).hide();	
+	return forceVisible;
+    }
     $("#" + id).toggle(anim);
     return display != 'block';
 }
