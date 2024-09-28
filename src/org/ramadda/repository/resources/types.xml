@@ -342,12 +342,11 @@ pageSearchParent=.ramadda-grid-container
 -toggle
 -if
 <div class=ramadda-grid-container>
-{{grid tag=card orderby=entryorder  ascending=true 
+{{grid tag=card orderby="entryorder,name"  ascending=true 
 embedLink="property:embed_link"
 addTags=true
 addTagSearchLink=false
 tagTypes="${property:tag_types}"
-sortby=name
 ascending=true
 inner-height=200
 width=300px
