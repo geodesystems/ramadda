@@ -309,6 +309,7 @@ var Utils =  {
         this.initContent();
         this.pageLoaded = true;
         this.initDisplays();
+	HU.initTooltip('.ramadda-tooltip-element');
         document.onmousemove = Utils.handleMouseMove;
         document.onmousedown = Utils.handleMouseDown;
         document.onmouseup = Utils.handleMouseUp;
@@ -3190,6 +3191,7 @@ var Utils =  {
         return true
     },
 
+
     finalHide:function(id) {
         var obj = GuiUtils.getDomObject(id);
         if (!obj) {
@@ -3673,15 +3675,46 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     getTitleBr:function() {
 	return "&#10;";
     },
+    hide:function(id) {
+	$('#' + id).hide();
+    },
+    toggleAllInit:function() {
+	let id = Utils.getUniqueId('toggleall');
+	document.write(HU.div([ATTR_ID,id],'Toggle Details'));
+	jqid(id).button().click(function() {
+	    $('.toggleblocklabel').each(function() {
+		let blockId = $(this).attr('block-id');
+		let imgId = $(this).attr('block-image-id');
+		toggleBlockVisibility(blockId,imgId,
+				      'fa-regular fa-square-minus','fa-regular fa-square-plus');
+	    });
+					
+	});
+    },
     initTooltip:function(select) {
 	$(select).tooltip({
+	    delay: { show: 0, hide: 5000 },
+	    open: function(event, ui) {
+		let width = $(this).attr('tooltip-width');
+		if(width)
+		    ui.tooltip.css('width', width).css('max-width',width);
+            },
 	    show: {
 		delay: 1000
 	    },
+
+	    position: {
+		xmy: "center bottom",  // Where the tooltip's position should be relative to itself
+		xat: "center top",     // Where the tooltip should be placed relative to the target
+		collision: "none" 
+            },
+	    hide:false,
 	    content: function() {
-		return HU.div(['style','margin:5px;'],$(this).attr('title'));
-	    }}
-	);
+		let title = $(this).attr('title');
+		title = Utils.convertText(title??'');
+		let contents = HU.div([ATTR_CLASS,'ramadda-tooltip',ATTR_STYLE,'margin:5px;'],title);
+		return contents;
+	    }});
 
     },
 
