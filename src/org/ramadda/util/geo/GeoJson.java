@@ -60,7 +60,22 @@ public class GeoJson extends JsonUtil {
     }    
 
 
-    public static void merge(String file1, String file2,String field1,String field2) throws Exception {
+    public static void merge(List<String> files) throws Exception {
+	JSONObject j1 =  read(files.get(0));
+	JSONArray f1=j1.getJSONArray("features");
+	for(int i=0;i<files.size();i++) {
+	    JSONObject j2 =  read(files.get(i));	    
+	    JSONArray f2=j2.getJSONArray("features");	
+	    for(int idx1=0;idx1<f2.length();idx1++) {
+		JSONObject feature1 = f2.getJSONObject(idx1);
+		f1.put(feature1);
+	    }
+	}
+	System.out.println(j1);
+    }
+
+
+    public static void join(String file1, String file2,String field1,String field2) throws Exception {
 	JSONObject j1 =  read(file1);
 	JSONObject j2 =  read(file2);
 	JSONArray f1=j1.getJSONArray("features");
@@ -897,7 +912,16 @@ public class GeoJson extends JsonUtil {
 		continue;
 	    }
 	    if(arg.equals("-merge")) {
-		merge(args[++i],args[++i],args[++i],args[++i]);
+		List<String> files = new ArrayList<String>();
+		for(int j=i+1;j<args.length;j++) {
+		    files.add(args[j]);
+		}
+		merge(files);
+		break;
+	    }
+
+	    if(arg.equals("-join")) {
+		join(args[++i],args[++i],args[++i],args[++i]);
 		break;
 	    }
 
