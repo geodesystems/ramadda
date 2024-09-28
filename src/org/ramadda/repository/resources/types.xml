@@ -316,12 +316,14 @@ showHeading=true
 +if property=show_text_search
 +center
 <span style="display:inline-block;">
-{{display_simplesearch  displayStyle="display:inline-block;"  ancestor=this  placeholder="Search in page" doPageSearch=true  
- pageSearchSelector=.search-component,.entry-list-row-data 
- }} 
+{{display_simplesearch  inputSize=200px width=200px
+ancestor=this  placeholder="Search in page" doPageSearch=true  
+pageSearchSelector=.search-component,.entry-list-row-data}} 
 </span>
 <span style="display:inline-block;">
-{{display_simplesearch  displayStyle="display:inline-block;" ancestor=this placeholder="Search in documents"  }} 
+{{display_simplesearch
+inputSize=200px width=200px
+ancestor=this placeholder="Search in documents" }} 
 </span>
 -center
 -if
