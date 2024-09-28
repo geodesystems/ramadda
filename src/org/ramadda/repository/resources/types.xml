@@ -307,17 +307,27 @@ showHeading=true
 </div>
 ]]></wikimacro>
 
-     <wiki><![CDATA[
+<wiki><![CDATA[
 +section title={{name}}
-:navtop
 {{description wikify=true}}
 +center
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
 :vspace 0.5em
 +if property=show_text_search
-{{display_simplesearch width=200px  inputSize=100% ancestor=this placeholder="Search in documents" orderBy=createdate_ascending}}
++center
+<span style="display:inline-block;">
+{{display_simplesearch  displayStyle="display:inline-block;"  ancestor=this  placeholder="Search in page" doPageSearch=true  
+ pageSearchSelector=.search-component,.entry-list-row-data 
+ }} 
+</span>
+<span style="display:inline-block;">
+{{display_simplesearch  displayStyle="display:inline-block;" ancestor=this placeholder="Search in documents"  }} 
+</span>
+-center
 -if
-
+-center
++tabs 
++tab  Grid
 +if property=show_tag_search
 +toggle <i title="Search Keywords" class="fas fa-search"></i>
 {{display_simplesearch width=100%
@@ -330,32 +340,38 @@ pageSearchParent=.ramadda-grid-container
 }}
 -toggle
 -if
--center
 <div class=ramadda-grid-container>
-{{grid tag=card message="No documents available"
-addTags="property:add_tags"
-addTagSearchLink=false
-tagTypes="property:tag_types"
-sortby=name
-inner-height=200
+{{grid tag=card orderby=entryorder  ascending=true 
 embedLink="property:embed_link"
+addTags=true
+addTagSearchLink=false
+sortby=name
+ascending=true
+inner-height=200
 width=300px
 columns=3
+showIcon=true
 includeChildren=false
 showSnippet=false
 showSnippetHover=true
 showLink=false
 showHeading=true
 }} 
-</div>
-+if property=show_map
-:heading Map
-{{map width="100%" height="70vh"   message="" listentries="true"}}
--if
+</div> 
+-tab
 +if property=show_table
-:heading Table
-{{tabletree message=""}}
++tab List
++inset left=10px
+{{namelist}}
+-inset
+-tab
 -if
++if property=show_map
++tab Map
+{{map width="100%" height="70vh"   message="" listentries="true"}}
+-tab
+-if
+-tabs
 
 +if property=show_information
 :vspace 1em
