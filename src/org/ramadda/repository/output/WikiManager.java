@@ -4821,6 +4821,13 @@ public class WikiManager extends RepositoryManager
 
 	    return sb.toString();
 
+	} else if(theTag.equals(WIKI_TAG_NAMELIST)) {
+	    String wiki = "";
+	    if(getProperty(wikiUtil,props,"showToggleAll",true)) {
+		wiki += "{{toggle_all}}\n";
+	    }
+	    wiki+="{{entries_template  orderby=entryorder  ascending=true template=\"<div class=search-component> <div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{snippet decorate=true showToggle=true toggleOpen=false}}</div>\" }}";
+	    return wikifyEntry(request,entry,wiki);
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);

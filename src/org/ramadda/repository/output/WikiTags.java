@@ -91,6 +91,9 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_LINKS, null,
 					"#target","link target"),
                             new WikiTag(WIKI_TAG_LIST),
+			    new WikiTag(WIKI_TAG_NAMELIST,null,"showToggleAll","true"),
+			    
+
                             new WikiTag(WIKI_TAG_ENTRIES_TEMPLATE,null,"template","${name link=true}","before","",
 					"after",""), 			    
                             new WikiTag(WIKI_TAG_TABS, null,ATTR_TT,"Show entries in tabs"), 
