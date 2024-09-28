@@ -3684,11 +3684,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let visible = false;
 	jqid(id).button().click(function() {
 	    visible = !visible;
-	    $('.toggleblocklabel').each(function() {
+	    $('.entry-toggleblock-label,.toggleblocklabel').each(function() {
 		let blockId = $(this).attr('block-id');
 		let imgId = $(this).attr('block-image-id');
-		HU.toggleBlockVisibility(blockId,imgId,
-					 'fa-regular fa-square-minus','fa-regular fa-square-plus',null,visible);
+		let i1 = 'fa-regular fa-square-minus';
+		let i2 = 'fa-regular fa-square-plus';
+		if($(this).hasClass('entry-toggleblock-label')) {
+		    i2 = 'fas fa-caret-right';
+		    i1 = 'fas fa-caret-down';		    
+		}
+		HU.toggleBlockVisibility(blockId,imgId, i1,i2,null,visible);
 	    });
 					
 	});
