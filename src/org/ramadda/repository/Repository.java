@@ -2790,7 +2790,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	    };
         entryListingHandler.addType(OUTPUT_ENTRYLISTING);
-        addOutputHandler(entryListingHandler);
+        addOutputHandler(entryListingHandler,true);
 
 
         OutputHandler createTypeHandler = new OutputHandler(getRepository(),
@@ -4895,9 +4895,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     
-    public boolean addOutputHandler(OutputHandler outputHandler) {
+    public boolean addOutputHandler(OutputHandler outputHandler,boolean...first) {
         synchronized (outputHandlers) {
-            outputHandlers.add(outputHandler);
+	    if(first.length>0 && first[0])
+		outputHandlers.add(0,outputHandler);
+	    else
+		outputHandlers.add(outputHandler);
         }
 
         return addOutputHandlerTypes(outputHandler);
