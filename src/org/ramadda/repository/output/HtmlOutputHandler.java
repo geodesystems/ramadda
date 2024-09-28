@@ -1313,6 +1313,15 @@ public class HtmlOutputHandler extends OutputHandler {
                 basicSB.append(HU.br());
             }
         }
+	if(Utils.getProperty(props,"includeSnippet",false)) {
+	    String snippet = getWikiManager().getSnippet(request, entry, true,"");
+	    if(stringDefined(snippet)) {
+		tabTitles.add("Details");
+		tabContents.add(snippet);
+	    }
+	}
+
+
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         entry.getTypeHandler().getEntryContent(request, entry,
 					       false, showResource, props,
