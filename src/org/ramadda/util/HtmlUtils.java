@@ -5178,9 +5178,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
 		       id(id + "img"));
 	    img =span(img,attrs("class","ramadda-clickable ramadda-toggle-link"));
         }
-        String mouseEvent = onMouseClick("toggleBlockVisibility('"
-					 + id + "','" + id + "img','" + hideImg
-					 + "','" + showImg + "')");
+	String imageId = id + "img";
+        String mouseEvent = onMouseClick(
+					 call("toggleBlockVisibility",
+					      squote(id),
+					      squote(imageId),
+					      squote(hideImg),
+					      squote(showImg)));
         String link = img + space(1) + label;
         sb.append(open("div",blockExtra));
         sb.append("<div " + clazz("hideshowblock")
@@ -5188,13 +5192,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                   + style("display:block;visibility:visible")
                   + ">");
         if ( !visible) {
-            script(sb, call("hide", HtmlUtils.squote(id)));
+            script(sb, call("HtmlUtils.hide", HtmlUtils.squote(id)));
         }
 
         sb.append(content.toString());
         sb.append(close(TAG_DIV));
         sb.append(close(TAG_DIV));
-        return div(link, headerExtra + mouseEvent);
+        return div(link, headerExtra + mouseEvent
+		   +attrs("block-id",id,"block-image-id",imageId));
+
     }
 
 
@@ -5279,7 +5285,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
              HtmlUtils.style("display:block;visibility:visible"));
         if ( !visible) {
             HtmlUtils.script(sb,
-                             HtmlUtils.call("hide", HtmlUtils.squote(id)));
+                             HtmlUtils.call("HtmlUtils.hide", HtmlUtils.squote(id)));
         }
         sb.append(content);
         sb.append(close(TAG_DIV));
@@ -5352,7 +5358,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
                  "display:inline;visibility:visible");
             if ( !visible) {
                 HtmlUtils.script(sb,
-                                 HtmlUtils.call("hide",
+                                 HtmlUtils.call("HtmlUtils.hide",
                                      HtmlUtils.squote(id)));
             }
             sb.append(content);
@@ -5396,7 +5402,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         open(contents, TAG_SPAN, "class", "hideshowblock", "id", id, "style",
              "display:block;visibility:visible");
         if ( !visible) {
-            HtmlUtils.script(contents,call("hide", HtmlUtils.squote(id)));
+            HtmlUtils.script(contents,call("HtmlUtils.hide", HtmlUtils.squote(id)));
         }
 
         contents.append(content.toString());
