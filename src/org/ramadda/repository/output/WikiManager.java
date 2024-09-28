@@ -2693,6 +2693,10 @@ public class WikiManager extends RepositoryManager
 	    if(toggle) {
 		boolean toggleOpen = getProperty(wikiUtil, props, "toggleOpen",   false);
 		String toggleLabel=getProperty(wikiUtil,props,"toggleLabel","Details");
+		if(getProperty(wikiUtil,props,"decorate",false)) {
+		    snippet = HU.div(snippet,
+				     HU.attrs("class","ramadda-shadow-box","style","padding:5px;"));
+		}
                 snippet = HU.makeShowHideBlock(toggleLabel, snippet, toggleOpen);
 	    }
 	    return snippet;
