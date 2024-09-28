@@ -2890,6 +2890,8 @@ public class WikiManager extends RepositoryManager
 	    if(ark==null) return getProperty(wikiUtil, props, ATTR_MESSAGE, "No ARK service available");
 	    String template = getProperty(wikiUtil, props, "template","<b>ARK ID: </b>${ark}");
 	    return template.replace("${ark}",ark);
+	} else if(theTag.equals("toggle_all")) {
+	    return HU.script("HtmlUtils.toggleAllInit();");
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = entry==null?"NULL ENTRY":getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
@@ -2906,6 +2908,26 @@ public class WikiManager extends RepositoryManager
 		    attrs+=HU.attr("target",target);
                 name = HU.href(url, name, attrs);
             }
+            if (getProperty(wikiUtil, props, "showTooltip", false)) {
+		String tt = "";
+		String snippet = getSnippet(request, entry, true,"");
+		if(stringDefined(snippet))
+		    tt = snippet;
+		if (getProperty(wikiUtil, props, "tooltipShowThumbnail", true)) {
+		    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry,false);
+		    if(tuple!=null) {
+			tt=HU.hbox(tt,HU.img(tuple[0],"",HU.attrs("width","150px")));
+		    }
+		}
+		tt =  Utils.encodeBase64(tt,true);
+
+		String attrs = HU.attrs("class","ramadda-tooltip-element", "title",tt);
+		String ttWidth = getProperty(wikiUtil, props,"tooltipWidth",null);
+		if(ttWidth!=null)
+		    attrs+=HU.attrs("tooltip-width",ttWidth);
+
+		name = HU.span(name,attrs);
+	    }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBEDMS)) {
 	    String url = request.getAbsoluteUrl(getEntryManager().getEntryResourceUrl(request, entry));
