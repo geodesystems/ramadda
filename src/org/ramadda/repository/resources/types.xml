@@ -334,6 +334,7 @@ showHeading=true
 ancestor=this
 toggle=true
 inputSize=20 doPageSearch=false doTagSearch=true
+metadataTypes="${property:tag_types}"
 placeholder="Search in page"
 orderBy=createdate_ascending 
 pageSearchParent=.ramadda-grid-container
@@ -345,6 +346,7 @@ pageSearchParent=.ramadda-grid-container
 embedLink="property:embed_link"
 addTags=true
 addTagSearchLink=false
+tagTypes="${property:tag_types}"
 sortby=name
 ascending=true
 inner-height=200

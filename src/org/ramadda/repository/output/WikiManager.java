@@ -4034,6 +4034,7 @@ public class WikiManager extends RepositoryManager
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_FLIPCARDS)		   
                    || theTag.equals(WIKI_TAG_GRID)) {
+	    checkProperties(request,entry,props);
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
             String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
