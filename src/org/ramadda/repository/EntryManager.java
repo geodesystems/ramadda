@@ -2439,7 +2439,7 @@ public class EntryManager extends RepositoryManager {
 
             boolean isGzip = resource.endsWith(".gz");
             // check if it's a zip file
-            if (unzipArchive && !resource.toLowerCase().endsWith(".zip")) {
+            if (unzipArchive && (!resource.toLowerCase().endsWith(".zip") || resource.toLowerCase().endsWith(".shp.zip"))) {
                 unzipArchive = false;
             }
 
