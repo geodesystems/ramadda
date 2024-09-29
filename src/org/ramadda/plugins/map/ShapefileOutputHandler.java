@@ -324,13 +324,27 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
     
-    private Result outputKml(Request request, Entry entry) throws Exception {
+    private static class MapRequest {
+	String filename;
+	String returnFile;
+	File cacheFile;
+        Rectangle2D.Double bounds;
+	MapRequest(String filename, String returnFile,File cacheFile,       Rectangle2D.Double bounds) {
+	    this.filename = filename;
+	    this.returnFile = returnFile;
+	    this.cacheFile = cacheFile;
+	    this.bounds = bounds;
+	}
+    }
+
+
+    private MapRequest makeMapRequest(Request request, Entry entry, String suffix) {
         String fieldsArg = request.getString(ATTR_SELECTFIELDS,
                                              (String) null);
         String boundsArg = request.getString(ATTR_SELECTBOUNDS,
                                              (String) null);
         boolean forMap = request.get("formap", false);
-        String returnFile =
+        String returnFile =entry.getChangeDate() +"_"+
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";
         String filename = forMap + "_" + returnFile;
@@ -348,13 +362,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                                      "_dot_") + filename;
         }
         File file = getEntryManager().getCacheFile(entry, filename);
-        if (file.exists()) {
-            Result result = new Result(new FileInputStream(file),
-                                       KmlOutputHandler.MIME_KML);
-            result.setReturnFilename(returnFile);
-            return result;
-        }
-
         Rectangle2D.Double bounds = null;
         if (boundsArg != null) {
             List<String> toks = StringUtil.split(boundsArg, ",");
@@ -366,6 +373,20 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 bounds = new Rectangle2D.Double(west, south, east - west,
                         north - south);
             }
+        }
+
+	return new MapRequest(filename, returnFile,file,bounds);
+    }
+
+    private Result outputKml(Request request, Entry entry) throws Exception {
+        String fieldsArg = request.getString(ATTR_SELECTFIELDS, (String) null);
+        boolean forMap = request.get("formap", false);
+	MapRequest mapRequest=makeMapRequest(request, entry,".kml");
+        if (mapRequest.cacheFile.exists()) {
+            Result result = new Result(new FileInputStream(mapRequest.cacheFile),
+                                       KmlOutputHandler.MIME_KML);
+            result.setReturnFilename(mapRequest.returnFile);
+            return result;
         }
 
         FeatureCollection fc = makeFeatureCollection(request, entry, null);
@@ -390,38 +411,43 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
-        //        System.err.println("fieldValues:" + fieldValues);
-        Element      root = toKml(fc, forMap, bounds, fieldValues);
+        Element      root = toKml(fc, forMap, mapRequest.bounds, fieldValues);
         long         t2   = System.currentTimeMillis();
         StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);
-	FileOutputStream fos = new FileOutputStream(file);
+	FileOutputStream fos = new FileOutputStream(mapRequest.cacheFile);
 	OutputStreamWriter osw = new OutputStreamWriter(fos);
         XmlUtil.toString(root, osw);
 	osw.flush();
 	osw.close();
 	fos.close();
         long t3 = System.currentTimeMillis();
-        //        Utils.printTimes("OutputKml time:", t1,t2,t3); 
-        Result result = new Result(new FileInputStream(file), KmlOutputHandler.MIME_KML);
-        result.setReturnFilename(returnFile);
-
+        Result result = new Result(new FileInputStream(mapRequest.cacheFile), KmlOutputHandler.MIME_KML);
+        result.setReturnFilename(mapRequest.returnFile);
         return result;
     }
 
     
     private Result outputGeoJson(Request request, Entry entry)
             throws Exception {
-        String filename =
-            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".geojson";
-        Result result = request.getOutputStreamResult(filename,
-						      IO.MIME_DOWNLOAD);
-        OutputStreamWriter sb =
-            new OutputStreamWriter(request.getOutputStream());
-        FeatureCollection fc = makeFeatureCollection(request, entry, null);
-        fc.toGeoJson(sb);
-        sb.flush();
+	MapRequest mapRequest=makeMapRequest(request, entry,".geojson");
+        if (mapRequest.cacheFile.exists()) {
+            Result result = new Result(new FileInputStream(mapRequest.cacheFile),
+                                       GeoJson.GEOJSON_MIMETYPE);
+            result.setReturnFilename(mapRequest.returnFile);
+            return result;
+        }
 
+	FileOutputStream fos = new FileOutputStream(mapRequest.cacheFile);
+	OutputStreamWriter osw = new OutputStreamWriter(fos);
+
+        FeatureCollection fc = makeFeatureCollection(request, entry, null);
+        fc.toGeoJson(osw);
+	osw.flush();
+	osw.close();
+	fos.close();
+
+        Result result = new Result(new FileInputStream(mapRequest.cacheFile), GeoJson.GEOJSON_MIMETYPE);
+        result.setReturnFilename(mapRequest.returnFile);
         return result;
     }
 

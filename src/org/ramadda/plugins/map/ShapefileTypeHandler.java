@@ -200,7 +200,7 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         String kmlUrl =
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                              ARG_OUTPUT,
-                             ShapefileOutputHandler.OUTPUT_KML.toString(),
+                             ShapefileOutputHandler.OUTPUT_GEOJSON.toString(),
                              "formap", "true");
         String fields = request.getString(ATTR_SELECTFIELDS,
                                           map.getSelectFields());
@@ -214,9 +214,8 @@ public class ShapefileTypeHandler extends PointTypeHandler implements WikiConsta
         }
 	List<String> styles = new ArrayList<String>();
 	ShapefileOutputHandler.makeMapStyle(request, entry,styles);
-        map.addKmlUrl(entry.getName(), kmlUrl, true,JU.map(styles));
-                      
-
+        map.addGeoJsonUrl(entry.getName(), kmlUrl, true,JU.map(styles));
+	//        map.addKmlUrl(entry.getName(), kmlUrl, true,JU.map(styles));	
         /*  For testing
         map.addGeoJsonUrl(
             entry.getName(),
