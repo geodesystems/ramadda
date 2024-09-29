@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -69,64 +69,43 @@ import java.util.zip.ZipOutputStream;
 @SuppressWarnings("unchecked")
 public class ShapefileOutputHandler extends OutputHandler implements WikiConstants {
 
-    /** _more_ */
     public static boolean debug = false;
 
-    /** Map output type */
     public static final OutputType OUTPUT_KML =
         new OutputType("Convert Shapefile to KML", "shapefile.kml",
                        OutputType.TYPE_FILE, "", ICON_KML);
 
-
-
-    /** Map output type */
     public static final OutputType OUTPUT_GEOJSON =
         new OutputType("Convert Shapefile to GeoJSON", "geojson.geojson",
                        OutputType.TYPE_FILE, "", ICON_GEOJSON);
 
-
-    /** _more_ */
     public static final OutputType OUTPUT_CSV =
         new OutputType("Convert Shapefile to CSV", "shapefile.csv",
                        OutputType.TYPE_FILE, "", ICON_CSV);
-
-    /** _more_ */
     public static final OutputType OUTPUT_FIELDS_LIST =
         new OutputType("Map Fields", "shapefile.fields_list",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
-
-    /** _more_ */
     public static final OutputType OUTPUT_FIELDS_TABLE =
         new OutputType("Map Table", "shapefile.fields_table",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
-
-
-
-    /** _more_ */
     public static final DecimalFormat decimalFormat =
         new DecimalFormat("#,##0.#");
 
-    /** _more_ */
+    
     public static final DecimalFormat intFormat = new DecimalFormat("#,###");
 
-    /** _more_ */
+    
     public static final DecimalFormat plainFormat =
         new DecimalFormat("####.#");
 
 
-    /** _more_ */
+    
     private TTLCache<String, ShapefileWrapper> cache;
 
 
 
-    /**
-     * Create a ShapefileOutputHandler
-     *
-     * @param repository  the repository
-     * @param element     the Element
-     * @throws Exception  problem generating handler
-     */
+    
     public ShapefileOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -146,15 +125,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public EsriShapefile getShapefile(Entry entry) throws Exception {
         synchronized (cache) {
             ShapefileWrapper wrapper   = cache.get(entry.getId());
@@ -184,27 +155,16 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Sep 8, '21
-     * @author         Enter your name here...
-     */
+    
     private static class ShapefileWrapper {
 
-        /** _more_ */
+        
         EsriShapefile shapefile;
 
-        /** _more_ */
+        
         InputStream inputStream;
 
-        /**
-         * _more_
-         *
-         * @param shapefile _more_
-         * @param inputStream _more_
-         */
+        
         public ShapefileWrapper(EsriShapefile shapefile,
                                 InputStream inputStream) {
             this.shapefile   = shapefile;
@@ -214,15 +174,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
 
-    /**
-     * Get the entry links
-     *
-     * @param request  the Request
-     * @param state    the repository State
-     * @param links    the links
-     *
-     * @throws Exception  problem creating links
-     */
+    
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if ((state.entry != null)
@@ -236,17 +188,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * Output the entry
-     *
-     * @param request      the Request
-     * @param outputType   the type of output
-     * @param entry        the Entry to output
-     *
-     * @return  the Result
-     *
-     * @throws Exception  problem outputting entry
-     */
+    
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -265,16 +207,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Hashtable getExtraProperties(Request request, Entry entry)
             throws Exception {
         List<Metadata> metadataList =
@@ -298,17 +231,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbfile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<DbaseDataWrapper> getDatum(Request request, Entry entry,
                                            DbaseFile dbfile)
             throws Exception {
@@ -320,17 +243,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * Make a FeatureCollection from the entry
-     *
-     * @param request  the Request
-     * @param entry    the Entry
-     * @param shapefile _more_
-     *
-     * @return a FeatureCollection
-     *
-     * @throws Exception  problems
-     */
+    
     private FeatureCollection makeFeatureCollection(Request request,
             Entry entry, EsriShapefile shapefile)
             throws Exception {
@@ -393,13 +306,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
+    
     public static String getTypeName(int type) {
         switch (type) {
 
@@ -416,16 +323,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return "unknown:" + type;
     }
 
-    /**
-     * Output the shapefile entry as KML
-     *
-     * @param request  the request
-     * @param entry  the entry
-     *
-     * @return the KML
-     *
-     * @throws Exception _more_
-     */
+    
     private Result outputKml(Request request, Entry entry) throws Exception {
         String fieldsArg = request.getString(ATTR_SELECTFIELDS,
                                              (String) null);
@@ -454,10 +352,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
             result.setReturnFilename(returnFile);
-
             return result;
         }
-
 
         Rectangle2D.Double bounds = null;
         if (boundsArg != null) {
@@ -512,16 +408,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return result;
     }
 
-    /**
-     * Output the shapefile entry as GeoJSON
-     *
-     * @param request  the request
-     * @param entry  the entry
-     *
-     * @return the GeoJSON
-     *
-     * @throws Exception _more_
-     */
+    
     private Result outputGeoJson(Request request, Entry entry)
             throws Exception {
         String filename =
@@ -538,25 +425,13 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
+    
     public static String format(int v) {
         return intFormat.format(v);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
+    
     public static String format(double v) {
         if (v == (int) v) {
             return intFormat.format(v);
@@ -565,30 +440,12 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return decimalFormat.format(v);
     }
 
-    /**
-     * Output the shapefile entry as GeoJSON
-     *
-     * @param request  the request
-     * @param entry  the entry
-     *
-     * @return the GeoJSON
-     *
-     * @throws Exception _more_
-     */
+    
     private Result outputCsv(Request request, Entry entry) throws Exception {
         return getCsvResult(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result getCsvResult(Request request, Entry entry)
             throws Exception {
         String filename =
@@ -603,20 +460,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param os _more_
-     * @param entry _more_
-     * @param shapefile _more_
-     * @param addHeader _more_
-     * @param addPoints _more_
-     * @param addFeatures _more_
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     public void getCsvBuffer(Request request, OutputStream os, Entry entry,
                              EsriShapefile shapefile, boolean addHeader,
                              boolean addPoints, boolean addFeatures)
@@ -740,18 +584,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param table _more_
-     * @param output _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private Result outputFields(Request request, Entry entry, boolean table,
                                 OutputType output)
             throws Exception {
@@ -966,12 +799,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * Get the Geometry type corresponding the the EsriFeature
-     * @param feature the feature
-     * @param numParts _more_
-     * @return the corresponding KML tag or null
-     */
+    
     public static String getGeometryType(EsriShapefile.EsriFeature feature,
                                          int numParts) {
         String tag = null;
@@ -1005,12 +833,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * Get the Geometry type corresponding the the EsriShapefileFeature
-     *
-     * @param featureType  the feature type
-     * @return the corresponding KML tag or null
-     */
+    
     public static String getGeometryType(int featureType) {
         String tag = null;
         switch (featureType) {
@@ -1043,16 +866,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void makeMapStyle(Request request, Entry entry,List<String> values)
             throws Exception {
         List<Metadata> metadataList =
@@ -1090,19 +904,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
 
-    /**
-     * Turn this into KML
-     *
-     *
-     *
-     * @param fc _more_
-     * @param decimate _more_
-     * @param bounds _more_
-     * @param fieldValues _more_
-     * @return the KML Element
-     *
-     * @throws Exception _more_
-     */
+    
     public Element toKml(FeatureCollection fc, boolean decimate,
                          Rectangle2D.Double bounds, List<String> fieldValues)
             throws Exception {
@@ -1406,23 +1208,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    /**
-     * _more_
-     *
-     * @param fc _more_
-     * @param color _more_
-     * @param colorMap _more_
-     * @param lineColor _more_
-     * @param doLine _more_
-     * @param folder _more_
-     * @param styleCnt _more_
-     * @param balloonSchema _more_
-     * @param balloonTemplate _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private String makeFillStyle(FeatureCollection fc, Color color,
                                  Hashtable<Color, String> colorMap,
                                  Color lineColor, boolean doLine,
@@ -1468,12 +1254,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
 
-    /**
-     * Get the KML tag corresponding the the EsriShapefileFeature
-     *
-     * @param featureType feature type
-     * @return the corresponding KML tag or null
-     */
+    
     public static String getKmlTag(int featureType) {
         String tag = null;
         switch (featureType) {
@@ -1507,11 +1288,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
 
-    /**
-     * Get the KML tag corresponding the the EsriFeature
-     * @param feature the feature
-     * @return the corresponding KML tag or null
-     */
+    
     public static String getKmlTag(EsriShapefile.EsriFeature feature) {
         String tag = null;
         if ((feature instanceof EsriShapefile.EsriPoint)
@@ -1528,15 +1305,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return tag;
     }
 
-    /**
-     * Make the KML schema element
-     *
-     *
-     * @param properties _more_
-     * @param parent  the one to add to
-     *
-     * @return  the element
-     */
+    
     public Element makeKmlSchema(Hashtable properties, Element parent) {
         Element schema = KmlUtil.makeElement(parent, KmlUtil.TAG_SCHEMA);
         schema.setAttribute(
@@ -1570,16 +1339,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return schema;
     }
 
-    /**
-     * Make a balloon style for the db schema
-     *
-     *
-     * @param fc _more_
-     * @param parent  the parent to add to
-     * @param template _more_
-     *
-     * @return the balloon element
-     */
+    
     private Element makeBalloonForDB(FeatureCollection fc, Element parent,
                                      String template) {
         List<DbaseDataWrapper> fieldDatum = fc.getDatum();
