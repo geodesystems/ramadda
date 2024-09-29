@@ -238,6 +238,34 @@ For Federal Reserve, Energy Information Agency, Quandl integration
 see <a href=/repository/biz/index.html>/repository/biz/index.html</a>
 }]
 
+<a name="geo"></a>
+[item {Geocoding} {
+
+RAMADDA can geocode addresses through the use of external services.
+Create API keys from the below service provides and set any (or all) of the below
+API keys in a repository.properties file.
+
+* [https://developers.google.com/maps/documentation/geocoding/get-api-key Google API Key]
+* [https://www.here.com/docs/bundle/getting-here-credentials/page/README.html here.com]
+* [https://www.geocod.io/ geocode.io]
+
+<pre>
+
+#for google geocoding
+google.key=
+
+#For geocoding using  the Here API from  https://www.here.com/
+#also for isoline and routing in the Intgerated Map Data Viewer (IMDV)
+here.key=
+
+#For geocoding from https://www.geocod.io/
+geocodeio.key=
+
+
+</pre>
+
+
+
 <a name="otherapis"></a>
 [item {Other API keys} {
 
@@ -246,8 +274,6 @@ an API key. Here are some of them.
 
 
 <pre>
-#show google streetview images
-google.streetview.key=
 
 #for google geocoding
 google.key=
@@ -256,9 +282,15 @@ google.key=
 #also for route generation in the editable maps 
 here.key=
 
-
 #For geocoding from https://www.geocod.io/
 geocodeio.key=
+
+
+
+
+#show google streetview images
+google.streetview.key=
+
 
 #For accessing purple air sensor data
 #https://www2.purpleair.com/
