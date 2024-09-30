@@ -4301,26 +4301,24 @@ label {
 
 .ramadda-breadcrumbs-menu-button {
     display:block;
-    padding:2px;
+    padding:3px;
     margin:0px;
-    border: 1px #ddd solid;
+    border-radius: 3px;
+    border: 1px #ccc solid;
     background-color:#fff;    
     transition: transform .3s ease-in-out;
 }
 
-.ramadda-breadcrumbs-menu-button:hover {
-    transform: scale(1.25);
-}
-
 .ramadda-breadcrumbs-menu-button i {
+    font-size:16pt;
     line-height:8px;
+    color:#aaa;
 }
 
 .ramadda-breadcrumbs-menu-button:hover {
-    background-color:#ccc;
+    transform: scale(1.5);
     border-color: var(--nav-hover-color);
 }
-
 
 .ramadda-plugin-row td {
     padding: 5px;
