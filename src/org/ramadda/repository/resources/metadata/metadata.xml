@@ -120,9 +120,12 @@
     </type>
 
 
+
+
     <type
        name="Author"
        searchable="true"
+       makesearchlink="true"
        browsable="true"
        displaygroup="Authors" 
        id="metadata_author"
