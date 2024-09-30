@@ -340,6 +340,9 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
    <property name="defaultFilename" value="imdvmap.json"/>
    <property name="convertidsinfile" value="true"/>
    <property name="icon" value="/icons/imdv.png"/>
+    <column name="show_information" label="Show Information"
+	    type="boolean" showinhtml="false" default="true"/>
+
 <wiki>
 <![CDATA[
 +section title={{name}}
@@ -350,6 +353,9 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -fullscreen
 -section
 ]]>
++if property=show_information
+{{information details=true}}
+-if
 </wiki>
 </type>
 
