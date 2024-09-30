@@ -263,7 +263,7 @@ priority="2"       >
      <column name="show_map" type="boolean"
 	     label="Show Map"  showinhtml="false" default="false"/>
      <column name="show_table" type="boolean"
-	     label="Show Table"  showinhtml="false" default="true"/>
+	     label="Show List"  showinhtml="false" default="true"/>
      <column name="show_information" type="boolean"
 	     label="Show Information"  showinhtml="false" default="true"/>
 
@@ -323,6 +323,8 @@ pageSearchSelector=.search-component,.entry-list-row-data}}
 <span style="display:inline-block;">
 {{display_simplesearch
 inputSize=200px width=200px
+applyToEntries=true
+pageSearchSelector=".search-component,.entry-list-row-data"
 ancestor=this placeholder="Search in documents" }} 
 </span>
 -center
@@ -375,9 +377,9 @@ showHeading=true
 -tab
 -if
 -tabs
-
 +if property=show_information
 :vspace 1em
+----
 :heading Information
 +center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
