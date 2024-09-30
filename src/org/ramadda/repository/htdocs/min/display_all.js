@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Sep 27 22:46:27 MDT 2024";
+var build_date="RAMADDA build date: Mon Sep 30 05:05:21 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -36023,6 +36023,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
         {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
+	{p:'applyToEntries',ex:true,tt:'When doing the entry search use the IDs to hide/show components'},
 	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
     ];
 
@@ -36351,7 +36352,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		}
 		if(value) {
 		    textOk = false;
-		    let html = Utils.stripTags($(this).html()).toLowerCase();
+		    let html = Utils.stripTags($(this).html());
+		    html+=$(this).attr('data-corpus')??'';
+		    html+=$(this).attr('entryid')??'';		    
+		    html = html.toLowerCase();
 		    if(html.indexOf(value)>=0) {
 			textOk=true;
 		    } else if(regExp) {
@@ -36372,6 +36376,12 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    sel.show();
 	},
 	clearSearch:function() {
+	    if(this.getApplyToEntries()) {
+		let sel = this.getPageSearchSelectors();
+		sel.each(function() {
+		    $(this).show();
+		});
+	    }
 	    this.writeMessage("");
 	    this.writeEntries("");			
 	    if(this.dialog) {
@@ -36453,8 +36463,41 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             if (this.multiSearch) {
                 this.multiSearch.count--;
             }
-            SUPER.entryListChanged.apply(this, [entryList]);
             let entries = this.entryList.getEntries();
+	    if(this.getApplyToEntries()) {
+		if(this.dialog) {
+		    this.dialog.hide();
+		}
+		let sel = this.getPageSearchSelectors();
+//		this.writeMessage("Found: " + entries.length +" entries");
+
+		if(entries.length==0) {
+		    sel.each(function() {
+			$(this).show();
+		    });
+		} else {
+		    let map = {}
+		    entries.forEach(e=>{
+			map[e.getId()]=true;
+		    });
+		    sel.each(function() {
+			let entryId = $(this).attr('entryid');
+			if(!entryId) return;
+			if(map[entryId]) {
+			    $(this).show();
+			} else {
+			    $(this).fadeOut();
+			}
+		    });
+
+		}
+//		return
+	    }
+
+
+            SUPER.entryListChanged.apply(this, [entryList]);
+
+
             if (entries.length == 0) {
                 this.getSearchSettings().skip = 0;
                 this.getSearchSettings().setMax(DEFAULT_MAX);
