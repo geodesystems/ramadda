@@ -4345,7 +4345,7 @@ public class WikiManager extends RepositoryManager
 							       + " ramadda-col"));
                     }
 		    StringBuilder comp = new StringBuilder();
-                    HU.open(comp, HU.TAG_DIV, boxClass + HU.style(boxStyle));
+                    HU.open(comp, HU.TAG_DIV, HU.attrs("entryid",child.getId()) +boxClass + HU.style(boxStyle));
                     if (showHeading) {
 			String title  = titles.get(idx);
 			String label = title;
@@ -4827,8 +4827,9 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"showToggleAll",true)) {
 		wiki += "{{toggle_all}}\n";
 	    }
-	    wiki+="{{entries_template  orderby=entryorder,name  ascending=true template=\"<div class=search-component> <div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
-	    return wikifyEntry(request,entry,wiki);
+	    wiki+="{{entries_template  orderby=entryorder,name  ascending=true template=\"<div class='search-component' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
+	    String html =  wikifyEntry(request,entry,wiki);
+	    return html;
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);
@@ -7472,7 +7473,7 @@ public class WikiManager extends RepositoryManager
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
 	    if(decorate) {
-		buff.append("<div class=\"image-outer search-component\">");
+		buff.append(HU.open("div",HU.attrs("class","image-outer search-component","entryid",child.getId())));
 		buff.append("<div class=\"image-inner\">");
 	    } else {
 		buff.append("<div style='padding:" + HU.makeDim(padding)+";'>");
@@ -8492,6 +8493,9 @@ public class WikiManager extends RepositoryManager
 	    if(property!=null) {
 		Object value = entry.getValue(request, property);
 		if(value==null) return false;
+		String match = (String) props.get("match");
+		if(match!=null) 
+		    return value.toString().equals(match);
 		return value.toString().equals("true");
 	    }
 
