@@ -157,7 +157,7 @@ propagateHighlightEvent=true showTitle="false" layoutHere="true" showMenu="true"
 <type name="geo_shapefile"  description="Shapefile"   super="type_point"
 	priority="12"
       handler="org.ramadda.plugins.map.ShapefileTypeHandler"
-      pattern="(.*\.shp$|.*shp.*\.zip|.*\.shz)"
+      pattern="(?i)(.*\.shp$|.*shp.*\.zip|.*\.shz|.*_shp.zip)"
       metadata="shapefile_display,shapefile_color,map_displaymap">
 <newhelp><![CDATA[
 Note: RAMADDA only displays WGS84 Shapefiles. If your map doesn't project correctly
