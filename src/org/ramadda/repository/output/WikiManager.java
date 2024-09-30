@@ -4827,7 +4827,7 @@ public class WikiManager extends RepositoryManager
 	    if(getProperty(wikiUtil,props,"showToggleAll",true)) {
 		wiki += "{{toggle_all}}\n";
 	    }
-	    wiki+="{{entries_template  orderby=entryorder,name  ascending=true template=\"<div class='search-component' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
+	    wiki+="{{entries_template  orderby=entryorder,name  ascending=true template=\"<div class='search-component ramadda-namelist-entry' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
 	    String html =  wikifyEntry(request,entry,wiki);
 	    return html;
         } else if (theTag.equals(WIKI_TAG_LINKS)

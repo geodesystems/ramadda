@@ -2775,6 +2775,14 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
     table-layout: fixed;
 }
 
+.ramadda-namelist-entry {
+    border:var(--basic-border);
+    padding:5px;
+    margin-top:8px;
+    margin-bottom:8px;
+
+}
+
 .entry-row-table .entry-name .entry-link {
     display: inline-block;
     position:relative;
