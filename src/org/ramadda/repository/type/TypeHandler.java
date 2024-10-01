@@ -2589,7 +2589,7 @@ public class TypeHandler extends RepositoryManager {
 
         Link downloadLink = getEntryDownloadLink(request, entry);
         if (downloadLink != null) {
-            links.add(downloadLink);
+            links.add(0,downloadLink);
         }
 
 
