@@ -4528,7 +4528,11 @@ public class WikiUtil implements HtmlUtilsConstants {
 
     public static String note(String note) throws Exception {
         return "\n+note\n"+note+"\n-note\n";
-    }    
+    }
+
+    public static String box(String note) throws Exception {
+        return "\n+box\n"+note+"\n-box\n";
+    }        
 
     /**
      * _more_
