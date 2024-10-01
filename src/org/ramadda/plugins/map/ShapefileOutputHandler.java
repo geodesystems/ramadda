@@ -346,7 +346,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         boolean forMap = request.get("formap", false);
         String returnFile =entry.getChangeDate() +"_"+
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".kml";
+            + suffix;
         String filename = forMap + "_" + returnFile;
 	filename+="_"+entry.getChangeDate();
         if (boundsArg != null) {
