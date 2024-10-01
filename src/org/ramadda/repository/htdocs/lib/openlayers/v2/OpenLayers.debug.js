@@ -77437,6 +77437,7 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                         this.id + "_input_"
                     );
 
+		
                 inputElem.id = inputId;
                 inputElem.name = (baseLayer) ? this.id + "_baseLayers" : layer.name;
                 inputElem.type = (baseLayer) ? "radio" : "checkbox";
@@ -77465,8 +77466,11 @@ OpenLayers.Control.LayerSwitcher = OpenLayers.Class(OpenLayers.Control, {
                 labelSpan.innerHTML = layer.name;
                 labelSpan.style.verticalAlign = (baseLayer) ? "bottom"
                                                             : "baseline";
+		//jeffmc:
+		labelSpan.title = inputElem.title=layer.ramaddaId??layer.name;
+
                 // create line break
-                var br = document.createElement("br");
+               var br = document.createElement("br");
 
 
                 var groupArray = (baseLayer) ? this.baseLayers
