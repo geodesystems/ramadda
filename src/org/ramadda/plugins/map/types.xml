@@ -195,11 +195,8 @@ Hint: To use conversion services name your file .shz or .shp.zip
 +tab Table
 {{import output=shapefile.fields_table}}
 -tab
-+tab Metadata
-{{information details=true}}
--tab
 +tab Information
-{{information}}
+{{information details=true}}
 -tab
 -tabs
 -section
