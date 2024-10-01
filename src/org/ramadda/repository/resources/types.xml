@@ -333,7 +333,7 @@ ancestor=this placeholder="Search in documents" }}
 +tabs 
 +tab  Grid
 +if property=show_tag_search
-+toggle <i title="Search Keywords" class="fas fa-search"></i>
++toggle <i title="Search Keywords" class="fas fa-tags"></i>
 {{display_simplesearch width=100%
 ancestor=this
 toggle=true
