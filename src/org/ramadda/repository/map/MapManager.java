@@ -1323,6 +1323,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         String bubble = entry.getTypeHandler().getBubbleTemplate(request,
 								 entry);
 
+
         /*
 	  if(bubble == null) {
 	  bubble = ":heading {{link}}\n";
@@ -1372,8 +1373,9 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
 	    if(stringDefined(snippet)) {
+		System.err.println(snippet);
 		info.append(getWikiManager().wikifyEntry(request,entry,
-							 WikiUtil.note(snippet)));
+							 WikiUtil.box(snippet)));
 	    } else {
 		info.append("<table class=\"formtable\">");
 		StringBuilder tb = new StringBuilder();

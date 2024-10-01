@@ -1268,7 +1268,6 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-snippet {
     text-decoration:none !important;
-    padding:5px;
 }
 
 
@@ -1328,7 +1327,7 @@ a.ramadda-menubar-button:hover {
 .ramadda-box {
     margin-top:2px;
     margin-bottom:2px;
-    padding:10px;
+    padding:5px;
     border : var(--basic-border);
 }
 
