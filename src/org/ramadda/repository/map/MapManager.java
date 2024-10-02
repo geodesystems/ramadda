@@ -1373,7 +1373,6 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 	    String snippet =  getWikiManager().getSnippet(request, entry, true,null);
 	    if(stringDefined(snippet)) {
-		System.err.println(snippet);
 		info.append(getWikiManager().wikifyEntry(request,entry,
 							 WikiUtil.box(snippet)));
 	    } else {
