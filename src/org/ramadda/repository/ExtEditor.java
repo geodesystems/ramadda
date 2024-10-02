@@ -835,40 +835,69 @@ public class ExtEditor extends RepositoryManager {
 		String cbx2 = request.addCheckbox(buff[0],ARG_EXTEDIT_RECURSE,"Recurse",true);
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
-			     + HU.space(1) +cbx + HU.space(1) + cbx2);
+			     + HU.space(1) +cbx + HU.space(1) + cbx2);	
+		List<String> helpTitles= new ArrayList<String>();
+		List<String> helpTabs = new ArrayList<String>();		
 		String eg =
-		    "<div id=exteg>" +
+		    "<div class=exteg>" +
 		    "<span>entry.getName()</span> <span>entry.setName()</span>\n" +
 		    "<span>entry.getType()</span>\n"+
 		    "<span>entry.getDescription()</span>  <span>entry.setDescription(String)</span>\n" +
 		    "<span>entry.getStartDate()</span> <span>entry.getEndDate()</span>\n" +
-		    "<span>entry.setStartDate(String)</span> <span>entry.setEndDate(String)</span>\n" +
+		    "<span>entry.setStartDate('yyyy-MM-dd')</span> <span>entry.setEndDate('yyyy-MM-dd')</span>\n" +
 		    "<span>entry.hasLocationDefined()</span> <span>entry.setLocation(lat,lon)</span>\n"+
-		    "<span>entry.setOwner(username)</span>\n" +
+		    "<span>entry.setOwner('username')</span>\n" +
 		    "<span>entry.getChildren()</span>\n" +
-		    "<span>entry.setColumnValue(name,value)</span>\n" +
-		    "<span>entry.isImage()</span> <span>entry.resizeImage(400)</span> <span>entry.grayscaleImage()</span>\n" +
-		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
+		    "<span>entry.setColumnValue('name',value)</span>\n" +
 		    "<span>entry.getValue('column_name')</span>\n" +
 		    "<span>entry.applyCommand('addthumbnail')</span>\n" +
 		    "<span>entry.hasMetadata('type')</span>\n" +
 		    "<span>entry.addMetadata('type','value1')</span>\n" +
 		    "<span>entry.listMetadata('type','match value')</span>\n" +
 		    "<span>entry.changeMetadata('type','pattern','with')</span>\n" +		    		    
+		    "</div>";
+		String image = "<div class=exteg>" +
+		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400)</span>\n<span>entry.grayscaleImage()</span>\n" +
+		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
+		    "</div>";
+		    
+		String llm =
+		    "<div class=exteg>" +
+		    "//Set the LLM to be used for subsequent calls\n" +
 		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
 		    "//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
-		    "<span>entry.applyLLM(true,'title','summary','keywords','model:gpt3.5')</span>\n" +
-		    "<span>entry.addLLMMetadata('metadata_type','prompt - for multiples ask the LLM to dlimiter with a semi-colon',false -> don't check if on exists)</span>\n" +
+		    "<span>entry.applyLLM(true,'title','summary','keywords','latlon','include_date','authors')</span>\n" +
+		    "//extract a metadata value using the LLM\n" +
+		    "//for multiples ask the LLM to delimit the results with a semi-colon\n" +
+		    "//true -&gt; *check if the entry has the metadata element already\n" +
+		    "<span>entry.addLLMMetadata('metadata_type'  , 'prompt' , true )</span>\n" +
+		    "//e.g.: entry.addLLMMetadata('tribe_name','Extract the tribe name from the document');\n" +
+		    "//extract lat/lon\n"+
 		    "<span>entry.addLLMGeo('optional prompt')</span>\n" +		    		    
+		    "</div>\n";
+
+		String control =   "<div class=exteg>" +
 		    "//ctx is the context object\n" +
-		    "<span>ctx.print()</span> prints output\n" +
-		    "//stop processing but still apply any changes\n" +
+		    "<span>ctx.print('message')</span> prints output\n" +
 		    "<span>ctx.pause(seconds)</span> \n"+
+		    "//stop processing but still apply any changes\n" +
 		    "<span>ctx.stop()</span> \n"+
 		    "//cancel processing and no changes will be applied\n"+
-		    "<span>ctx.cancel()</span></div>\n"+
-		    HU.script("Utils.initCopyable('#exteg span',{addNL:true,textArea:'" +ARG_EXTEDIT_SOURCE+"'});");
+		    "<span>ctx.cancel()</span></div>\n";
+
+		helpTitles.add("Basic");
+		helpTabs.add(HU.pre(eg));
+		helpTitles.add("Image");
+		helpTabs.add(HU.pre(image));		
+		helpTitles.add("LLM");
+		helpTabs.add(HU.pre(llm));
+		helpTitles.add("Control");
+		helpTabs.add(HU.pre(control));				
+		StringBuilder helpSB = new StringBuilder();
+		helpSB.append(HU.href(getRepository().getUrlBase()+"/userguide/extendededit.html#javascript","Help", "target=_help"));
+		HU.makeTabs(helpSB,helpTitles,helpTabs);
+		helpSB.append(HU.script("Utils.initCopyable('.exteg span',{addNL:true,textArea:'" +ARG_EXTEDIT_SOURCE+"'});"));
 
 
 		String ex =  (String) getSessionManager().getSessionProperty(request,"extedit");
@@ -881,7 +910,7 @@ public class ExtEditor extends RepositoryManager {
 
 		HU.formEntry(buff[0],  HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
 								  exclude,
-								  HU.pre(eg)))));
+								  helpSB.toString()))));
 		
 		buff[0].append(HU.formTableClose());
 		buff[0].append("<br>");
@@ -1440,9 +1469,6 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 	
-
-
-
 	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
 		if(check.length==0 || check[0]) {
