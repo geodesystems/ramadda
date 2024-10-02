@@ -209,7 +209,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** Change type output type */
     public static final OutputType OUTPUT_MAKESNAPSHOT =
         new OutputType("Make Snapshot", "repository.makesnapshot",
-                       OutputType.TYPE_OTHER | OutputType.TYPE_FILE, "",
+                       OutputType.TYPE_OTHER, "",
 
                        "fas fa-save");
 

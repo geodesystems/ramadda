@@ -162,7 +162,7 @@ public class UserManager extends RepositoryManager {
     /** output type */
     public static final OutputType OUTPUT_FAVORITE =
         new OutputType("Add as Favorite", "user.addfavorite",
-                       OutputType.TYPE_TOOLBAR, "", ICON_FAVORITE);
+                       OutputType.TYPE_OTHER, "", ICON_FAVORITE);
 
 
     /** _more_ */
@@ -3352,8 +3352,7 @@ public class UserManager extends RepositoryManager {
 			if ( !request.getUser().getAnonymous()) {
 			    link = makeLink(request, state.getEntry(),
 					    OUTPUT_FAVORITE);
-			    link.setLinkType(OutputType.TYPE_FILE);
-			    links.add(link);
+			    links.add(0,link);
 			}
 		    }
 		}
