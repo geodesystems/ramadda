@@ -71,7 +71,7 @@ inherited="false"  }}
     <property name="form.ark.show" value="true"/>    
     <action name="applyllm" label="Apply LLM" canedit="true"
 	    icon="fas fa-font" foruser="true" category="edit"/>
-    <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+    <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
 <children><![CDATA[
 <entries>
 <entry  name="Publications"  type="type_document_collection" entryorder="10"/>

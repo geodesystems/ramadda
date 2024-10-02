@@ -4,7 +4,7 @@
 
 
   <type name="link"  description="Link"  priority="1" help="A web page link">
-     <action name="documentchat" label="Document Chat" icon="fa-regular fa-comments" foruser="true" category="view"/>
+     <action name="documentchat" label="Web Page LLM" icon="fa-regular fa-comments" foruser="true" category="view"/>
      <property name="icon" value="/icons/link.png"/>
      <property name="upload.flags" value="harvesthtml:Harvest HTML"/>
      <property name="form.file.show" value="false"/>

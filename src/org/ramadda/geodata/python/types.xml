@@ -6,7 +6,7 @@
   </type>
 
   <type name="python_notebook"  description="IPython Notebook file"  pattern=".*\.ipynb" handler="org.ramadda.geodata.python.IPythonNotebookTypeHandler">
-     <action name="documentchat" label="Document Chat" icon="fas fa-comments" foruser="true" category="view"/>
+     <action name="documentchat" label="Document LLM" icon="fas fa-comments" foruser="true" category="view"/>
 
      <action name="applyllm" label="Apply LLM" canedit="true"
 	     icon="fas fa-font" foruser="true" category="edit"/>
