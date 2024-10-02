@@ -6515,8 +6515,8 @@ public class EntryManager extends RepositoryManager {
 	} else  {
 	    state = new OutputHandler.State(entry);
 	}
-        entry.getTypeHandler().getEntryLinks(request, entry,state, links);
         links.addAll(getRepository().getOutputLinks(request, state));
+        entry.getTypeHandler().getEntryLinks(request, entry,state, links);
         return links;
     }
 
@@ -6571,7 +6571,6 @@ public class EntryManager extends RepositoryManager {
         int     cnt         = 0;
         boolean needToAddHr = false;
         for (Link link : links) {
-
             if ( !link.isType(typeMask)) {
                 continue;
             }

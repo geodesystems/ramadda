@@ -2455,13 +2455,13 @@ public class TypeHandler extends RepositoryManager {
 
 	addImportExportLinks(request, entry,links,canDoNew);
 
-        links.add(
+        links.add(0,
 		  new Link(
 			   HU.url(
 				  getRepository().URL_ENTRY_LINKS.toString(),
 				  new String[] { ARG_ENTRYID,
 						 entry.getId() }), "fa-list",
-			   "All Actions", OutputType.TYPE_FILE));
+			   "All Actions", OutputType.TYPE_OTHER));
 
         links.add(makeHRLink(OutputType.TYPE_FILE));
 
@@ -2610,6 +2610,7 @@ public class TypeHandler extends RepositoryManager {
 				   OutputType.TYPE_TOOLBAR));
             }
         }
+
 
 	addActionLinks(request, entry,state, links);	
 
