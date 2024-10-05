@@ -125,7 +125,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
             throws Exception {
-	boolean debug = mainEntry.getId().equals("a86d071a-f098-4354-839f-1f58e2656854");
+	boolean debug =false;
         List<String> ids = getEntryManager().getChildIdsFromDatabase(request,   mainEntry, null);
         String idString = (String) mainEntry.getStringValue(request,0, "").replace(",", "_COMMA_");
 	if(debug)
