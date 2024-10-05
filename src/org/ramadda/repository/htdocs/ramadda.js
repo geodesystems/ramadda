@@ -93,7 +93,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 
     initEntryPopup:function(id,target,entryType) {
-        let input = HU.input("","",["id",id+"_input",CLASS,"input","placeholder","Search", "style",
+        let input = HU.input("","",["id",id+"_input",CLASS,"input",ATTR_PLACEHOLDER,"Search", "style",
                                     HU.css("width","200px")]);
         input = HU.center(input);
         let html = input +HU.div([CLASS,"ramadda-select-search-results","id",id+"_results"]);

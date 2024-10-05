@@ -1000,13 +1000,13 @@ WikiEditor.prototype = {
 	    HU.formEntry('Prompt suffix:',
 			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
-	html+=HU.textarea('',llmText,['placeholder','Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
 
 	html+='<br>';
 	html+=HU.span(['id',this.domId('llm-call')],'Evaluate');	    
 	
 	html+=HU.div(['style','position:relative;'],
-		     HU.textarea('','',['placeholder','Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 		     HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
 			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 
@@ -1495,7 +1495,7 @@ WikiEditor.prototype = {
 	    all+=items;
 	    all+="</div>";
 	});
-	all = HU.center(HU.input('','',['placeholder','Search','id',_this.domId('allsearch'),'width','10'])) +
+	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search','id',_this.domId('allsearch'),'width','10'])) +
 	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
 		    ATTR_CLASS,'wikieditor-menu-popup',
 		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
@@ -1738,7 +1738,7 @@ WikiEditor.prototype = {
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_ID,this.domId('expandwikimenu')], 
 			     HU.getIconImage("fas fa-maximize"));
-	let header = HU.center(HU.input('','',['placeholder','Search','id',this.domId('displaysearch'),'width','10'])+
+	let header = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search','id',this.domId('displaysearch'),'width','10'])+
 			       HU.space(2) + expand);
 
 
@@ -1880,7 +1880,7 @@ WikiEditor.prototype = {
 	if(this.displaysText)
 	    popup+='<thin_hr>' +
 	    HU.center(HU.b("Data Displays")) +this.displaysText;
-	popup =HU.center(HU.input('','',['placeholder','Find Tag','id', this.domId('tagsearch'),
+	popup =HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Tag','id', this.domId('tagsearch'),
 					 'style','margin-top:4px;','width','10'])) + popup;
 	popup = HU.div([ATTR_STYLE,HU.css('width','600px',
 					  'height','300px',
@@ -2549,7 +2549,7 @@ Transcriber.prototype = {
 		html=controls;
 
 	    html+=HU.div(['style','position:relative;'],
-			 HU.textarea('','',['placeholder','','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+			 HU.textarea('','',[ATTR_PLACEHOLDER,'','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
 			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
 				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
 

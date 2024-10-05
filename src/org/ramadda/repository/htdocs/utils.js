@@ -3072,7 +3072,7 @@ var Utils =  {
 	//      anchor = anchor || id;
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
-        let searchInput = HU.tag('input',['value', value, 'placeholder','Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
+        let searchInput = HU.tag('input',['value', value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true','id','popup_search_input','class', 'ramadda-search-input',
                                     STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
 	let right = '';
         if(ramaddaThisEntry) {
@@ -3733,7 +3733,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
 	let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
-				    ATTR_ID,id,'placeholder',label??'Search','size',args.inputSize]);
+				    ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
 	if(args.target)
 	    $(args.target).html(input);
 	else
@@ -5832,7 +5832,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), 'placeholder','Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
 	    let buttons = '';
 	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
 	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','selectshown'],'Select shown');	    

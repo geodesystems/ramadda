@@ -2130,7 +2130,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ID,inputId]);
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();

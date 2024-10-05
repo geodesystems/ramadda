@@ -1638,7 +1638,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function(eg) {
-            eg = this.getProperty("placeholder",eg||"Search");
+            eg = this.getProperty(ATTR_PLACEHOLDER,eg||"Search");
             if (this.eg) {
                 eg = " " + this.eg;
             }
@@ -2140,7 +2140,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    label = this.makeLabel(col.getSearchLabel());
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
-                    field = HU.input("", savedValue??this.getSearchValue(col.getName()), ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
+                    field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget =  field + " " + help;
 		}
 		extra+=this.addWidget(label,widget,{

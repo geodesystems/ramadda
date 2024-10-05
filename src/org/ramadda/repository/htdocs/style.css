@@ -1929,6 +1929,7 @@ mapheader {
 }
 
 .ramadda-message-error {
+    z-index: 1000;
 }
 
 
