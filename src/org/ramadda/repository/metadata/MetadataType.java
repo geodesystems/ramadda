@@ -534,7 +534,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	    long t1= System.currentTimeMillis();
             root = XmlUtil.getRoot(new ByteArrayInputStream(xml.getBytes()));
 	    long t2= System.currentTimeMillis();
-	    System.err.println("time:" + (t2-t1));
+	    //	    System.err.println("time:" + (t2-t1));
         } catch (Exception exc) {
             throw new IllegalStateException("XML Error:" + exc
                                             + "\nCould not create xml:"
