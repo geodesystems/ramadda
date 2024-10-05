@@ -228,7 +228,7 @@ public abstract class RecordFile {
 		Misc.sleep(100);
             }
 	    long t2 = System.currentTimeMillis();
-	    if(t2-t1>50) {
+	    if(t2-t1>1000) {
 		System.err.println("checkCache time:" + (t2-t1) +"  cnt:" + cnt);
 	    }
         }

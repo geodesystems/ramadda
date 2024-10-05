@@ -170,9 +170,11 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             }
             //            ids = null;
             if (ids != null) {
+		/**
                 System.err.println("getSynthIds: cached:" + synthId
                                    + " cachekey:" + cacheKey + " marker:"
                                    + request.getString(ARG_MARKER, ""));
+		*/
 
                 return ids;
             }
