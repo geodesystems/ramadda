@@ -71,7 +71,7 @@ public class RssOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    SimpleDateFormat rssSdf =
+    private SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
     /** _more_ */
@@ -241,7 +241,7 @@ public class RssOutputHandler extends OutputHandler {
             sb.append(
                 XmlUtil.tag(
                     RssUtil.TAG_PUBDATE, "",
-                    rssSdf.format(new Date(entry.getStartDate()))));
+                    DateHandler.doFormat(new Date(entry.getStartDate()),rssSdf)));
             sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
             String url = request.makeUrl(repository.URL_ENTRY_SHOW,
                                          ARG_ENTRYID, entry.getId());

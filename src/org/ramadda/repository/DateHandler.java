@@ -628,7 +628,7 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private String doFormat(Date date, SimpleDateFormat sdf) {
+    public static  String doFormat(Date date, SimpleDateFormat sdf) {
         synchronized (sdf) {
             return sdf.format(date);
         }
