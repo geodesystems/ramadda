@@ -945,20 +945,20 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
     }
 
-
-
-
     
-    private IndexSearcher getLuceneSearcher() throws Exception {
-	if(luceneSearcher==null) {
-	    IndexReader reader = DirectoryReader.open(luceneDirectory);
-	    luceneSearcher = new IndexSearcher(reader);
+    private Object SEARCHER_MUTEX = new Object();
+    private synchronized IndexSearcher getLuceneSearcher() throws Exception {
+	synchronized(SEARCHER_MUTEX) {
+	    if(luceneSearcher==null) {
+		IndexReader reader = DirectoryReader.open(luceneDirectory);
+		luceneSearcher = new IndexSearcher(reader);
+	    }
+	    DirectoryReader reader = DirectoryReader.openIfChanged((DirectoryReader) luceneSearcher.getIndexReader());
+	    if (reader != null) {
+		luceneSearcher = new IndexSearcher(reader);
+	    }
+	    return luceneSearcher;
 	}
-	DirectoryReader reader = DirectoryReader.openIfChanged((DirectoryReader) luceneSearcher.getIndexReader());
-	if (reader != null) {
-            luceneSearcher = new IndexSearcher(reader);
-        }
-        return luceneSearcher;
 	/*	if(luceneSearcher==null) {
 	    IndexReader reader = DirectoryReader.open(luceneDirectory);
 	    luceneSearcher = new IndexSearcher(reader);
