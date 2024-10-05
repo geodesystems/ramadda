@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct  2 06:45:52 MDT 2024";
+var build_date="RAMADDA build date: Sat Oct  5 06:22:12 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -6114,7 +6114,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), 'placeholder','Search for ' + label.toLowerCase(),ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","300px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ID,inputId]);
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
 	    if(!this.tagDialogs) this.tagDialogs = {};
 	    if(this.tagDialogs[type]) this.tagDialogs[type].remove();
@@ -34952,7 +34952,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         },
 	getEgText:function(eg) {
-            eg = this.getProperty("placeholder",eg||"Search");
+            eg = this.getProperty(ATTR_PLACEHOLDER,eg||"Search");
             if (this.eg) {
                 eg = " " + this.eg;
             }
@@ -35454,7 +35454,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    label = this.makeLabel(col.getSearchLabel());
                     widget= HU.div([ATTR_ID,this.domId(col.getName())], areaWidget.getHtml());
                 } else if(col.getType()=='string') {
-                    field = HU.input("", savedValue??this.getSearchValue(col.getName()), ["placeholder",col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
+                    field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget =  field + " " + help;
 		}
 		extra+=this.addWidget(label,widget,{
