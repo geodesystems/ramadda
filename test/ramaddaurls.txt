@@ -21,7 +21,12 @@ https://ramadda.org/repository/entry/show?entryid=882ba673-72b0-4d26-80de-e10f34
 https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+Side+Test?entryid=882ba673-72b0-4d26-80de-e10f34721d72&output=zip.tree
 
 
+echo: Virtual Entry
+https://ramadda.org/repository/entry/show?entryid=aac9718f-257f-4b45-8aa8-ba1055f45c40
+
+
 #stop
+
 
 echo: CSV
 https://ramadda.org/repository/entry/show?ascending=true&orderby=name&entryid=5ec45056-fe82-4d98-a9c4-4f1da94be8b0&output=default.csv&fields=name,id&showheader=false&showheader=false
