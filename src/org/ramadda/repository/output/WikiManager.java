@@ -5978,7 +5978,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    if (snippet == null) {
 		snippet = StringUtil.findPattern(text, "(?s)\\+callout-[^\\n]+(.*?)-callout");
-	    }	    
+	    }
 
 	    if (snippet == null) {
 		//Only get the first 400 characters so we just get the notes at the start of the text
@@ -5987,10 +5987,13 @@ public class WikiManager extends RepositoryManager
 		if (snippet == null) {
 		    snippet = StringUtil.findPattern(text, "(?s)\\+callout-info\\s*(.*?)-callout");
 		}		
-		//Now check for embedded tags
-		if(snippet!=null && snippet.indexOf("{{")>=0) {
-		    snippet = null;
-		}
+		if (snippet == null) {
+		    snippet = StringUtil.findPattern(text, "(?s)\\+credit[^\\n]+(.*?)-credit");
+		}	    	    
+	    }
+	    //Now check for embedded tags
+	    if(snippet!=null && snippet.indexOf("{{")>=0) {
+		snippet = null;
 	    }
 	}
         child.setSnippet(snippet);
