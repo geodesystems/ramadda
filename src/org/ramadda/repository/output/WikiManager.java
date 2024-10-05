@@ -6008,6 +6008,7 @@ public class WikiManager extends RepositoryManager
 			   boolean showIcon, int depth, List<String> types,
 			   Appendable sb,int count)
 	throws Exception {
+
 	if(top) {
 	    HU.open(sb,"ul",HU.attrs("id",menuId, "style",style));
 	    sb.append("\n");
@@ -6026,10 +6027,13 @@ public class WikiManager extends RepositoryManager
 	    sb.append("\n");
         }
 
-        if (depth-- < 0) {
+	
+	depth--;
+        if (depth < 0) {
 	    if(top && showRoot) HU.close(sb,"ul","\n");
 	    HU.close(sb,"li","\n");
 	    if(top) HU.close(sb,"ul","\n");
+	    return 0;
         }
         List<Entry> children = getEntries(request, wikiUtil, originalEntry,
                                           entry, props);
