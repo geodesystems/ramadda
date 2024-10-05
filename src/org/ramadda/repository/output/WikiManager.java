@@ -4767,7 +4767,8 @@ public class WikiManager extends RepositoryManager
 		else
 		    sb.append(header);		
 	    }
-	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {	  		String url;
+	    for(String link:Utils.split(getProperty(wikiUtil,props,"links",""),",",true,true)) {
+		String url;
 		String label;
 		if(link.indexOf(";")>=0) {
 		    List<String> toks = Utils.splitUpTo(link,";",2);
@@ -4782,10 +4783,15 @@ public class WikiManager extends RepositoryManager
 			}
 		    }
 		} else {
-		    Entry e  = getEntryManager().getEntry(request, link);
-		    if(e==null) continue;
-		    url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, e);
-		    label = getProperty(wikiUtil,props,link+".label",e.getName());
+		    try {
+			Entry e  = getEntryManager().getEntry(request, link);
+			if(e==null) continue;
+			url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, e);
+			label = getProperty(wikiUtil,props,link+".label",e.getName());
+		    } catch(Exception exc) {
+			exc.printStackTrace();
+			continue;
+		    }
 		}
 		String image2 = getProperty(wikiUtil,props,link+".image",image);
 		if(stringDefined(image2)) {
