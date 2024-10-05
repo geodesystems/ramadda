@@ -5,7 +5,6 @@ https://ramadda.org:443/repository/entry/show?entryid=dc6015ef-85ba-4502-a274-ef
 https://ramadda.org:443/repository/entry/show?entryid=e597761f-75c7-4636-907c-5bf741f690fb&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=df29a80c-83c5-44af-83f9-7fd5d2f77637&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=d7188271-672c-42ec-be0d-e3b616375739&max=5000&output=points.product&product=points.json
-https://ramadda.org:443/repository/entry/show?entryid=149bdad0-2422-466f-99ef-7239f1d7082d
 https://ramadda.org:443/repository/entry/show?entryid=7aedf88a-aea8-4537-8083-6da4d9e37d41
 https://ramadda.org:443/repository/entry/show?entryid=740ffb90-b033-469d-9faa-ab118a4e57ea&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=5eed9743-2a86-4a80-8057-86af6194cca4&max=5000&output=points.product&product=points.json
@@ -102,7 +101,6 @@ https://ramadda.org:443/repository/entry/show?entryid=bb9ad2f5-fed4-4c6a-bfe8-46
 #https://ramadda.org:443/repository/entry/show?entryid=4d77f379-b725-4707-a061-a8254a4dd121&max=5000&output=points.product&product=points.json
 #https://ramadda.org:443/repository/entry/show?entryid=4d77f379-b725-4707-a061-a8254a4dd121&onlyentry=true&output=json
 https://ramadda.org:443/repository/entry/show?entryid=66cdae73-b8c0-45ed-80d4-2528bf2dfecf
-https://ramadda.org:443/repository/entry/show?entryid=f4eb6aaf-5c95-4d62-b5b9-b145ac8c4f4f&latitude=40&longitude=-105.2&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=0a6ccb94-b2d4-4bb6-96b0-bf87153dfad6
 https://ramadda.org:443/repository/entry/show?entryid=fb23957e-c121-49a4-beef-80047b3cb869&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=ad801b88-3541-46bc-9552-5ac6434e8d5a&template=empty
@@ -184,7 +182,6 @@ https://ramadda.org:443/repository/entry/show?entryid=44157344-4221-4330-976b-b2
 https://ramadda.org:443/repository/entry/show?entryid=76f509f8-69a4-4623-ad41-2a65ad6b09aa&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=0a439a59-1ccb-4388-a2b5-b397536a5d6c
 https://ramadda.org:443/repository/entry/show?entryid=0a439a59-1ccb-4388-a2b5-b397536a5d6c&max=15000&output=points.product&product=points.json
-https://ramadda.org:443/repository/entry/show?entryid=e408e923-f472-4f24-bb23-a65d897e3700&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=a0f8c7d7-39ee-4d8f-bb04-5bb39094d64e
 https://ramadda.org:443/repository/entry/show?entryid=a0f8c7d7-39ee-4d8f-bb04-5bb39094d64e&max=5000&output=points.product&product=points.json
 https://ramadda.org:443/repository/entry/show?entryid=8c1b98f7-733f-4512-9f4a-c4aef9107a70

@@ -34,9 +34,6 @@ https://ramadda.org/repository/entry/show/Home/Explore/communityRAMADDA?entryid=
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Charts%2C+Maps+and+Search/Animated+Aircraft+Track+Data?output=points.product&entryid=5be1452b-330c-4fba-841a-a5a9bd46b2a6&numpoints=1000&product=points.json
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Charts%2C+Maps+and+Search/General+purpose+file+viewer?output=wiki.view&entryid=a98aa183-939b-471d-b31d-382e10657f2f
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Charts%2C+Maps+and+Search?entryid=2fea0375-164f-44f1-9861-d36e2f001209
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Gridded+Data/gfs80.nc?output=data.gridaspoint.form&entryid=b835f612-5975-468f-86af-16e1a8e25219
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Gridded+Data/gfs80.nc?output=data.gridsubset.form&entryid=b835f612-5975-468f-86af-16e1a8e25219
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Gridded+Data/gfs80.nc?output=default.html&entryid=b835f612-5975-468f-86af-16e1a8e25219
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Information+Constructs/Bibliography/Journal+Articles/A+decrease+in+discharge-normalized+DOC+export+by+the+Yukon+River+during+summer+through+autumn?entryid=7580c202-42c5-40b3-9064-dcc04095cd1a
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Information+Constructs/Bibliography/Journal+Articles/Amount+and+timing+of+permafrost+carbon+release+in+response+to+climate+warming?entryid=24adf81a-a0e9-4012-acaf-579853fe3c7e
@@ -90,14 +87,9 @@ https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Da
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=dif.xml&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=html.info&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03&ascending=false&orderby=fromdate
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=html.table&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=html.treeview&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03&ascending=false&orderby=fromdate
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=map.gemap&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=map.map&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Observation+Data?output=thredds.catalog&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Bathymetry/NGDC+Bathymetry+Data?entryid=fa2479f4-8b3e-4e18-88be-f0431ae40915
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=default.html&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=points.chart&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3
-https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography/Gliders/glider.nc?output=points.product&entryid=2ddfd7a2-f2ac-4328-a528-515251481ca3&numpoints=1000&product=points.json
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA/Oceanography?entryid=e69bc750-512e-404e-b919-6eae76513da6
 https://ramadda.org/repository/entry/show/Home/Explore/geoRAMADDA?entryid=ebbe1ab5-423a-4488-93fb-28bdcc792a17
 https://ramadda.org/repository/entry/show/Home/Explore/homeRAMADDA/Desert+Trips?entryid=4105f77f-3b04-47c2-be0d-a6f00e2f07c2
@@ -131,7 +123,6 @@ https://ramadda.org/repository/entry/show/Observation%20Data.kml?output=kml&entr
 https://ramadda.org/repository/entry/show/Observation%20Data.rss?output=rss.full&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/Observation%20Data.xml?output=atom&entryid=88992ce3-0267-4cd4-a4e8-3e53fee2bb03
 https://ramadda.org/repository/entry/show/P120.pbo.igs05.csv.json?max=1000&output=points.product&entryid=0b5cd936-c9f6-4796-85b8-065384d2dd34&product=points.json
-https://ramadda.org/repository/entry/show/gfs80_point?longitude=_LONGITUDEMACRO_&level=-1&location.longitude=-101.1&output=data.gridaspoint&entryid=b835f612-5975-468f-86af-16e1a8e25219&variable=Temperature&calendar=gregorian&submit=Get+Point&latitude=_LATITUDEMACRO_&format=json&location.latitude=34.6
 https://ramadda.org/repository/entry/show/scan0001.jpg?output=zipfile.list&entryid=3462841c-52fe-4ce9-b68d-f0e2865fcece&file=scan0001.jpg
 https://ramadda.org/repository/entry/show?
 https://ramadda.org/repository/entry/show?entryid=0b5cd936-c9f6-4796-85b8-065384d2dd34
@@ -140,7 +131,6 @@ https://ramadda.org/repository/entry/show?output=default.timeline&entryid=88992c
 https://ramadda.org/repository/entry/show?output=default.timeline&entryid=fa2479f4-8b3e-4e18-88be-f0431ae40915&timelinexml=true
 https://ramadda.org/repository/entry/types?
 https://ramadda.org/repository/grid/json?location.longitude=%24%7Blongitude%7D&output=data.gridaspoint&entryid=885d9253-4c6a-4d66-ba44-df37bd607928&location.latitude=%24%7Blatitude%7D&format=json
-https://ramadda.org/repository/grid/json?location.longitude=%24%7Blongitude%7D&output=data.gridaspoint&entryid=b835f612-5975-468f-86af-16e1a8e25219&location.latitude=%24%7Blatitude%7D&format=json
 https://ramadda.org/repository/metadata/list?metadata.type=enum_tag&response=json&type=cloud
 https://ramadda.org/repository/search/do?max=50&output=json&skip=0
 https://ramadda.org/repository/search/do?max=50&output=json&skip=0&group=66e17bbf-cdef-40b6-a875-e035c98072c3

@@ -9,8 +9,6 @@ https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geoscienc
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=default.html
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=html.info
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=html.table
-https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=html.treeview
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=map.map
-https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=map.gemap
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=calendar.calendar
 https://ramadda.org/repository/entry/show/Home/Explore/RAMADDA+for+the+Geosciences/Gridded+Data?entryid=6eb95a42-b146-4352-9a97-ce677f8373ae&output=default.timeline
