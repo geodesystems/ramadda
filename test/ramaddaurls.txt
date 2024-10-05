@@ -24,6 +24,16 @@ https://ramadda.org/repository/entry/show/Home/RAMADDA+/Development/Test/Server+
 echo: Virtual Entry
 https://ramadda.org/repository/entry/show?entryid=aac9718f-257f-4b45-8aa8-ba1055f45c40
 
+echo: Search
+https://ramadda.org/repository/search/do?forsearch=true&type=type_document_pdf&provider=this&text=test&name=data&orderby=relevant&ascending=false&areamode=contains&max=100&skip=0
+https://ramadda.org/repository/search/form
+https://ramadda.org/repository/search/do?text=data&search.submit=Search&search.submit=search.submit&output=default.html&orderby=none&max=100&provider=this&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=contains
+https://ramadda.org/repository/search/do?search.submit=Search&search.submit=search.submit&output=default.html&orderby=none&max=100&provider=this&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=contains&metadata_attr1_enum_tag=Boulder%20History
+
+https://ramadda.org/repository/search/do?search.submit=Search&search.submit=search.submit&output=default.csv&orderby=none&max=100&provider=this&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=contains&metadata_attr1_enum_tag=Boulder%20History
+
+https://ramadda.org/repository/search/do?text=data&search.submit=Search&output=json&search.submit=search.submit&output=json&orderby=none&max=100&provider=this&datadate.relative=none&createdate.relative=none&changedate.relative=none&areamode=contains
+
 
 #stop
 
