@@ -807,7 +807,7 @@ public class EntryUtil extends RepositoryManager {
             return compare(e1.getChangeDate(), e2.getChangeDate());
         } else if (on.is(ORDERBY_CREATEDATE)) {
             return compare(e1.getCreateDate(), e2.getCreateDate());
-        } else if (on.is(ORDERBY_NAME)) {
+        } else if (on.is(ORDERBY_NAME) || on.is(ORDERBY_RELEVANT)) {
             return e1.getTypeHandler().getNameSort(e1).compareToIgnoreCase(e2.getTypeHandler().getNameSort(e2));
         } else if (on.is(ORDERBY_ENTRYORDER)) {
             return e1.getEntryOrder() - e2.getEntryOrder();
