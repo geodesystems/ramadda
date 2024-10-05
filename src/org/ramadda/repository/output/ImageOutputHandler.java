@@ -206,7 +206,7 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ANIMATEDGIF =
         new OutputType("Make Animated Gif", "image.animatedgif",
-                       OutputType.TYPE_FILE, "", ICON_IMAGES);
+                       OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
 
     /** _more_ */
