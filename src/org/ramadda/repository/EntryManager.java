@@ -6666,6 +6666,7 @@ public class EntryManager extends RepositoryManager {
 	    if(sb==null) return;
             sb.append("</div>");
 	    Integer c = count.get(sb);
+	    if(c==null) return;
 	    String s = sb.toString();
 	    if(c.intValue()<12) {
 		s = s.replaceAll("ramadda-menugroup","ramadda-menugroup ramadda-menugroup-ext");
