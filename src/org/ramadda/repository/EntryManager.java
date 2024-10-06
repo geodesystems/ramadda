@@ -1252,7 +1252,10 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntryAddFile(Request request) throws Exception {
-        getAuthManager().ensureAuthToken(request);
+	boolean addThumbnail = request.get("addthumbnail",false);
+	if(!addThumbnail) {
+	    getAuthManager().ensureAuthToken(request);
+	}
 	StringBuilder sb = new StringBuilder();
 	request.setReturnFilename("result.json");
 	String fileContents = request.getString("file",(String) null);
@@ -1271,6 +1274,33 @@ public class EntryManager extends RepositoryManager {
 	if(!tmpFile.exists()) {
 	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","Unable to write file:" + fileName)));
 	    return new Result("", sb, JsonUtil.MIMETYPE);
+	}
+	if(addThumbnail)  {
+	    Entry entry = getEntry(request);
+	    if(entry==null) {
+		return new Result("",
+				  new StringBuilder(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","no entry"))), 
+				  JsonUtil.MIMETYPE);
+	    }
+	    if ( !getAccessManager().canDoEdit(request, entry)) {
+		return new Result("",
+				  new StringBuilder(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","error","message","Cannot edit entry"))), 
+				  JsonUtil.MIMETYPE);
+	    }
+
+	    String thumbFileName = getStorageManager().moveToEntryDir(entry,tmpFile).getName();
+	    Metadata thumb = new Metadata(getRepository().getGUID(), entry.getId(),
+					  getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL),
+					  false,  thumbFileName, null, null, null, null);
+
+	    getMetadataManager().addMetadata(request,entry,thumb,false);
+	    updateEntry(request, entry);
+	    String[] url = getMetadataManager().getFileUrl(request,  entry,thumb);
+	    return new Result("",
+			      new StringBuilder(JsonUtil.mapAndQuote(Utils.makeListFromValues("status","ok","message","Thumbnail added","imageurl",url[1]))), 
+			      JsonUtil.MIMETYPE);
+
+
 	}
 	return  processEntryAddFile(request, tmpFile,fileName,request.getString("description",""));
     }
