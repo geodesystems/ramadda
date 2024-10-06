@@ -55,7 +55,8 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explo
 {{display_table showMenu="false"}}
 -col
 +col-md-3
-<a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View at OpenAQ</a>
+This data is provided by <a href="https://openaq.org/">OpenAQ</a><br>
+<a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View data source</a>
 {{map showSearchLocation="false" }}
 <table class="formtable">
      {{field name="location_id"  row.label="Location ID:"}}
@@ -66,6 +67,11 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explo
 </table>
 -col
 -row
+
+----
+
+:heading Information
+{{information  details="true"  showTitle="false"  }} 
 -section
 ]]>
 
