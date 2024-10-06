@@ -132,6 +132,7 @@ function getHandler(id) {
 }
 
 
+//Utils
 var Utils =  {
     me:"Utils",
     pageLoaded: false,
@@ -3666,8 +3667,7 @@ var GuiUtils = {
 };
 
 
-
-
+//HtmlUtils
 var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
