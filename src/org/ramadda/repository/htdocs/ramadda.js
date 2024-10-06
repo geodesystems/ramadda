@@ -11,6 +11,67 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     currentRamaddaBase:null,
 
     currentSelector:null,
+    captureScreen:function(entryId) {
+	if(!confirm("Do you want to create a thumbnail image of the screen?")) return;
+	let js = RamaddaUtil.getCdnUrl("/lib/html2canvas.min.js");
+	let capture =()=>{
+	    RamaddaUtil.hideEntryPopup();
+	    let captureElement =  document.body;
+            html2canvas(captureElement,{
+		userCORS:true,
+		allowTaint:true
+	    }).then(function(originalCanvas) {
+		const borderCanvas = document.createElement('canvas');
+		const borderContext = borderCanvas.getContext('2d');
+		const borderWidth = 10; // Width of the border
+		borderCanvas.width = originalCanvas.width + borderWidth * 2; // Add border space
+		borderCanvas.height = originalCanvas.height + borderWidth * 2; // Add border space
+		borderContext.drawImage(originalCanvas, 0, 0);
+		borderContext.fillStyle = 'white';
+		borderContext.fillRect(0, 0, borderCanvas.width, borderCanvas.height);
+		borderContext.strokeStyle = '#ccc'; 
+		borderContext.lineWidth = borderWidth;
+		borderContext.strokeRect(0, 0, borderCanvas.width, borderCanvas.height);
+		borderContext.drawImage(originalCanvas, borderWidth, borderWidth);
+
+
+		let dataUrl = borderCanvas.toDataURL('image/png');
+		let data = new FormData();
+		data.append("addthumbnail","true");
+		data.append("filename","screencapture.png");
+		data.append("file", dataUrl);
+		data.append("entryid",entryId);
+		let dialog;
+		let url = RamaddaUtil.getUrl("/entry/addfile");
+		$.ajax({
+		    url: url,
+		    cache: false,
+		    contentType: false,
+		    processData: false,
+		    method: 'POST',
+		    type: 'POST', 
+		    data: data,
+		    success:  (data) =>{
+			if(data.status!='ok') {
+			    alert("An error occurred creating entry: "  + data.message);
+			    return;
+			}
+			console.dir(data);
+			let html  = data.message+"<br>"+HU.image(data.imageurl,[ATTR_WIDTH,"600px"]);
+			let dialog =  HU.makeDialog({content:html,my:"left top",at:"left top",
+						     title:'',anchor:$('body'),
+						     draggable:true,header:true,inPlace:false,stick:true});
+//			alert(data.message);
+		    },
+		    error: function (err) {
+			alert("An error occurred creating entry: "  + err);
+		    }
+		});
+            });
+	};
+	Utils.importJS(js,capture);
+    },
+
     initToggleTable:function(container) {
 	$(container).find('.entry-arrow').click(function() {
 	    let url = $(this).attr('data-url');
@@ -1399,9 +1460,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	*/
 
 
-	HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,
-		       rightSideTitle:extraLink,
-		       anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
+	this.entryPopup =
+	    HU.makeDialog({content:html,my:"left top",at:"left bottom",title:label,
+			   rightSideTitle:extraLink,
+			   anchor:anchor,draggable:true,header:true,inPlace:false,headerRight:headerRight});    
     },
 
     initEntryListForm:function(formId) {
@@ -1413,6 +1475,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     },
 
     hideEntryPopup:function() {
+	if(this.entryPopup) {
+	    this.entryPopup.remove();
+	    this.entryPopup=null;
+	}
 	HtmlUtils.getTooltip().hide();
     },
 
