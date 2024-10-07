@@ -48,6 +48,9 @@ public class Bounds {
     }
 
 
+    public Bounds(double north, double west) {
+	this(north,west,north,west);
+    }
 
     /**
      * _more_
