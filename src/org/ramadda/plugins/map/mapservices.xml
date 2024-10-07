@@ -1,5 +1,17 @@
 <services category="Maps">
 
+  <service label="OGR  Info" id="ogr_info" command="${service.gdal.ogrinfo}" >
+    <description>                                                                                                                    Run ogrinfo                                                                                                              
+    </description>
+    <arg value="-so"/>
+    <arg value="-al"/>    
+    <arg value="${entry.file}"
+	 type="entry" primary="true" entryType="geo_geodatabase"></arg>
+    <output showResults="true" stdout="true"/>
+  </service>
+
+
+
   <service label="Convert a Shapefile to GeoJson" id="map_shp2geojson" command="${service.gdal.ogr2ogr}" outputToStderr="true">
     <description>
       Run ogr2ogr to convert a shapefile to geojson. Note: the shapefile needs to have the .shz or .shp.zip suffix

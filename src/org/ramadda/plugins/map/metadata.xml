@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-<!-- moved to core -->
+  <handler category="Maps">
+  <type name="Geodatabase Layer" id="geodatabase_layer"
+	searchable="true" browsable="true" displaygroup="Map Layers"
+	makesearchlink="true">
+    <element name="Layer" datatype="enumerationplus" searchable="true"/>
+    <element name="Geometry" datatype="enumerationplus" searchable="false"/>
+    <element name="Feature Count" datatype="int" searchable="false"/>        
+  </type>
+  </handler>
 </metadata>
