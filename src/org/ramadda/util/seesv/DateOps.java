@@ -328,9 +328,15 @@ public abstract class DateOps extends Processor {
 		    add(ctx, row, v+"");
 		    return row;
 		}
-                cal.setTime(d);
-                String v =  "" + cal.get(what);
-                add(ctx, row, v);
+		if(d==null) {
+		    add(ctx, row, "");
+		} else {
+		    cal.setTime(d);
+		    String v =  "" + cal.get(what);
+		    add(ctx, row, v);
+		}
+
+
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
