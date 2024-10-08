@@ -9802,7 +9802,15 @@ public class WikiManager extends RepositoryManager
         //If its a file then we did the tiling ourselves
         if (entry.isFile()) {
 	    if(Utils.getProperty(props,"singleFile",false)) {
-		String url = entry.getTypeHandler().getEntryResourceUrl(request, entry);
+		String url=null;
+		String _path = entry.getResourcePath(request).toLowerCase();
+		//check for tiff
+		if((_path.endsWith("tif") || _path.endsWith("tiff")) &&
+		   Utils.getProperty(props,"useAttachmentIfNeeded",true)) {
+		    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry);
+		    if(tuple!=null) url  = tuple[0];
+		}
+		if(url==null)url= entry.getTypeHandler().getEntryResourceUrl(request, entry);
 		Utils.add(jsonProps,"tileSources",
 			  JU.map("type",JU.quote("image"),"buildPyramid","false",
 				 "url",JU.quote(url)));
