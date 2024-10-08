@@ -19,7 +19,7 @@
      <property name="entry.category" value="lidar"/>
   </type>
 
-  <type name="lidar_las"  description="LAS Lidar Data" handler="org.ramadda.geodata.lidar.LidarTypeHandler" super="lidar" category="LiDAR" pattern=".*\.las">
+  <type name="lidar_las"  description="LAS Lidar Data" handler="org.ramadda.geodata.lidar.LidarTypeHandler" super="lidar" category="LiDAR" >
      <property name="icon" value="/nlas/icons/laser.png"/>
      <property name="record.file.class" value="org.ramadda.geodata.lidar.las.LasFile"/>
   </type>
