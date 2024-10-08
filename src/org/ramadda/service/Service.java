@@ -1,17 +1,6 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.service;
@@ -58,254 +47,96 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
-/**
- *
- */
 @SuppressWarnings("unchecked")
 public class Service extends RepositoryManager {
 
     private static final String MACRO_OUTPUTDIR = "${outputdir}";
 
-    /** _more_ */
     public static boolean debug = false;
-
-    /** _more_ */
     private static ServiceUtil dummyToForceCompile;
-
-    /** _more_ */
     public static final String ARG_SERVICEFORM = "serviceform";
-
-    /** _more_ */
     public static final String TAG_ARG = "arg";
-
-    /** _more_ */
     public static final String TAG_PARAMS = "params";
-
-    /** _more_ */
     public static final String TAG_PARAM = "param";
-
-    /** _more_ */
     public static final String ATTR_COMMAND = "command";
-
-    /** _more_ */
     public static final String ATTR_CLEANUP = "cleanup";
-
-    /** _more_ */
     public static final String ATTR_LINK = "link";
-
-    /** _more_ */
     public static final String ATTR_ID = "id";
-
-    /** _more_ */
     public static final String ATTR_MAXFILESIZE = "maxFileSize";
-
-    /** _more_ */
     public static final String ATTR_PRIMARY = "primary";
-
-    /** _more_ */
     public static final String ATTR_ENTRY_TYPE = "entryType";
-
-    /** _more_ */
     public static final String ATTR_TARGET = "target";
-
-    /** _more_ */
     public static final String ATTR_TARGET_TYPE = "target.type";
-
-    /** _more_ */
     public static final String ATTR_ENTRY_PATTERN = "entryPattern";
-
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
-
-    /** _more_ */
     public static final String TAG_OUTPUT = "output";
-
-    /** _more_ */
     public static final String TAG_INPUT = "input";
-
-    /** _more_ */
     public static final String TAG_SERVICE = "service";
-
-    /** _more_ */
     public static final String TAG_SERVICES = "services";
-
-
-    /** _more_ */
     public static final String ATTR_CATEGORY = "category";
-
-    /** _more_ */
     public static final String ATTR_VALUES = "values";
-
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
-
-    /** _more_ */
     public static final String ATTR_HELP = "help";
-
-    /** _more_ */
     public static final String ATTR_DESCRIPTION = "description";
-
-    /** _more_ */
     public static final String ATTR_SERIAL = "serial";
-
-
-    /** _more_ */
     public static final String ATTR_FILE = "file";
-
-    /** _more_ */
     public static final String ATTR_SERVICE = "service";
-
-    /** _more_ */
     public static final String ATTR_PATHPROPERTY = "pathProperty";
-
-    /** _more_ */
     public static final String ARG_DELIMITER = ".";
 
-
-
-    /** _more_ */
     private String id;
-
-    /** _more_ */
     private Entry serviceEntry;
-
-    /** _more_ */
     private String icon;
-
     private List<String> ignore;
-
-    /** _more_ */
     private String entryType;
-
-    /** _more_ */
     private boolean enabled = false;
-
-    /** _more_ */
     private double maxFileSize = -1;
-
-    /** _more_ */
     private Boolean requiresMultipleEntries;
-
-    /** _more_ */
     private boolean outputToStderr = false;
     private boolean asynch = false;
-
-    /** _more_ */
     private boolean immediate = false;
-
-    /** _more_ */
     private boolean ignoreStderr = false;
-
     private String actionPattern;
-
-    /** _more_ */
     private String errorPattern;
-
-
-    /** _more_ */
     private String target;
-
-    /** _more_ */
     private String targetType;
-
-    /** _more_ */
     private String namePattern;
-
-    /** _more_ */
     private String descriptionPattern;
-
-    /** _more_ */
     private boolean cleanup = false;
-
-    /** _more_ */
     private String command;
-
-    /** _more_ */
     private Object commandObject;
-
-    /** _more_ */
     private Method commandMethod;
-
-    /** _more_ */
     private String description;
-
-    /** _more_ */
     private String category;
-
-    /** _more_ */
     private String processDesc;
-
-    /** _more_ */
     private String label;
-
-    /** _more_ */
     private String pathProperty;
-
-    /** _more_ */
     private Service parent;
-
-    /** _more_ */
     private List<Service> children;
-
-    /** _more_ */
     public boolean serial;
-
-    /** _more_ */
     private String linkId;
-
     private boolean optional = false;
-    
-    /** _more_ */
     private Service link;
-
-    /** _more_ */
     private List<ServiceArg> args = new ArrayList<ServiceArg>();
-
-    /** _more_ */
     private List<ServiceArg> inputs = new ArrayList<ServiceArg>();
-
-    /** _more_ */
     private List<OutputDefinition> outputs =
         new ArrayList<OutputDefinition>();
 
-
-    /** _more_ */
     private Hashtable paramValues = new Hashtable();
-
-    /** _more_ */
     private Element element;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public Service(Repository repository, Element element) throws Exception {
         super(repository);
         init(null, element, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entry _more_
-     */
+    
     public Service(Repository repository, Entry entry) {
         this(repository, entry.getId(), entry.getName());
     }
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     * @param label _more_
-     */
+    
     public Service(Repository repository, String id, String label) {
         super(repository);
         this.id    = id;
@@ -315,16 +146,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param parent _more_
-     * @param element _more_
-     * @param index _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Service(Repository repository, Service parent, Element element,
                    int index)
             throws Exception {
@@ -335,27 +157,14 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
+    
     private static void debug(String msg) {
         if (debug) {
             System.out.println(msg);
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param parent _more_
-     * @param element _more_
-     * @param dfltId _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void init(Service parent, Element element, String dfltId)
             throws Exception {
 
@@ -561,14 +370,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     * @param input _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void toXml(Appendable xml, ServiceInput input) throws Exception {
         StringBuilder attrs = new StringBuilder();
         attr(attrs, ATTR_ENTRY_TYPE, entryType);
@@ -615,43 +417,19 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     * @param name _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void attr(Appendable xml, String name, boolean value)
             throws Exception {
         attr(xml, name, value + "");
     }
 
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     * @param name _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void attr(Appendable xml, String name, int value)
             throws Exception {
         attr(xml, name, value + "");
     }
 
-    /**
-     * _more_
-     *
-     * @param xml _more_
-     * @param name _more_
-     * @param value _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void attr(Appendable xml, String name, String value)
             throws Exception {
         if (Utils.stringDefined(value)) {
@@ -659,12 +437,7 @@ public class Service extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param value _more_
-     */
+    
     public void putParamValue(String name, Object value) {
         Object v = paramValues.get(name);
         if (v == null) {
@@ -679,13 +452,7 @@ public class Service extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
+    
     public Request makeRequest(Request request) {
         //        System.err.println ("request:" + paramValues);
         if (paramValues.size() == 0) {
@@ -705,17 +472,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param argPrefix _more_
-     * @param argName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getRequestValue(Request request, ServiceInput input,
                                    String argPrefix, String argName,
                                    boolean dflt) {
@@ -729,48 +486,20 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param argPrefix _more_
-     * @param argName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getRequestValue(Request request, String argPrefix,
                                    String argName, boolean dflt) {
         return getRequestValue(request, null, argPrefix, argName, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param argPrefix _more_
-     * @param argName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getRequestValue(Request request, String argPrefix,
                                   String argName, String dflt) {
         return getRequestValue(request, null, argPrefix, argName, dflt);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param argPrefix _more_
-     * @param argName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getRequestValue(Request request, ServiceInput input,
                                   String argPrefix, String argName,
                                   String dflt) {
@@ -801,17 +530,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param argPrefix _more_
-     * @param argName _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> getRequestValue(Request request, ServiceInput input,
                                         String argPrefix, String argName,
                                         List<String> dflt) {
@@ -844,12 +563,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param service _more_
-     */
+    
     public void addChild(Service service) {
         if (children == null) {
             children = new ArrayList<Service>();
@@ -858,18 +572,12 @@ public class Service extends RepositoryManager {
         service.setParent(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean haveChildren() {
         return (children != null) && (children.size() > 0);
     }
 
-    /**
-     * _more_
-     */
+    
     private void initLinkedService() {
         if (link != null) {
             return;
@@ -891,25 +599,14 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param link _more_
-     */
+    
     public void setLinkId(String link) {
         linkId = link;
         initLinkedService();
     }
 
 
-    /**
-     * _more_
-     *
-     * @param prefix _more_
-     * @param tail _more_
-     *
-     * @return _more_
-     */
+    
     public String getUrlArg(String prefix, String tail) {
         return ((prefix == null)
                 ? tail
@@ -921,11 +618,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean haveLink() {
         initLinkedService();
 
@@ -933,41 +626,19 @@ public class Service extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Service getLink() {
         initLinkedService();
 
         return link;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getImmediate() {
         return immediate;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param argPrefix _more_
-     * @param input _more_
-     * @param commands _more_
-     * @param filesToDelete _more_
-     * @param allEntries _more_
-     * @param valueMap _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
+    
     private HashSet<String> addArgs(Request request, String argPrefix,
                                    ServiceInput input, List<String> commands,
                                    List<File> filesToDelete,
@@ -1152,7 +823,9 @@ public class Service extends RepositoryManager {
                     }
 
                     argValue = arg.getValue();
+		    filePath = new File(filePath).getAbsolutePath();
                     argValue = argValue.replace("${entry.file}", filePath);
+		    System.err.println("ARG:" + argValue);
                     if (arg.getInclude()) {
                         values.add(argValue);
                     }
@@ -1213,6 +886,7 @@ public class Service extends RepositoryManager {
                                               arg.getMap());
 
 
+			fileName = fileName.replace(" ","_");
                         fileName = fileName.replace("${value}",
                                 originalValue);
                         File destFile = new File(IOUtil.joinDir(workDir,
@@ -1296,30 +970,13 @@ public class Service extends RepositoryManager {
         return definedArgs;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param args _more_
-     * @param start _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addExtraArgs(Request request, ServiceInput input,
                              List<String> args, boolean start)
             throws Exception {}
 
 
-    /**
-     * _more_
-     *
-     * @param input _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getLinkXml(ServiceInput input) throws Exception {
         if (haveLink()) {
             return link.getLinkXml(input);
@@ -1341,14 +998,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param input _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void writeParamsXml(ServiceInput input, Appendable sb)
             throws Exception {
         sb.append("\n");
@@ -1366,11 +1016,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getCategory() {
         if (category != null) {
             return category;
@@ -1383,30 +1029,18 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getHelp() {
         return null;
     }
 
 
-    /**
-     * Set the Parent property.
-     *
-     * @param value The new value for Parent
-     */
+    
     public void setParent(Service value) {
         parent = value;
     }
 
-    /**
-     * Get the Parent property.
-     *
-     * @return The Parent
-     */
+    
     public Service getParent() {
         return parent;
     }
@@ -1414,11 +1048,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getIcon() {
         if (icon != null) {
             return icon;
@@ -1433,11 +1063,7 @@ public class Service extends RepositoryManager {
         return "fa-cog";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getId() {
         /*
         if (haveLink()) {
@@ -1447,66 +1073,36 @@ public class Service extends RepositoryManager {
         return id;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTarget() {
         return target;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getNamePattern() {
         return namePattern;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getDescriptionPattern() {
         return descriptionPattern;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getTargetType() {
         return targetType;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param js _more_
-     * @param formVar _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initFormJS(Request request, Appendable js, String formVar)
             throws Exception {}
 
 
 
-    /**
-     * _more_
-     *
-     * @param prefix _more_
-     *
-     * @return _more_
-     */
+    
     public String getPrefix(String prefix) {
         if ( !Utils.stringDefined(prefix)) {
             return this.id;
@@ -1519,18 +1115,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param sb _more_
-     * @param argPrefix _more_
-     * @param label _more_
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     public void addToForm(Request request, ServiceInput input, Appendable sb,
                           String argPrefix, String label)
             throws Exception {
@@ -1575,18 +1160,7 @@ public class Service extends RepositoryManager {
         addToFormInner(request, myPrefix, input, sb, label);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param prefix _more_
-     * @param input _more_
-     * @param sb _more_
-     * @param label _more_
-     *
-     *
-     * @throws Exception _more_
-     */
+    
     private void addToFormInner(Request request, String prefix,
                                 ServiceInput input, Appendable sb,
                                 String label)
@@ -1704,17 +1278,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param argPrefix _more_
-     * @param input _more_
-     * @param catBuff _more_
-     * @param arg _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addArgToForm(Request request, String argPrefix,
                              ServiceInput input, CatBuff catBuff,
                              ServiceArg arg)
@@ -1874,17 +1438,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param argPrefix _more_
-     * @param arg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry getEntry(Request request, String argPrefix, ServiceArg arg)
             throws Exception {
         String argName = arg.getName() + "_hidden";
@@ -1897,16 +1451,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param label _more_
-     * @param col1 _more_
-     * @param help _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void makeFormEntry(Appendable sb, String label, String col1,
                                String help)
             throws Exception {
@@ -1926,17 +1471,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param catArg _more_
-     * @param catBuff _more_
-     * @param blockCnt _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void processCatBuff(Request request, Appendable sb,
                                 ServiceArg catArg, CatBuff catBuff,
                                 int blockCnt)
@@ -1965,11 +1500,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isEnabled() {
         if (haveLink()) {
             return link.isEnabled();
@@ -1988,11 +1519,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean requiresMultipleEntries() {
         if (requiresMultipleEntries != null) {
             return requiresMultipleEntries;
@@ -2031,11 +1558,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
+    
     public void collectArgs(List<ServiceArg> args) {
         if (haveLink()) {
             link.collectArgs(args);
@@ -2053,11 +1576,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getOutputToStderr() {
         if (haveLink()) {
             return link.getOutputToStderr();
@@ -2066,11 +1585,7 @@ public class Service extends RepositoryManager {
         return outputToStderr;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getIgnoreStderr() {
         if (haveLink()) {
             return link.getIgnoreStderr();
@@ -2079,20 +1594,12 @@ public class Service extends RepositoryManager {
         return ignoreStderr;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<ServiceArg> getArgs() {
         return args;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<OutputDefinition> getOutputs() {
         if (haveLink()) {
             return link.getOutputs();
@@ -2102,22 +1609,13 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<ServiceArg> getInputs() {
         return inputs;
     }
 
 
-    /**
-     * Can we handle this type of ServiceInput?
-     *
-     * @param dpi ServiceInput
-     * @return true if we can handle
-     */
+    
     public boolean canHandle(ServiceInput dpi) {
         List<Entry> entries = dpi.getEntries();
         if (entries.size() == 0) {
@@ -2128,13 +1626,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isApplicable(List<Entry> entries) {
         if ( !requiresMultipleEntries()) {
             return false;
@@ -2156,13 +1648,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isApplicable(Entry entry) {
         if (requiresMultipleEntries()) {
             return false;
@@ -2172,13 +1658,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     private boolean isApplicableInner(Entry entry) {
         if (haveLink()) {
             return link.isApplicable(entry);
@@ -2211,11 +1691,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getCommand() {
         if (haveLink()) {
             return link.getCommand();
@@ -2224,12 +1700,7 @@ public class Service extends RepositoryManager {
         return command;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     */
+    
     public String getDescription() {
         if (haveLink()) {
             link.getDescription();
@@ -2238,11 +1709,7 @@ public class Service extends RepositoryManager {
         return description;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getProcessDescription() {
         if (Utils.stringDefined(processDesc)) {
             return processDesc;
@@ -2254,11 +1721,7 @@ public class Service extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getLabel() {
         if (Utils.stringDefined(label)) {
             return label;
@@ -2275,11 +1738,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param l _more_
-     */
+    
     public void setLabel(String l) {
         label = l;
     }
@@ -2292,17 +1751,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param argPrefix _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public ServiceOutput evaluate(Request request, Object actionID,ServiceInput input,
                                   String argPrefix)
             throws Exception {
@@ -2428,18 +1877,25 @@ public class Service extends RepositoryManager {
 
 
 	
-	//	System.err.println("commands:" + commands);
+	System.err.println("commands:" + commands);
         //        System.out.println(getLinkXml(input));
         if (commandObject != null) {
             commandMethod.invoke(commandObject, new Object[] { request, this,
                     input, commands });
         } else {
 	    try {
+		PrintWriter stdOutWriter = new PrintWriter(stdoutFile);
+		PrintWriter stdErrWriter = new PrintWriter(stderrFile);		
 		JobManager.CommandResults results =
 		    getRepository().getJobManager().executeCommand(commands,
 								   null, input.getProcessDir(), -1,
-								   new PrintWriter(stdoutFile),
-								   new PrintWriter(stderrFile),actionID,actionPattern);
+								   stdOutWriter,
+								   stdErrWriter,
+								   actionID,actionPattern);
+		stdOutWriter.flush();
+		stdOutWriter.close();
+		stdErrWriter.flush();
+		stdErrWriter.close();				
 	    } catch(Exception exc) {
 		System.err.println("Error evaluating service:" + commands);
 		throw exc;
@@ -2659,16 +2115,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param input _more_
-     * @param output _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addOutput(Request request, ServiceInput input,
                           ServiceOutput output, Appendable sb)
             throws Exception {
@@ -2702,9 +2149,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     */
+    
     public void ensureSafeServices() {
         if (command != null) {
             throw new IllegalArgumentException(
@@ -2717,30 +2162,18 @@ public class Service extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param d _more_
-     */
+    
     public void setDescription(String d) {
         description = d;
     }
 
 
-    /**
-     *  Set the Serial property.
-     *
-     *  @param value The new value for Serial
-     */
+    
     public void setSerial(boolean value) {
         serial = value;
     }
 
-    /**
-     *  Get the Serial property.
-     *
-     *  @return The Serial
-     */
+    
     public boolean getSerial() {
         return serial;
     }
@@ -2748,11 +2181,7 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param outputs _more_
-     */
+    
     public void getAllOutputs(List<OutputDefinition> outputs) {
         if (haveChildren()) {
             for (Service child : children) {
@@ -2764,30 +2193,12 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public String macro(String s) {
         return "${" + s + "}";
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryMap _more_
-     * @param valuesSoFar _more_
-     * @param workDir _more_
-     * @param value _more_
-     * @param forDisplay _more_
-     * @param extraMap _more_
-     *
-     * @return _more_
-     */
+    
     public String applyMacros(Request request,Entry entry,
                               Hashtable<String, List<Entry>> entryMap,
                               Hashtable<String, String> valuesSoFar,
@@ -2841,16 +2252,7 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param id _more_
-     * @param value _more_
-     * @param forDisplay _more_
-     *
-     * @return _more_
-     */
+    
     private String applyMacros(Request request, Entry entry, String id, String value,
                                boolean forDisplay) throws Exception {
         List<Column> columns = entry.getTypeHandler().getColumns();
@@ -2888,27 +2290,13 @@ public class Service extends RepositoryManager {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Sep 23, '14
-     * @author         Enter your name here...
-     */
+    
     private class CatBuff {
 
-        /** _more_ */
+        
         List<List<StringBuilder>> rows = new ArrayList<List<StringBuilder>>();
 
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param value _more_
-         * @param value2 _more_
-         *
-         * @return _more_
-         */
+        
         public List<StringBuilder> addRow(String label, String value,
                                           String value2) {
             List<StringBuilder> row = new ArrayList<StringBuilder>();
@@ -2922,29 +2310,17 @@ public class Service extends RepositoryManager {
             return row;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public int length() {
             return rows.size();
         }
 
-        /**
-         * _more_
-         *
-         * @param row _more_
-         */
+        
         public void addRow(List<StringBuilder> row) {
             rows.add(row);
         }
 
-        /**
-         * _more_
-         *
-         * @param v _more_
-         */
+        
         public void appendToCurrentRow(String v) {
             List<StringBuilder> row = rows.get(rows.size() - 1);
             row.get(1).append(v);
@@ -2952,13 +2328,7 @@ public class Service extends RepositoryManager {
 
 
 
-        /**
-         * _more_
-         *
-         * @param sb _more_
-         *
-         * @throws Exception _more_
-         */
+        
         public void addToForm(Appendable sb) throws Exception {
             for (List<StringBuilder> row : rows) {
                 String label  = row.get(0).toString();
@@ -2975,50 +2345,30 @@ public class Service extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Element getElement() {
         return element;
     }
 
 
-    /**
-     * Set the ServiceEntry property.
-     *
-     * @param value The new value for ServiceEntry
-     */
+    
     public void setServiceEntry(Entry value) {
         serviceEntry = value;
     }
 
-    /**
-     * Get the ServiceEntry property.
-     *
-     * @return The ServiceEntry
-     */
+    
     public Entry getServiceEntry() {
         return serviceEntry;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String toString() {
         return getLabel() + " " + id +" " + command;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public double getMaxFileSize() {
         return maxFileSize;
     }
