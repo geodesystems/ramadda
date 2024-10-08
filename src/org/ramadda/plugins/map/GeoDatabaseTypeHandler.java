@@ -121,7 +121,6 @@ public class GeoDatabaseTypeHandler extends GenericTypeHandler {
 	}
 
 	if(bounds!=null) {
-	    System.err.println("B:" + bounds);
 	    entry.setBounds(bounds);
 	}
     }
@@ -130,7 +129,6 @@ public class GeoDatabaseTypeHandler extends GenericTypeHandler {
     private static double[] getLatLon(String line) {
         line = line.trim();
         line = StringUtil.findPattern(line, ".*\\(([^\\)]+)\\.*");
-        //        System.err.println("TOK: " + line);
         if (line == null) {
             return null;
         }

@@ -360,11 +360,12 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 </type>
    
   <type name="geo_geodatabase"  super="type_map"
+	priority="12"
 	description="Geodatabase"
-	handler="org.ramadda.plugins.map.GeoDatabaseTypeHandler" pattern="(?i)*gdb.zip">
+	handler="org.ramadda.plugins.map.GeoDatabaseTypeHandler" pattern="(?i).*gdb.zip">
     <service link="ogr_info"/>
-  <property name="icon" value="/icons/mapfile.png"/>
-  <property name="upload.zip" value="true"/>
+    <property name="icon" value="/icons/mapfile.png"/>
+    <property name="upload.zip" value="true"/>
     <property name="search.tabs" value="list,map"/>
     <property name="icon" value="/icons/kml.png"/>
      <wiki><![CDATA[
@@ -378,6 +379,12 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 {{map width="100%" height="250" layer="esri.topo"}}
 -col
 -row
+
+{{properties
+prefix="----\n:heading Map Layers\n"
+message=""
+metadata.types="geodatabase_layer"  #layout="tabs|linear|accordion"  includeTitle="false"  separator=""
+decorate="false"  inherited="false"  }}  
 -section
 ]]>
 </wiki>
