@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -136,7 +136,7 @@ public class TypeHandler extends RepositoryManager {
 
     private String[] FIELDS_ENTRY = {
         ARG_NAME, ARG_DESCRIPTION, ARG_RESOURCE,/* FIELD_LABEL+":" +HU.span("Metadata",""),*/ ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
-    };
+	    };
 
     private String[] FIELDS_NOENTRY = {
         ARG_NAME, ARG_RESOURCE, ARG_DESCRIPTION,  /*ARG_LABEL+":" +HU.span("Metadata",""),*/ARG_TAGS, ARG_DATE, ARG_LOCATION,FIELD_COLUMNS
@@ -2626,10 +2626,10 @@ public class TypeHandler extends RepositoryManager {
 					  entry.getId() }), ICON_EXPORT,
 			       "Export", OutputType.TYPE_FILE));
 	    Link l = new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
-				      + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
-					  ARG_SHALLOW,"true",
-					  ARG_ENTRYID,
-					  entry.getId() }), ICON_EXPORT,
+				     + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
+					 ARG_SHALLOW,"true",
+					 ARG_ENTRYID,
+					 entry.getId() }), ICON_EXPORT,
 			      "Shallow Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Just export this entry, not it's children");
             links.add(l);	    
@@ -2939,9 +2939,9 @@ public class TypeHandler extends RepositoryManager {
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String icon = getPageHandler().getEntryIconImage(request,entry);
 	/*
-	String label =icon + HU.space(1)+HU.href(getSearchManager().getTypeSearchUrl(entry.getTypeHandler()),
-						 getFileTypeDescription(request,  entry),
-						 HU.attrs("title","Search for entries of this type"));
+	  String label =icon + HU.space(1)+HU.href(getSearchManager().getTypeSearchUrl(entry.getTypeHandler()),
+	  getFileTypeDescription(request,  entry),
+	  HU.attrs("title","Search for entries of this type"));
 	*/
 	String label =icon + HU.space(1)+ getFileTypeDescription(request,  entry);
 	sb.append(formEntry(request, msgLabel("Kind"),label));
@@ -3480,42 +3480,8 @@ public class TypeHandler extends RepositoryManager {
 
             //Now run the services
             for (Service service : services) {
-                if ( !service.isEnabled()) {
-                    continue;
-                }
-                try {
-		    //		    System.err.println("service:" + service);
-                    File workDir = getStorageManager().createProcessDir();
-                    ServiceInput serviceInput = new ServiceInput(workDir, entry);
-                    ServiceOutput output =
-                        service.evaluate(getRepository().getAdminRequest(),null,
-                                         serviceInput, null);
-		    if(output==null) {
-			getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
-								   " for entry:" + entry.getName() +" id:" + entry.getId() +
-								   " Error: no service output"); 
-			continue;
-		    }
-                    if ( !output.isOk()) {
-			getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
-							      " for entry:" + entry.getName() +" id:" + entry.getId() +
-							      " Error: service output is not ok"); 
-                        continue;
-                    }
-
-
-                    //Defer to the entry's type handler
-                    //                    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
-                    entry.getTypeHandler().handleServiceResults(request,
-								entry, service, output);
-                } catch (Exception exc) {
-		    getSessionManager().addSessionMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
-
-                    getLogManager().logError(
-					     "ERROR: TypeHandler calling service:" + service.getLabel()
-					     + "\n", exc);
-                }
-            }
+		applyService(request, entry,service);
+	    }
         }
 
 
@@ -3523,6 +3489,41 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public void applyService(Request request, Entry entry, Service service) {
+	if ( !service.isEnabled()) {
+	    return;
+	}
+	try {
+	    //		    System.err.println("service:" + service);
+	    File workDir = getStorageManager().createProcessDir();
+	    ServiceInput serviceInput = new ServiceInput(workDir, entry);
+	    ServiceOutput output =
+		service.evaluate(getRepository().getAdminRequest(),null,
+				 serviceInput, null);
+	    if(output==null) {
+		getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
+						      " for entry:" + entry.getName() +" id:" + entry.getId() +
+						      " Error: no service output"); 
+		return;
+	    }
+	    if ( !output.isOk()) {
+		getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
+						      " for entry:" + entry.getName() +" id:" + entry.getId() +
+						      " Error: service output is not ok"); 
+		return;
+	    }
+
+	    //Defer to the entry's type handler
+	    //                    System.err.println("calling handleServiceResults:"  + entry.getTypeHandler());
+	    entry.getTypeHandler().handleServiceResults(request,
+							entry, service, output);
+	} catch (Exception exc) {
+	    getSessionManager().addSessionMessage(request, "Error calling service:" + service.getLabel() + " Error: "+ exc.getMessage());
+	    getLogManager().logError(
+				     "ERROR: TypeHandler calling service:" + service.getLabel()
+				     + "\n", exc);
+	}
+    }
     
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
@@ -3855,12 +3856,12 @@ public class TypeHandler extends RepositoryManager {
                 String ownerInputId = Utils.getGuid();
 		buffers.setGroup("Admin");
                 buffers.append(formEntry(request, msgLabel("Owner"),
-                                    HU.input(ARG_USER_ID,
-					     ((entry != null)
-					      ? entry.getUser().getId()
-					      : ""), HU.SIZE_20
-					     + HU.attr("id", ownerInputId)) + " "
-				    + msg("Optionally specify an owner")));
+					 HU.input(ARG_USER_ID,
+						  ((entry != null)
+						   ? entry.getUser().getId()
+						   : ""), HU.SIZE_20
+						  + HU.attr("id", ownerInputId)) + " "
+					 + msg("Optionally specify an owner")));
                 HU.script(
 			  buffers,
 			  HU.call(
