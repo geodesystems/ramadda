@@ -88,7 +88,7 @@ public class Service extends RepositoryManager {
     private Entry serviceEntry;
     private String icon;
     private List<String> ignore;
-    private String entryType;
+    private List<String> entryTypes;
     private boolean enabled = false;
     private double maxFileSize = -1;
     private Boolean requiresMultipleEntries;
@@ -179,8 +179,10 @@ public class Service extends RepositoryManager {
             //            id = "dummy";
         }
 
-        entryType = XmlUtil.getAttribute(element, ATTR_ENTRY_TYPE,
+        String tmp = XmlUtil.getAttribute(element, ATTR_ENTRY_TYPE,
                                          (String) null);
+	if(tmp!=null) 
+	    entryTypes=Utils.split(tmp,",",true,true);
 
 
         maxFileSize = Double.parseDouble(XmlUtil.getAttributeFromTree(element,
@@ -373,7 +375,7 @@ public class Service extends RepositoryManager {
     
     public void toXml(Appendable xml, ServiceInput input) throws Exception {
         StringBuilder attrs = new StringBuilder();
-        attr(attrs, ATTR_ENTRY_TYPE, entryType);
+        attr(attrs, ATTR_ENTRY_TYPE, Utils.join(entryTypes,","));
         attr(attrs, ATTR_ICON, icon);
         attr(attrs, "outputToStderr", outputToStderr);
         attr(attrs, "immediate", immediate);
@@ -825,7 +827,6 @@ public class Service extends RepositoryManager {
                     argValue = arg.getValue();
 		    filePath = new File(filePath).getAbsolutePath();
                     argValue = argValue.replace("${entry.file}", filePath);
-		    System.err.println("ARG:" + argValue);
                     if (arg.getInclude()) {
                         values.add(argValue);
                     }
@@ -1683,8 +1684,11 @@ public class Service extends RepositoryManager {
         if (inputs.size() > 0) {
             return false;
         }
-        if (entryType != null) {
-            return entry.getTypeHandler().isType(entryType);
+        if (entryTypes != null) {
+	    for(String entryType: entryTypes) {
+		if(entry.getTypeHandler().isType(entryType)) return true;
+	    }
+	    return false;
         }
 
         return false;
@@ -1877,7 +1881,7 @@ public class Service extends RepositoryManager {
 
 
 	
-	System.err.println("commands:" + commands);
+	//	System.err.println("commands:" + commands);
         //        System.out.println(getLinkXml(input));
         if (commandObject != null) {
             commandMethod.invoke(commandObject, new Object[] { request, this,
