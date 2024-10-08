@@ -17,13 +17,13 @@
     <property name="form.header.new">
 <![CDATA[
 +callout-info
-You just need to enter the Location ID. 
+You just need to enter the Sensor ID. 
 To find the ID view the map at
 <a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
 click on "Show Details". The ID is in the URL, 
 e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/232797</a>
 -callout]]></property>
-     <column name="location_id" label="Location ID"/>
+     <column name="location_id" label="Sensor ID"/>
      <column  name="country"  type="enumerationplus" label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
@@ -59,7 +59,7 @@ This data is provided by <a href="https://openaq.org/">OpenAQ</a><br>
 <a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View data source</a>
 {{map showSearchLocation="false" }}
 <table class="formtable">
-     {{field name="location_id"  row.label="Location ID:"}}
+     {{field name="location_id"  row.label="Sensor ID:"}}
      {{field name="city"  row.label="City:"}}
      {{field name="country"  row.label="Country:"}}
      {{field name="sensor"  row.label="Sensor:"}}     

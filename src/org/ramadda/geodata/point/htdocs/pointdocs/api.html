@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
-<a href="pointreaders.html"><img src="images/previous.png" border="0"   alt="Previous: Developing point data readers for RAMADDA" title="Previous: Developing point data readers for RAMADDA"></a> <a href="json.html"><img src="images/next.png" border="0"   alt="Next: Time Series JSON Format" title="Next: Time Series JSON Format"></a>  <a href="toc.html#api.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="pointreaders.html"><table><td valign=center><td><span title="Previous: Developing point data readers for RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Developing point data readers for RAMADDA</td></tr></table></a> <a href="json.html"><table><tr valign=center><td>Time Series JSON Format</td><td><span title="Next: Time Series JSON Format"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#api.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="pagetitle">Point Data Documentation</div>
@@ -38,7 +38,9 @@ There are 3 major service areas provided by the API:
 <a href="#status">Job status</a>.
 
 
-<a name="collection"></a><p><div class="ramadda-help-heading">4.4.0 <a href="#collection">Point Collection Queries</a></div> 
+<a name="collection"></a>
+:heading 4.4.0 <label>Point Collection Queries</label>
+
 RAMADDA supports querying on the point collections it holds and returning the
 results as  an <a href="http://en.wikipedia.org/wiki/Atom_%28standard%29">ATOM</a> xml
 document.
@@ -93,7 +95,9 @@ An easy way to explore this is to go main NLAS search form, e.g.:
 do the search interactively. The search URL will be shown in the location bar.
 
 
-<a name="metadata"></a><p><div class="ramadda-help-heading">4.4.1 <a href="#metadata">NLAS Metadata</a></div> 
+<a name="metadata"></a>
+:heading 4.4.1 <label>NLAS Metadata</label>
+
 The Atom response contains various metadata elements for each collection.
 <p>
 The metadata includes geospatial tags using <a href="http://georss.org">GEORSS</a> tags:
@@ -123,7 +127,9 @@ The contained elements are  <a href="TODO">DIF metadata</a> and some custom NLAS
 
 
 
-<a name="service"></a><p><div class="ramadda-help-heading">4.4.2 <a href="#service">Data Access Service</a></div> 
+<a name="service"></a>
+:heading 4.4.2 <label>Data Access Service</label>
+
 The <i>link</i> elements in the Atom response allow you to invoke different data access requests.
 The <i>type</i> attribute defines what type of product is to be generated.
 <br>
@@ -238,7 +244,9 @@ To probabilistically sample points:
 
 
 
-<a name="xml"></a><p><div class="ramadda-help-heading">4.4.3 <a href="#xml">XML Responses</a></div> 
+<a name="xml"></a>
+:heading 4.4.3 <label>XML Responses</label>
+
 If the job submission request has a<pre>
     <i>response=xml</i>
 </pre>
@@ -285,7 +293,9 @@ We use the type attribute to distinguish between the 2 urls:
 
 
 
-<a name="status"></a><p><div class="ramadda-help-heading">4.4.4 <a href="#status">Job Status</a></div> 
+<a name="status"></a>
+:heading 4.4.4 <label>Job Status</label>
+
 The jop status URL returns the status of the job in an xml format.
 Hitting the job status url for a job that is still running gives the following xml:
 
@@ -315,7 +325,9 @@ If the processing job has completed then we get:
 &lt;/response&gt;
 </pre>
 
-<a name="all"></a><p><div class="ramadda-help-heading">4.4.5 <a href="#all">Putting it all together</a></div> 
+<a name="all"></a>
+:heading 4.4.5 <label>Putting it all together</label>
+
 To put this all together then to access data you:
 <ol>
 <li> Query the LiDAR Collection to identify the desired collection.
@@ -335,7 +347,7 @@ To put this all together then to access data you:
 <p>
 
 <p>&nbsp;<p>
-<a href="pointreaders.html"><img src="images/previous.png" border="0"   alt="Previous: Developing point data readers for RAMADDA" title="Previous: Developing point data readers for RAMADDA"></a> <a href="json.html"><img src="images/next.png" border="0"   alt="Next: Time Series JSON Format" title="Next: Time Series JSON Format"></a>  <a href="toc.html#api.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="pointreaders.html"><table><td valign=center><td><span title="Previous: Developing point data readers for RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Developing point data readers for RAMADDA</td></tr></table></a> <a href="json.html"><table><tr valign=center><td>Time Series JSON Format</td><td><span title="Next: Time Series JSON Format"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#api.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>

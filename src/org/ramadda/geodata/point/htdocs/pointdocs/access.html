@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
-<a href="viewer.html"><img src="images/previous.png" border="0"   alt="Previous: Map and Time Series Displays" title="Previous: Map and Time Series Displays"></a> <a href="page_forrepositoryadministrators.html"><img src="images/next.png" border="0"   alt="Next: For Repository Administrators" title="Next: For Repository Administrators"></a>  <a href="toc.html#access.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="viewer.html"><table><td valign=center><td><span title="Previous: Map and Time Series Displays"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Map and Time Series Displays</td></tr></table></a> <a href="page_forrepositoryadministrators.html"><table><tr valign=center><td>For Repository Administrators</td><td><span title="Next: For Repository Administrators"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#access.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="pagetitle">Point Data Documentation</div>
@@ -29,7 +29,7 @@ pre {
 
 RAMADDA provides an interactive service for point data subsetting, 
 converting and product generation.
-This facility is available through the <code class="menu">Data-&gt;Subset and Products</code> menu, e.g.:
+This facility is available through the <span class="ramadda-docs-menu">Data-&gt;Subset and Products</span> menu, e.g.:
 <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Point+Data/LiDAR+Data/LVIS+Arenal?entryid=ca0703ff-0333-4ac8-8ce4-262d630a7266&output=points.form">LVIS/Costa Rica</a>.
 
 <p>
@@ -42,10 +42,12 @@ sections that allow you to select what
 products are desired, specify subsetting information and provide information
 about the processing job.
 
-<a name="product"></a><p><div class="ramadda-help-heading">2.0 <a href="#product">Product Selection</a></div> 
+<a name="product"></a>
+:heading 2.0 <label>Product Selection</label>
+
 
 One can select any number of point or grid data  formats:
-<a name="image1"></a><div class="cimg"><a href="images/access_products.png"><img  src="images/access_products.png" border=0 alt="Product Selection" ></a><br><span class="caption">Image 1: Product Selection</span></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/access_products.png?version=11"><img  src="images/access_products.png?version=11" border=0 alt="Product Selection" ></a><br><span class="caption">Image 1: Product Selection</span></div></div>
 
 Under Point Products the "Native Format" will return the data in its original
 format. For LAS we generate LAS 1.2. The LAS point format depends on what the
@@ -59,7 +61,7 @@ There are 2 forms of Comma Separate Values (CSV) provided: "all fields" and
 All fields  will include all of the Point observation parameters.
 If the Point file has waveforms then you can also include the
 waveform values in the CSV by checking the checkbox under
-the <code class="menu">Advanced Settings-&gt;Points-&gt;Include waveforms</code>
+the <span class="ramadda-docs-menu">Advanced Settings-&gt;Points-&gt;Include waveforms</span>
 section.
 <p>
 You can also create a variety of gridded products from a variety of grids.
@@ -76,15 +78,19 @@ By default the altitude is the field that is gridded. However,
 under Advanced Settings you can select other parameters (if available) to grid.
 
 
-<a name="subset"></a><p><div class="ramadda-help-heading">2.1 <a href="#subset">Subset Data</a></div> 
+<a name="subset"></a>
+:heading 2.1 <label>Subset Data</label>
+
 You can do both spatial subsetting and decimation. For decimation
 you can select a skip factor or a probability. The skip factor allows you, for example, to use every 10th point (e.g., skip=9). The probability
 is a value between 0 and 1, e.g., 0.3 = 30% probability that a point 
 will be included.  
 
-<a name="advanced"></a><p><div class="ramadda-help-heading">2.2 <a href="#advanced">Advanced Settings</a></div> 
+<a name="advanced"></a>
+:heading 2.2 <label>Advanced Settings</label>
+
 There are a number of processing options you can select under Advanced Settings:
-<a name="image2"></a><div class="cimg"><a href="images/access_advanced.png"><img  src="images/access_advanced.png" border=0 alt="Advanced Settings" ></a><br><span class="caption">Image 2: Advanced Settings</span></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/access_advanced.png?version=11"><img  src="images/access_advanced.png?version=11" border=0 alt="Advanced Settings" ></a><br><span class="caption">Image 2: Advanced Settings</span></div></div>
 
 If you chose the IDW average grid product then you can specify
 a radius of influence for each Point point. The radius can either be
@@ -103,7 +109,9 @@ Note: The color table range is the min/max of the grid values.
 </div>
 
 
-<a name="job"></a><p><div class="ramadda-help-heading">2.3 <a href="#job">Job Processing</a></div> 
+<a name="job"></a>
+:heading 2.3 <label>Job Processing</label>
+
 When you submit a request the processing job will be run 
 asynchronously (unless you uncheck the option under Processing Options) and
 you will be redirected to a Job Status page. This page will reload until the
@@ -122,7 +130,7 @@ notification when your processing request is completed.
 <p>
 
 <p>&nbsp;<p>
-<a href="viewer.html"><img src="images/previous.png" border="0"   alt="Previous: Map and Time Series Displays" title="Previous: Map and Time Series Displays"></a> <a href="page_forrepositoryadministrators.html"><img src="images/next.png" border="0"   alt="Next: For Repository Administrators" title="Next: For Repository Administrators"></a>  <a href="toc.html#access.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="viewer.html"><table><td valign=center><td><span title="Previous: Map and Time Series Displays"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Map and Time Series Displays</td></tr></table></a> <a href="page_forrepositoryadministrators.html"><table><tr valign=center><td>For Repository Administrators</td><td><span title="Next: For Repository Administrators"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#access.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>

@@ -1,29 +1,25 @@
 
 body {
-      background-color: #FFFFFF;
-      margin: 5;
-      font-size: 12pt;
-      font-family: SansSerif, Arial, Helvetica, sans-serif}       
-
-
-
-
+    background-color: #FFFFFF;
+    margin: 5;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;
+}       
 
 body.popup {
-	background-color: #ffffcc;
+    background-color: #ffffcc;
 }
 
 .embeddedpopup {
-	background-color: #ffffcc;
-        border:1px solid #333;	
+    background-color: #ffffcc;
+    border:1px solid #333;	
 }
 
-
-
-.cimg {
+.userguide-image-centered {
     text-align:center;
     margin-top: 20;
     margin-bottom: 40;
+    max-width:100%;
 }
 
 .caption {
@@ -32,8 +28,8 @@ body.popup {
 }
 
 .moreblock {
-   visibility: hidden; 
-   display:none;
+    visibility: hidden; 
+    display:none;
 }
 
 
@@ -78,51 +74,40 @@ A.faq-question-link:hover {
 
 
 .faq-bottom {
-        margin-top:20px;
+    margin-top:20px;
 }
 
 .faq-bottom .faq-question {
-   font-weight:bold;
-   margin-top:5px;
+    font-weight:bold;
+    margin-top:5px;
 }
 
 .faq-category {
-        margin-left:20px;
+    margin-left:20px;
 }
 
-
-
-
-
-
-
 li {
-       margin-right: 5;
-       border: thin;
-       border-color: white;
+    margin-right: 5;
+    border: thin;
+    border-color: white;
 }
 
 ol li {    
-        margin-top: 20;
-        }
+    margin-top: 20;
+}
 
 ul li {    
-        margin-left:0;
-        margin-top: 8;
-        }
-
-
-
+    margin-left:0;
+    margin-top: 8;
+}
 
 div.framenav {
-     font-size: 8pt;
+    font-size: 8pt;
 }
 
 .framelink {
-         font-size: 8pt;
+    font-size: 8pt;
 }
-
-
 
 /*Since applying styles to span tags does not seem to work we use <code class="command">*/
 
@@ -138,60 +123,59 @@ code.display {
     font-family: SansSerif, Arial, Helvetica, sans-serif;       
 }
 
-
 code.command {
-         font-size: 12pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         font-weight: bold;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;       
+    font-weight: bold;
 }
 
 code.button {
-         font-size: 12pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         font-weight: bold;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;       
+    font-weight: bold;
 }
 
 code.menu {
-         font-size: 12pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         font-weight: bold;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;       
+    font-weight: bold;
 }
 
 code.dialog {
-         font-size: 12pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         font-style: italic;
-         font-weight: bold;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;       
+    font-style: italic;
+    font-weight: bold;
 }
 
 code.filename {
-         font-size: 12pt;
-         font-family: Monospaced, "Courier New", Courier, mono;
-         font-style: italic;
+    font-size: 12pt;
+    font-family: Monospaced, "Courier New", Courier, mono;
+    font-style: italic;
 }
 
 code.dataset {
-         font-size: 12pt;
-         font-family: Monospaced, "Courier New", Courier, mono;
+    font-size: 12pt;
+    font-family: Monospaced, "Courier New", Courier, mono;
 }
 
 code.datasource {
-         font-size: 12pt;
-         font-family: Monospaced, "Courier New", Courier, mono;
+    font-size: 12pt;
+    font-family: Monospaced, "Courier New", Courier, mono;
 }
 
 code.link {
-         font-size: 12pt;
-         font-family: SansSerif, Arial, Helvetica, sans-serif;       
-         text-decoration: underline;
+    font-size: 12pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif;       
+    text-decoration: underline;
 }
 
 
 .breadcrumb {
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 10pt;
-      font-family: SansSerif, Arial, Helvetica, sans-serif}       
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 10pt;
+    font-family: SansSerif, Arial, Helvetica, sans-serif}       
 
 
 
@@ -223,11 +207,8 @@ code.link {
     margin-left: 30;
 }
 .childlist a {
-     text-decoration:none;
+    text-decoration:none;
 }
-
-
-
 
 .pagesubsubtitle {
     font-size: 12pt;
@@ -237,17 +218,15 @@ code.link {
     margin-bottom: 5;
 }
 
-
-
 p   {
-     margin-top: 10;
-     margin-bottom: 0;
+    margin-top: 10;
+    margin-bottom: 0;
 }
 
 p.code {
-        font-family: Monospaced;
-	margin-left: 22;
-       }
+    font-family: Monospaced;
+    margin-left: 22;
+}
 
 
 p.indent1  {margin-left: 3}
@@ -260,11 +239,11 @@ p.note {margin-top: -19;
 	margin-left: 22}
 
 p.table {
-     margin-top:0;
-     margin-bottom: 0}
+    margin-top:0;
+    margin-bottom: 0}
 
 blockquote.menu {margin-left: 18;
-		margin-top: 10}
+		 margin-top: 10}
 
 center {margin-top: 10}
 
@@ -293,20 +272,19 @@ th {padding-left: 1;
 small {font-size: x-small}
 
 dl.see_also {margin-left: 0;
-    margin-top: 10;
-    margin-bottom: 10}
+	     margin-top: 10;
+	     margin-bottom: 10}
 
 .xmlcomment {
-     background-color: #eee;
-     font-style:italic;
+    background-color: #eee;
+    font-style:italic;
 }
 
 .xmlcdata {
-//      background-color: #6495ed;
 }
 
 .xmlattr {
-   font-weight: bold;
+    font-weight: bold;
 }
 
 .idv {text-decoration: none;background-color: #ffffcc;}
@@ -316,9 +294,9 @@ a.idv {text-decoration: none }
 a.nounderline {text-decoration: none }
 
 pre {  
-     font-family: Monospaced, "Courier New", Courier, mono; 
-    }
+    font-family: Monospaced, "Courier New", Courier, mono; 
+}
 
 code {  
-        font-family: Monospaced, "Courier New", Courier, mono; 
+    font-family: Monospaced, "Courier New", Courier, mono; 
 }

@@ -22,6 +22,24 @@ Once you have they key add it to your repository.properties file on your RAMADDA
 openaq.api.key= your key
 </pre>
 
+
+Once you have the API key to add an OpenAQ sensor into RAMADDA follow these steps:
+
+<ul>
+  <li> Find the sensor ID
+  <ul>
+    <li> Go to <a href=https://explore.openaq.org/>https://explore.openaq.org/</a>
+    <li> Find the sensor you are interested in and click on it.
+     <li> In the popup click on "Show Details"
+{{image align=center width=screenshot src=openaq1.png}}
+     <li> The sensor  ID will be in the URL, e.g., 270741
+       <pre>https://explore.openaq.org/locations/270741</pre>
+</ul>
+<li> Once you have the sensor ID in RAMADDA go to File-&gt;Pick a Type... and look for Open AQ Air Quality
+<li> Enter the Sensor ID and press "Add Open AQ Air Quality"
+</ul>
+
+
 :heading SOFAR API
 RAMADDA supports accessing real-time data from a <a href="https://www.sofarocean.com/">SOFAR buoy</a>
 with the SOFAR Buoy Data from API entry type. 

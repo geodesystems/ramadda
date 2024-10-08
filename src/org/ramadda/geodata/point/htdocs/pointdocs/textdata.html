@@ -8,7 +8,7 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
-<a href="datamodel.html"><img src="images/previous.png" border="0"   alt="Previous: Data Model" title="Previous: Data Model"></a> <a href="pointreaders.html"><img src="images/next.png" border="0"   alt="Next: Developing point data readers for RAMADDA" title="Next: Developing point data readers for RAMADDA"></a>  <a href="toc.html#textdata.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="datamodel.html"><table><td valign=center><td><span title="Previous: Data Model"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Data Model</td></tr></table></a> <a href="pointreaders.html"><table><tr valign=center><td>Developing point data readers for RAMADDA</td><td><span title="Next: Developing point data readers for RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#textdata.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 </td>
 <td width=40% align=center>
 <div class="pagetitle">Point Data Documentation</div>
@@ -40,7 +40,9 @@ All of the examples below, once saved to disk, can be processed with:
 
 Here are some examples of different point data readers.
 
-<a name="csv"></a><p><div class="ramadda-help-heading">4.2.0 <a href="#csv">Simple CSV Examples</a></div> 
+<a name="csv"></a>
+:heading 4.2.0 <label>Simple CSV Examples</label>
+
 
 If you have text formatted data that you want to ingest into RAMADDA you can either
 generate the data in a standard CSV text format for specify a set of
@@ -96,7 +98,9 @@ An alternative way to specify attributes of fields is with other named propertie
 </pre></div>
 
 
-<a name="datetime"></a><p><div class="ramadda-help-heading">4.2.1 <a href="#datetime">Date/Time</a></div> 
+<a name="datetime"></a>
+:heading 4.2.1 <label>Date/Time</label>
+
 
 You can specify a date/time by specifying its type=&quot;date&quot;. 
 Use format=&quot;date format&quot; to
@@ -139,7 +143,9 @@ RAMADDA will figure out the date/time of the records from the column values.
 
 
 
-<a name="geo"></a><p><div class="ramadda-help-heading">4.2.2 <a href="#geo">Georeferenced Data</a></div> 
+<a name="geo"></a>
+:heading 4.2.2 <label>Georeferenced Data</label>
+
 
 If you have georeferenced data then specify latitude and longitude columns. Please, please, please, use decimal degrees east -180 to 180 and decimal degrees north -90 to 90.
 
@@ -201,7 +207,9 @@ crs=epsg:&lt;epgs code&gt;
 
 <p>
 
-<a name="site"></a><p><div class="ramadda-help-heading">4.2.3 <a href="#site">Site Based Data</a></div> 
+<a name="site"></a>
+:heading 4.2.3 <label>Site Based Data</label>
+
 
 If you have text values
 then specify the <i>type="string"</i>
@@ -269,7 +277,9 @@ latitude, longitude, elevation, etc.
 
 <p>
 
-<a name="property"></a><p><div class="ramadda-help-heading">4.2.4 <a href="#property">Property Files</a></div> 
+<a name="property"></a>
+:heading 4.2.4 <label>Property Files</label>
+
 
 If you have text point files that are in some pre-existing format (i.e., you can't add "#" properties) then you can specfy
 
@@ -337,7 +347,9 @@ field.value.chartable=true
 
 <p>
 
-<a name="types"></a><p><div class="ramadda-help-heading">4.2.5 <a href="#types">Integrating with RAMADDA</a></div> 
+<a name="types"></a>
+:heading 4.2.5 <label>Integrating with RAMADDA</label>
+
 
 You can upload an arbitrary CSV point file and its accompanying properties file.
 When you are logged in go to File->New Entry. Under the Point Data list choose Text Point Data.
@@ -375,7 +387,7 @@ dateformat=yyyy/MM/dd HH:mm:ss
 <p>
 
 <p>&nbsp;<p>
-<a href="datamodel.html"><img src="images/previous.png" border="0"   alt="Previous: Data Model" title="Previous: Data Model"></a> <a href="pointreaders.html"><img src="images/next.png" border="0"   alt="Next: Developing point data readers for RAMADDA" title="Next: Developing point data readers for RAMADDA"></a>  <a href="toc.html#textdata.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="datamodel.html"><table><td valign=center><td><span title="Previous: Data Model"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Data Model</td></tr></table></a> <a href="pointreaders.html"><table><tr valign=center><td>Developing point data readers for RAMADDA</td><td><span title="Next: Developing point data readers for RAMADDA"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a>  <a href="toc.html#textdata.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a>
 <p>
 </div>
 </body>
