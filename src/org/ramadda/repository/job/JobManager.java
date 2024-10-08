@@ -942,7 +942,6 @@ public class JobManager extends RepositoryManager {
 	}
 
 
-
         ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 	pb.redirectErrorStream(false);
 
@@ -984,6 +983,10 @@ public class JobManager extends RepositoryManager {
 
 
 	    int exitCode = runner[0].runProcess();
+	    stdOutPrintWriter.flush();
+	    stdErrPrintWriter.flush();
+	    stdErrPrintWriter.close();
+	    stdOutPrintWriter.close();	    
 	    if (runner[0].getProcessTimedOut()) {
 		throw new InterruptedException("Process timed out");
 	    }
