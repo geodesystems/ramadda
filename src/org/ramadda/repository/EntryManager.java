@@ -2474,8 +2474,19 @@ public class EntryManager extends RepositoryManager {
             boolean isGzip = resource.endsWith(".gz");
             // check if it's a zip file
 	    String _path = resource.toLowerCase();
-            if (unzipArchive && (!_path.endsWith(".zip") || _path.endsWith(".shp.zip") || _path.endsWith("_shp.zip"))) {
-                unzipArchive = false;
+            if (unzipArchive) {
+		if(!_path.endsWith(".zip")) {
+		    unzipArchive = false;
+		} else {
+		    if (figureOutType) {
+			TypeHandler tmp = findDefaultTypeHandler(resource);
+			if(tmp!=null) {
+			    if (!tmp.isType("type_zipfile") && tmp.getTypeProperty("upload.zip", false)) {
+				unzipArchive = false;
+			    }
+			}
+		    }
+		}
             }
 
             boolean hasZip = false;
@@ -3175,6 +3186,11 @@ public class EntryManager extends RepositoryManager {
 			if(t2.getType().equals("type_image")) {
 			    return -1;
 			}			
+			if(t1.getPriority()!=t2.getPriority()) {
+			    return t1.getPriority()-t2.getPriority();
+			}
+
+
 			String p1 = t1.getFilePattern();
 			String p2 = t2.getFilePattern();			
 			if(p1==null) p1="";
@@ -3232,7 +3248,7 @@ public class EntryManager extends RepositoryManager {
         //Handle case sensitive first
         for (TypeHandler otherTypeHandler :sortedTypeHandlers) {
             if (otherTypeHandler.canHandleResource(theResource, shortName)) {
-                return otherTypeHandler;
+		return otherTypeHandler;
             }
         }
 
