@@ -428,7 +428,7 @@ inherited="false"  }}
 
 
 <type name="type_borehole_image"   description="Borehole Image"
-      handler="org.ramadda.repository.type.GenericTypeHandler">            
+      handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
   <property name="icon" value="/geo/drilling-rig.png"/>
   <property name="date.nullok" value="true"/>
   <property name="inheritlocationfromtype" value="type_geo_site"/>
@@ -451,7 +451,9 @@ inherited="false"  }}
 +col-8
 {{group}}
 {{description wikify=true}}
-{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"}}
+{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
+useAttachmentIfNeeded=true
+}}
 :vspace 1em
 ----
 :vspace 1em
@@ -496,7 +498,9 @@ inherited="false"  }}
 :navtop 
 {{group}}
 {{description wikify=true}}
-{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"}}
+{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
+useAttachmentIfNeeded=true
+}}
 :vspace 1em
 ----
 :vspace 1em
