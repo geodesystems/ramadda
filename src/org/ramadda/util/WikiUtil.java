@@ -4118,10 +4118,13 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    buff.append("Error reading Wikipedia URL: " + url);
 		return;
 	    }
-	    String thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
-	    if(thumb!=null) {
-		String iwidth = Utils.getProperty(props, "imageWidth","200px");
-		thumb = HU.image(thumb,ATTR_WIDTH,HU.makeDim(iwidth));
+	    String thumb = null;
+	    if(Utils.getProperty(props, "showImage",true))  {
+		thumb = JsonUtil.readValue(obj,"thumbnail.source",null);
+		if(thumb!=null) {
+		    String iwidth = Utils.getProperty(props, "imageWidth","200px");
+		    thumb = HU.image(thumb,ATTR_WIDTH,HU.makeDim(iwidth));
+		}
 	    }
 
 	    String title = obj.getString(ATTR_TITLE);
@@ -4137,6 +4140,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 	    }
 	    String source = "<div style='text-align:center;font-style:italic;font-size:80%;'>"+
 		makeHref(url,"Source: Wikipedia","")+"</div>";
+
+
 	    if(thumb!=null) {
 		extract = HU.leftRight(extract,HU.div(thumb+source,HU.style("margin-left:5px;")));
 	    } else {
