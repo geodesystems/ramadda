@@ -4506,26 +4506,14 @@ public abstract class Converter extends Processor {
     }
 
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Feb 10, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnMapper extends Converter {
 
-        /* */
-
-        /** _more_ */
         private String name;
 
-        /* */
+	private boolean replace;
 
-        /** _more_ */
         private Hashtable<String, String> map = new Hashtable();
+	private List<String> toks;
 
 
         /**
@@ -4534,9 +4522,12 @@ public abstract class Converter extends Processor {
          * @param toks _more_
          */
         public ColumnMapper(List<String> cols, String name,
+			    boolean replace,
                             List<String> toks) {
             super(cols);
             this.name = name;
+	    this.replace = replace;
+	    this.toks = toks;
             for (int i = 0; i < toks.size(); i += 2) {
                 map.put(toks.get(i), toks.get(i + 1));
             }
@@ -4565,7 +4556,16 @@ public abstract class Converter extends Processor {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
                     String s        = row.getString(index);
-                    String newValue = map.get(s);
+		    String newValue=null;
+		    if(replace) {
+			newValue  = s;
+			for(int i=0;i<toks.size();i+=2) {
+			    newValue = newValue.replace(toks.get(i),toks.get(i+1));
+			}
+		    } else {
+			newValue = map.get(s);
+		    }
+
                     if (name.length() > 0) {
                         if (newValue != null) {
                             row.getValues().add(newValue);
