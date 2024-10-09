@@ -42,6 +42,50 @@ Once you have the API key to add an OpenAQ sensor into RAMADDA follow these step
 </ul>
 
 
+:heading USBR Rise Data
+RAMADDA supports US Bureau of Reclamation RISE data. But, it does not read the
+data in real-time, rather you need to download the data.
+ First, find the site you are interested in on the USBR site -  <a href=https://data.usbr.gov/rise-map/ target=_usbr>USBR Map</a>
+<ul>
+<li> Click on the site of interest
+<li> From the map popup click on the link <i>Send location to RISE time series query page</i>
+<li> Note the location ID from the URL, e.g. "3511" - <a href=https://data.usbr.gov/time-series/selection?lo=3511>https://data.usbr.gov/time-series/selection?lo=3511</a>
+</ul>
+<p>
+Next, select and download the desired data
+  <ul>
+    <li> Select a Default Date Range, e.g., All Available<br>
+<br>
+      <img src=usbr1.png width=500px style="border:1px solid #ccc;">
+	<p>
+    <li> Select the data fields you want then click "Next Step: Generate Outputs"
+	<br>
+      <img src=usbr2.png width=500px style="border:1px solid #ccc;">
+	<p>
+    <li> Under "View All/Download All" select "Download All CSV"
+	<br>
+        <img src=usbr3.png width=500px style="border:1px solid #ccc;">
+	<p>
+  </ul>
+
+<p>
+Now back to RAMADDA
+  <ul>  
+    <li> Select Pick a Type... and choose "USBR RISE Hyrdo"
+      <li> Enter the Site ID from above and select the file:
+	<br>
+        <img src=usbr4.png width=500px style="border:1px solid #ccc;">
+	<p>
+<li> RAMADDA will read the Site name, location and other metadata
+
+</ul>      
+  
+
+
+
+* Enter the location ID below. This will extract location and metadata
+
+
 :heading SOFAR API
 RAMADDA supports accessing real-time data from a <a href="https://www.sofarocean.com/">SOFAR buoy</a>
 with the SOFAR Buoy Data from API entry type. 
