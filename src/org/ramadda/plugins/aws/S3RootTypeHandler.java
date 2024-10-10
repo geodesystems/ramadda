@@ -481,7 +481,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
         boolean isBucketType = false;
         TypeHandler bucketTypeHandler =
-            getEntryManager().findDefaultTypeHandler(rootEntry,
+            getEntryManager().findDefaultTypeHandler(request,rootEntry,
                 file.toString(), !file.isDirectory());
         //      System.err.println("rootEntry:" + rootEntry +" file:" + file +" "  +
         //                         file.isDirectory() +" type:" + bucketTypeHandler); 

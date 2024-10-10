@@ -617,7 +617,7 @@ public class MailHarvester extends Harvester {
                                      part.getInputStream(),
                                      part.getFileName());
                         TypeHandler typeHandler =
-                            getEntryManager().findDefaultTypeHandler(
+                            getEntryManager().findDefaultTypeHandler(request,
                                 f.toString());
                         if (typeHandler == null) {
                             typeHandler = getRepository().getTypeHandler(

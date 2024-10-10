@@ -984,7 +984,7 @@ public class PhoneHarvester extends Harvester {
         if (type != null) {
             typeHandler = getRepository().getTypeHandler(type);
         } else if (resource != null) {
-            typeHandler = getEntryManager().findDefaultTypeHandler(resource);
+            typeHandler = getEntryManager().findDefaultTypeHandler(null,resource);
         } else {
             typeHandler = getRepository().getTypeHandler("file");
         }

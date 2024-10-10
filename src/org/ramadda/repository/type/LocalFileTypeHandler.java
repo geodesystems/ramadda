@@ -528,7 +528,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 		directoryType = TypeHandler.TYPE_GROUP;
 	    handler = getRepository().getTypeHandler(directoryType);
 	} else {
-	    handler = getEntryManager().findDefaultTypeHandler(targetFile.toString());
+	    handler = getEntryManager().findDefaultTypeHandler(request,targetFile.toString());
 	    if(handler==null)
 		handler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
 	}

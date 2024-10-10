@@ -1321,7 +1321,7 @@ public class EntryManager extends RepositoryManager {
 		typeHandler = getRepository().getTypeHandler(fileType);
 	    }
 	    if(typeHandler==null) {
-		typeHandler = findDefaultTypeHandler(fileName);
+		typeHandler = findDefaultTypeHandler(request,fileName);
 	    }
 	    //	    System.err.println("tmpFile:" + tmpFile +" " + tmpFile.exists() +  " file name:" + fileName);
 	    tmpFile = getStorageManager().copyToStorage(request, tmpFile,fileName);
@@ -2480,7 +2480,7 @@ public class EntryManager extends RepositoryManager {
 		    unzipArchive = false;
 		} else {
 		    if (figureOutType) {
-			TypeHandler tmp = findDefaultTypeHandler(resource);
+			TypeHandler tmp = findDefaultTypeHandler(request,resource);
 			if(tmp!=null) {
 			    if (!tmp.isType("type_zipfile") && tmp.getTypeProperty("upload.zip", false)) {
 				unzipArchive = false;
@@ -2634,7 +2634,7 @@ public class EntryManager extends RepositoryManager {
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
                 if (figureOutType) {
-                    TypeHandler tmp = findDefaultTypeHandler(theResource);
+                    TypeHandler tmp = findDefaultTypeHandler(request,theResource);
                     if (tmp != null) {
                         typeHandlerToUse = tmp;
                     }
@@ -3159,13 +3159,19 @@ public class EntryManager extends RepositoryManager {
     List<TypeHandler> sortedTypeHandlers;
 
 
-    public TypeHandler findDefaultTypeHandler(String theResource)
+    public TypeHandler findDefaultTypeHandler(Request request,String theResource)
 	throws Exception {
-	return findDefaultTypeHandler(null,  theResource, false);
+	return findDefaultTypeHandler(request, null,  theResource, false);
     }
 
-    public TypeHandler findDefaultTypeHandler(Entry locale, String theResource, boolean isFile)
+    public TypeHandler findDefaultTypeHandler(Request request,Entry locale, String theResource, boolean isFile)
 	throws Exception {	
+	if(request!=null) {
+	    TypeHandler typeHandlerFromPattern =
+		findTypeFromPatterns(request.getString(ARG_TYPEPATTERNS,null),theResource);
+	    if(typeHandlerFromPattern!=null)  return typeHandlerFromPattern;
+	}
+
         File   newFile   = new File(theResource);
         String shortName = newFile.getName();
 	String _theResource= theResource.toLowerCase();
@@ -6111,7 +6117,7 @@ public class EntryManager extends RepositoryManager {
 
             TypeHandler typeHandler = null;
             if (type.equals(TypeHandler.TYPE_GUESS)) {
-                typeHandler = findDefaultTypeHandler(resource.getPath());
+                typeHandler = findDefaultTypeHandler(request,resource.getPath());
             }
 
             if (typeHandler == null) {
@@ -7478,7 +7484,7 @@ public class EntryManager extends RepositoryManager {
         File newFile =
             getRepository().getStorageManager().moveToStorage(request, file);
 
-        TypeHandler typeHandler = findDefaultTypeHandler(newFile.toString());
+        TypeHandler typeHandler = findDefaultTypeHandler(request,newFile.toString());
         if (typeHandler == null) {
             typeHandler =
                 getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
@@ -10025,22 +10031,23 @@ public class EntryManager extends RepositoryManager {
 
 
     public List<PatternType> getTypePatterns(String typePatterns) throws Exception {
+	if(!Utils.stringDefined(typePatterns)) return null;
 	List<PatternType> p = new ArrayList<PatternType>();
-	if(Utils.stringDefined(typePatterns)) {
-	    for(String line:Utils.split(typePatterns,"\n",true,true)) {
-		List<String> toks = Utils.splitUpTo(line,":",2);
-		if(toks.size()!=2)  continue;
-		TypeHandler typeHandler = getRepository().getTypeHandler(toks.get(0));
-		if(typeHandler!=null) {
-		    p.add(new PatternType(new PatternHolder(toks.get(1)), typeHandler));
-		}
+	for(String line:Utils.split(typePatterns,"\n",true,true)) {
+	    List<String> toks = Utils.splitUpTo(line,":",2);
+	    if(toks.size()!=2)  continue;
+	    TypeHandler typeHandler = getRepository().getTypeHandler(toks.get(0));
+	    if(typeHandler!=null) {
+		p.add(new PatternType(new PatternHolder(toks.get(1)), typeHandler));
 	    }
 	}
 	return p;
     }
 
     public TypeHandler findTypeFromPatterns(String typePatterns, String filePath) throws Exception {
-	for(PatternType pattern:getTypePatterns(typePatterns)) {
+	List<PatternType> patterns = getTypePatterns(typePatterns);
+	if(patterns==null) return null;
+	for(PatternType pattern:patterns) {
 	    if(pattern.pattern.matches(filePath)) {
 		return  pattern.type;
 	    }

@@ -209,7 +209,7 @@ public class HtmlImportHandler extends ImportHandler {
                             || typeHandler.getType().equals(
                                 TypeHandler.TYPE_FINDMATCH)) {
                         typeHandler =
-                            getEntryManager().findDefaultTypeHandler(
+                            getEntryManager().findDefaultTypeHandler(request,
                                 tmpFile.toString());
                     }
                     resource = new Resource(tmpFile,
@@ -221,7 +221,7 @@ public class HtmlImportHandler extends ImportHandler {
                             || typeHandler.getType().equals(
                                 TypeHandler.TYPE_FINDMATCH)) {
                         typeHandler =
-                            getEntryManager().findDefaultTypeHandler(
+                            getEntryManager().findDefaultTypeHandler(request,
                                 link.getUrl().toString());
                     }
                 }

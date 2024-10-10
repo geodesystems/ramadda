@@ -3605,7 +3605,7 @@ public class TypeHandler extends RepositoryManager {
 								 service.getTargetType());
                 }
                 if (typeHandler == null) {
-                    typeHandler = getEntryManager().findDefaultTypeHandler(
+                    typeHandler = getEntryManager().findDefaultTypeHandler(request,
 									   f.toString());
                 }
                 Entry parent = target.equals(TARGET_CHILD)
@@ -4812,6 +4812,10 @@ public class TypeHandler extends RepositoryManager {
 
 	extra.accept("Metadata:",addMetadata);
 	extra.accept("Entry name:",makeNameWidget);
+	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
+						extras,request.getString(ARG_TYPEPATTERNS,""));
+
+
 	extra.accept("Date format:",dateFormatWidget);	
 	if(entry==null)
 	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
