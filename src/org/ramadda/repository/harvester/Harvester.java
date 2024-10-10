@@ -749,10 +749,12 @@ public abstract class Harvester extends RepositoryManager {
 						       false,"",false,null,false);
 	String textArea = HtmlUtils.textArea(ATTR_TYPEPATTERNS, typePatterns, 
 					     5, 60,HU.id(textid));
+	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
+	    
         sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
 					 HU.hbox(
 						 textArea,
-						 select+
+						 select+ HU.space(1) + help +
 						 "<br>Form:<pre>entry type:pattern</pre>")));
 	HU.importJS(sb,getRepository().getPageHandler().makeHtdocsUrl("/harvester.js"));
         HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
