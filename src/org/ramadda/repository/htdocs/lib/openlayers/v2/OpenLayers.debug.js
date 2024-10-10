@@ -8129,9 +8129,10 @@ OpenLayers.Events = OpenLayers.Class({
             ];
         }
         
-        if (!this.element.offsets) {
+	//jeffmc: always calculate the page position since the map can be a draggable element
+//        if (!this.element.offsets) {
             this.element.offsets = OpenLayers.Util.pagePosition(this.element);
-        }
+//        }
 
         return new OpenLayers.Pixel(
             (evt.clientX + this.element.scrolls[0]) - this.element.offsets[0]
