@@ -2456,6 +2456,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return getUrlBase() + requestUrl.getPath();
     }
 
+    public String getUrlPath(String path) {
+        return getUrlBase() + path;
+    }
+
+
     
     public String httpsUrl(Request request, String url) {
         String hostname = (request != null)
