@@ -3672,6 +3672,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    initTypeMenu: function(selectId, textAreaId) {
+	jqid(selectId).change(function() {
+	    let v = $(this).val();
+	    if(!Utils.stringDefined(v)) {
+		return
+	    }
+	    $(this).val("");
+	    let  t = jqid(textAreaId).val()??"";
+	    t = t.trim();
+	    if(t!="") t = t+"\n";
+	    t+=v+":";
+	    jqid(textAreaId).val(t);
+	});
+    },
+
     getTitleBr:function() {
 	return "&#10;";
     },
