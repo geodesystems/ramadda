@@ -3,6 +3,10 @@
   <service label="OGR  Info" id="ogr_info" command="${service.gdal.ogrinfo}" >
     <description>                                                                                                                    Run ogrinfo                                                                                                              
     </description>
+  <ignoreerrors><![CDATA[
+.*proj_identify.*
+  ]]>
+  </ignoreerrors>
     <arg value="-so"/>
     <arg value="-al"/>    
     <arg value="${entry.file}"
