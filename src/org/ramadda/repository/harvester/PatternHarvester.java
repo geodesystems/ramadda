@@ -81,6 +81,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** attribute id */
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
+    public static final String ATTR_SKIPTIMECHECK = "skiptimecheck";    
 
     public static final String ATTR_SIZELIMIT = "sizelimit";
     public static final String ATTR_MAXLEVEL = "maxlevel";
@@ -132,6 +133,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     /** _more_ */
     private String notfilePatternString = "";
+
+    private boolean skipTimeCheck = false;
 
 
     /** _more_ */
@@ -275,6 +278,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     
         notfilePatternString = XmlUtil.getAttribute(element,
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
+        skipTimeCheck = XmlUtil.getAttribute(element,
+					     ATTR_SKIPTIMECHECK, skipTimeCheck);	
         sizeLimit = XmlUtil.getAttribute(element,
 					 ATTR_SIZELIMIT, sizeLimit);
         pushGeo = XmlUtil.getAttribute(element,
@@ -319,6 +324,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         element.setAttribute(ATTR_IGNORE_ERRORS, "" + ignoreErrors);
         element.setAttribute(ATTR_NOTREE, "" + noTree);
         element.setAttribute(ATTR_NOTFILEPATTERN, notfilePatternString);
+        element.setAttribute(ATTR_SKIPTIMECHECK, skipTimeCheck+"");	
         element.setAttribute(ATTR_SIZELIMIT, sizeLimit+"");
         element.setAttribute(ATTR_PUSHGEO, pushGeo+"");
         element.setAttribute(ATTR_MAKETHUMBNAILS, makeThumbnails+"");		
@@ -364,6 +370,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         ignoreErrors = request.get(ATTR_IGNORE_ERRORS, false);
         noTree       = request.get(ATTR_NOTREE, false);
 
+        skipTimeCheck = request.get(ATTR_SKIPTIMECHECK,false);
         notfilePatternString = request.getUnsafeString(ATTR_NOTFILEPATTERN,
 						       notfilePatternString).trim();
         notfilePattern = null;
@@ -483,6 +490,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 				  HU.textArea(ATTR_NOTFILEPATTERN,
 					      notfilePatternString,
 					      3,60)));
+        sb.append(HU.formEntryTop("",
+				  HU.labeledCheckbox(ATTR_SKIPTIMECHECK,
+						     "true",skipTimeCheck,"Skip file time check")));
 
         sb.append(HU.formEntry(msgLabel("Size limit"),
 			       HU.input(ATTR_SIZELIMIT,
@@ -1067,8 +1077,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		//Check if it has changed recently
                 long fileTime = f.lastModified();
                 //time diff threshold = 1 minute
-                long now = System.currentTimeMillis();
-                if ((now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
+                long now = new Date().getTime();
+                if (!skipTimeCheck && (now - fileTime) < FILE_CHANGED_TIME_THRESHOLD_MS) {
 		    skipCnt++;
 		    int diff = (int)((now-fileTime)/1000.0);
 		    String message = "Skipping recently modified file: " + f
