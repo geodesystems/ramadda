@@ -3509,7 +3509,7 @@ public class TypeHandler extends RepositoryManager {
 	    if ( !output.isOk()) {
 		getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
 						      " for entry:" + entry.getName() +" id:" + entry.getId() +
-						      " Error: service output is not ok"); 
+						      " Error: service output is not ok:\n " + output.getResults()); 
 		return;
 	    }
 
