@@ -540,7 +540,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 							      false, null,true)));
 
 
-	makeTypePatternsInput(request, sb);
+	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
 
 
         sb.append(HU.formEntry(msgLabel("Date format"),
@@ -1633,12 +1633,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         if (typeHandlerToUse == null) {
-	    for(PatternType pattern:getTypePatterns()) {
-		if(pattern.pattern.matches(filePath)) {
-		    typeHandlerToUse = pattern.type;
-		    break;
-		}
-	    }
+	    typeHandlerToUse = getEntryManager().findTypeFromPatterns(typePatterns, filePath);
 	}
 
 

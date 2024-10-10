@@ -246,7 +246,7 @@ public abstract class Harvester extends RepositoryManager {
     /** _more_ */
     private TypeHandler typeHandler;
 
-    private String typePatterns="";
+    protected String typePatterns="";
 
     private String aliases = "";    
 
@@ -714,51 +714,6 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    public static class PatternType {
-	PatternHolder pattern;
-	TypeHandler type;
-	public PatternType(PatternHolder pattern, TypeHandler type) {
-	    this.pattern = pattern;
-	    this.type =type;
-	}
-    }
-
-
-    public List<PatternType> getTypePatterns() throws Exception {
-	List<PatternType> p = new ArrayList<PatternType>();
-	if(Utils.stringDefined(typePatterns)) {
-	    for(String line:Utils.split(typePatterns,"\n",true,true)) {
-		List<String> toks = Utils.splitUpTo(line,":",2);
-		if(toks.size()!=2)  continue;
-		TypeHandler typeHandler = getRepository().getTypeHandler(toks.get(0));
-		if(typeHandler!=null) {
-		    p.add(new PatternType(new PatternHolder(toks.get(1)), typeHandler));
-		}
-	    }
-	}
-	return p;
-    }
-
-    public void makeTypePatternsInput(Request request, Appendable sb) 
-	throws Exception {
-	String uid = HU.getUniqueId("select_");
-	String textid = HU.getUniqueId("text_");	
-	String attrs =HU.style("max-width:200px;") + HU.id(uid);
-	List items = Utils.makeListFromValues(new TwoFacedObject("Add type",""));
-	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
-						       false,"",false,null,false);
-	String textArea = HtmlUtils.textArea(ATTR_TYPEPATTERNS, typePatterns, 
-					     5, 60,HU.id(textid));
-	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
-	    
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
-					 HU.hbox(
-						 textArea,
-						 select+ HU.space(1) + help +
-						 "<br>Form:<pre>entry type:pattern</pre>")));
-	HU.importJS(sb,getRepository().getPageHandler().makeHtdocsUrl("/harvester.js"));
-        HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
-    }
 
 
 

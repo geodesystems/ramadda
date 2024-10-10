@@ -30,6 +30,7 @@ import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.repository.util.FileWriter;
+import org.ramadda.util.PatternHolder;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
@@ -9991,6 +9992,60 @@ public class EntryManager extends RepositoryManager {
 	    parent = entry.getParentEntry();
 	}
 
+    }
+
+    public void makeTypePatternsInput(Request request, String arg, Appendable sb,String typePatterns) 
+	throws Exception {
+	String uid = HU.getUniqueId("select_");
+	String textid = HU.getUniqueId("text_");	
+	String attrs =HU.style("max-width:200px;") + HU.id(uid);
+	List items = Utils.makeListFromValues(new TwoFacedObject("Add type",""));
+	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
+						       false,"",false,null,false);
+	String textArea = HtmlUtils.textArea(arg, typePatterns==null?"":typePatterns, 
+					     5, 60,HU.id(textid));
+	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
+	    
+        sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
+					 HU.hbox(
+						 textArea,
+						 select+ HU.space(1) + help +
+						 "<br>Form:<pre>entry type:pattern</pre>")));
+        HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
+    }
+
+    public static class PatternType {
+	PatternHolder pattern;
+	TypeHandler type;
+	public PatternType(PatternHolder pattern, TypeHandler type) {
+	    this.pattern = pattern;
+	    this.type =type;
+	}
+    }
+
+
+    public List<PatternType> getTypePatterns(String typePatterns) throws Exception {
+	List<PatternType> p = new ArrayList<PatternType>();
+	if(Utils.stringDefined(typePatterns)) {
+	    for(String line:Utils.split(typePatterns,"\n",true,true)) {
+		List<String> toks = Utils.splitUpTo(line,":",2);
+		if(toks.size()!=2)  continue;
+		TypeHandler typeHandler = getRepository().getTypeHandler(toks.get(0));
+		if(typeHandler!=null) {
+		    p.add(new PatternType(new PatternHolder(toks.get(1)), typeHandler));
+		}
+	    }
+	}
+	return p;
+    }
+
+    public TypeHandler findTypeFromPatterns(String typePatterns, String filePath) throws Exception {
+	for(PatternType pattern:getTypePatterns(typePatterns)) {
+	    if(pattern.pattern.matches(filePath)) {
+		return  pattern.type;
+	    }
+	}
+	return null;
     }
 
 
