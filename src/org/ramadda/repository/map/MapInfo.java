@@ -754,6 +754,7 @@ public class MapInfo {
                                String extraLeft, String extraTop, Object...polygonInfo)
             throws Exception {
 
+	addProperty("showLatLonPosition","true");
         boolean doRegion = true;
         if (nwseValues == null) {
             nwseValues = new String[] { "", "", "", "" };
@@ -790,7 +791,7 @@ public class MapInfo {
 	    String delim =  ";" +HU.SPACE;
 	    header =  HU.leftRightBottom(localeLink+HU.SPACE+msg1 + delim + msg2 + delim + msg3,  clearLink,"");
         } else {
-	    header = HU.leftRightBottom(localeLink+HU.SPACE+HU.italics(msg("Click to select point")), clearLink,"");
+	    header = HU.leftRightBottom(localeLink+HU.SPACE+HU.italics(msg("Click to select a location")), clearLink,"");
         }
 	HU.div(sb, header,HU.style("margin:5px;"));
         sb.append(getMapDiv(""));
