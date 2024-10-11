@@ -806,12 +806,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	//Don't do really big files 
 	if(f.length()>LUCENE_MAX_LENGTH) {
-	    //Don't do this since the max size should be capped by tika below
-	    //	    getSessionManager().addSessionMessage(request,"Document too big to index");
-
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents file too big: " + f.getName() +" " +f.length());
-	    //	    return null;
 	}
 
 	if(f.length()==0) {
@@ -822,8 +818,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
 	if(corpus!=null) return corpus;
-	return extractCorpus(request, entry,f.toString(),metadataList);
-
+	corpus=	    extractCorpus(request, entry,f.toString(),metadataList);
+	return corpus;
     }	
 
 
