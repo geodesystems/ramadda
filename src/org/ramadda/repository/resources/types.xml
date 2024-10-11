@@ -290,6 +290,7 @@ pageSearchParent=.ramadda-grid-container
 <div class=ramadda-grid-container>
 {{grid tag=card
 embedLink="property:embed_link"
+showPlaceholderImage=true
 addTags=true
 addTagSearchLink=false
 sortby=name
