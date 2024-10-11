@@ -49,7 +49,7 @@ csvcommands3=-addheader, default.type double default.searchable true reporttime.
 
 <property name="mapglyphs">
 <![CDATA[
-props:iconSize:75,canvasWidth:600,canvasHeight:250,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
+props:iconSize:75,canvasWidth:600,canvasHeight:200,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:${icon}
 label,pady:5,pos:nw,dx:80,dy:-ch+10,label:${entryname}  
 label,pady:10,pos:n,dx:cw2,dy:-ch+60,font:36px sans-serif,label:${temp decimals=1 suffix=" ${unit}" prefixLabel=true}_nl_${wspd decimals=1 suffix=" ${unit}" prefixLabel=true}_nl_Pressure: ${slp suffix=" ${unit}" scale=0.01 decimals=1}
