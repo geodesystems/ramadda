@@ -2949,6 +2949,14 @@ public class Seesv implements SeesvCommands {
 		new Arg("west"),
 		new Arg("south"),
 		new Arg("east")),
+        new Cmd(CMD_INBOUNDS, "Subset lat/lon bounds",
+                new Arg(ARG_LATITUDE, "latitude column",ATTR_TYPE,TYPE_COLUMN),
+                new Arg(ARG_LONGITUDE, "longitude column",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("north","North",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("west","West",ATTR_TYPE,TYPE_NUMBER),
+		new Arg("south","South",ATTR_TYPE,TYPE_NUMBER),				
+		new Arg("east","East",ATTR_TYPE,TYPE_NUMBER)),		
+
         new Cmd(CMD_DECODELATLON, 
 		"Decode latlon", 
 		ARG_LABEL,"Deocde Lat/Lon",
@@ -4338,6 +4346,16 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.GeoNamer(args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_INBOUNDS,6,(ctx,args,i) -> {	
+		ctx.addProcessor(new Geo.InBounds(args.get(++i),
+						  args.get(++i),
+						  parseDouble(args.get(++i)),
+						  parseDouble(args.get(++i)),
+						  parseDouble(args.get(++i)),
+						  parseDouble(args.get(++i))));
+		return i;
+	    });	
+
 	defineFunction(CMD_DECODELATLON,1,(ctx,args,i) -> {	
 		ctx.addProcessor(new Geo.DecodeLatLon(getCols(args.get(++i))));
 		return i;

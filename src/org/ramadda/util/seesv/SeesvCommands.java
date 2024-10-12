@@ -287,6 +287,7 @@ public interface SeesvCommands {
     public static final String CMD_GEOCODEADDRESSDB="-geocodeaddressdb";
     public static final String CMD_GEOCODEJOIN="-geocodejoin";
     public static final String CMD_BOUNDS="-bounds";
+    public static final String CMD_INBOUNDS="-inbounds";
     public static final String CMD_DECODELATLON="-decodelatlon";
     public static final String CMD_GETADDRESS="-getaddress";
     public static final String CMD_STATENAME="-statename";

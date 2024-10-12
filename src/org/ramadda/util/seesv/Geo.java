@@ -1024,6 +1024,51 @@ public abstract class Geo extends Processor {
 
 
 
+    public static class InBounds extends Filter {
+
+
+	String latCol;
+	String lonCol;
+
+	int latIdx;
+	int lonIdx;
+	double north;
+	double west;
+	double south;
+	double east;
+        public InBounds(String slat,String slon,
+			double north,double west,double south, double east){
+            super();
+	    this.latCol=slat;
+	    this.lonCol=slon;
+	    if(!Utils.stringDefined(slat)) this.latCol = "latitude";
+	    if(!Utils.stringDefined(slon)) this.lonCol = "longitude";	       
+	    this.north=north;
+	    this.west = west;
+	    this.south = south;
+	    this.east = east;
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+		latIdx = getIndex(ctx,latCol);
+		lonIdx = getIndex(ctx,lonCol);		    
+                return true;
+            }
+	    double lat= Seesv.parseDouble(row.getString(latIdx));
+	    double lon= Seesv.parseDouble(row.getString(lonIdx));	    
+	    if(Double.isNaN(lat) || Double.isNaN(lon)) return false;
+	    if(!Double.isNaN(north) && lat>north) return false;
+	    if(!Double.isNaN(south) && lat<south) return false;
+	    if(!Double.isNaN(west) && lon<west) return false;	    	        
+	    if(!Double.isNaN(east) && lon>east) return false;	    	    
+            return true;
+        }
+
+    }
+
+
     /**
      * Class description
      *
