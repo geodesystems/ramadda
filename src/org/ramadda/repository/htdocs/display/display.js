@@ -6615,7 +6615,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(!label)
 		return HU.div([CLASS,"display-filter-widget"],widget);
 	    label = this.makeFilterLabel(label,title)+(label.trim().length==0?" ":": ");
-	    if(this.getProperty(name+'.filterLabelVertical') || this.getFilterLabelVertical())
+	    if(this.getFilterLabelVertical(this.getProperty(name+'.filterLabelVertical')))
 		label = label+'<br>'+widget;							       
 	    else
 		label = label+widget;

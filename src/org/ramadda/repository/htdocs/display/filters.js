@@ -719,7 +719,7 @@ function RecordFilter(display,filterFieldId, properties) {
 							       this.getProperty("filter.includeAll", true))));
 	},
 	getWidget: function(fieldMap, bottom,records, vertical) {
-	    let labelVertical = vertical || this.getProperty(this.getId()+".filterLabelVertical",false)  || this.getProperty("filterLabelVertical",false);
+	    let labelVertical =   this.getProperty("filterLabelVertical",this.getProperty(this.getId()+".filterLabelVertical",vertical));
 	    this.records = records;
 	    let debug = false;
 	    if(debug) console.log(this.id +".getWidget");
@@ -914,7 +914,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			style+=HU.css("border","1px solid #ccc","background", Utils.getEnumColor(this.getFieldId()));
 		    else
 			style+=HU.css();
-		    widget= HU.div([STYLE, style, TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fas fa-plus","font-size:8pt;") +label);   
+		    widget= HU.div([STYLE, style, TITLE,"Click to select tag", ID,clickId,CLASS,"ramadda-clickable entry-toggleblock-label"], HU.makeToggleImage("fa-solid fa-plus","font-size:8pt;") +label);   
 		} else {
 		    if(debug) console.log("\tis select");
 		    let tmp = [];

@@ -3377,7 +3377,20 @@ var Utils =  {
     },
 
     enumTypeCount: -1,
-    enumColorPalette:[      "rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
+//    enumColorPalette:['#6B7280 ',"rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
+    enumColorPalette:
+    [
+    "#9CA3AF", // Muted Slate (softer gray-blue)
+    "#BDB7D0", // Muted Lavender (desaturated lavender)
+    "#D8A29D", // Muted Coral (muted coral pink)
+    "#BCCAB3", // Muted Sage (soft, grayish-green)
+    "#D9C7A8", // Muted Beige (light beige)
+    "#C4A69A", // Muted Terracotta (soft, muted rust)
+    "#E7C4B0", // Muted Peach (muted peach)
+    "#9CAAC0", // Muted Steel Blue (soft steel blue)
+    "#A8A895", // Muted Olive (faded olive green)
+    "#D4A5A4"  // Muted Blush (soft, muted pink)
+    ],
     enumColors: {},
     getEnumColor:function(type) {
         if(type.color) return type.color;
