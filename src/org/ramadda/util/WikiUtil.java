@@ -3146,6 +3146,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith(":heading")
 		    ||  tline.startsWith(":lheading")
+		    ||  tline.startsWith(":nonavheading")		    
 		    ||  tline.startsWith(":noheading")		    
                         || tline.startsWith(":block")
                         || tline.startsWith(":credit")
@@ -3161,7 +3162,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String blob  = (toks.size() > 1)
                                    ? toks.get(1)
                                    : "";
-                    if ( !clazz.equals(what)) {
+		    boolean noNav = what.startsWith("nonavheading");
+		    if(noNav) {
+			clazz="ramadda-heading";
+			what = "heading";
+		    } else  if ( !clazz.equals(what)) {
                         clazz = "ramadda-" + what + "  ramadda-" + clazz;
                     } else {
                         clazz = "ramadda-" + what;
@@ -3170,9 +3175,10 @@ public class WikiUtil implements HtmlUtilsConstants {
 			clazz="ramadda-heading2";
 		    }
 		    String attrs = "";
-                    if (what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
+                    if (noNav ||
+			what.startsWith("heading") || what.startsWith("lheading") || what.startsWith("noheading")) {
 			String id = "heading-" +Utils.makeID(getHeadingLabel(blob));
-                        if(!what.startsWith("heading2"))
+                        if(!what.startsWith("heading2") && !noNav)
 			    defineHeading.accept(buff, blob, 1);
 			buff.append(HU.anchorName(id));
 			blob += HU.span("",HU.attrs("id",id+"-hover",ATTR_CLASS,"ramadda-linkable-link"));
