@@ -645,6 +645,11 @@ public class UserManager extends RepositoryManager {
 
 
 
+    public List<FavoriteEntry> getFavorites(Request request)
+	throws Exception {
+	return getFavorites(request, request.getUser());
+    }
+
     /**
      * _more_
      *
@@ -657,7 +662,7 @@ public class UserManager extends RepositoryManager {
      */
     public List<FavoriteEntry> getFavorites(Request request, User user)
 	throws Exception {
-        if (user.getAnonymous()) {
+        if (user ==null ||user.getAnonymous()) {
             return new ArrayList<FavoriteEntry>();
         }
         List<FavoriteEntry> favorites = user.getFavorites();
