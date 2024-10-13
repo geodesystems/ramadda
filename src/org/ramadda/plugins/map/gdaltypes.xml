@@ -1,11 +1,11 @@
 <types  supercategory="Geoscience" category="GIS Data">
 
-  <type name="geo_gdal" foruser="false" handler="org.ramadda.geodata.earthdata.GdalTypeHandler" >
+  <type name="geo_gdal" foruser="false" handler="org.ramadda.plugins.map.GdalTypeHandler" >
      <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info"/>
   </type>
 
-  <type name="geo_gdal_raster" super="geo_gdal" description="GDAL Raster" foruser="true" xhandler="org.ramadda.geodata.earthdata.GdalTypeHandler" >
+  <type name="geo_gdal_raster" super="geo_gdal" description="GDAL Raster" foruser="true" xhandler="org.ramadda.plugins.map.GdalTypeHandler" >
 <!--
      <service link="gdal_makethumb"  target="attachment"/>
 -->
@@ -34,8 +34,8 @@
   </type>
 
 
-  <type name="type_geo_dem" super="geo_gdal_raster" description="DEM File" foruser="true" handler="org.ramadda.geodata.earthdata.DemTypeHandler" >
-     <property name="icon" value="/earthdata/dem.png"/>
+  <type name="type_geo_dem" super="geo_gdal_raster" description="DEM File" foruser="true" handler="org.ramadda.plugins.map.DemTypeHandler" >
+     <property name="icon" value="/map/dem.png"/>
      <service link="gdal_makehillshade"  target="attachment"/>
     <wiki_inner><![CDATA[
 +section # title="{{name}}"

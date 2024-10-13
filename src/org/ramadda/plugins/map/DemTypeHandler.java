@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.geodata.earthdata;
+package org.ramadda.plugins.map;
 
 
 import org.ramadda.repository.*;

@@ -3,7 +3,7 @@ Copyright (c) 2008-2023 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-package org.ramadda.geodata.earthdata;
+package org.ramadda.plugins.map;
 
 
 import org.ramadda.repository.*;
@@ -248,7 +248,7 @@ Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
         return new Result(
             BLANK,
             Utils.getInputStream(
-                "/org/ramadda/geodata/earthdata/htdocs/earthdata/notavailable.png",
+                "/org/ramadda/plugins/map/htdocs/map/notavailable.png",
                 GdalTypeHandler.class), "image/png");
     }
 
