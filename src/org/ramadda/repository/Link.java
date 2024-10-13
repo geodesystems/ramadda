@@ -38,9 +38,15 @@ public class Link implements Constants {
     }
 
     public Link(String url, String icon, String label) {
-        this(url, icon, label, null);
+        this(url, icon, label, (OutputType)null);
     }
 
+
+    public Link(String url, String icon, String label,String tt) {
+        this(url, icon, label, (OutputType)null);
+	tooltip = tt;
+    }
+    
     public Link(String url, String icon, String label,
                 OutputType outputType) {
         this(url, icon, label, outputType, getLinkType(outputType));

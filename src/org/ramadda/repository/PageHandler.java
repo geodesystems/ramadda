@@ -1686,20 +1686,15 @@ public class PageHandler extends RepositoryManager {
      */
     private List<String> getUserLinks(Request request, String template,
                                       StringBuilder prefix,
-                                      boolean makePopup) {
+                                      boolean makePopup) throws Exception {
         User user   = request.getUser();
-
-        List extras = new ArrayList();
+	List<Link> _links = new ArrayList<Link>();
+	
         List urls   = new ArrayList();
         List labels = new ArrayList();
         List tips   = new ArrayList();
-
-
-        //System.err.println("Request:" + request.getUrl());
-
         if (user.getAnonymous()) {
             if (getUserManager().canDoLogin(request)) {
-                extras.add("");
                 String url;
 
                 String path = request.getRequestPath();
@@ -1716,16 +1711,15 @@ public class PageHandler extends RepositoryManager {
                                           ARG_REDIRECT, redirect);
                 }
 
-                urls.add(url);
-                labels.add(HU.faIcon("fa-sign-in-alt") + " " + msg("Login"));
-                tips.add(msg("Login"));
+                _links.add(new Link(url,  "",
+				    HU.faIcon("fa-sign-in-alt") + " " + msg("Login"),"Login"));
             }
 
         } else {
-            extras.add("");
-            urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"));
-            tips.add(msg("Logout"));
+	    _links.add(new Link(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT),
+				"",
+				HU.faIcon("fa-sign-out-alt") + " " + msg("Logout"),
+				"Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
 	    String avatar = getUserManager().getUserAvatar(request, request.getUser(),true,25,
 							   HU.attrs("class","ramadda-user-menu-image","title","User Settings - "+
@@ -1743,30 +1737,42 @@ public class PageHandler extends RepositoryManager {
                         settingsUrl, userIcon,
                         HU.cssClass("ramadda-user-settings-link")));
             } else {
-                extras.add("");
-                urls.add(settingsUrl);
-                labels.add(label);
-                tips.add(msg("Go to user settings"));
+		_links.add(new Link(settingsUrl,"",
+				    label,"Go to user settings"));
             }
         }
 
         if (showHelp
                 && (getRepository().getPluginManager().getDocUrls().size()
                     > 0)) {
-            urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
-            extras.add("");
-            labels.add(HU.faIcon("fa-question-circle") + " " + msg("Help"));
-            tips.add(msg("View Help"));
+		_links.add(new Link(
+				    request.makeUrl(getRepositoryBase().URL_HELP),
+				    "",
+				    HU.faIcon("fa-question-circle") + " " + msg("Help"),
+				    msg("View Help")));
         }
 
-
         List<String> links = new ArrayList<String>();
-        for (int i = 0; i < urls.size(); i++) {
+	List<FavoriteEntry> favs = getUserManager().getFavorites(request);
+	if(favs.size()>0) {
+	    StringBuilder sb = new StringBuilder();
+	    _links.add(new Link(null,"",HU.b(HU.center("Favorites"))));
+	    for(FavoriteEntry fav: favs) {
+                String url = getEntryManager().getEntryUrl(request, fav.getEntry());
+		sb.append(HU.div(fav.getEntry().getName(),HU.cssClass("ramadda-user-link")+HU.onMouseClick("document.location=" + HU.squote(url))));
+	    }
+	    _links.add(new Link(null,"",HU.div(sb.toString(),HU.style("max-width:120px;overflow-x:hidden;max-height:6em;overflow-y:auto;white-space:nowrap;"))));
+	}
+        for (Link _link:_links) {
+	    if(_link.getUrl()==null) {
+		links.add(_link.getLabel());
+		continue;
+	    }
             String link = template.replace("${label}",
-                                           labels.get(i).toString());
-            link = link.replace("${url}", urls.get(i).toString());
-            link = link.replace("${tooltip}", tips.get(i).toString());
-            link = link.replace("${extra}", extras.get(i).toString());
+					   _link.getLabel());
+            link = link.replace("${url}", _link.getUrl());
+            link = link.replace("${tooltip}", Utils.getNonNull(_link.getTooltip(),"").toString());
+            link = link.replace("${extra}", "");
             links.add(link);
         }
 
