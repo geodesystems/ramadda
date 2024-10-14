@@ -3604,7 +3604,9 @@ public class WikiUtil implements HtmlUtilsConstants {
             if (left || list || popup) {
                 delim = "<br>";
             } else {
-		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", "|"),
+		delim  = "&#9675;";
+		//""&#9679;"
+		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", delim),
 			       HU.cssClass("ramadda-nav-top-delimiter"));
 	    }
             for (Object o : headings2) {
