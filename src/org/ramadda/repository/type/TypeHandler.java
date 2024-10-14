@@ -3497,9 +3497,13 @@ public class TypeHandler extends RepositoryManager {
 	    //		    System.err.println("service:" + service);
 	    File workDir = getStorageManager().createProcessDir();
 	    ServiceInput serviceInput = new ServiceInput(workDir, entry);
+	    long t1 = System.currentTimeMillis();
+	    //	    System.err.println("apply service:" + entry.getName() +" service:" + service.getLabel());
 	    ServiceOutput output =
 		service.evaluate(getRepository().getAdminRequest(),null,
 				 serviceInput, null);
+	    long t2 = System.currentTimeMillis();
+	    //	    System.err.println("Time:" + (t2-t1));
 	    if(output==null) {
 		getSessionManager().addSessionMessage(request, "Error processing service:" + service.getLabel()+
 						      " for entry:" + entry.getName() +" id:" + entry.getId() +
