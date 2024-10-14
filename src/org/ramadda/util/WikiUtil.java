@@ -39,6 +39,8 @@ import java.util.regex.*;
 public class WikiUtil implements HtmlUtilsConstants {
 
 
+    public static final String NAVDELIM =  "&#9675;";
+
     /** _more_          */
     private static final HtmlUtils HU = null;
 
@@ -3604,8 +3606,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             if (left || list || popup) {
                 delim = "<br>";
             } else {
-		delim  = "&#9675;";
-		//""&#9679;"
+		delim = NAVDELIM;
 		delim= HU.span(Utils.getProperty(headingsProps, "delimiter", delim),
 			       HU.cssClass("ramadda-nav-top-delimiter"));
 	    }
