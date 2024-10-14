@@ -2469,6 +2469,9 @@ public class WikiManager extends RepositoryManager
 				      "data-plays","1"));
 
 	    return sb.toString();
+        } else if (theTag.equals("pdf")) {
+	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
+	    return HU.getPdfEmbed(url,props);
         } else if (theTag.equals(WIKI_TAG_MEDIA)) {
             if ( !entry.getResource().isDefined()) {
                 return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
