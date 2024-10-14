@@ -1271,16 +1271,23 @@ public class MapInfo {
      */
     public void addMarker(Request request, Entry entry, String icon,boolean useThumbnail)
             throws Exception {
+	String newIcon = null;
+	boolean addImageLayer = Utils.getProperty(this.tagProps,"addImageLayer",false);
 	if(!Utils.stringDefined(icon)) 
 	    icon = repository.getPageHandler().getIconUrl(request, entry);
         if (useThumbnail) {
             List<String> urls = new ArrayList<String>();
-            repository.getMetadataManager().getThumbnailUrls(request, entry,
-                    urls);
+            repository.getMetadataManager().getThumbnailUrls(request, entry, urls);
             if (urls.size() > 0) {
-                icon = urls.get(0);
-            }
-        }
+                newIcon = urls.get(0);
+	    }
+        } 
+	if(addImageLayer && newIcon==null) {
+	    if(entry.isImage()) {
+		newIcon = 	    entry.getTypeHandler().getEntryResourceUrl(request, entry);
+	    }
+	}
+	if(newIcon!=null) icon = newIcon;
 
         double[] location = entry.getCenter(request);
         String   id       = MapManager.mapEntryId(entry);
@@ -1296,7 +1303,7 @@ public class MapInfo {
             props += "}";
         }
 
-	if(Utils.getProperty(this.tagProps,"addImageLayer",false)) {
+	if(addImageLayer) {
 	    String args = JsonUtil.map(Utils.makeListFromValues("popupText",
 								JU.quote(info)));
 	    getJS().append(HU.call(mapVarName+".addImageLayer",
