@@ -71,6 +71,45 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
 </wiki>
    </type>
 
+  <type name="geo_pdf"  super="geo_gdal_raster"
+	description="Geo PDF"
+	handler="org.ramadda.plugins.map.GdalTypeHandler">
+    <service link="gdal_info"/>
+    <property name="search.tabs" value="list,map"/>
+    <property name="icon" value="/icons/pdf.png"/>
+     <wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
++accordion decorate=false collapsible=true activeSegment=-1
++segment Document Information
+{{information  details="true"  showTitle="false"  includeTools=true menus="service" menusTitle="Services"}}
+-segment                           
+-accordion
++tabs
++tab PDF
++center
+{{pdf}}
+-center
+-tab
++tab Map
+{{map height=80vh 
+addImageLayer=true  showBounds=false 
+useThumbnail=true
+popupWidth=400
+popupHeight=600
+doPopupSlider=true
+popupSliderRight=true
+}}
+-tab
+-tabs
+-section
+]]>
+</wiki>
+
+
+   </type>
+
+
 
   <type name="latlonimage"  super="type_map" description="Lat-Lon Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
      <property name="icon" value="/icons/map.png"/>
