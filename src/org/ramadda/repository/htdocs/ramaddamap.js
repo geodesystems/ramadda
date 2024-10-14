@@ -1001,7 +1001,6 @@ RepositoryMap.prototype = {
 	    if (id == null)
                 return;
 	    if (!Utils.isDefined($(this).data('latitude'))) {
-                console.log("no lat");
                 return;
 	    }
 	    attrs = {
