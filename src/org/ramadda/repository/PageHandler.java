@@ -22,6 +22,7 @@ import org.ramadda.repository.output.AtomOutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.PageStyle;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.WikiUtil;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.IO;
@@ -1844,7 +1845,7 @@ public class PageHandler extends RepositoryManager {
 	//add a space after so the whole line can be broken
         HU.div(header,
                StringUtil.join(
-                   "<span class=\"ramadda-separator\">|</span>",
+                   "<span class=\"ramadda-separator\">" + WikiUtil.NAVDELIM+"</span>",
                    links), HU.cssClass("ramadda-linksheader-links"));
         header.append("\n");
         sb.append(HU.tag(HU.TAG_DIV, HU.cssClass("ramadda-linksheader"),
