@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -43,7 +43,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MapInfo {
 
-    /**  */
     private static final HtmlUtils HU = null;
 
     /** default box color */
@@ -64,15 +63,11 @@ public class MapInfo {
     /** the map variable name */
     private String mapVarName;
 
-    /** _more_ */
     private String mapDivId;
-
-    /** _more_ */
     private String mapStyle;
 
     /** the width */
     private String width = DFLT_WIDTH;
-
     /** the height */
     private String height = DFLT_HEIGHT;
 
@@ -82,8 +77,7 @@ public class MapInfo {
     private boolean showFooter = true;
     
     private String credits = "CREDITS";
-    
-    /** _more_ */
+
     private boolean mapHidden = false;
 
     /** list of map regions */
@@ -96,17 +90,17 @@ public class MapInfo {
     private StringBuilder jsBuffer = null;
     private StringBuilder jsBuffer2 = null;    
 
-    /** _more_ */
     private StringBuilder extraNav = new StringBuilder();
 
     /** right side of widget */
     private StringBuilder rightSide = new StringBuilder();
 
-    /** _more_ */
     private String headerMessage;
 
     /** the html */
     private StringBuilder html = new StringBuilder();
+
+    private Hashtable tagProps;
 
     /** map properties */
     private Hashtable mapProps;
@@ -161,6 +155,7 @@ public class MapInfo {
      */
     public MapInfo(Request request, Repository repository, Hashtable props, String width,
                    String height, boolean forSelection) {
+	this.tagProps = props;
 	if(props!=null) {
 	    credits = Utils.getProperty(props,"credits",null);
 	}
@@ -1300,13 +1295,26 @@ public class MapInfo {
             props += "}";
         }
 
-        getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(Utils.makeID(id)) + ","
-                       + llp(location[0], location[1]) + ","
-                       + HU.squote(icon) + ","
-                       + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
-                       + "," + HU.squote(info) + ","
-                       + HU.squote(entry.getTypeHandler().getType()) + ","
-                       + props + ");\n");
+	if(Utils.getProperty(this.tagProps,"addImageLayer",false)) {
+	    getJS().append(HU.call(mapVarName+".addImageLayer",
+				   HU.squote(entry.getName()),
+				   HU.squote(entry.getName()),
+				   HU.squote(""),
+				   HU.squote(icon),
+				   "true",
+				   ""+entry.getNorth(request),
+				   ""+entry.getWest(request),
+				   ""+entry.getSouth(request),
+				   ""+entry.getEast(request)));
+	} else {	    
+	    getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(Utils.makeID(id)) + ","
+			   + llp(location[0], location[1]) + ","
+			   + HU.squote(icon) + ","
+			   + HU.squote(entry.getName().replaceAll("'", "\\\\'"))
+			   + "," + HU.squote(info) + ","
+			   + HU.squote(entry.getTypeHandler().getType()) + ","
+			   + props + ");\n");
+	}
     }
 
     private int getValue(Entry entry, String prop, int dflt) {
