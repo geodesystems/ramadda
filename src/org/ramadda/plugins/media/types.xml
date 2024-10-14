@@ -18,7 +18,7 @@
 
 
 <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" includeInSearch="true"  super="type_document_tika" isgroup="true"
-      handler="org.ramadda.plugins.media.PdfTypeHandler"      
+      handler="org.ramadda.repository.type.PdfTypeHandler"      
       >
      <service link="media_gs_thumbnail" target="attachment"/>
      <property name="icon" value="/icons/pdf.png"/>
