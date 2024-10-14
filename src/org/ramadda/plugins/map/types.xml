@@ -71,10 +71,11 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }
 </wiki>
    </type>
 
-  <type name="geo_pdf"  super="geo_gdal_raster"
+  <type name="geo_pdf"  super="type_map"
 	description="Geo PDF"
 	handler="org.ramadda.plugins.map.GdalTypeHandler">
     <service link="gdal_info"/>
+    <service link="media_gs_thumbnail" target="attachment"/>
     <property name="search.tabs" value="list,map"/>
     <property name="icon" value="/icons/pdf.png"/>
      <wiki><![CDATA[

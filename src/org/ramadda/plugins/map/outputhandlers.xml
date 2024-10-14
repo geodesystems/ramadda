@@ -2,4 +2,8 @@
   <outputhandler class="org.ramadda.plugins.map.ShapefileOutputHandler" name="Shapefile"/>
   <outputhandler class="org.ramadda.plugins.map.GeoJsonOutputHandler" name="GeoJson"/>
   <outputhandler class="org.ramadda.plugins.map.KmlEntryOutputHandler" name="KML Output"/>
+  <outputhandler serviceId="gdal_tiff2image" class="org.ramadda.repository.output.ServiceOutputHandler"/>
+  <outputhandler serviceId="gdal_tiff2xyz" class="org.ramadda.repository.output.ServiceOutputHandler"/>  
+  <outputhandler serviceId="gdal_info" class="org.ramadda.repository.output.ServiceOutputHandler"/>
+  <outputhandler serviceId="gdal_makehillshade" class="org.ramadda.repository.output.ServiceOutputHandler"/>  
 </outputhandlers>

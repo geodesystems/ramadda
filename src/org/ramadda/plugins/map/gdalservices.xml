@@ -41,7 +41,7 @@
     <description>
       Run gdalinfo
     </description>
-    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_gdal_raster" xentryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
+    <arg value="${entry.file}"   type="entry" primary="true" entryType="geo_pdf,geo_gdal_raster" ></arg>
     <output showResults="true" stdout="true"/>
   </service>
 
