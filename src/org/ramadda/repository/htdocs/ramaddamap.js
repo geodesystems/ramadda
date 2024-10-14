@@ -1508,7 +1508,8 @@ RepositoryMap.prototype = {
             forSelect: false,
             addBox: true,
             isBaseLayer: false,
-	    alwaysInRange:true
+	    alwaysInRange:true,
+	    popupText:null
         };
         if (args)
             $.extend(theArgs, args);
@@ -1538,6 +1539,14 @@ RepositoryMap.prototype = {
 	image.id = layerId;
         image.latLonBounds = latLonBounds;
         //        image.setOpacity(0.5);
+
+	//If we are showing popup text then add a rectangle since (for some reason) the clicks on the
+	//image layers are not being handled
+	if(theArgs.popupText) {
+	    let ghostRect = this.addRectangle('', north, west, south, east, {strokeWidth:0,fillColor:'transparent'},null);
+	    ghostRect.text= Utils.convertText(theArgs.popupText);
+	}
+
         if (theArgs.forSelect) {
             this.selectImage = image;
         }
