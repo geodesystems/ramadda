@@ -44,6 +44,7 @@ import java.util.List;
 public class MapInfo {
 
     private static final HtmlUtils HU = null;
+    private static final JsonUtil JU = null;    
 
     /** default box color */
     public static final String DFLT_BOX_COLOR = "blue";
@@ -1296,6 +1297,8 @@ public class MapInfo {
         }
 
 	if(Utils.getProperty(this.tagProps,"addImageLayer",false)) {
+	    String args = JsonUtil.map(Utils.makeListFromValues("popupText",
+								JU.quote(info)));
 	    getJS().append(HU.call(mapVarName+".addImageLayer",
 				   HU.squote(entry.getName()),
 				   HU.squote(entry.getName()),
@@ -1305,7 +1308,8 @@ public class MapInfo {
 				   ""+entry.getNorth(request),
 				   ""+entry.getWest(request),
 				   ""+entry.getSouth(request),
-				   ""+entry.getEast(request)));
+				   ""+entry.getEast(request),
+				   "null","null",args));
 	} else {	    
 	    getJS().append(mapVarName + ".addEntryMarker(" + HU.squote(Utils.makeID(id)) + ","
 			   + llp(location[0], location[1]) + ","
