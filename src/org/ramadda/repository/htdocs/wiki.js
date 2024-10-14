@@ -2021,12 +2021,12 @@ WikiEditor.prototype = {
 	    {p:'showBookmarks',ex:'true'},
 	    {p:'showBounds',ex:'true'},
 	    {p:'showOpacitySlider',ex:'true'},
-	    {p:'useThumbnail',ex:'true'},		
+	    {p:'useThumbnail',ex:'true',tt:'Use the entry thumbnail'},		
+	    {p:'addImageLayer',ex:'true',tt:'add the image as a georeferenced image layer'},
 
 	    {p:'iconSize',ex:'32'},
 	    {p:'iconWidth',ex:'32'},
 	    {p:'iconHeight',ex:'32'},				
-
 	    {p:'layerStrokeColor',ex:'red'},
 	    {p:'layerStrokeWidth',ex:'2'},				
 	    {p:'layerFillColor',ex:'red'},
@@ -2053,7 +2053,7 @@ WikiEditor.prototype = {
 	    {p:'doPopup',ex:'false'},
 	    {p:'doFeatureSelect',ex:'false'},	    
 
-	    {p:'doPopupSlider',ex:'true'},
+	    {p:'doPopupSlider',ex:'true',tt:'Show the popup text on the side using a fixed position'},
 	    {p:'popupSliderRight',ex:'true'},
 	    {p:'enableDragPan',ex:'false'},
 	    {p:'addMarkerOnClick',ex:'true'},
