@@ -4635,11 +4635,14 @@ RepositoryMap.prototype = {
         }
 
         let args = {
-            "color": "blue",
+            "color": this.params.boxColor??"blue",
+	    "width":(Utils.isDefined(this.params.boxWidth)?this.params.boxWidth:1),
+
             "selectable": true,
             "zoomToExtent": false,
             "sticky": false
         };
+
         for (let i in params) {
             args[i] = params[i];
         }
@@ -4662,7 +4665,7 @@ RepositoryMap.prototype = {
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
         box.name = name;
-        box.setBorder(args.color??'blue', 1);
+        box.setBorder(args.color??'blue', args.width);
 	box.defaultBorderColor = args.color;
         box.ramaddaId = id;
         if (args.zoomToExtent) {
