@@ -1820,6 +1820,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if (tmpName.equals("thumbs.sb")) {
             return null;
         }
+
+
+        if (tmpName.startsWith("thumb_")) {
+	    return null;
+	}
         if (tmpName.endsWith(".thm")) {
             return null;
         }
@@ -1909,25 +1914,60 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if ( !Utils.isImage(resource.getPath())) {
             File thumbnail = null;
             File tmp;
-            tmp = new File(IO.stripExtension(resource.getPath())
-                           + ".thm");
+	    File dir = theFile;
+
+
+	    String noExtension = IO.stripExtension(resource.getPath());
+	    String noExtensionName = IOUtil.getFileTail(noExtension);
+	    String extensionName = IOUtil.getFileTail(resource.getPath());
+	    String imageName=null;
+	    /**
+	       look for:
+	       <file>.thm
+	       thumb_<file>.(jpeg|jpg|png)
+	     */
+	    //Check for mac .thm files
+            tmp = new File(noExtension + ".thm");
             if (tmp.exists()) {
                 thumbnail = tmp;
+		imageName = IO.stripExtension(thumbnail.getName())   + ".jpg";
             }
             if (thumbnail == null) {
-                tmp = new File(IO.stripExtension(resource.getPath())
-                               + ".THM");
+                tmp = new File(noExtension + ".THM");
                 if (tmp.exists()) {
                     thumbnail = tmp;
+		    imageName = IO.stripExtension(thumbnail.getName())   + ".jpg";
                 }
-            }
+	    }
 
-            if (thumbnail != null) {
-                String jpegFile = IO.stripExtension(thumbnail.getName())
-		    + ".jpg";
+	    if(imageName==null) {
+		for(String suffix:new String[]{".jpg",".jpeg",".png",".gif"}) {
+		    tmp = new File(IOUtil.joinDir(dir,"thumb_"+noExtensionName+suffix));
+		    //		    System.err.println("trying:" + tmp);
+		    if (tmp.exists()) {
+			thumbnail = tmp;
+			imageName = thumbnail.toString();
+			break;
+		    }
+		    tmp = new File(IOUtil.joinDir(dir,"thumb_"+extensionName+suffix));
+		    //		    System.err.println("trying:" + tmp);
+		    if (tmp.exists()) {
+			thumbnail = tmp;
+			imageName = thumbnail.toString();
+			break;
+		    }
+
+
+		}
+	    }
+
+
+	    //	    System.err.println("thumbnail:" + thumbnail);
+	    //	    System.err.println("imageName:" + imageName);	    
+            if (imageName!=null && thumbnail != null && thumbnail.exists()) {
                 String newThumbFile =
                     getStorageManager().copyToEntryDir(entry, thumbnail,
-						       jpegFile).getName();
+						       IOUtil.getFileTail(imageName)).getName();
                 getMetadataManager().addMetadata(request,entry,
 						 new Metadata(getRepository().getGUID(),
 							      entry.getId(),
