@@ -1322,11 +1322,9 @@ public class Seesv implements SeesvCommands {
 	    if(file.indexOf("/resources/")<0) {
 		throw new IllegalArgumentException("Cannot read resource:"   + file);
 	    }
-	    System.err.println("read resource:" + file);
 	    try(InputStream is =  IOUtil.getInputStream(file, Seesv.class)) {
 		return IO.readInputStream(is);
 	    }
-	    //	    return IO.readResource(file,Seesv.class);
 	}
 
 
