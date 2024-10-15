@@ -17,6 +17,23 @@
 picky=false
 ]]>
 </property>
+
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{property max=5000}}
++toggle Information
+{{information  details="true"  showTitle="false" }}
+-toggle
+{{display_table height=800px}}
+-section
+]]>
+</wiki>
+
+
+
+
+
 </type>
 
 <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"
