@@ -2,6 +2,7 @@
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var CV_LINE_COLOR='#aaa';
+var CV_HIGHLIGHT_COLOR = 'red';
 
 function RamaddaCoreVisualizer(container,args) {
     if(!window['cv-base-id']) window['cv-base-id']=1;
@@ -92,9 +93,9 @@ RamaddaCoreVisualizer.prototype = {
 	this.entries.forEach(e=>{
 	    if(!e.highlight) return;
 	    if(show) {
-		e.highlight.show();
+		e.highlight.stroke(CV_HIGHLIGHT_COLOR);
 	    } else {
-		e.highlight.hide();
+		e.highlight.stroke('transparent');
 	    }		
 	});
     },
@@ -313,12 +314,12 @@ RamaddaCoreVisualizer.prototype = {
 		width: newWidth,
 		height:newHeight,
 		fill: 'transparent',
-		stroke: 'red',
+		stroke: CV_HIGHLIGHT_COLOR,
 		strokeWidth: 2,
 	    });
 	    this.layer.add(rect);
 	    if(!this.showHighlight()) {
-		rect.hide();
+		rect.stroke('transparent');
 	    }
 
 	    rect.on('click', () =>{
