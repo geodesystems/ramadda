@@ -1310,6 +1310,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(request.defined(ARG_TYPE)) {
 	    List<Query> typeQueries = new ArrayList<Query>();
 	    for(String type: Utils.split(request.getUnsafeString(ARG_TYPE),",",true,true)) {
+		if(type.equals("isgroup")) {
+		    continue;
+		}
 		TypeHandler typeHandler = getRepository().getTypeHandler(type);
 		if(typeHandler==null) continue;
 		//		queries.add(new TermQuery(new Term(FIELD_TYPE, typeHandler.getType())));
@@ -2606,6 +2609,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         boolean     doAll      = providers.contains("all");
         List<Entry> allEntries = new ArrayList<Entry>();
+
+	//A hack for the popup entry select where we want to only select groups
+	if(request.getString(ARG_TYPE,"").equals("isgroup")) {
+	    request.remove(ARG_TYPE);
+	}
+
 
         boolean     doSearch   = true;
         if (request.defined("entries")) {
