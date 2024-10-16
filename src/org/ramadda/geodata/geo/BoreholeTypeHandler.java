@@ -5,6 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.geo;
 
+import org.ramadda.repository.output.WikiTagHandler;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -30,7 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 
 
-public class BoreholeTypeHandler extends PointTypeHandler {
+@SuppressWarnings("unchecked")
+public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHandler {
 
     private JSONArray holes;
 
@@ -142,4 +144,48 @@ public class BoreholeTypeHandler extends PointTypeHandler {
 	return super.getWikiInclude(wikiUtil,request, originalEntry, entry,tag,props);
 
     }
+
+    @Override
+    public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
+	tagHandlers.put("core_visualizer",this);
+    }
+
+
+
+    public String handleTag(WikiUtil wikiUtil, Request request,
+                            Entry originalEntry, Entry entry, String theTag,
+                            Hashtable props, String remainder) throws Exception {
+	if(!theTag.equals("core_visualizer")) return null;
+	StringBuilder sb = new StringBuilder();
+	
+	String uid = HU.getUniqueId("id");
+	String topId = HU.getUniqueId("topid");
+	String leftId = HU.getUniqueId("left");	
+
+	HU.div(sb,"",HU.attrs("id",topId));
+	HU.div(sb,"",HU.attrs("id",uid,"style","border:1px solid #000;"));
+	sb.append("<script src='https://unpkg.com/konva@9/konva.min.js'></script>");
+	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
+	String id = "viz_" + uid;
+	StringBuilder js = new StringBuilder();
+	List<String> args = (List<String>)Utils.makeListFromValues("topId",JU.quote(topId));
+	js.append("var container = document.getElementById('"+uid+"');\n");
+	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","container",JU.map(args)));
+	js.append("\n");
+	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
+											   originalEntry, entry, props),
+							       "type_borehole_registeredcoreimage");
+
+	for(Entry child: children) {
+	    String url = getEntryManager().getEntryResourceUrl(request, child);
+	    js.append(HU.call(id+".addImage",HU.squote(url),child.getStringValue(request,"top_depth",""),
+			      child.getStringValue(request,"bottom_depth","")));			      
+	}
+	HU.script(sb,js.toString());
+
+
+	return sb.toString();
+    }
+
+
 }
