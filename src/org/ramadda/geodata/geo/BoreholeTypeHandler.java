@@ -164,11 +164,13 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	String topId = HU.getUniqueId("topid");
 	String leftId = HU.getUniqueId("left");	
 
-	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;"));
-	HU.div(sb,"",HU.attrs("id",topId));
-	HU.div(sb,"",HU.attrs("id",uid,"style","border:1px solid #000;"));
+	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;","class","cv-main"));
+	HU.div(sb,"",HU.attrs("id",topId,"class","cv-top"));
+	HU.div(sb,"",HU.attrs("class","cv-canvas","id",uid));
 	HU.close(sb,"div");
 	sb.append("<script src='https://unpkg.com/konva@9/konva.min.js'></script>");
+	HU.cssLink(sb,
+		   getPageHandler().makeHtdocsUrl("/geo/corevisualizer.css"));
 	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
 	String id = "viz_" + uid;
 	StringBuilder js = new StringBuilder();
@@ -183,7 +185,7 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	for(Entry child: children) {
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
-	    js.append(HU.call(id+".addImage",HU.squote(url),child.getStringValue(request,"top_depth",""),
+	    js.append(HU.call(id+".addEntry",HU.squote(child.getName()),HU.squote(url),child.getStringValue(request,"top_depth",""),
 			      child.getStringValue(request,"bottom_depth",""),HU.squote(info)));			      
 	}
 	HU.script(sb,js.toString());

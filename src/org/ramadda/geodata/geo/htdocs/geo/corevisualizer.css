@@ -1,0 +1,20 @@
+
+.cv-main {
+}
+.cv-top {
+    border:1px solid #ccc;
+    border-bottom:0px;
+    padding:4px;
+}
+
+.cv-menubar {
+
+}
+
+.cv-menubar span i {
+    font-size:18pt;
+}
+
+.cv-canvas {
+    border:1px solid #ccc;
+}
