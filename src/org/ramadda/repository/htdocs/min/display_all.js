@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 16 07:47:24 MDT 2024";
+var build_date="RAMADDA build date: Wed Oct 16 13:30:26 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -34830,8 +34830,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let clear = HU.href("javascript:void(0);",HU.getIconImage("fas fa-eraser"), ['onClick',"RamaddaUtils.clearSelect(" + HU.squote(aid) +");",TITLE,"Clear selection"]);
 		let input = HU.input("",name||"",["READONLY",null,ATTR_PLACEHOLDER,'Select', ATTR_STYLE,HU.css('cursor','pointer','width','100%'),ID,aid,CLASS,"ramadda-entry-popup-select  disabledinput"]);
 
-		extra += HU.hidden("",ancestor||"",[ID,aid+"_hidden"]);
-		extra+=this.addWidget('Search Under',HU.div([ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")),{toggleClose:true});
+		extra += HU.hidden("",ancestor||"",[ATTR_ID,aid+"_hidden"]);
+		extra+=this.addWidget('Search Under',HU.div([ATTR_ID,this.domId(ID_SEARCH_ANCESTOR)], HU.leftRightTable(clear,input,"5%", "95%")),{toggleClose:true});
 	    }
 
 
