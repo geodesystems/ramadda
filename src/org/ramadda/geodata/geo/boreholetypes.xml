@@ -632,6 +632,24 @@ inherited="true"  }}
   <property name="form.location.show" value="true"/>
   <column name="top_depth" type="double" label="Top Depth" showinhtml="true"/>
   <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true"/>       
+<property name="bubble">
+<![CDATA[
++center
+<b>{{name link=true}}</b>
+-center
++tabs
++tab Information
+{{information showImage=false}}
+-tab
++tab Image
++center
+{{image width=300px}}
+-center
+-tab
+-tabs
+]]></property>
+
+
 <wiki>
 <![CDATA[
 +section title="Registered Core Image: {{name}}"

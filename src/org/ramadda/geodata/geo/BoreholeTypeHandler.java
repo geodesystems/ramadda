@@ -156,19 +156,23 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
 	if(!theTag.equals("core_visualizer")) return null;
+
 	StringBuilder sb = new StringBuilder();
 	
+	String mainId = HU.getUniqueId("id");
 	String uid = HU.getUniqueId("id");
 	String topId = HU.getUniqueId("topid");
 	String leftId = HU.getUniqueId("left");	
 
+	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;"));
 	HU.div(sb,"",HU.attrs("id",topId));
 	HU.div(sb,"",HU.attrs("id",uid,"style","border:1px solid #000;"));
+	HU.close(sb,"div");
 	sb.append("<script src='https://unpkg.com/konva@9/konva.min.js'></script>");
 	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
 	String id = "viz_" + uid;
 	StringBuilder js = new StringBuilder();
-	List<String> args = (List<String>)Utils.makeListFromValues("topId",JU.quote(topId));
+	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
 	js.append("var container = document.getElementById('"+uid+"');\n");
 	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","container",JU.map(args)));
 	js.append("\n");
@@ -177,9 +181,10 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 							       "type_borehole_registeredcoreimage");
 
 	for(Entry child: children) {
+	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
 	    js.append(HU.call(id+".addImage",HU.squote(url),child.getStringValue(request,"top_depth",""),
-			      child.getStringValue(request,"bottom_depth","")));			      
+			      child.getStringValue(request,"bottom_depth",""),HU.squote(info)));			      
 	}
 	HU.script(sb,js.toString());
 

@@ -10,6 +10,7 @@ function RamaddaCoreVisualizer(container,args) {
 
     let menuBar='';
     menuBar+=HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],"<i class='fas fa-house'></i>");
+    this.mainDiv =jqid(this.opts.mainId);
     let top = HU.div([],menuBar);
     jqid(this.opts.topId).html(top);
     jqid(this.opts.topId).find('.ramadda-clickable').click(function(){
@@ -35,6 +36,23 @@ function RamaddaCoreVisualizer(container,args) {
 
 
 RamaddaCoreVisualizer.prototype = {
+    showPopup:function(text,obj) {
+	if(!text) return;
+	if(obj &&  obj.dialog) obj.dialog.remove();
+	text = Utils.convertText(text);
+	let div = HU.div([ATTR_STYLE,HU.css('margin','10px')],
+			 text);
+
+	let dialog =  HU.makeDialog({anchor:this.mainDiv,
+				     decorate:true,
+				     at:'right top',
+				     my:'right top',
+				     header:true,
+				     content:div,
+				     draggable:true});
+
+	if(obj) obj.dialog=dialog;
+    },
     addEventListeners:function() {
 	window.addEventListener('resize', () => {
 	    const containerWidth = container.offsetWidth;
@@ -115,7 +133,7 @@ RamaddaCoreVisualizer.prototype = {
 
     },
 
-    addImage:function(url,y1,y2) {
+    addImage:function(url,y1,y2,text) {
 	Konva.Image.fromURL(url,  (image) =>{
 	    let imageX = 100;
 	    let imageY = y1;
@@ -123,6 +141,7 @@ RamaddaCoreVisualizer.prototype = {
 	    let aspectRatio = image.width()/ image.height()
 	    let newHeight= (y2-y1)
 	    let newWidth = newHeight * aspectRatio;
+
 
 	    image.setAttrs({
 		x: imageX,
@@ -155,7 +174,7 @@ RamaddaCoreVisualizer.prototype = {
 	    });
 	    this.layer.add(tick2);
 	    
-	    let rect1 = new Konva.Rect({
+	    let rect = new Konva.Rect({
 		x: imageX,
 		y: imageY,
 		width: newWidth,
@@ -164,8 +183,19 @@ RamaddaCoreVisualizer.prototype = {
 		stroke: 'black',
 		strokeWidth: 1,
 	    });
-	    this.layer.add(rect1);
+	    this.layer.add(rect);
 
+	    rect.on('click', () =>{
+		this.showPopup(text,rect);
+	    });
+
+	    rect.on('mouseover', function () {
+		document.body.style.cursor = 'pointer'; 
+	    });
+
+	    rect.on('mouseout', function () {
+		document.body.style.cursor = 'default'; 
+	    });
 
 	});
     }
