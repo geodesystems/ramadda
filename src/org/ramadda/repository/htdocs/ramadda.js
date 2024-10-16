@@ -987,7 +987,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    if(props.sortdir) {
 		url=HU.url(url,['ascending',props.sortdir=='up']);
 	    }
-	    console.log(url);
             $.getJSON(url, function(data, status, jqxhr) {
                 if (GuiUtils.isJsonError(data)) {
                     return;
@@ -1489,7 +1488,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
     changeImages: new Array(),
 
     folderClick:function(uid, url, changeImg) {
-	console.log(url);
 	RamaddaUtil.changeImages[uid] = changeImg;
 	let jqBlock = $("#" + uid);
 	if (jqBlock.length == 0) {
@@ -1881,7 +1879,7 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 	}
 
         HtmlUtils.hidePopupObject(event);
-	let container = $(HU.div(['style','position:relative;'])).appendTo("body");
+	let container = $(HU.div([ATTR_STYLE,'position:relative;'])).appendTo("body");
         $(HU.div(['style',HU.css('min-width','200px','min-height','200px'),ATTR_CLASS,'ramadda-selectdiv','id',this.domId])).appendTo(container);
         this.div = jqid(this.domId);
 	if(this.props.minWidth) {
