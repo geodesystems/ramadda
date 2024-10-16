@@ -34,11 +34,13 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHandler {
 
+    private CoreApiHandler coreApi;
     private JSONArray holes;
 
     public BoreholeTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+	coreApi = new CoreApiHandler(repository);
     }
 
 
@@ -175,19 +177,32 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	String id = "viz_" + uid;
 	StringBuilder js = new StringBuilder();
 	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
-	js.append("var container = document.getElementById('"+uid+"');\n");
-	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","container",JU.map(args)));
-	js.append("\n");
+	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
+	for(String a:new String[]{"height","canvasHeight","scale","top","showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
+	    String v=Utils.getProperty(props,a,null);
+	    if(v!=null) {
+		if(v.equals("true") || v.equals("false"))
+		    Utils.add(args,a,v);
+		else
+		    Utils.add(args,a,HU.squote(v));
+	    }
+	}
+
+
 	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
 											   originalEntry, entry, props),
 							       "type_borehole_registeredcoreimage");
 
-	for(Entry child: children) {
-	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
-	    String url = getEntryManager().getEntryResourceUrl(request, child);
-	    js.append(HU.call(id+".addEntry",HU.squote(child.getName()),HU.squote(url),child.getStringValue(request,"top_depth",""),
-			      child.getStringValue(request,"bottom_depth",""),HU.squote(info)));			      
-	}
+	String json = coreApi.makeEntriesJson(request, entry,children);
+	js.append("var coreVisualizerData = " + json);
+	js.append(";\n");
+
+	js.append("var container = document.getElementById('"+uid+"');\n");
+	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","coreVisualizerData",
+					   "container",JU.map(args)));
+	js.append("\n");
+
+
 	HU.script(sb,js.toString());
 
 

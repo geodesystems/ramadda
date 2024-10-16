@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.geodata.geo.CoreApiHandler" id="core">
+      <api request="/core/entries"    method="processEntriesApi" admin="false"/>
+</api>

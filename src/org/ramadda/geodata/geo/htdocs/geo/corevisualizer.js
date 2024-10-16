@@ -1,40 +1,145 @@
 
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
+var ID_CV_GOTO = 'goto';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
+var CV_LEGEND_X=80;
+var CV_OFFSET_X=170;
+var CV_COLUMN_WIDTH=300;
+var CV_FONT_SIZE = 15;
+var CV_TICK_WIDTH = 8;
 
-function RamaddaCoreVisualizer(container,args) {
+function RamaddaCoreVisualizer(collection,container,args) {
     if(!window['cv-base-id']) window['cv-base-id']=1;
     this.id = window['cv-base-id']++;
     let _this = this;
     this.entries = [];
+    if(!args) args={};
+    
     this.opts = {
-	screenHeight:1000,
+	screenHeight:args.height??1000,
+	canvasHeight:args.height??1000,
+	scale:1.0,
+	offset:30,
 	top:0,
 	bottom:1000,
 	scaleY:100,
+	showLabels:true,
+	showHighlight:false,
+	showMenuBar:true,
+	initScale:1.0
     }
-    if(args) $.extend(this.opts,args);
+    //check for numbers as strings
+    for (const [key, value] of Object.entries(args)) {
+	if (typeof value === 'string') {
+	    if(value=="true")
+		args[key] = true;
+	    else if(value=="false")
+		args[key] = false;		
+	    else if(!isNaN(value)) 
+		args[key] = +value;
 
-    let menuItems = [];
-    menuItems.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],"<i class='fas fa-house'></i>"));
-    menuItems.push(HU.checkbox(this.domId(ID_CV_SHOWLABELS),
-			       [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],true,'Show Labels'));
-    menuItems.push(HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
-			       [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],false,'Show Highlight'));    
+	}
+    }
+
+    $.extend(this.opts,args);
+
+    this.opts.top =+this.opts.top;
+    this.opts.top =+this.opts.top;    
+
+    let menuItemsLeft = [];
+    let menuItemsCenter = [];    
+    let menuItemsRight = [];    
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),ATTR_TITLE,'Add collection','action','add',
+			    ATTR_CLASS,'ramadda-clickable'],
+			   "<i class='fas fa-plus'></i>"));                
+
+    menuItemsLeft.push(HU.space(1));
+
+    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],"<i class='fas fa-house'></i>"));
+
+
+    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out','action','zoomout',
+			    ATTR_CLASS,'ramadda-clickable'],
+			   "<i class='fas fa-magnifying-glass-minus'></i>"));
+
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in','action','zoomin',
+			    ATTR_CLASS,'ramadda-clickable'],
+			   "<i class='fas fa-magnifying-glass-plus'></i>"));
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
+			    ATTR_CLASS,'ramadda-clickable'],
+			   "<i class='fas fa-arrow-down'></i>"));
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('up'),ATTR_TITLE,'Pan up','action','up',
+			    ATTR_CLASS,'ramadda-clickable'],
+			       "<i class='fas fa-arrow-up'></i>"));
+
+
+  
+
+
+
+    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'15',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
+
+
+
+    menuItemsRight.push(HU.checkbox(this.domId(ID_CV_SHOWLABELS),
+			       [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.opts.showLabels,'Show Labels'));
+    menuItemsRight.push(HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
+			       [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
 	
-    let menuBar=Utils.join(menuItems,HU.space(3));
+    let menuBar=HU.leftCenterRight(
+	Utils.join(menuItemsLeft,HU.space(1)),
+	Utils.join(menuItemsCenter,HU.space(1)),
+	Utils.join(menuItemsRight,HU.space(2)));	
     this.mainDiv =jqid(this.opts.mainId);
+    if(!this.opts.showMenuBar)menuBar='';
     let top = HU.div([ATTR_CLASS,"cv-menubar"],menuBar);
     jqid(this.opts.topId).html(top);
-    jqid(this.opts.topId).find('.ramadda-clickable').click(function(){
+    addHandler({
+	selectClick:function(type,id,entryId,value) {
+	    _this.loadEntries(entryId);
+	}
+    },this.domId('add'));
+
+
+    jqid(this.opts.topId).find('.ramadda-clickable').click(function(event){
 	let action = $(this).attr('action');
 	if(action=='home') {
 	    _this.resetZoomAndPan();
+	} else if(action=='zoomin') {
+	    let scale = _this.stage.scaleX();
+	    scale = 1.2*scale;
+	    _this.stage.scale({ x: scale, y: scale });
+	} else	if(action=='zoomout') {
+	    let scale = _this.stage.scaleX();
+	    scale = 0.8*scale;
+	    _this.stage.scale({ x: scale, y: scale });
+	} else	if(action=='add') {
+	    let id = $(this).attr('id');
+	    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+	    let localeId = _this.opts.mainEntry;
+	    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
+	} else	if(action=='down') {
+
+	    let pos = _this.stage.position();
+	    _this.stage.position({x:pos.px,y:pos.y-50});
+
+	} else	if(action=='up') {
+	    let pos = _this.stage.position();
+	    _this.stage.position({x:pos.px,y:pos.y+50});
 	}
+	
     })
 
+    this.jq(ID_CV_GOTO).keydown(function(event) {
+	if (event.key === "Enter" || event.keyCode === 13) {
+	    let depth = $(this).val().trim();
+	    let y = _this.worldToScreen(depth);
+	    _this.stage.position({ x: 0, y: -y });
+
+	}
+    });
     this.jq(ID_CV_SHOWLABELS).change(()=>{
 	this.toggleLabels();
     });
@@ -52,24 +157,100 @@ function RamaddaCoreVisualizer(container,args) {
 	draggable: true 
     });
 
+    this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
+
+    this.legendLayer = new Konva.Layer();
+    this.stage.add(this.legendLayer);
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
     this.drawLegend();
     this.layer.draw();
     this.addEventListeners();
+    this.collections = [];
+    this.addCollection(collection);
+
+    if(this.opts.otherEntries) {
+	Utils.split(this.opts.otherEntries,",",true,true).forEach(entryId=>{
+	    this.loadEntries(entryId);
+	});
+    }
+
+
 }
 
 
 RamaddaCoreVisualizer.prototype = {
     domId:function(id) {
-	return this.id+'_'+ id;
+	return 'id_'+this.id+'_'+ id;
     },
     jq:function(id) {
 	return jqid(this.domId(id));
     },
     
+    getXOffset:function(column) {
+	return CV_OFFSET_X+column*CV_COLUMN_WIDTH;
+    },
+    worldToScreen:function(y) {
+	let off = y-(+this.opts.top);
+
+	let perc = off/(this.opts.bottom-this.opts.top);
+	let sy =  (this.getCanvasHeight()*perc);
+	return this.opts.offset+sy*this.getScale();
+    },
+
+    getScale:function() {
+	return this.opts.scale;
+    },
     getScreenHeight:function() {
 	return this.opts.screenHeight;
+    },
+
+    getCanvasHeight:function() {
+	return this.opts.canvasHeight;
+    },
+    
+    clear:function(data) {
+	this.layer.removeChildren();
+    },
+    removeCollection:function(idx) {
+	this.collections.splice(idx, 1);
+	this.clear();
+	this.collections.forEach(data=>{
+	    this.addEntries(data);
+	});
+    },
+
+    loadEntries:function(entryId) {
+	let _this = this;
+	let url = RamaddaUtils.getUrl('/core/entries');
+	url +='?entryid='+ entryId;
+	$.getJSON(url, (data)=> {
+	    _this.addCollection(data);
+	}).fail((data)=>{
+	    window.alert('Failed to load entries');
+	});
+    },
+
+    addCollection:function(collection) {
+	this.collections.push(collection);
+	this.addEntries(collection);
+    },
+    addEntries:function(collection) {
+	let column = this.collections.length-1;
+	let x = this.getXOffset(column);
+	let l = this.makeText(collection.name,x,10,{fontStyle:'bold'});
+	this.layer.add(l);
+	this.addClickHandler(l,()=>{
+	    if(!confirm('Do you want to remove this collection?')) return;
+	    let index = this.collections.findIndex(c=>{
+		return collection==c;
+	    });
+	    this.removeCollection(index);
+
+	});
+	collection.data.forEach(entry=>{
+	    this.addEntry(entry.label,entry.url,entry.topDepth,entry.bottomDepth,entry.text,column);
+	});
     },
 
     toggleLabels: function() {
@@ -104,12 +285,7 @@ RamaddaCoreVisualizer.prototype = {
     },
 
 
-    worldToScreen:function(y) {
-	let off = y-this.opts.top;
-	let perc = off/(this.opts.bottom-this.opts.top);
-	let sy =  (this.opts.screenHeight*perc);
-	return sy;
-    },
+
     showPopup:function(text,obj) {
 	if(!text) return;
 	if(obj &&  obj.dialog) obj.dialog.remove();
@@ -157,6 +333,7 @@ RamaddaCoreVisualizer.prototype = {
 	    const stagePos = this.stage.position();
 	    switch (e.key) {
             case 'ArrowUp':
+
 		this.stage.position({
 		    x: stagePos.x,
 		    y: stagePos.y + scrollSpeed
@@ -196,8 +373,9 @@ RamaddaCoreVisualizer.prototype = {
 	let opts = {
 	    doOffsetWidth:false,
 	    fill:'#000',
-	    fontSize:15,
-	    background:null
+	    fontSize:CV_FONT_SIZE,
+	    background:null,
+	    fontStyle:'',
 	}
 	if(args) $.extend(opts,args);
 	let text=  new Konva.Text({
@@ -206,6 +384,7 @@ RamaddaCoreVisualizer.prototype = {
 	    text: t,
 	    fontSize: opts.fontSize,
 	    fontFamily: 'helvetica',
+	    fontStyle:opts.fontStyle,
 	    fill: opts.fill,
 	});
 
@@ -230,8 +409,8 @@ RamaddaCoreVisualizer.prototype = {
 	return text;
     },
     drawLegend:function() {
-	let legendX = 50;
-	let tickWidth = 20;
+	let legendX = CV_LEGEND_X;
+	let tickWidth = CV_TICK_WIDTH;
 	let h = this.opts.bottom-this.opts.top;
 	let step = h/100;
 	let cnt = 10;
@@ -247,13 +426,22 @@ RamaddaCoreVisualizer.prototype = {
 	    if(cnt==0) y1=y;
 	    y2=y;
 	    let l1 = this.makeText(i,legendX-tickWidth,y,{doOffsetWidth:true});
-	    this.layer.add(l1);
+	    this.legendLayer.add(l1);
 	    let tick1 = new Konva.Line({
 		points: [legendX-tickWidth, y, legendX, y],
 		stroke: CV_LINE_COLOR,
 		strokeWidth: 1,
 	    });
-	    this.layer.add(tick1);
+	    this.legendLayer.add(tick1);
+	    let tick2 = new Konva.Line({
+		points: [legendX, y, legendX+1000, y],
+		stroke: CV_LINE_COLOR,
+		strokeWidth: 0.4,
+		dash: [5, 5],
+	    });
+	    this.legendLayer.add(tick2);
+
+
 	}
 
 	let line = new Konva.Line({
@@ -261,18 +449,33 @@ RamaddaCoreVisualizer.prototype = {
 	    stroke: CV_LINE_COLOR,
 	    strokeWidth: 1,
 	});
-	this.layer.add(line);
+	this.legendLayer.add(line);
 
 
     },
 
-    addEntry:function(label,url,y1,y2,text) {
+    addClickHandler:function(obj,f) {
+	obj.on('click', () =>{
+	    f();
+	});
+	
+	obj.on('mouseover', function () {
+	    document.body.style.cursor = 'pointer'; 
+	});
+	obj.on('mouseout', function () {
+	    document.body.style.cursor = 'default'; 
+	});
+    },
+
+
+    addEntry:function(label,url,y1,y2,text,column) {
+	if(!Utils.isDefined(column)) column = 0;
 	let scy1 = this.worldToScreen(y1);
 	let scy2 = this.worldToScreen(y2);
 
 
 	Konva.Image.fromURL(url,  (image) =>{
-	    let imageX = 100;
+	    let imageX = this.getXOffset(column);
 	    let imageY = scy1;
 	    let scaleX = 0.5;
 	    let aspectRatio = image.width()/ image.height()
@@ -285,9 +488,9 @@ RamaddaCoreVisualizer.prototype = {
 		width:newWidth,
 		height:newHeight,
             });
-	    let tickWidth=20;
+	    let tickWidth=CV_TICK_WIDTH;
 	    this.layer.add(image);
-	    let l1 = this.makeText(y1,imageX-tickWidth,imageY,{doOffsetWidth:true});
+	    let l1 = this.makeText(y1,imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:10});
 	    this.layer.add(l1);
 	    let tick1 = new Konva.Line({
 		points: [imageX-tickWidth, imageY, imageX, imageY],
@@ -298,7 +501,7 @@ RamaddaCoreVisualizer.prototype = {
 
 
 	    let y = imageY+newHeight;
-	    let l2 = this.makeText(y2,imageX-tickWidth,y,{doOffsetWidth:true});
+	    let l2 = this.makeText(y2,imageX-tickWidth,y,{doOffsetWidth:true,fontSize:10});
 	    this.layer.add(l2);
 
 	    let tick2 = new Konva.Line({
@@ -321,18 +524,9 @@ RamaddaCoreVisualizer.prototype = {
 	    if(!this.showHighlight()) {
 		rect.stroke('transparent');
 	    }
+		
+	    this.addClickHandler(rect,()=>{this.showPopup(text,rect);});
 
-	    rect.on('click', () =>{
-		this.showPopup(text,rect);
-	    });
-
-	    rect.on('mouseover', function () {
-		document.body.style.cursor = 'pointer'; 
-	    });
-
-	    rect.on('mouseout', function () {
-		document.body.style.cursor = 'default'; 
-	    });
 
 	    let ilabel = this.makeText(label,imageX+10,imageY+10,{background:'#fff'});
 	    this.layer.add(ilabel);
