@@ -1024,7 +1024,8 @@ public class HtmlOutputHandler extends OutputHandler {
 	    for(Entry child: children) {
 		boolean didIt = false;
 		for(String type: types) {
-		    if(child.getTypeHandler().isType(type)) {
+		    if(type.equals("isgroup") && child.getTypeHandler().isGroup() ||
+		       child.getTypeHandler().isType(type)) {
 			byType.add(child);
 			didIt = true;
 			break;
