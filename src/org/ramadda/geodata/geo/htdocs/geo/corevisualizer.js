@@ -9,6 +9,7 @@ var CV_LEGEND_X=80;
 var CV_OFFSET_X=170;
 var CV_COLUMN_WIDTH=300;
 var CV_FONT_SIZE = 15;
+var CV_FONT_SIZE_SMALL = 10;
 var CV_TICK_WIDTH = 8;
 
 
@@ -477,6 +478,10 @@ RamaddaCoreVisualizer.prototype = {
 	let oldScale = this.stage.scaleX();
 	let newScale = oldScale * scaleBy;
 	let stagePos = this.stage.position();
+	if(!mousePos) {
+	    mousePos = {x:0,y:0};
+	}
+
 	let mousePointTo = {
 	    x: (mousePos.x - stagePos.x) / oldScale,
 	    y: (mousePos.y - stagePos.y) / oldScale
@@ -726,7 +731,7 @@ RamaddaCoreVisualizer.prototype = {
             });
 	    let tickWidth=CV_TICK_WIDTH;
 	    this.layer.add(image);
-	    let l1 = this.makeText(Utils.formatNumber(y1),imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:10});
+	    let l1 = this.makeText(Utils.formatNumber(y1),imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	    this.layer.add(l1);
 	    let tick1 = new Konva.Line({
 		points: [imageX-tickWidth, imageY, imageX, imageY],
@@ -737,7 +742,7 @@ RamaddaCoreVisualizer.prototype = {
 
 
 	    let y = imageY+newHeight;
-	    let l2 = this.makeText(Utils.formatNumber(y2),imageX-tickWidth,y,{doOffsetWidth:true,fontSize:10});
+	    let l2 = this.makeText(Utils.formatNumber(y2),imageX-tickWidth,y,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	    this.layer.add(l2);
 
 	    let tick2 = new Konva.Line({
@@ -764,7 +769,7 @@ RamaddaCoreVisualizer.prototype = {
 	    this.addClickHandler(rect,()=>{this.showPopup(label,text,rect);});
 
 
-	    let ilabel = this.makeText(label,imageX+10,imageY+10,{background:'#fff'});
+	    let ilabel = this.makeText(label,imageX+4,imageY+4,{fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
 	    this.layer.add(ilabel);
 	    if(!this.getShowLabels()) {
 		ilabel.hide();
