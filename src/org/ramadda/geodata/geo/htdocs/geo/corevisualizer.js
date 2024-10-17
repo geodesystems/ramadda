@@ -122,13 +122,9 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	} else	if(action=='home') {
 	    _this.resetZoomAndPan();
 	} else if(action=='zoomin') {
-	    let scale = _this.stage.scaleX();
-	    scale = 1.2*scale;
-	    _this.stage.scale({ x: scale, y: scale });
+	    _this.zoom(1.1);
 	} else	if(action=='zoomout') {
-	    let scale = _this.stage.scaleX();
-	    scale = 0.8*scale;
-	    _this.stage.scale({ x: scale, y: scale });
+	    _this.zoom(0.9);
 	} else	if(action=='add') {
 	    let id = $(this).attr('id');
 	    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
@@ -138,11 +134,10 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	    _this.showGallery($(this));
 	} else	if(action=='down') {
 	    let pos = _this.stage.position();
-	    _this.stage.position({x:pos.px,y:pos.y-50});
-
+	    _this.stage.position({x:pos.x,y:pos.y-50});
 	} else	if(action=='up') {
 	    let pos = _this.stage.position();
-	    _this.stage.position({x:pos.px,y:pos.y+50});
+	    _this.stage.position({x:pos.x,y:pos.y+50});
 	}
 	
     })
@@ -317,6 +312,7 @@ RamaddaCoreVisualizer.prototype = {
 	let _this=this;
 	this.clear();
 	this.checkRange();
+	this.stage.scale({ x: 1, y: 1 });
 	let html = '';
 
 	this.collections.forEach((collection,idx)=>{
@@ -476,6 +472,23 @@ RamaddaCoreVisualizer.prototype = {
 
 	if(obj) obj.dialog=dialog;
     },
+    zoom:function(scaleBy) {
+	let mousePos = this.stage.getPointerPosition();
+	let oldScale = this.stage.scaleX();
+	let newScale = oldScale * scaleBy;
+	let stagePos = this.stage.position();
+	let mousePointTo = {
+	    x: (mousePos.x - stagePos.x) / oldScale,
+	    y: (mousePos.y - stagePos.y) / oldScale
+	};
+	let newPos = {
+	    x: mousePos.x - mousePointTo.x * newScale,
+	    y: mousePos.y - mousePointTo.y * newScale
+	};
+	this.stage.scale({ x: newScale, y: newScale });
+	this.stage.position(newPos);
+	this.stage.batchDraw();
+    },
     addEventListeners:function() {
 	window.addEventListener('resize', () => {
 	    const containerWidth = container.offsetWidth;
@@ -483,6 +496,9 @@ RamaddaCoreVisualizer.prototype = {
 	    this.stage.batchDraw();
 	});
 
+	this.stage.on('dblclick',  (e)=> {
+	    this.zoom(1.2);
+	});
 	this.stage.on('wheel', (e) => {
 	    e.evt.preventDefault(); 
 	    let scale = this.stage.scaleX();
@@ -612,9 +628,8 @@ RamaddaCoreVisualizer.prototype = {
 	    };
 	    let y1 = this.worldToScreen(min);
 	    let y2 = this.worldToScreen(max);	    
-	    y1-=(y2-y1)*0.2;
+	    y1-=(y2-y1)*0.05;
 	    if(y1<0) y1=0;
-//	    console.log('y1',y1);
 	    let distance = y2-y1;
 	    let canvasHeight = this.stage.height();
 	    let scaleFactor = canvasHeight / distance; 
@@ -711,7 +726,7 @@ RamaddaCoreVisualizer.prototype = {
             });
 	    let tickWidth=CV_TICK_WIDTH;
 	    this.layer.add(image);
-	    let l1 = this.makeText(y1,imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:10});
+	    let l1 = this.makeText(Utils.formatNumber(y1),imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:10});
 	    this.layer.add(l1);
 	    let tick1 = new Konva.Line({
 		points: [imageX-tickWidth, imageY, imageX, imageY],
@@ -722,7 +737,7 @@ RamaddaCoreVisualizer.prototype = {
 
 
 	    let y = imageY+newHeight;
-	    let l2 = this.makeText(y2,imageX-tickWidth,y,{doOffsetWidth:true,fontSize:10});
+	    let l2 = this.makeText(Utils.formatNumber(y2),imageX-tickWidth,y,{doOffsetWidth:true,fontSize:10});
 	    this.layer.add(l2);
 
 	    let tick2 = new Konva.Line({
