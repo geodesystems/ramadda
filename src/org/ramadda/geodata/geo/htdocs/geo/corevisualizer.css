@@ -1,8 +1,9 @@
 
 .cv-main {
 }
+
 .cv-top {
-    border:1px solid #ccc;
+    border:var(--basic-border);
     border-bottom:0px;
     padding:4px;
 }
@@ -16,5 +17,5 @@
 }
 
 .cv-canvas {
-    border:1px solid #ccc;
+    border:var(--basic-border);
 }
