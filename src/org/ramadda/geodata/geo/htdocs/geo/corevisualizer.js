@@ -10,6 +10,7 @@ var CV_COLUMN_WIDTH=300;
 var CV_FONT_SIZE = 15;
 var CV_TICK_WIDTH = 8;
 
+
 function RamaddaCoreVisualizer(collection,container,args) {
     if(!window['cv-base-id']) window['cv-base-id']=1;
     this.id = window['cv-base-id']++;
@@ -74,6 +75,9 @@ function RamaddaCoreVisualizer(collection,container,args) {
 			    ATTR_CLASS,'ramadda-clickable'],
 			       "<i class='fas fa-arrow-up'></i>"));
 
+    menuItemsCenter.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
+			    ATTR_CLASS,'ramadda-clickable'],
+			       "<i class='fas fa-images'></i>"));
 
   
 
@@ -120,8 +124,9 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
 	    let localeId = _this.opts.mainEntry;
 	    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
+	} else	if(action=='gallery') {
+	    _this.showGallery($(this));
 	} else	if(action=='down') {
-
 	    let pos = _this.stage.position();
 	    _this.stage.position({x:pos.px,y:pos.y-50});
 
@@ -167,6 +172,8 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.layer.draw();
     this.addEventListeners();
     this.collections = [];
+    this.collectionIndex = 0;
+
     this.addCollection(collection);
 
     if(this.opts.otherEntries) {
@@ -198,6 +205,47 @@ RamaddaCoreVisualizer.prototype = {
 	return this.opts.offset+sy*this.getScale();
     },
 
+    showGallery: function(anchor) {
+	let contents=[];
+	this.collections.forEach(c=>{
+	    let html = '';
+	    let sorted = c.data.sort((e1,e2)=>{
+		return e1.topDepth-e2.topDepth;
+	    });
+	    sorted.forEach(entry=>{
+		let label = entry.label;
+		label+=' ' +entry.topDepth +' - ' +entry.bottomDepth;
+		label = HU.href(RamaddaUtil.getEntryUrl(entry.entryId),label,
+				['target','_entry']);
+
+		html+=HU.b(label);
+
+		html+='<br>';
+		html+=HU.image(entry.url,[ATTR_WIDTH,'400px']);
+		html+='<br>';
+	    });
+	    html = HU.div([ATTR_STYLE,HU.css('padding','10px','max-height','600px','overflow-y','auto')],html);
+	    contents.push({label:c.name,contents:html});
+	});
+	let gallery;
+	let tabs;
+	if(contents.length>1) {
+	    tabs = HU.makeTabs(contents);
+	    gallery = tabs.contents;
+	} else {
+	    gallery=HU.b(contents[0].label) +'<br>' + contents[0].contents;
+	}
+	let dialog =  HU.makeDialog({anchor:anchor,
+				     decorate:true,
+				     at:'right top',
+				     my:'right top',
+				     header:true,
+				     content:gallery,
+				     draggable:true});
+	if(tabs) {
+	    tabs.init();
+	}
+    },
     getScale:function() {
 	return this.opts.scale;
     },
@@ -215,8 +263,9 @@ RamaddaCoreVisualizer.prototype = {
     removeCollection:function(idx) {
 	this.collections.splice(idx, 1);
 	this.clear();
-	this.collections.forEach(data=>{
-	    this.addEntries(data);
+	this.collectionIndex=0;
+	this.collections.forEach(collection=>{
+	    this.addEntries(collection);
 	});
     },
 
@@ -232,18 +281,24 @@ RamaddaCoreVisualizer.prototype = {
     },
 
     addCollection:function(collection) {
+	if(!Utils.isDefined(window.cv_collection_id))
+	    window.cv_collection_id = 0;
+	window.cv_collection_id++;
+	collection.collectionId=window.cv_collection_id;
 	this.collections.push(collection);
 	this.addEntries(collection);
     },
     addEntries:function(collection) {
-	let column = this.collections.length-1;
+	this.collectionIndex++;
+	let column = this.collectionIndex-1;
 	let x = this.getXOffset(column);
 	let l = this.makeText(collection.name,x,10,{fontStyle:'bold'});
+	l.collectionId = collection.collectionId;
 	this.layer.add(l);
 	this.addClickHandler(l,()=>{
 	    if(!confirm('Do you want to remove this collection?')) return;
 	    let index = this.collections.findIndex(c=>{
-		return collection==c;
+		return collection.collectionId==c.collectionId;
 	    });
 	    this.removeCollection(index);
 
@@ -286,7 +341,8 @@ RamaddaCoreVisualizer.prototype = {
 
 
 
-    showPopup:function(text,obj) {
+    showPopup:function(label,text,obj) {
+	let _this = this;
 	if(!text) return;
 	if(obj &&  obj.dialog) obj.dialog.remove();
 	text = Utils.convertText(text);
@@ -300,6 +356,37 @@ RamaddaCoreVisualizer.prototype = {
 				     header:true,
 				     content:div,
 				     draggable:true});
+
+	
+	dialog.find('.wiki-image img').css('cursor','pointer');
+	dialog.find('.wiki-image img').click(function() {
+	    let url  =$(this).attr('src');
+	    let div = HU.image(url,[ATTR_WIDTH,'800px']);
+	    let idialog =  HU.makeDialog({anchor:dialog,
+					  decorate:true,
+					  at:'right top',
+					  my:'right top',
+					  header:true,
+					  content:div,
+					  draggable:true});
+
+	    dialog.remove();
+	    
+	    });
+	//Not now
+	if(false && !Utils.isAnonymous()) {
+	    dialog.find('.ramadda-column-value').each(function() {
+		let id = $(this).attr('column-id');
+		if(id=='top_depth' || id=='bottom_depth') {
+		    let v = $(this).html();
+		    let input = HU.input('',v,[ATTR_ID,_this.domId('input'+id)]);
+		    $(input).appendTo($(this)).keypress(function(event) {
+			if (event.keyCode === 13) {
+			    console.log($(this).val());
+			}});
+		}
+	    });
+	}
 
 	if(obj) obj.dialog=dialog;
     },
@@ -434,7 +521,7 @@ RamaddaCoreVisualizer.prototype = {
 	    });
 	    this.legendLayer.add(tick1);
 	    let tick2 = new Konva.Line({
-		points: [legendX, y, legendX+1000, y],
+		points: [legendX, y, legendX+3000, y],
 		stroke: CV_LINE_COLOR,
 		strokeWidth: 0.4,
 		dash: [5, 5],
@@ -482,6 +569,7 @@ RamaddaCoreVisualizer.prototype = {
 	    let newHeight= (scy2-scy1)
 	    let newWidth = newHeight * aspectRatio;
 
+
 	    image.setAttrs({
 		x: imageX,
 		y: imageY,
@@ -525,7 +613,7 @@ RamaddaCoreVisualizer.prototype = {
 		rect.stroke('transparent');
 	    }
 		
-	    this.addClickHandler(rect,()=>{this.showPopup(text,rect);});
+	    this.addClickHandler(rect,()=>{this.showPopup(label,text,rect);});
 
 
 	    let ilabel = this.makeText(label,imageX+10,imageY+10,{background:'#fff'});

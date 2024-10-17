@@ -63,6 +63,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
 	    entries.add(JU.map("url",JU.quote(url),"label",JU.quote(child.getName()),
+			       "entryId",JU.quote(child.getId()),
 			       "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
 			       "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
 			       "text",JU.quote(info)));
