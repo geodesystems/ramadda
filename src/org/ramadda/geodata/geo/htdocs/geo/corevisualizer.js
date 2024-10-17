@@ -52,37 +52,39 @@ function RamaddaCoreVisualizer(collection,container,args) {
     let menuItemsLeft = [];
     let menuItemsCenter = [];    
     let menuItemsRight = [];    
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),ATTR_TITLE,'Add collection','action','add',
-			    ATTR_CLASS,'ramadda-clickable'],
-			   "<i class='fas fa-plus'></i>"));                
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
+				ATTR_TITLE,'Add collection','action','add',
+				ATTR_CLASS,'ramadda-clickable'],
+			       HU.getIconImage('fas fa-plus')));
 
     menuItemsLeft.push(HU.space(1));
 
-    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],"<i class='fas fa-house'></i>"));
+    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
 
 
     menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out','action','zoomout',
-			    ATTR_CLASS,'ramadda-clickable'],
-			   "<i class='fas fa-magnifying-glass-minus'></i>"));
+				ATTR_CLASS,'ramadda-clickable'],
+			       HU.getIconImage('fas fa-magnifying-glass-minus')));
 
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in','action','zoomin',
 			    ATTR_CLASS,'ramadda-clickable'],
-			   "<i class='fas fa-magnifying-glass-plus'></i>"));
+			       HU.getIconImage('fas fa-magnifying-glass-plus')));
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
 			    ATTR_CLASS,'ramadda-clickable'],
-			   "<i class='fas fa-arrow-down'></i>"));
+			       HU.getIconImage('fas fa-arrow-down')));
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId('up'),ATTR_TITLE,'Pan up','action','up',
 			    ATTR_CLASS,'ramadda-clickable'],
-			       "<i class='fas fa-arrow-up'></i>"));
+			       HU.getIconImage('fas fa-arrow-up')));
 
     menuItemsCenter.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
 			    ATTR_CLASS,'ramadda-clickable'],
-			       "<i class='fas fa-images'></i>"));
+				 HU.getIconImage('fas fa-images')));
 
   
 
 
 
+    menuItemsLeft.push(HU.space(1));
     menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'15',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
 
 
@@ -227,6 +229,8 @@ RamaddaCoreVisualizer.prototype = {
 	    html = HU.div([ATTR_STYLE,HU.css('padding','10px','max-height','600px','overflow-y','auto')],html);
 	    contents.push({label:c.name,contents:html});
 	});
+	if(this.collections.length==0)
+	    contents.push({label:'',contents:'No collections are available'});
 	let gallery;
 	let tabs;
 	if(contents.length>1) {
