@@ -2535,8 +2535,9 @@ var Utils =  {
         return s;
     },
     formatNumberInner: function(number,debug) {
-        var anumber = Math.abs(number);
-        if (anumber == Math.floor(anumber)) return String(number);
+        let anumber = Math.abs(number);
+	let inumber = Math.floor(anumber);
+        if (anumber == inumber) return String(inumber);
         if (anumber > 1000) {
             return number_format(number, 0);
         } else if (anumber > 100) {
