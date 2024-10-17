@@ -167,18 +167,18 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	String leftId = HU.getUniqueId("left");	
 
 	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;","class","cv-main"));
-	HU.div(sb,"",HU.attrs("id",topId,"class","cv-top"));
+	HU.div(sb,"",HU.attrs("id",topId,"class","cv-top","style","position:relative"));
 	HU.div(sb,"",HU.attrs("class","cv-canvas","id",uid));
 	HU.close(sb,"div");
-	sb.append("<script src='https://unpkg.com/konva@9/konva.min.js'></script>");
-	HU.cssLink(sb,
-		   getPageHandler().makeHtdocsUrl("/geo/corevisualizer.css"));
+	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/konva.min.js"));
+	HU.cssLink(sb, getPageHandler().makeHtdocsUrl("/geo/corevisualizer.css"));
 	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
 	String id = "viz_" + uid;
 	StringBuilder js = new StringBuilder();
 	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
 	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
-	for(String a:new String[]{"height","canvasHeight","scale","top","showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
+	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
+				  "showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
 	    String v=Utils.getProperty(props,a,null);
 	    if(v!=null) {
 		if(v.equals("true") || v.equals("false"))

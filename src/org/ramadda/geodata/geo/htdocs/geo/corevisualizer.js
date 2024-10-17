@@ -2,6 +2,7 @@
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var ID_CV_GOTO = 'goto';
+var ID_CV_COLLECTIONS= 'collections';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
 var CV_LEGEND_X=80;
@@ -19,18 +20,22 @@ function RamaddaCoreVisualizer(collection,container,args) {
     if(!args) args={};
     
     this.opts = {
-	screenHeight:args.height??1000,
-	canvasHeight:args.height??1000,
+	screenHeight:args.height??800,
 	scale:1.0,
 	offset:30,
+	autoSize:true,
 	top:0,
 	bottom:1000,
+	range: {
+	},
+
 	scaleY:100,
 	showLabels:true,
 	showHighlight:false,
 	showMenuBar:true,
 	initScale:1.0
     }
+
     //check for numbers as strings
     for (const [key, value] of Object.entries(args)) {
 	if (typeof value === 'string') {
@@ -45,12 +50,10 @@ function RamaddaCoreVisualizer(collection,container,args) {
     }
 
     $.extend(this.opts,args);
-
     this.opts.top =+this.opts.top;
-    this.opts.top =+this.opts.top;    
+
 
     let menuItemsLeft = [];
-    let menuItemsCenter = [];    
     let menuItemsRight = [];    
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
 				ATTR_TITLE,'Add collection','action','add',
@@ -76,7 +79,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
 			    ATTR_CLASS,'ramadda-clickable'],
 			       HU.getIconImage('fas fa-arrow-up')));
 
-    menuItemsCenter.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
+    menuItemsRight.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
 			    ATTR_CLASS,'ramadda-clickable'],
 				 HU.getIconImage('fas fa-images')));
 
@@ -86,18 +89,21 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
     menuItemsLeft.push(HU.space(1));
     menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'15',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
+    menuItemsLeft.push(HU.space(1));
+    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
+			       ATTR_STYLE,HU.css('max-width','600px','overflow-x','auto')]));
 
 
+    menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
+				 ATTR_TITLE,'Settings','action','settings',
+			    ATTR_CLASS,'ramadda-clickable'],
+				 HU.getIconImage('fas fa-cog')));
 
-    menuItemsRight.push(HU.checkbox(this.domId(ID_CV_SHOWLABELS),
-			       [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.opts.showLabels,'Show Labels'));
-    menuItemsRight.push(HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
-			       [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
+
 	
-    let menuBar=HU.leftCenterRight(
-	Utils.join(menuItemsLeft,HU.space(1)),
-	Utils.join(menuItemsCenter,HU.space(1)),
-	Utils.join(menuItemsRight,HU.space(2)));	
+    let menuBar=Utils.join(menuItemsLeft,HU.space(1));
+    menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
+		     Utils.join(menuItemsRight,HU.space(2)));
     this.mainDiv =jqid(this.opts.mainId);
     if(!this.opts.showMenuBar)menuBar='';
     let top = HU.div([ATTR_CLASS,"cv-menubar"],menuBar);
@@ -111,7 +117,9 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
     jqid(this.opts.topId).find('.ramadda-clickable').click(function(event){
 	let action = $(this).attr('action');
-	if(action=='home') {
+	if(action=='settings') {
+	    _this.showSettings($(this));
+	} else	if(action=='home') {
 	    _this.resetZoomAndPan();
 	} else if(action=='zoomin') {
 	    let scale = _this.stage.scaleX();
@@ -147,13 +155,6 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
 	}
     });
-    this.jq(ID_CV_SHOWLABELS).change(()=>{
-	this.toggleLabels();
-    });
-
-    this.jq(ID_CV_SHOWHIGHLIGHT).change(()=>{
-	this.toggleHighlight();
-    });
     
 
 
@@ -165,26 +166,22 @@ function RamaddaCoreVisualizer(collection,container,args) {
     });
 
     this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
-
     this.legendLayer = new Konva.Layer();
     this.stage.add(this.legendLayer);
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
-    this.drawLegend();
-    this.layer.draw();
     this.addEventListeners();
     this.collections = [];
     this.collectionIndex = 0;
-
     this.addCollection(collection);
-
     if(this.opts.otherEntries) {
 	Utils.split(this.opts.otherEntries,",",true,true).forEach(entryId=>{
 	    this.loadEntries(entryId);
 	});
     }
 
-
+    this.drawLegend();
+    this.layer.draw();
 }
 
 
@@ -200,13 +197,47 @@ RamaddaCoreVisualizer.prototype = {
 	return CV_OFFSET_X+column*CV_COLUMN_WIDTH;
     },
     worldToScreen:function(y) {
-	let off = y-(+this.opts.top);
-
-	let perc = off/(this.opts.bottom-this.opts.top);
+	let range = this.opts.range;
+	let mh = range.minHeight;
+	let r1 = range.max-range.min;
+	let perc = (y-0)/r1;
 	let sy =  (this.getCanvasHeight()*perc);
-	return this.opts.offset+sy*this.getScale();
+	let v= sy;
+	return v;
     },
 
+    showSettings:function(anchor) {
+	let _this = this;
+	let html = '';
+	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_SHOWLABELS),
+				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.opts.showLabels,'Show Labels'));
+
+	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
+				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
+	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+	let dialog =  HU.makeDialog({anchor:anchor,
+				     decorate:true,
+				     at:'right bottom',
+				     my:'right top',
+				     header:true,
+				     content:html,
+				     draggable:true});
+
+	this.jq(ID_CV_SHOWLABELS).change(function(){
+	    _this.opts.showLabels = $(this).is(':checked');
+	    _this.toggleLabels();
+	});
+
+	this.jq(ID_CV_SHOWHIGHLIGHT).change(function(){
+	    _this.opts.showHighlight = $(this).is(':checked');
+	    _this.toggleHighlight();
+	});
+
+
+
+    },
     showGallery: function(anchor) {
 	let contents=[];
 	this.collections.forEach(c=>{
@@ -258,19 +289,17 @@ RamaddaCoreVisualizer.prototype = {
     },
 
     getCanvasHeight:function() {
-	return this.opts.canvasHeight;
+	return this.stage.height();
     },
     
     clear:function(data) {
 	this.layer.removeChildren();
+	this.layer.destroyChildren() 
+	this.layer.clear();
     },
     removeCollection:function(idx) {
 	this.collections.splice(idx, 1);
-	this.clear();
-	this.collectionIndex=0;
-	this.collections.forEach(collection=>{
-	    this.addEntries(collection);
-	});
+	this.drawCollections();
     },
 
     loadEntries:function(entryId) {
@@ -284,22 +313,72 @@ RamaddaCoreVisualizer.prototype = {
 	});
     },
 
+    drawCollections:function() {
+	let _this=this;
+	this.clear();
+	this.checkRange();
+	let html = '';
+
+	this.collections.forEach((collection,idx)=>{
+	    collection.collectionIndex = idx;
+	    this.addEntries(collection);
+	    html+=HU.span(['collection-index',idx,
+			   ATTR_CLASS,'ramadda-button',
+			   ATTR_STYLE,HU.css('display','inline-block')],collection.name);
+	});
+	this.jq(ID_CV_COLLECTIONS).html(html);
+	this.jq(ID_CV_COLLECTIONS).find('.ramadda-button').button().click(function() {
+	    let collection = _this.collections[+$(this).attr('collection-index')];
+	    let html = '';
+	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+			  'action','view'],'View Entry');
+	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+			  'action','goto'],'Scroll To');	    
+	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+			  'action','delete'],'Delete');
+	    html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
+	    let dialog =  HU.makeDialog({anchor:$(this),
+				     decorate:true,
+				     at:'left bottom',
+				     my:'left top',
+				     content:html,
+				     draggable:false});
+
+	    dialog.find('.ramadda-clickable').click(function() {
+		let action = $(this).attr('action');
+		if(action=='delete') {
+		    _this.removeCollection(collection.collectionIndex);
+		} else if(action=='goto') {
+		    let y = _this.worldToScreen(collection.range.min);
+		    y-=50;
+		    _this.stage.position({x:0,y:-y});
+		} else if(action=='view') {
+		    let url = RamaddaUtils.getEntryUrl(collection.entryId);
+		    window.open(url, '_entry');
+		}
+		dialog.remove();
+	    });
+	});
+	this.drawLegend();
+    },
     addCollection:function(collection) {
 	if(!Utils.isDefined(window.cv_collection_id))
 	    window.cv_collection_id = 0;
 	window.cv_collection_id++;
 	collection.collectionId=window.cv_collection_id;
 	this.collections.push(collection);
-	this.addEntries(collection);
+	this.drawCollections();
     },
     addEntries:function(collection) {
 	this.collectionIndex++;
-	let column = this.collectionIndex-1;
+	let column = collection.collectionIndex;
+
 	let x = this.getXOffset(column);
-	let l = this.makeText(collection.name,x,10,{fontStyle:'bold'});
+	let l = this.makeText(collection.name,x,this.worldToScreen(collection.range.min)-20,
+			      {fontStyle:'bold'});
 	l.collectionId = collection.collectionId;
 	this.layer.add(l);
-	this.addClickHandler(l,()=>{
+	this.addClickHandler(l,(e)=>{
 	    if(!confirm('Do you want to remove this collection?')) return;
 	    let index = this.collections.findIndex(c=>{
 		return collection.collectionId==c.collectionId;
@@ -307,13 +386,16 @@ RamaddaCoreVisualizer.prototype = {
 	    this.removeCollection(index);
 
 	});
+	this.checkRange();
+	let range =  this.opts.range;
+//	console.log(collection.name,'range',range.min,range.max);
 	collection.data.forEach(entry=>{
 	    this.addEntry(entry.label,entry.url,entry.topDepth,entry.bottomDepth,entry.text,column);
 	});
     },
 
     toggleLabels: function() {
-	let show = this.showLabels();
+	let show = this.getShowLabels();
 	this.entries.forEach(e=>{
 	    if(!e.ilabel) return;
 	    if(show) {
@@ -325,11 +407,11 @@ RamaddaCoreVisualizer.prototype = {
 	    }		
 	});
     },
-    showLabels: function() {
-	return this.jq(ID_CV_SHOWLABELS).is(':checked');
+    getShowLabels: function() {
+	return this.opts.showLabels;
     },
     toggleHighlight: function() {
-	let show = this.showHighlight();
+	let show = this.getShowHighlight();
 	this.entries.forEach(e=>{
 	    if(!e.highlight) return;
 	    if(show) {
@@ -339,8 +421,8 @@ RamaddaCoreVisualizer.prototype = {
 	    }		
 	});
     },
-    showHighlight: function() {
-	return this.jq(ID_CV_SHOWHIGHLIGHT).is(':checked');
+    getShowHighlight: function() {
+	return this.opts.showHighlight;
     },
 
 
@@ -458,6 +540,7 @@ RamaddaCoreVisualizer.prototype = {
     resetZoomAndPan:function() {
 	this.stage.scale({ x: 1, y: 1 });
 	this.stage.position({ x: 0, y: 0 });
+	this.drawLegend();
 	this.stage.batchDraw();
     },
     makeText:function(t,x,y,args) {
@@ -499,10 +582,56 @@ RamaddaCoreVisualizer.prototype = {
 	}
 	return text;
     },
+    checkRange:function() {
+	let min =null;
+	let max =null;    
+	let minHeight=null;
+	this.collections.forEach(collection=>{
+	    let cmin =null;
+	    let cmax =null;    
+	    collection.data.forEach(entry=>{
+		if(min === null || entry.topDepth<min) min =+entry.topDepth;
+		if(max === null || entry.bottomDepth>max) max =+entry.bottomDepth;
+		if(cmin === null || entry.topDepth<cmin) cmin =+entry.topDepth;
+		if(cmax === null || entry.bottomDepth>cmax) cmax =+entry.bottomDepth;
+		let h = entry.bottomDepth-entry.topDepth;
+		if(h>0) {
+		    if(!Utils.isDefined(minHeight) || h<minHeight) {
+			minHeight=h;
+		    }
+		}
+	    });
+	    collection.range = {min:cmin,max:cmax};
+	});
+
+	if(Utils.isDefined(min)) {
+	    this.opts.range={
+		min:min,
+		max:max,
+		minHeight:minHeight
+	    };
+	    let y1 = this.worldToScreen(min);
+	    let y2 = this.worldToScreen(max);	    
+	    y1-=(y2-y1)*0.2;
+	    if(y1<0) y1=0;
+//	    console.log('y1',y1);
+	    let distance = y2-y1;
+	    let canvasHeight = this.stage.height();
+	    let scaleFactor = canvasHeight / distance; 
+//	    this.stage.scale({ x: scaleFactor, y: scaleFactor });
+	    this.stage.position({ x: 0, y: -y1 });
+	}
+    },
+
+
     drawLegend:function() {
+	this.legendLayer.clear();
+	this.legendLayer.destroyChildren() 
+	this.legendLayer.draw();
+	this.checkRange();
 	let legendX = CV_LEGEND_X;
 	let tickWidth = CV_TICK_WIDTH;
-	let h = this.opts.bottom-this.opts.top;
+	let h = this.getCanvasHeight()-this.opts.top;
 	let step = h/100;
 	let cnt = 10;
 	while(cnt-->0) {
@@ -512,11 +641,14 @@ RamaddaCoreVisualizer.prototype = {
 	}
 	let y1 = 0;
 	let y2 = 0;	
-	for(let i=this.opts.top;i<=this.opts.bottom;i+=step) {
+	let range = this.opts.range;
+	let bottom = range.max+(0.1*(range.max-range.min));
+	for(let i=0;i<=bottom;i+=step) {
 	    let y = this.worldToScreen(i);
-	    if(cnt==0) y1=y;
+	    if(i==0) y1=y;
 	    y2=y;
-	    let l1 = this.makeText(i,legendX-tickWidth,y,{doOffsetWidth:true});
+	    let l1 = this.makeText(Utils.formatNumber(i),
+				   legendX-tickWidth,y,{doOffsetWidth:true});
 	    this.legendLayer.add(l1);
 	    let tick1 = new Konva.Line({
 		points: [legendX-tickWidth, y, legendX, y],
@@ -541,19 +673,18 @@ RamaddaCoreVisualizer.prototype = {
 	    strokeWidth: 1,
 	});
 	this.legendLayer.add(line);
-
-
+	this.legendLayer.draw();
     },
 
     addClickHandler:function(obj,f) {
-	obj.on('click', () =>{
-	    f();
+	obj.on('click', (e) =>{
+	    f(e);
 	});
 	
-	obj.on('mouseover', function () {
+	obj.on('mouseover', function (e) {
 	    document.body.style.cursor = 'pointer'; 
 	});
-	obj.on('mouseout', function () {
+	obj.on('mouseout', function (e) {
 	    document.body.style.cursor = 'default'; 
 	});
     },
@@ -563,8 +694,6 @@ RamaddaCoreVisualizer.prototype = {
 	if(!Utils.isDefined(column)) column = 0;
 	let scy1 = this.worldToScreen(y1);
 	let scy2 = this.worldToScreen(y2);
-
-
 	Konva.Image.fromURL(url,  (image) =>{
 	    let imageX = this.getXOffset(column);
 	    let imageY = scy1;
@@ -613,7 +742,7 @@ RamaddaCoreVisualizer.prototype = {
 		strokeWidth: 2,
 	    });
 	    this.layer.add(rect);
-	    if(!this.showHighlight()) {
+	    if(!this.getShowHighlight()) {
 		rect.stroke('transparent');
 	    }
 		
@@ -622,8 +751,9 @@ RamaddaCoreVisualizer.prototype = {
 
 	    let ilabel = this.makeText(label,imageX+10,imageY+10,{background:'#fff'});
 	    this.layer.add(ilabel);
-	    if(!this.showLabels()) {
+	    if(!this.getShowLabels()) {
 		ilabel.hide();
+		ilabel.backgroundRect.hide();
 	    }
 
 	    this.entries.push({
