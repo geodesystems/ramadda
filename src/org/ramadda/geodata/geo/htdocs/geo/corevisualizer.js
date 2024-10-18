@@ -5,7 +5,8 @@ var ID_CV_GOTO = 'goto';
 var ID_CV_COLLECTIONS= 'collections';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
-var CV_LEGEND_X=80;
+var CV_AXIS_X=100;
+
 var CV_OFFSET_X=170;
 var CV_COLUMN_WIDTH=300;
 var CV_FONT_SIZE = 15;
@@ -25,6 +26,8 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	scale:1.0,
 	offset:30,
 	autoSize:true,
+	axisX:CV_AXIS_X,
+	legendX:0,
 	top:0,
 	bottom:1000,
 	range: {
@@ -151,7 +154,6 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
 	}
     });
-    
 
 
     this.stage = new Konva.Stage({
@@ -162,9 +164,12 @@ function RamaddaCoreVisualizer(collection,container,args) {
     });
 
     this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
-    this.legendLayer = new Konva.Layer();
-    this.stage.add(this.legendLayer);
+    this.annotationLayer = new Konva.Layer();
+    this.stage.add(this.annotationLayer);
     this.layer = new Konva.Layer();
+    this.legendLayer = new Konva.Layer();    
+
+    this.stage.add(this.legendLayer);
     this.stage.add(this.layer);
     this.addEventListeners();
     this.collections = [];
@@ -173,6 +178,42 @@ function RamaddaCoreVisualizer(collection,container,args) {
     if(this.opts.otherEntries) {
 	Utils.split(this.opts.otherEntries,",",true,true).forEach(entryId=>{
 	    this.loadEntries(entryId);
+	});
+    }
+
+    if(this.opts.legendUrl) {
+	Konva.Image.fromURL(this.opts.legendUrl,  (image) =>{
+	    let y1 = this.worldToScreen(this.opts.legendTop);
+	    let y2 = this.worldToScreen(this.opts.legendBottom);	    
+	    let aspectRatio = image.width()/ image.height()
+	    let newHeight= (y2-y1)
+	    let newWidth = newHeight * aspectRatio;
+	    console.log(this.opts.legendX);
+	    image.setAttrs({
+		x: this.opts.legendX-newWidth,
+		y: y1,
+		width:newWidth,
+		height:newHeight,
+            });
+	    this.annotationLayer.add(image);
+	});
+    }
+
+    if(this.opts.annotations) {
+	Utils.split(this.opts.annotations,",",true,true).forEach(a=>{
+	    let t = a.split(":");
+	    let x= this.opts.axisX-50;
+	    let y = this.worldToScreen(+t[0]);
+	    let l = this.makeText(t[1],x,y-5,
+				  {fontStyle:'bold',doOffsetWidth:true});
+	    let tick = new Konva.Line({
+		points: [x+3, y, this.opts.axisX, y],
+		stroke: CV_LINE_COLOR,
+		strokeWidth: 0.5,
+	    });
+
+	    this.annotationLayer.add(l);
+	    this.annotationLayer.add(tick);
 	});
     }
 
@@ -190,7 +231,7 @@ RamaddaCoreVisualizer.prototype = {
     },
     
     getXOffset:function(column) {
-	return CV_OFFSET_X+column*CV_COLUMN_WIDTH;
+	return this.opts.axisX+100+column*CV_COLUMN_WIDTH;
     },
     worldToScreen:function(y) {
 	let range = this.opts.range;
@@ -649,7 +690,7 @@ RamaddaCoreVisualizer.prototype = {
 	this.legendLayer.destroyChildren() 
 	this.legendLayer.draw();
 	this.checkRange();
-	let legendX = CV_LEGEND_X;
+	let axisX = this.opts.axisX;
 	let tickWidth = CV_TICK_WIDTH;
 	let h = this.getCanvasHeight()-this.opts.top;
 	let step = h/100;
@@ -668,16 +709,16 @@ RamaddaCoreVisualizer.prototype = {
 	    if(i==0) y1=y;
 	    y2=y;
 	    let l1 = this.makeText(Utils.formatNumber(i),
-				   legendX-tickWidth,y,{doOffsetWidth:true});
+				   axisX-tickWidth,y,{doOffsetWidth:true});
 	    this.legendLayer.add(l1);
 	    let tick1 = new Konva.Line({
-		points: [legendX-tickWidth, y, legendX, y],
+		points: [axisX-tickWidth, y, axisX, y],
 		stroke: CV_LINE_COLOR,
 		strokeWidth: 1,
 	    });
 	    this.legendLayer.add(tick1);
 	    let tick2 = new Konva.Line({
-		points: [legendX, y, legendX+3000, y],
+		points: [axisX, y, axisX+3000, y],
 		stroke: CV_LINE_COLOR,
 		strokeWidth: 0.4,
 		dash: [5, 5],
@@ -688,7 +729,7 @@ RamaddaCoreVisualizer.prototype = {
 	}
 
 	let line = new Konva.Line({
-	    points: [legendX, y1, legendX, y2],
+	    points: [axisX, y1, axisX, y2],
 	    stroke: CV_LINE_COLOR,
 	    strokeWidth: 1,
 	});
@@ -717,12 +758,9 @@ RamaddaCoreVisualizer.prototype = {
 	Konva.Image.fromURL(url,  (image) =>{
 	    let imageX = this.getXOffset(column);
 	    let imageY = scy1;
-	    let scaleX = 0.5;
 	    let aspectRatio = image.width()/ image.height()
 	    let newHeight= (scy2-scy1)
 	    let newWidth = newHeight * aspectRatio;
-
-
 	    image.setAttrs({
 		x: imageX,
 		y: imageY,

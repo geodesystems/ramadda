@@ -178,6 +178,7 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
 	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
 	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
+				  "axisX","legendX","annotations","legendTop","legendBottom",
 				  "showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
 	    String v=Utils.getProperty(props,a,null);
 	    if(v!=null) {
@@ -186,6 +187,10 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 		else
 		    Utils.add(args,a,HU.squote(v));
 	    }
+	}
+	String legend=Utils.getProperty(props,"legendUrl",null);
+	if(legend!=null) {
+	    Utils.add(args,"legendUrl",JU.quote(legend));
 	}
 
 
