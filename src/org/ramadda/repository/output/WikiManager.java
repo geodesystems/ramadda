@@ -1015,8 +1015,6 @@ public class WikiManager extends RepositoryManager
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
 	throws Exception {
-
-
         boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
@@ -1366,7 +1364,6 @@ public class WikiManager extends RepositoryManager
                                 getHtmlOutputHandler().getImageUrl(request,
 								   srcEntry), srcEntry, props);
         }
-
 
 
         if ((attachment != null) && attachment.equals("*")) {
@@ -8400,15 +8397,12 @@ public class WikiManager extends RepositoryManager
         return HU.div(HU.href(js, label,linkAttrs),attrs);
     }
 
-
-
-
     
     public String getWikiImageUrl(WikiUtil wikiUtil, String src,
                                   Hashtable props) {
         try {
-
-	    if(src.startsWith("/") || HU.isFontAwesome(src)) return src;
+	    if(src.startsWith("http:") || src.startsWith("https:") ||
+	       src.startsWith("/") || HU.isFontAwesome(src)) return src;
             Entry   entry      = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
             Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
             Entry   srcEntry   = null;
