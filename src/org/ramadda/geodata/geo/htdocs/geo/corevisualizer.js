@@ -197,10 +197,6 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	});
     }
 
-    if(this.opts.annotations) {
-	this.addAnnotations(this.opts.annotations);
-    }
-
     this.drawLegend();
     this.layer.draw();
 }
@@ -259,9 +255,16 @@ RamaddaCoreVisualizer.prototype = {
 
 
     },
-    addAnnotations:function(annotations) {
-	let objs = [];
-	Utils.split(annotations,",",true,true).forEach(a=>{
+    addAnnotations:function(collection) {
+	if(!collection.annotations) return;
+	if(collection.annotationObjects) {
+	    collection.annotationObjects.forEach(obj=>{
+		this.destroy(obj);
+	    });
+	}
+	
+	let objs = collection.annotationObjects = [];
+	Utils.split(collection.annotations,",",true,true).forEach(a=>{
 	    let t = a.split(';');
 	    let x= this.opts.axisX-50;
 	    let y = this.worldToScreen(+t[0]);
@@ -352,7 +355,6 @@ RamaddaCoreVisualizer.prototype = {
 	if(collection.annotationObjects) {
 	    collection.annotationObjects.forEach(obj=>{
 		this.destroy(obj);
-
 	    });
 	}
 	this.drawCollections();
@@ -441,7 +443,7 @@ RamaddaCoreVisualizer.prototype = {
 	this.collections.push(collection);
 	this.drawCollections();
 	if(collection.annotations) {
-	    collection.annotationObjects  =this.addAnnotations(collection.annotations);
+	    this.addAnnotations(collection);
 	}
 
     },
@@ -783,6 +785,10 @@ RamaddaCoreVisualizer.prototype = {
 	});
 	this.legendLayer.add(line);
 	this.legendLayer.draw();
+	this.collections.forEach(collection=>{
+	    this.addAnnotations(collection);
+	});
+
     },
 
     addClickHandler:function(obj,f) {
