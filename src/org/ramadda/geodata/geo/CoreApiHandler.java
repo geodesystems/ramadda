@@ -8,7 +8,7 @@ package org.ramadda.geodata.geo;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
-import org.ramadda.repository.harvester.*;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -71,6 +71,24 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}
 	List<String> collection = new ArrayList<String>();
 	Utils.add(collection,"name",JU.quote(entry.getName()),"entryId",JU.quote(entry.getId()),"data",JU.list(entries));
+
+	List<String> annotations=new ArrayList<String>();
+	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_annotation"}, true)) {
+	    String desc = mtd.getAttr1();
+	    String depth = mtd.getAttr2();
+	    String style = mtd.getAttr3();	    
+	    if(Utils.stringDefined(depth)) {
+		annotations.add(depth+";"+ desc+";"+style);
+	    }
+	}
+
+	if(annotations.size()>0) {
+	    Utils.add(collection,"annotations",JU.quote(Utils.join(annotations,",")));
+	}
+
+	
+
+
 	return JU.map(collection);
     }
 

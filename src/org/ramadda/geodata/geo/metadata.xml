@@ -29,6 +29,13 @@
 	       values="file:/org/ramadda/geodata/geo/resources/stratigraphy.txt"/>      
     </type>    
     
+    <type id="geo_core_annotation" name="Geo Core Annotation"> 
+      <element id="description" name="Description" datatype="string"/>
+      <element name="Depth" datatype="int"/>
+      <element name="Style" datatype="string" suffix="e.g., background:red;fontSize:20pt"/>      
+    </type>
+
+
   </handler>
 
 
