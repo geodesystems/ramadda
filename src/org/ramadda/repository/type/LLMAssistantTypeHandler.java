@@ -1,16 +1,11 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2024 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.type;
 
-
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
-import org.ramadda.repository.type.*;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -18,18 +13,11 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.WikiUtil;
 
+import ucar.unidata.util.Misc;
+
 import org.json.*;
 import org.w3c.dom.*;
-
-import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.LogUtil;
-import ucar.unidata.util.Misc;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -37,10 +25,11 @@ import java.util.List;
 
 
 /**
-help:
-https://platform.openai.com/docs/assistants/quickstart?context=without-streaming
- */
+   https://platform.openai.com/docs/assistants/quickstart?context=without-streaming
+*/
 public class LLMAssistantTypeHandler extends GenericTypeHandler {
+
+    private static final String TAG_ASSISTANT = "llmassistant";
 
     private static final String ACTION_ASSISTANT = "llmassistant";
     private static final String ACTION_UPLOAD = "llmassistant_upload";
@@ -57,21 +46,36 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private static final String URL_RUNS= "https://api.openai.com/v1/threads/${thread}/runs";
 
 
-
     public LLMAssistantTypeHandler(Repository repository, Element entryNode)
-            throws Exception {
+	throws Exception {
         super(repository, entryNode);
     }
-
 
     public boolean canBeCreatedBy(Request request) {
         return request.getUser().getAdmin();
     }
 
-    private Result handleError(Request request, String msg) {
-	String s =  JsonUtil.map(Utils.makeListFromValues("error", JU.quote(msg)));
-	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+    private String getKey() {
+	return getLLMManager().getOpenAIKey();
     }
+
+    private Result handleError(Request request, String msg) {
+	String s =  JU.map(Utils.makeListFromValues("error", JU.quote(msg)));
+	return  new Result("", new StringBuilder(s), JU.MIMETYPE);
+    }
+
+    /**
+       curl https://api.openai.com/v1/assistants/asst_abc123
+       -H "Content-Type: application/json"	  \
+       -H "Authorization: Bearer $OPENAI_API_KEY" \
+       -H "OpenAI-Beta: assistants=v2" \
+       -d '{
+       "instructions": "You are an HR bot, and you have access to files to answer employee questions about company policies. Always response with info from either of the files.",
+       "tools": [{"type": "file_search"}],
+       "model": "gpt-4o"
+       }'
+    */
+
 
     private IO.Result call(Request request, URL url, String body) throws Exception {
 	return getRepository().getLLMManager().call(getRepository().getLLMManager().getOpenAIJobManager(),
@@ -84,7 +88,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
-            throws Exception {
+	throws Exception {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
 	String assistantId = entry.getStringValue(request,"assistant_id","");
@@ -147,35 +151,28 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	return new JSONObject(json).getString("id");
     }
 
-    /**
-       curl https://api.openai.com/v1/assistants/asst_abc123	\
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "OpenAI-Beta: assistants=v2" \
-  -d '{
-      "instructions": "You are an HR bot, and you have access to files to answer employee questions about company policies. Always response with info from either of the files.",
-      "tools": [{"type": "file_search"}],
-      "model": "gpt-4o"
-    }'
-    */
 
+    private String getWikiError(String msg) {
+	return HU.span(msg,HU.cssClass("ramadda-wiki-error"));
+    }
 
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
 	throws Exception {
-	if(!tag.equals(ACTION_ASSISTANT))
+
+	if(!tag.equals(TAG_ASSISTANT))
 	    return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
 
 	if(!getLLMManager().isOpenAIEnabled()) {
-	    return HU.span("LLM Assistant: OpenAI access is not enabled",HU.cssClass("ramadda-wiki-error"));
+	    return getWikiError("LLM Assistant: OpenAI access is not enabled");
 	}
 
 
 	String assistantId = entry.getStringValue(request,"assistant_id","");
 	if(!Utils.stringDefined(assistantId)) {
-	    return HU.span("LLM Assistant: No assistant ID is specified",HU.cssClass("ramadda-wiki-error"));
+	    return getWikiError("LLM Assistant: No assistant ID is specified");
 	}
 
 
@@ -185,16 +182,16 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    sb.append(HU.href(url,"@OpenAI",HU.attrs("target","openai")));
 	    sb.append("<br>");
 	}
-	String thread= getThread(request, entry);
-	if(thread==null) {
-	    return HU.span("LLM Assistant: Could not create thread",HU.cssClass("ramadda-wiki-error"));
-	}
+	//	String thread= getThread(request, entry);
+	//	if(thread==null) {
+	//	    return getWikiError("LLM Assistant: Could not create thread");
+//	}
         String id = HU.getUniqueId("chat_div");
 	HU.div(sb,"",HU.attrs("style","width:100%;","id", id));
 	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/wiki.js"));
 	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/documentchat.js"));
 	List<String> args = new ArrayList<String>();
-	Utils.add(args,"thread",JU.quote(thread));
+	//	Utils.add(args,"thread",JU.quote(thread));
 	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId()),
 			      JU.quote(ACTION_ASSISTANT),"null",JU.map(args)));
         return sb.toString();
@@ -204,7 +201,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private String getThread(Request request, Entry entry) throws Exception {
 	String thread  = request.getString(ARG_THREAD,null);
 	if(thread!=null) {
-	    //	    System.err.println("from arg:" + thread);
 	    return thread;
 	}
 	String sessionKey = "llmassistantthread_" + entry.getId();
@@ -224,19 +220,15 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    if(thread!=null) {
 		JSONObject obj     = new JSONObject(thread);
 		thread = obj.optString("id",null);
-		//		System.err.println("THREAD:" + thread);
+		System.err.println("NEW THREAD:" + thread);
 		if(thread!=null) {
 		    getSessionManager().putSessionProperty(request,sessionKey,thread);
 		}
 	    }
 	}
-
 	return thread;
     }
 
-    private String getKey() {
-	return getLLMManager().getOpenAIKey();
-    }
 
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
@@ -313,21 +305,19 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    return handleError(request,"Unable to create thread");
 	}
 
-
 	/*
-curl https://api.openai.com/v1/threads/thread_abc123/messages 
-      "role": "user",
-      "content": "I need to solve the equation `3x + 11 = 14`. Can you help me?"
-	 */
+	  curl https://api.openai.com/v1/threads/thread_abc123/messages 
+	  "role": "user",
+	  "content": "I need to solve the equation `3x + 11 = 14`. Can you help me?"
+	*/
 
 	String  messagesUrl = URL_MESSAGES.replace("${thread}",thread);
-	//	messagesUrl ="https://api.openai.com/v1/threads/thread_AoWuuLPxAexvGH4VfVICkiCR/messages";
 	List<String> message = new ArrayList<String>();
 	String q = request.getString("question","");
 	Utils.add(message,"role",JU.quote("user"), "content", JU.quote(q));
 	IO.Result result=call(request,   new URL(messagesUrl), JU.map(message));
 	if(result.getError()) {
-	    System.err.println("ERROR:" + result.getResult());
+	    //	    System.err.println("ERROR:" + result.getResult());
 	    return handleError(request, result.getResult());
 	}
 
@@ -366,9 +356,9 @@ curl https://api.openai.com/v1/threads/thread_abc123/messages
 			    String value =  text.getString("value");
 			    value = value.replace("\n\n","<p>");
 			    value = value.replaceAll("【.*?】","");
-			    //			    System.err.println("VALUE:" + value);
-			    String s =  JsonUtil.map(Utils.makeListFromValues("response", JU.quote(value)));
-			    return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+			    String s =  JU.map(Utils.makeListFromValues("thread",JU.quote(thread),
+									"response", JU.quote(value)));
+			    return  new Result("", new StringBuilder(s), JU.MIMETYPE);
 			}
 		    }
 		}
@@ -376,13 +366,10 @@ curl https://api.openai.com/v1/threads/thread_abc123/messages
 	    //	    System.err.println("No results: sleeping:" + sleep +" result:" + finalResult.getResult().replace("\n"," "));
 	    Misc.sleep(sleep);
 	    sleep= Math.min(5000,(int)(sleep*1.5));
-
 	}
 
-
-	StringBuilder sb = new  StringBuilder();
-	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "The call to OpenAI timed out"));
-	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
+	String s =  JU.mapAndQuote(Utils.makeListFromValues("error", "The call to OpenAI timed out"));
+	return  new Result("", new StringBuilder(s), JU.MIMETYPE);
     }
 
 }

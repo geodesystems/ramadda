@@ -96,6 +96,10 @@ function DocumentChat(id,entryId,action,models,args) {
 		this.jq('info').tooltip({
 		    content:()=>{return tt;}});
 		r = result.response??'';
+		if(result.thread) {
+		    this.opts.thread = result.thread;
+		    console.log('got thread',this.opts.thread);
+		}
 		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 	    }
@@ -120,6 +124,7 @@ function DocumentChat(id,entryId,action,models,args) {
 	    input.focus();
         }).fail((d)=>{
 	    console.log('fail',d);
+	    alert('request failed');
 	});
     }
     this.jq('transcribe').click(()=> {
