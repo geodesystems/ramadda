@@ -86,6 +86,11 @@ public class ZipOutputHandler extends OutputHandler {
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
 
     /** _more_ */
+    public static final OutputType OUTPUT_CORPUS =
+        new OutputType("Download Text Corpus", "text.corpus",
+                       OutputType.TYPE_OTHER, "", ICON_TEXT);    
+
+    /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
         new OutputType("Export Entries", "zip.export",
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
@@ -111,6 +116,7 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_ZIP);
         addType(OUTPUT_ZIPGROUP);
         addType(OUTPUT_ZIPTREE);
+        addType(OUTPUT_CORPUS);
         addType(OUTPUT_THUMBNAILS);
         addType(OUTPUT_EXPORT);
         addType(OUTPUT_EXPORT_SHALLOW);	
@@ -155,12 +161,15 @@ public class ZipOutputHandler extends OutputHandler {
             return;
         }
 
+
+
         if ((state.group != null) && state.group.isDummy()) {
             if ( !request.isAnonymous()) {
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));		
             }
         }
+
 
         boolean hasFile  = false;
         boolean hasGroup = false;
@@ -190,6 +199,10 @@ public class ZipOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.group, OUTPUT_ZIPTREE));
         }
 
+        if (hasFile) {
+	    links.add(makeLink(request, state.group, OUTPUT_CORPUS));
+	}
+
     }
 
 
@@ -211,6 +224,14 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+        OutputType output = request.getOutput();
+        if (output.equals(OUTPUT_CORPUS)) {
+	    List<Entry> children  = new ArrayList<Entry>();
+	    children.add(entry);
+            return toCorpus(request, entry.getName(), children);
+	}
+
+
 
         return toZip(request, entry.getName(), entries, false, false,false);
     }
@@ -234,6 +255,9 @@ public class ZipOutputHandler extends OutputHandler {
             throws Exception {
 
         OutputType output = request.getOutput();
+        if (output.equals(OUTPUT_CORPUS)) {
+            return toCorpus(request, group.getName(), children);
+	}
         if (output.equals(OUTPUT_ZIPTREE)) {
             getLogManager().logInfo("Doing zip tree");
             return toZip(request, group.getName(), children, true, false,false);
@@ -395,6 +419,40 @@ public class ZipOutputHandler extends OutputHandler {
 
 
     }
+
+    public Result toCorpus(Request request, String prefix, final List<Entry> entries)
+            throws Exception {
+	InputStream is =IO.pipeIt(new IO.PipedThing(){
+		public void run(OutputStream os) {
+		    PrintStream           pw  = new PrintStream(os);
+		    try {
+			long t1 = System.currentTimeMillis();
+			for(Entry e: entries) {
+			    pw.println("********************");
+			    pw.println("entry: " + e.getName());
+			    pw.println("url: "+  request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId()));
+			    pw.println(e.getDescription());
+			    if(e.isFile()) {
+				String corpus =getSearchManager().extractCorpus(request,e,e.getResource().getPath(),null);
+				if(corpus!=null) {
+				    corpus = corpus.trim();
+				    pw.println(corpus);
+				}
+			    }
+			    pw.println("********************");
+			}
+			//			    makeJson(request, allEntries, pw);
+			long t2 = System.currentTimeMillis();
+			//			    Utils.printTimes("makeJson",t1,t2);
+		    } catch(Exception exc) {
+			getLogManager().logError("Making Corpus",exc);
+		    }
+		}});
+	request.setReturnFilename(prefix+".txt",false);
+	return request.returnStream("corpus.txt", "text/plain",is);
+    }
+
+
 
 
     /**
