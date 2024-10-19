@@ -43,13 +43,18 @@ https://platform.openai.com/docs/assistants/quickstart?context=without-streaming
 public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
     private static final String ACTION_ASSISTANT = "llmassistant";
+    private static final String ACTION_UPLOAD = "llmassistant_upload";
     private static final String ARG_THREAD = "thread";
 
+
     private static final String URL_ASSISTANTS= "https://api.openai.com/v1//assistants";
+    private static final String URL_VECTOR_STORES= "https://api.openai.com/v1/vector_stores";
+    private static final String URL_VECTOR_STORES_FILES= "https://api.openai.com/v1/vector_stores/${vector_store_id}/files";
+    private static final String URL_FILES="https://api.openai.com/v1/files";
+
     private static final String URL_THREADS = "https://api.openai.com/v1/threads";
     private static final String URL_MESSAGES= "https://api.openai.com/v1/threads/${thread}/messages";
     private static final String URL_RUNS= "https://api.openai.com/v1/threads/${thread}/runs";
-
 
 
 
@@ -88,22 +93,58 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 	List<String> args = new ArrayList<String>();
 	/*curl "https://api.openai.com/v1/assistants" 
-	  -d '{
 	  "instructions": "You are a personal math tutor. Write and run code to answer math questions.",
 	  "name": "Math Tutor",
-	  "tools": [{"type": "code_interpreter"}],
+	  "tools": [{"type": "file_search"}],
 	  "model": "gpt-4o"
-	  }'
 	*/
 	Utils.add(args,"tools","[{\"type\": \"file_search\"}]",
 		  "model",JU.quote("gpt-4o"),
-		  "name",JU.quote(entry.getName()));
+		  "name",JU.quote(entry.getName()),
+		  "instructions",JU.quote(entry.getStringValue(request,"instructions","")));
 	IO.Result result=call(request,   new URL(URL_ASSISTANTS), JU.map(args));
 
 	if(result.getError()) {
 	    throw new IllegalStateException("LLMAssistant: Error creating assistant:" + result.getResult());
 	}
-	entry.setValue("assistant_id",new JSONObject(result.getResult()).getString("id"));
+	assistantId =  getId(result.getResult());
+	entry.setValue("assistant_id",assistantId);
+
+	//create a vector store
+	args = new ArrayList<String>();
+	Utils.add(args,  "name",JU.quote(entry.getName() +" Vector Store"));
+	result=call(request,   new URL(URL_VECTOR_STORES), JU.map(args));
+	if(result.getError()) {
+	    throw new IllegalStateException("LLMAssistant: Error creating vector store:" + result.getResult());
+	}
+
+	String vectorStoreId = getId(result.getResult());
+	entry.setValue("vector_store_id",vectorStoreId);
+
+	//associate the vector store with the assistant
+	/*  curl https://api.openai.com/v1/assistants/asst_abc123 
+	    -d '{"tool_resources": {"file_search": {"vector_store_ids": []}},}'*/
+
+	args = new ArrayList<String>();
+	Utils.add(args,  "tool_resources",JU.map("file_search",JU.map("vector_store_ids",JU.list(JU.quote(vectorStoreId)))));
+	result=call(request,   new URL(URL_ASSISTANTS+"/" + assistantId), JU.map(args));
+	if(result.getError()) {
+	    throw new IllegalStateException("LLMAssistant: Error adding vector store:" + result.getResult());
+	}
+    }
+
+
+    private IO.Result  uploadFile(Request request, Entry entry, File file) throws Exception {
+	List postArgs = new ArrayList();
+	Utils.add(postArgs,"purpose","assistants","file",file);
+	IO.Result result =IO.doMultipartPost(new URL(URL_FILES),
+					     new String[]{"Authorization"," Bearer " +getKey()},
+					     postArgs);
+	return result;
+    }
+
+    private String getId(String json) throws Exception {
+	return new JSONObject(json).getString("id");
     }
 
     /**
@@ -139,6 +180,11 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
 
 	StringBuilder sb = new StringBuilder();
+	if(request.isAdmin()) {
+	    String url = "https://platform.openai.com/playground/assistants?assistant=" +assistantId;
+	    sb.append(HU.href(url,"@OpenAI",HU.attrs("target","openai")));
+	    sb.append("<br>");
+	}
 	String thread= getThread(request, entry);
 	if(thread==null) {
 	    return HU.span("LLM Assistant: Could not create thread",HU.cssClass("ramadda-wiki-error"));
@@ -203,9 +249,56 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
     }
 
+    private Result processUpload(Request request, Entry entry)
+	throws Exception {
+	if(!request.isAdmin()) {
+	    throw new IllegalStateException("You must be an admin user to upload a file");
+	}
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb,"LLM Assistant File Upload");
+	sb.append(request.uploadForm(getRepository().URL_ENTRY_ACTION,""));
+	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	sb.append(HU.hidden(ARG_ACTION, ACTION_UPLOAD));
+	sb.append("Upload a file to OpenAI:");
+	sb.append("<br>");
+	sb.append(HU.fileInput(ARG_FILE, ""));
+	sb.append("<p>");
+	sb.append(HU.submit("Upload"));
+	sb.append(HU.formClose());
+
+	if(request.exists(ARG_FILE)) {
+	    try {
+		File file = new File(request.getUploadedFile(ARG_FILE));
+		IO.Result  fileResult = uploadFile(request, entry,  file);
+		file.delete();
+		if(fileResult.getError()) {
+		    sb.append(getPageHandler().showDialogError("Error uploading file:" + fileResult.getResult()));
+		} else {
+		    String fileId = getId(fileResult.getResult());
+		    URL url = new URL(URL_VECTOR_STORES_FILES.replace("${vector_store_id}",entry.getStringValue(request,"vector_store_id","")));
+		    IO.Result result= call(request, url, JU.map("file_id",JU.quote(fileId)));
+		    if(result.getError()) {
+			sb.append(getPageHandler().showDialogError(result.getResult()));
+		    } else {
+			sb.append(getPageHandler().showDialogNote("File has been uploaded. It may take a bit before it is available"));
+		    }
+		}
+	    } catch(Exception exc) {
+		sb.append(getPageHandler().showDialogError(exc.toString()));
+	    }
+	}
+
+	getPageHandler().entrySectionClose(request, entry, sb);
+	return new Result("LLM Upload",sb);
+    }
+
     private Result processEntryActionInner(Request request, Entry entry)
 	throws Exception {
         String action = request.getString("action", "");
+	if(action.equals(ACTION_UPLOAD)) {
+	    return processUpload(request, entry);
+	}
+
 	if (!action.equals(ACTION_ASSISTANT)) {
 	    return super.processEntryAction(request,entry);
 	}
@@ -221,16 +314,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 
 
-
 	/*
-curl https://api.openai.com/v1/threads/thread_abc123/messages \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
-  -H "OpenAI-Beta: assistants=v2" \
-  -d '{
+curl https://api.openai.com/v1/threads/thread_abc123/messages 
       "role": "user",
       "content": "I need to solve the equation `3x + 11 = 14`. Can you help me?"
-    }'
 	 */
 
 	String  messagesUrl = URL_MESSAGES.replace("${thread}",thread);
@@ -244,11 +331,9 @@ curl https://api.openai.com/v1/threads/thread_abc123/messages \
 	    return handleError(request, result.getResult());
 	}
 
-	/* curl https://api.openai.com/v1/threads/thread_abc123/runs \
-	   -d '{
+	/* curl https://api.openai.com/v1/threads/thread_abc123/runs 
 	   "assistant_id": "asst_abc123",
 	   "instructions": "Please address the user as Jane Doe. The user has a premium account."
-	   }'
 	*/
 
 	List<String> run = new ArrayList<String>();

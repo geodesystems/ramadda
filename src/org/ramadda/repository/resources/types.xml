@@ -410,8 +410,12 @@ showHeading=true
 
 <type name="type_llm_assistant"  description="ChatGPT Assistant"
       handler="org.ramadda.repository.type.LLMAssistantTypeHandler"
-      priority="2">
+      priority="2"
+      editfields="name,instructions,_default"
+      newfields="name,instructions,_default">
   <action name="llmassistant" label="ChatGPT Assistant" icon="fa-regular fa-comments" foruser="true" category="view"/>
+  <action name="llmassistant_upload" label="Upload a file to ChatGPT"
+	  icon="fa-regular fa-file" foruser="true" category="view" canedit="true"/>  
   <property name="form.description.iswiki" value="true"/>
   <property name="icon" value="/point/sitemap_color.png"/>
   <property name="form.resource.show" value="false"/>
@@ -421,6 +425,8 @@ showHeading=true
   <property name="form.altitude.show" value="false"/>
 
   <column name="assistant_id" label="Assistant ID" type="string"/>
+  <column name="vector_store_id" label="Vector Store ID" type="string"/>  
+  <column name="instructions" size="1000" label="Instructions" rows="5" type="string"/>
   <wiki>
     <![CDATA[
 +section title={{name}}
