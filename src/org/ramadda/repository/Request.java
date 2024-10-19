@@ -527,6 +527,7 @@ public class Request implements Constants, Cloneable {
         return httpServletResponse != null;
     }
 
+    boolean haveSetReturnFilename = false;
     /**
      *
      * @param filename _more_
@@ -536,6 +537,8 @@ public class Request implements Constants, Cloneable {
         if ( !isNormalRequest()) {
             return;
         }
+	if(haveSetReturnFilename) return;
+	haveSetReturnFilename=true;
         filename = filename.replaceAll(" ", "_").replaceAll(",", "_");
         //      System.err.println("Request.setReturnFilename:" + inline +" " +filename + "\n" +Utils.getStack(10));
         if (inline) {
