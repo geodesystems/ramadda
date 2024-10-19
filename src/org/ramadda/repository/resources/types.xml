@@ -394,40 +394,45 @@ showHeading=true
 
 <type name="type_display_children"  description="Children Display"   isgroup="true"
       priority="2">
-  <property name="form.description.iswiki" value="true"/>
+
+  <property name="xform.description.iswiki" value="true"/>
   <property name="icon" value="/point/sitemap_color.png"/>
   <property name="form.resource.show" value="false"/>
   <property name="form.area.show" value="true"/>
   <property name="form.datatype.show" value="false"/>
   <property name="form.date.show" value="false"/>
   <property name="form.altitude.show" value="false"/>
+
+</type>
+
+
+
+
+<type name="type_llm_assistant"  description="ChatGPT Assistant"
+      handler="org.ramadda.repository.type.LLMAssistantTypeHandler"
+      priority="2">
+  <action name="llmassistant" label="ChatGPT Assistant" icon="fa-regular fa-comments" foruser="true" category="view"/>
+  <property name="form.description.iswiki" value="true"/>
+  <property name="icon" value="/point/sitemap_color.png"/>
+  <property name="form.resource.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.datatype.show" value="false"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.altitude.show" value="false"/>
+
+  <column name="assistant_id" label="Assistant ID" type="string"/>
   <wiki>
     <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
-+center                                                                                            
-{{display_menu showMenu=false
-doEntries=true 
-setEntry.acceptGroup=month                                                                         
-setEntry.shareGroup=file                                                                           
-showArrows=true                                                                                    
-menuLabel="Select:"                                                                            
-noun=File                                                                                          
-template="${name}"                                                                                 
-}}
-{{display_entrytitle showMenu=false message="" setEntry.acceptGroup=file entry=child:}} 
--center                                                                                            
-----
-<div style="min-height:500px;">
-{{display_entrywiki showMenu=false message="" setEntry.acceptGroup=file entry=child: }}     
-</div>
-----
-:heading Entries
-{{tabletree}}
+{{llmassistant}}
 -section         
 ]]>
 </wiki>
 </type>
+
+
+
 
 
 

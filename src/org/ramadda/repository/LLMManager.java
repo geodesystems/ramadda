@@ -106,6 +106,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	//	geminiJobManager.setDebug(true);	
     }
 
+
+
     public void debug(String msg) {
 	if(debug) System.err.println("LLMManager:" + msg);
     }
@@ -115,9 +117,14 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 
+    public JobManager getOpenAIJobManager (){
+	return  openAIJobManager;
+    }
+
+
     private List<String> openAIKeys;
     private int openAIKeyIdx=0;
-    private synchronized String getOpenAIKey() {
+    public synchronized String getOpenAIKey() {
 	if(openAIKeys==null) {
 	    String openAIKey = getRepository().getProperty(PROP_OPENAI_KEY);
 	    if(openAIKey!=null) openAIKeys = Utils.split(openAIKey,",",true,true);
@@ -140,7 +147,7 @@ public class LLMManager extends  AdminHandlerImpl {
     }    
 
 
-    private boolean isOpenAIEnabled() {
+    public boolean isOpenAIEnabled() {
 	return Utils.stringDefined(getRepository().getProperty(PROP_OPENAI_KEY));
     }
 
@@ -341,14 +348,14 @@ public class LLMManager extends  AdminHandlerImpl {
 
 
 
-    private IO.Result call(JobManager jobManager, final URL url, final String body, final String...args) 
+    public IO.Result call(JobManager jobManager, final URL url, final String body, final String...args) 
 	throws Exception {
 	//	System.err.println("URL:" + url);
 	final IO.Result[] theResult={null};
 	Callable<Boolean> callable = new Callable<Boolean>() {
 		public Boolean call() {
 		    try {
-			theResult[0] = IO.getHttpResult(IO.HTTP_METHOD_POST,url,body,args);
+			theResult[0] = IO.getHttpResult(stringDefined(body)?IO.HTTP_METHOD_POST:IO.HTTP_METHOD_GET,url,body,args);
 		    } catch (Exception exc) {
 			throw new RuntimeException(exc);
 		    }

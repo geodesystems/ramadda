@@ -1,6 +1,10 @@
 
-function DocumentChat(id,entryId,action,models) {
+function DocumentChat(id,entryId,action,models,args) {
+    if(!models) models =[];
     this.id = id;
+    this.opts = {
+    }
+    if(args) $.extend(this.opts,args);
     let cnt = 0;
     let div  =jqid(id);
     let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
@@ -65,6 +69,8 @@ function DocumentChat(id,entryId,action,models) {
 	    question:q,
 	    offset:this.jq('chatoffset').val().trim(),
         };
+	if(this.opts.thread)
+	    args.thread = this.opts.thread;
 	let model = this.jq('chatmodel').val()
 	if(model) {
 	    args.model = model;
@@ -79,9 +85,13 @@ function DocumentChat(id,entryId,action,models) {
 	    let r;
             if (result.error) {
                 r="Error: " + result.error;
+
             } else {
-		let tt=Utils.join(['Corpus length: ' + result.corpusLength,
+		let tt='';
+		if(Utils.isDefined(result.corpusLength)) {
+		    tt=Utils.join(['Corpus length: ' + result.corpusLength,
 				   'Segment length: ' + result.segmentLength],'<br>');		
+		}
 		this.jq('info').attr(ATTR_TITLE,tt);
 		this.jq('info').tooltip({
 		    content:()=>{return tt;}});
@@ -108,7 +118,9 @@ function DocumentChat(id,entryId,action,models) {
 	    }, 2000);
 */
 	    input.focus();
-        });
+        }).fail((d)=>{
+	    console.log('fail',d);
+	});
     }
     this.jq('transcribe').click(()=> {
 	if(!this.transcriber) this.transcriber = new Transcriber(this,{
