@@ -436,6 +436,7 @@ public class ZipOutputHandler extends OutputHandler {
 				String corpus =getSearchManager().extractCorpus(request,e,e.getResource().getPath(),null);
 				if(corpus!=null) {
 				    corpus = corpus.trim();
+				    corpus = corpus.replaceAll("[^\\x00-\\x7F]", "");
 				    pw.println(corpus);
 				}
 			    }
