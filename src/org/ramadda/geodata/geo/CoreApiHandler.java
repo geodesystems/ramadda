@@ -58,19 +58,24 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 
     public String makeEntriesJson(Request request, Entry entry,List<Entry> children)  throws Exception {
-	List<String> entries = new ArrayList<String>();
-	for(Entry child: children) {
-	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
-	    String url = getEntryManager().getEntryResourceUrl(request, child);
-	    entries.add(JU.map("url",JU.quote(url),"label",JU.quote(child.getName()),
-			       "entryId",JU.quote(child.getId()),
-			       "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
-			       "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
-			       "text",JU.quote(info)));
-
-	}
 	List<String> collection = new ArrayList<String>();
-	Utils.add(collection,"name",JU.quote(entry.getName()),"entryId",JU.quote(entry.getId()),"data",JU.list(entries));
+	Utils.add(collection,"name",JU.quote(entry.getName()),"entryId",JU.quote(entry.getId()));
+	List<String> legends=new ArrayList<String>();
+	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_legend"}, true)) {
+	    String[]tuple=  getMetadataManager().getFileUrl(request, entry, mtd);
+	    if(tuple==null) continue;
+	    List<String>obj = new ArrayList<String>();
+	    String url = tuple[1];
+	    Utils.add(obj,"url",JU.quote(url),"top",JU.quote(mtd.getAttr2()),"bottom",
+		      JU.quote(mtd.getAttr3()));
+
+	    legends.add(JU.map(obj));
+	}
+	if(legends.size()>0) {
+	    Utils.add(collection,"legends",JU.list(legends));
+	}
+	System.err.println(collection);
+
 
 	List<String> annotations=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_annotation"}, true)) {
@@ -86,9 +91,19 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    Utils.add(collection,"annotations",JU.quote(Utils.join(annotations,",")));
 	}
 
-	
+	List<String> entries = new ArrayList<String>();
+	for(Entry child: children) {
+	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
+	    String url = getEntryManager().getEntryResourceUrl(request, child);
+	    entries.add(JU.map("url",JU.quote(url),"label",JU.quote(child.getName()),
+			       "entryId",JU.quote(child.getId()),
+			       "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
+			       "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
+			       "text",JU.quote(info)));
 
+	}
 
+	Utils.add(collection,"data",JU.list(entries));
 	return JU.map(collection);
     }
 

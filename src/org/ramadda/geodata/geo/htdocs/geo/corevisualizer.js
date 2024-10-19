@@ -1,4 +1,3 @@
-
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var ID_CV_GOTO = 'goto';
@@ -95,7 +94,8 @@ function RamaddaCoreVisualizer(collection,container,args) {
     menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'15',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
     menuItemsLeft.push(HU.space(1));
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
-			       ATTR_STYLE,HU.css('max-width','600px','overflow-x','auto')]));
+				ATTR_STYLE,HU.css('margin-right','50px',
+						  'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
 
 
     menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
@@ -149,7 +149,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.jq(ID_CV_GOTO).keydown(function(event) {
 	if (event.key === "Enter" || event.keyCode === 13) {
 	    let depth = $(this).val().trim();
-	    let y = _this.worldToScreen(depth);
+	    let y = _this.worldtoCanvas(depth);
 	    _this.stage.position({ x: 0, y: -y });
 
 	}
@@ -168,7 +168,6 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.stage.add(this.annotationLayer);
     this.layer = new Konva.Layer();
     this.legendLayer = new Konva.Layer();    
-
     this.stage.add(this.legendLayer);
     this.stage.add(this.layer);
     this.addEventListeners();
@@ -180,22 +179,6 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	});
     }
 
-    if(this.opts.legendUrl) {
-	Konva.Image.fromURL(this.opts.legendUrl,  (image) =>{
-	    let y1 = this.worldToScreen(this.opts.legendTop);
-	    let y2 = this.worldToScreen(this.opts.legendBottom);	    
-	    let aspectRatio = image.width()/ image.height()
-	    let newHeight= (y2-y1)
-	    let newWidth = newHeight * aspectRatio;
-	    image.setAttrs({
-		x: this.opts.legendX-newWidth,
-		y: y1,
-		width:newWidth,
-		height:newHeight,
-            });
-	    this.annotationLayer.add(image);
-	});
-    }
 
     this.drawLegend();
     this.layer.draw();
@@ -213,7 +196,7 @@ RamaddaCoreVisualizer.prototype = {
     getXOffset:function(column) {
 	return this.opts.axisX+100+column*CV_COLUMN_WIDTH;
     },
-    worldToScreen:function(y) {
+    worldtoCanvas:function(y) {
 	let range = this.opts.range;
 	let mh = range.minHeight;
 	let r1 = range.max-range.min;
@@ -251,23 +234,53 @@ RamaddaCoreVisualizer.prototype = {
 	    _this.opts.showHighlight = $(this).is(':checked');
 	    _this.toggleHighlight();
 	});
-
-
-
     },
     addAnnotations:function(collection) {
+	if(collection.legends && collection.legends.length>0) {
+	    if(!collection.legendObjects) {
+		collection.legendObjects=[];
+	    }
+	    collection.legends.forEach(l=>{
+		let setPosition = image=> {
+		    let y1 = this.worldtoCanvas(l.top);
+		    let y2 = this.worldtoCanvas(l.bottom);	    
+		    let aspectRatio = image.width()/ image.height()
+		    let newHeight= (y2-y1)
+		    let newWidth = newHeight * aspectRatio;
+		    image.setAttrs({
+			x: this.opts.legendX-newWidth,
+			y: y1,
+			width:newWidth,
+			height:newHeight});
+		}
+
+		if(l.image) {
+		    setPosition(l.image);
+		    return;
+		}
+		if(l.pending) {return;}
+		l.pending=true;
+		Konva.Image.fromURL(l.url,  (image) =>{
+		    l.image = image;
+		    setPosition(image);
+		    this.annotationLayer.add(image);
+		    collection.legendObjects.push(image);
+		});
+	    });
+	}
+
 	if(!collection.annotations) return;
 	if(collection.annotationObjects) {
 	    collection.annotationObjects.forEach(obj=>{
 		this.destroy(obj);
 	    });
 	}
+	collection.annotationObjects=[];
 	
-	let objs = collection.annotationObjects = [];
 	Utils.split(collection.annotations,",",true,true).forEach(a=>{
 	    let t = a.split(';');
 	    let x= this.opts.axisX-50;
-	    let y = this.worldToScreen(+t[0]);
+	    let y = this.worldtoCanvas(+t[0]);
 	    let style = {doOffsetWidth:true};
 	    for(let i=2;i<t.length;i++) {
 		let pair = t[i].split(':');
@@ -275,18 +288,20 @@ RamaddaCoreVisualizer.prototype = {
 		style[pair[0]] = pair[1];
 	    }
 	    let l = this.makeText(this.annotationLayer,t[1],x,y-5, style);
-	    objs.push(l);
 	    let tick = new Konva.Line({
 		points: [x+3, y, this.opts.axisX, y],
 		stroke: CV_LINE_COLOR,
 		strokeWidth: 0.5,
 	    });
-	    objs.push(l);
-	    objs.push(tick);
 	    this.annotationLayer.add(tick);
+	    collection.annotationObjects.push(l);
+	    collection.annotationObjects.push(tick);
+	    if(!collection.visible) {
+		this.toggleAll([l,tick],false);
+	    }
 	});
-	return objs;
     },
+
     showGallery: function(anchor) {
 	let contents=[];
 	this.collections.forEach(c=>{
@@ -357,6 +372,11 @@ RamaddaCoreVisualizer.prototype = {
 		this.destroy(obj);
 	    });
 	}
+	if(collection.legendObjects) {
+	    collection.legendObjects.forEach(obj=>{
+		this.destroy(obj);
+	    });
+	}	
 	this.drawCollections();
     },
 
@@ -386,7 +406,8 @@ RamaddaCoreVisualizer.prototype = {
 	    html+=HU.span(['collection-index',idx,
 			   ATTR_CLASS,'ramadda-button',
 			   ATTR_STYLE,style],collection.name);
-	    this.toggleAll(collection.annotationObjects,collection.visible)
+	    this.toggleAll(collection.annotationObjects,collection.visible,true)
+	    this.toggleAll(collection.legendObjects,collection.visible)	    
 	    if(collection.visible) {
 		collection.displayIndex=displayIndex++;
 		this.addEntries(collection);
@@ -422,9 +443,15 @@ RamaddaCoreVisualizer.prototype = {
 		    collection.visible=!collection.visible;
 		    _this.drawCollections();
 		} else if(action=='goto') {
-		    let y = _this.worldToScreen(collection.range.min);
-		    y-=50;
-		    _this.stage.position({x:0,y:-y});
+		    let y = _this.worldtoCanvas(collection.range.min)-50;
+		    let x =  collection.xPosition-200;
+		    //not sure what x to use
+		    let scale = _this.stage.scaleY();
+		    let pos = _this.stage.position();
+		    x = x*scale;
+		    y = y*scale;
+		    x=0;
+		    _this.stage.position({x:-x,y:-y});
 		} else if(action=='view') {
 		    let url = RamaddaUtils.getEntryUrl(collection.entryId);
 		    window.open(url, '_entry');
@@ -442,16 +469,14 @@ RamaddaCoreVisualizer.prototype = {
 	collection.collectionId=window.cv_collection_id;
 	this.collections.push(collection);
 	this.drawCollections();
-	if(collection.annotations) {
-	    this.addAnnotations(collection);
-	}
-
+	this.addAnnotations(collection);
     },
     addEntries:function(collection) {
 	let column = collection.displayIndex;
+	collection.xPosition =  this.getXOffset(column);
 
 	let x = this.getXOffset(column);
-	let l = this.makeText(this.layer,collection.name,x,this.worldToScreen(collection.range.min)-20,
+	let l = this.makeText(this.layer,collection.name,x,this.worldtoCanvas(collection.range.min)-20,
 			      {fontStyle:'bold'});
 	l.collectionId = collection.collectionId;
 	this.addClickHandler(l,(e)=>{
@@ -467,14 +492,15 @@ RamaddaCoreVisualizer.prototype = {
 	});
     },
 
-    toggleAll:function(l,visible) {
+    toggleAll:function(l,visible,debug) {
 	if(!l) return;
+	if(debug)
+	    console.log('toggle',l.length);
 	l.forEach(obj=>{
 	    this.toggle(obj,visible);
 	});
     },
     toggle:function(obj,visible) {
-
 	if(!obj) return;
 	if(visible) {
 	    obj.show();
@@ -723,8 +749,8 @@ RamaddaCoreVisualizer.prototype = {
 		max:max,
 		minHeight:minHeight
 	    };
-	    let y1 = this.worldToScreen(min);
-	    let y2 = this.worldToScreen(max);	    
+	    let y1 = this.worldtoCanvas(min);
+	    let y2 = this.worldtoCanvas(max);	    
 	    y1-=(y2-y1)*0.05;
 	    if(y1<0) y1=0;
 	    let distance = y2-y1;
@@ -747,7 +773,7 @@ RamaddaCoreVisualizer.prototype = {
 	let step = h/100;
 	let cnt = 10;
 	while(cnt-->0) {
-	    let y = this.worldToScreen(step+step)-this.worldToScreen(step);
+	    let y = this.worldtoCanvas(step+step)-this.worldtoCanvas(step);
 	    if(y>40) break;
 	    step+=10;
 	}
@@ -756,7 +782,7 @@ RamaddaCoreVisualizer.prototype = {
 	let range = this.opts.range;
 	let bottom = range.max+(0.1*(range.max-range.min));
 	for(let i=0;i<=bottom;i+=step) {
-	    let y = this.worldToScreen(i);
+	    let y = this.worldtoCanvas(i);
 	    if(i==0) y1=y;
 	    y2=y;
 	    let l1 = this.makeText(this.legendLayer,Utils.formatNumber(i),
@@ -807,8 +833,8 @@ RamaddaCoreVisualizer.prototype = {
 
     addEntry:function(label,url,y1,y2,text,column) {
 	if(!Utils.isDefined(column)) column = 0;
-	let scy1 = this.worldToScreen(y1);
-	let scy2 = this.worldToScreen(y2);
+	let scy1 = this.worldtoCanvas(y1);
+	let scy2 = this.worldtoCanvas(y2);
 	Konva.Image.fromURL(url,  (image) =>{
 	    let imageX = this.getXOffset(column);
 	    let imageY = scy1;

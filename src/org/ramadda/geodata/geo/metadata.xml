@@ -35,6 +35,12 @@
       <element name="Style" datatype="string" suffix="e.g., background:red;fontSize:20pt"/>      
     </type>
 
+    <type id="geo_core_legend" name="Geo Core Legend"> 
+      <element name="Legend Image" datatype="file"/>
+      <element name="Top" datatype="int"/>
+      <element name="Bottom" datatype="int"/>      
+    </type>    
+
 
   </handler>
 
