@@ -526,7 +526,7 @@ public class TypeHandler extends RepositoryManager {
 
 	    //Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
 	    if(parent==null) {
-		addAction(new Action("entryllm","Entry LLM","/icons/chatbot.png",true,false,"view"));
+		addAction(new Action("entryllm","Entry LLM","/icons/chatbot.png",true,false,false,"view"));
 	    }
 
             List actionNodes = XmlUtil.findChildren(node, "action");
@@ -537,6 +537,7 @@ public class TypeHandler extends RepositoryManager {
 				     XmlUtil.getAttribute(actionNode, "label"),
 				     XmlUtil.getAttribute(actionNode, "icon",ICON_EDIT),
 				     XmlUtil.getAttribute(actionNode, "foruser","false").equals("true"),
+				     XmlUtil.getAttribute(actionNode, "foradmin","false").equals("true"),
 				     XmlUtil.getAttribute(actionNode, "canedit","false").equals("true"),
 				     XmlUtil.getAttribute(actionNode, "category","file")));
             }
@@ -2388,6 +2389,11 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 
+	    if(action.forAdmin) {
+		if (!request.isAdmin()) {
+		    continue;
+		}
+	    }		
 	    if(action.forUser) {
 		if (request.getUser().getAnonymous()) {
 		    continue;
@@ -6927,17 +6933,20 @@ public class TypeHandler extends RepositoryManager {
 	private String label;
 	private String icon;
 	private boolean forUser;
+	private boolean forAdmin;
 	private boolean canEdit;
 	private String category = "view";
 	private String wikiText;
-	Action(String id, String label, String icon,boolean forUser,boolean canEdit,String category) {
+	Action(String id, String label, String icon,boolean forUser,boolean forAdmin, boolean canEdit,String category) {
 	    this.id = id;
 	    this.label = label;
 	    this.icon = icon;
 	    this.forUser = forUser;
+	    this.forAdmin = forAdmin;
 	    this.canEdit = canEdit;
 	    this.category=category;
 	}
+
 	Action(String id, String label, String icon,String wikiText) {
 	    this.id=id;
 	    this.label = label;
