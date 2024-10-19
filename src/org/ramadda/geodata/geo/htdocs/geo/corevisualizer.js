@@ -751,8 +751,8 @@ RamaddaCoreVisualizer.prototype = {
 	    };
 	    let y1 = this.worldtoCanvas(min);
 	    let y2 = this.worldtoCanvas(max);	    
-	    y1-=(y2-y1)*0.05;
-	    if(y1<0) y1=0;
+	    y1-=(y2-y1-10)*0.05;
+	    if(y1<-10) y1=-10;
 	    let distance = y2-y1;
 	    let canvasHeight = this.stage.height();
 	    let scaleFactor = canvasHeight / distance; 
