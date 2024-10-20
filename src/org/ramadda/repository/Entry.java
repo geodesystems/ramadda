@@ -1057,12 +1057,13 @@ public class Entry implements Cloneable {
 	return getBooleanValue(request, getColumn(index), dflt);
     }    
 
-    public void setValue(String col, Object v) throws Exception {
+    public boolean setValue(String col, Object v) throws Exception {
 	Column column = getTypeHandler().findColumn(col);
 	if(column == null) {
-	    throw new IllegalArgumentException("Bad column:" +col);
+	    return false;
 	}
 	column.setValue(this,v);
+	return true;
 	//	setValue(column.getOffset(),v);
     }
 
