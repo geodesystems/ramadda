@@ -1,4 +1,6 @@
 var ID_CV_SHOWLABELS = 'showlabels';
+var ID_CV_DOROTATION = 'dorotation';
+var ID_CV_MAXWIDTH = 'maxwidth';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var ID_CV_GOTO = 'goto';
 var ID_CV_COLLECTIONS= 'collections';
@@ -22,6 +24,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
     
     this.opts = {
 	screenHeight:args.height??800,
+	maxColumnWidth:200,
 	scale:1.0,
 	offset:30,
 	autoSize:true,
@@ -241,6 +244,15 @@ RamaddaCoreVisualizer.prototype = {
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
 				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
+	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_DOROTATION),
+				 [ATTR_ID,this.domId(ID_CV_DOROTATION)],this.opts.doRotation,'Do Rotation'));
+
+
+	html+= HU.div([],
+		      'Max width: ' + HU.input('',this.opts.maxColumnWidth,
+					       [ATTR_ID,this.domId(ID_CV_MAXWIDTH),ATTR_STYLE,'width:40px']));
+
 	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
 	let dialog =  HU.makeDialog({anchor:anchor,
 				     decorate:true,
@@ -250,10 +262,21 @@ RamaddaCoreVisualizer.prototype = {
 				     content:html,
 				     draggable:true});
 
+	
+	this.jq(ID_CV_MAXWIDTH).keypress(function(event) {
+	    if (event.keyCode === 13) {
+		_this.opts.maxColumnWidth=$(this).val();
+		_this.drawCollections();
+	    }});
+
 	this.jq(ID_CV_SHOWLABELS).change(function(){
 	    _this.opts.showLabels = $(this).is(':checked');
 	    _this.toggleLabels();
 	});
+	this.jq(ID_CV_DOROTATION).change(function(){
+	    _this.opts.doRotation = $(this).is(':checked');
+	    _this.drawCollections(true);
+	});	
 
 	this.jq(ID_CV_SHOWHIGHLIGHT).change(function(){
 	    _this.opts.showHighlight = $(this).is(':checked');
@@ -416,7 +439,7 @@ RamaddaCoreVisualizer.prototype = {
 	});
     },
 
-    drawCollections:function() {
+    drawCollections:function(forceNewImages) {
 	let _this=this;
 	this.clear();
 	this.checkRange();
@@ -435,7 +458,7 @@ RamaddaCoreVisualizer.prototype = {
 	    this.toggleAll(collection.legendObjects,collection.visible)	    
 	    if(collection.visible) {
 		collection.displayIndex=displayIndex++;
-		this.addEntries(collection);
+		this.addEntries(collection,forceNewImages);
 	    }
 	});
 	this.jq(ID_CV_COLLECTIONS).html(html);
@@ -496,7 +519,7 @@ RamaddaCoreVisualizer.prototype = {
 	this.drawCollections();
 	this.addAnnotations(collection);
     },
-    addEntries:function(collection) {
+    addEntries:function(collection,forceNewImages) {
 	let column = collection.displayIndex;
 	collection.xPosition =  this.getXOffset(column);
 
@@ -513,7 +536,8 @@ RamaddaCoreVisualizer.prototype = {
 	let range =  this.opts.range;
 //	console.log(collection.name,'range',range.min,range.max);
 	collection.data.forEach(entry=>{
-	    this.addEntry(entry);
+	    entry.displayIndex = column;
+	    this.addEntry(entry,forceNewImages);
 	});
     },
 
@@ -876,10 +900,13 @@ RamaddaCoreVisualizer.prototype = {
 	html+=HU.buttons(buttonList);
 
 
-	let dialog =  HU.makeDialog({anchor:this.mainDiv,
+	if(this.editDialog) {
+	    this.editDialog.remove();
+	}
+	let dialog = this.editDialog =  HU.makeDialog({anchor:this.mainDiv,
 				     decorate:true,
-				     at:'right top',
-				     my:'right top',
+				     at:'left top',
+				     my:'left top',
 				     header:true,
 				     content:html,
 				     draggable:true});
@@ -923,32 +950,96 @@ RamaddaCoreVisualizer.prototype = {
 	this.layer.draw();
     },
 
-    addEntry:function(entry,debug) {
-	if(entry.image) {
-	    this.addEntryImage(entry,debug);
+    addEntry:function(entry,forceNewImages) {
+	if(!forceNewImages &&entry.image) {
+	    this.addEntryImage(entry);
 	} else {
  	    Konva.Image.fromURL(entry.url,  (image) =>{
 		this.entries.push(entry);
 		entry.image = image;
-		this.addEntryImage(entry,debug);
+		this.addEntryImage(entry);
 	    });
 	}
 				
     },
+    getCenter:function(shape) {
+	const angleRad = Utils.toRadians(shape.rotation || 0);
+	return {
+	    x:
+	    shape.x +
+		shape.width / 2 * Math.cos(angleRad) +
+		shape.height / 2 * Math.sin(-angleRad),
+	    y:
+	    shape.y +
+		shape.height / 2 * Math.cos(angleRad) +
+		shape.width / 2 * Math.sin(angleRad)
+	};
+    },
+    rotateAroundPoint:function(shape, deltaDeg, point) {
+	const angleRad = Utils.toRadians(deltaDeg);
+	const x = Math.round(
+	    point.x +
+		(shape.x - point.x) * Math.cos(angleRad) -
+		(shape.y - point.y) * Math.sin(angleRad)
+	);
+	const y = Math.round(
+	    point.y +
+		(shape.x - point.x) * Math.sin(angleRad) +
+		(shape.y - point.y) * Math.cos(angleRad)
+	);
+	return {
+	    ...shape,
+	    rotation: Math.round(((shape.rotation??0) + deltaDeg)),
+	    x,
+	    y
+	};
+    },
+    rotateAroundCenter:function(shape, deltaDeg) {
+	const center = this.getCenter(shape);
+	return this.rotateAroundPoint(shape, deltaDeg, center);
+    },
+
     addEntryImage:function(entry,debug) {
-	let column = entry.column;
+	let column = entry.displayIndex;
 	if(!Utils.isDefined(column)) column = 0;
 	let scy1 = this.worldtoCanvas(entry.topDepth,true);
 	let scy2 = this.worldtoCanvas(entry.bottomDepth);
 	let image = entry.image;
-	if(debug) console.log('addentry',scy1,scy2);
-
 	let imageX = this.getXOffset(column);
 	let imageY = scy1;
 	let aspectRatio = image.width()/ image.height()
 	let newHeight= (scy2-scy1)
 	let newWidth = newHeight * aspectRatio;
+	let maxWidth=+this.opts.maxColumnWidth;
+
+	let imageAttrs = {
+	    x: imageX,
+	    y: imageY,
+	    width:newWidth,
+	    height:newHeight,
+        };
+
+	if(this.opts.doRotation) {
+	    imageAttrs =  this.rotateAroundCenter(imageAttrs, 90);
+	    imageAttrs.x=imageAttrs.x-(newWidth/2)+newHeight/2;
+	    imageAttrs.y=imageAttrs.y-(newHeight/2)+newWidth/2;	
+	}
+	image.setAttrs(imageAttrs);
+	
+	if(this.opts.doRotation) {
+	    let tmp =newWidth;
+	    newWidth=newHeight;
+	    newHeight=tmp;
+	}
+
 	let group = new Konva.Group({
+	    clip: {
+		x: imageX-100,
+		y: imageY-100,
+		width: 100+maxWidth,
+		height: 10000,
+            },
+
 	    draggable: this.opts.canEdit,
 	    dragBoundFunc: function(pos) {
 		return {
@@ -958,12 +1049,8 @@ RamaddaCoreVisualizer.prototype = {
 	    }		
 	});
 	this.layer.add(group);
-	image.setAttrs({
-	    x: imageX,
-	    y: imageY,
-	    width:newWidth,
-	    height:newHeight,
-        });
+
+
 	let tickWidth=CV_TICK_WIDTH;
 	group.add(image);
 	let l1 = this.makeText(group,Utils.formatNumber(entry.topDepth),
@@ -1002,7 +1089,7 @@ RamaddaCoreVisualizer.prototype = {
 	this.addClickHandler(rect,(e,obj)=>{
 	    let y = rect.getAbsolutePosition().y;
 	    let world = this.canvasToWorld(y);
-	    this.showPopup(entry.label,text,rect);
+	    this.showPopup(entry.label,entry.text,rect);
 	});
 
 	let ilabel = this.makeText(group,entry.label,imageX+4,imageY+4,{fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
