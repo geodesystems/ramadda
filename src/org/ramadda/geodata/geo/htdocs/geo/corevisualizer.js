@@ -169,9 +169,22 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.layer = new Konva.Layer();
     this.legendLayer = new Konva.Layer();    
     this.stage.add(this.legendLayer);
+/*
+    this.x = new Konva.Layer();    
+    this.stage.add(this.x);
+    this.x.add(new Konva.Line({
+	points:[0,0,1000,0],
+	stroke:'green',
+	strokeWidth:2}));	
+*/
+
     this.stage.add(this.layer);
     this.addEventListeners();
     this.collections = [];
+    
+
+
+
     this.addCollection(collection);
     if(this.opts.otherEntries) {
 	Utils.split(this.opts.otherEntries,",",true,true).forEach(entryId=>{
@@ -196,15 +209,27 @@ RamaddaCoreVisualizer.prototype = {
     getXOffset:function(column) {
 	return this.opts.axisX+100+column*CV_COLUMN_WIDTH;
     },
-    worldtoCanvas:function(y) {
+    worldtoCanvas:function(w,debug) {
 	let range = this.opts.range;
-	let mh = range.minHeight;
-	let r1 = range.max-range.min;
-	let perc = (y-0)/r1;
-	let sy =  (this.getCanvasHeight()*perc);
-	let v= sy;
-	return v;
+	let r = range.max-range.min;
+	let h = this.getCanvasHeight();
+	let c =   h*(w/r);
+	if(debug) {
+//	    console.log('worldToCanvas',w,c);    console.log('canvasToWorld',this.canvasToWorld(c));
+	}
+	return c;
     },
+    canvasToWorld:function(c) {
+	let pos = this.stage.position().y;
+	let scale = this.stage.scale().y;
+	c = (c-pos)/scale;
+	let range = this.opts.range;
+	let r = range.max - range.min;
+	let h=this.getCanvasHeight();
+	let w =  (r*c)/h;
+	return w;
+    },
+
 
     showSettings:function(anchor) {
 	let _this = this;
@@ -406,7 +431,7 @@ RamaddaCoreVisualizer.prototype = {
 	    html+=HU.span(['collection-index',idx,
 			   ATTR_CLASS,'ramadda-button',
 			   ATTR_STYLE,style],collection.name);
-	    this.toggleAll(collection.annotationObjects,collection.visible,true)
+	    this.toggleAll(collection.annotationObjects,collection.visible,false)
 	    this.toggleAll(collection.legendObjects,collection.visible)	    
 	    if(collection.visible) {
 		collection.displayIndex=displayIndex++;
@@ -488,7 +513,7 @@ RamaddaCoreVisualizer.prototype = {
 	let range =  this.opts.range;
 //	console.log(collection.name,'range',range.min,range.max);
 	collection.data.forEach(entry=>{
-	    this.addEntry(entry.label,entry.url,entry.topDepth,entry.bottomDepth,entry.text,column);
+	    this.addEntry(entry);
 	});
     },
 
@@ -765,6 +790,10 @@ RamaddaCoreVisualizer.prototype = {
     drawLegend:function() {
 	this.legendLayer.clear();
 	this.legendLayer.destroyChildren() 
+
+
+
+
 	this.legendLayer.draw();
 	this.checkRange();
 	let axisX = this.opts.axisX;
@@ -819,9 +848,8 @@ RamaddaCoreVisualizer.prototype = {
 
     addClickHandler:function(obj,f) {
 	obj.on('click', (e) =>{
-	    f(e);
+	    f(e,obj);
 	});
-	
 	obj.on('mouseover', function (e) {
 	    document.body.style.cursor = 'pointer'; 
 	});
@@ -831,75 +859,181 @@ RamaddaCoreVisualizer.prototype = {
     },
 
 
-    addEntry:function(label,url,y1,y2,text,column) {
+    editEntry:function(entry,y1,y2) {
+	let _this = this;
+	let html = '';
+	y1 = Utils.formatNumber(y1);
+	y2 = Utils.formatNumber(y2);	
+	html+=HU.formTable();
+	html+=HU.formEntry('Name:',HU.input('',entry.label,  [ATTR_ID,this.domId('editname')]));
+	html+=HU.formEntry('Top:',HU.input('',y1,  [ATTR_ID,this.domId('edittop')]));
+	html+=HU.formEntry('Bottom:',HU.input('',y2, [ATTR_ID,this.domId('editbottom')]));		
+	html+=HU.formTableClose();
+	let buttonList =[
+	    HU.div(['action','cancel','class','ramadda-button ' + CLASS_CLICKABLE],"Cancel"),
+	    HU.div(['action','apply','class','ramadda-button ' + CLASS_CLICKABLE],
+		   "Change Entry")];
+	html+=HU.buttons(buttonList);
+
+
+	let dialog =  HU.makeDialog({anchor:this.mainDiv,
+				     decorate:true,
+				     at:'right top',
+				     my:'right top',
+				     header:true,
+				     content:html,
+				     draggable:true});
+	dialog.find('.ramadda-button').button().click(function(){
+	    let apply = $(this).attr('action')=='apply';
+	    if(apply) {
+		let name = _this.jq('editname').val();
+		let top = _this.jq('edittop').val();
+		let bottom = _this.jq('editbottom').val();		
+		entry.label = name;
+		entry.topDepth = top;
+		entry.bottomDepth = bottom;
+		let what = 'name';
+		let value = name;
+		let url = HU.url(ramaddaBaseUrl + '/entry/changefield',
+				    ['entryid',entry.entryId,
+				     'what1','name','value1',name,
+				     'what2','top_depth','value2',top,
+				     'what3','bottom_depth','value3',bottom]);			     				     
+		$.getJSON(url, function(data) {
+		    if(data.error) {
+			alert('An error has occurred: '+data.error);
+			return;
+		    }
+		}).fail(data=>{
+		    console.dir(data);
+		    alert('An error occurred:' + data);
+		});
+
+	    }
+	    _this.removeEntry(entry);
+	    _this.addEntry(entry,false);
+	    _this.layer.draw();
+	    dialog.remove();
+	});
+    },
+
+    removeEntry:function(entry) {
+	if(!entry.group) return;
+	entry.group.remove();
+	this.layer.draw();
+    },
+
+    addEntry:function(entry,debug) {
+	if(entry.image) {
+	    this.addEntryImage(entry,debug);
+	} else {
+ 	    Konva.Image.fromURL(entry.url,  (image) =>{
+		this.entries.push(entry);
+		entry.image = image;
+		this.addEntryImage(entry,debug);
+	    });
+	}
+				
+    },
+    addEntryImage:function(entry,debug) {
+	let column = entry.column;
 	if(!Utils.isDefined(column)) column = 0;
-	let scy1 = this.worldtoCanvas(y1);
-	let scy2 = this.worldtoCanvas(y2);
-	Konva.Image.fromURL(url,  (image) =>{
-	    let imageX = this.getXOffset(column);
-	    let imageY = scy1;
-	    let aspectRatio = image.width()/ image.height()
-	    let newHeight= (scy2-scy1)
-	    let newWidth = newHeight * aspectRatio;
-	    image.setAttrs({
-		x: imageX,
-		y: imageY,
-		width:newWidth,
-		height:newHeight,
-            });
-	    let tickWidth=CV_TICK_WIDTH;
-	    this.layer.add(image);
-	    let l1 = this.makeText(this.layer,Utils.formatNumber(y1),imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
-	    let tick1 = new Konva.Line({
-		points: [imageX-tickWidth, imageY, imageX, imageY],
-		stroke: CV_LINE_COLOR,
-		strokeWidth: 1,
-	    });
-	    this.layer.add(tick1);
+	let scy1 = this.worldtoCanvas(entry.topDepth,true);
+	let scy2 = this.worldtoCanvas(entry.bottomDepth);
+	let image = entry.image;
+	if(debug) console.log('addentry',scy1,scy2);
 
+	let imageX = this.getXOffset(column);
+	let imageY = scy1;
+	let aspectRatio = image.width()/ image.height()
+	let newHeight= (scy2-scy1)
+	let newWidth = newHeight * aspectRatio;
+	let group = new Konva.Group({
+	    draggable: this.opts.canEdit,
+	    dragBoundFunc: function(pos) {
+		return {
+		    x: this.getAbsolutePosition().x,  
+		    y: pos.y                          
+		};
+	    }		
+	});
+	this.layer.add(group);
+	image.setAttrs({
+	    x: imageX,
+	    y: imageY,
+	    width:newWidth,
+	    height:newHeight,
+        });
+	let tickWidth=CV_TICK_WIDTH;
+	group.add(image);
+	let l1 = this.makeText(group,Utils.formatNumber(entry.topDepth),
+			       imageX-tickWidth,imageY,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
+	let tick1 = new Konva.Line({
+	    points: [imageX-tickWidth, imageY, imageX, imageY],
+	    stroke: CV_LINE_COLOR,
+	    strokeWidth: 1,
+	});
+	group.add(tick1);
+	
+	let y = imageY+newHeight;
+	let l2 = this.makeText(group,Utils.formatNumber(entry.bottomDepth),
+			       imageX-tickWidth,y,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
+	
+	let tick2 = new Konva.Line({
+	    points: [imageX-tickWidth, y, imageX, y],
+	    stroke: CV_LINE_COLOR,
+	    strokeWidth: 1,
+	});
+	group.add(tick2);
+	let rect = new Konva.Rect({
+	    x: imageX,
+	    y: imageY,
+	    width: newWidth,
+	    height:newHeight,
+	    fill: 'transparent',
+	    stroke: CV_HIGHLIGHT_COLOR,
+	    strokeWidth: 2,
+	});
+	group.add(rect);
+	if(!this.getShowHighlight()) {
+	    rect.stroke('transparent');
+	}
+	
+	this.addClickHandler(rect,(e,obj)=>{
+	    let y = rect.getAbsolutePosition().y;
+	    let world = this.canvasToWorld(y);
+	    this.showPopup(entry.label,text,rect);
+	});
 
-	    let y = imageY+newHeight;
-	    let l2 = this.makeText(this.layer,Utils.formatNumber(y2),imageX-tickWidth,y,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
+	let ilabel = this.makeText(group,entry.label,imageX+4,imageY+4,{fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
+	if(!this.getShowLabels()) {
+	    ilabel.hide();
+	    ilabel.backgroundRect.hide();
+	}
 
-	    let tick2 = new Konva.Line({
-		points: [imageX-tickWidth, y, imageX, y],
-		stroke: CV_LINE_COLOR,
-		strokeWidth: 1,
-	    });
-	    this.layer.add(tick2);
-	    let rect = new Konva.Rect({
-		x: imageX,
-		y: imageY,
-		width: newWidth,
-		height:newHeight,
-		fill: 'transparent',
-		stroke: CV_HIGHLIGHT_COLOR,
-		strokeWidth: 2,
-	    });
-	    this.layer.add(rect);
-	    if(!this.getShowHighlight()) {
-		rect.stroke('transparent');
-	    }
-		
-	    this.addClickHandler(rect,()=>{this.showPopup(label,text,rect);});
+	entry.group = group;
+	entry.image = image;
+	entry.highlight = rect;
+	entry.ilabel = ilabel;
 
+	let getPos = ()=>{
+	    let y1 = rect.getAbsolutePosition().y;
+	    let scale = this.stage.scaleY();
+	    let y2 = y1+scale*rect.getHeight();
+	
+	    let top = this.canvasToWorld(y1);
+	    let bottom = this.canvasToWorld(y2);		
+	    return {top:top,bottom:bottom};
+	}
+	group.on('dragmove', (e)=> {
+	    let pos  = getPos();
+	    l1.text(Utils.formatNumber(pos.top));
+	    l2.text(Utils.formatNumber(pos.bottom));	    
+	});
 
-	    let ilabel = this.makeText(this.layer,label,imageX+4,imageY+4,{fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
-	    if(!this.getShowLabels()) {
-		ilabel.hide();
-		ilabel.backgroundRect.hide();
-	    }
-
-	    this.entries.push({
-		label:label,
-		url:url,
-		y1:y1,
-		y2:y2,
-		text:text,
-		image:image,
-		highlight:rect,
-		ilabel:ilabel
-	    });
+	group.on('dragend', (e)=> {
+	    let pos  = getPos();
+	    this.editEntry(entry,pos.top,pos.bottom);
 	});
     }
 }

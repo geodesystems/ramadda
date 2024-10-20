@@ -74,9 +74,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	if(legends.size()>0) {
 	    Utils.add(collection,"legends",JU.list(legends));
 	}
-	System.err.println(collection);
-
-
 	List<String> annotations=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_annotation"}, true)) {
 	    String desc = mtd.getAttr1();

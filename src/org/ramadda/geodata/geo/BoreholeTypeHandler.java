@@ -177,6 +177,10 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	StringBuilder js = new StringBuilder();
 	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
 	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
+	if (getAccessManager().canDoEdit(request, entry)) {
+	    Utils.add(args,"canEdit","true");
+	}
+
 	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
 				  "axisX","legendX","legendTop","legendBottom",
 				  "showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
