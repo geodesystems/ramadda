@@ -2054,15 +2054,20 @@ public class EntryManager extends RepositoryManager {
 	    return new Result("", sb, JsonUtil.MIMETYPE);
 	}
 
-	String what = request.getString("what","");
+
+
 	try {
-	    if(what.equals("entryorder")) {
-		entry.setEntryOrder(request.get("value",999));
-	    } else  if(what.equals("name")) {
-		entry.setName(request.getString("value",entry.getName()));		
-	    }   else {
-		sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Unknown field:" +what)));
-		return new Result("", sb, JsonUtil.MIMETYPE);
+	    String what = request.getString("what",null);
+	    String value  = request.getString("value",null);
+	    Result r =     applyProperty(request,entry,what,value);
+	    if(r!=null) return r;
+	    int cnt=1;
+	    while(cnt<100) {
+		what = request.getString("what"+cnt,null);
+		value  = request.getString("value"+cnt,null);
+		r =     applyProperty(request,entry,what,value);
+		if(r!=null) return r;
+		cnt++;
 	    }
 	} catch(Exception exc) {
 	    sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "An error has occurred:" + exc)));
@@ -2071,6 +2076,22 @@ public class EntryManager extends RepositoryManager {
 	updateEntry(request, entry);
 	sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("message", "OK, field has changed")));
 	return new Result("", sb, JsonUtil.MIMETYPE);
+    }
+
+    private Result applyProperty(Request request,Entry entry, String what, String value) throws Exception {
+	if(what==null || value==null) return null;
+	if(what.equals("entryorder")) {
+	    entry.setEntryOrder(Integer.parseInt(value));
+	} else  if(what.equals("name")) {
+	    entry.setName(value);
+	}  else {
+	    if(!entry.setValue(what,value)) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(JsonUtil.mapAndQuote(Utils.makeListFromValues("error", "Unknown field:" +what)));
+		return new Result("", sb, JsonUtil.MIMETYPE);
+	    }
+	}
+	return null;
     }
 
     public Result processEntrySetFile(final Request request) throws Exception {
