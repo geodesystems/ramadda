@@ -2,9 +2,11 @@
 
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_DOROTATION = 'dorotation';
-var ID_CV_MAXWIDTH = 'maxwidth';
+var ID_CV_COLUMN_WIDTH = 'columnwidth';
+var ID_CV_SCALE = 'scale';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var ID_CV_GOTO = 'goto';
+var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
@@ -29,10 +31,14 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.opts = {
 	screenHeight:args.height??800,
 	maxColumnWidth:300,
-	scale:1.0,
 	offsetY:-20,
-	autoSize:true,
-	showLegend:true,
+	//This is the scale applied to the world coordinates on the image
+	scaleY:0.5,
+	//This is the initial canvas scale
+	initScale:1.0,
+
+
+
 	legendWidth:0,
 	hadLegendWidth:Utils.isDefined(args.legendWidth),
 
@@ -41,16 +47,15 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	hadAxisWidth:Utils.isDefined(args.axisWidth),	
 	top:0,
 
-
-	bottom:1000,
 	range: {
 	},
 
-	scaleY:100,
+
+	showLegend:true,
 	showLabels:true,
 	showHighlight:false,
 	showMenuBar:true,
-	initScale:1.0
+
     }
 
     //check for numbers as strings
@@ -210,6 +215,7 @@ RamaddaCoreVisualizer.prototype = {
 	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+100);
     },
     worldtoCanvas:function(w,debug) {
+	w = w*this.opts.scaleY;
 	let range = this.opts.range;
 	let r = range.max-range.min;
 	let h = this.getCanvasHeight();
@@ -228,6 +234,7 @@ RamaddaCoreVisualizer.prototype = {
 	let r = range.max - range.min;
 	let h=this.getCanvasHeight();
 	let w =  (r*c)/h;
+	w = w/this.opts.scaleY;
 	return w;
     },
 
@@ -249,7 +256,10 @@ RamaddaCoreVisualizer.prototype = {
 
 	html+= HU.div([],
 		      'Column width: ' + HU.input('',this.opts.maxColumnWidth,
-					       [ATTR_ID,this.domId(ID_CV_MAXWIDTH),ATTR_STYLE,'width:40px']));
+						  [ATTR_ID,this.domId(ID_CV_COLUMN_WIDTH),ATTR_STYLE,'width:40px']));
+	html+= HU.div([],
+		      'Scale: ' + HU.input('',this.opts.scaleY,
+					       [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));	
 
 	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
 	let dialog =  HU.makeDialog({anchor:anchor,
@@ -261,8 +271,14 @@ RamaddaCoreVisualizer.prototype = {
 				     draggable:true});
 
 	
-	HU.onReturn(this.jq(ID_CV_MAXWIDTH),obj=>{
+	HU.onReturn(this.jq(ID_CV_COLUMN_WIDTH),obj=>{
 	    _this.opts.maxColumnWidth=+obj.val();
+	    _this.drawCollections();
+	});
+
+
+	HU.onReturn(this.jq(ID_CV_SCALE),obj=>{
+	    _this.opts.scaleY=+obj.val();
 	    _this.drawCollections();
 	});
 
@@ -403,9 +419,6 @@ RamaddaCoreVisualizer.prototype = {
 	if(tabs) {
 	    tabs.init();
 	}
-    },
-    getScale:function() {
-	return this.opts.scale;
     },
     getScreenHeight:function() {
 	return this.opts.screenHeight;
