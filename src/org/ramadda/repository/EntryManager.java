@@ -6593,8 +6593,8 @@ public class EntryManager extends RepositoryManager {
 	} else  {
 	    state = new OutputHandler.State(entry);
 	}
-        links.addAll(getRepository().getOutputLinks(request, state));
         entry.getTypeHandler().getEntryLinks(request, entry,state, links);
+        links.addAll(getRepository().getOutputLinks(request, state));
         return links;
     }
 
