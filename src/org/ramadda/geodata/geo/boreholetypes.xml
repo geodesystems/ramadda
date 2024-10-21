@@ -434,8 +434,6 @@ inherited="false"  }}
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
-
-
   <column  name="hole"  label="Hole" type="enumerationplus"  cansearch="true"/>
   <column  name="tool"  label="Tool" type="enumerationplus"  cansearch="true"
 	 values="file:/org/ramadda/geodata/geo/resources/tools.txt"/>
@@ -495,6 +493,65 @@ useAttachmentIfNeeded=true
 <wiki>
 <![CDATA[
 +section title="Core Image: {{name}}"
+:navtop 
+{{group}}
+{{description wikify=true}}
+{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
+useAttachmentIfNeeded=true
+}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
++row
++col-8
+{{information  details="true"  showTitle="false"   showResource=false}}
+-col
++col-4
+{{properties  message=""  metadata.types="geo_project,geo_site,geo_box_number" oneLine="true"
+includeTitle="false"  separator=""  decorate="false" inherited="true"  }} 
++center
+{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
+-center
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
+
+<type name="type_borehole_registeredcoreimage"
+      description="Registered Core Image"
+      handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
+  <property name="icon" value="/geo/drilling-rig.png"/>
+  <property name="date.nullok" value="true"/>
+  <property name="inheritlocationfromtype" value="type_geo_site"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <column name="top_depth" type="double" label="Top Depth" showinhtml="true"/>
+  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true"/>       
+<property name="bubble">
+<![CDATA[
++center
+<b>{{name link=true}}</b>
+-center
++tabs
++tab Information
+{{information showImage=false}}
+-tab
++tab Image
++center
+{{image width=300px}}
+-center
+-tab
+-tabs
+]]></property>
+
+
+<wiki>
+<![CDATA[
++section title="Registered Core Image: {{name}}"
 :navtop 
 {{group}}
 {{description wikify=true}}
@@ -622,62 +679,5 @@ inherited="true"  }}
 </type>
 
 
-<type name="type_borehole_registeredcoreimage"
-      description="Registered Core Image"
-      handler="org.ramadda.geodata.geo.BoreholeBaseTypeHandler">      
-  <property name="icon" value="/geo/drilling-rig.png"/>
-  <property name="date.nullok" value="true"/>
-  <property name="inheritlocationfromtype" value="type_geo_site"/>
-  <property name="form.area.show" value="false"/>
-  <property name="form.location.show" value="true"/>
-  <column name="top_depth" type="double" label="Top Depth" showinhtml="true"/>
-  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true"/>       
-<property name="bubble">
-<![CDATA[
-+center
-<b>{{name link=true}}</b>
--center
-+tabs
-+tab Information
-{{information showImage=false}}
--tab
-+tab Image
-+center
-{{image width=300px}}
--center
--tab
--tabs
-]]></property>
-
-
-<wiki>
-<![CDATA[
-+section title="Registered Core Image: {{name}}"
-:navtop 
-{{group}}
-{{description wikify=true}}
-{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
-useAttachmentIfNeeded=true
-}}
-:vspace 1em
-----
-:vspace 1em
-:heading Information
-+row
-+col-8
-{{information  details="true"  showTitle="false"   showResource=false}}
--col
-+col-4
-{{properties  message=""  metadata.types="geo_project,geo_site,geo_box_number" oneLine="true"
-includeTitle="false"  separator=""  decorate="false" inherited="true"  }} 
-+center
-{{mapentry hideIfNoLocations=true width="90%" height="200px"}}
--center
--col
--row
--section
-]]>
-</wiki>
-</type>
 
 </types>

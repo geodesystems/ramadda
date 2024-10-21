@@ -181,11 +181,16 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	    Utils.add(args,"canEdit","true");
 	}
 
+	String ids = entry.getId();
+	String other = Utils.getProperty(props,"otherEntries",null);
+	if(other!=null) ids+=","+other;
+	Utils.add(args,"collectionIds",JU.quote(ids));
 	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
+				  "showLegend","showAnnotations",
 				  "maxColumnWidth",
 				  "doRotation",
 				  "axisX","legendX","legendTop","legendBottom",
-				  "showLabels","showHighlight","showMenuBar","initScale","otherEntries"}) {
+				  "showLabels","showHighlight","showMenuBar","initScale"}) {
 	    String v=Utils.getProperty(props,a,null);
 	    if(v!=null) {
 		if(v.equals("true") || v.equals("false"))
@@ -213,6 +218,7 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	}
 
 
+	/****
 	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
 											   originalEntry, entry, props),
 							       "type_borehole_registeredcoreimage");
@@ -220,13 +226,12 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 	String json = coreApi.makeEntriesJson(request, entry,children);
 	js.append("var coreVisualizerData = " + json);
 	js.append(";\n");
+	*/
 
 	js.append("var container = document.getElementById('"+uid+"');\n");
-	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","coreVisualizerData",
+	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","null",
 					   "container",JU.map(args)));
 	js.append("\n");
-
-
 	HU.script(sb,js.toString());
 
 

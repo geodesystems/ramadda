@@ -76,11 +76,12 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}
 	List<String> annotations=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_annotation"}, true)) {
-	    String desc = mtd.getAttr1();
+	    String label = mtd.getAttr1();
 	    String depth = mtd.getAttr2();
 	    String style = mtd.getAttr3();	    
+	    String desc =  mtd.getAttr4();	    
 	    if(Utils.stringDefined(depth)) {
-		annotations.add(depth+";"+ desc+";"+style);
+		annotations.add(depth+";"+ label+";"+Utils.encodeBase64(style,true)+";"+Utils.encodeBase64(desc,true));
 	    }
 	}
 
