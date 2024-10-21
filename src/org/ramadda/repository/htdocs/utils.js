@@ -3686,6 +3686,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    onReturn:function(obj,func) {
+	obj.keydown(function(event) {
+	    if (event.key === "Enter" || event.keyCode === 13) {
+		func($(this));
+	    }
+	});
+    },
+
     initTypeMenu: function(selectId, textAreaId) {
 	jqid(selectId).change(function() {
 	    let v = $(this).val();
