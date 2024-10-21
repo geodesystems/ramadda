@@ -189,6 +189,7 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 				  "showLegend","showAnnotations",
 				  "maxColumnWidth",
 				  "doRotation",
+				  "scaleY",
 				  "axisX","legendX","legendTop","legendBottom",
 				  "showLabels","showHighlight","showMenuBar","initScale"}) {
 	    String v=Utils.getProperty(props,a,null);
