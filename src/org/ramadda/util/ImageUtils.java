@@ -223,4 +223,39 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	}
     }
 
+
+    public static int[] averageRGB(BufferedImage image) throws Exception {
+	// Get image dimensions
+	int width = image.getWidth();
+	int height = image.getHeight();
+	// Variables to store total RGB values
+	long totalRed = 0, totalGreen = 0, totalBlue = 0;
+	// Loop through each pixel
+	for (int y = 0; y < height; y++) {
+	    for (int x = 0; x < width; x++) {
+		int pixel = image.getRGB(x, y);
+		// Extract RGB values
+		int red = (pixel >> 16) & 0xFF;
+		int green = (pixel >> 8) & 0xFF;
+		int blue = pixel & 0xFF;
+		// Add to total
+		totalRed += red;
+		totalGreen += green;
+		totalBlue += blue;
+	    }
+	}
+	// Calculate the average
+	int numPixels = width * height;
+	int avgRed = (int)(totalRed / numPixels);
+	int avgGreen = (int)(totalGreen / numPixels);
+	int avgBlue = (int)(totalBlue / numPixels);
+	return new int[]{avgRed,avgGreen,avgBlue};
+    }
+
+
+
+
 }
+
+
+
