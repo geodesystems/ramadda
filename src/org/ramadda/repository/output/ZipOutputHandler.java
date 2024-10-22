@@ -420,7 +420,7 @@ public class ZipOutputHandler extends OutputHandler {
 
     }
 
-    public Result toCorpus(Request request, String prefix, final List<Entry> entries)
+    public Result toCorpus(final Request request, String prefix, final List<Entry> entries)
             throws Exception {
 	InputStream is =IO.pipeIt(new IO.PipedThing(){
 		public void run(OutputStream os) {
@@ -428,8 +428,12 @@ public class ZipOutputHandler extends OutputHandler {
 		    try {
 			long t1 = System.currentTimeMillis();
 			for(Entry e: entries) {
+			    if(!getAccessManager().canDoFile(request, e)){
+				continue;
+			    }
 			    pw.println("********************");
 			    pw.println("entry: " + e.getName());
+			    pw.println("entry id: " + e.getId());			    
 			    pw.println("url: "+  request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId()));
 			    pw.println(e.getDescription());
 			    if(e.isFile()) {
