@@ -93,11 +93,27 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	for(Entry child: children) {
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
-	    entries.add(JU.map("url",JU.quote(url),"label",JU.quote(child.getName()),
-			       "entryId",JU.quote(child.getId()),
-			       "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
-			       "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
-			       "text",JU.quote(info)));
+	    List<String> attrs = new ArrayList<String>();
+	    Utils.add(attrs,"url",JU.quote(url),"label",JU.quote(child.getName()),
+		      "entryId",JU.quote(child.getId()),
+		      "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
+		      "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
+		      "text",JU.quote(info));
+	    List<String>boxes = null;
+	    for(Metadata mtd: getMetadataManager().findMetadata(request, child, new String[]{"geo_core_box"}, true)) {
+		if(boxes==null)boxes=new ArrayList<String>();
+		boxes.add(JU.map("label",JU.quote(mtd.getAttr1()),
+				 "x",JU.quote(mtd.getAttr2()),
+				 "y",JU.quote(mtd.getAttr3()),
+				 "width",JU.quote(mtd.getAttr4()),
+				 "height",JU.quote(mtd.getAttr(5)),
+				 "top",JU.quote(mtd.getAttr(6)),
+				 "bottom",JU.quote(mtd.getAttr(7))));				 				 
+	    };
+
+	    if(boxes!=null) Utils.add(attrs,"boxes",JU.list(boxes));
+
+	    entries.add(JU.map(attrs));
 
 	}
 

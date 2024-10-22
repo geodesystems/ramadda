@@ -40,7 +40,17 @@
       <element name="Legend Image" datatype="file"/>
       <element name="Top" datatype="int"/>
       <element name="Bottom" datatype="int"/>      
-    </type>    
+    </type>
+
+    <type id="geo_core_box" name="Geo Core Box"> 
+      <element name="Label" datatype="string"/>
+      <element name="X" datatype="double"/>
+      <element name="Y" datatype="double"/>
+      <element name="Width" datatype="double"/>
+      <element name="Height" datatype="double"/>            
+      <element name="Top" datatype="double"/>
+      <element name="Bottom" datatype="double"/>      
+    </type>        
 
 
   </handler>

@@ -32,7 +32,7 @@ import java.util.List;
 
 
 @SuppressWarnings("unchecked")
-public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHandler {
+public class BoreholeTypeHandler extends PointTypeHandler {
 
     private CoreApiHandler coreApi;
     private JSONArray holes;
@@ -147,97 +147,6 @@ public class BoreholeTypeHandler extends PointTypeHandler implements WikiTagHand
 
     }
 
-    @Override
-    public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
-	tagHandlers.put("core_visualizer",this);
-    }
-
-
-
-    public String handleTag(WikiUtil wikiUtil, Request request,
-                            Entry originalEntry, Entry entry, String theTag,
-                            Hashtable props, String remainder) throws Exception {
-	if(!theTag.equals("core_visualizer")) return null;
-
-	StringBuilder sb = new StringBuilder();
-	
-	String mainId = HU.getUniqueId("id");
-	String uid = HU.getUniqueId("id");
-	String topId = HU.getUniqueId("topid");
-	String leftId = HU.getUniqueId("left");	
-
-	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;","class","cv-main"));
-	HU.div(sb,"",HU.attrs("id",topId,"class","cv-top","style","position:relative"));
-	HU.div(sb,"",HU.attrs("class","cv-canvas","id",uid));
-	HU.close(sb,"div");
-	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/konva.min.js"));
-	HU.cssLink(sb, getPageHandler().makeHtdocsUrl("/geo/corevisualizer.css"));
-	HU.importJS(sb,getRepository().getHtdocsUrl("/geo/corevisualizer.js"));
-	String id = "viz_" + uid;
-	StringBuilder js = new StringBuilder();
-	List<String> args = (List<String>)Utils.makeListFromValues("mainId",JU.quote(mainId),"topId",JU.quote(topId));
-	Utils.add(args,"mainEntry",JU.quote(entry.getId()));
-	if (getAccessManager().canDoEdit(request, entry)) {
-	    Utils.add(args,"canEdit","true");
-	}
-
-	String ids = entry.getId();
-	String other = Utils.getProperty(props,"otherEntries",null);
-	if(other!=null) ids+=","+other;
-	Utils.add(args,"collectionIds",JU.quote(ids));
-	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
-				  "showLegend","showAnnotations",
-				  "maxColumnWidth",
-				  "doRotation",
-				  "scaleY",
-				  "axisX","legendX","legendTop","legendBottom",
-				  "showLabels","showHighlight","showMenuBar","initScale"}) {
-	    String v=Utils.getProperty(props,a,null);
-	    if(v!=null) {
-		if(v.equals("true") || v.equals("false"))
-		    Utils.add(args,a,v);
-		else
-		    Utils.add(args,a,HU.squote(v));
-	    }
-	}
-
-
-
-	List<String> annotations=new ArrayList<String>();
-	String annotationsProp  =Utils.getProperty(props,"annotations",null);
-	if(annotationsProp!=null)
-	    annotations.add(annotationsProp);
-	if(annotations.size()>0) {
-	    Utils.add(args,"annotations",JU.quote(Utils.join(annotations,",")));
-	}
-
-
-
-	String legend=Utils.getProperty(props,"legendUrl",null);
-	if(legend!=null) {
-	    Utils.add(args,"legendUrl",JU.quote(legend));
-	}
-
-
-	/****
-	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
-											   originalEntry, entry, props),
-							       "type_borehole_registeredcoreimage");
-
-	String json = coreApi.makeEntriesJson(request, entry,children);
-	js.append("var coreVisualizerData = " + json);
-	js.append(";\n");
-	*/
-
-	js.append("var container = document.getElementById('"+uid+"');\n");
-	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","null",
-					   "container",JU.map(args)));
-	js.append("\n");
-	HU.script(sb,js.toString());
-
-
-	return sb.toString();
-    }
 
 
 }
