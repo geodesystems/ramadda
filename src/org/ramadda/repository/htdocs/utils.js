@@ -2559,6 +2559,7 @@ var Utils =  {
         if ((undefined === value) || (null === value)) {
             return false;
         }
+	if(value==='') return false;
         if (typeof value == 'number') {
             return true;
         }
