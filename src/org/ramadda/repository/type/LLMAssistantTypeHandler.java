@@ -179,7 +179,11 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	StringBuilder sb = new StringBuilder();
 	if(request.isAdmin()) {
 	    String url = "https://platform.openai.com/assistants/" +assistantId;
-	    sb.append(HU.href(url,"@OpenAI",HU.attrs("target","openai")));
+	    String upload = request.makeUrl(getRepository().URL_ENTRY_ACTION, ARG_ENTRYID,
+					    entry.getId(), ARG_ACTION, ACTION_UPLOAD);
+	    sb.append(HU.href(upload,HU.faIcon("fas fa-upload")));
+	    sb.append(HU.space(3));
+	    sb.append(HU.href(url,"View @OpenAI",HU.attrs("target","openai")));
 	    sb.append("<br>");
 	}
 	//	String thread= getThread(request, entry);
@@ -281,7 +285,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 
 	getPageHandler().entrySectionClose(request, entry, sb);
-	return new Result("LLM Upload",sb);
+	return getEntryManager().addEntryHeader(request, entry,
+						new Result("LLM Upload",sb));
     }
 
     private Result processEntryActionInner(Request request, Entry entry)
