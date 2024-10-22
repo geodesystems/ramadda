@@ -434,7 +434,7 @@ public class ZipOutputHandler extends OutputHandler {
 			    pw.println("********************");
 			    pw.println("entry: " + e.getName());
 			    pw.println("entry id: " + e.getId());			    
-			    pw.println("url: "+  request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId()));
+			    pw.println("entry url: "+  request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW) +"?" + HU.arg(ARG_ENTRYID,e.getId()));
 			    pw.println(e.getDescription());
 			    if(e.isFile()) {
 				String corpus =getSearchManager().extractCorpus(request,e,e.getResource().getPath(),null);
