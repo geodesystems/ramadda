@@ -178,7 +178,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
 	StringBuilder sb = new StringBuilder();
 	if(request.isAdmin()) {
-	    String url = "https://platform.openai.com/playground/assistants?assistant=" +assistantId;
+	    String url = "https://platform.openai.com/assistants/" +assistantId;
 	    sb.append(HU.href(url,"@OpenAI",HU.attrs("target","openai")));
 	    sb.append("<br>");
 	}
