@@ -671,7 +671,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public void childrenChanged(Entry entry) {
+    public void childrenChanged(Entry entry,boolean isNew) {
     }
 
     

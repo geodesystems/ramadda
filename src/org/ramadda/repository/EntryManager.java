@@ -2179,7 +2179,7 @@ public class EntryManager extends RepositoryManager {
 			  long startDate, long endDate, Object[] values) {
 	entry.initEntry(name, description, parentEntry,user,resource,category,entryOrder,createDate,
 			changeDate, startDate, endDate, values);
-	parentageChanged(parentEntry);
+	parentageChanged(parentEntry,true);
 
     }
 
@@ -3105,7 +3105,7 @@ public class EntryManager extends RepositoryManager {
 	    IO.close(fis);
 	    IO.close(zin);
 	}
-	parentageChanged(parentEntry);
+	parentageChanged(parentEntry,true);
     }	
 
     
@@ -3833,7 +3833,7 @@ public class EntryManager extends RepositoryManager {
             okEntries.add(entry);
         }
         entries = okEntries;
-	parentageChanged(entries);
+	parentageChanged(entries,false);
 
         List<Descendent> found = getDescendents(request, entries, connection,
 						null, true, true, actionId);
@@ -4958,7 +4958,7 @@ public class EntryManager extends RepositoryManager {
             if (newEntries.size() > 0) {
                 link = links.toString();
             }
-	    parentageChanged(toGroup);
+	    parentageChanged(toGroup,true);
             getActionManager().setContinueHtml(actionId,
 					       count + " entries copied" + HU.br() + link);
         } catch (Exception exc) {
@@ -5004,7 +5004,7 @@ public class EntryManager extends RepositoryManager {
 		  oldEntry.getValues());
 
 	newEntry.setParentEntry(getPathEntry(request,newParent,newEntry,pathTemplate));
-	parentageChanged(newEntry);
+	parentageChanged(newEntry,true);
 	newEntry.setLocation(oldEntry);
 	newTypeHandler.initializeCopiedEntry(newEntry, oldEntry);
 
@@ -5031,7 +5031,7 @@ public class EntryManager extends RepositoryManager {
     private Result processEntryMove(Request request, Entry toGroup,
                                     List<Entry> entries)
 	throws Exception {
-	parentageChanged(entries);
+	parentageChanged(entries,true);
         Connection connection = getDatabaseManager().getConnection();
         connection.setAutoCommit(false);
         Statement statement = connection.createStatement();
@@ -5054,7 +5054,7 @@ public class EntryManager extends RepositoryManager {
             connection.setAutoCommit(true);
 
 	    getRepository().checkMovedEntries(entries);
-	    parentageChanged(entries);
+	    parentageChanged(entries,true);
 
             return new Result(request.makeUrl(getRepository().URL_ENTRY_SHOW,
 					      ARG_ENTRYID, entries.get(0).getId()));
@@ -7552,7 +7552,7 @@ public class EntryManager extends RepositoryManager {
 						   newEntry, "", associationType);
         }
 
-	parentageChanged(parent);
+	parentageChanged(parent,true);
         return new Result(request.entryUrl(getRepository().URL_ENTRY_FORM,
                                            newEntry));
 
@@ -7701,7 +7701,6 @@ public class EntryManager extends RepositoryManager {
         if (entries.size() == 0) {
             return;
         }
-
 	for (Entry entry : entries) {
 	    if(!entry.getTypeHandler().canCreate(request)) {
 		throw new IllegalArgumentException("User cannot create entry of type:" + entry.getTypeHandler());
@@ -8523,14 +8522,16 @@ public class EntryManager extends RepositoryManager {
 
 
 
-    public void parentageChanged(List<Entry> entries) {
-	for(Entry entry: entries) parentageChanged(entry.getParentEntry());
+    public void parentageChanged(List<Entry> children, boolean isNew) {
+	for(Entry entry: children) {
+	    parentageChanged(entry.getParentEntry(),isNew);
+	}
     }
 
-    public void parentageChanged(Entry parent) {
+    public void parentageChanged(Entry parent, boolean isNew) {
 	if(parent!=null) {
 	    childrenCache.remove(parent.getId());
-	    parent.getTypeHandler().childrenChanged(parent);
+	    parent.getTypeHandler().childrenChanged(parent,isNew);
 	}
     }
 

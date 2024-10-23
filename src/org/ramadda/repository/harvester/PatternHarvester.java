@@ -1176,7 +1176,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             addEntries(needToAdd, timestamp, entriesMap);
         }
 
-	getEntryManager().parentageChanged(getBaseGroup());
+	getEntryManager().parentageChanged(getBaseGroup(),true);
         if ( !canContinueRunning(timestamp)) {
             return;
         }
@@ -1889,7 +1889,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                             changeDate.getTime(), fromDate.getTime(),
                             toDate.getTime(), values);
 
-	    getEntryManager().parentageChanged(group);
+	    getEntryManager().parentageChanged(group,true);
         }
 
 	if(pushGeo && !entry.isGeoreferenced(request)) {
