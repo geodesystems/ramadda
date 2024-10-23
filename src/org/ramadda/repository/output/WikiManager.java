@@ -2466,6 +2466,31 @@ public class WikiManager extends RepositoryManager
 				      "data-plays","1"));
 
 	    return sb.toString();
+	} else if(theTag.equals("json.view")) {
+	    //Limit the size
+	    if(entry.getResource().getFileSize()>1000*1000*5) {
+		return "JSON too large";
+	    }
+	    HU.importJS(sb, getPageHandler().makeHtdocsUrl("/media/json.js"));
+	    String json=null;
+	    try {
+		String id = Utils.getGuid();
+		json =
+		    getStorageManager().readEntry(entry);
+		String formatted = JsonUtil.format(json, true);
+		HtmlUtils.open(sb, "div", "id", id);
+		HtmlUtils.pre(sb, formatted);
+		HtmlUtils.close(sb, "div");
+		sb.append(HtmlUtils.importJS(getRepository().getHtdocsUrl("/jsonutil.js")));
+		sb.append(HtmlUtils.script("RamaddaJsonUtil.init('" + id + "');"));
+	    } catch (Exception exc) {
+		sb.append("Error formatting JSON: " + exc);
+		System.err.println("Error formatting JSON:"  + exc +"\n" +json);
+		exc.printStackTrace();
+	    }
+
+	    return sb.toString();
+	    
         } else if (theTag.equals("pdf")) {
 	    String url = HU.url(getEntryManager().getEntryResourceUrl(request, entry),"fileinline","true");
 	    return HU.getPdfEmbed(url,props);
