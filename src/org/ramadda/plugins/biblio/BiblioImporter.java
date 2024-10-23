@@ -177,7 +177,7 @@ public class BiblioImporter extends ImportHandler implements BiblioConstants {
 
         sb.append("</ul> ");
 	getPageHandler().entrySectionClose(request, parentEntry, sb);
-	getEntryManager().parentageChanged(parentEntry);
+	getEntryManager().parentageChanged(parentEntry,true);
         getSearchManager().entriesCreated(request, entries);	
         return getEntryManager().addEntryHeader(request, parentEntry,
                 new Result("", sb));
