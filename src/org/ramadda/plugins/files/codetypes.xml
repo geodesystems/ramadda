@@ -63,6 +63,7 @@
 </type>
 
 <type name="type_json"  super="type_convertible" description="JSON File as CSV"
+      priority="100"
       notpattern="(?i).*imdvmap\.json$"
       pattern="(?i).*\.(json|json.gz)"
       handler="org.ramadda.plugins.files.JsonFileTypeHandler"
