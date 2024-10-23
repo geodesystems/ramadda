@@ -320,6 +320,9 @@ public class ImageOutputHandler extends OutputHandler {
 		getAccessManager().canDoEdit(request, state.entry)) {		
                 File f = state.entry.getFile();
                 if ((f != null) && f.canWrite()) {
+		    Link hr = new Link(true);
+                    hr.setLinkType(OutputType.TYPE_EDIT);		    
+		    links.add(hr);
                     Link link = new Link(repository.getUrlBase()
                                          + "/lib/tui/tui?entryid="
                                          + state.entry.getId(), ICON_IMAGES,
@@ -356,6 +359,9 @@ public class ImageOutputHandler extends OutputHandler {
                       && state.getEntry().isImage();
         if (ok || ok2) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
+	    Link hr = new Link(true);
+	    hr.setLinkType(OutputType.TYPE_VIEW);		    
+	    links.add(hr);
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ZOOM));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
