@@ -112,7 +112,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				 "width",JU.quote(box.width),
 				 "height",JU.quote(box.height),
 				 "top",JU.quote(box.top),
-				 "bottom",JU.quote(box.height)));
+				 "bottom",JU.quote(box.bottom)));
 	    };
 
 	    if(boxes!=null) Utils.add(attrs,"boxes",JU.list(boxes));
@@ -151,8 +151,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    makeBoxesFromJson(request,entry, corebox,boxes);
 	}
 
-	for(Box box: boxes)
-	    System.err.println("box:" + box);
+	//	for(Box box: boxes)	    System.err.println("box:" + box);
 	return boxes;
     }
 
