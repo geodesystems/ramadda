@@ -536,7 +536,7 @@ includeTitle="false"  separator=""  decorate="false" inherited="true"  }}
 -col
 -row
 
-{{tabletree message="" prefix="\n----\n:heading Children Entries\n:"}}
+{{tabletree message="" prefix="\n----\n:heading Children Entries\n"}}
 
 
 -section

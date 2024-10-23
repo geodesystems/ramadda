@@ -16,6 +16,7 @@ import org.ramadda.util.WikiUtil;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.IOUtil;
 
 import org.ramadda.util.ImageUtils;
@@ -31,7 +32,6 @@ import org.w3c.dom.*;
 import org.json.*;
 import java.net.URL;
 import java.io.*;
-import org.json.*;
 
 import java.util.zip.*;
 import java.text.SimpleDateFormat;
@@ -54,67 +54,36 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
     }
 
 
-
     @Override
-    public void childrenChanged(Entry entry) {
-	super.childrenChanged(entry);
-	Request request = getRepository().getAdminRequest();
+    public void childrenChanged(final Entry entry,boolean isNew) {
+	super.childrenChanged(entry,isNew);
+	if(!isNew) return;
+	final Request request = getRepository().getAdminRequest();
 	double top = (Double) entry.getValue(request, "top_depth");
 	double bottom = (Double) entry.getValue(request, "bottom_depth");	
 	if(!Double.isNaN(top) && !Double.isNaN(bottom)) {
 	    return;
 	}
-	try {
-	    Entry corebox = findCoreboxEntry(request,entry);
-	    if(corebox==null) {
-		return;
-	    }
-	    processCorebox(request, entry, corebox);
-
-	} catch(Exception exc) {
-	    getLogManager().logError("checking children:"+ exc,exc);
-	}
-	
-    }
-
-    private void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {
-	double min= Double.NaN;
-	double max= Double.NaN;	
-	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
-	JSONArray comps = obj.optJSONArray("Compartments");
-	if(comps==null) return;
-	for(int i=0;i<comps.length();i++) {
-	    JSONObject comp = comps.getJSONObject(i);
-	    JSONArray regions= comp.optJSONArray("Regions");
-	    if(regions==null) continue;
-	    for(int j=0;j<comps.length();j++) {
-		JSONObject region = regions.getJSONObject(j);
-		JSONObject depth = region.optJSONObject("depth");
-		if(depth==null) continue;
-		double top = depth.getDouble("start");
-		double bottom = top+depth.getDouble("length");		
-		if(Double.isNaN(min) || top<min) min=top;
-		if(Double.isNaN(max) || top>min) max=top;		
-	    }
-	    
-	}
-	System.err.println(min +" " + max);
-	if(!Double.isNaN(min)){
-	    entry.setValue("top_depth",new Double(min/100));
-	    entry.setValue("bottom_depth",new Double(max/100));	    
-	}
-
+	//a bit of a hack - put this in a thread so the EntryManager has a chance to store the children entries
+	Misc.runInABit(2000,new Runnable(){
+		public void run() {
+		    try {
+			System.err.println("running");
+			Entry corebox = coreApi.findCoreboxEntry(request,entry);
+			if(corebox==null) {
+			    System.err.println("no core box");
+			    return;
+			}
+			coreApi.processCorebox(request, entry, corebox);
+		    } catch(Exception exc) {
+			getLogManager().logError("checking children:"+ exc,exc);
+		    }
+		}
+	    });
 
     }
 
-    private Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
-	for(Entry child:  getEntryManager().getChildren(request, entry)) {
-	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
-		return child;
-	    }
-	}
-	return null;
-    }
+
 
     @Override
     public Result processEntryAction(Request request, Entry entry)
@@ -133,8 +102,6 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	    return getEntryManager().addEntryHeader(request, entry,
 						    new Result("Apply Boxes",sb));
 	}
-
-
 
 
 	sb.append(getWikiManager().wikifyEntry(request,entry,"+callout-info\nThis applies the boxes to the image\n-callout-info\n"));

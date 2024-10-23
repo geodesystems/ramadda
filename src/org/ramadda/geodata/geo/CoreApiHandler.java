@@ -17,7 +17,9 @@ import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoResource;
 import org.ramadda.util.geo.Place;
+import org.ramadda.util.IO;
 
+import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.ui.HttpFormEntry;
@@ -100,7 +102,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		      "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
 		      "text",JU.quote(info));
 	    List<String>boxes = null;
-	    List<CoreApiHandler.Box> _boxes = getBoxes(request, child);
+	    List<Box> _boxes = getBoxes(request, child);
 
 	    for(Box box:_boxes) {
 		if(boxes==null)boxes=new ArrayList<String>();
@@ -123,15 +125,69 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	return JU.map(collection);
     }
 
+    public Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
+	for(Entry child:  getEntryManager().getChildren(request, entry)) {
+	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
+		return child;
+	    }
+	}
+	return null;
+    }
+
+
+
+
     public List<Box> getBoxes(Request request, Entry entry) throws Exception  {
 	List<Metadata> mtdList=
 	    getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_box"}, true);
-	List<CoreApiHandler.Box> boxes = new ArrayList<CoreApiHandler.Box>();
+	List<Box> boxes = new ArrayList<Box>();
 	for(Metadata mtd: mtdList) {
 	    boxes.add(new CoreApiHandler.Box(mtd));
 	}	
+	
+
+	Entry corebox = findCoreboxEntry(request,entry);
+	if(corebox!=null) {
+	    makeBoxesFromJson(request,entry, corebox,boxes);
+	}
+
+	for(Box box: boxes)
+	    System.err.println("box:" + box);
 	return boxes;
     }
+
+    public void makeBoxesFromJson(Request request, Entry entry, Entry corebox, List<Box> boxes) throws Exception {
+	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
+	JSONObject dims= obj.optJSONObject("Dimensions");	    
+	if(dims==null) return;
+	double mainWidth = dims.getDouble("width");
+	double mainHeight = dims.getDouble("height");
+	double mainLength = dims.getDouble("length");	
+	
+
+	JSONArray comps = obj.optJSONArray("Compartments");
+	if(comps==null) return;
+	for(int i=0;i<comps.length();i++) {
+	    JSONObject comp = comps.getJSONObject(i);
+	    JSONObject position= comp.optJSONObject("Position");
+	    JSONObject dimensions= comp.optJSONObject("Dimensions");	    
+	    if(position==null || dimensions==null) continue;
+	    JSONObject origin= position.getJSONObject("origin");
+	    double length=dimensions.getDouble("length");
+	    double height=dimensions.getDouble("height");	    
+	    double width=dimensions.getDouble("width");
+	    double x = origin.getDouble("x");
+	    double y = mainHeight-origin.getDouble("y");	    
+	    double z = origin.getDouble("z");
+	    double[] d = getRegionsDepths(comp);
+	    if(d!=null) {
+		boxes.add(new Box("",x,y,width,height,d[0],d[1]));
+	    } else {
+		boxes.add(new Box("",x,y,width,height));
+	    }
+	}
+    }
+
 
     public Result processEntriesApi(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
@@ -142,6 +198,46 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	List<Entry> children = getEntryManager().getChildren(request, entry);
 	sb.append(makeEntriesJson(request, entry,children));
 	return new Result("", sb, JU.MIMETYPE);
+    }
+
+    public void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {
+	double min= Double.NaN;
+	double max= Double.NaN;	
+	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
+	JSONArray comps = obj.optJSONArray("Compartments");
+	if(comps==null) return;
+	for(int i=0;i<comps.length();i++) {
+	    JSONObject comp = comps.getJSONObject(i);
+	    double[]d = getRegionsDepths(comp);
+	    if(d==null || Double.isNaN(d[0])) continue;
+	    if(Double.isNaN(min) || d[0]<min) min=d[0];
+	    if(Double.isNaN(max) || d[1]>max) max=d[1];		
+	}
+
+	if(!Double.isNaN(min)){
+	    System.err.println("min/max:" + min +" " + max); 
+	    entry.setValue("top_depth",new Double(min));
+	    entry.setValue("bottom_depth",new Double(max));	    
+	    getEntryManager().updateEntry(request, entry);
+	}
+    }
+
+    private double[]getRegionsDepths(JSONObject comp) {
+	JSONArray regions= comp.optJSONArray("Regions");
+	if(regions==null) return null;
+	double min= Double.NaN;
+	double max= Double.NaN;	
+	for(int j=0;j<regions.length();j++) {
+	    JSONObject region = regions.getJSONObject(j);
+	    JSONObject depth = region.optJSONObject("depth");
+	    if(depth==null) continue;
+	    double top = depth.getDouble("start");
+	    double bottom = top+depth.getDouble("length");		
+	    if(Double.isNaN(min) || top<min) min=top;
+	    if(Double.isNaN(max) || bottom>max) max=bottom;		
+	}
+	//The json is in centimeters. the boxes are in meters
+	return new double[]{min/100,max/100};
     }
 
     public static class Box {
@@ -179,6 +275,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    this.bottom = bottom;
 	}
 
+	Box(String label,
+	    double x,
+	    double y,
+	    double width,
+	    double height) {
+	    this(label,x,y,width,height,Double.NaN,Double.NaN);
+	}
+
+
+	public String toString() {
+	    return "box:" + label +" x/y:" + x +" " + y +" dim:" + width +"x" + height +" depth:" + top +" " + bottom;
+	}
 	private static double p(String s) {
 	    if(!Utils.stringDefined(s)) return Double.NaN;
 	    try{
