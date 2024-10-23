@@ -110,6 +110,7 @@ function DocumentChat(id,entryId,action,models,args) {
 			      'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
+	    out = out.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
 	    output.prepend(HU.div([],out));
 	    Utils.initCopyable('#'+guid,{addLink:true,extraStyle:'right:10px;bottom:10px;'});
 	    this.jq(qid).click(function() {
