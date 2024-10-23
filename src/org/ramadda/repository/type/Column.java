@@ -2820,7 +2820,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 							 ? Double.valueOf(dflt.trim())
 							 : 0));
             if (request.exists(urlArg)) {
-                values[offset] = Double.valueOf(request.get(urlArg, dfltValue));
+		String v = request.getString(urlArg,"");
+		if(v.trim().length()==0) {
+		    values[offset] = Double.NaN;
+		} else {
+		    values[offset] = Double.valueOf(request.get(urlArg, dfltValue));
+		}
             } else {
                 values[offset] = dfltValue;
 
