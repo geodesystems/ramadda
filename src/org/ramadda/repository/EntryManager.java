@@ -2431,12 +2431,26 @@ public class EntryManager extends RepositoryManager {
             String       resource  = "";
             String urlArgument = request.getAnonymousEncodedString(ARG_URL,
 								   BLANK);
-            String  filename     = typeHandler.getUploadedFile(request);
             boolean unzipArchive = false;
             boolean stripExif = request.get(ARG_STRIPEXIF,false);
-
             boolean isFile       = false;
+            boolean hasZip = false;
+	    boolean hasUpload = false;
+            String  filename     = typeHandler.getUploadedFile(request);
             String  resourceName = request.getString(ARG_FILE, BLANK);
+
+
+	    List<String> uploadedFiles = request.getUploadedFiles(ARG_FILE,true);
+	    if(uploadedFiles!=null && uploadedFiles.size()>1) {
+		filename=null;
+		resourceName = "";
+		isFile = true;
+		hasUpload  = true;
+		for(String f: uploadedFiles) {
+		    String name = getStorageManager().getOriginalFilename(f);
+		    infos.add(new NewEntryInfo(name, f,parentEntry));
+		}
+	    }
 
             if (serverFile != null) {
                 filename = serverFile.toString();
@@ -2511,8 +2525,7 @@ public class EntryManager extends RepositoryManager {
 		}
             }
 
-            boolean hasZip = false;
-	    boolean hasUpload = false;
+
 	    for(int i=0;i<100;i++) {
 		if(!request.defined("upload_file_"+i)) continue;
 		hasUpload  = true;
@@ -4191,7 +4204,6 @@ public class EntryManager extends RepositoryManager {
 
 
     public Result processEntryNew(Request request) throws Exception {
-
         Entry         group = findGroup(request);
         StringBuilder sb    = new StringBuilder();
         getPageHandler().entrySectionOpen(request, group, sb,
