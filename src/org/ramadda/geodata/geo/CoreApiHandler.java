@@ -100,15 +100,17 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		      "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
 		      "text",JU.quote(info));
 	    List<String>boxes = null;
-	    for(Metadata mtd: getMetadataManager().findMetadata(request, child, new String[]{"geo_core_box"}, true)) {
+	    List<CoreApiHandler.Box> _boxes = getBoxes(request, child);
+
+	    for(Box box:_boxes) {
 		if(boxes==null)boxes=new ArrayList<String>();
-		boxes.add(JU.map("label",JU.quote(mtd.getAttr1()),
-				 "x",JU.quote(mtd.getAttr2()),
-				 "y",JU.quote(mtd.getAttr3()),
-				 "width",JU.quote(mtd.getAttr4()),
-				 "height",JU.quote(mtd.getAttr(5)),
-				 "top",JU.quote(mtd.getAttr(6)),
-				 "bottom",JU.quote(mtd.getAttr(7))));				 				 
+		boxes.add(JU.map("label",JU.quote(box.label),
+				 "x",JU.quote(box.x),
+				 "y",JU.quote(box.y),
+				 "width",JU.quote(box.width),
+				 "height",JU.quote(box.height),
+				 "top",JU.quote(box.top),
+				 "bottom",JU.quote(box.height)));
 	    };
 
 	    if(boxes!=null) Utils.add(attrs,"boxes",JU.list(boxes));
@@ -119,6 +121,16 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	Utils.add(collection,"data",JU.list(entries));
 	return JU.map(collection);
+    }
+
+    public List<Box> getBoxes(Request request, Entry entry) throws Exception  {
+	List<Metadata> mtdList=
+	    getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_box"}, true);
+	List<CoreApiHandler.Box> boxes = new ArrayList<CoreApiHandler.Box>();
+	for(Metadata mtd: mtdList) {
+	    boxes.add(new CoreApiHandler.Box(mtd));
+	}	
+	return boxes;
     }
 
     public Result processEntriesApi(Request request) throws Exception {
@@ -132,6 +144,51 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	return new Result("", sb, JU.MIMETYPE);
     }
 
+    public static class Box {
+	public String label;
+	public double  x;
+	public double  y;
+	public double  width;
+	public double  height;
+	public double  top;
+	public double  bottom;
+
+	Box(Metadata m) {
+	    this(m.getAttr(1),
+		 p(m.getAttr(2)),		 
+		 p(m.getAttr(3)),
+		 p(m.getAttr(4)),
+		 p(m.getAttr(5)),
+		 p(m.getAttr(6)),
+		 p(m.getAttr(7)));		 
+	}
+
+	Box(String label,
+	    double x,
+	    double y,
+	    double width,
+	    double height,
+	    double top,
+	    double bottom) {
+	    this.label = label;
+	    this.x = x;
+	    this.y = y;
+	    this.width = width;
+	    this.height = height;
+	    this.top = top;
+	    this.bottom = bottom;
+	}
+
+	private static double p(String s) {
+	    if(!Utils.stringDefined(s)) return Double.NaN;
+	    try{
+		return Double.parseDouble(s);
+	    } catch(Exception e) {
+		return Double.NaN;
+	    }
+	}
+    }
+	
 
 
 }

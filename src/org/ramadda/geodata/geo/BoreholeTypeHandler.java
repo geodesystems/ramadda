@@ -34,13 +34,13 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class BoreholeTypeHandler extends PointTypeHandler {
 
-    private CoreApiHandler coreApi;
+
     private JSONArray holes;
 
     public BoreholeTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
-	coreApi = new CoreApiHandler(repository);
+
     }
 
 

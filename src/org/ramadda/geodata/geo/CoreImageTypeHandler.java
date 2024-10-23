@@ -43,15 +43,80 @@ import java.util.List;
 
 
 @SuppressWarnings("unchecked")
-public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagHandler {
+public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements WikiTagHandler {
+    private CoreApiHandler coreApi;
 
 
     public CoreImageTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+	coreApi = new CoreApiHandler(repository);
     }
 
 
+
+    @Override
+    public void childrenChanged(Entry entry) {
+	super.childrenChanged(entry);
+	Request request = getRepository().getAdminRequest();
+	double top = (Double) entry.getValue(request, "top_depth");
+	double bottom = (Double) entry.getValue(request, "bottom_depth");	
+	if(!Double.isNaN(top) && !Double.isNaN(bottom)) {
+	    return;
+	}
+	try {
+	    Entry corebox = findCoreboxEntry(request,entry);
+	    if(corebox==null) {
+		return;
+	    }
+	    processCorebox(request, entry, corebox);
+
+	} catch(Exception exc) {
+	    getLogManager().logError("checking children:"+ exc,exc);
+	}
+	
+    }
+
+    private void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {
+	double min= Double.NaN;
+	double max= Double.NaN;	
+	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
+	JSONArray comps = obj.optJSONArray("Compartments");
+	if(comps==null) return;
+	for(int i=0;i<comps.length();i++) {
+	    JSONObject comp = comps.getJSONObject(i);
+	    JSONArray regions= comp.optJSONArray("Regions");
+	    if(regions==null) continue;
+	    for(int j=0;j<comps.length();j++) {
+		JSONObject region = regions.getJSONObject(j);
+		JSONObject depth = region.optJSONObject("depth");
+		if(depth==null) continue;
+		double top = depth.getDouble("start");
+		double bottom = top+depth.getDouble("length");		
+		if(Double.isNaN(min) || top<min) min=top;
+		if(Double.isNaN(max) || top>min) max=top;		
+	    }
+	    
+	}
+	System.err.println(min +" " + max);
+	if(!Double.isNaN(min)){
+	    entry.setValue("top_depth",new Double(min/100));
+	    entry.setValue("bottom_depth",new Double(max/100));	    
+	}
+
+
+    }
+
+    private Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
+	for(Entry child:  getEntryManager().getChildren(request, entry)) {
+	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
+		return child;
+	    }
+	}
+	return null;
+    }
+
+    @Override
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
         String action = request.getString("action", "");
@@ -61,14 +126,17 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb,"Apply Boxes");
 
-	List<Metadata> mtdList=
-	    getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_box"}, true);
-	if(mtdList.size()==0) {
+	List<CoreApiHandler.Box> boxes = coreApi.getBoxes(request, entry);
+	if(boxes.size()==0) {
 	    sb.append(getWikiManager().wikifyEntry(request,entry,"+callout-info\nThere are no box properies\n-callout-info\n"));
 	    getPageHandler().entrySectionClose(request, entry, sb);
 	    return getEntryManager().addEntryHeader(request, entry,
 						    new Result("Apply Boxes",sb));
 	}
+
+
+
+
 	sb.append(getWikiManager().wikifyEntry(request,entry,"+callout-info\nThis applies the boxes to the image\n-callout-info\n"));
 	sb.append(request.uploadForm(getRepository().URL_ENTRY_ACTION,""));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
@@ -80,7 +148,7 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 	sb.append(HU.formClose());
 
 	if(request.exists("apply")) {
-	    Result result =applyBoxes(request,entry,sb,mtdList);
+	    Result result =applyBoxes(request,entry,sb,boxes);
 	    if(result!=null) return result;
 	}	
 
@@ -91,7 +159,7 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 
     }
 
-    private Result   applyBoxes(Request request,Entry entry,StringBuilder sb,List<Metadata> metadataList) throws Exception {
+    private Result   applyBoxes(Request request,Entry entry,StringBuilder sb,List<CoreApiHandler.Box>boxes) throws Exception {
 	Image image = ImageUtils.readImage(entry.getResource().getPath());
 	BufferedImage bi    = ImageUtils.toBufferedImage(image);
 	boolean asZip = request.get("aszip",false);
@@ -111,31 +179,26 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 	int cnt=0;
 	StringBuilder csv = new StringBuilder();
 
-	csv.append("box,red,green,blue\n");
-	
-	
-	for(Metadata mtd: metadataList) {
+	csv.append("box,width,height,red,green,blue,top,bottom\n");
+
+
+	for(CoreApiHandler.Box box: boxes) {
 	    cnt++;
-	    String label =mtd.getAttr(1);
-	    int x=Integer.parseInt(mtd.getAttr(2));
-	    int y=Integer.parseInt(mtd.getAttr(3));	    
-	    int width=Integer.parseInt(mtd.getAttr(4));
-	    int height=Integer.parseInt(mtd.getAttr(5));
-	    BufferedImage subset =  bi.getSubimage(x,y,width,height);
+	    BufferedImage subset =  bi.getSubimage((int)box.x,(int)box.y,(int)box.width,(int)box.height);
 	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(subset, "png", byteArrayOutputStream); 
-	    int[]rgb= ImageUtils.averageRGB(subset);
+	    ImageUtils.ImageInfo info = ImageUtils.averageRGB(subset);
 
             if(zos!=null)  {
 		String file="";
-		if(Utils.stringDefined(label)) {
-		    file=label+"_";
+		if(Utils.stringDefined(box.label)) {
+		    file=box.label+"_";
 		}
 		file+="box_"+cnt+".png";
 		zos.putNextEntry(new ZipEntry(file));
 		byte[] imageBytes = byteArrayOutputStream.toByteArray();
 		IOUtil.writeTo(new ByteArrayInputStream(imageBytes), zos);
-		csv.append(file+","+rgb[0]+"," +rgb[1] +"," + rgb[2]+"\n");
+		csv.append(file+","+ info.width +"," + info.height+","+info.avgRed+"," +info.avgGreen +"," + info.avgBlue+","+box.top +","+ box.bottom+"\n");
 		continue;
 	    }
 	    
@@ -148,13 +211,15 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 
             // Construct the data URL (using "image/png" as the MIME type)
             String dataUrl = "data:image/png;base64," + base64Image;
-	    if(Utils.stringDefined(label)) {
-		sb.append(HU.b(label+":"));
+	    if(Utils.stringDefined(box.label)) {
+		sb.append(HU.b(box.label+":"));
 	    } else {
-		sb.append(HU.b(label+":"));
+		sb.append(HU.b(box.label+":"));
 	    }
 	    sb.append("<br>");
-	    sb.append("Average: red: " + rgb[0] +" green: " + rgb[1] +" blue: " + rgb[2]);
+	    sb.append("Width: " + info.width+" Height: " + info.height+"<br>");
+	    sb.append("Top: " + box.top+" Bottom: " + box.bottom+"<br>");	    
+	    sb.append("Average: red: " + info.avgRed +" green: " + info.avgGreen +" blue: " + info.avgBlue);
 	    sb.append("<br>");
 	    sb.append(HU.image(dataUrl));
 	    sb.append("<p>");
@@ -242,24 +307,11 @@ public class CoreImageTypeHandler extends GenericTypeHandler implements WikiTagH
 	    Utils.add(args,"legendUrl",JU.quote(legend));
 	}
 
-
-	/****
-	List<Entry> children = getEntryUtil().getEntriesOfType(getWikiManager().getEntries(request, wikiUtil,
-											   originalEntry, entry, props),
-							       "type_borehole_registeredcoreimage");
-
-	String json = coreApi.makeEntriesJson(request, entry,children);
-	js.append("var coreVisualizerData = " + json);
-	js.append(";\n");
-	*/
-
 	js.append("var container = document.getElementById('"+uid+"');\n");
 	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","null",
 					   "container",JU.map(args)));
 	js.append("\n");
 	HU.script(sb,js.toString());
-
-
 	return sb.toString();
     }
 

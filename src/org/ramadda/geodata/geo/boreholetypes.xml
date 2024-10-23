@@ -473,7 +473,7 @@ useAttachmentIfNeeded=true
 </wiki>
 </type>
 
-<type name="type_borehole_coreimage"   description="Core Image"
+<type name="type_borehole_coreimage"   description="Core Image" isgroup="true"
       pattern="(?i).*annotated-core-photo.*\.jpg"
       handler="org.ramadda.geodata.geo.CoreImageTypeHandler">      
   <action name="applyboxes"
@@ -484,8 +484,6 @@ useAttachmentIfNeeded=true
   <property name="inheritlocationfromtype" value="type_geo_site"/>
   <property name="form.area.show" value="false"/>
   <property name="form.location.show" value="true"/>
-  <!-- NBCP_1993_Titusville_1.annotated-core-photo_B001.jpg -->
-
   <filename_metadata pattern="^([^_]+)_" metadata_type="geo_project"/>
   <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
   <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
@@ -537,6 +535,10 @@ includeTitle="false"  separator=""  decorate="false" inherited="true"  }}
 -center
 -col
 -row
+
+{{tabletree message="" prefix="\n----\n:heading Children Entries\n:"}}
+
+
 -section
 ]]>
 </wiki>
@@ -646,6 +648,62 @@ inherited="true"  }}
 -section]]></wiki>
 </type>
 
+
+
+<type  name="type_geo_corebox_csv"  description="Geo Corebox CSV"  handler="org.ramadda.data.services.PointTypeHandler"
+       pattern=".*corebox.cblog"
+  super="type_point"  supercategory="Geoscience"  category="Borehole Data" >
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.properties.show"  value="false" />
+<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-tab,-skiplines,1
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{display_table height=80vh}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-section]]></wiki>
+</type>
+
+
+
+<type  name="type_geo_corebox_json"  description="Geo Corebox JSON"
+       handler="org.ramadda.repository.type.TypeHandler"
+       priority="50"
+       pattern=".*corebox.json"
+       supercategory="Geoscience"  category="Borehole Data" >
+
+<!-- Properties-->
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{json.view wikify="false"}} 
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-section]]></wiki>
+</type>
 
 
 </types>
