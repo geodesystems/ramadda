@@ -224,7 +224,21 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
     }
 
 
-    public static int[] averageRGB(BufferedImage image) throws Exception {
+    public static class ImageInfo {
+	public int width;
+	public int height;
+	public int avgRed;
+	public int avgGreen;
+	public int avgBlue;
+	public ImageInfo(int width, int height, int avgRed,int avgGreen, int avgBlue){
+	     this.width = width;
+	     this.height = height;
+	     this.avgRed = avgRed;
+	     this.avgGreen = avgGreen;
+	     this.avgBlue = avgBlue;
+	}
+    }
+    public static ImageInfo averageRGB(BufferedImage image) throws Exception {
 	// Get image dimensions
 	int width = image.getWidth();
 	int height = image.getHeight();
@@ -249,7 +263,7 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	int avgRed = (int)(totalRed / numPixels);
 	int avgGreen = (int)(totalGreen / numPixels);
 	int avgBlue = (int)(totalBlue / numPixels);
-	return new int[]{avgRed,avgGreen,avgBlue};
+	return new ImageInfo(width,height,avgRed,avgGreen,avgBlue);
     }
 
 
