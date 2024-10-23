@@ -109,8 +109,8 @@ public class LetterTypeHandler extends ExtensibleGroupTypeHandler {
 
 
     @Override
-    public void childrenChanged(Entry entry) {
-	super.childrenChanged(entry);
+    public void childrenChanged(Entry entry,boolean isNew) {
+	super.childrenChanged(entry,isNew);
 	letterCache =
 	    new TTLCache<String,List<String>>(5*60*1000);
     }
