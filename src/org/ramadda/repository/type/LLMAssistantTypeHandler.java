@@ -252,6 +252,9 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb,"LLM Assistant File Upload");
+	sb.append(getPageHandler().showDialogNote("Note: This will upload the file to ChatGPT.<br>OpenAI's may use this content for other purposes.<br> See <a target=_help href=https://openai.com/policies/row-terms-of-use/>https://openai.com/policies/row-terms-of-use/</a>"));
+
+
 	sb.append(request.uploadForm(getRepository().URL_ENTRY_ACTION,""));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_ACTION, ACTION_UPLOAD));
