@@ -178,6 +178,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean addFileToSearch = false;
     private boolean isMediaUrl = false;
     private boolean isGeoAccess=false;
+    private boolean doInlineEdit = false;
     private boolean addBulkUpload = false;
     private String bulkUploadHelp ="";
     private String suffix;
@@ -373,6 +374,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                                          (String) null);
         alias      = getAttributeOrTag(element, "alias", (String) null);
 
+        doInlineEdit    = getAttributeOrTag(element, "doinlineedit", false);
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
 	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
@@ -643,6 +645,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     public boolean isType(String t) {
         return type.equals(t);
+    }
+
+    public boolean getDoInlineEdit() {
+	return doInlineEdit;
     }
 
     public boolean getShowInFormFirst() {
