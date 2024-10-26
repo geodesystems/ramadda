@@ -6387,6 +6387,15 @@ public class Utils extends IO {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+
+	if(true) {
+	    String c = IO.readInputStream(new FileInputStream(args[0]));
+	    c= stripTags(c);
+	    System.out.println(c);
+	    return;
+	}
+
+
 	if(true) {
 	    String s = "date: ${setdate date=\"2000-01-04\"} ${date format=\"iso8601\"} ${foo} -1 week: ${date offset=\"-1 week\"}  date:now ${date date=\"20240201\" format=\"yyyyMMdd\" parseFormat=\"yyyyMMdd\"} xx";
 	    System.err.println(s);
