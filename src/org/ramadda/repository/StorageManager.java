@@ -85,6 +85,8 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** file separator */
     public static final String FILE_SEPARATOR = "_file_";
 
+    public static final String MACRO_STORAGEDIR = "${ramadda.storagedir}";
+
     /** _more_ */
     public static final String DFLT_CIPHER = "DES";
 
@@ -254,6 +256,8 @@ public class StorageManager extends RepositoryManager implements PointFile
         PointFile.setFileReader(this);
     }
 
+
+
     /**
      * Convert a resource to the actual location
      *
@@ -261,9 +265,10 @@ public class StorageManager extends RepositoryManager implements PointFile
      *
      * @return  the resource
      */
+
     public String resourceFromDB(String resource) {
         if (resource != null) {
-            resource = resource.replace("${ramadda.storagedir}",
+            resource = resource.replace(MACRO_STORAGEDIR,
                                         getStorageDir().toString());
         }
 
@@ -279,8 +284,7 @@ public class StorageManager extends RepositoryManager implements PointFile
      */
     public String resourceToDB(String resource) {
         if (resource != null) {
-            resource = resource.replace(getStorageDir().toString(),
-                                        "${ramadda.storagedir}");
+            resource = resource.replace(getStorageDir().toString(), MACRO_STORAGEDIR);
         }
 
         return resource;
