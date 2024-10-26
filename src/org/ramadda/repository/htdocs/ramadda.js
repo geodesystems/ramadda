@@ -670,6 +670,83 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    return HU.getIconImage('fas fa-caret-down',null,[ATTR_STYLE,this.props.toggleStyle||'']);
 	}
     },
+
+
+    applyInlineEdit:function(inlineEdit,entryOrder) {
+	if(typeof inlineEdit=='string') {
+	    inlineEdit = $(inlineEdit);
+	}
+	let applyEdit = comp=>{
+	    let entryId = comp.attr('entryid');
+	    let value = comp.val().trim();
+	    let what = comp.attr('data-field');
+	    let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=' + what+'&value='+ value;
+	    $.getJSON(url, function(data) {
+		if(data.error) {
+		    alert('An error has occurred: '+data.error);
+		    return;
+		}
+	    }).fail(data=>{
+		console.dir(data);
+		alert('An error occurred:' + data);
+	    });
+
+	    if (event.preventDefault) {
+		event.preventDefault();
+	    } else {
+		event.returnValue = false;
+		return false;
+	    }
+	    comp.css('background','yellow');
+	    setTimeout(()=>{
+		comp.css('background','#fff');
+	    },4000);
+
+	}
+
+	let applyAll=(comp,delta)=>{
+	    let start=false;
+	    let index = parseInt(comp.val());
+	    let startId = comp.attr('entryid');
+	    entryOrder.each(function() {
+		let id =$(this).attr('entryid');
+		if(!start) {
+		    if(id!=startId) {
+			return;
+		    }
+		    start = true;
+		} else {
+		    index = index+delta;
+		}
+		$(this).val(index);
+		applyEdit($(this));
+	    });
+	};
+	
+
+
+	inlineEdit.keypress(function(event) {
+	    if(event.which!=13) {
+		return;
+	    }
+	    if(event.shiftKey && $(this).attr('data-field') == 'entryorder') {
+		if (event.preventDefault) {
+		    event.preventDefault();
+		} else {
+		    event.returnValue = false;
+		}
+
+		let delta = prompt("Do you want to reorder all of the following entries. Delta:",5);
+		if(delta) {
+		    applyAll($(this),parseInt(delta));
+		}
+
+		return false;
+	    }
+	    applyEdit($(this));
+	});
+    },
+
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
 	let main = $('#'+ mainId);
 	let html = '';
@@ -833,86 +910,16 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	html = $(html).appendTo(container);
 	Translate.translate(html);
-	let inlineEdit = 	main.find('.ramadda-entry-inlineedit');
-	let entryOrder = 	main.find('.ramadda-entry-inlineedit-entryorder');
-
 	if(hasMetadata) {
 	    html.find('.ramadda-metadata-bigtext').each(function() {
 		Utils.initBigText($(this));
 	    });
 	}
 
-	let applyEdit = comp=>{
-	    let entryId = comp.attr('entryid');
-	    let value = comp.val().trim();
-	    let what = comp.attr('data-field');
-            let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + entryId+'&what=' + what+'&value='+ value;
-            $.getJSON(url, function(data) {
-		if(data.error) {
-		    alert('An error has occurred: '+data.error);
-		    return;
-		}
-            }).fail(data=>{
-		console.dir(data);
-		alert('An error occurred:' + data);
-	    });
 
-	    if (event.preventDefault) {
-		event.preventDefault();
-	    } else {
-		event.returnValue = false;
-		return false;
-	    }
-	    comp.css('background','yellow');
-	    setTimeout(()=>{
-		comp.css('background','#fff');
-	    },4000);
-
-	}
-
-	let applyAll=(comp,delta)=>{
-	    let start=false;
-	    let index = parseInt(comp.val());
-	    let startId = comp.attr('entryid');
-	    entryOrder.each(function() {
-		let id =$(this).attr('entryid');
-		if(!start) {
-		    if(id!=startId) {
-			return;
-		    }
-		    start = true;
-		} else {
-		    index = index+delta;
-		}
-		$(this).val(index);
-		applyEdit($(this));
-	    });
-	};
-	
-
-
-	inlineEdit.keypress(function(event) {
-	    if(event.which!=13) {
-		return;
-	    }
-	    if(event.shiftKey && $(this).attr('data-field') == 'entryorder') {
-		if (event.preventDefault) {
-		    event.preventDefault();
-		} else {
-		    event.returnValue = false;
-		}
-
-		let delta = prompt("Do you want to reorder all of the following entries. Delta:",5);
-		if(delta) {
-		    applyAll($(this),parseInt(delta));
-		}
-
-		return false;
-	    }
-	    applyEdit($(this));
-	});
-
-
+	let inlineEdit =        main.find('.ramadda-entry-inlineedit');
+	let entryOrder =        main.find('.ramadda-entry-inlineedit-entryorder');
+	this.applyInlineEdit(inlineEdit,entryOrder)
 
 	if(true ||!props.inlineEdit) {
 	    html.find('.entry-row').tooltip({
