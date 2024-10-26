@@ -1801,6 +1801,8 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
 
 
+	boolean doInlineEdit = false;
+
 	String NA = "---";
 	
         if (props == null) {
@@ -1873,6 +1875,9 @@ public class HtmlOutputHandler extends OutputHandler {
         List<String> titles   = new ArrayList<String>();
 
         int          typeCnt  = 0;
+	String guid = HU.getUniqueId("div_");
+	sb.append(HU.open("div",HU.attrs("id",guid)));
+
         for (String type : types) {
             typeCnt++;
             List<Entry>  entries     = map.get(type);
@@ -1954,6 +1959,7 @@ public class HtmlOutputHandler extends OutputHandler {
 		}
 	    }
 
+
 	    if(showMetadata!=null) {
 		for(MetadataType mtd: showMetadata) {
 		    headers.add(mtd.getName());
@@ -1977,6 +1983,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    int cnt = 0;
 	    tableSB.append("\n\n");
             for (Entry entry : entries) {
+		boolean canEdit = getAccessManager().canDoEdit(request, entry);
 		typeHandler = entry.getTypeHandler();
 		columns     = typeHandler.getColumns();
 		String name = getEntryDisplayName(entry);
@@ -2106,6 +2113,15 @@ public class HtmlOutputHandler extends OutputHandler {
 				    String s = entry.getStringValue(request, column,"");
 				    s = entry.getTypeHandler().decorateValue(
 									     request, entry, column, s);
+
+				    if(canEdit && column.getDoInlineEdit()) {
+					doInlineEdit = true;
+					
+					s = HU.input("",s,HU.attrs("size","10","class","ramadda-entry-inlineedit",
+								   "entryid",entry.getId(),
+								   "data-field",column.getName()));
+				    }
+
 				    if (column.isNumeric()) {
 					tableSB.append(HU.colRight(s));
 				    } else {
@@ -2164,6 +2180,15 @@ public class HtmlOutputHandler extends OutputHandler {
                                                       HU.insetLeft(content, 10), true));
                                                       }*/
         }
+
+	sb.append(HU.close("div"));
+	if(doInlineEdit) {
+	    sb.append(HU.script(HU.call("RamaddaUtils.applyInlineEdit",
+					HU.squote("#" + guid +" .ramadda-entry-inlineedit"))));
+	}
+
+
+
     }
 
 
