@@ -473,7 +473,7 @@ useAttachmentIfNeeded=true
 </wiki>
 </type>
 
-<type name="type_borehole_coreimage"   description="Core Image" isgroup="true"
+<type name="type_borehole_coreimage"   description="Geo Core Image" isgroup="true"
       pattern="(?i).*annotated-core-photo.*\.jpg"
       handler="org.ramadda.geodata.geo.CoreImageTypeHandler">      
   <action name="applyboxes"
@@ -488,8 +488,9 @@ useAttachmentIfNeeded=true
   <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
   <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
   <filename_metadata pattern="(?i)(B[\d+]+)\." metadata_type="geo_box_number"/>
-  <column name="top_depth" type="double" label="Top Depth" showinhtml="true"/>
-  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true"/>       
+  <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true" />
+  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true" />
+  <column name="do_rotation" type="boolean" label="Do Rotation" showinhtml="true" doinlineedit="true" default="false"/>         
   <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"
 	  candisplay="false" editable="false" canlist="false"/>     
 <property name="bubble">
@@ -516,7 +517,8 @@ useAttachmentIfNeeded=true
 :navtop 
 {{group}}
 {{description wikify=true}}
-{{zoomify singleFile=true annotationsField="type_borehole_image_annotations_json"
+{{zoomify singleFile=true
+annotationsField="type_borehole_coreimage_annotations_json"
 useAttachmentIfNeeded=true
 }}
 :vspace 1em

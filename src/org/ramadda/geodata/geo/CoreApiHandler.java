@@ -100,6 +100,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		      "entryId",JU.quote(child.getId()),
 		      "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
 		      "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
+		      "doRotation",child.getStringValue(request,"do_rotation","false"),
 		      "text",JU.quote(info));
 	    List<String>boxes = null;
 	    List<Box> _boxes = getBoxes(request, child);
@@ -118,7 +119,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    if(boxes!=null) Utils.add(attrs,"boxes",JU.list(boxes));
 
 	    entries.add(JU.map(attrs));
-
 	}
 
 	Utils.add(collection,"data",JU.list(entries));
@@ -146,12 +146,62 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}	
 	
 
+	//This is from the zoomify drawing
+	String annotations  = entry.getStringValue(request,"annotations_json",null);
+	if(stringDefined(annotations)) {
+	    try {
+		//		System.out.println(annotations);
+		JSONArray a = new JSONArray(annotations);
+		for(int i=0;i<a.length();i++) {
+		    JSONObject ann = a.getJSONObject(i);
+		    JSONArray bodyArray = ann.optJSONArray("body");
+		    String top=null;
+		    String bottom=null;		    
+		    String label = "";
+		    if(bodyArray!=null) {
+			for(int bidx=0;bidx<bodyArray.length();bidx++) {
+			    JSONObject body = bodyArray.getJSONObject(bidx);
+			    String purpose= body.optString("purpose","");
+			    if(purpose.equals("commenting")) {
+				label = body.optString("value","");
+				continue;
+			    } else if(purpose.equals("tagging")) {
+				String v = body.optString("value",null);
+				if(v==null) continue;
+				if(v.trim().startsWith("top:")) top = v.substring(4).trim();
+				else if(v.trim().startsWith("bottom:")) bottom= v.substring(7).trim();
+			    }
+			}
+		    }
+		    String value = JU.readValue(ann,"target.selector.value",null);
+		    if(value==null) continue;
+		    //xywh=pixel:428.0892028808594,54.38945770263672,373.4395446777344,74.16742706298828"
+		    int idx = value.indexOf("pixel:");
+		    if(idx<0) continue;
+		    value = value.substring(idx+"pixel:".length());
+		    List<String> toks = Utils.split(value);
+		    if(toks.size()!=4) continue;
+		    boxes.add(new Box(label,
+				      Double.parseDouble(toks.get(0)),
+				      Double.parseDouble(toks.get(1)),
+				      Double.parseDouble(toks.get(2)),
+				      Double.parseDouble(toks.get(3)),
+				      top==null?Double.NaN:Double.parseDouble(top),
+				      bottom==null?Double.NaN:Double.parseDouble(bottom)));
+		}
+	    } catch(Exception exc) {
+		System.err.println(exc);
+		exc.printStackTrace();
+	    }
+	}
+	/**
+	   these don't have the correct box dimensions
 	Entry corebox = findCoreboxEntry(request,entry);
 	if(corebox!=null) {
 	    makeBoxesFromJson(request,entry, corebox,boxes);
 	}
-
-	for(Box box: boxes)	    System.err.println("box:" + box);
+	*/
+	//	for(Box box: boxes)	    System.err.println("box:" + box);
 	return boxes;
     }
 

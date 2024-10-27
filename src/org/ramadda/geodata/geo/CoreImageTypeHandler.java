@@ -68,10 +68,8 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	Misc.runInABit(2000,new Runnable(){
 		public void run() {
 		    try {
-			System.err.println("running");
 			Entry corebox = coreApi.findCoreboxEntry(request,entry);
 			if(corebox==null) {
-			    System.err.println("no core box");
 			    return;
 			}
 			coreApi.processCorebox(request, entry, corebox);
@@ -181,7 +179,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	    if(Utils.stringDefined(box.label)) {
 		sb.append(HU.b(box.label+":"));
 	    } else {
-		sb.append(HU.b(box.label+":"));
+		sb.append(HU.b("Box #"+cnt+":"));
 	    }
 	    sb.append("<br>");
 	    sb.append("Width: " + info.width+" Height: " + info.height+"<br>");

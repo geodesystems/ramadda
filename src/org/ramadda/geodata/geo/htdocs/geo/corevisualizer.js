@@ -5,7 +5,7 @@ var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
 var ID_CV_SCALE = 'scale';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
-var ID_CV_SHOWBOXES='showboxes';
+var ID_CV_SHOWPIECES='showpieces';
 var ID_CV_GOTO = 'goto';
 var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
@@ -40,9 +40,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	legendWidth:0,
 	hadLegendWidth:Utils.isDefined(args.legendWidth),
 
-	showBoxes:true,
-
-
+	showPieces:false,
 	showAnnotations:true,	
 	axisWidth:CV_AXIS_WIDTH,
 	hadAxisWidth:Utils.isDefined(args.axisWidth),	
@@ -59,7 +57,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
     }
 
-    Utils.split('showBoxes,hasBoxes',',').forEach(prop=>{
+    Utils.split('showPieces,hasBoxes',',').forEach(prop=>{
 	let getName =  'get' + prop.substring(0, 1).toUpperCase() + prop.substring(1);
 	let setName =  'set' + prop.substring(0, 1).toUpperCase() + prop.substring(1);	
 	let getFunc = (dflt)=>{
@@ -273,9 +271,9 @@ RamaddaCoreVisualizer.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
 	if(this.getHasBoxes()) {
 	    html+=HU.div([],
-		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
-				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],
-				 this.getShowBoxes(),'Show Pieces'));
+		     HU.checkbox(this.domId(ID_CV_SHOWPIECES),
+				 [ATTR_ID,this.domId(ID_CV_SHOWPIECES)],
+				 this.getShowPieces(),'Show Pieces'));
 
 	}
 
@@ -322,8 +320,8 @@ RamaddaCoreVisualizer.prototype = {
 	    _this.drawCollections(true);
 	});	
 
-	this.jq(ID_CV_SHOWBOXES).change(function(){
-	    _this.setShowBoxes($(this).is(':checked'));
+	this.jq(ID_CV_SHOWPIECES).change(function(){
+	    _this.setShowPieces($(this).is(':checked'));
 	    _this.drawCollections(true);
 	});
 
@@ -629,7 +627,7 @@ RamaddaCoreVisualizer.prototype = {
     toggleLabels: function() {
 	let show = this.getShowLabels();
 	this.entries.forEach(e=>{
-	    this.toggle(e.imageLabel,show);
+	    this.toggleAll(e.labels,show);
 	});
     },
     getShowLabels: function() {
@@ -838,6 +836,7 @@ RamaddaCoreVisualizer.prototype = {
 	    let cmin =null;
 	    let cmax =null;    
 	    let check = (top,bottom) =>{
+		if(isNaN(top) || isNaN(bottom)) return;
 		if(min === null || top<min) min =+top;
 		if(max === null || bottom>max) max =+bottom;
 		if(cmin === null || top<cmin) cmin =+top;
@@ -1070,8 +1069,8 @@ RamaddaCoreVisualizer.prototype = {
 	    y
 	};
     },
-    rotateAroundCenter:function(shape, deltaDeg) {
-	const center = this.getCenter(shape);
+    rotateAroundCenter:function(shape, deltaDeg,centerShape) {
+	const center = this.getCenter(centerShape??shape);
 	return this.rotateAroundPoint(shape, deltaDeg, center);
     },
 
@@ -1107,46 +1106,24 @@ RamaddaCoreVisualizer.prototype = {
 	return {l1:l1,l2:l2,tick1:tick1,tick2:tick2};
     },
     addEntryImage:function(entry,debug) {
-	console.log(entry.label,entry.topDepth,entry.bottomDepth);
-	let canvasY1 = this.worldToCanvas(entry.topDepth,true);
-	let canvasY2 = this.worldToCanvas(entry.bottomDepth);
-	let image = entry.image;
-	let showBoxes= this.getShowBoxes();
+	
+	if(isNaN(entry.topDepth)|| isNaN(entry.bottomDepth)) return;
+	entry.labels = [];
 
+	let showPieces= this.getShowPieces();
+	let maxWidth=+this.opts.maxColumnWidth;
 	let column = entry.displayIndex;
 	if(!Utils.isDefined(column)) column = 0;
+	let doRotation=entry.doRotation||this.opts.doRotation;
+	let canvasY1 = this.worldToCanvas(entry.topDepth,true);
+	let canvasY2 = this.worldToCanvas(entry.bottomDepth);
+	let canvasHeight = (canvasY2-canvasY1);
+	let image = entry.image.clone();
 	let imageX = this.getXOffset(column);
-
 	let imageY = canvasY1;
 	let aspectRatio = image.width()/ image.height()
 	let newHeight= (canvasY2-canvasY1)
 	let newWidth = newHeight * aspectRatio;
-	let maxWidth=+this.opts.maxColumnWidth;
-	let imageScale = newHeight/image.height();
-	let scale =v=>{
-	    return v*imageScale;
-	}
-
-	let imageAttrs = {
-	    x: imageX,
-	    y: imageY,
-	    width:newWidth,
-	    height:newHeight,
-        };
-
-
-	if(this.opts.doRotation) {
-	    imageAttrs =  this.rotateAroundCenter(imageAttrs, 90);
-	    imageAttrs.x=imageAttrs.x-(newWidth/2)+newHeight/2;
-	    imageAttrs.y=imageAttrs.y-(newHeight/2)+newWidth/2;	
-	}
-	image.setAttrs(imageAttrs);
-	
-	if(this.opts.doRotation) {
-	    let tmp =newWidth;
-	    newWidth=newHeight;
-	    newHeight=tmp;
-	}
 
 	let group = new Konva.Group({
 	    xclip: {
@@ -1165,14 +1142,47 @@ RamaddaCoreVisualizer.prototype = {
 	});
 	this.layer.add(group);
 	entry.group = group;
-	if(!showBoxes || !entry.hasBoxes) {
+
+	let imageAttrs = {
+	    x: imageX,
+	    y: imageY,
+	    width:image.width(),
+	    height:image.height(),
+        };
+
+	let origImageCenter = {
+	    x:imageX+image.width()/2,
+	    y:imageY+image.height()/2
+	}
+	if(doRotation) {
+	    imageAttrs =  this.rotateAroundCenter(imageAttrs, 90);
+	}
+	image.setAttrs(imageAttrs);
+	let imageRect = image.getClientRect();
+	let imageScale = canvasHeight/imageRect.height;
+
+	image.scale({x:imageScale,y:imageScale});
+	imageRect = image.getClientRect({ relativeTo: this.layer});
+
+	let dx = imageRect.x-imageX;
+	let dy = imageRect.y-canvasY1;
+	image.position({x:image.x()-dx,y:image.y()-dy});
+	let scale =v=>{
+	    return (+v)*imageScale;
+	}
+	let rotOffset = {
+	    x:imageRect.x-imageX,
+	    y:imageRect.y-imageY,
+	}
+	if(!showPieces || !entry.hasBoxes) {
 	    group.add(image);
 	    group.ticks = this.makeTicks(group,entry.topDepth,entry.bottomDepth,imageX,imageY,imageY+newHeight);
+	    let ir = image.getClientRect({relativeTo: this.layer});
 	    let rect = new Konva.Rect({
-		x: imageX,
-		y: imageY,
-		width: newWidth,
-		height:newHeight,
+		x: ir.x,
+		y: ir.y,
+		width:ir.width,
+		height:ir.height,
 		stroke: CV_HIGHLIGHT_COLOR,
 		strokeWidth: 2,
 	    });
@@ -1182,42 +1192,40 @@ RamaddaCoreVisualizer.prototype = {
 	    }
 	    if(entry.boxes) {
 		entry.boxes.forEach(box=>{
-		    if(showBoxes && this.isValidBox(box)) {
+		    if(showPieces && this.isValidBox(box)) {
 			return;
 		    }
-		    let boxRect = new Konva.Rect({
+		    let boxAttrs = {
 			x: imageX+scale(box.x),
 			y: imageY+scale(box.y),
 			width: scale(box.width),
 			height:scale(box.height),
 			stroke: 'red',
 			strokeWidth: 1,
-		    });
+		    }
+		    if(doRotation) {
+			boxAttrs =  this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
+			boxAttrs.x=boxAttrs.x - rotOffset.x;
+			boxAttrs.y=boxAttrs.y - rotOffset.y;
+		    }
+		    let boxRect = new Konva.Rect(boxAttrs);
 		    group.add(boxRect);
-
-
 		});
 	    }
-
-
 
 	    this.definePopup(rect,entry.label,entry.text);
 	    let imageLabel = this.makeText(group,entry.label,imageX+4,imageY+4,
 					   {outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
-	    if(!this.getShowLabels()) {
-		imageLabel.hide();
-		if(imageLabel.backgroundRect)
-		    imageLabel.backgroundRect.hide();
-	    }
+	    this.toggle(imageLabel,this.getShowLabels());
 	    entry.image = image;
 	    entry.highlight = rect;
-	    entry.imageLabel = imageLabel;
+	    entry.labels.push(imageLabel);
 	}
 	
 
-	if(showBoxes && entry.boxes) {
+	if(showPieces && entry.boxes) {
 	    entry.boxes.forEach(box=>{
-		if(!Utils.isNumber(box.top) || !Utils.isNumber(box.bottom)) return;
+		if(!this.isValidBox(box)) return;
 		let boxGroup = new Konva.Group({
 		    xclip: {
 		    x: imageX+scale(box.x),
@@ -1225,17 +1233,17 @@ RamaddaCoreVisualizer.prototype = {
 		    width: scale(box.width),
 		    height:scale(box.height),
 		}});
-
-
+		group.add(boxGroup);
 		let x = imageX;
 		let y = this.worldToCanvas(box.top);
 		let width = scale(box.width)*8;
 		let height=this.worldToCanvas(box.bottom)-y;
-		let boxImage = image.clone({
-		    x: x,
+		let boxImage = entry.image.clone({
+/*		    x: x,
 		    y: y,
 		    width: width,
 		    height:height,
+		    */
 		    crop:{
 			x: box.x,
 			y: box.y,
@@ -1243,21 +1251,64 @@ RamaddaCoreVisualizer.prototype = {
 			height:box.height,
 		    }
 		});
+		const croppedImageDataURL = boxImage.toDataURL();
+		let newImage = new Image();
+		newImage.src = croppedImageDataURL;
+		newImage.onload = () => {
+		    let boxImage= new Konva.Image({
+			image:newImage,
+			x: x,
+			y: y,
+			width: width,
+			height:height,
+		    });
+		    if(doRotation) {
+			boxImage.rotate(90);
+			boxImage.width(height);
+		    } else {
+
+			boxImage.width(width);
+		    }
+
+		    let bir = boxImage.getClientRect({relativeTo: this.layer});
+		    let dx = imageX-bir.x;
+		    let dy = bir.y-canvasY1;
+		    boxImage.x(boxImage.x()+dx);
+
+		    bir = boxImage.getClientRect({relativeTo: this.layer});
+		    this.makeTicks(boxGroup,box.top,box.bottom,x,y,y+height);
+		    boxGroup.add(boxImage);
+		};
+
+		/*
+		console.log('a',boxImage.getClientRect());
+
+		if(doRtoation) {
+		    boxImage.rotate(90);
+		}
+		let bir = boxImage.getClientRect({relativeTo: this.layer});
+		let dx = imageX-bir.x;
+		let dy = bir.y-canvasY1;
+		boxImage.x(boxImage.x()+dx);
+		bir = boxImage.getClientRect({relativeTo: this.layer});
+		console.dir(bir)
 		this.makeTicks(boxGroup,box.top,box.bottom,x,y,y+height);
 		boxGroup.add(boxImage);
 		group.add(boxGroup);
 		let br = new Konva.Rect({
-		    x: x,
-		    y: y,
-		    width: width,
-		    height:height,
-		    stroke: "#000",
+		    x:bir.x,
+		    y:bir.y,
+//		    rotation:boxImage.attrs.rotation,
+		    width: bir.width,
+		    height:bir.height,
+		    stroke: "red",
 		    strokeWidth: 1,
 		});
 		boxGroup.add(br);
 		if(Utils.stringDefined(box.label)) {
 		    this.definePopup(br,entry.label + ' - '+box.label,entry.text);
 		}
+*/
 	    });
 	}
 
