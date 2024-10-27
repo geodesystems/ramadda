@@ -102,7 +102,7 @@ function DocumentChat(id,entryId,action,models,args) {
 		r = result.response??'';
 		if(result.thread) {
 		    this.opts.thread = result.thread;
-		    console.log('got thread',this.opts.thread);
+//		    console.log('got thread',this.opts.thread);
 		}
 		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
@@ -114,7 +114,8 @@ function DocumentChat(id,entryId,action,models,args) {
 		r  = r.replace(/__br__/g,'<br>');
 		r  = r.replace(/__p__/g,'<p>');		
 		r = r.replace(/```shell */g,'```');
-		r = r.replace(/```bash */g,'```');				
+		r = r.replace(/```bash */g,'```');
+		r = r.replace(/```plaintext */g,'```');						
 		
 		r = r.trim();
 		r = r.replace(/```([\s\S]*?)```/g,"<pre>$1</pre>");
