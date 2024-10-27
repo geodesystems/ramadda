@@ -427,6 +427,7 @@ showHeading=true
   <column name="assistant_id" label="Assistant ID" type="string"/>
   <column name="vector_store_id" label="Vector Store ID" type="string"/>  
   <column name="instructions" size="1000" label="Instructions" rows="5" type="string"/>
+  <column name="placeholder"  columns="80" label="Placeholder Text"  type="string" help="What to show in the input field"/>  
   <wiki>
     <![CDATA[
 +section title={{name}}
