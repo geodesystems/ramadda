@@ -5,6 +5,9 @@ function DocumentChat(id,entryId,action,models,args) {
     this.opts = {
     }
     if(args) $.extend(this.opts,args);
+    if(!Utils.stringDefined(this.opts.placeholder)) {
+	this.opts.placeholder = 'LLM Input, e.g., - List the 5 main points';
+    }
     let cnt = 0;
     let div  =jqid(id);
     let chat = HU.open('div',[ATTR_STYLE,'margin-left:5px;max-width:100%;overflow-x:auto;']);
@@ -32,7 +35,8 @@ function DocumentChat(id,entryId,action,models,args) {
     right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
-    let text= HU.textarea('','',['placeholder','LLM Input, e.g. - List the 5 main points','rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
+    let text= HU.textarea('','',['placeholder',this.opts.placeholder,
+				 'rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
 		  HU.div([ATTR_ID,this.domId('progress'),
@@ -102,6 +106,20 @@ function DocumentChat(id,entryId,action,models,args) {
 		}
 		r = r.replace(/(https?:\/\/[^\s]+)/g,'<a href=\'$1\'>$1</a>');
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
+		r = r.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
+		r =r.replace(/<br>/g,'__br__');
+		r =r.replace(/<p>/g,'__p__');
+		r = r.replace(/</g,'&lt;');
+		r = r.replace(/>/g,'&gt;');		
+		r  = r.replace(/__br__/g,'<br>');
+		r  = r.replace(/__p__/g,'<p>');		
+		r = r.replace(/```shell */g,'```');
+		r = r.replace(/```bash */g,'```');				
+		
+		r = r.trim();
+		r = r.replace(/```([\s\S]*?)```/g,"<pre>$1</pre>");
+		r = r.replace(/<pre><br>/g,'<pre>');
+		r = r.replace(/<\/br><\/pre>/g,'</pre>');		
 	    }
 	    
 	    let qid = 'id_' + (cnt++);
@@ -110,7 +128,6 @@ function DocumentChat(id,entryId,action,models,args) {
 			      'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
-	    out = out.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
 	    output.prepend(HU.div([],out));
 	    Utils.initCopyable('#'+guid,{addLink:true,extraStyle:'right:10px;bottom:10px;'});
 	    this.jq(qid).click(function() {
