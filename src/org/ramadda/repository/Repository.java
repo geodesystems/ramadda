@@ -451,11 +451,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     private HttpClient httpClient;
 
+
     private boolean repositoryInitialized = false;
 
     private boolean isActive = true;
 
     private boolean readOnly = false;
+
+    private boolean generateEntryDocs = false;
+    
+    private PrintWriter entryDocsWriter;
+
 
     private boolean doCache = true;
 
@@ -1098,7 +1104,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
-
+	    if(arg.equals("-entrydocs")) {
+		generateEntryDocs = true;
+		continue;
+	    }
 
             if (getPluginManager().checkFile(arg)) {
                 continue;
@@ -1485,6 +1494,46 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 	if(Repository.debugInit)   System.err.println("Repository.initServer:done");
+
+	if(generateEntryDocs) {
+	    entryDocsWriter = new PrintWriter(new FileOutputStream("entrydocs.html"));
+	    entryDocsWriter.println("[ht::head {Entry Types}]\n<%nochildlist%>\n:navleft\n+center\n:pagesearch selector=.entrydoc\n-center\n");
+	    entryDocsWriter.flush();
+	    PrintWriter pw = entryDocsWriter;
+	    Request request = getAdminRequest();
+	    for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
+		boolean didSuper = false;
+		for(EntryManager.Types types: superType.getList()) {
+		    boolean didSub = false;
+		    for(TypeHandler typeHandler: types.getList()) {
+			if(!typeHandler.canCreate(request))
+			    continue;
+			if(!didSuper) {
+			    didSuper = true;
+			    pw.println("<div class=type-group-container><div class='type-group-header'>" + superType.getName()+"</div><div class=type-group>");
+			}
+			if(!didSub) {
+			    didSub=true;
+			    pw.println("<div style='font-size:140%;text-decoration:underline;'>" + types.getName()+"</div><div style='margin-left:40px;'>");
+			}
+			writeEntryDocs(typeHandler);
+		    }
+		    if(didSub) {
+			pw.println("</div>");
+		    }
+		}
+		if(didSuper) {
+		    pw.println("</div></div>");
+		}
+	    }
+	    entryDocsWriter.println("[ht::foot]");
+	    entryDocsWriter.flush();
+	    entryDocsWriter.close();
+	}
+
+
+
+
     }
 
 
@@ -4523,6 +4572,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+
         //xxxxx
         prop = (String) coreProperties.get(name);
         if (checkProperty(prop, needsToBeNonEmpty)) {
@@ -4684,6 +4734,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
     
+    public boolean getGenerateEntryDocs() {
+	return generateEntryDocs;
+   }
+
     public boolean getDbProperty(String name, boolean dflt) {
         return Misc.getProperty(getDbProperties(), name, dflt);
     }
@@ -5121,6 +5175,36 @@ public class Repository extends RepositoryBase implements RequestHandler,
         addTypeHandler(typeName, typeHandler, false);
     }
 
+
+
+
+
+
+    private void writeEntryDocs(TypeHandler th) {
+	try {
+	    if(!th.getForUser()) return;
+	    PrintWriter  pw = entryDocsWriter;
+	    pw.println("<div class=entrydoc>");
+	    pw.println(":lheading " + th.getLabel());
+	    pw.println("<div class=ramadda-hidden>");
+	    pw.println("To create an entry of type " + th.getLabel() +" go to the desired folder and select Find a Type... from the entry popup menu. Look for the " + th.getLabel() +" entry type");
+	    pw.println("</div>");
+	    String help = th.getHelp();
+	    if(help!=null) {
+		pw.println(help.replace("\\n","\n"));
+	    }
+	    String fhn = th.getTypeProperty("form.header.new",(String) null);
+	    Request request = getAdminRequest();
+	    if(fhn!=null) {
+		pw.println("When creating a new entry:<br>");
+		pw.println(getWikiManager().wikify(request,fhn.replace("\\n","\n")));
+	    }
+	    pw.println("</div>");
+	    pw.flush();
+	} catch(Exception exc) {
+	    exc.printStackTrace();
+	}
+    }
 
 
     private HashSet notTypes;
