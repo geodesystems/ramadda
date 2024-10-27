@@ -126,6 +126,10 @@ inlineblock {
 }
 
 
+.ramadda-hidden {
+    display:none;
+}    
+
 .ramadda-dict {
     display:none;
 }
