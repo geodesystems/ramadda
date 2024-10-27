@@ -384,7 +384,8 @@ lineWrap=true
 
 
 <type name="type_daymet"  description="Daymet Daily Weather" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.DaymetTypeHandler"
-	editfields="name,location,_default"      
+      help="Provides access to the Daymet historic weather data provided by Oak Ridge National Labs"
+      editfields="name,location,_default"      
 >
   <property name="search.tabs" value="map,list"/>
      <property name="form.header.new">
