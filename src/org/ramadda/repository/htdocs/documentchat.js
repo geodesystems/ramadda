@@ -29,11 +29,13 @@ function DocumentChat(id,entryId,action,models,args) {
 	right+=HU.b('Model: ') +HU.select('',['id',this.domId('chatmodel')],models);
 	right+=SPACE;
     }
-    right+=HU.b('Offset: ') +HU.input('','0',
-				      [ATTR_ID,this.domId('chatoffset'),ATTR_TITLE,'Offset into document','size','3']);
+    if (this.opts.showOffset) {
+	right+=HU.b('Offset: ') +HU.input('','0',
+					  [ATTR_ID,this.domId('chatoffset'),ATTR_TITLE,'Offset into document','size','3']);
 
-    right+=SPACE1;
-    right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
+	right+=SPACE1;
+	right+=HU.span([ATTR_ID,this.domId('info'),ATTR_TITLE,''],HU.getIconImage('fas fa-circle-info'));
+    }
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
     let text= HU.textarea('','',['placeholder',this.opts.placeholder,
@@ -68,11 +70,17 @@ function DocumentChat(id,entryId,action,models,args) {
 	if(this.jq('button_clearalways').is(':checked')) output.html('');
 	let url =ramaddaBaseUrl+'/entry/action';
 
+	let offset = 0;
+	if(this.opts.showOffset) {
+	    offset = this.jq('chatoffset').val().trim();
+	}
+	    
+
         let args = {
 	    action:action,
             entryid: entryId,
 	    question:q,
-	    offset:this.jq('chatoffset').val().trim(),
+	    offset:offset
         };
 	if(this.opts.thread)
 	    args.thread = this.opts.thread;

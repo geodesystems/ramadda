@@ -196,7 +196,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	HU.importJS(sb,getPageHandler().makeHtdocsUrl("/documentchat.js"));
 	List<String> args = new ArrayList<String>();
 	//	Utils.add(args,"thread",JU.quote(thread));
-	Utils.add(args,"placeholder",JU.quote(entry.getStringValue(request, "placeholder","")));
+	Utils.add(args,"showOffset","false",
+		  "placeholder",JU.quote(entry.getStringValue(request, "placeholder","")));
 	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId()),
 			      JU.quote(ACTION_ASSISTANT),"null",JU.map(args)));
         return sb.toString();
@@ -225,7 +226,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    if(thread!=null) {
 		JSONObject obj     = new JSONObject(thread);
 		thread = obj.optString("id",null);
-		System.err.println("NEW THREAD:" + thread);
+		//		System.err.println("NEW THREAD:" + thread);
 		if(thread!=null) {
 		    getSessionManager().putSessionProperty(request,sessionKey,thread);
 		}
