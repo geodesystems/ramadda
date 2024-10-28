@@ -16,6 +16,7 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
+import org.ramadda.util.seesv.Seesv;
 
 import org.ramadda.util.JQuery;
 import org.ramadda.util.TTLCache;
@@ -2171,6 +2172,9 @@ public class Admin extends RepositoryManager {
                   ? BLANK
                   : query), 5, 80));
         formSB.append(HU.vspace());
+        formSB.append(HU.labeledCheckbox("ascsv","true",false,"Download CSV"));
+	formSB.append("<br>");
+
         formSB.append("SQL File: ");
         formSB.append(HU.fileInput(ARG_SQLFILE, HU.SIZE_60));
         formSB.append(HU.formClose());
@@ -2217,6 +2221,8 @@ public class Admin extends RepositoryManager {
             ResultSetMetaData rsmd   = null;
             StringBuilder     raw    = null;
             StringBuilder     table  = new StringBuilder();
+            StringBuilder     csv  = new StringBuilder();	    
+	    boolean asCsv = request.get("ascsv",false);
             StringBuilder     resultsSB  = new StringBuilder();
             while ((results = iter.getNext()) != null) {
                 if (rsmd == null) {
@@ -2235,25 +2241,38 @@ public class Admin extends RepositoryManager {
                             raw = new StringBuilder();
                         }
                         table.append(HU.th(HU.bold(HU.div(col,HU.style("margin-left:5px;")))));
+			if(asCsv) {
+			    if(csv.length()>0) csv.append(",");
+			    csv.append(col);
+			}
                     }
+		    if(asCsv) {
+			csv.append("\n");
+		    }
                     table.append("</tr></thead><tbody>");
                 }
                 table.append("<tr valign=\"top\">");
                 while (colcnt < rsmd.getColumnCount()) {
                     colcnt++;
+		    if(asCsv && colcnt>1) {
+			csv.append(",");
+		    }
                     if (rsmd.getColumnType(colcnt)
+	
                             == java.sql.Types.TIMESTAMP) {
 			synchronized(Repository.calendar) {
 			    Date dttm = results.getTimestamp(colcnt,
 							     Repository.calendar);
-			    table.append(HU.col(formatDate(request,
-							   dttm)));
+			    String date = formatDate(request,   dttm);
+			    table.append(HU.col(date));
+			    if(asCsv) csv.append(date);
 			}
                     } else {
                         String s = results.getString(colcnt);
                         if (s == null) {
                             s = "_null_";
                         }
+			if(asCsv) csv.append(Seesv.cleanColumnValue(s));
                         s = HU.entityEncode(s);
                         if (raw != null) {
                             raw.append(s);
@@ -2270,6 +2289,7 @@ public class Admin extends RepositoryManager {
                     }
                 }
                 table.append("</tr>\n");
+		if(asCsv) csv.append("\n");
                 //                if (cnt++ > 1000) {
                 //                    table.append(HU.row("..."));
                 //                    break;
@@ -2289,6 +2309,12 @@ public class Admin extends RepositoryManager {
 		      + (t2 - t1) + "ms");
 	    sb.append(HU.vspace());
 	    sb.append(resultsSB);
+	    if(asCsv) {
+		request.setReturnFilename("db.csv");
+		return new Result("", csv, "text/csv");
+	    }
+
+
             return makeResult(request, msg("RAMADDA-Admin-SQL"),  sb);
 	}
     }
