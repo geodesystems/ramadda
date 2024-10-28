@@ -2269,10 +2269,15 @@ public class Admin extends RepositoryManager {
 			}
                     } else {
                         String s = results.getString(colcnt);
+			if(asCsv) {
+			    if(s==null)
+				csv.append(Seesv.cleanColumnValue(""));
+			    else
+				csv.append(Seesv.cleanColumnValue(s));
+			}
                         if (s == null) {
                             s = "_null_";
                         }
-			if(asCsv) csv.append(Seesv.cleanColumnValue(s));
                         s = HU.entityEncode(s);
                         if (raw != null) {
                             raw.append(s);
