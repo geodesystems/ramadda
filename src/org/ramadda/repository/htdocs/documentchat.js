@@ -3,6 +3,7 @@ function DocumentChat(id,entryId,action,models,args) {
     if(!models) models =[];
     this.id = id;
     this.opts = {
+	showOffset:true,
     }
     if(args) $.extend(this.opts,args);
     if(!Utils.stringDefined(this.opts.placeholder)) {
@@ -108,9 +109,13 @@ function DocumentChat(id,entryId,action,models,args) {
 		r = r.replace(/^-/gm,'&#x2022;').replace(/\n/g,'<br>');
 		r = r.replace(/\*\*([^\*]{1,100})\*\*/g,"<b>$1</b>");
 		r =r.replace(/<br>/g,'__br__');
+		r =r.replace(/<b>/g,'__b__');
+		r =r.replace(/<\/b>/g,'__nb__');				
 		r =r.replace(/<p>/g,'__p__');
 		r = r.replace(/</g,'&lt;');
 		r = r.replace(/>/g,'&gt;');		
+		r  = r.replace(/__b__/g,'<b>');
+		r  = r.replace(/__nb__/g,'</b>');		
 		r  = r.replace(/__br__/g,'<br>');
 		r  = r.replace(/__p__/g,'<p>');		
 		r = r.replace(/```shell */g,'```');
