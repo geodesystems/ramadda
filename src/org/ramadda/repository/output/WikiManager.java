@@ -8227,6 +8227,7 @@ public class WikiManager extends RepositoryManager
 	    List<WikiMacro> macros = entry.getTypeHandler().getWikiMacros();
 	    if(macros!=null) {
 		for(WikiMacro macro: macros) {
+		    if(!macro.getForEditMenu()) continue;
 		    if(fromTypeBuff==null) fromTypeBuff = new StringBuilder();
 		    String tag = "{{macro entry=\"" + entry.getId() +"\" name=\"" + macro.getName()+"\"";
 		    String props = macro.getProperties();
