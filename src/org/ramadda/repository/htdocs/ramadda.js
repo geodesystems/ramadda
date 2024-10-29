@@ -723,28 +723,36 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	};
 	
-
-
-	inlineEdit.keypress(function(event) {
-	    if(event.which!=13) {
-		return;
+	inlineEdit.each(function() {
+	    let tag = $(this).prop('tagName')??'';
+	    tag = tag.toLowerCase();
+	    if(tag=='select') {
+		$(this).change(function() {
+		    applyEdit($(this));
+		});
+	    } else {
+		$(this).keypress(function(event) {
+		    if(event.which!=13) {
+			return;
+		    }
+		    if(event.shiftKey && $(this).attr('data-field') == 'entryorder') {
+			if (event.preventDefault) {
+			    event.preventDefault();
+			} else {
+			    event.returnValue = false;
+			}
+			
+			let delta = prompt("Do you want to reorder all of the following entries. Delta:",5);
+			if(delta) {
+			    applyAll($(this),parseInt(delta));
+			}
+			return false;
+		    }
+		    applyEdit($(this));
+		});
 	    }
-	    if(event.shiftKey && $(this).attr('data-field') == 'entryorder') {
-		if (event.preventDefault) {
-		    event.preventDefault();
-		} else {
-		    event.returnValue = false;
-		}
-
-		let delta = prompt("Do you want to reorder all of the following entries. Delta:",5);
-		if(delta) {
-		    applyAll($(this),parseInt(delta));
-		}
-
-		return false;
-	    }
-	    applyEdit($(this));
 	});
+
     },
 
     showEntryTable:function(id,props,cols,mainId,entryMap,initFunc,entries,secondTime) {
