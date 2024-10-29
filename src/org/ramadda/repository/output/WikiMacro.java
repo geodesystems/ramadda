@@ -20,12 +20,14 @@ public class WikiMacro {
     private String properties;
     private List<String> tags;
     private boolean isOutput=false;
+    private boolean forEditMenu = true;
     public WikiMacro(Element node) {
 	name = XmlUtil.getAttribute(node,"name","name");
 	tags  =Utils.split(XmlUtil.getAttribute(node,"tags",""),",",true,true);
 	icon = XmlUtil.getAttribute(node,"icon",(String)null);
 	label = XmlUtil.getAttribute(node,"label",name);
 	isOutput = XmlUtil.getAttribute(node,"isoutput",false);
+	forEditMenu = XmlUtil.getAttribute(node,"foreditmenu",true);	
 	properties = XmlUtil.getAttribute(node,"properties","");
 	wikiText = XmlUtil.getChildText(node);
 	if(wikiText!=null) wikiText = wikiText.trim();
@@ -39,6 +41,10 @@ public class WikiMacro {
 
     public boolean hasTag(String tag) {
 	return tags.contains(tag);
+    }
+
+    public boolean getForEditMenu() {
+	return forEditMenu;
     }
 
     public boolean isOutput() {
