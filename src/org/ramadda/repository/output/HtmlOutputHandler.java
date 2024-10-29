@@ -2117,9 +2117,18 @@ public class HtmlOutputHandler extends OutputHandler {
 				    if(canEdit && column.getDoInlineEdit()) {
 					doInlineEdit = true;
 					
-					s = HU.input("",s,HU.attrs("size","10","class","ramadda-entry-inlineedit",
+					if(column.isBoolean()) {
+					    List values = Utils.add(null,"true","false");
+					    s = HU.select("",values,s,
+							  HU.attrs("class","ramadda-entry-inlineedit",
 								   "entryid",entry.getId(),
 								   "data-field",column.getName()));
+
+					} else {
+					    s = HU.input("",s,HU.attrs("size","10","class","ramadda-entry-inlineedit",
+								       "entryid",entry.getId(),
+								       "data-field",column.getName()));
+					}
 				    }
 
 				    if (column.isNumeric()) {
