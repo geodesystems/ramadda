@@ -931,6 +931,7 @@ public class PointFormHandler extends RecordFormHandler {
 											 "")) + prob));
             }
 
+
             if (recordEntry.isCapable(PointFile.ACTION_TRACKS)) {
                 subsetSB.append(
                     HU.formEntry(
@@ -1007,8 +1008,13 @@ public class PointFormHandler extends RecordFormHandler {
 
 		HU.script(subsetSB,"HU.initToggleAll('" + toggleAllId+"','.ramadda-subset-field');");
             }
+	    if(theEntry !=null && theEntry.isGeoreferenced(request)) {
+		subsetSB.append(HU.formEntry("",HU.labeledCheckbox(ARG_ADD_LATLON,"true",request.get(ARG_ADD_LATLON,false),
+								   "Add entry lat/lon")));
+		
+	    }
 	    /*
-	    if(entry.isGeoreferenced(request)) {
+	      if(entry.isGeoreferenced(request)) {
 		HU.formEntry(subsetSB,msgLabel("Entry location"),
 			     HU.labeledCheckbox(ARG_ADD_LATLON, "true",false,"Add latitude/longitude"));
 			     }*/

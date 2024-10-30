@@ -327,7 +327,11 @@ public class CsvVisitor extends RecordVisitor {
                     pw.append(svalue);
                 }
             }
-        }
+	}
+	if(extraLine!=null) {
+	    pw.append(",");
+	    pw.append(extraLine);
+	}
         if (lineEnder != null) {
             lineEnder.call(this, pw, fields, record, cnt);
         }
