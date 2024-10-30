@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Oct 28 07:59:12 MDT 2024";
+var build_date="RAMADDA build date: Wed Oct 30 11:23:01 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -39127,6 +39127,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Labels'},
 	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'labelRecordTemplate',ex:'${field}',tt:'Apply the template to the records. Use ${recordtemplate} for the labelTemplate'},
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
 	{p:'labelLimit',ex:'1000',tt:'Max number of records to display labels'},
   	{p:'doLabelGrid',ex:'true',tt:'Use a grid to determine if a label should be shown'},		
@@ -43275,6 +43276,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
+            let labelRecordTemplate = this.getProperty('labelRecordTemplate');
 	    let labelKeyField;
 	    if(this.getLabelKeyField()) {
 		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
@@ -43362,6 +43364,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 pointFeature.attributes = {};
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 pointFeature.attributes["recordIndex"] = (i+1)+"";
+		if(labelRecordTemplate) {
+		    let text = this.applyRecordTemplate(record,this.getDataValues(record),null, labelRecordTemplate);
+		    pointFeature.attributes['recordtemplate'] = text;
+		}
 		if(labelKeyField) {
 		    let v = labelKeyField.getValue(record);
 		    if(!keyMap[v]) {
@@ -43375,6 +43381,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let field = fields[fieldIdx];
 		    let value = field.getValue(record);
 		    if(typeof value == 'number') value = this.formatNumber(value);
+		    value = String(value);
+		    value = value.replace(/  */g,'\n');
 		    pointFeature.attributes[field.getId()] = value;
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
@@ -51568,6 +51576,16 @@ MapGlyph.prototype = {
 		contents: contents});
 
 	}
+	if(this.isMultiEntry()) {
+	    let exc = 'Enter entry IDs to exclude. One per line. Note: this will take effect on map reload.<br>';
+
+	    exc+= HU.textarea('',   this.getAttribute('excludes')??'',
+			      [ATTR_ID,this.domId('excludes'),'rows','8','cols','60']);
+	    content.push({
+		header:'Exclude Entries',
+		contents: exc});
+	}
+
 
     },
     addElevations:async function(update,done) {
@@ -51609,6 +51627,10 @@ MapGlyph.prototype = {
 		setTimeout(()=>{this.checkMapLayer(false,true);},10);
 	    }
 	}
+	if(this.isMultiEntry()) {
+	    this.attrs['excludes']  = this.jq('excludes').val();
+	}	    
+
 	this.attrs[ID_LEGEND_TEXT] = this.jq(ID_LEGEND_TEXT).val();
 	if(this.isEntry()) {
 	    this.setUseEntryName(this.jq("useentryname").is(":checked"));
@@ -52241,12 +52263,27 @@ MapGlyph.prototype = {
 	this.attrs.useentrylabel =v;
 	return this;
     },
+    getMultiEntries:function() {
+	if(!this.entries) return null;
+	let exclude = {};
+	if(this.getAttribute('excludes')) {
+	    Utils.split(this.getAttribute('excludes'),'\n',true,true).forEach(id=>{
+		exclude[id] = true;
+	    });
+	}
+	return this.entries.filter(entry=>{
+	    if(exclude[entry.getId()]) return false;
+	    return true;
+	});
+
+    },
     showMultiEntries:function() {
 	let _this = this;
-	if(!this.entries) return;
+	let entries = this.getMultiEntries();
+	if(!entries) return;
 	let html = '';
 	let map = {};
-	this.entries.forEach(entry=>{
+	entries.forEach(entry=>{
 	    map[entry.getId()] = entry;
 	    let link = entry.getLink(null,true,['target','_entry']);
 	    link = HU.div([ATTR_STYLE,'white-space:nowrap;max-width:180px;overflow-x:hidden;',ATTR_TITLE,entry.getName()], link);
@@ -52589,8 +52626,9 @@ MapGlyph.prototype = {
 	    }
 	}
 
-	if(!MapUtils.boundsDefined(bounds) && this.isMultiEntry() && this.entries) {
-	    this.entries.forEach(entry=>{
+	let entries = this.getMultiEntries();
+	if(!MapUtils.boundsDefined(bounds) && this.isMultiEntry() && entries) {
+	    entries.forEach(entry=>{
 		let b = null;
 		if(entry.hasBounds()) {
 		    b =   MapUtils.createBounds(entry.getWest(),entry.getSouth(),entry.getEast(), entry.getNorth());
@@ -57033,6 +57071,7 @@ MapGlyph.prototype = {
 	    this.clearChildren();
 	    this.children = [];
 	    this.entries = entries;
+	    entries = this.getMultiEntries();
 	    let someNotLocated = false;
 	    entries.forEach((e,idx)=>{
 		if(!e.hasLocation()) {
