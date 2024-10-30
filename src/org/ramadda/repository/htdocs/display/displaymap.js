@@ -1095,6 +1095,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Labels'},
 	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'labelRecordTemplate',ex:'${field}',tt:'Apply the template to the records. Use ${recordtemplate} for the labelTemplate'},
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
 	{p:'labelLimit',ex:'1000',tt:'Max number of records to display labels'},
   	{p:'doLabelGrid',ex:'true',tt:'Use a grid to determine if a label should be shown'},		
@@ -5243,6 +5244,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let limit = this.getLabelLimit(1000);
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
+            let labelRecordTemplate = this.getProperty('labelRecordTemplate');
 	    let labelKeyField;
 	    if(this.getLabelKeyField()) {
 		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
@@ -5330,6 +5332,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 pointFeature.attributes = {};
                 pointFeature.attributes[RECORD_INDEX] = (i+1);
                 pointFeature.attributes["recordIndex"] = (i+1)+"";
+		if(labelRecordTemplate) {
+		    let text = this.applyRecordTemplate(record,this.getDataValues(record),null, labelRecordTemplate);
+		    pointFeature.attributes['recordtemplate'] = text;
+		}
 		if(labelKeyField) {
 		    let v = labelKeyField.getValue(record);
 		    if(!keyMap[v]) {
@@ -5343,6 +5349,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    let field = fields[fieldIdx];
 		    let value = field.getValue(record);
 		    if(typeof value == 'number') value = this.formatNumber(value);
+		    value = String(value);
+		    value = value.replace(/  */g,'\n');
 		    pointFeature.attributes[field.getId()] = value;
 		    if(colorBy && field.getId() == colorBy) {
 			pointFeature.attributes["colorBy"] = field.getValue(record);
