@@ -57,10 +57,13 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
     @Override
     public void childrenChanged(final Entry entry,boolean isNew) {
 	super.childrenChanged(entry,isNew);
+	//	System.err.println("children changed");
 	if(!isNew) return;
+	//	System.err.println("children changed - new");
 	final Request request = getRepository().getAdminRequest();
 	double top = (Double) entry.getValue(request, "top_depth");
 	double bottom = (Double) entry.getValue(request, "bottom_depth");	
+	//	System.err.println("top:" + top +" " + bottom);
 	if(!Double.isNaN(top) && !Double.isNaN(bottom)) {
 	    return;
 	}

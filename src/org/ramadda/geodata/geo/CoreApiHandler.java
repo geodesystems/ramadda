@@ -148,6 +148,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	//This is from the zoomify drawing
 	String annotations  = entry.getStringValue(request,"annotations_json",null);
+	//	System.out.println(annotations);
 	if(stringDefined(annotations)) {
 	    try {
 		//		System.out.println(annotations);
@@ -245,7 +246,13 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	if(entry==null) {
 	    return new Result("", new StringBuilder(JsonUtil.map("error",JU.quote("No entry found"))), JU.MIMETYPE);
 	}
-	List<Entry> children = getEntryManager().getChildren(request, entry);
+	List<Entry> children;
+	if(entry.getTypeHandler().isType("type_borehole_coreimage")) {
+	    children = new ArrayList<Entry>();
+	    children.add(entry);
+	} else {
+	    children = getEntryManager().getChildren(request, entry);
+	}
 	sb.append(makeEntriesJson(request, entry,children));
 	return new Result("", sb, JU.MIMETYPE);
     }
@@ -255,7 +262,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	double max= Double.NaN;	
 	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
 	JSONArray comps = obj.optJSONArray("Compartments");
-	if(comps==null) return;
+	if(comps==null) {
+	    System.err.println("no compartments");
+
+	    return;
+	}
 	for(int i=0;i<comps.length();i++) {
 	    JSONObject comp = comps.getJSONObject(i);
 	    double[]d = getRegionsDepths(comp);
@@ -264,8 +275,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    if(Double.isNaN(max) || d[1]>max) max=d[1];		
 	}
 
+	System.err.println("min/max:" + min +" " + max); 
 	if(!Double.isNaN(min)){
-	    System.err.println("min/max:" + min +" " + max); 
 	    entry.setValue("top_depth",new Double(min));
 	    entry.setValue("bottom_depth",new Double(max));	    
 	    getEntryManager().updateEntry(request, entry);

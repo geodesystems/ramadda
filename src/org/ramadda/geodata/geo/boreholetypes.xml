@@ -511,6 +511,16 @@ useAttachmentIfNeeded=true
 ]]></property>
 
 
+<wikimacro name="corevisualizer" label="Core Visualizer"
+	   icon="/geo/drilling-rig.png"	   
+isoutput="true" foreditmenu="false">
+  <![CDATA[
++section title="Core Image: {{name}}"
+{{core_visualizer}}
+-section
+]]></wikimacro>
+
+
 <wiki>
 <![CDATA[
 +section title="Core Image: {{name}}"
