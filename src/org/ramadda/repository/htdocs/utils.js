@@ -2338,6 +2338,10 @@ var Utils =  {
 				value  =value+t.attrs['maxLengthSuffix'];
 			}
 
+                        if(t.attrs['crop'] && value.length>+t.attrs['crop']) {
+			    value = String(value).substring(0,t.attrs['crop']) +'...';
+			}
+
                         if(t.attrs['cropLength'] && value.length>+t.attrs['cropLength']) {
                             let idx = +t.attrs['cropLength'];
                             while(idx>=0) {
