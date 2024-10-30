@@ -317,8 +317,11 @@ You just need to specify the Agency/Site. The name and other metadata will be lo
      <property name="form.time.show" value="false"/>     
      <property name="form.resource.show" value="false"/>
  <property name="record.properties">
-csvcommands1=-xml,samples.sample,-addheader, time.type date
-     </property>
+   csvcommands1=-xml,samples.sample
+   csvcommands2=-change,6-9,(?i)unknown,NaN
+   #csvcommands3=-scale,original_value\,from_landsurface_value\,from_datum_value,0,1,0
+   csvcommands3=-addheader, time.type date
+</property>
      <column  name="site"  label="Agency:Site" type="string" cansearch="false"
 	      columns="30"
 	      bulkuploadhelp="Or upload a file of site ids. One per line. See &lt;a href=/point/usgs.html target=_help&gt;here&lt;/a&gt; for information"
@@ -338,11 +341,10 @@ csvcommands1=-xml,samples.sample,-addheader, time.type date
 +section title={{name}}
 :navtop
 {{description wikify=true}}
-:heading Charts
 {{property max=30000}}
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
-{{display_linechart showMenu=true fields="original_value"}}
+{{display_linechart vAxisReverse=true showMenu=true fields="original_value"}}
 :vspace 0.5em
 :heading Table
 {{display_download showMenu=false}}
