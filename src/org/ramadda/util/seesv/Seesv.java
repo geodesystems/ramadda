@@ -6136,7 +6136,7 @@ public class Seesv implements SeesvCommands {
 	    pw.print("\"" + arg+"\" ");
 	}
 	if(!seenPrint)   pw.print(" -print ");
-	pw.print(" $1 ");
+	pw.print(" \"$1\" ");
 	pw.println("");
 	pw.println("");
 	pw.println("");
