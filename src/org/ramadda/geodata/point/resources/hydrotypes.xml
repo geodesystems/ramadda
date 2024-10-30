@@ -299,7 +299,7 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 :b {{name link=true}}
 -center
 {{group}}
-{{display_linechart fields="original_value"}}
+{{display_linechart fields="original_value" vAxisReverse=true}}
  ]]>
 </property>
      <property name="form.header.new">
