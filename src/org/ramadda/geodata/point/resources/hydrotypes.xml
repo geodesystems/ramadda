@@ -320,7 +320,7 @@ You just need to specify the Agency/Site. The name and other metadata will be lo
    csvcommands1=-xml,samples.sample
    csvcommands2=-change,6-9,(?i)unknown,NaN
    #csvcommands3=-scale,original_value\,from_landsurface_value\,from_datum_value,0,1,0
-   csvcommands3=-addheader, time.type date
+   csvcommands3=-addheader, time.type date site.type enumeration
 </property>
      <column  name="site"  label="Agency:Site" type="string" cansearch="false"
 	      columns="30"
