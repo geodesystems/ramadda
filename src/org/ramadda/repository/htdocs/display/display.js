@@ -1500,8 +1500,8 @@ function DisplayThing(argId, argProperties) {
 	    return this.getProperty(prop,dflt);
 	},
 
-	getTooltip:function() {
-	    let tooltip = this.getProperty('tooltip');
+	getTooltip:function(dflt) {
+	    let tooltip = this.getProperty('tooltip',dflt);
 	    if(tooltip=='none') tooltip=null;
 	    return tooltip;
 	},

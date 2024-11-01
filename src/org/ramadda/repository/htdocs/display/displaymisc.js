@@ -1521,13 +1521,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 		    if(idx==0 && iconField) {
 			let icon = record.getValue(iconField.getIndex());
-			sv = HU.image(icon,[STYLE,HU.css("max-width","50px;")]) +"&nbsp;" +v;
+			sv = HU.image(icon,[STYLE,HU.css("max-width","50px;")]) +"&nbsp;" +sv;
 		    }
 		    if(urlField && idx==0) {
 			let url = record.getValue(urlField.getIndex());
 			if(sv && Utils.stringDefined(url)) {
-			    if(sv) sv = String(v).trim();
-			    sv = HU.href(url,sv);
+			    if(sv) sv = svalue.trim();
+			    sv = HU.href(url,sv,['target','_other']);
 			}
 		    }
 
