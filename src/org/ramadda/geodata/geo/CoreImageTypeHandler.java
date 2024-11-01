@@ -216,6 +216,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
                             Hashtable props, String remainder) throws Exception {
 	if(!theTag.equals("core_visualizer")) return null;
 
+	getWikiManager().checkProperties(request,entry,props);
 	StringBuilder sb = new StringBuilder();
 	
 	String mainId = HU.getUniqueId("id");

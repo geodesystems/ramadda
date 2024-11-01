@@ -109,6 +109,31 @@ message="" width="80%"  useThumbnail="true" }}
 
 </type>
 
+  <type name="type_geo_borehole_images"  description="Geo Image Collection" 
+	handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  
+	childtypes="type_borehole_coreimage"
+	>
+    <property name="icon" value="/media/album.png"/>
+    <property name="form.area.show" value="false"/>
+    <property name="date.nullok" value="true"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
+     <column name="show_labels" type="boolean" group="Display Settings"
+	     label="Show Labels"  showinhtml="false" default="true"/>
+
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{core_visualizer showLabels="${property:show_labels}" }}
+
+:heading Table
+{{table showDate=false}} 
+-section
+]]></wiki>
+
+
+</type>
 
 
 <type name="type_borehole"  foruser="false" description="Borehole Data">
