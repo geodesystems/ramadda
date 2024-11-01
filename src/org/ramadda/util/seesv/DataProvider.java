@@ -838,7 +838,6 @@ public abstract class DataProvider extends SeesvOperator {
                     }
 		}
 
-
                 if (secondary.size() == 0) {
                     secondary.add(primary);
                 } else {
@@ -852,16 +851,22 @@ public abstract class DataProvider extends SeesvOperator {
                     names = new ArrayList<String>();
                     Row row = makeRow();
                     addRow(row);
+		    for (Enumeration keys = secondary.get(0).keys();
+			 keys.hasMoreElements(); ) {
+			String key = (String) keys.nextElement();
+			if(!names.contains(key)) 
+			    names.add(key);
+		    }
                     if (arrayKeys.size() > 0) {
-                        names.addAll(arrayKeys);
+			for(String key: arrayKeys) {
+			    if(!names.contains(key)) 
+				names.addAll(arrayKeys);
+			}
 			if(debug) System.err.println("names 1:" + names);
-                    } else {
-                        for (Enumeration keys = secondary.get(0).keys();
-                                keys.hasMoreElements(); ) {
-			    names.add((String) keys.nextElement());
-                        }
-			if(debug) System.err.println("names 2:" + names);
-                    }
+                    } 
+		    //else {
+		    if(debug) System.err.println("names 2:" + names);
+		    //                    }
                     //              names = (List<String>) Utils.sort(names);
                     for (String name : names) {
                         row.add(name);
@@ -878,6 +883,8 @@ public abstract class DataProvider extends SeesvOperator {
                   row.add("Index " + k);
                   }
                 ***/
+
+
 
                 for (Hashtable h : secondary) {
                     Row row = makeRow();
