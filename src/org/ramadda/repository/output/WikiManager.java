@@ -9017,7 +9017,7 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    private void checkProperties(Request request, Entry entry, Hashtable props) {
+    public void checkProperties(Request request, Entry entry, Hashtable props) {
 	for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
 	    Object key   = keys.nextElement();
 	    Object value = props.get(key);
