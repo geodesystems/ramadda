@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Oct 30 11:23:01 MDT 2024";
+var build_date="RAMADDA build date: Thu Oct 31 20:29:21 MDT 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5484,8 +5484,8 @@ function DisplayThing(argId, argProperties) {
 	    return this.getProperty(prop,dflt);
 	},
 
-	getTooltip:function() {
-	    let tooltip = this.getProperty('tooltip');
+	getTooltip:function(dflt) {
+	    let tooltip = this.getProperty('tooltip',dflt);
 	    if(tooltip=='none') tooltip=null;
 	    return tooltip;
 	},
@@ -38076,7 +38076,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     });
 
     //Default to a tooltip
-    if(!properties.tooltip) properties.tooltip='${default}';
+//    if(!properties.tooltip) properties.tooltip='${default}';
     this.myycnt = ++ycnt;
     this.myName = "map " + (this.myycnt);
     const SUPER = new RamaddaDisplay(displayManager, id, type,   properties);
@@ -41143,7 +41143,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    let textGetter = (f)=>{
 		if(f.record) {
-                    return  this.getRecordHtml(f.record, null, this.getTooltip());
+                    return  this.getRecordHtml(f.record, null, this.getTooltip('${default}'));
 		}
 		return "NONE";
 	    };
@@ -42504,7 +42504,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    
 
 
-	    let tooltip = this.getTooltip();
+	    let tooltip = this.getTooltip('${default}');
 	    let haveTooltip = Utils.stringDefined(tooltip);
 	    let highlight = this.getProperty("highlight");
 	    let highlightTemplate = this.getProperty("highlightTemplate");
@@ -43233,7 +43233,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
 	getTextGetter:function(fields,showCount) {
-	    let tooltip = this.getTooltip();
+	    let tooltip = this.getTooltip('${default}');
 	    return  this.textGetter = f=>{
 		if(!Utils.stringDefined(tooltip)) {
 		    if(debugPopup) console.log("No tooltip");
@@ -58944,13 +58944,13 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 
 		    if(idx==0 && iconField) {
 			let icon = record.getValue(iconField.getIndex());
-			sv = HU.image(icon,[STYLE,HU.css("max-width","50px;")]) +"&nbsp;" +v;
+			sv = HU.image(icon,[STYLE,HU.css("max-width","50px;")]) +"&nbsp;" +sv;
 		    }
 		    if(urlField && idx==0) {
 			let url = record.getValue(urlField.getIndex());
 			if(sv && Utils.stringDefined(url)) {
-			    if(sv) sv = String(v).trim();
-			    sv = HU.href(url,sv);
+			    if(sv) sv = svalue.trim();
+			    sv = HU.href(url,sv,['target','_other']);
 			}
 		    }
 
