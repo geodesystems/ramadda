@@ -116,9 +116,15 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	sb.append(HU.formClose());
 
 	if(request.exists("apply")) {
-	    Result result =applyBoxes(request,entry,sb,boxes);
+	    StringBuilder tmp = new StringBuilder();
+	    Result result =applyBoxes(request,entry,tmp,boxes);
 	    if(result!=null) return result;
+
+	    sb.append(getWikiManager().wikifyEntry(request, entry, tmp.toString()));
+
+
 	}	
+
 
 
 	getPageHandler().entrySectionClose(request, entry, sb);
@@ -151,24 +157,46 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 
 
 	for(CoreApiHandler.Box box: boxes) {
+	    StringBuilder inline = new StringBuilder();
 	    cnt++;
 	    BufferedImage subset =  bi.getSubimage((int)box.x,(int)box.y,(int)box.width,(int)box.height);
 	    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(subset, "png", byteArrayOutputStream); 
 	    ImageUtils.ImageInfo info = ImageUtils.averageRGB(subset);
+	    StringBuilder counts = new StringBuilder();
+	    counts.append("index,red,green,blue\n");
+	    for(int i=0;i<info.redCount.length;i++) {
+		counts.append(i);
+		counts.append(",");
+		counts.append(info.redCount[i]);
+		counts.append(",");
+		counts.append(info.greenCount[i]);		    
+		counts.append(",");
+		counts.append(info.blueCount[i]);
+		counts.append("\n");
+	    }
 
             if(zos!=null)  {
 		String file="";
 		if(Utils.stringDefined(box.label)) {
 		    file=box.label+"_";
 		}
-		file+="box_"+cnt+".png";
-		zos.putNextEntry(new ZipEntry(file));
+		String imageFile=file+"box_"+cnt+".png";
+		zos.putNextEntry(new ZipEntry(imageFile));
 		byte[] imageBytes = byteArrayOutputStream.toByteArray();
 		IOUtil.writeTo(new ByteArrayInputStream(imageBytes), zos);
-		csv.append(file+","+ info.width +"," + info.height+","+info.avgRed+"," +info.avgGreen +"," + info.avgBlue+","+box.top +","+ box.bottom+"\n");
+		csv.append(imageFile+","+ info.width +"," + info.height+","+info.avgRed+"," +info.avgGreen +"," + info.avgBlue+","+box.top +","+ box.bottom+"\n");
+
+		String countFile = file+"box_"+cnt+"_histogram.csv";
+		zos.putNextEntry(new ZipEntry(countFile));
+		byte[] countBytes = counts.toString().getBytes();
+		IOUtil.writeTo(new ByteArrayInputStream(countBytes), zos);
 		continue;
 	    }
+	    inline.append("<div style='display:none;' id=" + "inline_" + cnt+">");
+	    inline.append(counts);
+	    inline.append("</div>");
+
 	    
 
             // Get the byte array from the output stream
@@ -180,17 +208,19 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
             // Construct the data URL (using "image/png" as the MIME type)
             String dataUrl = "data:image/png;base64," + base64Image;
 	    if(Utils.stringDefined(box.label)) {
-		sb.append(HU.b(box.label+":"));
+		sb.append("\n:heading " + box.label+"\n");
 	    } else {
-		sb.append(HU.b("Box #"+cnt+":"));
+		sb.append("\n:heading " + "Box #"+cnt+"\n");
 	    }
-	    sb.append("<br>");
 	    sb.append("Width: " + info.width+" Height: " + info.height+"<br>");
 	    sb.append("Top: " + box.top+" Bottom: " + box.bottom+"<br>");	    
 	    sb.append("Average: red: " + info.avgRed +" green: " + info.avgGreen +" blue: " + info.avgBlue);
 	    sb.append("<br>");
 	    sb.append(HU.image(dataUrl));
 	    sb.append("<p>");
+	    sb.append(inline);
+	    sb.append("{{display_linechart inlineDataSrc=inline_" + cnt +" vAxisMinValue=0 vAxisMaxValue=255 colors=red,green,blue fields=red,green,blue}}");
+	    sb.append("\n----\n");
 	}
 	if(zos!=null)  {
 	    zos.putNextEntry(new ZipEntry("boxes.csv"));
