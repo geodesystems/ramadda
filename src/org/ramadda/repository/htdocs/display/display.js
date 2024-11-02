@@ -1713,6 +1713,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'background',ex:'color'},
 	{p:'showProgress',ex:true},
 	{p:'loadingMessage',ex:'',tt:'Message to show when loading data'},	
+	{p:'inlineDataSrc',tt:'div id that holds the CSV inline'},
 	{p:'showRecordPager',ex:true,tt:'Show the prev/next pager'},
 	{p:'recordPagerNumber',d:100,tt:'How many records to show'},	
 	{p:'noun',ex:'images'},
@@ -3043,7 +3044,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 
 	    //Check if we didn't have any data specified
-	    if(!msg && !this.getProperty("theData")) {
+	    if(!msg && !this.getProperty("theData") && !this.getInlineDataSrc()) {
 		msg = "No data specified"
 	    }
 	    if (!msg) msg = this.getProperty("loadingMessage", "icon_progress Loading data...");
@@ -5802,6 +5803,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         loadInitialData: function() {
 	    if(!this.getProperty("okToLoadData",true)) return;
+	    if(this.getInlineDataSrc()) {
+		this.getData();
+		return;
+	    }
+
+
+
             if (!this.needsData() || this.properties.theData == null) {
                 return;
             }
@@ -5813,6 +5821,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.addData(this.properties.theData);
                 return;
             }
+
+
+
             this.properties.theData.loadData(this);
         },
         getData: function() {
@@ -5821,8 +5832,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if (this.properties.theData) {
 		    return this.properties.theData;
 		} 
-		if(this.properties.dataSrc) {
-		    this.addData(makeInlineData(this,this.properties.dataSrc));
+		if(this.getInlineDataSrc()) {
+		    this.addData(makeInlineData(this,this.getInlineDataSrc()));
 		} else {
 		    return null;
 		}
