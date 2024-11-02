@@ -219,7 +219,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	    sb.append(HU.image(dataUrl));
 	    sb.append("<p>");
 	    sb.append(inline);
-	    sb.append("{{display_linechart inlineDataSrc=inline_" + cnt +" vAxisMinValue=0 vAxisMaxValue=255 colors=red,green,blue fields=red,green,blue}}");
+	    sb.append("{{display_linechart showMenu=true inlineDataSrc=inline_" + cnt +" vAxisMinValue=0 vAxisMaxValue=255 colors=red,green,blue fields=red,green,blue}}");
 	    sb.append("\n----\n");
 	}
 	if(zos!=null)  {
