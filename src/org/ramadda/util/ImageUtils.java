@@ -224,20 +224,6 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
     }
 
 
-    public static class ImageInfo {
-	public int width;
-	public int height;
-	public int avgRed;
-	public int avgGreen;
-	public int avgBlue;
-	public ImageInfo(int width, int height, int avgRed,int avgGreen, int avgBlue){
-	     this.width = width;
-	     this.height = height;
-	     this.avgRed = avgRed;
-	     this.avgGreen = avgGreen;
-	     this.avgBlue = avgBlue;
-	}
-    }
     public static ImageInfo averageRGB(BufferedImage image) throws Exception {
 	// Get image dimensions
 	int width = image.getWidth();
@@ -245,6 +231,7 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	// Variables to store total RGB values
 	long totalRed = 0, totalGreen = 0, totalBlue = 0;
 	// Loop through each pixel
+	ImageInfo info = new ImageInfo();
 	for (int y = 0; y < height; y++) {
 	    for (int x = 0; x < width; x++) {
 		int pixel = image.getRGB(x, y);
@@ -252,6 +239,7 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 		int red = (pixel >> 16) & 0xFF;
 		int green = (pixel >> 8) & 0xFF;
 		int blue = pixel & 0xFF;
+		info.count(red,green,blue);
 		// Add to total
 		totalRed += red;
 		totalGreen += green;
@@ -263,10 +251,52 @@ public class ImageUtils extends ucar.unidata.ui.ImageUtils {
 	int avgRed = (int)(totalRed / numPixels);
 	int avgGreen = (int)(totalGreen / numPixels);
 	int avgBlue = (int)(totalBlue / numPixels);
-	return new ImageInfo(width,height,avgRed,avgGreen,avgBlue);
+	info.init(width,height,avgRed,avgGreen,avgBlue);
+	return info;
     }
 
 
+    public static class ImageInfo {
+	public int width;
+	public int height;
+	public int avgRed;
+	public int avgGreen;
+	public int avgBlue;
+	public int []redCount;
+	public int []greenCount;	
+	public int []blueCount;
+	public ImageInfo() {
+	    int length = 256;
+	    redCount = new int[length];
+	    greenCount = new int[length];	    
+	    blueCount = new int[length];
+	    for(int i=0;i<redCount.length;i++) {
+		redCount[i]=0;
+		greenCount[i]=0;
+		blueCount[i]=0;
+	    }
+	}
+
+
+	public ImageInfo(int width, int height, int avgRed,int avgGreen, int avgBlue){
+	    this();
+	    init(width,height,avgRed,avgGreen,avgBlue);
+	}
+	public void init(int width, int height, int avgRed,int avgGreen, int avgBlue){
+	    this.width = width;
+	    this.height = height;
+	    this.avgRed = avgRed;
+	    this.avgGreen = avgGreen;
+	    this.avgBlue = avgBlue;
+	}
+
+	public void count(int red,int green,int blue) {
+	    redCount[red]++;
+	    greenCount[green]++;	    
+	    blueCount[blue]++;
+	}
+
+    }
 
 
 }
