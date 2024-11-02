@@ -83,6 +83,8 @@ Cleanup
 Display
 Stopped
 Execute
+Login
+Permissions	
 Pattern
 Project
 Recurse
