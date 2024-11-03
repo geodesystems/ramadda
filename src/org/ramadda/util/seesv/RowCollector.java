@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -44,51 +44,21 @@ import java.util.function.Function;
 import java.util.regex.*;
 
 
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Jan 9, '15
- * @author         Jeff McWhirter
- */
+
 @SuppressWarnings("unchecked")
 public class RowCollector extends Processor {
-
-    /** _more_ */
     private List<Row> rows = new ArrayList<Row>();
-
-
-    /**
-     * _more_
-     *
-     */
+    
     public RowCollector() {}
 
-    /**
-     * _more_
-     *
-     * @param col _more_
-     */
     public RowCollector(String col) {
         super(col);
     }
-
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     */
+    
     public RowCollector(List<String> cols) {
         super(cols);
     }
-
-
-    /**
-     *
-     * @param ctx _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void finish(TextReader ctx) throws Exception {
         Processor nextProcessor = getNextProcessor();
         //      System.err.println("RowCollector.finish:" + rows.size() +" next:" + nextProcessor.getClass().getSimpleName());
@@ -103,47 +73,25 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     *
-     * @param ctx _more_
-     * @param rows _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public List<Row> finish(TextReader ctx, List<Row> rows) throws Exception {
         return rows;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     @Override
     public boolean buffersRows() {
         return true;
     }
 
-    /**
-     * _more_
-     */
+    
     @Override
     public void reset(boolean force) {
         super.reset(force);
         rows = new ArrayList<Row>();
     }
 
-    /**
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Row handleRow(TextReader ctx, Row row) throws Exception {
         //Here we don't call nextProcessor.handleRow
         setHeaderIfNeeded(row);
@@ -152,17 +100,7 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     @Override
     public Row processRow(TextReader ctx, Row row) throws Exception {
         rows.add(row);
@@ -170,39 +108,22 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     *
-     * @param row _more_
-     */
+    
     public void addRow(Row row) {
         rows.add(row);
     }
 
-    /**
-     *  Set the Rows property.
-     *
-     *  @param value The new value for Rows
-     */
+    
     public void setRows(List<Row> value) {
         rows = value;
     }
 
-    /**
-     *  Get the Rows property.
-     *
-     *  @return The Rows
-     */
+    
     public List<Row> getRows() {
         return rows;
     }
 
-    /**
-     * _more_
-     *
-     * @param incoming _more_
-     *
-     * @return _more_
-     */
+    
     public List<Row> getRows(List<Row> incoming) {
         if (incoming != null) {
             return incoming;
@@ -211,49 +132,18 @@ public class RowCollector extends Processor {
         return rows;
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class RowOperator extends RowCollector {
-
-        /** _more_ */
         public static final int OP_SUM = 0;
-
-        /** _more_ */
         public static final int OP_MIN = 1;
-
-        /** _more_ */
         public static final int OP_MAX = 2;
-
-        /** _more_ */
         public static final int OP_AVERAGE = 3;
-
-        /** _more_ */
         public static final int OP_COUNT = 4;
-
-
-        /** _more_ */
         private int op = OP_SUM;
-
-        /** _more_ */
         private String opLabel;
-
-        /** _more_ */
         private List<String> valueCols;
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param keys _more_
-         * @param values _more_
-         * @param op _more_
-         */
+        
         public RowOperator(List<String> keys, List<String> values,
                            String op) {
             super(keys);
@@ -275,16 +165,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param r _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> r)
 	    throws Exception {
@@ -405,7 +286,6 @@ public class RowCollector extends Processor {
     private  static class Bin extends Count {
 	String label;
 
-
 	Bin(double min,double max) {this.min = min;this.max = max;}
 	public boolean firstBin() {
 	    return (min==Double.NEGATIVE_INFINITY);
@@ -437,31 +317,10 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Rotator extends RowCollector {
-
-        /**
-         * _more_
-         *
-         */
         public Rotator(TextReader ctx) {}
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -482,29 +341,11 @@ public class RowCollector extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class RowShuffler extends RowCollector {
-
-        /**  */
         boolean atStart;
-
-        /**  */
         String pattern;
-
-        /**
-         * _more_
-         *
-         *
-         * @param atStart _more_
-         * @param cols _more_
-         * @param pattern _more_
-         */
+        
         public RowShuffler(TextReader ctx, boolean atStart, List<String> cols,
                            String pattern) {
             super(cols);
@@ -512,16 +353,7 @@ public class RowCollector extends Processor {
             this.pattern = pattern;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -564,43 +396,17 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
+    
     public static class MaxValue extends RowCollector {
-
-        /** _more_ */
         String key;
-
-        /** _more_ */
         String value;
-
-        /**
-         * _more_
-         *
-         *
-         * @param key _more_
-         * @param value _more_
-         */
+        
         public MaxValue(TextReader ctx, String key, String value) {
             this.key   = key;
             this.value = value;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -641,43 +447,18 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
+    
     public static class MinValue extends RowCollector {
-
-        /** _more_ */
         String key;
-
-        /** _more_ */
         String value;
 
-        /**
-         * _more_
-         *
-         *
-         * @param key _more_
-         * @param value _more_
-         */
+        
         public MinValue(TextReader ctx, String key, String value) {
             this.key   = key;
             this.value = value;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -719,30 +500,10 @@ public class RowCollector extends Processor {
     
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Flipper extends RowCollector {
-
-        /**
-         * ctor
-         */
         public Flipper(TextReader ctx) {}
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -758,40 +519,16 @@ public class RowCollector extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
+    
     public static class TclWrapper extends RowCollector {
-
-
-        /** _more_ */
         private String prefix;
-
-
-        /**
-         * _more_
-         * @param prefix _more_
-         */
+        
         public TclWrapper(TextReader ctx, String prefix) {
             super();
             this.prefix = prefix;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             PrintWriter writer = ctx.getWriter();
@@ -816,39 +553,12 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jul 8, '15
-     * @author         Enter your name here...
-     */
+    
     public static class Exploder extends RowCollector {
-
-
-        /**
-         * ctor
-         *
-         *
-         * @param col _more_
-         */
         public Exploder(TextReader ctx, String col) {
             super(col);
         }
-
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -907,54 +617,20 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
+    
     public static class Html extends RowCollector {
-
-        /** _more_ */
         protected int cnt = 0;
-
-        /**
-         * _more_
-         *
-         */
+        int maxCount = 0;
         public Html(TextReader ctx) {
 	}
 
-
-        /** _more_ */
-        int maxCount = 0;
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             printRow(ctx, row, true,true);
             return row;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         * @param addCnt _more_
-         *
-         * @throws Exception _more_
-         */
+        
         public void printRow(TextReader ctx, Row row, boolean addCnt, boolean even)
 	    throws Exception {
             List values = row.getValues();
@@ -1056,16 +732,7 @@ public class RowCollector extends Processor {
             cnt++;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1087,52 +754,17 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Unfurler extends RowCollector {
-
-        /** _more_ */
         private int unfurlIndex = -1;
-
-        /** _more_ */
         private String unfurlCol;
-
-        /** _more_ */
         private int uniqueIndex = -1;
-
-        /** _more_ */
         private String uniqueCol;
-
-        /** _more_ */
-        //        private int valueIndex;
-
         private List<Integer> valueIndices;
-
-        /** _more_ */
         private List<String> valueCols;
-
-        /** _more_ */
         private int unitIndex = -1;
-
-        /** _more_ */
         private HashSet<String> seenValue = new HashSet<String>();
-
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param unfurlIndex _more_
-         * @param valueCols _more_
-         * @param uniqueIndex _more_
-         * @param uniqueCol _more_
-         * @param extraCols _more_
-         */
+        
         public Unfurler(TextReader ctx, String unfurlIndex, List<String> valueCols,
                         String uniqueCol, List<String> extraCols) {
             super(extraCols);
@@ -1142,26 +774,13 @@ public class RowCollector extends Processor {
             this.uniqueCol = uniqueCol;
         }
 
-        /**
-         * _more_
-         *
-         * @param index _more_
-         */
+        
         public void setUnitIndex(int index) {
             unitIndex = index;
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1291,37 +910,17 @@ public class RowCollector extends Processor {
     }
 
     public static class CountUnique extends RowCollector {
-
-        /**  */
         private Row header;
-
-        /**  */
         private List<String> keys = new ArrayList<String>();
-
-        /**  */
         private Hashtable<String, Row> rowMap = new Hashtable<String, Row>();
-
-        /**  */
         private Hashtable<String, Integer> countMap = new Hashtable<String,
 	    Integer>();
 
-        /**
-         *
-         * @param cols _more_
-         */
         public CountUnique(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
 	@Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -1349,16 +948,7 @@ public class RowCollector extends Processor {
 
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1377,25 +967,11 @@ public class RowCollector extends Processor {
     }
 
     public static class Normal extends RowCollector {
-
-        /**
-         *
-         * @param cols _more_
-         */
         public Normal(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1457,34 +1033,13 @@ public class RowCollector extends Processor {
             return rows;
         }
 
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Thu, Nov 4, '21
-         * @author         Enter your name here...    
-         */
+        
         private static class KeyValue {
-
-            /**  */
             int index;
-
-            /**  */
             String key;
-
-            /**  */
             String value;
-
-            /**  */
             boolean matched = false;
-
-            /**
-             
-             *
-             * @param index _more_
-             * @param key _more_
-             * @param value _more_
-             */
+            
             KeyValue(int index, String key, String value) {
                 this.index = index;
                 this.key   = key;
@@ -1492,7 +1047,7 @@ public class RowCollector extends Processor {
             }
         }
 
-        /**  */
+        
         private static String[] replace = new String[] {
             "ÁĂẮẶẰẲẴǍÂẤẬẦẨẪÄǞȦǠẠȀÀẢȂĀĄÅǺḀÃǼǢ", "A", "ḂḄḆ", "B", "ĆČÇḈĈĊ", "C",
             "ĎḐḒḊḌḎ", "D", "ÉĔĚȨḜÊẾỆỀỂỄḘËĖẸȄÈẺȆĒḖḔĘẼḚÉ", "E", "Ḟ", "F",
@@ -1506,12 +1061,7 @@ public class RowCollector extends Processor {
             //      "  +"," "
         };
 
-        /**
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
+        
         public static String cleanName(String s) {
             s = s.toUpperCase();
             for (int i = 0; i < replace.length; i += 2) {
@@ -1525,38 +1075,14 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
+    
     public static class Melter extends RowCollector {
-
-        /** _more_ */
         private List<Integer> indices;
-
-        /** _more_ */
         private List<String> cols;
-
-        /** _more_ */
         private Row header;
-
-
-        /** _more_ */
         private String label1;
-
-        /** _more_ */
         private String label2;
-
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param label1 _more_
-         * @param label2 _more_
-         */
+        
         public Melter(TextReader ctx, List<String> cols, String label1, String label2) {
             super(cols);
             this.label1 = label1;
@@ -1565,16 +1091,7 @@ public class RowCollector extends Processor {
 
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Integer>    indices   = getIndices(ctx);
@@ -1614,38 +1131,16 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Dups extends RowCollector {
-
-        /** _more_ */
         private List<String> columns;
-
-        /**
-         * _more_
-         *
-         * @param columns _more_
-         */
+        
         public Dups(TextReader ctx, List<String> columns) {
             this.columns = columns;
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1683,34 +1178,13 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Splatter extends RowCollector {
-
-        /** _more_ */
         private String key;
-
-        /** _more_ */
         private String value;
-
-        /** _more_ */
         private String delimiter;
-
-        /** _more_ */
         private String name;
-
-        /**
-         * _more_
-         * @param key _more_
-         * @param value _more_
-         * @param delim _more_
-         * @param name _more_
-         */
+        
         public Splatter(TextReader ctx, String key, String value, String delim, String name) {
             this.key       = key;
             this.value     = value;
@@ -1719,16 +1193,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1771,28 +1236,11 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Aug 8, '19
-     * @author         Enter your name here...
-     */
+    
     public static class Breaker extends RowCollector {
-
-        /** _more_ */
         private String label1;
-
-        /** _more_ */
         private String label2;
 
-        /**
-         * _more_
-         *
-         * @param label1 _more_
-         * @param label2 _more_
-         * @param cols _more_
-         */
         public Breaker(TextReader ctx, String label1, String label2, List<String> cols) {
             super(cols);
             this.label1 = label1;
@@ -1801,16 +1249,7 @@ public class RowCollector extends Processor {
 
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1862,30 +1301,11 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Sorter extends RowCollector {
-
-
-        /** _more_ */
         private boolean asc = true;
-
 	private String how="";
 
-        /**
-         * _more_
-         *
-         *
-         * @param index _more_
-         *
-         * @param col _more_
-         * @param asc _more_
-         */
         public Sorter(TextReader ctx, List<String> cols, boolean asc) {
             super(cols);
             this.asc = asc;
@@ -1898,16 +1318,7 @@ public class RowCollector extends Processor {
         }	
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1926,45 +1337,19 @@ public class RowCollector extends Processor {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jul 8, '15
-     * @author         Enter your name here...
-     */
+    
     public static class Stats extends Html {
-
-        /** _more_ */
         private static SimpleDateFormat fmtSdf =
             new SimpleDateFormat("yyyy-MM-dd hh:mm");
-
-        /** _more_ */
+        
         private Seesv util;
-
-        /**  */
         private boolean justStats;
-
-        /** _more_ */
         private List<ColStat> cols;
-
-        /** _more_ */
         private Row headerRow;
-
-        /** _more_ */
         int rowCnt = 0;
-
-        /** _more_ */
         private boolean interactive;
-
         private boolean showSummary=true;
 
-        /**
-         * ctor
-         *
-         * @param util _more_
-         * @param justStats _more_
-         */
         public Stats(TextReader ctx, Seesv util, boolean justStats,boolean showSummary) {
 	    super(ctx);
             this.util      = util;
@@ -1974,16 +1359,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             rowCnt++;
@@ -2012,16 +1388,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -2230,82 +1597,39 @@ public class RowCollector extends Processor {
 
         }
 
-
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Sat, Apr 3, '21
-         * @author         Enter your name here...
-         */
         private static class ColStat {
-
-            /** _more_ */
             String name;
-
-            /** _more_ */
             String label;
-
-            /** _more_ */
             String type;
-
 	    boolean alignRight = false;
-	    
-            /** _more_ */
             String sample;
-
-            /** _more_ */
             MyDateFormat sdf;
-
-            /** _more_ */
             String format;
-
-            /** _more_ */
             String sampleError;
-
             double total = 0;
-
-            /** _more_ */
             double min = Double.NaN;
-
-            /** _more_ */
             double max = Double.NaN;
-
-            /** _more_ */
             int numErrors = 0;
-
-            /** _more_ */
             int numMissing = 0;
-
-            /**  */
             boolean interactive;
-
-
-            /** _more_ */
+            
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
 		Integer>();
 
-            /**  */
+            
             List<Double> pts = new ArrayList<Double>();
 
 
-            /** _more_ */
+            
             Date minDate;
 
-            /** _more_ */
+            
             Date maxDate;
 
 	    boolean skip = false;
 	    boolean mergeNext = false;
 
-            /**
-             * _more_
-             *
-             * @param util _more_
-             * @param interactive _more_
-             * @param n _more_
-             * @param sample _more_
-             */
+            
             public ColStat(Seesv util, boolean interactive, String n,
                            String sample) {
                 this.interactive = interactive;
@@ -2355,13 +1679,7 @@ public class RowCollector extends Processor {
 	    }
 
 	    boolean loggedError = false;
-            /**
-             * _more_
-             *
-             * @param v _more_
-             *
-             * @return _more_
-             */
+            
             public Date getDate(Object v) {
                 try {
                     return getSdf().parse(v.toString());
@@ -2374,13 +1692,7 @@ public class RowCollector extends Processor {
                 }
             }
 
-            /**
-             * _more_
-             *
-             * @param v _more_
-             *
-             * @return _more_
-             */
+            
             public Object format(TextReader ctx,Object v) {
                 if (type.equals("date") && (format != null)) {
                     Date date = getDate(v);
@@ -2408,11 +1720,7 @@ public class RowCollector extends Processor {
                 return v;
             }
 
-            /**
-             * _more_
-             *
-             * @param v _more_
-             */
+            
             public void addValue(String v) {
                 if (sample == null) {
                     sample = v;
@@ -2457,11 +1765,7 @@ public class RowCollector extends Processor {
                 uniques.put(v, cnt);
             }
 
-            /**
-             * _more_
-             *
-             * @param writer _more_
-             */
+            
             public void finish(PrintWriter writer) {
                 if (interactive) {
                     writer.print("<pre>");
@@ -2497,52 +1801,22 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Summary extends RowCollector {
-
 	private List<String> what;
-	
-        /** _more_ */
         private List<Integer> uniqueIndices;
-
-        /** _more_ */
         private List<Integer> valueIndices;
-
-        /** _more_ */
         private List<Integer> extraIndices;
-
-        /** _more_ */
         private List<String> keyCols;
-
-        /** _more_ */
         private List<String> values;
-
-        /** _more_ */
         private List<String> extra;
-
 	private Object[] array = null;
-
 	List<String> keys     = new ArrayList<String>();
 	Hashtable<String, Count> counts = new Hashtable<String,Count>();
 	Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
 	Row                    headerRow;
 	Row                    firstRow ;
-
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param keys _more_
-         * @param values _more_
-         * @param extra _more_
-         */
+        
         public Summary(TextReader ctx, List<String> what,List<String> keys, List<String> values,
 		       List<String> extra) {
 	    
@@ -2602,16 +1876,7 @@ public class RowCollector extends Processor {
 	}
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -2690,46 +1955,33 @@ public class RowCollector extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Pivot extends RowCollector {
 	LinkedHashMap<String,String> seenColumns = new LinkedHashMap<String,String>();
 	LinkedHashMap<String,String> seenRows = new LinkedHashMap<String,String>();	
 	Hashtable<String, Tuple> values = new Hashtable<String,Tuple>();
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
 	    StringBuilder>();
-
-
-        /** _more_ */
+        
         private List<String> keyCols;
         private List<String> columnCols;	
 	private List<String> operators;
 	private String valueColumn;
 	
-        /** _more_ */
+        
         private List<Integer> keyIndices;
 
-        /** _more_ */
+        
         private List<Integer> columnIndices;
 
-        /** _more_ */
+        
         private int valueIndex;
 
 
 	private Row  headerRow;
 
 
-        /**
-         *
-         * @param keys _more_
-         * @param values _more_
-         * @param extra _more_
-         */
+        
         public Pivot(TextReader ctx, List<String> keys,List<String> columns, String valueColumn,
 		     List<String> operators) {
 	    if(operators.size()==0) {
@@ -2805,16 +2057,7 @@ public class RowCollector extends Processor {
 	    return row+"----" + col;
 	}
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -2943,25 +2186,13 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
+    
     public static class Histogram extends RowCollector {
-
-
 	List<Bin> bins;
 	List<String> what;
 	String scolumn;
 	int column;
-
-        /**
-         * _more_
-         *
-         */
+        
         public Histogram(TextReader ctx, String column, String bins,List<String> cols,String what) {
 	    super(cols);
 	    this.scolumn = column;
@@ -2976,16 +2207,7 @@ public class RowCollector extends Processor {
 	    this.bins.add(new Bin(prevValue,Double.POSITIVE_INFINITY));
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -3084,32 +2306,12 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...
-     */
+    
     public static class GroupFilter extends RowCollector {
-
-        /** _more_ */
         private int op;
-
-        /** _more_ */
         private String value;
-
-        /** _more_ */
         private int valueIdx;
-
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param valueIdx _more_
-         * @param op _more_
-         * @param value _more_
-         */
+        
         public GroupFilter(TextReader ctx, List<String> cols, int valueIdx, int op,
                            String value) {
             super(cols);
@@ -3119,13 +2321,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param v _more_
-         *
-         * @return _more_
-         */
+        
         private double getValue(String v) {
             try {
                 return Double.parseDouble(v);
@@ -3135,16 +2331,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param finalRows _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> finalRows)
 	    throws Exception {
@@ -3220,51 +2407,19 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...    
-     */
+    
     public static class Slicer extends RowCollector {
-
-        /**  */
         String sdest;
-
-        /**  */
         int dest;
-
-        /**  */
         List<String> fill;
-
-
-
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param colName _more_
-         * @param sdf _more_
-         * @param sdest _more_
-         * @param fill _more_
-         */
+        
         public Slicer(TextReader ctx, List<String> cols, String sdest, List<String> fill) {
             super(cols);
             this.sdest = sdest;
             this.fill  = fill;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             super.processRow(ctx, row);
@@ -3277,16 +2432,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param tmp _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> tmp)
 	    throws Exception {
@@ -3320,49 +2466,19 @@ public class RowCollector extends Processor {
 
 
 
-    /**
-     * Class description
-     *a
-     *
-     * @version        $version$, Sat, Jul 18, '20
-     * @author         Enter your name here...
-     */
+    
     public static class DateLatest extends RowCollector {
-
-        /** _more_ */
         List<String> keys;
-
-        /** _more_ */
         private Hashtable<String, Row> rows = new Hashtable<String, Row>();
-
-        /** _more_ */
         private List<Integer> indices;
-
-        /** _more_ */
         private List<Integer> keyindices;
-
-        /** _more_ */
         private List<String> keyValues = new ArrayList<String>();
-
-        /** _more_ */
         private String colName;
-
-        /** _more_ */
         private int col = -1;
-
-        /** _more_ */
         private SimpleDateFormat sdf;
-
-        /** _more_ */
         private Row header;
 
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param colName _more_
-         * @param sdf _more_
-         */
+        
         public DateLatest(TextReader ctx, List<String> cols, String colName,
                           SimpleDateFormat sdf) {
             this.keys    = cols;
@@ -3370,14 +2486,7 @@ public class RowCollector extends Processor {
             this.sdf     = sdf;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
+        
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -3426,16 +2535,7 @@ public class RowCollector extends Processor {
 
 
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param tmp _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
+        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> tmp)
 	    throws Exception {
@@ -3451,24 +2551,11 @@ public class RowCollector extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
+    
     public static class Crosser extends RowCollector {
-
-        /** _more_ */
         private String file;
 	private List<Row> rows2;
-
-
-        /**
-         * _more_
-         * @param file _more_
-         */
+        
         public Crosser(TextReader ctx,  String file) {
             this.file    = file;
             try {
@@ -3479,13 +2566,7 @@ public class RowCollector extends Processor {
         }
 
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @throws Exception _more_
-         */
+        
         private void init(TextReader ctx) throws Exception {
             if ( !IO.okToReadFrom(file)) {
                 throw new RuntimeException("Cannot read file:" + file);
@@ -3546,25 +2627,13 @@ public class RowCollector extends Processor {
 
 
     public static class Cloner extends Converter {
-
-        /** _more_ */
         private int count;
 
-
-        /**
-         * @param row _more_
-         * @param col _more_
-         * @param value _more_
-         */
         public Cloner(int cnt) {
             this.count = cnt;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
+        
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++==0) return row;
