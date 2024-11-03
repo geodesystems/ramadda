@@ -6952,6 +6952,7 @@ public abstract class Converter extends Processor {
 		: -1;
             String v   = "";
             if (rowCnt == 0) {
+		value = ctx.applyMacros(value);
                 v = name;
             } else if (rowCnt < values.size()) {
                 //v = values.get(rowCnt);
