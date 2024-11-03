@@ -1806,6 +1806,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'fieldsNumeric',ex:true,tt:'Only get numeric fields'},
 	{p:'filterFields',ex:''},
 	{p:'filterFieldsToPropagate'},
+	{p:'filterSetValueFieldId',tt:'when a record is selected in another display this is the field to set the filter value on the target display'},
 	{p:'hideFilterWidget',ex:true},
 	{p:'filterHighlight',d:false,ex:true,tt:'Highlight the records'},
 	{p:'isMasterFilter',ex:true,tt:'Does this display provide filters for all the other displays'},
@@ -2740,7 +2741,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    }
 	},
         handleEventFilterChanged: function(source, prop) {
-	    if(!this.acceptEvent(DisplayEvent.filterChanged, this.getProperty("acceptEventFilter",true))) {
+	    if(!this.acceptEvent(DisplayEvent.filterChanged, this.getProperty('acceptEventFilter',true))) {
 		return;
 	    }
 	    this.haveCalledUpdateUI = false;
@@ -2946,6 +2947,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			let date = this.selectedRecord.getDate();
 			if(date) 
 			    this.getAnimation().setDateRange(date,date);
+		    }
+		}
+		let fieldId = this.getFilterSetValueFieldId();
+		if(fieldId) {
+		    let field =this.getFieldById(null,fieldId);
+		    if(field) {
+			let value = field.getValue(this.selectedRecord);
+			this.handleEventFilterChanged(this,{id:'',fieldId:field.getId(),value:value});
 		    }
 		}
 	    }

@@ -246,7 +246,12 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     }
 
     let opts = {
-	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 }
+	theMargin:{ top: 0, right: 0, bottom: 0, left: 0 },
+	flipYAxis:false,
+	drawAxis:true,
+	drawAxisLabels:false,	
+	axisWidth:1,
+	axisColor:'#ccc',
     }
     if(params) {
 	if(params.margin) $.extend(opts.theMargin,params.margin);
@@ -256,7 +261,9 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
     const INNER_HEIGHT = h - opts.theMargin.top - opts.theMargin.bottom;
     const BAR_WIDTH  = w / data.length;
     const x    = d3.scaleLinear().domain([0, data.length]).range([0, INNER_WIDTH]);
-    const y    = d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]);
+    let y = !opts.flipYAxis?
+	d3.scaleLinear().domain([min, max]).range([INNER_HEIGHT, 0]):
+	d3.scaleLinear().domain([max, min]).range([INNER_HEIGHT, 0]);    
     const recty    = d3.scaleLinear().domain([min, max]).range([0,INNER_HEIGHT]);
 
     let tt = d3.select("body").append("div")	
@@ -282,21 +289,40 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	return colorBy?colorBy.getColorFromRecord(records[i], dflt):dflt;
     };
     let showBars = opts.showBars|| display.getSparklineShowBars();
-    svg.append('line')
-	.attr('x1',0)
-	.attr('y1', 0)
-	.attr('x2', 0)
-	.attr('y2', h)    
-	.attr("stroke-width", 1)
-    	.attr("stroke", '#ccc');
+    if(opts.drawAxisLabels) {
+	let minLabel= opts.flipYAxis?Utils.formatNumber(max):Utils.formatNumber(min);	
+	let maxLabel = opts.flipYAxis?Utils.formatNumber(min):Utils.formatNumber(max);	
+	svg.append('text')
+	    .attr("x", 5) 
+	    .attr("y", h-5) 
+	    .attr("text-anchor", "left") 
+	    .attr('font-size','8pt')
+	    .text(minLabel);
+	svg.append('text')
+	    .attr("x", 5) 
+	    .attr("y", 0+10) 
+	    .attr("text-anchor", "left") 
+	    .attr('font-size','8pt')
+	    .text(maxLabel);	
+    }
 
-    svg.append('line')
-	.attr('x1',0)
-	.attr('y1', h)
-	.attr('x2', w)
-	.attr('y2', h)    
-	.attr("stroke-width", 1)
-    	.attr("stroke", '#ccc');
+    if(opts.drawAxis) {
+	svg.append('line')
+	    .attr('x1',0)
+	    .attr('y1', 0)
+	    .attr('x2', 0)
+	    .attr('y2', h)    
+	    .attr("stroke-width", opts.axisWidth)
+    	    .attr("stroke", opts.axisColor);
+
+	svg.append('line')
+	    .attr('x1',0)
+	    .attr('y1', h)
+	    .attr('x2', w)
+	    .attr('y2', h)    
+	    .attr("stroke-width", opts.axisWidth)
+    	    .attr("stroke", opts.axisColor);
+    }
     
 
 

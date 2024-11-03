@@ -1167,6 +1167,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'htmlLayerHeight',ex:'15'},
 	{p:'htmlLayerStyle',ex:'css style'},
 	{p:'htmlLayerScale',ex:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'htmlLayerPopupLabelField'},
+	{p:'htmlLayerMin',tt:'min value for sparkline'},
+	{p:'htmlLayerMax',tt:'max value for sparkline'},	
+	{p:'htmlLayerFlipYAxis',ex:true},
+	{p:'htmlLayerDrawAxisLabels',ex:true},
+	{p:'htmlLayerPopupDrawAxisLabels',ex:true},	
+	{p:'htmlLayerScaleWithAll',ex:'false',tt:'Scale data values with all or with just the local data'},
 	{p:'cellShape',ex:'rect|3dbar|circle|vector'},
 	{p:'cellColor',ex:'color'},
 	{p:'cellFilled',ex:true},
@@ -3794,22 +3801,40 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(!this.htmlLayer) return;
 	    if(!this.htmlLayerId) {
 		this.htmlLayerId =this.getUniqueId(ID_HTMLLAYER);
+		this.htmlPopupLayerId =this.getUniqueId('popup');
+		this.jq(ID_MAP).append(HU.div([ATTR_ID,this.htmlPopupLayerId,ATTR_STYLE,HU.css('position','absolute','width','100%','left','0px','top','0px','bottom','0px','xbackground','red','z-index','0','pointer-events', 'none')]));
 		let vp  = this.map.getMap().getViewport();
 		vp = $(vp).children()[0];
-		$(vp).css("display","relative");
-		$(vp).append(HU.div([CLASS,"display-map-htmllayer", ID,this.htmlLayerId]));
+		$(vp).css('display','relative');
+		$(vp).append(HU.div([ATTR_STYLE,'z-index:10',ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
 	    }
-	    $("#"+ this.htmlLayerId).html(this.htmlLayer);
+	    if(this.htmlPopupLayerId) {
+//		jqid(this.htmlPopupLayerId).html(HU.div(['style','position:absolute;top:50px;left:100px'],'xxxx'));
+		jqid(this.htmlPopupLayerId).html(this.htmlPopup);
+	    }
+	    $('#'+ this.htmlLayerId).html(HU.div([ATTR_STYLE,'position:relative;'],this.htmlLayer));
+	    
+
+
 	},
         createHtmlLayer: function(records, fields) {
+	    let _this = this;
+	    _this.htmlLayerMouseOver = null;
 	    let htmlLayerField = this.getFieldById(fields,this.getHtmlLayerField());
 	    this.htmlLayerInfo = {
 		records:records,
 		fields:fields,
 	    };
-	    this.htmlLayer = "";
+	    this.htmlLayer = '';
+	    this.htmlPopup = '';
 	    let fillColor = this.getFillColor("#619FCA");
 	    let strokeColor = this.getStrokeColor("#888");
+	    let popupLabelField = this.getFieldById(fields, this.getHtmlLayerPopupLabelField());
+	    let flipYAxis = this.getHtmlLayerFlipYAxis();
+	    let drawAxisLabels = this.getHtmlLayerDrawAxisLabels();	    	    
+	    let drawPopupAxisLabels = this.getHtmlLayerPopupDrawAxisLabels();	    	    
+	    let scaleAll = this.getHtmlLayerScaleWithAll(true);	    
+
 	    let w = this.getHtmlLayerWidth(30);
 	    let h = this.getHtmlLayerHeight(15);
 	    let shape = this.getHtmlLayerShape("barchart");
@@ -3859,13 +3884,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let id = this.getId() +"_sl"+ idx;
 		let hid = id +"_hover";
 		let html = 
-		    HU.div([ID,id,  CLASS,'display-map-html-item',STYLE,style +HU.css('line-height','0px','z-index','1000','position','absolute','left', (px.x-w/2-cleft) +'px','top', (px.y-h/2-ctop)+'px')]) +
-		    HU.div([ID,hid, RECORD_INDEX, idx,TITLE,"", CLASS,'display-map-html-hitem', STYLE,style +HU.css('display','none','line-heigh','0px','z-index','1001','position','absolute','left', (px.x-hoverW/2-cleft) +'px','top', (px.y-hoverH/2-ctop)+'px')]);
+		    HU.div([ATTR_ID,id,  ATTR_CLASS,'display-map-html-item',
+			    ATTR_STYLE,style +HU.css('line-height','0px','z-index','1000','position','absolute','left', (px.x-w/2-cleft) +'px','top', (px.y-h/2-ctop)+'px')]);
+		let label = '';
+		if(record && popupLabelField) {
+		    label = popupLabelField.getValue(record);
+		}
+		if(Utils.stringDefined(label)) {
+		    label  = HU.div([ATTR_STYLE,'white-space:nowrap;position:absolute;font-size:8pt;top:25px;left:10px;'],label);
+		}
+		this.htmlPopup +=
+		    HU.div([ATTR_ID,hid, RECORD_INDEX, idx,
+			    ATTR_TITLE,"", ATTR_CLASS,'display-map-html-hitem',
+			    ATTR_STYLE,style +HU.css('display','none','line-height','0px','z-index','2001','position','absolute','xleft', (px.x-hoverW/2-cleft) +'px','left','0px','top','0px','xtop', (px.y-hoverH/2-ctop)+'px')],label);
 		this.htmlLayer += html;
 		infos.push({
 		    id:id,
 		    hoverId: hid,
 		    data:data,
+		    min:Utils.getMin(data),
+		    max:Utils.getMax(data),		    		    
 		    records: recordsAtTime
 		});
 	    });
@@ -3908,22 +3946,45 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			ctx.stroke();
 		    });
 		} else {
-		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,allData.min,allData.max,colorBy);
+		    let props1 = {
+			flipYAxis:flipYAxis,
+			drawAxisLabels:drawAxisLabels,
+			//drawAxis:false
+		    };
+		    let props2 = {
+			flipYAxis:flipYAxis,
+			drawAxisLabels:drawAxisLabels||drawPopupAxisLabels,
+		    }
+
+		    let min = allData.min;
+		    let max = allData.max;		    
+		    if(!scaleAll) {
+			min = info.min;
+			max = info.max;
+		    }
+		    min = this.getHtmlLayerMin(min);
+		    max = this.getHtmlLayerMax(max);		    
+		    drawSparkline(this,"#"+ info.id,w,h,info.data,info.records,min,max,colorBy,props1);
 		    $('#' + info.hoverId).css('background','#fff').css('border','1px solid #ccc');
-		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,allData.min,allData.max,colorBy);		    
+		    drawSparkline(this,"#"+ info.hoverId,hoverW,hoverH,info.data,info.records,min,max,colorBy,props2);
 		}
 	    });
-	    let items = this.find(".display-map-html-item");
+	    let items = this.find(".display-map-html-item");			
 	    let hitems = this.find(".display-map-html-hitem");
 	    this.makeTooltips(hitems, layerRecords);
-
+	    
 	    items.mouseenter(function() {
-		$(this).css('display','none');
-		$("#"+$(this).attr(ID)+"_hover").fadeIn(1000);
-		
+//		$(this).css('display','none');
+		hitems.hide();
+		let popup = 	$('#'+$(this).attr(ID)+'_hover');
+		popup.show();
+//		$('#'+$(this).attr(ID)+'_hover').fadeIn(1000);
+	    });
+	    items.mouseleave(function() {
+		hitems.hide();
 	    });
 	    hitems.mouseleave(function() {
-		$("#"+ $(this).attr(ID).replace('_hover','')).css('display','block');
+		$('#'+ $(this).attr(ID).replace('_hover','')).css('display','block');
 		$(this).css('display','none');
 	    });
 	    if(colorBy.hasField()) {
@@ -4176,7 +4237,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 	    if(this.getHtmlLayerField()) {
 		this.createHtmlLayer(records, fields);
-		return;
+		if(!this.getShowPoints(false)) 
+		    return;
 	    }
 	    if(debugMapTime)
 		console.time('createPoints');
