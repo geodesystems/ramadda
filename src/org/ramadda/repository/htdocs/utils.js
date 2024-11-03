@@ -237,6 +237,23 @@ var Utils =  {
 	return true;
     },
 
+    getMin:function(a) {
+	let min = NaN;
+	a.forEach(v=>{
+	    if(isNaN(v)) return;
+	    if(isNaN(min) || v<min)  min=v;
+	});
+	return min;
+    },
+    getMax:function(a) {
+	let max = NaN;
+	a.forEach(v=>{
+	    if(isNaN(v)) return;
+	    if(isNaN(max) || v>max)  max=v;
+	});
+	return max;
+    },
+
     bufferedCalls:{},
     bufferedCall:function(id, func,timeout) {
 	timeout= Utils.isDefined(timeout)?timeout:1;
