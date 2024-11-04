@@ -275,7 +275,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    if(Double.isNaN(max) || d[1]>max) max=d[1];		
 	}
 
-	System.err.println("min/max:" + min +" " + max); 
+	//	System.err.println("min/max:" + min +" " + max); 
 	if(!Double.isNaN(min)){
 	    entry.setValue("top_depth",new Double(min));
 	    entry.setValue("bottom_depth",new Double(max));	    

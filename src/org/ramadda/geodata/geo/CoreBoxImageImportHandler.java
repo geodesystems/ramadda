@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2024 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -15,6 +15,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.JsonUtil;
 
+import java.util.zip.*;
 import org.json.*;
 
 import org.w3c.dom.*;
@@ -25,14 +26,13 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 
 import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 import java.util.List;
@@ -40,33 +40,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-/**
- */
 public class CoreBoxImageImportHandler extends ImportHandler {
 
-
-    /**
-     * _more_
-     */
     public CoreBoxImageImportHandler() {
         super(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public CoreBoxImageImportHandler(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     public void xaddImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
     }
@@ -77,97 +60,76 @@ public class CoreBoxImageImportHandler extends ImportHandler {
                                 String uploadedFile, Entry parentEntry)
             throws Exception {
 	if(!uploadedFile.endsWith("coreimages.zip")) return null;
-	return null;
-	/**
-        if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_IIIF)) {
-            return null;
-        }
-        List<Entry> entries = new ArrayList<Entry>();
-
-	String json = new String(IOUtil.readBytes(getStorageManager().getFileInputStream(uploadedFile)));
-
-	JSONObject root = new JSONObject(json);
-	JSONArray sequences = root.getJSONArray("sequences");
-	JSONArray topMetadata   = root.optJSONArray("metadata");
-	String topThumbnail   = JsonUtil.readValue(root,"thumbnail.@id",null);
-	JSONArray topDescription   = root.optJSONArray("description");
-	StringBuilder desc = new StringBuilder();
-	if(topDescription!=null) {
-	    for (int i = 0; i < topDescription.length(); i++) {
-		if(i>0) desc.append("<br>");
-		String s = topDescription.optString(i);
-		if(s!=null) {
-		    desc.append(s);
-		} else {
-		    JSONObject jo = topDescription.optJSONObject(i);
-		    if(jo!=null) {
-			s = jo.optString("@value");
-			if(s!=null) 
-			    desc.append(s);
-
-		    }
-		}
-	    }
-	}
-	String topDescriptionS = root.optString("description",null);
-	if(topDescriptionS!=null) {
-	    desc.append(topDescriptionS);
-	}
-
-
-	String topLabel = root.optString("label");
-        for (int i = 0; i < sequences.length(); i++) {
-            JSONObject sequence   = sequences.getJSONObject(i);
-	    JSONArray canvases = sequence.getJSONArray("canvases");
-	    for (int j = 0; j < canvases.length(); j++) {
-		JSONObject canvas   = canvases.getJSONObject(j);
-		Entry album = getRepository().getTypeHandler("media_photoalbum").createEntry();
-		album.setCreateDate(new Date().getTime());
-		String thumbnail   = JsonUtil.readValue(canvas,"thumbnail.@id",topThumbnail);
-		if(thumbnail!=null) {
-		    getRepository().getMetadataManager().addThumbnailUrl(request, album,thumbnail,Utils.getFileTail(thumbnail));
-		}
-
-		album.setParentEntry(parentEntry);
-		String label = canvas.getString("label");
-		//Some heuristics to get the best label
-		if(topLabel!=null && topLabel.length()-label.length()>5)
-		    label = topLabel;
-		album.setName(label);
-		album.setDescription(desc.toString());
-		entries.add(album);
-		List<JSONArray> metadataList = new ArrayList<JSONArray>();
-		if(topMetadata!=null) metadataList.add(topMetadata);
-		JSONArray canvasMetadata = canvas.optJSONArray("metadata");
-		if(canvasMetadata!=null) metadataList.add(canvasMetadata);
-		addMetadata(getRepository(), request,album,metadataList);
-		JSONArray images = canvas.getJSONArray("images");
-		int imageCnt = 0;
-		for (int k = 0; k < images.length(); k++) {
-		    JSONObject image   = images.getJSONObject(k);
-		    JSONObject resource   = image.getJSONObject("resource");
-		    String url = resource.getString("@id");
-		    Entry imageEntry = getRepository().getTypeHandler("type_image").createEntry();
-		    imageEntry.setCreateDate(new Date().getTime());
-		    imageEntry.setName(Utils.getFileTail(url));
-		    imageEntry.setParentEntry(album);
-		    imageEntry.setResource(new Resource(url,Resource.TYPE_URL));
-		    imageEntry.setEntryOrder(imageCnt++);
-		    if(thumbnail!=null) {
-			getRepository().getMetadataManager().addThumbnailUrl(request, imageEntry,thumbnail,Utils.getFileTail(thumbnail));
-		    }
-		    entries.add(imageEntry);
-		}
-	    }
-	}
-
         StringBuffer sb = new StringBuffer();
-        for (Entry newEntry : entries) {
-            newEntry.setUser(request.getUser());
-        }
-        getEntryManager().addNewEntries(request, entries);
         getPageHandler().entrySectionOpen(request, parentEntry, sb,
                                           "Imported Entries");
+
+        List<Entry> entries = new ArrayList<Entry>();
+	List<FileHolder> files  = new ArrayList<FileHolder>();
+	InputStream fis =   getStorageManager().getFileInputStream(uploadedFile);
+	ZipInputStream zin = getStorageManager().makeZipInputStream(fis);
+	ZipEntry ze = null;
+	while ((ze = zin.getNextEntry()) != null) {
+	    if (ze.isDirectory()) {
+		continue;
+	    }
+	    String path = ze.getName();
+	    String name = IO.getFileTail(path);
+	    if(name.indexOf("MANIFEST")>=0) continue;
+
+	    File f = getStorageManager().getTmpFile(name);
+	    OutputStream  fos = getStorageManager().getFileOutputStream(f);
+	    try {
+		IOUtil.writeTo(zin, fos);
+	    } finally {
+		IO.close(fos);
+	    }
+	    files.add(new FileHolder(f,path));
+	}
+
+	Hashtable<String,FileHolder> map = new Hashtable<String,FileHolder>();
+
+	for(FileHolder fileHolder: files) {
+	    String name = fileHolder.file.getName();
+	    if(!Utils.isImage(name) || name.indexOf("_ML")>=0) continue;
+	    fileHolder.isCoreImage = true;
+	    String path = fileHolder.getPathToUse();
+	    map.put(path,fileHolder);
+	}
+
+	for(FileHolder fileHolder: files) {
+	    if(fileHolder.isCoreImage) continue;
+	    String path = fileHolder.getPathToUse();
+	    FileHolder parent = map.get(path);
+	    if(parent==null) {
+		sb.append("Could not find parent core image for:" + path+"<br>");
+		continue;
+	    }
+	    //	    System.err.println("Parent:" + parent.path +" child:"+ fileHolder.path);
+	    parent.files.add(fileHolder);
+	}
+
+	for (String key : map.keySet()) {
+	    FileHolder parent = map.get(key);
+	    Entry coreEntry = makeEntry(request, "type_borehole_coreimage",
+					parent, parentEntry);
+
+	    coreEntry.setValue("top_depth",new Double(Double.NaN));
+	    coreEntry.setValue("bottom_depth",new Double(Double.NaN));	    
+	    entries.add(coreEntry);
+
+	    for(FileHolder child: parent.files) {
+		Entry childEntry = makeEntry(request, null, child,coreEntry);
+		if(childEntry==null) continue;
+
+		entries.add(childEntry);
+		
+	    }
+	}
+
+        getEntryManager().addNewEntries(request, entries);
+        getEntryManager().parentageChanged(entries,true);
+
         sb.append("<ul>");
         for (Entry newEntry : entries) {
             sb.append("<li> ");
@@ -178,10 +140,66 @@ public class CoreBoxImageImportHandler extends ImportHandler {
         getPageHandler().entrySectionClose(request, parentEntry, sb);
         return getEntryManager().addEntryHeader(request, parentEntry,
                 new Result("", sb));
-	*/
+
     }
 
+    private Entry  makeEntry(Request request,
+			     String type,
+			     FileHolder file, Entry parentEntry) throws Exception     {
+	File f =  getStorageManager().moveToStorage(request, file.file);
+	Resource resource = new Resource(f, Resource.TYPE_STOREDFILE);
+	TypeHandler typeHandler;
+	if(stringDefined(type)) {
+	    typeHandler = getRepository().getTypeHandler(type);
+	} else {
+	    typeHandler = getEntryManager().findDefaultTypeHandler(request,file.file.toString());
+	}
+	if(typeHandler==null) {
+            typeHandler =
+                getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
+	}
+	
+	
+	Entry entry = typeHandler.createEntry();
+	Date now = new Date();
+	entry.setStartDate(DateHandler.NULL_DATE);
+	entry.setEndDate(DateHandler.NULL_DATE);	
+	
+	entry.setResource(resource);
+	entry.setCreateDate(now.getTime());
+	entry.setParentEntry(parentEntry);
+	entry.setName(makeName(file.file.getName()));
+	entry.getTypeHandler().initializeNewEntry(request, entry, TypeHandler.NewType.NEW);
+	return entry;
 
+    }
+    
+
+
+    private String makeName(String path)    {
+	String name = IO.getFileTail(path);
+	name = name.replaceAll("_", " ");
+	name = IO.stripExtension(name);
+	return name;
+    }
+			
+			       
+    private static class FileHolder {
+	boolean isCoreImage = false;
+	File file;
+	String path;
+	List<FileHolder> files = new ArrayList<FileHolder>();
+	FileHolder(File file, String path) {
+	    this.file = file;
+	    this.path= path;
+	}
+	public String getPathToUse() {
+	    int idx = path.indexOf("/");
+	    if(idx<0) return "";
+	    return path.substring(0,idx);
+	}
+
+    }
 
     /*
     public static void addMetadata(Repository repository,Request request,Entry entry,List<JSONArray>metadataList) throws Exception {
