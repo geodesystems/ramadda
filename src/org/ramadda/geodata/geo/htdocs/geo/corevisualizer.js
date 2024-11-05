@@ -11,7 +11,7 @@ var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
-
+var CV_STROKE_WIDTH = 0.4;
 var CV_AXIS_WIDTH=100;
 var CV_ANNOTATIONS_WIDTH=200;
 var CV_LEGEND_WIDTH=150;
@@ -147,6 +147,11 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	}
     },this.domId('add'));
 
+    $(document).on('keydown', function(event) {
+	if (event.key === 'Escape' || event.keyCode === 27) {
+	}
+    });
+
 
     jqid(this.opts.topId).find('.ramadda-clickable').click(function(event){
 	let action = $(this).attr('action');
@@ -202,7 +207,7 @@ function RamaddaCoreVisualizer(collection,container,args) {
     
     this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
 
-//    this.addCollection(collection);
+
     if(this.opts.collectionIds) {
 	Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
 	    this.loadCollection(entryId);
@@ -421,13 +426,13 @@ RamaddaCoreVisualizer.prototype = {
 	    });
 	    sorted.forEach(entry=>{
 		let label = entry.label;
-		label+=' ' +entry.topDepth +' - ' +entry.bottomDepth;
-		label = HU.href(RamaddaUtil.getEntryUrl(entry.entryId),label,
-				['target','_entry']);
+		label+=' ' +Utils.formatNumber(entry.topDepth) +' - ' +Utils.formatNumber(entry.bottomDepth);
+		let url = RamaddaUtil.getEntryUrl(entry.entryId);
+		label = HU.href(url,label,['target','_entry']);
 
 		html+=HU.b(label);
 		html+='<br>';
-		html+=HU.image(entry.url,[ATTR_WIDTH,'400px']);
+		html+=HU.href(url,HU.image(entry.url,[ATTR_WIDTH,'400px']),['target','_entry']);
 		html+='<br>';
 	    });
 	    html = HU.div([ATTR_STYLE,HU.css('padding','10px','max-height','600px','overflow-y','auto')],html);
@@ -443,6 +448,7 @@ RamaddaCoreVisualizer.prototype = {
 	} else {
 	    gallery=HU.b(contents[0].label) +'<br>' + contents[0].contents;
 	}
+	gallery = HU.div([ATTR_STYLE,HU.css('margin','5px')], gallery);
 	let dialog =  HU.makeDialog({anchor:anchor,
 				     decorate:true,
 				     at:'right top',
@@ -783,6 +789,7 @@ RamaddaCoreVisualizer.prototype = {
 	    fontSize:CV_FONT_SIZE,
 	    background:null,
 	    fontStyle:'',
+	    strokeWidth:1
 	}
 	if(args) $.extend(opts,args);
 	let text=  new Konva.Text({
@@ -809,7 +816,7 @@ RamaddaCoreVisualizer.prototype = {
 		height: text.height()+pad*2,
 		fill: opts.background,
 		stroke:opts.outline,
-		strokeWidth: 1,
+		strokeWidth: opts.strokeWidth,
 		cornerRadius: 0 
 	    });
 	    layer.add(bg);
@@ -857,6 +864,7 @@ RamaddaCoreVisualizer.prototype = {
 
 	    });
 	    collection.range = {min:cmin,max:cmax};
+//	    console.log(cmin,cmax);
 	});
 
 	if(Utils.isDefined(min)) {
@@ -908,7 +916,7 @@ RamaddaCoreVisualizer.prototype = {
 	let y1 = 0;
 	let y2 = 0;	
 	let range = this.opts.range;
-	let bottom = range.max+(0.1*(range.max-range.min));
+	let bottom = range.max+(0.2*(range.max-range.min));
 	for(let i=0;i<=bottom;i+=step) {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
@@ -918,14 +926,14 @@ RamaddaCoreVisualizer.prototype = {
 	    let tick1 = new Konva.Line({
 		points: [axisWidth-tickWidth, y, axisWidth, y],
 		stroke: CV_LINE_COLOR,
-		strokeWidth: 1,
+		strokeWidth: CV_STROKE_WIDTH,
 	    });
 	    this.legendLayer.add(tick1);
 	    let tick2 = new Konva.Line({
 		points: [axisWidth, y, axisWidth+3000, y],
 		stroke: CV_LINE_COLOR,
-		strokeWidth: 0.4,
-		dash: [5, 5],
+		strokeWidth: CV_STROKE_WIDTH,
+		dash: [5, 10],
 	    });
 	    this.legendLayer.add(tick2);
 
@@ -1092,7 +1100,7 @@ RamaddaCoreVisualizer.prototype = {
 	let tick1 = new Konva.Line({
 	    points: [x-tickWidth, y1, x, y1],
 	    stroke: CV_LINE_COLOR,
-	    strokeWidth: 1,
+	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick1);
 	let l2 = this.makeText(group,Utils.formatNumber(bottom),
@@ -1100,7 +1108,7 @@ RamaddaCoreVisualizer.prototype = {
 	let tick2 = new Konva.Line({
 	    points: [x-tickWidth, y2, x, y2],
 	    stroke: CV_LINE_COLOR,
-	    strokeWidth: 1,
+	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick2);
 	return {l1:l1,l2:l2,tick1:tick1,tick2:tick2};
@@ -1215,7 +1223,8 @@ RamaddaCoreVisualizer.prototype = {
 
 	    this.definePopup(rect,entry.label,entry.text);
 	    let imageLabel = this.makeText(group,entry.label,imageX+4,imageY+4,
-					   {outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
+					   {strokeWidth:0.4,outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
+	    this.definePopup(imageLabel,entry.label,entry.text);
 	    this.toggle(imageLabel,this.getShowLabels());
 	    entry.image = image;
 	    entry.highlight = rect;

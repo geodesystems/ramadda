@@ -118,8 +118,8 @@ message="" width="80%"  useThumbnail="true" }}
     <property name="date.nullok" value="true"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.time.show" value="false"/>    
-     <column name="show_labels" type="boolean" group="Display Settings"
-	     label="Show Labels"  showinhtml="false" default="true"/>
+    <column name="show_labels" type="boolean" group="Display Settings"
+	    label="Show Labels"  showinhtml="false" default="true"/>
 
 <wiki><![CDATA[
 +section title={{name}}
@@ -518,19 +518,21 @@ useAttachmentIfNeeded=true
   <column name="do_rotation" type="boolean" label="Do Rotation" showinhtml="true" doinlineedit="true" default="false"/>         
   <column name="annotations_json" type="clob" label="Annotations" showinhtml="false"
 	  candisplay="false" editable="false" canlist="false"/>     
+  <column name="show_visualizer" type="boolean" group="Display Settings"
+	  label="Show Visualizer"  showinhtml="false" default="true"/>
 <property name="bubble">
 <![CDATA[
 +center
 <b>{{name link=true}}</b>
 -center
 +tabs
-+tab Information
-{{information showImage=false}}
--tab
 +tab Image
 +center
-{{image width=300px}}
+{{image width=400px}}
 -center
+-tab
++tab Information
+{{information showImage=false}}
 -tab
 -tabs
 ]]></property>
@@ -552,10 +554,21 @@ isoutput="true" foreditmenu="false">
 :navtop 
 {{group}}
 {{description wikify=true}}
-{{zoomify singleFile=true
-annotationsField="type_borehole_coreimage_annotations_json"
-useAttachmentIfNeeded=true
-}}
++if show_visualizer=false
+{{zoomify singleFile=true annotationsField="type_borehole_coreimage_annotations_json"
+useAttachmentIfNeeded=true}}
+-if
++if show_visualizer=true
++tabs
++tab Annotated Image
+{{zoomify singleFile=true annotationsField="type_borehole_coreimage_annotations_json"
+useAttachmentIfNeeded=true}}
+-tab
++tab Core Visualizer
+{{core_visualizer}}
+-tab
+-tabs
+-if
 :vspace 1em
 ----
 :vspace 1em
@@ -573,7 +586,7 @@ includeTitle="false"  separator=""  decorate="false" inherited="true"  }}
 -col
 -row
 
-{{tabletree message="" prefix="\n----\n:heading Children Entries\n"}}
+{{tabletree message="" prefix="\n----\n:heading Children Entries\n" showDate=false}}
 
 
 -section

@@ -50,8 +50,10 @@ public class CoreBoxImageImportHandler extends ImportHandler {
         super(repository);
     }
 
-    public void xaddImportTypes(List<TwoFacedObject> importTypes,
+    public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
+        super.addImportTypes(importTypes, formBuffer);
+        importTypes.add(new TwoFacedObject("Borehole Core Images","coreimages"));
     }
 
 
@@ -59,7 +61,13 @@ public class CoreBoxImageImportHandler extends ImportHandler {
     public Result handleRequest(Request request, Repository repository,
                                 String uploadedFile, Entry parentEntry)
             throws Exception {
-	if(!uploadedFile.endsWith("coreimages.zip")) return null;
+	if(!uploadedFile.endsWith("coreimages.zip")) {
+	    if ( !request.getString(ARG_IMPORT_TYPE, "").equals("coreimages")) {
+		return null;
+	    }
+	}
+	
+		
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, parentEntry, sb,
                                           "Imported Entries");
