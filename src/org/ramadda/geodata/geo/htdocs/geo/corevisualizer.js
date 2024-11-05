@@ -1,6 +1,7 @@
 
 
 var ID_CV_SHOWLABELS = 'showlabels';
+var ID_CV_MEASURE = 'measure';
 var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
 var ID_CV_SCALE = 'scale';
@@ -122,6 +123,12 @@ function RamaddaCoreVisualizer(collection,container,args) {
     menuItemsLeft.push(HU.space(1));
     menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
     menuItemsLeft.push(HU.space(1));
+    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
+			       ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,'ramadda-clickable',
+				ATTR_PLACEHOLDER,'Measure'],
+			      HU.getIconImage('fas fa-ruler-vertical')));
+    menuItemsLeft.push(HU.space(1));
+
     menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
 				ATTR_STYLE,HU.css('margin-right','50px',
 						  'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
@@ -180,6 +187,15 @@ function RamaddaCoreVisualizer(collection,container,args) {
 	
     })
 
+    this.jq(ID_CV_MEASURE).click(function() {
+	_this.toggleMeasure();
+	if(_this.isMeasuring()) {
+	    $(this).css('background','#ccc');
+	} else {
+	    $(this).css('background','transparent');
+	}
+    });
+
     HU.onReturn(this.jq(ID_CV_GOTO),obj=>{
 	let depth = obj.val().trim();
 	let y = _this.worldToCanvas(depth);
@@ -200,8 +216,10 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.stage.add(this.annotationLayer);
     this.layer = new Konva.Layer();
     this.legendLayer = new Konva.Layer();    
+    this.drawLayer = new Konva.Layer();
     this.stage.add(this.legendLayer);
     this.stage.add(this.layer);
+    this.stage.add(this.drawLayer);
     this.addEventListeners();
     this.collections = [];
     
@@ -262,6 +280,91 @@ RamaddaCoreVisualizer.prototype = {
 	w = w/this.opts.scaleY;
 	return w;
     },
+    calculateDistance:function(x1, y1, x2, y2) {
+	return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    },
+    clearMeasure:function() {
+	if(!this.measure) return;
+	if(this.measure.line) {
+	    this.measure.line.destroy();
+	    this.measure.line=null;
+	}
+	if(this.measure.text1) {
+	    this.destroy(this.measure.text1);
+	    this.measure.text1=null;
+	}	
+	if(this.measure.text2) {
+	    this.destroy(this.measure.text2);
+	    this.measure.text2=null;
+	}	
+
+    },
+    isMeasuring: function() {
+	return this.measuring;
+    },
+    toggleMeasure:function() {
+	if(this.isMeasuring()) {
+	    this.measuring=false;
+	    this.clearMeasure();
+	    this.stage.setAttrs({draggable: true});
+	    return;
+	}
+	this.measuring=true;
+	this.stage.setAttrs({draggable: false});
+	if(this.measure) return;
+	this.measure = {
+	    start:null,
+	    line:null
+	}
+
+	this.stage.on('mousedown', (e) => {
+	    if(!this.isMeasuring()) return;
+	    this.clearMeasure();
+	    const pos = this.stage.getRelativePointerPosition();
+	    this.measure.start = pos;
+	    this.measure.line = new Konva.Line({
+		points: [pos.x, pos.y, pos.x, pos.y],
+		stroke: 'red',
+		strokeWidth: 2,
+		lineCap: 'round',
+		lineJoin: 'round',
+	    });
+	    this.drawLayer.add(this.measure.line);
+	    this.measure.text1 = this.makeText(this.drawLayer,
+					       Utils.formatNumber(this.canvasToWorld(this.stage.getPointerPosition().y)),
+					       this.measure.start.x+5,
+					       pos.y,
+					       {fontSize: 12,	background:'#fff',fill: 'black',});
+	    this.drawLayer.draw();
+	});
+
+	this.stage.on('mousemove', (e) => {
+	    if(!this.isMeasuring()) return;
+	    if (!this.measure.line || !this.measure.start) return;
+	    const pos = this.stage.getRelativePointerPosition();
+	    if(this.measure.text2)this.destroy(this.measure.text2);
+	    this.measure.text2 = this.makeText(this.drawLayer,
+					       Utils.formatNumber(this.canvasToWorld(this.stage.getPointerPosition().y)),
+					       this.measure.start.x+5,
+					       pos.y,
+					       {fontSize: 12,	background:'#fff',fill: 'black',});
+	    this.drawLayer.add(this.measure.text2);
+	    this.measure.line.points([this.measure.start.x, this.measure.start.y, this.measure.start.x, pos.y]);
+	    this.drawLayer.draw();
+	});
+
+	this.stage.on('mouseup', (e) => {
+	    if(!this.isMeasuring()) return;
+	    if (!this.measure.start) return;
+	    const pos = this.stage.getRelativePointerPosition();
+	    const distance = this.calculateDistance(this.measure.start.x, this.measure.start.y, this.measure.start.x, pos.y);
+	    // Display the measurement as text on the canvas
+	    this.drawLayer.draw();
+	    this.measure.start=null;
+	});
+    },
+
+
 
 
     showSettings:function(anchor) {
