@@ -297,8 +297,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    if(Double.isNaN(min) || top<min) min=top;
 	    if(Double.isNaN(max) || bottom>max) max=bottom;		
 	}
-	//The json is in centimeters. the boxes are in meters
-	return new double[]{min/100,max/100};
+	//The json is in millimeters. the boxes are in meters
+	return new double[]{min/1000,max/1000};
     }
 
     public static class Box {
