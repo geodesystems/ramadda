@@ -8493,29 +8493,34 @@ public class WikiManager extends RepositoryManager
 	    User user = request.getUser();
 	    if(user==null) user = getUserManager().getAnonymousUser();
 	    if(props.get("anonymous")!=null) {
+		props.remove("anonymous");
 		if(request.isAnonymous() !=Utils.getProperty(props,"anonymous",true)) {
 		    return false;
 		}
 	    }
 
 	    if(props.get("admin")!=null) {
+		props.remove("admin");
 		if(request.isAdmin() !=Utils.getProperty(props,"admin",true)) {
 		    return false;
 		}
 	    }	    
 
 	    if(props.get("users")!=null) {
+		props.remove("users");
 		if(!Utils.split(Utils.getProperty(props,"users",""),",",true,true).contains(user.getId()))
 		    return false;
 	    }
 
 	    if(props.get("notusers")!=null) {
+		props.remove("notusers");
 		if(Utils.split(Utils.getProperty(props,"notusers",""),",",true,true).contains(user.getId()))
 		    return false;
 	    }
 	    
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    if(props.get("canedit")!=null) {
+		props.remove("canedit");
 		if(entry==null) return false;
 		if(getAccessManager().canDoEdit(request, entry) !=Utils.getProperty(props,"canedit",true)) {
 		    return false;
@@ -8527,6 +8532,7 @@ public class WikiManager extends RepositoryManager
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
+		props.remove("property");
 		Object value = entry.getValue(request, property);
 		if(value==null) return false;
 		String match = (String) props.get("match");
@@ -8535,7 +8541,22 @@ public class WikiManager extends RepositoryManager
 		return value.toString().equals("true");
 	    }
 
-
+	    
+	    boolean ok = true;
+	    for (Object key : props.keySet()) {
+		String skey = key.toString();
+		Column column = entry.getColumn(skey);
+		if(column!=null) {
+		    Object value = props.get(key);
+		    Object entryValue = entry.getValue(request,column);
+		    if(entryValue==null) {
+			ok = false;
+			break;
+		    }
+		    if(!Misc.equals(value,entryValue.toString())) ok = false;
+		}
+	    }
+	    if(!ok) return false;
 
 	    String ofType = Utils.getProperty(props,"hasChildrenOfType",null);
 	    if(ofType!=null) {
