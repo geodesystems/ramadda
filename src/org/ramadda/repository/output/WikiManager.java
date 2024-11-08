@@ -8964,7 +8964,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-    private String getGroupVar(Request request) {
+    public String getGroupVar(Request request) {
 	groupCount++;
 	if(groupCount>1000000) groupCount=0;
 	String var = "displayManager" + groupCount;
