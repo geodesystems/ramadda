@@ -1215,7 +1215,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-	    //	    debug=true
+//	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
@@ -1392,7 +1392,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(debug)console.log("\tadd column: fixedValue type: number");
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
-			if(field.isString()) {
+			if(field.isString() || field.isBoolean()) {
 			    if(debug)console.log("\tadd column: " + headerLabel +" type: string");
 			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {
