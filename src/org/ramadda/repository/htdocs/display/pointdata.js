@@ -897,6 +897,10 @@ function RecordField(props, source) {
 	canEdit: function() {
 	    return this.canedit==true;
 	},
+        isBoolean: function() {
+	    return this.type == "boolean";
+	},
+
         isNumeric: function() {
 	    return this.type == "double" || this.type == "integer";
 	},
