@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov  5 10:57:17 MST 2024";
+var build_date="RAMADDA build date: Fri Nov  8 07:58:46 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5855,9 +5855,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'filterLabelVertical',ex:true},				
 	{p:'&lt;field&gt;.filterByStyle',ex:'background:white;'},
 	{p:'&lt;field&gt;.filterSuggest',tt:'For text input popup a list of matching records',ex:true},
-	{p:'&lt;field&gt;.includeAll',ex:false},
-	{p:'&lt;field&gt;.filterSort',ex:false},
-	{p:'&lt;field&gt;.filterSortCount',ex:false},		
+	{p:'&lt;field&gt;.includeAll',ex:true},
+	{p:'&lt;field&gt;.filterSort',ex:true},
+	{p:'&lt;field&gt;.filterSortCount',ex:true},		
 	{p:'&lt;field&gt;.filterStartsWith',ex:true},
 	{p:'&lt;field&gt;.filterDisplay',ex:'menu|tab|button|image'},
 	{p:'&lt;field&gt;.filterOps',ex:'<,5000000,label1;>,5000000',tt:'Add menu with fixed filters'},
@@ -15132,6 +15132,10 @@ function RecordField(props, source) {
 	canEdit: function() {
 	    return this.canedit==true;
 	},
+        isBoolean: function() {
+	    return this.type == "boolean";
+	},
+
         isNumeric: function() {
 	    return this.type == "double" || this.type == "integer";
 	},
@@ -20539,7 +20543,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    this.getPropertyCounts={};
 	    let dateType = this.getProperty("dateType","date");
 	    let debug =    false || displayDebug.makeDataTable;
-	    //	    debug=true
+//	    debug=true
 	    let debugRows = 1;
 	    debugRows = 2;
 	    if(debug) this.logMsg(this.type+" makeDataTable #records:" + dataList.length);
@@ -20716,7 +20720,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			if(debug)console.log("\tadd column: fixedValue type: number");
 			dataTable.addColumn('number', this.getProperty("fixedValueLabel","Count"));
 		    } else {
-			if(field.isString()) {
+			if(field.isString() || field.isBoolean()) {
 			    if(debug)console.log("\tadd column: " + headerLabel +" type: string");
 			    dataTable.addColumn('string', headerLabel);
 			} else if(field.isFieldDate()) {

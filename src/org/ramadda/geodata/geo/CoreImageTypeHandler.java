@@ -246,8 +246,11 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
                             Hashtable props, String remainder) throws Exception {
 	if(!theTag.equals("core_visualizer")) return null;
 
-	getWikiManager().checkProperties(request,entry,props);
+
+
 	StringBuilder sb = new StringBuilder();
+	sb.append(getWikiManager().wikifyEntry(request,entry,"{{group}}"));
+	getPageHandler().addDisplayImports(request, sb,true);
 	
 	String mainId = HU.getUniqueId("id");
 	String uid = HU.getUniqueId("id");
@@ -306,9 +309,28 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	    Utils.add(args,"legendUrl",JU.quote(legend));
 	}
 
+	/*
+	String divId = HU.getUniqueId("div");
+        HU.div(sb, "",
+               HU.clazz("display-container") + HU.id(divId)
+               + HU.style(""));
+	*/
+        Utils.add(args, "divid", JU.quote(mainId));
+
+	String groupVar = (String) request.getExtraProperty(getWikiManager().PROP_GROUP_VAR);
+	if(groupVar==null)
+	    groupVar = getWikiManager().getGroupVar(request);
+	Utils.concatBuff(
+			 js, "\nvar " + groupVar +" = getOrCreateDisplayManager(",
+			     HU.quote(""), ",", "{}", ");\n");
+	js.append(groupVar+".createDisplay(" + HU.quote("core")
+                  + "," + JU.map(args) + ");\n");
+
+	/*
+
 	js.append("var container = document.getElementById('"+uid+"');\n");
-	js.append("var " +id +"="+ HU.call("new RamaddaCoreVisualizer","null",
-					   "container",JU.map(args)));
+	js.append("var " +id +"="+ HU.call("new RamaddaCoreDisplay","null",
+	"container",JU.map(args)));*/
 	js.append("\n");
 	HU.script(sb,js.toString());
 	return sb.toString();
