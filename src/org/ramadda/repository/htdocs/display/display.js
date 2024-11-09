@@ -5949,6 +5949,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return false;
 	},
         getDisplayDialogContents: function(tabTitles, tabContents) {
+
             if (this.hasData()) {
 	        let html = HU.div([ATTR_ID, this.domId(ID_FIELDS)],"");
 		tabTitles.push("Fields");
@@ -7829,6 +7830,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 //		this.dialogElement = this.jq(ID_DIALOG);
 	    }
 	    let html = this.makeDialog(text);
+	    if(this.getProperty('dialogHook')) {
+		html =this.getProperty('dialogHook')('contents',html);
+	    }
+
 	    let at = 'left bottom';
 	    if(!from && this.jq(ID_MENU_BUTTON).length) {
 		from=this.jq(ID_MENU_BUTTON);
@@ -7841,6 +7846,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    this.dialog = HU.makeDialog({content:html,title:title||this.getTitle(),anchor:from,at:at,draggable:true,header:true});
 	    if(initDialog) initDialog();
             else this.initDialog();
+	    if(this.getProperty('dialogHook')) {
+		this.getProperty('dialogHook')('init',this.dialog);
+	    }
 	    return this.dialog;
         },
         copyDisplay: function() {
