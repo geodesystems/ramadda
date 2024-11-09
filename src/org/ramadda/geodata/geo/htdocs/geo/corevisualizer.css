@@ -1,21 +1,34 @@
 
 .cv-main {
+    border:var(--basic-border);
+    border-top:0px;
 }
 
 .cv-top {
-    border:var(--basic-border);
     border-bottom:0px;
     padding:4px;
 }
 
 .cv-menubar {
-
+    border:var(--basic-border);
+    padding:5px;
 }
 
-.cv-menubar span i {
+.cv-displays {
+    display:flex;
+    flex-wrap:nowrap;
+}
+
+
+
+.cv-displaysbar {
+    padding:5px;
+}
+
+.cv-menubar span i, .cv-displaysbar span i {
     font-size:14pt;
 }
 
 .cv-canvas {
-    border:var(--basic-border);
+    //border-top:var(--basic-border);
 }

@@ -1,7 +1,27 @@
 
 
+const DISPLAY_CORE = "core";
+addGlobalDisplayType({
+    type: DISPLAY_CORE,
+    label: "Core Visualizer",
+    requiresData: false,
+    forUser: true,
+    category: CATEGORY_CONTROLS,
+});
+
+
+
+var ID_CV_CONTENTS = 'cv_contents';
+var ID_CV_CANVAS = 'cv_canvas';
+var ID_CV_MENUBAR = 'cv_menubar';
+var ID_CV_DISPLAYS = 'cv_displays';
+var ID_CV_DISPLAYSBAR = 'cv_displays_bar';
+var ID_CV_DISPLAYS_ADD='cv_displays_add';
+
+
 var ID_CV_SHOWLABELS = 'showlabels';
 var ID_CV_MEASURE = 'measure';
+var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
 var ID_CV_SCALE = 'scale';
@@ -23,7 +43,280 @@ var CV_FONT_SIZE_SMALL = 10;
 var CV_TICK_WIDTH = 8;
 
 
-function RamaddaCoreVisualizer(collection,container,args) {
+function RamaddaCoreDisplay(displayManager, id, args) {
+    const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_CORE, args);
+    let myProps =[];
+    defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
+	clearRecordSelection: function(source, args) {
+	    if(!this.recordSelect) return;
+	    if(this.recordSelect.dialog)
+		this.recordSelect.dialog.remove();
+	    if(this.recordSelect.line) 
+		this.destroy(this.recordSelect.line);
+	    this.recordSelect.dialog= null;
+	    this.recordSelect.line=null;
+	},
+	findDepthField:function(record) {
+	    let depthField;
+	    record.fields.every(f=>{
+		let id = f.getId();
+		if(id=='depth') {
+		    depthField=f;
+		    return false;
+		}
+		return true;
+	    });
+	    return depthField;
+	},
+	handleEventRecordSelection: function(source, args) {
+	    if(!this.recordSelect) {
+		this.recordSelect={
+		}
+	    }
+	    this.clearRecordSelection();
+	    if(!args.record) return;
+	    let depthField = this.findDepthField(args.record);
+	    if(depthField) {
+		let value =depthField.getValue(args.record);
+		let y = this.worldToCanvas(value);
+		this.goToWorld(value);
+		this.recordSelect.line = new Konva.Line({
+		    points: [this.getAxisWidth(), y, 2000,y],
+		    stroke: 'red',
+		    strokeWidth: 2,
+		    lineCap: 'round',
+		    lineJoin: 'round',
+		});
+
+		this.drawLayer.add(this.recordSelect.line);
+		this.drawLayer.draw();
+		let html = this.applyRecordTemplate(args.record,null,null, '${default}');
+		let left = false;
+		html = HU.div([ATTR_STYLE,HU.css('padding','5px')],html);
+		this.recordSelect.dialog =
+		    HU.makeDialog({anchor:this.mainDiv,
+				   callback:()=>{
+				       this.clearRecordSelection();
+				   },
+				   title:'Record',
+				   decorate:true,
+				   at:(left?'left top':'right top'),
+				   my:(left?'left top':'right top'),
+				   header:true,
+				   content:html,
+				   draggable:true});
+
+
+	    }
+	},
+
+    updateUI:  function() {
+	if(this.haveDrawn) return;
+	this.haveDrawn = true;
+	let menuItemsLeft = [];
+	let menuItemsRight = [];    
+	let canvas =HU.div([ATTR_CLASS,'cv-canvas',ATTR_ID,this.domId(ID_CV_CANVAS)]);
+	let menuBarContainer =HU.div([ATTR_CLASS,"cv-menubar",ATTR_ID,this.domId(ID_CV_MENUBAR)]);	
+	let displaysBarContainer =HU.div([ATTR_CLASS,"cv-displaysbar",ATTR_ID,this.domId(ID_CV_DISPLAYSBAR)]);	
+	let displays =HU.div([ATTR_CLASS,'cv-displays',ATTR_ID,this.domId(ID_CV_DISPLAYS)]);
+	let main = HU.div([ATTR_CLASS,'cv-main'],canvas);	
+	let row1 = HU.tr([],HU.td([],displaysBarContainer)+
+			HU.td([],menuBarContainer));
+
+	let row2 = HU.tr([ATTR_VALIGN,'top'],HU.td([],displays)+
+			HU.td([],main));
+
+
+	let html=HU.table(['cellpadding','0px','cellspacing','0px',ATTR_WIDTH,'100%'],row1+row2);
+
+	this.jq(ID_DISPLAY_CONTENTS).html(html);
+
+	let displaysBar = HU.div([ATTR_TITLE,'Add display','action',ID_CV_DISPLAYS_ADD,
+				  ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,'ramadda-clickable'],
+				 HU.getIconImage('fas fa-chart-line'));
+	this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
+				    ATTR_TITLE,'Add image collection','action','add',
+				    ATTR_CLASS,'ramadda-clickable'],
+				   HU.getIconImage('fas fa-plus')));
+
+	menuItemsLeft.push(HU.space(1));
+
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
+
+
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out','action','zoomout',
+				    ATTR_CLASS,'ramadda-clickable'],
+				   HU.getIconImage('fas fa-magnifying-glass-minus')));
+
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in','action','zoomin',
+				    ATTR_CLASS,'ramadda-clickable'],
+				   HU.getIconImage('fas fa-magnifying-glass-plus')));
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
+				    ATTR_CLASS,'ramadda-clickable'],
+				   HU.getIconImage('fas fa-arrow-down')));
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('up'),ATTR_TITLE,'Pan up','action','up',
+				    ATTR_CLASS,'ramadda-clickable'],
+				   HU.getIconImage('fas fa-arrow-up')));
+
+	menuItemsRight.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
+				     ATTR_CLASS,'ramadda-clickable'],
+				    HU.getIconImage('fas fa-images')));
+
+	
+
+
+
+	menuItemsLeft.push(HU.space(1));
+	menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
+	menuItemsLeft.push(HU.space(1));
+	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
+				   ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,'ramadda-clickable',
+				   ATTR_PLACEHOLDER,'Measure'],
+				  HU.getIconImage('fas fa-ruler-vertical')));
+	menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
+				   ATTR_ID,this.domId(ID_CV_SAMPLE),ATTR_CLASS,'ramadda-clickable',
+				   ATTR_PLACEHOLDER,'Sample data'],
+				  HU.getIconImage('fas fa-eye-dropper')));	
+	menuItemsLeft.push(HU.space(1));
+
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
+				    ATTR_STYLE,HU.css('margin-right','50px',
+						      'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
+
+
+	menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
+				     ATTR_TITLE,'Settings','action','settings',
+				     ATTR_CLASS,'ramadda-clickable'],
+				    HU.getIconImage('fas fa-cog')));
+	
+	let menuBar=Utils.join(menuItemsLeft,HU.space(1));
+	menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
+			 Utils.join(menuItemsRight,HU.space(2)));
+	this.mainDiv =jqid(this.opts.mainId);
+	if(!this.opts.showMenuBar)menuBar='';
+	this.jq(ID_CV_MENUBAR).html(menuBar);
+
+	addHandler({
+	    selectClick:function(type,id,entryId,value) {
+		_this.loadCollection(entryId);
+	    }
+	},this.domId('add'));
+
+	addHandler({
+	    selectClick:(type,id,entryId,value) =>{
+		this.addDisplayEntry(entryId);
+	    }
+	},this.domId(ID_CV_DISPLAYS_ADD));	
+
+	$(document).on('keydown', (event) =>{
+	    if (event.key === 'Escape' || event.keyCode === 27) {
+		this.toggleSampling(false);
+		this.toggleMeasure(false);
+	    }
+	});
+
+	this.jq(ID_DISPLAY_CONTENTS).find('.ramadda-clickable').click(function(event){
+	    let action = $(this).attr('action');
+	    if(action=='settings') {
+		_this.showSettings($(this));
+	    } else	if(action=='home') {
+		_this.resetZoomAndPan();
+	    } else if(action=='zoomin') {
+		_this.zoom(1.1);
+	    } else	if(action=='zoomout') {
+		_this.zoom(0.9);
+	    } else	if(action==ID_CV_DISPLAYS_ADD) {
+		let id = $(this).attr('id');
+		let localeId = _this.opts.mainEntry;
+		RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'',null);	    
+	    } else	if(action=='add') {
+		let id = $(this).attr('id');
+		//selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
+		let localeId = _this.opts.mainEntry;
+		RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
+	    } else	if(action=='gallery') {
+		_this.showGallery($(this));
+	    } else	if(action=='down') {
+		let pos = _this.stage.position();
+		_this.stage.position({x:pos.x,y:pos.y-50});
+	    } else	if(action=='up') {
+		let pos = _this.stage.position();
+		_this.stage.position({x:pos.x,y:pos.y+50});
+	    }
+	    
+	})
+
+	this.jq(ID_CV_MEASURE).click(function() {
+	    _this.toggleSampling(false);
+	    _this.toggleMeasure();
+	});
+	this.jq(ID_CV_SAMPLE).click(function() {
+	    _this.toggleMeasure(false);
+	    _this.toggleSampling();
+	});	
+
+	HU.onReturn(this.jq(ID_CV_GOTO),obj=>{
+	    let depth = obj.val().trim();
+	    _this.goToWorld(depth);
+	});
+
+
+	let container = this.container = this.jq(ID_CV_CANVAS).get(0);
+
+	this.stage = new Konva.Stage({
+	    container: container,  
+	    width: container.offsetWidth,
+	    height: this.getScreenHeight(),
+	    draggable: true 
+	});
+	this.stage.offsetY(this.opts.offsetY);
+
+	this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
+	this.annotationLayer = new Konva.Layer();
+	this.stage.add(this.annotationLayer);
+	this.layer = new Konva.Layer();
+	this.legendLayer = new Konva.Layer();    
+	this.drawLayer = new Konva.Layer();
+	this.stage.add(this.legendLayer);
+	this.stage.add(this.layer);
+	this.stage.add(this.drawLayer);
+	this.addEventListeners();
+	this.collections = [];
+	
+	this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
+
+	if(this.opts.collectionIds) {
+	    Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
+		this.loadCollection(entryId);
+	    });
+	}
+
+
+	this.drawLegend();
+	this.layer.draw();
+
+	this.displayEntries = [];
+	if(this.opts.displayEntries) {
+	    Utils.split(this.opts.displayEntries,'\n',true,true).forEach((line,idx)=>{
+		let toks = Utils.split(line,',',true,true);
+		let entryId = toks[0];
+		toks.shift();
+		this.displayEntries.push({
+		    display:null,
+		    entryId:entryId,
+		    props:this.parseDisplayProps(toks)
+		});
+	    });
+	}
+	this.loadDisplays();
+
+    },
+
+    });
+
+
+//function RamaddaCoreVisualizer(collection,container,args) {
     if(!window['cv-base-id']) window['cv-base-id']=1;
     this.id = window['cv-base-id']++;
     let _this = this;
@@ -33,9 +326,9 @@ function RamaddaCoreVisualizer(collection,container,args) {
     this.opts = {
 	screenHeight:args.height??800,
 	maxColumnWidth:300,
-	offsetY:-20,
+	offsetY:0,
 	//This is the scale applied to the world coordinates on the image
-	scaleY:0.5,
+	scaleY:1,
 	//This is the initial canvas scale
 	initScale:1.0,
 	legendWidth:0,
@@ -86,159 +379,15 @@ function RamaddaCoreVisualizer(collection,container,args) {
 
     $.extend(this.opts,args);
     this.opts.top =+this.opts.top;
-    let menuItemsLeft = [];
-    let menuItemsRight = [];    
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('add'),
-				ATTR_TITLE,'Add collection','action','add',
-				ATTR_CLASS,'ramadda-clickable'],
-			       HU.getIconImage('fas fa-plus')));
-
-    menuItemsLeft.push(HU.space(1));
-
-    menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
-
-
-    menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out','action','zoomout',
-				ATTR_CLASS,'ramadda-clickable'],
-			       HU.getIconImage('fas fa-magnifying-glass-minus')));
-
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in','action','zoomin',
-			    ATTR_CLASS,'ramadda-clickable'],
-			       HU.getIconImage('fas fa-magnifying-glass-plus')));
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
-			    ATTR_CLASS,'ramadda-clickable'],
-			       HU.getIconImage('fas fa-arrow-down')));
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId('up'),ATTR_TITLE,'Pan up','action','up',
-			    ATTR_CLASS,'ramadda-clickable'],
-			       HU.getIconImage('fas fa-arrow-up')));
-
-    menuItemsRight.push(HU.span([ATTR_ID,this.domId('gallery'),ATTR_TITLE,'Show Gallery','action','gallery',
-			    ATTR_CLASS,'ramadda-clickable'],
-				 HU.getIconImage('fas fa-images')));
-
-  
-
-
-
-    menuItemsLeft.push(HU.space(1));
-    menuItemsLeft.push(HU.input('','',[ATTR_SIZE,'10',ATTR_ID,this.domId(ID_CV_GOTO),ATTR_PLACEHOLDER,"Go to depth"]));
-    menuItemsLeft.push(HU.space(1));
-    menuItemsLeft.push(HU.div([ATTR_STYLE,HU.css('display','inline-block','padding-left','5px','padding-right','5px'),
-			       ATTR_ID,this.domId(ID_CV_MEASURE),ATTR_CLASS,'ramadda-clickable',
-				ATTR_PLACEHOLDER,'Measure'],
-			      HU.getIconImage('fas fa-ruler-vertical')));
-    menuItemsLeft.push(HU.space(1));
-
-    menuItemsLeft.push(HU.span([ATTR_ID,this.domId(ID_CV_COLLECTIONS),
-				ATTR_STYLE,HU.css('margin-right','50px',
-						  'vertical-align','top','display','inline-block','max-width','600px','overflow-x','auto')]));
-
-
-    menuItemsRight.push(HU.span([ATTR_ID,this.domId('settings'),
-				 ATTR_TITLE,'Settings','action','settings',
-			    ATTR_CLASS,'ramadda-clickable'],
-				 HU.getIconImage('fas fa-cog')));
-
-
-	
-    let menuBar=Utils.join(menuItemsLeft,HU.space(1));
-    menuBar +=HU.div([ATTR_STYLE,HU.css('position','absolute','right','10px','top','4px')],
-		     Utils.join(menuItemsRight,HU.space(2)));
-    this.mainDiv =jqid(this.opts.mainId);
-    if(!this.opts.showMenuBar)menuBar='';
-    let top = HU.div([ATTR_CLASS,"cv-menubar"],menuBar);
-    jqid(this.opts.topId).html(top);
-    addHandler({
-	selectClick:function(type,id,entryId,value) {
-	    _this.loadCollection(entryId);
-	}
-    },this.domId('add'));
-
-    $(document).on('keydown', function(event) {
-	if (event.key === 'Escape' || event.keyCode === 27) {
-	}
-    });
-
-
-    jqid(this.opts.topId).find('.ramadda-clickable').click(function(event){
-	let action = $(this).attr('action');
-	if(action=='settings') {
-	    _this.showSettings($(this));
-	} else	if(action=='home') {
-	    _this.resetZoomAndPan();
-	} else if(action=='zoomin') {
-	    _this.zoom(1.1);
-	} else	if(action=='zoomout') {
-	    _this.zoom(0.9);
-	} else	if(action=='add') {
-	    let id = $(this).attr('id');
-	    //selectInitialClick:function(event, selectorId, elementId, allEntries, selecttype, localeId, entryType,baseUrl,props) {
-	    let localeId = _this.opts.mainEntry;
-	    RamaddaUtils.selectInitialClick(event,id,id,true,null,localeId,'isgroup',null);	    
-	} else	if(action=='gallery') {
-	    _this.showGallery($(this));
-	} else	if(action=='down') {
-	    let pos = _this.stage.position();
-	    _this.stage.position({x:pos.x,y:pos.y-50});
-	} else	if(action=='up') {
-	    let pos = _this.stage.position();
-	    _this.stage.position({x:pos.x,y:pos.y+50});
-	}
-	
-    })
-
-    this.jq(ID_CV_MEASURE).click(function() {
-	_this.toggleMeasure();
-	if(_this.isMeasuring()) {
-	    $(this).css('background','#ccc');
-	} else {
-	    $(this).css('background','transparent');
-	}
-    });
-
-    HU.onReturn(this.jq(ID_CV_GOTO),obj=>{
-	let depth = obj.val().trim();
-	let y = _this.worldToCanvas(depth);
-	this.stage.position({ x: 0, y: -y });
-    });
-
-
-    this.stage = new Konva.Stage({
-	container: container,  
-	width: container.offsetWidth,
-	height: this.getScreenHeight(),
-	draggable: true 
-    });
-    this.stage.offsetY(this.opts.offsetY);
-
-    this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
-    this.annotationLayer = new Konva.Layer();
-    this.stage.add(this.annotationLayer);
-    this.layer = new Konva.Layer();
-    this.legendLayer = new Konva.Layer();    
-    this.drawLayer = new Konva.Layer();
-    this.stage.add(this.legendLayer);
-    this.stage.add(this.layer);
-    this.stage.add(this.drawLayer);
-    this.addEventListeners();
-    this.collections = [];
-    
-    this.loadingMessage= this.makeText(this.annotationLayer,"Loading...",50,50, {fontSize:45});
-
-
-    if(this.opts.collectionIds) {
-	Utils.split(this.opts.collectionIds,",",true,true).forEach(entryId=>{
-	    this.loadCollection(entryId);
-	});
-    }
-
-
-    this.drawLegend();
-    this.layer.draw();
 }
 
 
-RamaddaCoreVisualizer.prototype = {
+RamaddaCoreDisplay.prototype = {
+    needsData: function() {
+        return false;
+    },
+
+
     getProperty:function(key,dflt) {
 	let v = this.opts[key];
 	if(v===null) return dflt;
@@ -247,16 +396,19 @@ RamaddaCoreVisualizer.prototype = {
     setProperty:function(key,v) {
 	this.opts[key] = v;
     },    
-    domId:function(id) {
-	return 'id_'+this.id+'_'+ id;
-    },
-    jq:function(id) {
-	return jqid(this.domId(id));
-    },
-    
+
     getXOffset:function(column) {
 	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+100);
     },
+    goToWorld:function(world) {
+	let scale = this.stage.scale().y;
+	let y = this.worldToCanvas(world);
+	y = y*scale;
+	//Offset a bit
+	y-=20;
+	this.stage.position({ x: 0, y: -y });
+    },
+
     worldToCanvas:function(w,debug) {
 	w = w*this.opts.scaleY;
 	let range = this.opts.range;
@@ -269,50 +421,137 @@ RamaddaCoreVisualizer.prototype = {
 	return c;
     },
     canvasToWorld:function(c) {
-	let pos = this.stage.position().y;
-	c=c+this.opts.offsetY;
 	let scale = this.stage.scale().y;
-	c = (c-pos)/scale;
+//	console.log('canvas',c,this.opts.offsetY,this.opts.scaleY,scale);
 	let range = this.opts.range;
 	let r = range.max - range.min;
 	let h=this.getCanvasHeight();
-	let w =  (r*c)/h;
-	w = w/this.opts.scaleY;
-	return w;
+	let world =  (r*c)/h;
+	world = world/this.opts.scaleY;
+	return world;
     },
     calculateDistance:function(x1, y1, x2, y2) {
 	return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     },
     clearMeasure:function() {
-	if(!this.measure) return;
-	if(this.measure.line) {
-	    this.measure.line.destroy();
-	    this.measure.line=null;
+	if(!this.measureState) return;
+	if(this.measureState.line) {
+	    this.measureState.line.destroy();
+	    this.measureState.line=null;
 	}
-	if(this.measure.text1) {
-	    this.destroy(this.measure.text1);
-	    this.measure.text1=null;
+	if(this.measureState.text1) {
+	    this.destroy(this.measureState.text1);
+	    this.measureState.text1=null;
 	}	
-	if(this.measure.text2) {
-	    this.destroy(this.measure.text2);
-	    this.measure.text2=null;
+	if(this.measureState.text2) {
+	    this.destroy(this.measureState.text2);
+	    this.measureState.text2=null;
 	}	
-
+	this.drawLayer.draw();
     },
+    isSampling: function() {
+	return this.sampling;
+    },
+
+
+    toggleSampling:function(s) {
+	if(Utils.isDefined(s)) {
+	    this.sampling = s;
+	}  else {
+	    this.sampling = !this.sampling;
+	}
+
+    	if(this.isSampling()) {
+	    this.stage.container().style.cursor = 'crosshair';
+	    this.jq(ID_CV_SAMPLE).css('background','#ccc');
+	} else {
+	    if(this.sampleDialog) this.sampleDialog.remove();
+	    this.sampleDialog=null;
+	    if(this.stage.container().style.cursor == 'crosshair')
+		this.stage.container().style.cursor = 'default';
+	    this.jq(ID_CV_SAMPLE).css('background','transparent');
+	    return;
+	}
+
+
+	if(this.samplingInit) return;
+	this.samplingInit=true;
+	this.stage.on('mousedown', (e) => {
+	    if(!this.isSampling()) return;
+	    const pos = this.stage.getRelativePointerPosition();
+	    let depth = this.canvasToWorld(pos.y);
+	    let y = this.worldToCanvas(depth);	    
+	    let displays = this.getDisplayManager().getDisplays();
+	    let html = '';
+	    displays.forEach(display=>{
+		if(display==this) return;
+		let records = display.getRecords();
+		if(records==null || records.length==0) return;
+		let closest = null;
+		let min = 0;
+		let depthField = this.findDepthField(records[0]);
+		if(depthField==null) return;
+		records.forEach(record=>{
+		    let v = depthField.getValue(record);
+		    let diff  = Math.abs(v-depth);
+		    if(closest==null || diff<min) {
+			min =diff;
+			closest=record;
+		    }
+		});
+		if(!closest) return;
+		html += HU.div([],HU.b(display.getTitle()));
+		html+=this.applyRecordTemplate(closest,null,null, '${default}');
+	    });
+	    if(Utils.stringDefined(html)) {
+		html = HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + html;
+		html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+		if(this.sampleDialog) this.sampleDialog.remove();
+		this.sampleDialog =
+		    HU.makeDialog({anchor:this.mainDiv,
+				   callback:()=>{
+				       this.clearRecordSelection();
+				   },
+				   title:'Record',
+				   decorate:true,
+				   at:'right top',
+				   my:'right top',
+				   header:true,
+				   content:html,
+				   draggable:true});
+
+	    }
+	});
+    },
+
+
     isMeasuring: function() {
 	return this.measuring;
     },
-    toggleMeasure:function() {
-	if(this.isMeasuring()) {
-	    this.measuring=false;
+
+
+    toggleMeasure:function(s) {
+	if(Utils.isDefined(s)) {
+	    this.measuring = s;
+	}  else {
+	    this.measuring = !this.measuring;
+	}
+
+    	if(this.isMeasuring()) {
+	    this.jq(ID_CV_MEASURE).css('background','#ccc');
+	    this.stage.container().style.cursor = 'row-resize';
+	    this.stage.setAttrs({draggable: false});
+	} else {
+	    if(this.stage.container().style.cursor == 'row-resize')
+		this.stage.container().style.cursor = 'default';
+	    this.jq(ID_CV_MEASURE).css('background','transparent');
 	    this.clearMeasure();
 	    this.stage.setAttrs({draggable: true});
 	    return;
 	}
-	this.measuring=true;
-	this.stage.setAttrs({draggable: false});
-	if(this.measure) return;
-	this.measure = {
+
+	if(this.measureState) return;
+	this.measureState= {
 	    start:null,
 	    line:null
 	}
@@ -321,49 +560,159 @@ RamaddaCoreVisualizer.prototype = {
 	    if(!this.isMeasuring()) return;
 	    this.clearMeasure();
 	    const pos = this.stage.getRelativePointerPosition();
-	    this.measure.start = pos;
-	    this.measure.line = new Konva.Line({
+	    this.measureState.start = pos;
+	    this.measureState.line = new Konva.Line({
 		points: [pos.x, pos.y, pos.x, pos.y],
 		stroke: 'red',
 		strokeWidth: 2,
 		lineCap: 'round',
 		lineJoin: 'round',
 	    });
-	    this.drawLayer.add(this.measure.line);
-	    this.measure.text1 = this.makeText(this.drawLayer,
-					       Utils.formatNumber(this.canvasToWorld(this.stage.getPointerPosition().y)),
-					       this.measure.start.x+5,
-					       pos.y,
-					       {fontSize: 12,	background:'#fff',fill: 'black',});
+	    this.drawLayer.add(this.measureState.line);
+	    let world  =this.canvasToWorld(pos.y);	    
+//	    console.log('rel:',pos.y,' pos:', this.stage.getPointerPosition().y,' world:',world,'format:',Utils.formatNumber(world));
+	    this.measureState.text1 = this.makeText(this.drawLayer,
+						    Utils.formatNumber(world),
+						    this.measureState.start.x+5,
+						    pos.y,
+						    {fontSize: 12,	background:'#fff',fill: 'black',});
 	    this.drawLayer.draw();
 	});
 
 	this.stage.on('mousemove', (e) => {
 	    if(!this.isMeasuring()) return;
-	    if (!this.measure.line || !this.measure.start) return;
+	    if (!this.measureState.line || !this.measureState.start) return;
 	    const pos = this.stage.getRelativePointerPosition();
-	    if(this.measure.text2)this.destroy(this.measure.text2);
-	    this.measure.text2 = this.makeText(this.drawLayer,
-					       Utils.formatNumber(this.canvasToWorld(this.stage.getPointerPosition().y)),
-					       this.measure.start.x+5,
+	    if(this.measureState.text2)this.destroy(this.measureState.text2);
+	    this.measureState.text2 = this.makeText(this.drawLayer,
+					       Utils.formatNumber(this.canvasToWorld(pos.y)),
+					       this.measureState.start.x+5,
 					       pos.y,
 					       {fontSize: 12,	background:'#fff',fill: 'black',});
-	    this.drawLayer.add(this.measure.text2);
-	    this.measure.line.points([this.measure.start.x, this.measure.start.y, this.measure.start.x, pos.y]);
+	    this.drawLayer.add(this.measureState.text2);
+	    this.measureState.line.points([this.measureState.start.x, this.measureState.start.y, this.measureState.start.x, pos.y]);
 	    this.drawLayer.draw();
 	});
 
 	this.stage.on('mouseup', (e) => {
 	    if(!this.isMeasuring()) return;
-	    if (!this.measure.start) return;
+	    if (!this.measureState.start) return;
 	    const pos = this.stage.getRelativePointerPosition();
-	    const distance = this.calculateDistance(this.measure.start.x, this.measure.start.y, this.measure.start.x, pos.y);
+	    const distance = this.calculateDistance(this.measureState.start.x, this.measureState.start.y, this.measureState.start.x, pos.y);
 	    // Display the measurement as text on the canvas
 	    this.drawLayer.draw();
-	    this.measure.start=null;
+	    this.measureState.start=null;
 	});
     },
 
+    deleteDisplay:function(e) {
+	jqid(e.props.divid).remove();
+	const indexToRemove = this.displayEntries.findIndex(item => item.props.divid === e.props.divid);
+	if (indexToRemove !== -1) {
+	    this.displayEntries.splice(indexToRemove, 1);
+	}
+    },
+    loadDisplays:function() {
+	this.displayEntries.forEach((e,idx)=>{
+	    let props = e.props;
+	    let entryId = e.entryId;
+	    if(e.display)  return;
+	    this.getEntry(entryId, entry => {
+		$.extend(props, {
+		    "entry":entryId,
+		    "entryId":entryId,
+		    "data":new PointData("Display",  null,null,
+					 "/repository/entry/data?entryid=" + entryId+"&max=10000",
+					 {entryId:entryId}),
+		});
+		if(!props.title) {
+		    props.title = entry.getName();
+		    if(props.title && props.title.length>20) {
+			props.title = props.title.substring(0,19)+'...';
+		    }
+		}		    
+		//Add the hook for when the display pops up its dialog to add the Delete button
+		props.dialogHook = (what,v)=>{
+		    if(what=='contents') {
+			//The v is the dialog html
+			return HU.div([ATTR_STYLE,HU.css('margin','5px')], HU.div([ATTR_CLASS,'cv-display-delete'],'Delete display')) + v;
+		    }  else if(what=='init') {
+			//the v is the dialog
+			v.find('.cv-display-delete').button().click(()=>{
+			    v.remove();
+			    this.deleteDisplay(e);
+			});
+		    }
+		};
+		let divId = HU.getUniqueId('display_');
+		let div = HU.div([ATTR_ID,divId,ATTR_STYLE,'display:inline-block;min-width:150px;']);
+		props.divid = divId;
+		this.jq(ID_CV_DISPLAYS).append(div);
+		e.display = this.getDisplayManager().createDisplay(props.displayType,props);
+	    });
+	});
+    },
+
+    addDisplayEntry:function(entryId) {
+	let toks=[];
+	let html = 'Enter display properties. e.g.:<pre>fields:&lt;field id&gt;\ntitle:Some title\netc.</pre>';
+	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),ATTR_STYLE,HU.css('width','400px'),'rows','5']);
+	let buttons = [HU.div([ATTR_ID,this.domId('cancel')],'Cancel'),	
+		       ' '+   HU.div([ATTR_ID,this.domId('add_display')],'Create Display')];
+	html+=HU.buttons(buttons);
+	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+	
+	let anchor =  this.jq(ID_CV_DISPLAYS_ADD);
+	let dialog = HU.makeDialog({content:html,title:'Display Properties',
+				    draggable:true,header:true,my:'left top',at:'left bottom',anchor:anchor});
+
+	this.jq('cancel').button().click(()=>{
+	    dialog.remove();
+	});
+	this.jq('add_display').button().click(()=>{
+	    this.lastDisplayProps = this.jq('displayprops').val();
+	    let props = Utils.split(this.lastDisplayProps,'\n',true,true);
+	    props = this.parseDisplayProps(props);
+	    dialog.remove();
+	    this.displayEntries.push({
+		display:null,
+		entryId:entryId,
+		props:props
+	    });
+	    this.loadDisplays();
+	});
+
+
+    },
+
+
+    parseDisplayProps:function(toks) {
+	let props = {
+	    'displayType':'profile',
+	    "profileMode":"lines",
+	    "indexField":"depth",
+	    "showLegend":false,
+	    "showTitle":true,
+	    "width":"100%",
+	    "height":"500px",
+	    "yAxisReverse":true,
+	    "marginTop":"0",
+	    "marginRight":"0",
+	    "showMenu":true,
+	    "max":"10000",
+
+	};
+	for(let i=0;i<toks.length;i++) {
+	    let pair = toks[i];
+	    let tuple = Utils.split(pair,':',true);
+	    if(tuple.length<1) continue;
+	    let key  =tuple[0];
+	    let value = tuple[1];
+	    if(key=='fields') value = value.split(',');
+	    props[key] = value; 
+	}
+	return props;
+    },
 
 
 
@@ -704,10 +1053,10 @@ RamaddaCoreVisualizer.prototype = {
 	});
 	this.checkRange();
 	let range =  this.opts.range;
-//	console.log(collection.name,'range',range.min,range.max);
+//	console.log(collection.name,'range',range.min,range.max,collection.data.length);
 	collection.data.forEach(entry=>{
 	    entry.displayIndex = column;
-	    this.addEntry(entry,forceNewImages);
+	    this.addCoreEntry(entry,forceNewImages);
 	});
     },
 
@@ -817,7 +1166,7 @@ RamaddaCoreVisualizer.prototype = {
     },
     addEventListeners:function() {
 	window.addEventListener('resize', () => {
-	    const containerWidth = container.offsetWidth;
+	    const containerWidth = this.container.offsetWidth;
 	    this.stage.width(containerWidth);
 	    this.stage.batchDraw();
 	});
@@ -1001,12 +1350,15 @@ RamaddaCoreVisualizer.prototype = {
     },
 
 
+    getAxisWidth:function() {
+	return this.opts.axisWidth;
+    },
     drawLegend:function() {
 	this.legendLayer.clear();
 	this.legendLayer.destroyChildren() 
 	this.legendLayer.draw();
 	this.checkRange();
-	let axisWidth = this.opts.axisWidth;
+	let axisWidth = this.getAxisWidth();
 	let tickWidth = CV_TICK_WIDTH;
 	let h = this.getCanvasHeight()-this.opts.top;
 	let step = h/100;
@@ -1019,7 +1371,7 @@ RamaddaCoreVisualizer.prototype = {
 	let y1 = 0;
 	let y2 = 0;	
 	let range = this.opts.range;
-	let bottom = range.max+(0.2*(range.max-range.min));
+	let bottom = range.max+(0.5*(range.max-range.min));
 	for(let i=0;i<=bottom;i+=step) {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
@@ -1056,8 +1408,13 @@ RamaddaCoreVisualizer.prototype = {
 
     },
 
+    canShowPopup:function(obj,f) {
+    	if(this.isSampling() || this.isMeasuring()) return false;
+	return true;
+    },
     addClickHandler:function(obj,f) {
 	obj.on('click', (e) =>{
+	    if(!this.canShowPopup())  return;
 	    f(e,obj);
 	});
 	obj.on('mouseover', function (e) {
@@ -1124,7 +1481,7 @@ RamaddaCoreVisualizer.prototype = {
 
 	    }
 	    _this.removeEntry(entry);
-	    _this.addEntry(entry,false);
+	    _this.addCoreEntry(entry,false);
 	    _this.layer.draw();
 	    dialog.remove();
 	});
@@ -1136,7 +1493,7 @@ RamaddaCoreVisualizer.prototype = {
 	this.layer.draw();
     },
 
-    addEntry:function(entry,forceNewImages) {
+    addCoreEntry:function(entry,forceNewImages) {
 	if(!forceNewImages &&entry.image) {
 	    this.addEntryImage(entry);
 	} else {

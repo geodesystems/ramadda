@@ -245,9 +245,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {
 	if(!theTag.equals("core_visualizer")) return null;
-
-
-
+	getWikiManager().checkProperties(request, entry, props);
 	StringBuilder sb = new StringBuilder();
 	sb.append(getWikiManager().wikifyEntry(request,entry,"{{group}}"));
 	getPageHandler().addDisplayImports(request, sb,true);
@@ -257,7 +255,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	String topId = HU.getUniqueId("topid");
 	String leftId = HU.getUniqueId("left");	
 
-	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;","class","cv-main"));
+	HU.open(sb,"div",HU.attrs("id",mainId,"style","position:relative;"));
 	HU.div(sb,"",HU.attrs("id",topId,"class","cv-top","style","position:relative"));
 	HU.div(sb,"",HU.attrs("class","cv-canvas","id",uid));
 	HU.close(sb,"div");
@@ -277,6 +275,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	if(other!=null) ids+=","+other;
 	Utils.add(args,"collectionIds",JU.quote(ids));
 	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
+				  "displayEntries",
 				  "showLegend","showAnnotations",
 				  "maxColumnWidth",
 				  "doRotation",
@@ -288,9 +287,10 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 		if(v.equals("true") || v.equals("false"))
 		    Utils.add(args,a,v);
 		else
-		    Utils.add(args,a,HU.squote(v));
+		    Utils.add(args,a,JU.quote(v));
 	    }
 	}
+
 
 
 
