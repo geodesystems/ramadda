@@ -48,6 +48,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
     let myProps =[];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
 	clearRecordSelection: function(source, args) {
+	    let displays = this.getDisplayManager().getDisplays();
+	    displays.forEach((display,idx)=>{
+		if(display==this) return;
+		if(display.clearAnnotations) display.clearAnnotations();
+	    });
 	    if(!this.recordSelect) return;
 	    if(this.recordSelect.dialog)
 		this.recordSelect.dialog.remove();
@@ -507,6 +512,7 @@ RamaddaCoreDisplay.prototype = {
 	
 	displays.forEach((display,idx)=>{
 	    if(display==this) return;
+	    if(display.addAnnotation) display.addAnnotation(depth);
 	    let records = display.getRecords();
 	    if(records==null || records.length==0) return;
 	    let closest = null;
