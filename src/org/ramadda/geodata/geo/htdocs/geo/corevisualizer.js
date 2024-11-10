@@ -295,6 +295,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 		let toks = Utils.split(line,',',true,true);
 		let entryId = toks[0];
 		toks.shift();
+		if(entryId.startsWith('#')) return;
 		this.displayEntries.push({
 		    display:null,
 		    entryId:entryId,
@@ -458,6 +459,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.jq(ID_CV_SAMPLE).css('background','#ccc');
 	} else {
 	    if(this.sampleDialog) this.sampleDialog.remove();
+	    this.clearRecordSelection();
 	    this.sampleDialog=null;
 	    if(this.stage.container().style.cursor == 'crosshair')
 		this.stage.container().style.cursor = 'default';
@@ -497,8 +499,13 @@ RamaddaCoreDisplay.prototype = {
 	this.drawLayer.add(this.recordSelect.line);
 	this.drawLayer.draw();
 
+	let colors  = ['red','green','blue'];
 
-	displays.forEach(display=>{
+	let maxHeight='100px;';
+	if(displays.length<=2)
+	    maxHeight='400px';
+	
+	displays.forEach((display,idx)=>{
 	    if(display==this) return;
 	    let records = display.getRecords();
 	    if(records==null || records.length==0) return;
@@ -518,7 +525,9 @@ RamaddaCoreDisplay.prototype = {
 	    if(html!='')
 		html+=HU.div([ATTR_CLASS,'ramadda-thin-hr']);
 	    html += HU.div([],HU.b(display.getTitle()));
-	    html+=this.applyRecordTemplate(closest,null,null, '${default}');
+	    let recordHtml = this.applyRecordTemplate(closest,null,null, '${default}');
+	    html+=HU.div([ATTR_STYLE,HU.css('max-height',maxHeight,'overflow-y','auto')],
+			 recordHtml);
 	});
 	if(Utils.stringDefined(html)) {
 	    html = HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr'])+
@@ -624,7 +633,9 @@ RamaddaCoreDisplay.prototype = {
 	jqid(e.props.divid).remove();
 	const indexToRemove = this.displayEntries.findIndex(item => item.props.divid === e.props.divid);
 	if (indexToRemove !== -1) {
+	    let display = this.displayEntries[indexToRemove].display;
 	    this.displayEntries.splice(indexToRemove, 1);
+	    this.getDisplayManager().removeDisplay(display);
 	}
     },
     loadDisplays:function() {
