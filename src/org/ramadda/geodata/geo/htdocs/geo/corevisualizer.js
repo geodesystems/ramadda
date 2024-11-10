@@ -77,19 +77,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    if(!args.record) return;
 	    let depthField = this.findDepthField(args.record);
 	    if(depthField) {
-		let value =depthField.getValue(args.record);
+		let depth =depthField.getValue(args.record);
 		let y = this.worldToCanvas(value);
-		this.goToWorld(value);
-		this.recordSelect.line = new Konva.Line({
-		    points: [this.getAxisWidth(), y, 2000,y],
-		    stroke: 'red',
-		    strokeWidth: 2,
-		    lineCap: 'round',
-		    lineJoin: 'round',
-		});
-
-		this.drawLayer.add(this.recordSelect.line);
-		this.drawLayer.draw();
+		this.goToWorld(depth);
+		this.sampleAtDepth(depth);
+		return;
 		let html = this.applyRecordTemplate(args.record,null,null, '${default}');
 		let left = false;
 		html = HU.div([ATTR_STYLE,HU.css('padding','5px')],html);
@@ -211,6 +203,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	$(document).on('keydown', (event) =>{
 	    if (event.key === 'Escape' || event.keyCode === 27) {
+		this.clearRecordSelection();
 		this.toggleSampling(false);
 		this.toggleMeasure(false);
 	    }
@@ -453,7 +446,6 @@ RamaddaCoreDisplay.prototype = {
 	return this.sampling;
     },
 
-
     toggleSampling:function(s) {
 	if(Utils.isDefined(s)) {
 	    this.sampling = s;
@@ -480,51 +472,74 @@ RamaddaCoreDisplay.prototype = {
 	    if(!this.isSampling()) return;
 	    const pos = this.stage.getRelativePointerPosition();
 	    let depth = this.canvasToWorld(pos.y);
-	    let y = this.worldToCanvas(depth);	    
-	    let displays = this.getDisplayManager().getDisplays();
-	    let html = '';
-	    displays.forEach(display=>{
-		if(display==this) return;
-		let records = display.getRecords();
-		if(records==null || records.length==0) return;
-		let closest = null;
-		let min = 0;
-		let depthField = this.findDepthField(records[0]);
-		if(depthField==null) return;
-		records.forEach(record=>{
-		    let v = depthField.getValue(record);
-		    let diff  = Math.abs(v-depth);
-		    if(closest==null || diff<min) {
-			min =diff;
-			closest=record;
-		    }
-		});
-		if(!closest) return;
-		html += HU.div([],HU.b(display.getTitle()));
-		html+=this.applyRecordTemplate(closest,null,null, '${default}');
-	    });
-	    if(Utils.stringDefined(html)) {
-		html = HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + html;
-		html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
-		if(this.sampleDialog) this.sampleDialog.remove();
-		this.sampleDialog =
-		    HU.makeDialog({anchor:this.mainDiv,
-				   callback:()=>{
-				       this.clearRecordSelection();
-				   },
-				   title:'Record',
-				   decorate:true,
-				   at:'right top',
-				   my:'right top',
-				   header:true,
-				   content:html,
-				   draggable:true});
-
-	    }
+	    this.sampleAtDepth(depth);
 	});
     },
 
 
+    sampleAtDepth:function(depth) {
+	this.clearRecordSelection();
+	let y = this.worldToCanvas(depth);	    
+	let displays = this.getDisplayManager().getDisplays();
+	let html = '';
+	if(!this.recordSelect) {
+	    this.recordSelect={
+	    }
+	}
+	this.recordSelect.line = new Konva.Line({
+	    points: [this.getAxisWidth(), y, 2000,y],
+	    stroke: 'red',
+	    strokeWidth: 2,
+	    lineCap: 'round',
+	    lineJoin: 'round',
+	});
+
+	this.drawLayer.add(this.recordSelect.line);
+	this.drawLayer.draw();
+
+
+	displays.forEach(display=>{
+	    if(display==this) return;
+	    let records = display.getRecords();
+	    if(records==null || records.length==0) return;
+	    let closest = null;
+	    let min = 0;
+	    let depthField = this.findDepthField(records[0]);
+	    if(depthField==null) return;
+	    records.forEach(record=>{
+		let v = depthField.getValue(record);
+		let diff  = Math.abs(v-depth);
+		if(closest==null || diff<min) {
+		    min =diff;
+		    closest=record;
+		}
+	    });
+	    if(!closest) return;
+	    if(html!='')
+		html+=HU.div([ATTR_CLASS,'ramadda-thin-hr']);
+	    html += HU.div([],HU.b(display.getTitle()));
+	    html+=this.applyRecordTemplate(closest,null,null, '${default}');
+	});
+	if(Utils.stringDefined(html)) {
+	    html = HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr'])+
+		html;
+	    html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
+	    if(this.sampleDialog) this.sampleDialog.remove();
+	    this.sampleDialog =
+		HU.makeDialog({anchor:this.mainDiv,
+			       callback:()=>{
+				   this.clearRecordSelection();
+			       },
+			       title:'Record',
+			       decorate:true,
+			       at:'right top',
+			       my:'right top',
+			       header:true,
+			       content:html,
+			       draggable:true});
+
+	}
+    },
     isMeasuring: function() {
 	return this.measuring;
     },
