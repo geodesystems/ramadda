@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2024 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -433,10 +433,7 @@ RepositoryMap.prototype = {
     },
 	
     setFeatureStyle:function(feature,style) { 
-	if(style && style.display=='none') {
-	} else {
-	}
-	if(feature) feature.style = style;
+	MapUtils.setFeatureStyle(feature,style);
     },
 
     validBounds: function(b) {
@@ -1130,17 +1127,19 @@ RepositoryMap.prototype = {
 
 
     unhighlightFeature:function(feature) {
+	if(feature.style && feature.style.display=='none') return;
 	if(feature.originalStyle) {
-	    this.setFeatureStyle(feature, feature.originalStyle);
+	    MapUtils.setFeatureStyle(feature, feature.originalStyle);
 	    this.drawFeature(feature.layer,feature);
 	}
     },
     highlightFeature:function(feature,highlightStyle) {
+	if(feature.style && feature.style.display=='none') return;
 	let fs = feature.style;
 	if(!feature.originalStyle && feature.style) {
             feature.originalStyle = $.extend({},feature.style);
 	}
-	this.setFeatureStyle(feature,null);
+	MapUtils.setFeatureStyle(feature,null);
 	let layer = feature.layer;
 	let highlight = $.extend({},highlightStyle??this.getLayerHighlightStyle(layer));
 
@@ -1203,13 +1202,15 @@ RepositoryMap.prototype = {
             }
             return;
         }
+	this.unhighlightFeature(feature);
+
         if (layer == null || layer.canSelect === false) {
 	    return;
 	}
 
 	//Only reset to the original style if there is something there
 	if(feature.originalStyle && feature.originalStyle.fillColor) {
-	    this.setFeatureStyle(feature, feature.originalStyle);
+	    MapUtils.setFeatureStyle(feature, feature.originalStyle);
 	}
 
 
@@ -1981,14 +1982,14 @@ RepositoryMap.prototype = {
 	    cbx.prop('checked',visible);
 	}
         if (feature.originalStyle) {
-	    this.setFeatureStyle(feature, feature.originalStyle);
+	    MapUtils.setFeatureStyle(feature, feature.originalStyle);
         }
         let style = feature.style;
         if (!style) {
 	    style = {};
             let defaultStyle = layer?layer.styleMap.styles["default"].defaultStyle:{};
             $.extend(style, defaultStyle);
-	    this.setFeatureStyle(feature, style);
+	    MapUtils.setFeatureStyle(feature, style);
         }
 
         if (!visible) {

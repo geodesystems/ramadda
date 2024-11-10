@@ -163,6 +163,14 @@ var MapUtils =  {
     createPolygon:function(pts){
 	return new OpenLayers.Geometry.Polygon(pts);
     },
+    setFeatureStyle:function(feature,style,orig) { 
+	if(!feature) return;
+	feature.style = style;
+	if(typeof orig !='undefined')
+	    feature.originalStyle=orig;
+	return style;
+    },
+
     createVector:function(geom,attrs,style) {
         return  new OpenLayers.Feature.Vector(geom,attrs,style);
     },
@@ -368,7 +376,8 @@ var MapUtils =  {
 	}  else {
 	    feature.style.display = 'none';
 	}
-	$.extend(feature.style,{display:feature.style.display});
+	if(feature.originalStyle) feature.originalStyle.display = feature.style.display;
+//	$.extend(feature.style,{display:feature.style.display});
     },
 
     declutter:function(map,features,args) {
