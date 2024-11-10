@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 10 11:04:20 MST 2024";
+var build_date="RAMADDA build date: Sun Nov 10 12:02:21 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5317,7 +5317,7 @@ function DisplayThing(argId, argProperties) {
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
 		    }
-
+                    row += HU.close('tr');
 		    rows.push(row);
                 }
             }
@@ -5338,15 +5338,19 @@ function DisplayThing(argId, argProperties) {
             }
 	    let rowCnt = 0;
 	    values += "<table><tr valign=top>";
+
+
+
 	    let		lists   = Utils.splitList(rows,itemsPerColumn);
 	    let tdStyle =lists.length>1?"margin-right:5px;":"";
 	    lists.forEach(list=>{
 		values += "<td><div style='" + tdStyle+"'><table>" + Utils.join(list,"") +"</table></div></td>";
 	    });
-            values += "</tr><table>";
+            values += "</tr></table>";
 	    if(this.getRecordHtmlStyle()){
 		values = HU.div([ATTR_CLASS,"ramadda-shadow-box display-tooltip", ATTR_STYLE,this.getRecordHtmlStyle()], values);
 	    }
+	    
             return values;
         },
         formatRecordLabel: function(label) {
