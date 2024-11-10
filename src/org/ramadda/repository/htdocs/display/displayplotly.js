@@ -226,6 +226,8 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		}
 	    };
 	    if(layout) return $.extend(layout,myLayout);
+
+
 	    return myLayout;
 	},
         handleClickEvent: function(data) {
@@ -1217,10 +1219,16 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
 
   
+	    let minX;
+	    let maxX;
             fields.forEach((field,idx)=>{
-		let x = this.getColumnValues(records, field).values;
+		let values= this.getColumnValues(records, field);
+		minX = values.min;
+		maxX = values.max;		
+		let x = values.values;
 		if(fields.length==1) {
-		    let nindex=[];		let nx=[];
+		    let nindex=[];
+		    let nx=[];
 		    x.forEach((v,idx)=>{
 			if(!isNaN(v)) {
 			    nindex.push(index[idx]);
@@ -1342,12 +1350,39 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
                     tickcolor: 'rgb(102, 102, 102)'
                 };
 	    }
+
+	    if(this.annotations) {
+		let shapes= layout.shapes = [];
+		this.annotations.forEach(v=>{
+		    shapes.push({
+			type: 'line',
+			x0: minX,
+			x1: maxX,      
+			y0: v,      
+			y1: v,     
+			line: {
+			    color: 'red',
+			    width: 2,
+			    dash: 'solid', 
+			}
+		    });
+		});
+	    }
+
             this.setDimensions(layout, 2);
             this.makePlot(data, layout);
 	    if(this.writePropertyDef)
 		console.log(this.writePropertyDef);
 	    this.writePropertyDef=null;
         },
+	addAnnotation: function (v) {
+	    this.annotations = [v];
+	    this.updateUI(true);
+	},
+	clearAnnotations: function () {
+	    this.annotations=null;
+	    this.updateUI(true);
+	}	
     });
 }
 
