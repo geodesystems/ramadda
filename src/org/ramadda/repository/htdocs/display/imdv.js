@@ -95,6 +95,7 @@ var CLASS_FILTER_SLIDER = 'imdv-filter-slider';
 var CLASS_FILTER_SLIDER_LABEL = 'imdv-filter-slider-label';
 var CLASS_FILTER_PLAY = 'imdv-filter-play';
 var CLASS_FILTER_STRING = 'imdv-filter-string';
+var CLASS_FILTER_STRINGS = 'imdv-filter-strings';
  
 
 var ID_GLYPH_ID='glyphid';
