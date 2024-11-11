@@ -237,7 +237,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		    let index = data.points[0].pointIndex;
 		    record = this.indexToRecord[index];
 		}
-		//		console.log("index:" + index +" record:"+  record);
 		if(record) {
 		    this.propagateEventRecordSelection({record: record});
 		}
@@ -1227,10 +1226,13 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		maxX = values.max;		
 		let x = values.values;
 		if(fields.length==1) {
+		    let oldIndex = this.indexToRecord;
+		    this.indexToRecord={};
 		    let nindex=[];
 		    let nx=[];
 		    x.forEach((v,idx)=>{
 			if(!isNaN(v)) {
+			    this.indexToRecord[nindex.length] = oldIndex[idx];
 			    nindex.push(index[idx]);
 			    nx.push(v);
 			}
@@ -1252,7 +1254,6 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 			});
 		    }			
 		}
-
 
 		let trace =   {
 		    y: index,
