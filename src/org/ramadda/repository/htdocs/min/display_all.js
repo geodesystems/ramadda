@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 10 15:15:48 MST 2024";
+var build_date="RAMADDA build date: Mon Nov 11 06:52:38 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -63574,7 +63574,6 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 		    let index = data.points[0].pointIndex;
 		    record = this.indexToRecord[index];
 		}
-		//		console.log("index:" + index +" record:"+  record);
 		if(record) {
 		    this.propagateEventRecordSelection({record: record});
 		}
@@ -64564,10 +64563,13 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		maxX = values.max;		
 		let x = values.values;
 		if(fields.length==1) {
+		    let oldIndex = this.indexToRecord;
+		    this.indexToRecord={};
 		    let nindex=[];
 		    let nx=[];
 		    x.forEach((v,idx)=>{
 			if(!isNaN(v)) {
+			    this.indexToRecord[nindex.length] = oldIndex[idx];
 			    nindex.push(index[idx]);
 			    nx.push(v);
 			}
@@ -64589,7 +64591,6 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 			});
 		    }			
 		}
-
 
 		let trace =   {
 		    y: index,
