@@ -1218,12 +1218,12 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
 
   
-	    let minX;
-	    let maxX;
+	    let minX=NaN;
+	    let maxX= NaN;
             fields.forEach((field,idx)=>{
 		let values= this.getColumnValues(records, field);
-		minX = values.min;
-		maxX = values.max;		
+		minX = Utils.min(values.min,minX)
+		maxX = Utils.max(values.max,maxX);	
 		let x = values.values;
 		if(fields.length==1) {
 		    let oldIndex = this.indexToRecord;
