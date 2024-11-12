@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Nov 11 06:52:38 MST 2024";
+var build_date="RAMADDA build date: Tue Nov 12 09:20:48 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -64555,12 +64555,12 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 	    }
 
   
-	    let minX;
-	    let maxX;
+	    let minX=NaN;
+	    let maxX= NaN;
             fields.forEach((field,idx)=>{
 		let values= this.getColumnValues(records, field);
-		minX = values.min;
-		maxX = values.max;		
+		minX = Utils.min(values.min,minX)
+		maxX = Utils.max(values.max,maxX);	
 		let x = values.values;
 		if(fields.length==1) {
 		    let oldIndex = this.indexToRecord;
