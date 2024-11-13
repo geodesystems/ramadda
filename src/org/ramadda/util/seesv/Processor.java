@@ -3715,7 +3715,10 @@ public abstract class Processor extends SeesvOperator {
             }
             String key = "";
             for (int i : keys2Indices) {
-                key += row.getString(i) + "_";
+		String keyValue="key";
+		if(row.indexOk(i))
+		    keyValue = row.getString(i);
+                key += keyValue + "_";
             }
 	    //	    if(ycnt++<10)System.err.println("value:" + key);
             Row other = map.get(key);
