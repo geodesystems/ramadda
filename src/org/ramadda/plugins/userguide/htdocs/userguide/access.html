@@ -44,7 +44,9 @@ pre {
 }
 </style>
 
+:navtop
 
+:heading Permissions Form
 You can define access control settings under the &quot;Edit -&gt; Permissions&quot; menu for an entry.
 <p>
   The access control mechanism in RAMADDA is centered around a set of actions that can be
@@ -57,7 +59,7 @@ The form is composed of this list of actions and, for each action,
 there is a field where you can enter any number of user roles (one per line).
 
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/access.png?version=891"><img  src="images/access.png?version=891"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Permissions" ></a><br><span class="caption">Image 1: Entry Permissions</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/access.png?version=930"><img  src="images/access.png?version=930"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Permissions" ></a><br><span class="caption">Image 1: Entry Permissions</span></div></div>
 
 +callout-info
 Note: Permissions settings have no effect on RAMADDA site administrators. They can do anything.
@@ -104,7 +106,7 @@ If nothing matches then permission is not granted.
 
 Here are other examples:
 <ul>
-<li> To make a whole tree of entrys inaccessable - under the <i>view</i> action enter:
+<li> To make a whole tree of entries inaccessable - under the <i>view</i> action enter:
 <pre>
 none
 </pre>
@@ -117,19 +119,21 @@ user
 none
 </pre>
 
+:br
 <li> To make an entry (or tree of entries) inaccessable to users outside of an ip address  - under the <i>view</i> action enter:
 <pre>
 ip:some_ip_prefix
 none
 </pre>
 
-
+:br
 <li> To allow anyone to view the entries in a tree but don't allow anyone to
   access the files then under the <i>file</i> action enter:
 <pre>
 none
 </pre>
 
+:br
 <li> To allow anyone to view the entries in a tree but only allow file access to
  users who are coming from the IP address 123.456 then 
 under the <i>file</i> action do:
@@ -139,6 +143,20 @@ none
 </pre>
 
 
+:br
+<li> 
+It is often the case that researchers are granted an embargo period on any data collected
+in a project, i.e., the data can be accessed after a certain date.
+This type of permission can be defined with a special "date:" role.
+For example, to restrict access until after March 2025 specify:
+<pre>
+date:2025-03-01
+none
+</pre>
+
+
+
+:br
 <li> If you wanted to give a certain user permission (e.g., joe) to view the entry but not allow
 any one else to view the entry then enter under the <i>view</i> action:
 <pre>
@@ -150,6 +168,7 @@ RAMADDA would first check if the given user was "joe". If it is "joe" then permi
 its not "joe" then RAMADDA looks at the next role - "none". This blocks any other access.
 
 
+:br
 <li> To allow for a group of users in the role "group1" to be able to edit and create new entries under a whole 
 tree then enter:
 <pre>
@@ -158,6 +177,7 @@ group1
 
 for both the <i>edit</i> and the <i>new</i> actions.
 
+:br
 <li> A common case is to allow one role to have new and edit capabilities under a whole tree (like the group1 
 example above) but to grant new and edit capabilities to some other user to a sub tree. For this you would 
 grant the access to the parent entry like above, e.g.:
@@ -216,6 +236,15 @@ For example, the following would grant access to any request coming from any IP 
 ip:128.117
 </pre>
 
+<a name="date"></a>
+<li> Date access - this role specifies a date. The role is only effective after the specified date, e.g.:
+<pre>
+date:yyyy-MM-dd
+</pre>
+
+
+
+
 <li> <i>!some role</i> - Prefixing a role with &quot;!&quot; is a way to deny specific access to a user, role, or ip address.
 For example, the following would deny access to any request coming from any IP address that starts with 128.117:
 <pre>
@@ -233,8 +262,7 @@ user:joe
 
 
 <a name="accesstypes"></a>
-:heading 3.4.1 <label>Permission Types</label>
-
+:heading Permission Types
 
 The different access types are:
 <ul>
@@ -251,8 +279,9 @@ but cannot see any of the details of the folder or any of the children entry of 
 file or access any of the content of the file (e.g., through charts or maps).
 This also includes any file based properties like entry thumbnails.
 
+
 <a name="geo"></a>
-<li> Geolocation - This allows limits any access to the geolocation (i.e., its north/west/south/east bounding box)
+<li> Geolocation - This limits any access to the geolocation (i.e., its north/west/south/east bounding box)
 of an entry including displaying in a map, export, JSON listing, etc.
 If the user is searching based on geographic location and they don't have "geo" access then the entries
 won't be shown.
@@ -290,7 +319,7 @@ that contains the other recipient's email.
 
 
 <a name="datapolicy"></a>
-:heading 3.4.2 <label>Data Policies</label>
+:heading Data Policies
 
 RAMADDA has support for a data policy mechanism that allows for
 the specification of a data license and access settings in a centralized
@@ -322,6 +351,17 @@ ramadda.datapolicy.debug=true
 The URLs specified are read at a given frequency (with the property above).
 Each URL returns a document that has one or more data policies. 
 A data policy consists of name, ID, data license and a number of permissions.
+
+
+:heading Displaying Permissions
+You can embed the access status for an entry directly in the wiki page for the entry with the access_status tag.
+This is only shown for logged in users and gives you the opportunity to see what access anonymous users have.
+
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/accessstatus.png?version=930"><img  src="images/accessstatus.png?version=930"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="Entry Status" ></a><br><span class="caption">Image 2: Entry Status</span></div></div>
+
+<pre>
+{<noop>{access_status  fullAccess="false"  }}
+</pre>
 
 
 
