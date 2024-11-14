@@ -2241,9 +2241,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo              dbInfo     = getDbInfo();
         List<DbNamedBuffer> buffers    = new ArrayList<DbNamedBuffer>();
         String              formHeader = HU.formTable(true);
-        DbNamedBuffer buffer = new DbNamedBuffer(searchForLabel, formHeader,
-                                   Utils.makeID(searchForLabel));
-        buffers.add(buffer);
+        DbNamedBuffer buffer = null;
 	String currentGroup = null;
         for (Column column : getDbColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
@@ -2258,6 +2256,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 buffers.add(buffer = new DbNamedBuffer(group, formHeader,
                         Utils.makeID(group)));
             }
+	    if(buffer==null) {
+		buffer = new DbNamedBuffer(searchForLabel, formHeader,
+					   Utils.makeID(searchForLabel));
+		buffers.add(buffer);
+	    }
             String help = column.getHelp();
             if (Utils.stringDefined(help)) {
                 buffer.getBuffer().append(formEntry(request, "", help));
@@ -2553,6 +2556,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int    cnt         = 0;
         String formSection = request.getString("formsection", null);
         for (DbNamedBuffer b : buffers) {
+	    if(b.getBuffer().length()==0) {
+		continue;
+	    }
             b.append(HU.formTableClose());
             if (b.anchor != null) {
                 sb.append(HU.anchorName(b.anchor));
