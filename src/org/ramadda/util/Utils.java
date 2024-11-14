@@ -2351,7 +2351,9 @@ public class Utils extends IO {
 	    Double d = (Double) o;
 	    return d.doubleValue();
 	}
-	return Double.parseDouble(o.toString());
+	String s = o.toString();
+	if(s.equals("NA")) return Double.NaN;
+	return Double.parseDouble(s);
     }
     
     /**
