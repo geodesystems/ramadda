@@ -1,5 +1,6 @@
 table.id soil_test1_n02   
 table.label Test Soil N02 Database   
+table.showmultiples true
 #db.install true    
 #db.droptable true
 #db.yesreallydroptable true
@@ -16,3 +17,30 @@ location.type latlon
 date.type date
 observation_year.type int
 observation_month.type int
+
+siteid.group=Observation
+treatment.group=Treatment
+tmax.group=Weather
+soilt.group=Soil Characteristics
+
+
+siteid.show_multiples=true
+
+siteid.label=Site ID
+fertilizer_kgn_ha.label=Fertilizer KG/HA
+fert_type.label=Fertilizer Type
+
+tmax.label=Max Temperature
+tmin.label=Min Temperature
+tavg.label=Average Temperature
+totalnetrad.label=Total Net Radiation
+humi_max.label=Max Humidity
+humi_min.label=Min Humidity
+humi_avg.label=Average Humidity
+
+
+soilt.label=Soil Temperature
+soilt_temp5.label=5cm Soil Temperature
+soilt_temp10.label=10cm Soil Temperature
+soilt_temp20.label=20cm Soil Temperature
+

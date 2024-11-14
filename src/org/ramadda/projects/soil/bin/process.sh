@@ -1,11 +1,12 @@
 #!/bin/sh
 set -e
-export csv=~/bin/csv.sh 
+
 export dots=5000
 export dropdb=0
 export install=0
+
 seesv() {
-    ${csv}  -cleaninput -dots  "tab${dots}"  "$@"
+    ${SEESV}  -cleaninput -dots  "tab${dots}"  "$@"
 }
 
 
