@@ -462,7 +462,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     
     private PrintWriter entryDocsWriter;
 
-
+    private List<String> dropTables = new ArrayList<String>();
+    
     private boolean doCache = true;
 
     private boolean adminOnly = false;
@@ -1114,6 +1115,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             if (arg.endsWith(".properties")) {
                 loadProperties(cmdLineProperties, arg);
+	    } else if(arg.equals("-dropdbtable")) {
+		//Only for the db plugin tables
+		String table =   args[i + 1];
+                i++;
+		dropTables.add(table);
             } else if (arg.equals("-dump")) {
                 dumpFile = args[i + 1];
                 i++;
@@ -1388,6 +1394,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected void initServer() throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.initServer");
         getDatabaseManager().init();
+
+	for(String table: dropTables) {
+	    table = "db_" +table;
+	    System.err.println("RAMADDA: drop table:" + table);
+	    String sql = "drop table " + table;
+	    getDatabaseManager().executeAndClose(sql);
+	}
+	
+
+
 	if(Repository.debugInit)   System.err.println("Repository.init-1");
         initDefaultTypeHandlers();
 	if(Repository.debugInit)   System.err.println("Repository.init-2");
