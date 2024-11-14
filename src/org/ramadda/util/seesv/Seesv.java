@@ -6193,6 +6193,12 @@ public class Seesv implements SeesvCommands {
 		InputStream fis= new ByteArrayInputStream(contents.getBytes());
 		tmp.load(new InputStreamReader(fis, Charset.forName("UTF-8")));
 		fis.close();
+		Properties tmp2 = new Properties();
+		for (Object key : tmp.keySet()) {
+		    Object v = tmp.get(key);
+		    tmp2.put(key.toString().trim(),v.toString().trim());
+		}
+		tmp = tmp2;
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
 	    }		
