@@ -15,8 +15,12 @@ treatment.type enumerationplus
 crop.type enumerationplus
 location.type latlon 
 date.type date
-observation_year.type int
-observation_month.type int
+
+observation_year.changetype true
+observation_month.changetype true
+observation_year.type enumeration
+observation_month.type enumeration
+
 
 siteid.group=Observation
 treatment.group=Treatment
