@@ -962,9 +962,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     public double[] getLatLon(Request request,Entry entry) {
+	return getLatLon(request, entry,entry.getValues());
+    }
+
+    public double[] getLatLon(Request request,Entry entry,Object []values) {
 	if(entry==null) return NULL_LATLON;
 	if(!accessOk(request, entry)) return NULL_LATLON;
-	return getLatLon(request, entry.getValues());
+	return getLatLon(request, values);
     }
 
     private Object getValue(Request request, Object[]values) {
@@ -985,6 +989,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     public double[] getLatLon(Request request,Object []values) {
+	if(values==null) return NULL_LATLON;
 	double lat = Double.NaN;
 	double lon = Double.NaN;
 	if (values != null) {
@@ -2419,7 +2424,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    return "";
 	} 
         if (isLatLon()) {
-            double[] latlon = getLatLon(request,entry);
+            double[] latlon = getLatLon(request,entry,values);
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
@@ -2489,6 +2494,10 @@ public class Column implements DataTypes, Constants, Cloneable {
             value = request.getString(urlArg, ((values != null)
 					       ? (String) toString(values, offset)
 					       : value));
+	    //For now ask the typehandler for the enum values
+	    //we used to just use the  TypeHandler.enumValues but that is wrong?
+	    List<HtmlUtils.Selector> enumValues = typeHandler.getEnumValues(request, this, null);
+
             widget = HU.select(urlArg, enumValues, value,
 			       HU.cssClass("ramadda-pulldown-with-icons"));
 
@@ -3098,7 +3107,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             }
             List<HtmlUtils.Selector> values = typeHandler.getEnumValues(request, this, entry);
-
             for (HtmlUtils.Selector o : values) {
                 HtmlUtils.Selector tfo = null;
                 if (enumValues != null) {
@@ -3107,8 +3115,8 @@ public class Column implements DataTypes, Constants, Cloneable {
                 if (tfo != null) {
                     tmpValues.add(tfo);
                 } else {
-                    String label = getEnumLabel("" + o, false);
-                    tmpValues.add(new HtmlUtils.Selector(label, o.toString()));
+                    String label = getEnumLabel(o.getLabel(), false);
+                    tmpValues.add(new HtmlUtils.Selector(label, o.getId()));
                 }
             }
 
@@ -3119,6 +3127,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 selectExtra += HU.cssClass("search-select");
             }
+
 
             //      if(true) return;
             //            System.err.println(getName() + " values=" + tmpValues);
