@@ -67,8 +67,11 @@ if [ ! -e "dailyghg.csv" ]; then
 	  -set year 0 "observation_year"  -set month 0 "observation_month" \
 	  -indateformats MM/dd/yyyy UTC \
 	  -convertdate date \
-	  -join reference latitude,longitude sitelibrary.csv siteid NaN \
-	  -firstcolumns siteid,date,observation_year,observation_month \
+	  -join reference latitude,longitude,type sitelibrary.csv siteid NaN \
+	  -set type 0 "site_type" \
+	  -change site_type "NaN" "NA" \
+	  -case site_type capitalize \
+	  -firstcolumns siteid,site_type,date,observation_year,observation_month \
 	  -columnsafter tavg "wind,wind_max" \
 	  -combine "latitude,longitude" ";" Location \
 	  -notcolumns latitude,longitude \

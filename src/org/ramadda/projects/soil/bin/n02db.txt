@@ -11,6 +11,7 @@ table.icon /soil/soil.png
 #table.mapLabelTemplate _quote_\${precinct} - \${city}_quote_
 table.cansearch true 
 siteid.type enumerationplus
+site_type.type enumerationplus
 treatment.type enumerationplus
 crop.type enumerationplus
 location.type latlon 
