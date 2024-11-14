@@ -2937,7 +2937,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
         } else if (isType(DATATYPE_PERCENTAGE) || isDouble()) {
             if (Utils.stringDefined(value)) {
-                values[offset] = Double.parseDouble(value.toString());
+                values[offset] = Utils.getDouble(value);
             } else {
                 values[offset] = Double.valueOf(0);
             }
