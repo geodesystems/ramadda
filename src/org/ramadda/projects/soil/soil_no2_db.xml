@@ -1,0 +1,64 @@
+<tables>
+<table  id="soil_test1_n02"  name="Test Soil N02 Database"  icon="/soil/soil.png" >
+<column  name="siteid"  enumeration_search_multiples="true"  type="enumerationplus"  label="Site ID"  cansearch="true"  canlist="true"  group="Observation" />
+<column  name="site_type"  enumeration_search_multiples="true"  type="enumerationplus"  label="Site Type"  cansearch="true"  canlist="true" />
+<column  name="date"  enumeration_search_multiples="true"  type="date"  label="Date"  cansearch="true"  canlist="true"  format="yyyy-MM-dd HH:mm" />
+<column  name="observation_year"  changetype="true"  enumeration_search_multiples="true"  type="enumeration"  label="Observation Year"  cansearch="true"  canlist="true" />
+<column  name="observation_month"  changetype="true"  enumeration_search_multiples="true"  type="enumeration"  label="Observation Month"  cansearch="true"  canlist="true" />
+<column  name="location"  enumeration_search_multiples="true"  type="latlon"  label="Location"  cansearch="true"  canlist="true" />
+<column  name="treatment"  enumeration_search_multiples="true"  type="enumerationplus"  label="Treatment"  cansearch="true"  canlist="true"  group="Treatment" />
+<column  name="crop"  enumeration_search_multiples="true"  type="enumerationplus"  label="Crop"  cansearch="true"  canlist="true" />
+<column  name="fertilizer_kgn_ha"  enumeration_search_multiples="true"  type="double"  label="Fertilizer KG/HA"  cansearch="true"  canlist="true" />
+<column  name="fert_type"  enumeration_search_multiples="true"  type="enumerationplus"  label="Fertilizer Type"  cansearch="true"  canlist="true" />
+<column  name="tillage_cm"  enumeration_search_multiples="true"  type="double"  label="Tillage Cm"  cansearch="true"  canlist="true" />
+<column  name="tillage_type"  enumeration_search_multiples="true"  type="enumerationplus"  label="Tillage Type"  cansearch="true"  canlist="true" />
+<column  name="sand"  enumeration_search_multiples="true"  type="double"  label="Sand"  cansearch="true"  canlist="true" />
+<column  name="silt"  enumeration_search_multiples="true"  type="double"  label="Silt"  cansearch="true"  canlist="true" />
+<column  name="clay"  enumeration_search_multiples="true"  type="double"  label="Clay"  cansearch="true"  canlist="true" />
+<column  name="tmax"  enumeration_search_multiples="true"  type="double"  label="Max Temperature"  cansearch="true"  canlist="true"  group="Weather" />
+<column  name="tmin"  enumeration_search_multiples="true"  type="double"  label="Min Temperature"  cansearch="true"  canlist="true" />
+<column  name="tavg"  enumeration_search_multiples="true"  type="double"  label="Average Temperature"  cansearch="true"  canlist="true" />
+<column  name="wind"  enumeration_search_multiples="true"  type="double"  label="Wind"  cansearch="true"  canlist="true" />
+<column  name="wind_max"  enumeration_search_multiples="true"  type="double"  label="Wind Max"  cansearch="true"  canlist="true" />
+<column  name="totalnetrad"  enumeration_search_multiples="true"  type="double"  label="Total Net Radiation"  cansearch="true"  canlist="true" />
+<column  name="rain"  enumeration_search_multiples="true"  type="double"  label="Rain"  cansearch="true"  canlist="true" />
+<column  name="rain_irrigation"  enumeration_search_multiples="true"  type="double"  label="Rain Irrigation"  cansearch="true"  canlist="true" />
+<column  name="dew"  enumeration_search_multiples="true"  type="double"  label="Dew"  cansearch="true"  canlist="true" />
+<column  name="gsr_avg"  enumeration_search_multiples="true"  type="double"  label="Gsr Avg"  cansearch="true"  canlist="true" />
+<column  name="humi_max"  enumeration_search_multiples="true"  type="double"  label="Max Humidity"  cansearch="true"  canlist="true" />
+<column  name="humi_min"  enumeration_search_multiples="true"  type="double"  label="Min Humidity"  cansearch="true"  canlist="true" />
+<column  name="humi_avg"  enumeration_search_multiples="true"  type="double"  label="Average Humidity"  cansearch="true"  canlist="true" />
+<column  name="soilt"  enumeration_search_multiples="true"  type="double"  label="Soil Temperature"  cansearch="true"  canlist="true"  group="Soil Characteristics" />
+<column  name="soil_temp5"  enumeration_search_multiples="true"  type="double"  label="Soil Temp5"  cansearch="true"  canlist="true" />
+<column  name="soil_temp10"  enumeration_search_multiples="true"  type="double"  label="Soil Temp10"  cansearch="true"  canlist="true" />
+<column  name="soil_temp20"  enumeration_search_multiples="true"  type="double"  label="Soil Temp20"  cansearch="true"  canlist="true" />
+<column  name="soil_temp_x"  enumeration_search_multiples="true"  type="double"  label="Soil Temp X"  cansearch="true"  canlist="true" />
+<column  name="soil_temp_x_depth"  enumeration_search_multiples="true"  type="double"  label="Soil Temp X Depth"  cansearch="true"  canlist="true" />
+<column  name="soilm0"  enumeration_search_multiples="true"  type="double"  label="Soilm0"  cansearch="true"  canlist="true" />
+<column  name="soilm5"  enumeration_search_multiples="true"  type="double"  label="Soilm5"  cansearch="true"  canlist="true" />
+<column  name="soilm10"  enumeration_search_multiples="true"  type="double"  label="Soilm10"  cansearch="true"  canlist="true" />
+<column  name="soilm20"  enumeration_search_multiples="true"  type="double"  label="Soilm20"  cansearch="true"  canlist="true" />
+<column  name="soil_m"  enumeration_search_multiples="true"  type="double"  label="Soil M"  cansearch="true"  canlist="true" />
+<column  name="soilm_depth"  enumeration_search_multiples="true"  type="double"  label="Soilm Depth"  cansearch="true"  canlist="true" />
+<column  name="wfps0"  enumeration_search_multiples="true"  type="double"  label="Wfps0"  cansearch="true"  canlist="true" />
+<column  name="wfps5"  enumeration_search_multiples="true"  type="double"  label="Wfps5"  cansearch="true"  canlist="true" />
+<column  name="wfps10"  enumeration_search_multiples="true"  type="double"  label="Wfps10"  cansearch="true"  canlist="true" />
+<column  name="wfps20"  enumeration_search_multiples="true"  type="double"  label="Wfps20"  cansearch="true"  canlist="true" />
+<column  name="wfps"  enumeration_search_multiples="true"  type="double"  label="Wfps"  cansearch="true"  canlist="true" />
+<column  name="wfps_depth"  enumeration_search_multiples="true"  type="double"  label="Wfps Depth"  cansearch="true"  canlist="true" />
+<column  name="etref_s"  enumeration_search_multiples="true"  type="double"  label="Etref S"  cansearch="true"  canlist="true" />
+<column  name="etref_t"  enumeration_search_multiples="true"  type="double"  label="Etref T"  cansearch="true"  canlist="true" />
+<column  name="nh4"  enumeration_search_multiples="true"  type="double"  label="Nh4"  cansearch="true"  canlist="true" />
+<column  name="no3"  enumeration_search_multiples="true"  type="double"  label="No3"  cansearch="true"  canlist="true" />
+<column  name="doc"  enumeration_search_multiples="true"  type="double"  label="Doc"  cansearch="true"  canlist="true" />
+<column  name="eto"  enumeration_search_multiples="true"  type="double"  label="Eto"  cansearch="true"  canlist="true" />
+<column  name="ch4"  enumeration_search_multiples="true"  type="double"  label="Ch4"  cansearch="true"  canlist="true" />
+<column  name="ch4sd"  enumeration_search_multiples="true"  type="double"  label="Ch4sd"  cansearch="true"  canlist="true" />
+<column  name="co2"  enumeration_search_multiples="true"  type="double"  label="Co2"  cansearch="true"  canlist="true" />
+<column  name="co2sd"  enumeration_search_multiples="true"  type="double"  label="Co2sd"  cansearch="true"  canlist="true" />
+<column  name="n2o"  enumeration_search_multiples="true"  type="double"  label="N2o"  cansearch="true"  canlist="true" />
+<column  name="n2osd"  enumeration_search_multiples="true"  type="double"  label="N2osd"  cansearch="true"  canlist="true" />
+<column  name="wfps_calc"  enumeration_search_multiples="true"  type="double"  label="Wfps Calc"  cansearch="true"  canlist="true" />
+<column  name="ph"  enumeration_search_multiples="true"  type="double"  label="PH"  cansearch="true"  canlist="true" />
+</table>
+</tables>
