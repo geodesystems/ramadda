@@ -6,7 +6,7 @@ table.showmultiples true
 #db.yesreallydroptable true
 table.type double
 #table.defaultOrder city,asc 
-#table.icon /icons/map/marker-blue.png 
+table.icon /soil/soil.png
 #table.defaultView map 
 #table.mapLabelTemplate _quote_\${precinct} - \${city}_quote_
 table.cansearch true 

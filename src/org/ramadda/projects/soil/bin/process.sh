@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+export mydir=`dirname $0`
 
 export dots=5000
 export dropdb=0
@@ -52,8 +53,10 @@ if [ ! -e "dailyghg.csv" ]; then
 	  -convertdate date \
 	  -join reference latitude,longitude sitelibrary.csv siteid NaN \
 	  -firstcolumns siteid,date,observation_year,observation_month \
+	  -columnsafter tavg "wind,wind_max" \
 	  -combine "latitude,longitude" ";" Location \
 	  -notcolumns latitude,longitude \
+	  -columnsafter observation_month location \
 	  -p DailyGHG_V1.csv > dailyghg.csv
 fi
 
@@ -61,7 +64,7 @@ if [ ! -e "sample.csv" ]; then
     seesv -sample 0.01 -p dailyghg.csv > sample.csv
 fi
 
-seesv -db  "file:n02db.txt"  sample.csv > soil_no2_db.xml
+seesv -db  "file:${mydir}/n02db.txt"  sample.csv > soil_no2_db.xml
 
 
 if [ "$install" -eq 1 ]; then
