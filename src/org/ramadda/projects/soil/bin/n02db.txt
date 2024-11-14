@@ -1,0 +1,18 @@
+table.id soil_test1_n02   
+table.label Test Soil N02 Database   
+#db.install true    
+#db.droptable true
+#db.yesreallydroptable true
+table.type double
+#table.defaultOrder city,asc 
+#table.icon /icons/map/marker-blue.png 
+#table.defaultView map 
+#table.mapLabelTemplate _quote_\${precinct} - \${city}_quote_
+table.cansearch true 
+siteid.type enumerationplus
+treatment.type enumerationplus
+crop.type enumerationplus
+location.type latlon 
+date.type date
+observation_year.type int
+observation_month.type int
