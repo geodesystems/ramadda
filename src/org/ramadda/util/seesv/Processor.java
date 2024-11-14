@@ -2862,7 +2862,7 @@ public abstract class Processor extends SeesvOperator {
 		    attrs.append(XmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
 
 		String showMultiples =getDbProp(colId, "show_multiples",dfltShowMultiples);
-		if(showMultiples!=null) {
+		if(showMultiples!=null && type.startsWith("enumeration")) {
 		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_search_multiples",showMultiples}));
 		}
 
