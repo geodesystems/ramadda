@@ -2726,6 +2726,7 @@ public abstract class Processor extends SeesvOperator {
             boolean dfltCanList = getDbProp("table", "canlist",
                                             "true").equals("true");
             String dfltChangeType = getDbProp("table", "changetype", "false");
+            String dfltShowMultiples  = getDbProp("table", "showmultiples", null);	    
 
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
             String displayFormat = getDbProp("table", "displayFormat", (String)null);
@@ -2860,9 +2861,10 @@ public abstract class Processor extends SeesvOperator {
 		if(doPolygonSearch)
 		    attrs.append(XmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
 
-		boolean showMultiples ="true".equals(getDbProp(colId, "show_multiples","true"));
-		if(!showMultiples)
-		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_multiples","false"}));
+		String showMultiples =getDbProp(colId, "show_multiples",dfltShowMultiples);
+		if(showMultiples!=null) {
+		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_search_multiples",showMultiples}));
+		}
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
                         canSearch + ""));
