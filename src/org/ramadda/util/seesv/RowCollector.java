@@ -531,6 +531,7 @@ public class RowCollector extends Processor {
         
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
+	    
             PrintWriter writer = ctx.getWriter();
 	    int cnt = 0;
             for (Row row : rows) {
@@ -551,7 +552,9 @@ public class RowCollector extends Processor {
 
                 writer.print(prefix);
                 for (Object o : values) {
-                    writer.print(" {" + o + "} ");
+		    String s = o.toString();
+		    s = s.replace("\n","\\n");
+                    writer.print(" {" + s + "} ");
                 }
                 writer.print("\n");
             }
