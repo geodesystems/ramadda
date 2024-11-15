@@ -113,7 +113,6 @@ public class XlsUtil {
                         //                      .rowCacheSize(100)    
                         //                      .bufferSize(4096)     
                         .open(is);
-
                         //Only read the first sheet
                         for (Sheet sheet : wb) {
 			    if(--_sheetNumber>0) {
@@ -163,6 +162,45 @@ public class XlsUtil {
             throw new RuntimeException(exc);
 
         }
+    }
+
+    public static void explodeXls(final IO.Path path) throws Exception {
+	InputStream is = new BufferedInputStream(
+						 IO.getInputStream(
+								   path.getPath(), XlsUtil.class));
+	Workbook wb = StreamingReader.builder()
+	    //                      .rowCacheSize(100)    
+	    //                      .bufferSize(4096)     
+	    .open(is);
+	for (Sheet sheet : wb) {
+	    String name = Utils.makeID(sheet.getSheetName())+".csv";
+	    FileOutputStream fos = new FileOutputStream(name);
+	    PrintWriter          pw  = new PrintWriter(fos);
+	    int rowIdx = 0;
+	    for (Row row : sheet) {
+		rowIdx++;
+		if (row == null) {
+		    continue;
+		}
+		short firstCol = row.getFirstCellNum();
+		for (short col = firstCol;
+		     col < row.getLastCellNum(); col++) {
+		    Cell cell = row.getCell(col);
+		    if (cell == null) {
+			break;
+		    }
+		    String value = cell.getStringCellValue();
+		    if (col > firstCol) {
+			pw.print(",");
+		    }
+		    pw.print(clean(value));
+		}
+		pw.println("");
+	    }
+	    pw.flush();
+	    pw.close();
+	    fos.close();
+	}
     }
 
 
@@ -260,7 +298,7 @@ public class XlsUtil {
      * @param maxRows _more_
      * @return _more_
      */
-    public static InputStream xlsToCsv(IO.Path path, int maxRows,int sheetNumber) {
+    public static InputStream xlsToCsv(final IO.Path path, final int maxRows,final int sheetNumber) {
         try {
             final PipedOutputStream pos = new PipedOutputStream();
             final PipedInputStream  pis = new PipedInputStream(pos);
@@ -378,6 +416,8 @@ public class XlsUtil {
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
+	    explodeXls(new IO.Path(arg));
+	    /*
             String csv = null;
             for (int i = 0; i < 10; i++) {
                 long t1 = System.currentTimeMillis();
@@ -392,6 +432,7 @@ public class XlsUtil {
             }
             String newFile = IOUtil.stripExtension(arg) + ".csv";
             IOUtil.writeFile(newFile, csv);
+	    */
         }
     }
 
