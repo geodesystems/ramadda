@@ -535,9 +535,20 @@ public class RowCollector extends Processor {
 	    int cnt = 0;
             for (Row row : rows) {
 		cnt++;
-		if(cnt==1) continue;
-
                 List values = row.getValues();
+		if(cnt==1) {
+		    writer.print("#proc ");
+		    writer.print(prefix);		    
+		    writer.print(" { ");
+
+		    for (Object o : values) {
+			String s = Utils.makeID(o.toString());
+			writer.print(" { "+s +" {}} " );
+		    }
+		    writer.println(" }  {  } ");
+		    continue;
+		}
+
                 writer.print(prefix);
                 for (Object o : values) {
                     writer.print(" {" + o + "} ");
