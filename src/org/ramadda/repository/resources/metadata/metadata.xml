@@ -69,10 +69,25 @@
     </type>    
     
 
-    <type name="Citation" id="content.citation" searchable="false" browsable="true" displaygroup="Citations"  priority="10">
+    <type name="Citation" id="content.citation" searchable="false" browsable="true"
+	  displaygroup="Citations"  priority="10">
       <element name="Citation" rows="5" datatype="string"/>
     </type>
 
+    <type name="Full Citation" id="content.fullcitation" 
+	  displaycategory="Citations"
+	  searchable="false" browsable="true" displaygroup="Citations"  priority="10">
+      <element name="Title"  datatype="string"/>
+      <element name="Date"  datatype="date"/>      
+      <element name="Type"  datatype="enumerationplus"/>
+      <element name="Author"  />
+      <element name="Corresponding Author"  />            
+      <element name="Identifier"  />      
+      <element name="Description"  />      
+      <element name="Full Citation" rows="5" />      
+      <element name="URL" datatype="url" />      
+    </type>
+    
 
     <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  priority="10">
       <element name="Acknowledgement" rows="5"/>
