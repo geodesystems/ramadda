@@ -2419,7 +2419,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("header label"),
                 new Arg("value label")),
         new Cmd(CMD_EXPLODE, "Make separate files based on value of column",
-                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN)),
+                new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
+		new Arg("template","e.g., file_${value}.csv")),
         new Cmd(CMD_JOIN, "Join the 2 files together",
                 new Arg("key columns", "key columns the file to join with", ATTR_TYPE, TYPE_COLUMNS),
                 new Arg("value_columns", "value columns"),
@@ -4284,8 +4285,8 @@ public class Seesv implements SeesvCommands {
 	    });
 
 
-	defineFunction(CMD_EXPLODE,1,(ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.Exploder(ctx, args.get(++i)));
+	defineFunction(CMD_EXPLODE,2,(ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Exploder(ctx, args.get(++i),args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_DISSECT,2,(ctx,args,i) -> {
