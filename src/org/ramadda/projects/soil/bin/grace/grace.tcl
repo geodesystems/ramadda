@@ -6,6 +6,34 @@ source $env(RAMADDA_ROOT)/bin/ramadda.tcl
 set ::cnt 0
 set ::sites {}
 array set ::sitesMap {}
+set ::exportFiles {}
+
+
+array set ::names {
+    measargenes {Measure Genes}
+    measbiomasscho  {Measure Biomass Cho}
+    measbiomassenergy  {Measure Biomass Energy} 
+    measbiomassminan  {Measure Biomass Minan}  
+    measgasnutrientloss  {Measure Nutrient Loss}
+    measghgflux  {Measure GHG Flux}
+    measgrazingplants  {Measure Grazing Plants}
+    measharvestfraction  {Measure Harvest Fraction}
+    measnutreff  {Measure Nutrient Reff}
+    measresiduemgnt  {Measure Residue Management}
+    meassoilbiol  {Measure Soil Biology}
+    meassoilchem  {Measure Soil Chemistry}
+    meassoilcover  {Measure Soil Cover}
+    meassoilphys  {Measure Soil Phys}
+    measwaterqualityarea  {Measure Water Quality Area}
+    measwaterqualityconc  {Measure Water Quality Conc}
+    measwinderosionarea  {Measure Wind Erosion Area}
+    measyieldnutuptake  {Measure Yield Nutrient Uptake}
+    mgtamendments  {Management Amendments}
+    mgtgrazing {Management Grazing}
+    mgtgrowthstages {Management Growth Stages}
+    mgtplanting {Management Planting}
+    mgtresidue {Management Residue}
+    mgttillage {Management Tillage}} 
 
 set ::xml "<entries>\n"
 
@@ -56,27 +84,25 @@ oo::class create Site {
     method addUnit {unit} {
         lappend units $unit
     }    
-    
-    method listCitations {} {
-        foreach citation $citations {
-            puts [$citation getCitationDetails]
-        }
-    }
+
     method process {} {
-	if {[incr ::cnt]>5} return
+#	if {[incr ::cnt]>5} return
 	set name "$id - [my getProp site_id_descriptor]"
 	set start [my getProp start_date]
 	set end [my getProp end_date]	
 
-	append ::xml [openEntry type_geo_site $id {} $name]
+	set entryid [string tolower $id]
+	append ::xml [openEntry type_geo_site $entryid {} $name]
 	if {$start!=""} {
 	    append ::xml [col fromdate $start]
 	}
 	if {$end!=""} {
 	    append ::xml [col todate $end]
 	}
-	append ::xml [col latitude [my getProp latitude_decimal_deg]]
-	append ::xml [col longitude [my getProp longitude_decimal_deg]]
+	set lat [my getProp latitude_decimal_deg]
+	set lon [my getProp longitude_decimal_deg]    
+	append ::xml [col latitude $lat]
+	append ::xml [col longitude $lon]
 	append ::xml [col altitude [my getProp elevation_m]]		
 	append ::xml [col description [my getProp site_history]]
 	set	alias "grace-[string tolower $id]"
@@ -107,9 +133,22 @@ oo::class create Site {
 
 	}
 	
-
-
 	append ::xml [closeEntry] 
+	foreach data [array names ::names] {
+#	    puts "$data=$::names($data)"
+
+	    set path "split/$data/${data}_${entryid}.csv"
+	    if {![file exists $path]} {
+		continue;
+	    }
+	    lappend ::exportFiles $path
+	    set name "[toProperCase $id] - [toProperCase $::names($data)]"
+	    append ::xml [openEntry type_soil_grace_measurement {} $entryid $name file $path latitude $lat longitude $lon]
+	    append ::xml [col datatype $data]
+	    append ::xml [closeEntry] 
+	}
+
+
     }
 }
 
@@ -187,5 +226,21 @@ source tcl/experunits.tcl
 foreach site  $::sites {
     $site process
 }
+
+
+
+
+
 append ::xml "</entries>"
-puts $::xml
+
+
+
+
+
+set efp [open entries.xml w]
+puts $efp $::xml
+close $efp
+
+
+
+eval exec jar -cvf graceimport.zip entries.xml $::exportFiles
