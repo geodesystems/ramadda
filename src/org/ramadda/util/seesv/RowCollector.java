@@ -534,19 +534,24 @@ public class RowCollector extends Processor {
 	    
             PrintWriter writer = ctx.getWriter();
 	    int cnt = 0;
+	    int cols = 0;
+
             for (Row row : rows) {
 		cnt++;
                 List values = row.getValues();
 		if(cnt==1) {
-		    writer.print("#proc ");
-		    writer.print(prefix);		    
-		    writer.print(" { ");
+		    cols=values.size();
+		    StringBuilder args = new StringBuilder();
+		    args.append("#set ::" + prefix+"Args {");
+		    //writer.print(prefix);		     writer.print(" { ");
 
 		    for (Object o : values) {
 			String s = Utils.makeID(o.toString());
-			writer.print(" { "+s +" {}} " );
+			args.append(" "+s +" " );
 		    }
-		    writer.println(" }  {  } ");
+		    args.append("}\n");
+		    writer.print(args);
+		    writer.println("#proc " + prefix +" $::" + prefix+"Args { }");
 		    continue;
 		}
 
@@ -556,6 +561,11 @@ public class RowCollector extends Processor {
 		    s = s.replace("\n","\\n");
                     writer.print(" {" + s + "} ");
                 }
+		int todo = cols-values.size();
+		while(todo-->0) {
+                    writer.print(" {} ");
+		}
+
                 writer.print("\n");
             }
 
