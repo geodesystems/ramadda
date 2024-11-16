@@ -88,7 +88,7 @@ includeNonImages=false
 +col-8
 {{description wikify="true"}}
 :heading Data
-{{tabletree  message="No entries" orderby=name ascending=true showType=false showSize=false}}
+{{tabletree  message="No data available" orderby=name ascending=true showType=false showSize=false}}
 -col
 +col-4
 +center
