@@ -107,4 +107,17 @@ proc  mtd5 {type v1 {v2 {}} {v3 {}} {v4 {}} {v5 {}}} {
 }
 
 
+proc  mtdN {type args} {
+    set xml  "<metadata [attr type $type]>\n"
+    for {set i 0} {$i<15} {incr i} {
+	set v [lindex $args $i]
+	if {$v!=""} {
+	    append  xml "<attr [attr index [expr $i+1]] [attr encoded false]>[cdata [clean $v]]</attr>"
+	}
+    }
+    append xml "</metadata>\n"
+    set xml
+}
+
+
 
