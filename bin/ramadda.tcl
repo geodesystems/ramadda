@@ -1,5 +1,15 @@
 
 
+proc toProperCase {input} {
+    set result {}
+    foreach word [split $input] {
+        set first [string toupper [string index $word 0]]
+        set rest [string tolower [string range $word 1 end]]
+        append result "$first$rest "
+    }
+    return [string trim $result]
+}
+
 proc cdata {s} {
     return "<!\[CDATA\[$s\]\]>"
 }
@@ -35,6 +45,10 @@ proc attr {key value} {
     return " $key=\"[clean $value]\" "
 }
 
+proc closeEntry {} {
+    return "</entry>\n"
+}
+
 proc openEntry {type id parent name} {
     set e   "<entry  [attr type $type] ";
     if {$id!=""} {
@@ -65,6 +79,10 @@ proc  mtd2 {type value1 value2} {
     }
     append xml "</metadata>\n"
     set xml
+}
+
+proc clean {s} {
+    return $s
 }
 
 proc  mtd5 {type v1 {v2 {}} {v3 {}} {v4 {}} {v5 {}}} {
