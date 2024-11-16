@@ -12,7 +12,7 @@ export mydir=`dirname $0`
 #the -dots say to print a progress message
 
 seesv() {
-    ${SEESV}   -dots  "tab5000"  "$@"
+    ${SEESV}   -dots  "tab2000"  "$@"
 }
 
 

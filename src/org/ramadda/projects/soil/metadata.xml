@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Soil Properties" >
+
+    <type id="soil_grace_person" name="GRACE Project People"
+       displaycategory="People"
+       >
+      <element id="name" name="Name" datatype="string"/>
+      <element id="role" name="Role in Study" datatype="enumerationplus"/>
+      <element id="primary_contact" name="Primary Contact" datatype="boolean"/>
+      <element id="department" name="Department" datatype="enumerationplus"/>
+      <element id="organization" name="Organization" datatype="enumerationplus"/>
+      <element id="profession" name="Profession" datatype="enumerationplus"/>
+      <element id="email" name="Email" datatype="email"/>
+      <element id="telephone" name="Telephone" datatype="string"/>
+      <element id="web_site" name="Web Site" datatype="url"/>
+      <element id="note" name="Note" datatype="string"/>
+    </type>
+
+  </handler>
+</metadata>

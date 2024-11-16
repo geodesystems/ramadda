@@ -3,6 +3,7 @@ package require Tcl 8.6
 ##source the lib
 source $env(RAMADDA_ROOT)/bin/ramadda.tcl
 
+set ::cnt 0
 set ::sites {}
 array set ::sitesMap {}
 
@@ -62,6 +63,7 @@ oo::class create Site {
         }
     }
     method process {} {
+	if {[incr ::cnt]>5} return
 	set name "$id - [my getProp site_id_descriptor]"
 	set start [my getProp start_date]
 	set end [my getProp end_date]	
@@ -96,9 +98,15 @@ oo::class create Site {
 	    set name "[$person getProp first_name] [$person getProp middle_name] [$person getProp last_name] [$person getProp suffix]"
 	    regsub -all {  +} $name { } name
 	    set name [string trim $name]
-	    puts stderr $name
+	    append ::xml [mtdN soil_grace_person $name [$person getProp role_in_study]  [$person getProp primary_contact] [$person getProp department] [$person getProp organization] [$person getProp profession] [$person getProp email] [$person getProp telephone] [$person getProp web_site]  [$person getProp note] ]
+
 	}
 
+	foreach c $citations {
+	    append ::xml [mtdN content.fullcitation  [$c getProp title] [$c getProp date_published] [$c getProp type] [$c getProp author] [$c getProp correspond_author] [$c getProp identifier] [$c getProp description] [$c getProp citation] [$c getProp url]] 
+
+	}
+	
 
 
 	append ::xml [closeEntry] 
@@ -140,13 +148,11 @@ proc persons $::personsArgs {
 set ::citationsArgs {siteid date_published type title is_part_of  author  correspond_author  identifier description citation url} 
 proc citations $::citationsArgs {
     set site $::sitesMap($siteid) 
-    set citation [Base new]
-    $site addCitation $citation
+    set c [Base new]
+    $site addCitation $c
     foreach arg $::citationsArgs {
-	$citation setProp $arg [set $arg]
+	$c setProp $arg [set $arg]
     }
-
-
 }
 
 set ::treatmentsArgs  {    siteid treatment_id start_date  treatment_descriptor  rotation_descriptor  tillage_descriptor n_treatment_descriptor  project_scenario fertilizer_amendment_class  cover_crop residue_removal irrigation organic_management  grazing_rate animal_species  operation ars_projects}
