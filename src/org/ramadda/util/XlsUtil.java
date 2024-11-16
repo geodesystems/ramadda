@@ -17,6 +17,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -165,6 +167,7 @@ public class XlsUtil {
     }
 
     public static void explodeXls(final IO.Path path) throws Exception {
+	SimpleDateFormat sdf =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	InputStream is = new BufferedInputStream(
 						 IO.getInputStream(
 								   path.getPath(), XlsUtil.class));
@@ -186,10 +189,16 @@ public class XlsUtil {
 		for (short col = firstCol;
 		     col < row.getLastCellNum(); col++) {
 		    Cell cell = row.getCell(col);
-		    if (cell == null) {
-			break;
+		    String value = "";
+		    if (cell != null) {
+			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+			    Date date = cell.getDateCellValue();
+			    value = sdf.format(date);
+			} else {
+			    value = cell.getStringCellValue();
+			}
 		    }
-		    String value = cell.getStringCellValue();
+
 		    if (col > firstCol) {
 			pw.print(",");
 		    }
