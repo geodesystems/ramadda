@@ -579,8 +579,14 @@ public class RowCollector extends Processor {
 
     
     public static class Exploder extends RowCollector {
-        public Exploder(TextReader ctx, String col) {
+	String template;
+        public Exploder(TextReader ctx, String col,String template) {
             super(col);
+	    if(!Utils.stringDefined(template)) {
+		template = "${value}.csv";
+	    }
+	    this.template=template;
+
         }
         
         @Override
@@ -597,6 +603,7 @@ public class RowCollector extends Processor {
             for (int i = 1; i < rows.size(); i++) {
                 Row       row    = rows.get(i);
                 List      values = row.getValues();
+		if(!row.indexOk(column)) continue;
                 String    value  = values.get(column).toString();
                 List<Row> myRows = map.get(value);
                 if (myRows == null) {
@@ -621,7 +628,7 @@ public class RowCollector extends Processor {
                 s = s.replaceAll("_+_", "_");
                 s = s.replaceAll("\\.", "_");
                 s = Utils.removeNonAscii(s);
-                String filename = s + ".csv";
+                String filename = template.replace("${value}",s);
                 filename = filename.replace("_.", ".");
 
                 //                System.err.println("writing:" + filename);
