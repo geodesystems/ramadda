@@ -49,14 +49,21 @@ proc closeEntry {} {
     return "</entry>\n"
 }
 
-proc openEntry {type id parent name} {
+proc openEntry {type id parent name args} {
     set e   "<entry  [attr type $type] ";
     if {$id!=""} {
 	append e [attr id $id]
     }
     if {$parent !=""} {append e [attr  parent $parent];}
+    for {set i 0} {$i<[llength $args]} {incr i 2} {
+	append e [attr [lindex $args $i] [lindex $args [expr $i+1]]]
+    }
+
+
     append e ">\n";
-    append e [attrs name $name]
+    if {$name!=""} {
+	append e [attrs name $name]
+    }
     set e
 }
 
