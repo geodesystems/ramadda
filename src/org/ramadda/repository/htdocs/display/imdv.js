@@ -6121,6 +6121,24 @@ var IMDV_PATTERNS = {
     "diagonal-stripe-5":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='5'/></svg>"},
     "diagonal-stripe-6":{width:10,height:10,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='<%= background %>'/><path d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='<%= foreground %>' stroke-width='6a'/></svg>"},
     "subtle-patch":{width:5,height:5,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='5' height='5'><rect width='5' height='5' fill='<%= background %>' /><rect x='2' y='2' width='1' height='1' fill='<%= foreground %>' /></svg>"},
+    "sparse-rect-1":{
+	width:30,height:30,
+	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
+    },
+    "sparse-rect-2":{
+	width:40,height:40,
+	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
+    },    
+    "sparse-rect-3":{
+	width:50,height:50,
+	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
+    },
+    "sparse-rect-4":{
+	width:60,height:60,
+	svg:"<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><rect width='2' height='2' fill='<%= foreground %>' />' /></svg>"
+    },    
+
+
     "whitecarbon":{width:6,height:6,svg:"<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='6' height='6'><rect width='6' height='6' fill='<%= background %>'/><g id='c'><rect width='3' height='3' fill='<%= foreground %>'/><rect y='1' width='3' height='2' fill='<%= foreground %>'/></g><use xlink:href='#c' x='3' y='3'/></svg>"},
     "crosshatch":{width:8,height:8,svg:"<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='<%= background %>'/><path d='M0 0L8 8ZM8 0L0 8Z' stroke-width='0.5' stroke='<%= foreground %>'/></svg> "},
     "houndstooth":{width:10,height:10,svg:"<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><path d='M0 0L4 4' stroke='#aaa' fill='#aaa' stroke-width='1'/><path d='M2.5 0L5 2.5L5 5L9 9L5 5L10 5L10 0' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/><path d='M5 10L5 7.5L7.5 10' stroke='<%= foreground %>' fill='<%= foreground %>' stroke-width='1'/></svg> "},
