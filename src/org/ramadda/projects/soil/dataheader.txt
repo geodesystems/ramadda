@@ -1,0 +1,16 @@
+siteid.type=enumeration   
+exp_unit_id.type=enumeration 
+date.format={yyyy-MM-dd hh:mm:ss} 
+treatment_id.type=enumeration
+crop.type=enumeration
+chamber_placement.type=enumeration
+growth_stage.type=enumeration
+sampling_start_stop_interval.type=enumeration
+interval.type=enumeration
+method.type=enumeration
+losses_or_deposition.type=enumeration
+plant_fraction.type=enumeration
+.type=enumeration
+.type=enumeration
+.type=enumeration
+.type=enumeration 
