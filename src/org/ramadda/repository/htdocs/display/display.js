@@ -3271,7 +3271,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				html += HU.tag(TAG_DIV, [],label + ' - ' +field.getId());
 			    } else {
 				if (this.canDoMultiFields()) {
-                                    widget = HU.checkbox(field.checkboxId, [CLASS, checkboxClass,'title',field.getId()], on,label);
+                                    widget = HU.checkbox(field.checkboxId, [ATTR_CLASS, checkboxClass,ATTR_TITLE,field.getId() +' - '+ field.getType()], on,label);
 				    html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()], widget);
 				} else {
                                     widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
