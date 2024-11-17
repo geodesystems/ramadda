@@ -2003,52 +2003,19 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class HeaderMaker extends Converter {
-
-        /** _more_ */
         private int count = 0;
-
-        /* */
-
-        /** _more_ */
         PatternProps props;
-
-        /* */
-
-        /** _more_ */
         String defaultType = "string";
-
-        /**  */
         String defaultTypeFromProperties;
-
-        /* */
-
-        /** _more_ */
         boolean defaultChartable = true;
-
-        /** _more_ */
         boolean makeLabel = true;
-
-        /** _more_ */
         boolean toStdOut = false;
-
-        /** _more_ */
         Row firstRow;
+	List<String[]> typePatterns;
 
 	org.ramadda.util.Propper  propper;
 
-        /**
-         * @param props _more_
-         */
         public HeaderMaker(Seesv seesv, Dictionary<String, String> props) {
             this.props = new PatternProps(props);
 	    try {
@@ -2064,8 +2031,6 @@ public abstract class Converter extends Processor {
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
 	    }
-
-
 
 
             defaultType = Seesv.getDbProp(props, "default", "type",
@@ -2086,6 +2051,23 @@ public abstract class Converter extends Processor {
 	    }
             makeLabel = Seesv.getDbProp(props, null, "makeLabel", true);
             toStdOut  = Seesv.getDbProp(props, null, "stdout", false);
+	    Enumeration<String> keys = props.keys();
+	    typePatterns = new ArrayList<String[]>();
+	    while (keys.hasMoreElements()) {
+		String key = keys.nextElement();
+		if(key.endsWith(".type")) {
+		    String pattern = key.replace(".type","");
+		    if(StringUtil.containsRegExp(pattern)) {
+			String v  =props.get(key);
+			pattern = pattern.replace("_space_"," ");
+			//			System.err.println("PATTERN:" + pattern +  " value:" + v);
+			typePatterns.add(new String[]{pattern,v});
+		    }
+		}
+	    }
+
+
+
         }
 
 
@@ -2308,7 +2290,15 @@ public abstract class Converter extends Processor {
                 //              System.err.println("\tfinal type:" + type);
 
 
+		for(String[]tuple:typePatterns) {
+		    if(label.matches(tuple[0]) || id.matches(tuple[0])) {
+			type = tuple[1];
+			break;
+		    }
+		}
                 type = Seesv.getDbProp(props, id, i, "type", type);
+
+
 		//		System.err.println("ID:"  + id  + " type:" + type +" format:" + format);
 
 

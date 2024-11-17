@@ -6182,15 +6182,23 @@ public class Seesv implements SeesvCommands {
      * @return _more_
      */
     public  Dictionary<String, String> parseProps(String s) {
-	if(s.startsWith(PREFIX_FILE)) {
-	    File file = new File(s.substring(PREFIX_FILE.length()));
-	    checkOkToRead(file.toString());
-	    Properties tmp = new Properties();
+	if(s.startsWith(PREFIX_FILE) || s.startsWith(PREFIX_RESOURCE)) {
 	    try {
-		String contents =  IO.readContents(file);
-		String parent = file.getParent();
-		if(parent!=null)
-		    contents = contents.replace("${directory}",file.getParent());
+		File file=null;
+		String contents;
+		if(s.startsWith(PREFIX_FILE)) {
+		    file = new File(s.substring(PREFIX_FILE.length()));
+		    checkOkToRead(file.toString());
+		    contents =  IO.readContents(file);
+		} else {
+		    contents = readFile(s);
+		}
+		Properties tmp = new Properties();
+		if(file!=null) {
+		    String parent = file.getParent();
+		    if(parent!=null)
+			contents = contents.replace("${directory}",file.getParent());
+		}
 		InputStream fis= new ByteArrayInputStream(contents.getBytes());
 		tmp.load(new InputStreamReader(fis, Charset.forName("UTF-8")));
 		fis.close();
@@ -6200,11 +6208,11 @@ public class Seesv implements SeesvCommands {
 		    tmp2.put(key.toString().trim(),v.toString().trim());
 		}
 		tmp = tmp2;
+		Dictionary dict = tmp;
+		return (Dictionary<String,String>)dict;
 	    } catch(Exception exc) {
 		throw new RuntimeException(exc);
 	    }		
-	    Dictionary dict = tmp;
-	    return (Dictionary<String,String>)dict;
 	}
 
 	//Remove comment lines
