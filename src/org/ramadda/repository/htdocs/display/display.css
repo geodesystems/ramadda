@@ -508,6 +508,7 @@ table.dataTable {
 }
 
 .display-map-toc {
+    padding:5px;
     margin-right:6px;
     width:200px;
     max-width:200px;    

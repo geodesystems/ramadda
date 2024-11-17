@@ -3181,7 +3181,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let iconField = this.getFieldById(null, this.getProperty("iconField"));
 		let doTable=this.getProperty('tocTable',true);
 		if(doTable) {
-		    html+='<table><tr>'
+		    html+='<table  width=100%><tr>'
+		    if(urlField) html+='<td></td>';
 		    fields.forEach(f=>{
 			html+='<td style=\'font-weight:bold;\'>' + f.getLabel() +'</td>';
 		    });
@@ -3191,12 +3192,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		records.forEach((record,idx)=>{
 		    let title = "View record";
 		    if(this.trackUrlField) title = "Click to view; Double-click to view track";
-		    let values= fields.map(f=>{
+		    let values=[];
+		    values.push(...fields.map(f=>{
 			return f.getValue(record);
-		    });
+		    }));
+
 		    let value;
 		    if(doTable) {
-			value = Utils.wrap(values,HU.open('td',[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx]),'</td>');
+			let width = Math.floor(100/values.length)+'%';
+			value = Utils.wrap(values,HU.open('td',[ATTR_CLASS,clazz,RECORD_ID,record.getId(),RECORD_INDEX,idx,'x'+ATTR_WIDTH,width]),'</td>');
+			if(urlField) {
+			    let url = urlField.getValue(record);
+			    if(Utils.stringDefined(url)) {
+				value = HU.td([ATTR_STYLE,HU.css('width','10px')],
+					      HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']))+value;
+			}
+		    }
 			html+=HU.tag('tr',[], value);
 		    } else {
 			value = Utils.join(values,' ');
@@ -3206,6 +3217,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    value = HU.getIconImage(iconField.getValue(record,icon_blank16),["width",16]) + SPACE + value;
 			}
 			if(urlField) {
+
 			    let url = urlField.getValue(record);
 			    if(Utils.stringDefined(url)) {
 				value=HU.href(url,HU.getIconImage('fas fa-link',null,[ATTR_STYLE,'font-size:8pt;']),['target','_link']) + HU.space(1) +value;
@@ -3218,14 +3230,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    html+='</table>';
 		}
 	    }
+
 	    if(html) {
-		let height = this.getProperty("height", this.getProperty("mapHeight", 300));
-		height="calc(" +HU.getDimension(height)+" - 1em)";
-		let style = HU.css('height',height,"max-height",height,'overflow-y','auto');
+		let height = this.getProperty('height', this.getProperty('mapHeight', 300));
+		height='calc(' +HU.getDimension(height)+' - 1em)';
+		let style = HU.css('height',height,'max-height',height,'overflow-y','auto');
 		if(this.getTocWidth()) {
 		    style+=HU.css("min-width",this.getTocWidth());
 		}
-		html = HU.div([CLASS, "display-map-toc",ATTR_STYLE,style,ATTR_ID, this.domId("toc")],html);
+		html = HU.div([ATTR_CLASS, "display-map-toc",ATTR_STYLE,style,ATTR_ID, this.domId("toc")],html);
 		if(title) html = HU.center(HU.b(title)) + html;
 		this.jq(ID_LEFT).html(html);
 		let _this = this;
