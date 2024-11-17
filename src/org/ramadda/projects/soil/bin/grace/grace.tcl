@@ -15,7 +15,7 @@ array set ::names {
     measbiomasscho  {Measure Biomass Cho}
     measbiomassenergy  {Measure Biomass Energy} 
     measbiomassminan  {Measure Biomass Minan}  
-    measgasnutrientloss  {Measure Nutrient Loss}
+    measgasnutrientloss  {Measure Gas Nutrient Loss}
     measghgflux  {Measure GHG Flux}
     measgrazingplants  {Measure Grazing Plants}
     measharvestfraction  {Measure Harvest Fraction}

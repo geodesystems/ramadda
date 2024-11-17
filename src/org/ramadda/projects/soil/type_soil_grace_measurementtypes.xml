@@ -10,14 +10,14 @@
 <property name="inheritlocationfromtype" value="type_geo_site"/>
 <property name="search.tabs" value="map,list"/>
 <column  name="datatype"  label="Data Type" type="enumerationplus"  cansearch="true"
-	 values="file:/org/ramadda/projects/soil/datatypes.txt"	 />
+	 values="file:/org/ramadda/projects/soil/resources/datatypes.txt"	 />
 
 
 <!-- SeeSV commands-->
 
 <property  name="record.properties" ><![CDATA[
 picky=false
-csvcommands1=-addheader,file:/org/ramadda/projects/soil/dataheader.txt
+csvcommands1=-addheader,resource:/org/ramadda/projects/soil/resources/dataheader.txt
 ]]></property>
 
 <!-- Wiki text-->
