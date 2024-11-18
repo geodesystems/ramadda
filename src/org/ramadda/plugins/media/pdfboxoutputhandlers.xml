@@ -1,5 +1,6 @@
 <outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="/icons/pdf.png" category="Documents and Images">
 
+  <outputhandler serviceId="xlsx_extractsheets"/>
   <outputhandler serviceId="media_pdfbox_extracttext"/>
   <outputhandler serviceId="media_pdfbox_extractimages"/>
   <outputhandler serviceId="media_pdfbox_pdftoimage"/>

@@ -13,4 +13,14 @@
   <arg value="${entry.file}" type="entry" entryType="type_document_tika" primary="true" label="Input Document"  entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*)"></arg>
 </service>
 
+<service id="xlsx_extractsheets" label="Extract sheets" command="java:org.ramadda.data.docs.TikaService:extractSheets" >
+  <description><![CDATA[Extract individual sheets from an XLSX spreadsheet]]></description>
+
+  <arg value="${entry.file}" type="entry" xentryType="type_document_tika" primary="true" label="Input Document"
+       entryPattern="(.*\.xlsx)"></arg>
+  <output type="file" pattern=".*\.csv"/>
+</service>
+
+
+
 </services>

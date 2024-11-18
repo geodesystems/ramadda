@@ -43,7 +43,9 @@ import org.apache.tika.sax.BodyContentHandler;
 
 import org.ramadda.repository.*;
 import org.ramadda.service.*;
+import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.XlsUtil;
 import org.ramadda.util.TikaUtil;
 
 import org.w3c.dom.*;
@@ -144,7 +146,7 @@ public class TikaService extends Service {
         Parser parser =
             new AutoDetectParser(TikaUtil.getConfigNoImage());
         //Set the max char length to be 5 meg
-        BodyContentHandler handler = new BodyContentHandler(5 * 1000 * 1000);
+        BodyContentHandler handler = new BodyContentHandler(5_000_000);
         Metadata           metadata    = new Metadata();
         FileInputStream    inputstream = new FileInputStream(entry.getFile());
         ParseContext       context     = new ParseContext();
@@ -250,6 +252,27 @@ public class TikaService extends Service {
         slide.draw(image.createGraphics());
         ImageIO.write(image, "png", output);
     }
+
+    public boolean extractSheets(Request request, Service service,
+                               ServiceInput input, List args)
+            throws Exception {
+        Entry entry = null;
+        for (Entry e : input.getEntries()) {
+            if (e.isFile()) {
+                entry = e;
+                break;
+            }
+        }
+        if (entry == null) {
+            throw new IllegalArgumentException("No file entry found");
+        }
+
+	IO.Path path  = new IO.Path(entry.getResource().getPath());
+	XlsUtil.explodeXls(path, input.getProcessDir());
+        return true;
+    }
+
+
 
 
 }
