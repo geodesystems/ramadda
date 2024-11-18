@@ -179,17 +179,16 @@ public class XlsUtil {
 	    return cell.getStringCellValue();
 	}
     }
-    public static void explodeXls(final IO.Path path) throws Exception {
-	InputStream is = new BufferedInputStream(
-						 IO.getInputStream(
-								   path.getPath(), XlsUtil.class));
+
+    public static void explodeXls(final IO.Path path, File directory) throws Exception {
+	InputStream is = new BufferedInputStream(IO.getInputStream(path.getPath(), XlsUtil.class));
 	Workbook wb = StreamingReader.builder()
 	    //                      .rowCacheSize(100)    
 	    //                      .bufferSize(4096)     
 	    .open(is);
 	for (Sheet sheet : wb) {
 	    String name = Utils.makeID(sheet.getSheetName())+".csv";
-	    FileOutputStream fos = new FileOutputStream(name);
+	    FileOutputStream fos = new FileOutputStream(IOUtil.joinDir(directory, name));
 	    PrintWriter          pw  = new PrintWriter(fos);
 	    int rowIdx = 0;
 	    for (Row row : sheet) {
@@ -428,7 +427,7 @@ public class XlsUtil {
      */
     public static void main(String[] args) throws Exception {
         for (String arg : args) {
-	    explodeXls(new IO.Path(arg));
+	    explodeXls(new IO.Path(arg),new File("."));
 	    /*
             String csv = null;
             for (int i = 0; i < 10; i++) {
