@@ -882,26 +882,22 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    try {
 		parser.parse(bis, handler, metadata, parseContext);
 		//		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
-	    } finally {
+	    } catch(org.apache.tika.exception.WriteLimitReachedException ignore) {
+	    }	finally {
 		if(!reIndexing) {
 		    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
 		}
 	    }
 	    long t2= System.currentTimeMillis();
 	    String corpus = handler.toString();
-	    /*
-	    if(corpus!=null)
-		System.err.println("corpus:" + corpus.trim());
-	    else
-		System.err.println("no corpus extracted" );
-	    */
-
+	    if(corpus==null) corpus="";
 	    if(debugCorpus)
 		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
 	    return  corpus;
 	}  catch(Throwable exc) {
 	    getLogManager().logError("Error extracting text corpus for entry:" + entry +" file:" + f.getName() +" error:" + exc,exc);
+	    getSessionManager().addSessionMessage(request,"There was an error extracting text from the document: " + exc.getMessage());
 	    return null;
 	}
     }
@@ -3134,7 +3130,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
 	    org.apache.tika.metadata.Metadata metadata =
 		new org.apache.tika.metadata.Metadata();
-	    BodyContentHandler handler =  new BodyContentHandler(1000000);
+	    BodyContentHandler handler =  new BodyContentHandler(1_000_000);
 	    pdfParser.parse(bis, handler, metadata,parseContext);
 	    //	    parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    String corpus = handler.toString();
