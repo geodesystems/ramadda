@@ -80,6 +80,8 @@ import java.util.List;
  */
 public class XlsUtil {
 
+    private static SimpleDateFormat sdf =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
     /**
      * _more_
      *
@@ -136,7 +138,7 @@ public class XlsUtil {
                                     if (cell == null) {
                                         break;
                                     }
-                                    String value = cell.getStringCellValue();
+				    String value = getCellValue(cell);
                                     if (col > firstCol) {
                                         pw.print(",");
                                     }
@@ -166,8 +168,18 @@ public class XlsUtil {
         }
     }
 
+    public static String getCellValue(Cell cell) {
+	if(cell==null) return "";
+	if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+	    Date date = cell.getDateCellValue();
+	    synchronized(sdf) {
+		return  sdf.format(date);
+	    }
+	} else {
+	    return cell.getStringCellValue();
+	}
+    }
     public static void explodeXls(final IO.Path path) throws Exception {
-	SimpleDateFormat sdf =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	InputStream is = new BufferedInputStream(
 						 IO.getInputStream(
 								   path.getPath(), XlsUtil.class));
@@ -189,16 +201,7 @@ public class XlsUtil {
 		for (short col = firstCol;
 		     col < row.getLastCellNum(); col++) {
 		    Cell cell = row.getCell(col);
-		    String value = "";
-		    if (cell != null) {
-			if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-			    Date date = cell.getDateCellValue();
-			    value = sdf.format(date);
-			} else {
-			    value = cell.getStringCellValue();
-			}
-		    }
-
+		    String value = getCellValue(cell);
 		    if (col > firstCol) {
 			pw.print(",");
 		    }
