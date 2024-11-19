@@ -1846,13 +1846,15 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    String fillColor = metadata.getAttr3();
 		    String fillOpacity = metadata.getAttr4();		    
 		    String strokeColor = metadata.getAttr(5);
-		    String strokeWidth = metadata.getAttr(6);    
+		    String strokeWidth = metadata.getAttr(6);
 		    List<String> styles = new ArrayList<String>();
 		    ShapefileOutputHandler.makeMapStyle(request, mapEntry,styles);
 		    if(stringDefined(fillColor)) Utils.add(styles,"fillColor",JU.quote(fillColor));
 		    if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
 		    if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
 		    if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
+		    String strokeStyle = metadata.getAttr(7);    		    
+		    if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
 		    String mapStyle = JU.map(styles);
 		    if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
 			String url =
@@ -2017,6 +2019,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		    Utils.add(attrs,"strokeColor",JU.quote(metadata.getAttr4()));
 		if(stringDefined(metadata.getAttr(5)))
 		    Utils.add(attrs,"strokeWidth",JU.quote(metadata.getAttr(5)));
+		String strokeStyle = metadata.getAttr(6);    		    
+		if(stringDefined(strokeStyle))
+		    Utils.add(attrs,"strokeStyle",strokeStyle);		    
+
 		urls.add(new String[]{url,JU.map(attrs)});
 	    }
 	}

@@ -1699,8 +1699,10 @@ RepositoryMap.prototype = {
             fill: props.fill,
             strokeColor: props.strokeColor,
             strokeWidth: props.strokeWidth,
+	    strokeDashstyle:props.strokeStyle??'solid',
 	    externalGraphic:props.externalGraphic
         });
+
 
         let map = MapUtils.createStyleMap({
             "temporary": temporaryStyle,
@@ -2588,6 +2590,7 @@ RepositoryMap.prototype = {
     },
     addMapFileLayer:  function(layer, url, name, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent,errorCallback) {
 
+
 	let idx  = this.loadedLayers.length+1;
 	let opts =  {
             strokeColor: this.getLayerProperty(layer, "layerStrokeColor", idx,name, "blue"),
@@ -2595,6 +2598,7 @@ RepositoryMap.prototype = {
 	    fillColor:this.getLayerProperty(layer, "layerFillColor", idx,name, "#ccc"),
 	    fillOpacity:this.getLayerProperty(layer, "layerFillOpacity", idx,name, 0.4)
         }
+
 	let highlightStyle = {};
 	$.extend(highlightStyle, this.highlightStyle);
 	for(a in highlightStyle) {

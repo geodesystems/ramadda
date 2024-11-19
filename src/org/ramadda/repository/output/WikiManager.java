@@ -9674,6 +9674,7 @@ public class WikiManager extends RepositoryManager
 		    String fillOpacity = metadata.getAttr4();		    
 		    String strokeColor = metadata.getAttr(5);
 		    String strokeWidth = metadata.getAttr(6);    
+		    String strokeStyle = metadata.getAttr(7);    		    
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
 							   metadata.getAttr1());
@@ -9690,8 +9691,8 @@ public class WikiManager extends RepositoryManager
 		    if(stringDefined(strokeColor)) Utils.add(styles,"strokeColor",JU.quote(strokeColor));		    
 		    if(stringDefined(fillOpacity)) Utils.add(styles,"fillOpacity",fillOpacity);
 		    if(stringDefined(strokeWidth)) Utils.add(styles,"strokeWidth",strokeWidth);
+		    if(stringDefined(strokeStyle)) Utils.add(styles,"strokeStyle",JU.quote(strokeStyle));		    
 		    String mapStyle = JU.map(styles);
-
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
 			mapLayers.add(JU.map("match",""+matchData,
 					     "name",JU.quote(mapEntry.getName()),

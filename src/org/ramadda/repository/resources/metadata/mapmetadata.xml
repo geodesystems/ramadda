@@ -37,7 +37,8 @@
       <element name="Fill Color" />
       <element name="Fill Opacity" />      
       <element name="Stroke Color" />
-      <element name="Stroke Width" />            
+      <element name="Stroke Width" />
+      <element name="Stroke Style" datatype="enumeration" values="solid,dot,dash,dashdot,longdash,longdashdot"/>                  
     </type>
 
     <type id="map_selector_layer" name="Map Selector Layer"
