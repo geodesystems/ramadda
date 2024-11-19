@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Nov 17 12:04:53 MST 2024";
+var build_date="RAMADDA build date: Tue Nov 19 06:16:59 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35830,23 +35830,61 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 	    }		
 
 	    let url = button.attr('data-url');
-	    let format = button.attr('data-name')
+	    let format = button.attr('data-format')
+	    let formatName = button.attr('data-name')	    
 	    let size = "100";
+	    let doit = (extra) =>{
+		url = url.replace(/max=\d+/,'max='+size);
+		if(extra) url+=extra;
+		if(event.shiftKey) {
+		    let protocol = window.location.protocol;
+		    let hostname = window.location.hostname;
+		    let port = window.location.port;
+		    let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+		    url = prefix+url;
+		    Utils.copyToClipboard(url);
+		    alert('The URL has been copied to the clipboard');
+		} else {
+		    Utils.triggerDownload(url);
+		}
+	    };
+
+	    size= this.jq(ID_SEARCH_MAX).val();
 	    if(!dontAsk) {
-		size = prompt('How many records do you want in the ' + format +' download?',this.jq(ID_SEARCH_MAX).val());
-		if(!size) return;
-	    }
-	    url = url.replace(/max=\d+/,'max='+size);
-            if(event.shiftKey) {
-		let protocol = window.location.protocol;
-		let hostname = window.location.hostname;
-		let port = window.location.port;
-		let prefix = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
-		url = prefix+url;
-		Utils.copyToClipboard(url);
-		alert('The URL has been copied to the clipboard');
+		if(format==OUTPUT_CHOOSE) {
+		    let html = HU.formTable();
+		    html += HU.formEntry('Number of Records:',
+					 HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),ATTR_SIZE,'5']));
+		    let select= [['csv','CSV'],['json','JSON'], ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs']];
+		    html+= HU.formEntry('What to download:',
+					HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
+		    let buttons = HU.buttons([
+			HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK'),
+			HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel')]);
+		    html+=HU.formTableClose();
+		    html+=buttons;
+		    html = HU.div([ATTR_STYLE,'margin:5px;'], html);
+		    let dialog = HU.makeDialog({content:html,
+						title:'Download options',
+						anchor:button,
+						draggable:true,header:true});
+		    dialog.find('.ramadda-button-ok').button().click(()=>{
+			size = this.jq('downloadrecords').val();
+			what = this.jq('downloadwhat').val();
+			doit('&what='+ what);
+			dialog.remove();
+		    });
+		    dialog.find('.ramadda-button-cancel').button().click(()=>{
+			dialog.remove();			
+		    });
+		} else {
+		    size = prompt('How many records do you want in the ' + formatName +' download?',size);
+		    if(!size) return;
+		    
+		    doit();
+		}
 	    } else {
-		Utils.triggerDownload(url);
+		doit();
 	    }
 	},
         entryListChanged: function(entryList) {
