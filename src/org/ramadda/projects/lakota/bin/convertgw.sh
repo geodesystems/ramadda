@@ -1,7 +1,10 @@
 #!/bin/sh
-#the SEESV environment variable needs to point to the directory holding the seesv.sh script in RAMADDA's SeeSV  release
+#the SEESV environment variable needs to point to the  seesv.sh script in RAMADDA's SeeSV  release
+#This converts the input groundwater file summarizing on the yearly average
 #
-sh ${SEESV}/seesv.sh -insert "" site "\${file_shortname}" -change site "^.*/" "" -change site "- U\.S\..*" "" \
+
+sh ${SEESV} \
+   -insert "" site "\${file_shortname}" -change site "^.*/" "" -change site "- U\.S\..*" "" \
    -change site ".*\(RST" "RST"     -trim site -change site "\)$" "" \
    "-extractdate" "time" "year" -gt year 1984 \
    "-summary" "year" "original_value" "site,latitude,longitude" "average"  -print  "$1"
