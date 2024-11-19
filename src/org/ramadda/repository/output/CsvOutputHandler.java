@@ -71,6 +71,10 @@ public class CsvOutputHandler extends OutputHandler {
                                                     OutputType.TYPE_FEEDS|
 							       OutputType.TYPE_FORSEARCH,
                                                     "", ICON_CSV);
+    public static final OutputType OUTPUT_IDS = new OutputType("IDS",
+                                                    "default.ids",
+							       OutputType.TYPE_FORSEARCH,
+							       "", ICON_CSV);    
 
 
     /** _more_ */
@@ -90,6 +94,7 @@ public class CsvOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_CSV);
+        addType(OUTPUT_IDS);
         addType(OUTPUT_ENTRYCSV);
     }
 
@@ -130,6 +135,18 @@ public class CsvOutputHandler extends OutputHandler {
     private Result makeStream(Request request, InputStream is) throws Exception {
 	return request.returnStream("entries.csv",  getMimeType(OUTPUT_CSV),is);	    
     }
+
+    public Result listIds(Request request, List<Entry> entries) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	sb.append("id\n");
+	for(Entry entry: entries) {
+	    sb.append(entry.getId());
+	    sb.append("\n");
+	}
+        return new Result("", sb, "text/csv");
+	
+    }
+
 
     public Result listEntries(Request request, List<Entry> entries)
             throws Exception {
@@ -543,6 +560,9 @@ public class CsvOutputHandler extends OutputHandler {
         } else {
             request.setReturnFilename(group.getName() + ".csv");
         }
+        if (OUTPUT_IDS.equals(outputType)) {
+            return listIds(request, children);
+	}
         if (OUTPUT_ENTRYCSV.equals(outputType)) {
             List<Entry> tmp = new ArrayList<Entry>();
             tmp.add(group);

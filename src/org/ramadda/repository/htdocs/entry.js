@@ -6,6 +6,7 @@
 
 var OUTPUT_JSON = "json";
 var OUTPUT_CSV = "default.csv";
+var OUTPUT_IDS = "default.ids";
 var OUTPUT_ZIP = "zip.tree";
 var OUTPUT_EXPORT = "zip.export";
 
@@ -14,6 +15,7 @@ var VALUE_ANY_TYPE="_any_";
 var DEFAULT_MAX = 100;
 
 var OUTPUTS = [
+    {id: OUTPUT_IDS,name: "IDs"},
     {id: OUTPUT_CSV,name: "CSV"},
     {id: OUTPUT_JSON, name: "JSON"},
     {id: OUTPUT_ZIP, name: "Download Files"},
