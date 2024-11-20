@@ -5794,7 +5794,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		     getRepository().getProperty(PROP_BUILD_DATE, "N/A"));
         String version =
             Runtime.class.getPackage().getImplementationVersion();
-        HU.formEntry(sb,msgLabel("Java Version"), version);
+	version = System.getProperty("java.version");
+        HU.formEntry(sb,msgLabel("Java Version"), (String)Utils.getNonNull(version,"NA"));
         getAdmin().addInfo(request, sb);
         if (request.exists("class")) {
             Class c = Class.forName(request.getString("class", ""));
