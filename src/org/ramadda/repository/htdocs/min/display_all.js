@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Nov 19 10:56:18 MST 2024";
+var build_date="RAMADDA build date: Tue Nov 19 21:30:33 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -5689,7 +5689,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
     let myProps = [
 	{label:'Display'},
-	{p:'fields',doGetter:false,ex:'comma separated list of field ids or indices - e.g. #1,#2,#4-#7,etc or *'},
+	{p:'fields',doGetter:false,
+	 ex:'comma separated list of field ids or indices - e.g. #1,#4-#7,@2,@3 (use @ for numeric fields) or *'},
 	{p:'notFields',ex:'regexp',tt:'regexp to not include fields'},		
 	{p:'fieldsPatterns',ex:'comma separated list of regexp patterns to match on fields to display'},
 	{p:'fieldAliases',canCache:true},
@@ -7156,6 +7157,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!Array.isArray(fixedFields)) fixedFields=fixedFields.split(",");
 		fieldsMap = {};
 		fixedFields.forEach(id=>{
+		    //look for numeric field
+		    if(id.startsWith("@")) {
+			let index = parseInt(id.substring(1).trim())-1;
+			let fidx=0;
+			let fields = this.getFields();
+			fields.every(field=>{
+			    if(!field.isNumeric()) return true;
+			    if(fidx==index) {
+				fieldsMap[field.getId()]  = true;
+				return false;
+			    }
+			    fidx++;
+			    return true;
+			});
+			return
+		    }
+
+
 		    if(id.startsWith("#")) {
 			let toks = id.split("-");
 			if(toks.length==2) {
@@ -7228,9 +7247,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         field.checkboxId = this.getDomId(idBase);
                         let on = false;
                         let hasValues = (flags ? flags[field.getIndex()] : true);
-                        //                            console.log(tupleIdx + " field: " + field.getId() + "has values:" + hasValues);
+//                        console.log(tupleIdx + " field: " + field.getId() + "has values:" + hasValues);
                         if (argFields != null) {
-                            //                                console.log("argFields:" + argFields);
+                            //console.log("argFields:" + argFields);
                             for (let fIdx = 0; fIdx < argFields.length; fIdx++) {
                                 if (argFields[fIdx].getId() == field.getId()) {
                                     on = true;
@@ -7241,27 +7260,30 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
                         } else if (selectedIds.length > 0) {
                             on = selectedIds.indexOf(field.getId()) >= 0;
-                            //                                console.log("selected ids   on:" + on +" " + field.getId());
-                        } else if (fieldsMap != null) {
-                            on = fixedFields[field.getId()];
-                            if (!on) {
-                                on = fixedFields["#" + (tupleIdx + 1)];
-                            }
-                            //                                console.log("fixed fields  on:" + on +" " + field.getId());
-                        } else if (this.overrideFields != null) {
-                            on = this.overrideFields.indexOf(field.getId()) >= 0;
-                            if (!on) {
-                                on = (this.overrideFields.indexOf("#" + (tupleIdx + 1)) >= 0);
-                            }
-                            //                                console.log("override fields  on:" + on +" " + field.getId());
-                        } else {
-                            if (this.selectedCbx.indexOf(field.getId()) >= 0) {
-                                on = true;
-                            } else if (this.selectedCbx.length == 0) {
-                                on = (tupleIdx == 0);
-                            }
+//                            console.log("selected ids   on:" + on +" " + field.getId());
+                        }
+			if(!on) {
+			    if (fieldsMap != null) {
+				on = fieldsMap[field.getId()];
+				if (!on) {
+                                    on = fieldsMap["#" + (tupleIdx + 1)];
+				}
+                            } else if (this.overrideFields != null) {
+				on = this.overrideFields.indexOf(field.getId()) >= 0;
+				if (!on) {
+                                    on = (this.overrideFields.indexOf("#" + (tupleIdx + 1)) >= 0);
+				}
+				//                                console.log("override fields  on:" + on +" " + field.getId());
+                            } else {
+				if (this.selectedCbx.indexOf(field.getId()) >= 0) {
+                                    on = true;
+				} else if (this.selectedCbx.length == 0) {
+                                    on = (tupleIdx == 0);
+				}
+			    }
                             //                                console.log("cbx fields:" + on + " " + field.getId());
                         }
+//			if(on)    console.log(field.getId(),on);
                         let label = field.getUnitLabel();
                         if (seenLabels[label]) {
                             label = label + " " + seenLabels[label];
@@ -7333,7 +7355,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getSelectedFields: function(dfltList) {
 	    let prefixFields = this.getProperty('prefixFields');
 	    let debug = displayDebug.getSelectedFields || this.getProperty('debugFields');
-//	    debug =true;
 	    if(debug)
 		console.log(this.type +".getSelectedFields");
 	    if(this.getBinDate()) {
@@ -7728,12 +7749,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    id.split("|").every(fieldId=>{
 		let alias = aliases[fieldId];
 		let hasRegexp = fieldId.indexOf("*")>=0;
+		let numericCnt = 0;
 		for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
+		    if(field.isFieldNumeric()) numericCnt++;
 		    if(debug)	{
 			console.log("\tField:" + field.getId());
 		    }
-		    
+
 		    if(fieldId=="#") {
 			if(field.isFieldNumeric()) {
 			    theField =  field;
@@ -7741,6 +7764,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 			continue;
 		    }
+		    if(fieldId==('@'+numericCnt)) {
+			theField = field;
+			return false;
+		    }
+
                     if (field.getId() == fieldId || fieldId == ("#" + (i+1)) || field.getId()==alias) {
 			theField =  field;
 			if(debug)
@@ -7806,7 +7834,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fields = pointData.getRecordFields();
             }
 
-
             for (let i = 0; i < ids.length; i++) {
 		let id = ids[i];
 		//Check for numeric range
@@ -7815,7 +7842,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(toks.length==2) {
 			let idx1 = +toks[0].replace("#","");
 			let idx2 = +toks[1].replace("#","");			
-			console.log(idx1 +" " + idx2);
 			for(let j=idx1;j<=idx2;j++) {
 			    let f = this.getFieldById(fields, "#" + idx1);
 			    if (f) result.push(f);
