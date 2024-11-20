@@ -4479,6 +4479,7 @@ MapGlyph.prototype = {
 		update();
 	    });
     
+
 	    this.findFilter(CLASS_FILTER_STRING).keypress(function(event) {
 		let keycode = (event.keyCode ? event.keyCode : event.which);
                 if (keycode == 13) {
@@ -4486,7 +4487,6 @@ MapGlyph.prototype = {
 		    let filter = filters[key]??{};
 		    filter.type='string';
 		    filter.stringValue = ($(this).val()??"").trim();
-		    filter.stringValue=null;
 		    filter.property = key;
 		    update();
 		}
