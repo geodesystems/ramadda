@@ -344,7 +344,7 @@ You just need to specify the Agency/Site. The name and other metadata will be lo
 {{property max=30000}}
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
-{{display_linechart vAxisReverse=true showMenu=true fields="original_value"}}
+{{display_linechart height=400px vAxisReverse=true showMenu=true fields="original_value"}}
 :vspace 0.5em
 :heading Table
 {{display_download showMenu=false}}
