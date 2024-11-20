@@ -309,8 +309,8 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		   HU.cssClass("nws-header"));
             HU.open(sb, "div", HU.cssClass("nws-contents"));
         }
-        HU.open(sb, "div", HU.style("padding-left:5px;"));
-        sb.append(HU.tag("ul"));
+        HU.open(sb, "div","");
+        sb.append(HU.open("ul",HU.style("padding-left:10px;")));
 	String link = forecast.hazards.toString();
 	link = link.replace("<a ","<a target='_wx' ");
 	sb.append(link);
