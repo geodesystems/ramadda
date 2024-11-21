@@ -330,10 +330,12 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 
 
   <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true"  metadata="enum_tag,camera.direction">
-     <property name="icon" value="/media/webcam.png"/>
-     <property name="form.file.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
+    <property name="search.tabs" value="images,map,list"/>
+    <property name="icon" value="/media/webcam.png"/>
+    <property name="form.file.show" value="false"/>
+    <property name="form.area.show" value="false"/>
+    <property name="form.location.show" value="true"/>
+    <column name="location" type="enumerationplus" label="Location" cansearch="true"/>
  </type>
 
 
