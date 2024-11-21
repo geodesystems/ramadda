@@ -1,4 +1,5 @@
 #geojson is from
+#get the rwis...geojson file
 #https://www.sd511.org/#&zoom=7.978186436385607&lon=-100.30169924551444&lat=43.26529779342613
 
 source $env(RAMADDA_ROOT)/bin/ramadda.tcl
@@ -24,7 +25,7 @@ proc camera $::cameraArgs {
     set j [json::json2dict $cameras]
     foreach obj $j {
 	incr ::cnt
-	if {$::cnt>40} return;
+##	if {$::cnt>4} return;
 
 	set url  [dict get  $obj image]
 	set n  [dict get  $obj name]	
@@ -38,6 +39,7 @@ proc camera $::cameraArgs {
 	    append entryName " - $n"
 	}
 	append ::xml [openEntry type_image_webcam  {} {} "$entryName" latitude $latitude longitude $longitude url $url]
+	set desc "+credit\nWebcam image from \[https://www.sd511.org/ South Dakota DOT\]\n:br\n$desc\n-credit"
 	append ::xml [col description $desc]
 	append ::xml [col location $route]	
 	append ::xml [closeEntry] 
