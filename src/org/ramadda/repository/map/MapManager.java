@@ -1439,6 +1439,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
         String  selectBounds = Utils.getProperty(props, ATTR_SELECTBOUNDS);
         boolean forceBounds  = true;
+        String  overlays       = Utils.getProperty(props, "overlays");
         String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
 					      selectBounds);
 
@@ -1469,6 +1470,10 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 
 
 	if(props!=null) {
+	    if(stringDefined(overlays)) {
+		map.getMapProps().put("overlays",overlays);
+	    }
+
 	    List<String> urls=null;
 	    Object prop = props.get("geojson");
 	    if(prop!=null && (prop instanceof String)) {

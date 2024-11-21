@@ -69,6 +69,7 @@ function RepositoryMap(mapId, params) {
 	showDates:true,
 
         defaultMapLayer: map_default_layer,
+	overlayers:null,
 
 	displayDivSticky:true,
 	showLayerToggle:false,
@@ -2698,6 +2699,12 @@ RepositoryMap.prototype = {
 
     addBaseLayers:  function() {
 	this.mapLayers = Utils.mergeLists([], RAMADDA_MAP_LAYERS);
+	let overlays = {};
+	if(this.params.overlays) {
+	    Utils.split(this.params.overlays,',',true,true).forEach(l=>{
+		overlays[l] = true;
+	    });
+	}
         let dflt = this.params.defaultMapLayer || "osm";
         if (!this.haveAddedDefaultLayer && dflt) {
 	    let index = -1;
@@ -2729,9 +2736,12 @@ RepositoryMap.prototype = {
                 this.firstLayer = newLayer;
             }
             if (newLayer != null) {
+		if(overlays[mapLayer.id])
+		    newLayer.visibility=true;
 		if(l!="") l+=",";
 		l+=mapLayer.id+":" + newLayer.name;
                 newLayer.ramaddaId = mapLayer.id;
+
 		if(!newLayer.isBaseLayer) {
 		    this.addLayer(newLayer);
 		} else {
