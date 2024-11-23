@@ -934,8 +934,6 @@ RepositoryMap.prototype = {
 	    return
 	} 
 	if(this.params.addToUrl) {
-	    HU.addToDocumentUrl("map_bounds",latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right);
-//	    if(debugBounds)console.log("locationChanged: setting url args:",this.getMap().getZoom());
 	    HU.addToDocumentUrl(ARG_ZOOMLEVEL , this.getMap().getZoom());
             HU.addToDocumentUrl(ARG_MAPCENTER, r(center.lat)+","+ r(center.lon));
 	}
