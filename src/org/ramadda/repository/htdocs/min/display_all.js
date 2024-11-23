@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Nov 23 13:24:46 MST 2024";
+var build_date="RAMADDA build date: Sat Nov 23 14:14:45 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -56181,11 +56181,12 @@ MapGlyph.prototype = {
 
 	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    if(features.length==0) return;
 	    //make a copy because we can change it later
 	    //Maybe not since the state doesn't get set
 	    //	    obj  =$.extend({},obj);
 	    if(debug)
-		console.log('applyColors',attr);
+		console.log('applyColors','#features:',features.length,attr,obj.max);
 	    let strings  =[]
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
