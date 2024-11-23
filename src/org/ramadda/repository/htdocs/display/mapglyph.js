@@ -4996,11 +4996,12 @@ MapGlyph.prototype = {
 
 	let applyColors = (obj,attr,stringList,debug)=>{
 	    if(!obj || !Utils.stringDefined(obj?.property))  return;
+	    if(features.length==0) return;
 	    //make a copy because we can change it later
 	    //Maybe not since the state doesn't get set
 	    //	    obj  =$.extend({},obj);
 	    if(debug)
-		console.log('applyColors',attr);
+		console.log('applyColors','#features:',features.length,attr,obj.max);
 	    let strings  =[]
 	    let prop =obj.property;
 	    let min =Number.MAX_VALUE;
