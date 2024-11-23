@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Nov 21 07:41:02 MST 2024";
+var build_date="RAMADDA build date: Sat Nov 23 13:17:39 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -6022,7 +6022,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
-	{p:'colorTableLabel',ex:''},
+	{p:'colorTableLabel',ex:'${field}'},
 	{p:'colorTableDisplayId',tt:'Dom id to where to place the color table'},
 	{p:'colorTableDots',ex:true,tt:'Show as dots'},
 	{p:'colorTableDotsWidth',ex:'24px'},
@@ -6278,7 +6278,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    let dom = jqid(domId);
 	    if(label) {
-		if(args.field) label = label.replace('${field}', args.field.getLabel());
+		if(args.field) label = label.replace('${field}', args.field.getLabel(false,true));
 		if(args.showColorTableDots)
 		    dom.prepend(HU.center(label));
 		else
@@ -15155,14 +15155,23 @@ function RecordField(props, source) {
             return "";
         },
 
-        getLabel: function(display) {
+        getLabel: function(display,addUnit) {
+	    let label;
 	    if(display) {
-		let label = display.getProperty(this.getId() +".label");
-		if(label) return label;
+		label = display.getProperty(this.getId() +".label");
 	    }
 
-            if (this.label == null || this.label.length == 0) return this.id;
-            return this.label;
+	    if(!label) {
+		label = this.label;
+	    }
+	    if(!label) {
+		if (this.label == null || this.label.length == 0) label = this.id;
+	    }
+	    if(addUnit && Utils.stringDefined(this.getUnit())) {
+		label = label +' [' + this.getUnit() +']';
+	    }
+	    return label;
+
         },
         setLabel: function(l) {
             this.label = l;
@@ -39253,14 +39262,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	{label:'Map Labels'},
 	{p:'labelTemplate',ex:'${field}',tt:'Display labels in the map'},
+	{p:'declutterLabels',d:true},
 	{p:'labelRecordTemplate',ex:'${field}',tt:'Apply the template to the records. Use ${recordtemplate} for the labelTemplate'},
 	{p:'labelKeyField',ex:'field',tt:'Make a key, e.g., A, B, C, ... based on the value of the key field'},	
 	{p:'labelLimit',ex:'1000',tt:'Max number of records to display labels'},
-  	{p:'doLabelGrid',ex:'true',tt:'Use a grid to determine if a label should be shown'},		
 	{p:'labelFontColor',ex:'#000'},
 	{p:'labelFontSize',ex:'12px'},
 	{p:'labelFontFamily',ex:'\'Open Sans\', Helvetica Neue, Arial, Helvetica, sans-serif'},
 	{p:'labelFontWeight',ex:'plain'},
+	{p:'labelBackground',ex:'green'},
 	{p:'labelAlign',ex:'l|c|r t|m|b'},
 	{p:'labelXOffset',ex:'0'},
 	{p:'labelYOffset',ex:'0'},
@@ -43478,6 +43488,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(records.length>limit) return;
             let labelTemplate = this.getLabelTemplate();
             let labelRecordTemplate = this.getProperty('labelRecordTemplate');
+//	    if(!labelRecordTemplate) return;
 	    let labelKeyField;
 	    if(this.getLabelKeyField()) {
 		labelKeyField = this.getFieldById(fields,this.getLabelKeyField());
@@ -43494,12 +43505,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let cellWidth = (bounds.right-bounds.left)/numCellsX;
 	    let cellHeight = (bounds.top-bounds.bottom)/numCellsY;	    
 	    let grid = {};
-	    let doLabelGrid = this.getDoLabelGrid();
 	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    let labelStyle = {
-		label : labelTemplate,
+		//xlabel : labelTemplate,
                 fontColor: this.getProperty("labelFontColor","#000"),
+		textBackgroundFillColor:this.getLabelBackground(),
                 fontSize: this.getProperty("labelFontSize","10pt"),
                 fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
                 fontWeight: this.getProperty("labelFontWeight","plain"),
@@ -43538,36 +43549,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    keys.push(cc);
 		});
 	    }
+	    let labelFeatures = [];
             for (let i = 0; i < records.length; i++) {
 		let record = records[i];
 		let lat = record.getLatitude();
 		let lon = record.getLongitude();		
-		if(doUniqueLabelPosition) {
-		    let key = lat+'_'+ lon;
-		    if(labelPositions[key]) {
-			continue;
-		    }
-		    labelPositions[key]=true;
-		}
-
-		if(doLabelGrid) {
-		    let indexX = Math.floor((lon-bounds.left)/cellWidth);
-		    let indexY = Math.floor((lat-bounds.bottom)/cellHeight);		
-		    let key = indexX +"_"+ indexY;
-		    if(grid[key]) continue;
-		    grid[key] = true;
-		}
 		let point = {x:record.getLongitude(),y:record.getLatitude()};
                 let center = MapUtils.createPoint(point.x, point.y);
                 center.transform(this.map.displayProjection, this.map.sourceProjection);
-                let pointFeature = MapUtils.createVector(center);
-                pointFeature.noSelect = true;
-                pointFeature.attributes = {};
-                pointFeature.attributes[RECORD_INDEX] = (i+1);
-                pointFeature.attributes["recordIndex"] = (i+1)+"";
+		let text = this.applyRecordTemplate(record,this.getDataValues(record),null, labelTemplate);
+		let style = $.extend({label:text},labelStyle);
+		let labelFeature = MapUtils.createVector(center,null,style);
+                labelFeature.noSelect = true;
+                labelFeature.attributes = {};
+                labelFeature.attributes[RECORD_INDEX] = (i+1);
+                labelFeature.attributes["recordIndex"] = (i+1)+"";
 		if(labelRecordTemplate) {
-		    let text = this.applyRecordTemplate(record,this.getDataValues(record),null, labelRecordTemplate);
-		    pointFeature.attributes['recordtemplate'] = text;
+		    labelFeature.attributes['recordtemplate'] = text;
 		}
 		if(labelKeyField) {
 		    let v = labelKeyField.getValue(record);
@@ -43576,24 +43574,25 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			keyMap[v] = keys[keyIndex++];
 			keyLegend+=keyMap[v]+": " + v+"<br>";
 		    }
-		    pointFeature.attributes["_key"] = keyMap[v];
+		    labelFeature.attributes["_key"] = keyMap[v];
                 }
-		for (let fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-		    let field = fields[fieldIdx];
-		    let value = field.getValue(record);
-		    if(typeof value == 'number') value = this.formatNumber(value);
-		    value = String(value);
-		    value = value.replace(/  */g,'\n');
-		    pointFeature.attributes[field.getId()] = value;
-		    if(colorBy && field.getId() == colorBy) {
-			pointFeature.attributes["colorBy"] = field.getValue(record);
-		    }
-		    if(sizeBy && field.getId() == sizeBy) {
-			pointFeature.attributes["sizeBy"] = field.getValue(record);
-                    }
-		}
-                features.push(pointFeature);
+                features.push(labelFeature);
 	    }
+
+	    if(!this.haveAddedZoomListener) {
+		this.haveAddedZoomListener = true;
+		if(this.getDeclutterLabels()) {
+		    this.getMap().getMap().events.register('zoomend', '', () =>{
+			Utils.bufferedCall(this.getId()+'_checklabels', 
+					   ()=>{this.declutterLabels();});
+		    },true);
+		    this.getMap().getMap().events.register('moveend', '', () =>{
+			Utils.bufferedCall(this.getId()+'_checklabels', 
+					   ()=>{this.declutterLabels();});
+		    },true);
+		}
+	    }
+
 	    if(keyLegend.length>0) {
 		if(!this.legendId) {
 		    this.legendId = this.domId("legendid");
@@ -43605,10 +43604,33 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.labelLayer.removeFeatures(this.labelFeatures);
             this.map.labelLayer.addFeatures(features);
 	    this.labelFeatures = features;
+	    if(this.getDeclutterLabels()) {
+		this.declutterLabels();
+	    }
 	    $("#" + this.map.labelLayer.id).css("z-index",900);
         },
 
 
+	declutterLabels:function() {
+	    if(!this.labelFeatures) return;
+	    MapUtils.declutter(this.getMap(), this.labelFeatures,this.getDeclutterArgs());
+	    this.map.labelLayer.redraw();
+	},
+	getDeclutterArgs:function() {
+	    let get = v=>{
+		if(!v) return null;
+		return +v;
+	    }
+	    let args ={
+		fontSize: this.getProperty("labelFontSize","10pt"),
+		padding: +this.getProperty('labelDeclutterPadding',1),
+		granularity: +this.getProperty('labelDeclutterGranularity',1),		
+		pixelsPerLine:get(this.getProperty('labelDeclutterPixelsPerLine')),
+		pixelsPerCharacter:get(this.getProperty('labelDeclutterPixelsPerCharacter'))
+	    };
+	    return args;
+	},
+	    
         handleEventRemoveDisplay: function(source, display) {
             if (!this.map) {
                 return;
