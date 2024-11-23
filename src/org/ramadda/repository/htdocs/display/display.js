@@ -2012,7 +2012,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	{p:'nullColor',ex:'transparent'},
 	{p:'showColorTable',ex:'false',tt:'Display the color table'},
-	{p:'colorTableLabel',ex:''},
+	{p:'colorTableLabel',ex:'${field}'},
 	{p:'colorTableDisplayId',tt:'Dom id to where to place the color table'},
 	{p:'colorTableDots',ex:true,tt:'Show as dots'},
 	{p:'colorTableDotsWidth',ex:'24px'},
@@ -2268,7 +2268,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let label = args.label ?? this.getProperty((args.field?args.field.getId():'')+'.colorTableLabel',this.getColorTableLabel());
 	    let dom = jqid(domId);
 	    if(label) {
-		if(args.field) label = label.replace('${field}', args.field.getLabel());
+		if(args.field) label = label.replace('${field}', args.field.getLabel(false,true));
 		if(args.showColorTableDots)
 		    dom.prepend(HU.center(label));
 		else
