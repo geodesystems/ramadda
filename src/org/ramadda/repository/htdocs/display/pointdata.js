@@ -882,14 +882,23 @@ function RecordField(props, source) {
             return "";
         },
 
-        getLabel: function(display) {
+        getLabel: function(display,addUnit) {
+	    let label;
 	    if(display) {
-		let label = display.getProperty(this.getId() +".label");
-		if(label) return label;
+		label = display.getProperty(this.getId() +".label");
 	    }
 
-            if (this.label == null || this.label.length == 0) return this.id;
-            return this.label;
+	    if(!label) {
+		label = this.label;
+	    }
+	    if(!label) {
+		if (this.label == null || this.label.length == 0) label = this.id;
+	    }
+	    if(addUnit && Utils.stringDefined(this.getUnit())) {
+		label = label +' [' + this.getUnit() +']';
+	    }
+	    return label;
+
         },
         setLabel: function(l) {
             this.label = l;
