@@ -180,7 +180,7 @@ public class CsvOutputHandler extends OutputHandler {
 		    file = getStorageManager().getFileTail(entry);
 		} else {
 		    url =  request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
-					    "output","points.product","getdata","getdata","product","points.csv");
+					    "output","points.product","getdata","getdata","product","points.csv","addlatlon","true");
 		    file = Utils.makeID(entry.getName())+".csv";
 		}
 		int cnt=0;
