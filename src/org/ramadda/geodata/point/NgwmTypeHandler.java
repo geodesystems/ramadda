@@ -21,15 +21,22 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.List;
 
-
+/**
+This class supports accessing data in real-time from the
+USGS National Ground-Water Monitoring Network
+https://cida.usgs.gov/ngwmn/index.jsp
+*/
 public class NgwmTypeHandler extends PointTypeHandler {
-
     public NgwmTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
     }
 
 
+    /**
+       check for bulk upload of site ids
+       initialize the entry with metadata extracted from the USGS HTML page for the site (uggh)
+     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
@@ -46,21 +53,7 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
     }
 
-    private String find(String html,String key) {
-	String p = "(?s)(?i)<th.*?>" + key+"</th>\\s*<td>(.*?)</td";
-	String v = StringUtil.findPattern(html,p);
-	if(v!=null) v = v.trim();
-	//	System.err.println(key +"="+ v);
-	return v;
-    }
 
-    private String getUrl(String url,String id) {
-	List<String> toks = Utils.split(id,":",true,true);
-	if(toks.size()!=2)
-	    throw new IllegalArgumentException("Incorrect Site ID:" + id +". It must be of the form agency:Site #, e.g. UNLCSD:241551");
-	return url.replace("${agency}",toks.get(0)).replace("${site}",toks.get(1));
-	
-    }
     private void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
 	String id = (String)  entry.getValue(request,"site");
@@ -116,7 +109,6 @@ public class NgwmTypeHandler extends PointTypeHandler {
 		    entry.setValue("link",info.trim());
 		}
 	    }
-
 	    if(name!=null && !stringDefined(entry.getName())) entry.setName(name);
 	} catch(Exception exc) {
 	    getLogManager().logError("Error reading site metadata for id:" + id +" url:" + url,exc);
@@ -130,10 +122,24 @@ public class NgwmTypeHandler extends PointTypeHandler {
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
 	throws Exception {
 	String id = (String)  entry.getValue(request,"site");
-	String url = getUrl("https://cida.usgs.gov/ngwmn_cache/direct/flatXML/waterlevel/${agency}/${site}",id);
-        return url;
+	return  getUrl("https://cida.usgs.gov/ngwmn_cache/direct/flatXML/waterlevel/${agency}/${site}",id);
     }
 
+    private String find(String html,String key) {
+	String p = "(?s)(?i)<th.*?>" + key+"</th>\\s*<td>(.*?)</td";
+	String v = StringUtil.findPattern(html,p);
+	if(v!=null) v = v.trim();
+	return v;
+    }
 
-
+    /**
+       split the id into network:site and apply those values to the url template
+     */
+    private String getUrl(String url,String id) {
+	List<String> toks = Utils.split(id,":",true,true);
+	if(toks.size()!=2)
+	    throw new IllegalArgumentException("Incorrect Site ID:" + id +". It must be of the form agency:Site #, e.g. UNLCSD:241551");
+	return url.replace("${agency}",toks.get(0)).replace("${site}",toks.get(1));
+	
+    }
 }
