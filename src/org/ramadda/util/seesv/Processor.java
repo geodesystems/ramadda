@@ -2050,7 +2050,7 @@ public abstract class Processor extends SeesvOperator {
                 }
             } else {
 		//		System.err.println("ROW:" + rowCnt);
-                if (rowCnt>2 && delimiter != null && theTemplate != null) {
+                if (rowCnt>1 && delimiter != null && theTemplate != null) {
 		    writer.append(delimiter);
                 }
             }
