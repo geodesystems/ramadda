@@ -326,7 +326,9 @@ You just need to specify the Agency/Site. The name and other metadata will be lo
 	      columns="30"
 	      bulkuploadhelp="Or upload a file of site ids. One per line. See &lt;a href=/point/usgs.html target=_help&gt;here&lt;/a&gt; for information"
 	      addbulkupload="true">
-     <suffix><![CDATA[Find a site at the <a href=https://cida.usgs.gov/ngwmn/index.jsp target=_map>USGS</a>. The Site ID has to be of the form &lt;agency&gt;:&lt;site #&gt;, e.g. <i>UNLCSD:241551</i>]]></suffix>       
+       <suffix><![CDATA[Find a site at the <a href=https://cida.usgs.gov/ngwmn/index.jsp target=_map>USGS</a>. The Site ID has to be of the form &lt;agency&gt;:&lt;site #&gt;, e.g. <i>UNLCSD:241551</i>.
+       <br>There are also state site lists available the  <a target=_other href=https://github.com/geodesystems/ramadda/tree/master/data/ngwmn_sites>RAMADDA Github site</a>
+]]></suffix>       
      </column>
      <column  name="agency"  label="Agency" type="enumerationplus"  cansearch="true"/>
      <column  name="site_type"  label="Site Type" type="enumerationplus"  cansearch="true"/>     

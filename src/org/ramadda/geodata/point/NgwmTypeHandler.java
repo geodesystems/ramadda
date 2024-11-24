@@ -77,7 +77,6 @@ public class NgwmTypeHandler extends PointTypeHandler {
 		name = name.trim();
 		name = name.replaceAll("National\\s*Ground\\s*Water\\s*Monitoring\\s*Network","").trim();
 		name = name.replaceAll("-$","").trim();
-		System.err.println("name=" +name);
 	    }
 	    String lat = find(html,"Latitude");
 	    if(lat!=null) {
