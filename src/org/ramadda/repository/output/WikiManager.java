@@ -4736,6 +4736,7 @@ public class WikiManager extends RepositoryManager
 	    String height = getProperty(wikiUtil, props, "height","500px");
             List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
+
             if (children.size() == 0) {
 		return  makeErrorMessage(request,wikiUtil,props,theTag, "No entries available");
             }
@@ -6672,6 +6673,8 @@ public class WikiManager extends RepositoryManager
         List<Entry> entries = getEntries(request, wikiUtil, entry,
                                          userDefinedEntries, props);
 
+
+
 	debugGetEntries = false;
 
         String filter = getProperty(wikiUtil, props,
@@ -6767,8 +6770,10 @@ public class WikiManager extends RepositoryManager
         if (sort == null) {
             sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT_BY,
 			       getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
-					   (String) null));
+					   getProperty(wikiUtil, props,attrPrefix+"orderby",
+						       (String) null)));
         }
+
 
         if (sort != null) {
             String dir = null;
