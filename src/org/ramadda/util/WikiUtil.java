@@ -662,7 +662,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         }
 
         int     cnt      = 0;
-        Pattern pattern2 = Pattern.compile("\\[([^\\]]+)\\]");
+        Pattern pattern2 = Pattern.compile("\\[([^\\]]+)\\]",Pattern.DOTALL);
         Matcher matcher2 = pattern2.matcher(s);
         while (matcher2.find()) {
             String name  = matcher2.group(1).trim();
@@ -678,6 +678,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 	    }
             int    idx   = name.indexOf(" ");
+            int    nlidx   = name.indexOf("\n");	    
+	    if(idx==-1) idx = nlidx;
+	    else if(nlidx>=0) idx = Math.min(idx,nlidx);
             int    start = matcher2.start(0);
             int    end   = matcher2.end(0);
 	    
