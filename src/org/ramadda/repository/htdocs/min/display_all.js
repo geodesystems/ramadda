@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Nov 23 14:14:45 MST 2024";
+var build_date="RAMADDA build date: Sun Nov 24 22:13:33 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -8199,7 +8199,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date = new Date(date);
 			if(filterDate == "year") {
 			    this.setDateRange(new Date(date.getFullYear()+"-01-01"),
-					      new Date(date.getFullYear()+"-12-31"));
+					      new Date(date.getFullYear()+"-12-31 23:59:59"));
 			} else if(filterDate == "day") {
 			    let f = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) +"-" + date.getUTCDate();
 			    let dttm = new Date(f);
@@ -8210,6 +8210,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 	    }
+
 
             if (!records) {
 		return null;
@@ -12330,11 +12331,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 //	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
 	    if(this.minDateObj &&this.minDateObj.isIndex) {
-//		console.dir('min',this.minDateObj.index,idx);
+		if(debug)
+		    console.dir('min',this.minDateObj.index,idx);
 		if(idx<this.minDateObj.index) return false;
 	    }
 	    if(this.maxDateObj &&this.maxDateObj.isIndex) {
-//		console.dir('max',this.maxDateObj.index,idx);
+		if(debug)
+		    console.dir('max',this.maxDateObj.index,idx);
 		if(idx>this.maxDateObj.index) return false;
 		return true;
 	    }	    
@@ -12350,13 +12353,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
                     if (this.minDateObj != null && date.getTime() < this.minDateObj.getTime()) {
 			if(debug) {
-			    console.log("    minDate:\n\t" + date.getTime() +"\n\t" + this.minDateObj.getTime());
+			    console.log("minDate: " + date +"   " + this.minDateObj);
 			}
 			return false;
                     }
                     if (this.maxDateObj != null && date.getTime() > this.maxDateObj.getTime()) {
 			if(debug) {
-			    console.log("    maxDate:\n\t" + date.getTime() +"\n\t" + this.minDateObj.getTime());
+			    let diff = (this.maxDateObj.getTime()-date.getTime())/1000;
 			}
 			return false;
 		    }
@@ -12378,6 +12381,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     return false;
                 }
             }
+	    if(debug) console.log('ok');
             return true;
         },
         getPointData: function() {
@@ -39334,7 +39338,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'htmlLayerWidth',ex:'30'},
 	{p:'htmlLayerHeight',ex:'15'},
 	{p:'htmlLayerStyle',ex:'css style'},
-	{p:'htmlLayerScale',ex:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'htmlLayerScale',d:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
 	{p:'htmlLayerPopupLabelField'},
 	{p:'htmlLayerMin',tt:'min value for sparkline'},
 	{p:'htmlLayerMax',tt:'max value for sparkline'},	
