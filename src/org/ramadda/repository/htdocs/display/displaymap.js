@@ -1167,7 +1167,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'htmlLayerWidth',ex:'30'},
 	{p:'htmlLayerHeight',ex:'15'},
 	{p:'htmlLayerStyle',ex:'css style'},
-	{p:'htmlLayerScale',ex:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
+	{p:'htmlLayerScale',d:'2:0.75,3:1,4:2,5:3,6:4,7:6',tt:'zoomlevel:scale,...'},
 	{p:'htmlLayerPopupLabelField'},
 	{p:'htmlLayerMin',tt:'min value for sparkline'},
 	{p:'htmlLayerMax',tt:'max value for sparkline'},	
