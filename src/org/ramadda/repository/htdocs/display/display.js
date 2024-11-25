@@ -4189,7 +4189,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			date = new Date(date);
 			if(filterDate == "year") {
 			    this.setDateRange(new Date(date.getFullYear()+"-01-01"),
-					      new Date(date.getFullYear()+"-12-31"));
+					      new Date(date.getFullYear()+"-12-31 23:59:59"));
 			} else if(filterDate == "day") {
 			    let f = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) +"-" + date.getUTCDate();
 			    let dttm = new Date(f);
@@ -4200,6 +4200,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    }
 		}
 	    }
+
 
             if (!records) {
 		return null;
@@ -8320,11 +8321,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 //	    if(this.minDateObj)console.log("index:" +this.minDateObj.index +" " +this.maxDateObj.index)
 	    if(this.minDateObj &&this.minDateObj.isIndex) {
-//		console.dir('min',this.minDateObj.index,idx);
+		if(debug)
+		    console.dir('min',this.minDateObj.index,idx);
 		if(idx<this.minDateObj.index) return false;
 	    }
 	    if(this.maxDateObj &&this.maxDateObj.isIndex) {
-//		console.dir('max',this.maxDateObj.index,idx);
+		if(debug)
+		    console.dir('max',this.maxDateObj.index,idx);
 		if(idx>this.maxDateObj.index) return false;
 		return true;
 	    }	    
@@ -8340,13 +8343,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		} else {
                     if (this.minDateObj != null && date.getTime() < this.minDateObj.getTime()) {
 			if(debug) {
-			    console.log("    minDate:\n\t" + date.getTime() +"\n\t" + this.minDateObj.getTime());
+			    console.log("minDate: " + date +"   " + this.minDateObj);
 			}
 			return false;
                     }
                     if (this.maxDateObj != null && date.getTime() > this.maxDateObj.getTime()) {
 			if(debug) {
-			    console.log("    maxDate:\n\t" + date.getTime() +"\n\t" + this.minDateObj.getTime());
+			    let diff = (this.maxDateObj.getTime()-date.getTime())/1000;
 			}
 			return false;
 		    }
@@ -8368,6 +8371,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     return false;
                 }
             }
+	    if(debug) console.log('ok');
             return true;
         },
         getPointData: function() {
