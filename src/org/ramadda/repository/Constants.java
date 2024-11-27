@@ -317,7 +317,7 @@ public interface Constants {
         "fas fa-exclamation-triangle";
 
     /** _more_ */
-    public static final String ICON_DIALOG_WARNING = "fas fa-exclamation";
+    public static final String ICON_DIALOG_WARNING = "fas fa-triangle-exclamation";
 
     public static final String ICON_WIDTH = "18px";
 

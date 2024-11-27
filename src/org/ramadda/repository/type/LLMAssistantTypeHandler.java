@@ -78,11 +78,11 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
 
     private IO.Result call(Request request, URL url, String body) throws Exception {
-	return getRepository().getLLMManager().call(getRepository().getLLMManager().getOpenAIJobManager(),
-						    url, body,
-						    "OpenAI-Beta","assistants=v2",
-						    "Content-Type","application/json",
-						    "Authorization","Bearer " +getKey());
+	return getLLMManager().call(getRepository().getLLMManager().getOpenAIJobManager(),
+				    url, body,
+				    "OpenAI-Beta","assistants=v2",
+				    "Content-Type","application/json",
+				    "Authorization","Bearer " +getKey());
     
     }
 
@@ -254,8 +254,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().entrySectionOpen(request, entry, sb,"LLM Assistant File Upload");
-	sb.append(getPageHandler().showDialogNote("Note: This will upload the file to ChatGPT.<br>OpenAI's may use this content for other purposes.<br> See <a target=_help href=https://openai.com/policies/row-terms-of-use/>https://openai.com/policies/row-terms-of-use/</a>"));
-
+	String warning = getPageHandler().showDialogWarning("Note: This will upload the file to the ChatGPT Assistant. It is important to know that OpenAI may use this content for other purposes. See the <a target=_help href=https://openai.com/policies/row-terms-of-use/>OpenAI Terms of Use</a>");
+	sb.append(HU.div(warning,HU.style("max-width:800px;")));
 
 	sb.append(request.uploadForm(getRepository().URL_ENTRY_ACTION,""));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
