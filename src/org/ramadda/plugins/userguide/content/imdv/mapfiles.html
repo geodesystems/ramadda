@@ -138,6 +138,23 @@ The "Explore the trails map with the below filters" top-level legend label and t
 legend width are defined in the Other Properties section.
 
 
+:heading Drawing a map
+The IMDV allows you to draw one or more polygons, group them and then generate a GeoJSON map file
+for download.
+* First, create a Group using  the New  -&gt; Group menu.
+* Next, draw any number of  Lines, Polylines or Freehand objects in the map
+* Drag and drop the Line/Polyline/Freehand objects in the legend onto the Group
+* Bring up the Settings dialog for the Group
+* Under the "Make Map" tab you can hist "Make Map File". This will generate and download  a GeoJson map file with each of the Lines as separate features
+[ht::screenshot images/makemap.png]
+
+If you want to merge the Lines into one GeoJson feature, first make sure the Lines are in
+the order they are to be merged. Then in the Map Map dialog select the "Merge Polygons" checkbox
+and press Make Map File. Check the GeoJson map file to ensure that the Lines are in the correct order.
+If not, then drag and drop the Line-s in the Legend under the Group to specify the correct order.
+
+
+
 
 </body>
 </html>
