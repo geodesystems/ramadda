@@ -834,7 +834,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 		if (defined(this.sustained)) {
 		    String gust = "";
 		    if (defined(this.gust)) {
-			gust = "&nbsp;G&nbsp;" + this.gust;
+			gust = "&nbsp;Gust:&nbsp;" + this.gust;
 		    }
 		    HU.formEntry(sb,"Wind&nbsp;Speed:",  this.sustained + gust + "&nbsp;" + msg("MPH"));
 		}
