@@ -2089,6 +2089,18 @@ mapheader {
     background-color: #E8F0FE;
 }
 
+.ramadda-background-grid , .ramadda-block-grid , .ramadda-heading-grid , .ramadda-box-grid , .ramadda-note-grid , .ramadda-blurb-grid , .ramadda-section-grid  {
+    background-color: #f9f9f9; 
+    background-color: #fcfcfc;
+    background-image: 
+	linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+	linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+    background-size: 30px 30px; 
+}
+  
+.ramadda-background-paper , .ramadda-block-paper , .ramadda-heading-paper , .ramadda-box-paper , .ramadda-note-paper , .ramadda-blurb-paper , .ramadda-section-paper  {
+    background: radial-gradient(circle, #fffdf5, #f8f3e5);
+}
 
 
 .ramadda-background-babypowder , .ramadda-block-babypowder , .ramadda-heading-babypowder , .ramadda-box-babypowder , .ramadda-note-babypowder , .ramadda-blurb-babypowder , .ramadda-section-babypowder  {
