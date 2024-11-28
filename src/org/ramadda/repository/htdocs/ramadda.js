@@ -943,6 +943,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			title = icon+HU.space(1) +title;
 		    }
 		    title = HU.div([],HU.b(title));
+		    let val = $(this).val();
+		    if(val)
+			title+=HU.div([],val);
 
 		    let type = $(this).attr('data-type');		
 		    if(type) title=title+ 'Type: ' + type+'<br>';
