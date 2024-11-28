@@ -1,4 +1,4 @@
-// Copyright (c) 2008-2023 Geode Systems LLC
+// Copyright (c) 2008-2024 Geode Systems LLC
 // SPDX-License-Identifier: Apache-2.0
 
 
@@ -33,140 +33,52 @@ import java.util.regex.*;
 
 
 
-/**
- */
 @SuppressWarnings("unchecked")
 public class WikiUtil implements HtmlUtilsConstants {
-
-
-    public static final String NAVDELIM =  "&#9675;";
-
-    /** _more_          */
     private static final HtmlUtils HU = null;
-
-    /** _more_ */
+    public static final String NAVDELIM =  "&#9675;";
     public static final String ATTR_OPEN = "open";
-
-    /** _more_ */
     public static final String ATTR_VAR = "var";
-
-    /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
-
-
-    /** _more_ */
     public static final String ATTR_SHOW = "show";
-
-    /** _more_ */
     public static final String PROP_NOHEADING = "noheading";
-
-    /** _more_ */
     public static final String PROP_NOP = "nop";
-
-    /** _more_ */
     public static final String PROP_DOP = "dop";
-
-    /** _more_ */
     public static final String PROP_HEADING = "heading";
-
-    /** _more_ */
     public static final String TAG_PREFIX = "{{";
-
-    /** _more_ */
     public static final String TAG_SUFFIX = "}}";
-
-
-    /** _more_ */
     private static Hashtable globalProperties;
-
-    /** _more_ */
     private Hashtable properties;
-
-    /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
-
-    /** _more_ */
     private Hashtable wikiAttributes = new Hashtable();
-
-    /** _more_ */
     private StringBuilder javascript = new StringBuilder();
-
-    /** _more_ */
     private Hashtable<String, String> myVars = new Hashtable<String,String>();
-
     private Hashtable<String, String> rawMacros;
     private Hashtable<String, String> macros;    
-    
-
     private Hashtable<String,String> templates=  new Hashtable<String,String>();
-
-    /** _more_ */
     private boolean hasSet = false;
-
-    /** _more_ */
     private List categoryLinks = new ArrayList();
-
-    /** _more_ */
     private List floatBoxes = new ArrayList();
-
-    /** _more_ */
     private boolean makeHeadings = false;
-
-    /** _more_ */
     private boolean replaceNewlineWithP = true;
-
-
-    /** _more_ */
     private boolean mobile = false;
-
-    /** _more_ */
     private String user;
-
-    /** _more_ */
     private HashSet notTags;
-
     private HashSet  seen = new HashSet();
-
-
-    /** _more_          */
     private WikiPageHandler handler;
-
-
-    /** _more_          */
     List headings2 = new ArrayList();
 
-    /**
-     * _more_
-     */
     public WikiUtil() {}
 
-    /**
-     * _more_
-     *
-     * @param that _more_
-     */
     public WikiUtil(WikiUtil that) {
         this.properties = that.properties;
 	this.templates = that.templates;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     */
     public WikiUtil(Hashtable properties) {
         this.properties = properties;
     }
-
-    static int xcnt = 0;
-    int mycnt = xcnt++;
-    /**
-     * _more_
-     *
-     * @param code _more_
-     */
+    
     public void appendJavascript(String code) {
         if ((code == null) || (code.trim().length() == 0)) {
             return;
@@ -175,12 +87,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         javascript.append(code);
         javascript.append("\n");
     }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getJavascript(boolean andClear) {
 	if(javascript==null) return null;
 	String j = javascript.toString();
@@ -193,58 +100,28 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * Set the GlobalProperties property.
-     *
-     * @param value The new value for GlobalProperties
-     */
     public static void setGlobalProperties(Hashtable value) {
         globalProperties = value;
     }
 
-    /**
-     * Get the GlobalProperties property.
-     *
-     * @return The GlobalProperties
-     */
     public static Hashtable getGlobalProperties() {
         return globalProperties;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
     public void removeProperty(Object key) {
         if (properties == null) {
             properties = new Hashtable();
         }
         properties.remove(key);
-
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void putProperty(Object key, Object value) {
         if (properties == null) {
             properties = new Hashtable();
         }
         properties.put(key, value);
     }
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
+    
     public void putWikiProperty(Object key, Object value) {
         if (value == null) {
             wikiProperties.remove(key);
@@ -252,27 +129,11 @@ public class WikiUtil implements HtmlUtilsConstants {
             wikiProperties.put(key, value);
         }
     }
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
+    
     public Object getWikiProperty(Object key) {
         return wikiProperties.get(key);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
+    
     public Object getWikiProperty(Hashtable props, Object... args) {
         Object dflt = args[args.length - 1];
         for (int i = 0; i < args.length - 1; i++) {
@@ -288,81 +149,37 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         return dflt;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
+  
     public void removeWikiProperty(Object key) {
         wikiProperties.remove(key);
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
+    
     public void putWikiAttribute(Object key, Object value) {
         wikiAttributes.put(key, value);
     }
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
+    
     public Hashtable getWikiAttributes() {
         return wikiAttributes;
     }
-
-    /**
-     * _more_
-     */
+    
     public void clearWikiAttributes() {
         wikiAttributes = new Hashtable();
     }
-
-
-    /**
-     * _more_
-     *
-     * @param l _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addWikiAttributes(List l) throws Exception {
         for (Enumeration keys =
-                wikiAttributes.keys(); keys.hasMoreElements(); ) {
+		 wikiAttributes.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = (String) wikiAttributes.get(key);
             l.add(key);
             l.add(JsonUtil.quote(value));
         }
     }
-
-    /**
-     * _more_
-     *
-     * @param link _more_
-     */
+    
     public void addCategoryLink(String link) {
         categoryLinks.add(link);
     }
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
+    
     public Object getProperty(Object key) {
         if (properties == null) {
             return null;
@@ -377,20 +194,10 @@ public class WikiUtil implements HtmlUtilsConstants {
         properties.put(key,value);
     }
 
-
     public Hashtable getProperties() {
 	return properties;
     }
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getProperty(Hashtable props, String prop, boolean dflt) {
         String v = getProperty(props, prop, (String) null);
         if (v == null) {
@@ -399,33 +206,12 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         return Boolean.valueOf(v);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public static String getProperty(WikiUtil wikiUtil, Hashtable props,
                                      String prop, String dflt) {
         return wikiUtil.getProperty(props, prop, dflt);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getProperty(Hashtable props, String prop, String dflt) {
         String value = Utils.getProperty(props, prop, (String) null);
         if (value == null) {
@@ -444,21 +230,11 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         return value;
     }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param property _more_
-     *
-     * @return _more_
-     */
+   
     public String getInfoBox(String property) {
         StringBuffer sb = new StringBuffer();
         List<String> toks = (List<String>) Utils.split(property, "\n",
-                                true, true);
+						       true, true);
         String firstLine = toks.get(0);
         toks.remove(0);
         /*
@@ -493,10 +269,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                 title = toks2[1].trim();
             } else if (toks2[1].trim().length() > 0) {
                 sb.append(
-                    HU.rowTop(
-                        HU.col(name, HU.cssClass("wiki-infobox-entry-title"))
-                        + HU.col(
-                            toks2[1], HU.cssClass("wiki-infobox-entry"))));
+			  HU.rowTop(
+				    HU.col(name, HU.cssClass("wiki-infobox-entry-title"))
+				    + HU.col(
+					     toks2[1], HU.cssClass("wiki-infobox-entry"))));
 
             }
         }
@@ -509,13 +285,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @param property _more_
-     *
-     * @return _more_
-     */
+   
     public String getPropertyValue(String property) {
         if (property.startsWith("Infobox")) {
             return getInfoBox(property);
@@ -523,34 +293,12 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         return null;
     }
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param text _more_
-     * @param handler _more_
-     *
-     * @return _more_
-     */
+    
     public String wikify(String text, WikiPageHandler handler) {
         this.handler = handler;
         return wikify(text, handler, null);
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param text _more_
-     * @param handler _more_
-     * @param notTags _more_
-     *
-     * @return _more_
-     */
+    
     public String wikify(String text, WikiPageHandler handler,
                          HashSet notTags) {
         try {
@@ -563,46 +311,20 @@ public class WikiUtil implements HtmlUtilsConstants {
             throw new RuntimeException(ioe);
         }
     }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public WikiPageHandler getHandler() {
         return handler;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param mainBuffer _more_
-     * @param text _more_
-     * @param handler _more_
-     *
-     * @throws IOException _more_
-     */
+    
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler)
-            throws IOException {
+	throws IOException {
         wikify(mainBuffer, text, handler, new HashSet());
     }
-
-
-    /**
-     * _more_
-     *
-     * @param mainBuffer _more_
-     * @param text _more_
-     * @param handler _more_
-     * @param notTags _more_
-     *
-     * @throws IOException _more_
-     */
+   
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler, HashSet notTags)
-            throws IOException {
+	throws IOException {
         if (text.startsWith("<wiki>")) {
             text = text.substring("<wiki>".length());
             text = text.replaceFirst("\\s*\\R?", "");
@@ -613,24 +335,10 @@ public class WikiUtil implements HtmlUtilsConstants {
         String      s      = wikifyInner(chunks, handler, notTags);
         mainBuffer.append(s);
     }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param handler _more_
-     * @param headings _more_
-     * @param s _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
+    
     private String applyPatterns(WikiPageHandler handler, List headings,
                                  String s)
-            throws IOException {
+	throws IOException {
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
             s = s.replaceAll("\r\r", "\n<p></p>\n");
@@ -688,7 +396,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 String label = name.substring(idx);
                 name = name.substring(0, idx);
 		String attrs = HU.attrs("title",name,"class","wiki-link-external",
-						      "href",name);
+					"href",name);
 		if(target!=null) attrs+=HU.attr("target",target);
                 String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + label + "</a>"
@@ -696,7 +404,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             } else {
                 cnt++;
 		String attrs = HU.attrs("title",name,"class","wiki-link-external",
-						      "href",name);
+					"href",name);
 		if(target!=null) attrs+=HU.attr("target",target);
                 String ahref =HU.open("a",attrs);
                 s = s.substring(0, start) + ahref + "_BRACKETOPEN_" + cnt
@@ -718,10 +426,10 @@ public class WikiUtil implements HtmlUtilsConstants {
 
             if (label.startsWith(TAG_PREFIX)) {
                 value = "<div class=\"wiki-h" + level + "\">" + label
-                        + "</div>";
+		    + "</div>";
             } else {
                 value = "<a name=\"" + label + "\"></a><div class=\"wiki-h"
-                        + level + "\">" + label + "</div>";
+		    + level + "\">" + label + "</div>";
                 //            if(level==1)
                 //                value = value+"<hr class=\"wiki-hr\">";
                 headings.add(new Object[] {  Integer.valueOf(level), label });
@@ -735,8 +443,6 @@ public class WikiUtil implements HtmlUtilsConstants {
         return s;
     }
 
-
-
     private String getHeadingLabel(String label) {
 	String tmp = StringUtil.findPattern(label,"<label>(.*)</label>");
 	if(tmp!=null) label = tmp;
@@ -745,7 +451,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
     private String wikifyInner(List<Chunk> chunks, WikiPageHandler handler,
                                HashSet notTags)
-            throws IOException {
+	throws IOException {
 
         List      headings      = new ArrayList();
         String    headingsNav   = null;
@@ -952,7 +658,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 		buff.append(">");
                 String s = chunk.buff.toString().replaceAll("\\{\\{",
-                               "{<noop>{");
+							    "{<noop>{");
 		if(chunk.type==chunk.TYPE_XML) {
 		    s=s.replace("<","&lt;").replace(">","&gt;");
 		}
@@ -978,10 +684,10 @@ public class WikiUtil implements HtmlUtilsConstants {
 
             for (String line : text.split("\n")) {
                 if ((line.indexOf("${") >= 0)
-                        && (hasSet || (globalProperties != null))) {
+		    && (hasSet || (globalProperties != null))) {
                     if (macros != null) {
                         for (java.util.Enumeration keys = macros.keys();
-                                keys.hasMoreElements(); ) {
+			     keys.hasMoreElements(); ) {
                             String key   = (String)keys.nextElement();
                             String value = (String)macros.get(key);
 			    key ="${" + key + "}";
@@ -993,12 +699,12 @@ public class WikiUtil implements HtmlUtilsConstants {
                     }
                     if (globalProperties != null) {
                         for (java.util.Enumeration keys =
-                                globalProperties.keys();
-                                keys.hasMoreElements(); ) {
+				 globalProperties.keys();
+			     keys.hasMoreElements(); ) {
                             Object key   = keys.nextElement();
                             Object value = globalProperties.get(key);
                             line = line.replace("${" + key + "}",
-                                    value.toString());
+						value.toString());
                         }
                     }
                 }
@@ -1540,25 +1246,25 @@ public class WikiUtil implements HtmlUtilsConstants {
                         width  = Utils.getProperty(props, ATTR_WIDTH, width);
                         height = Utils.getProperty(props, ATTR_HEIGHT, height);
                         ordering = Utils.getProperty(props, "ordering",
-                                ordering);
+						     ordering);
                         paging = Utils.getProperty(props, "paging", paging);
                         searching = Utils.getProperty(props, "searching",
-                                height);
+						      height);
 
                         if (Misc.equals(Utils.getProperty(props, "rowborder",
-                                null), "true")) {
+							  null), "true")) {
                             clazz = "row-border " + clazz;
                         }
                         if (Misc.equals(Utils.getProperty(props,
-                                "cellborder", null), "true")) {
+							  "cellborder", null), "true")) {
                             clazz = "cell-border " + clazz;
                         }
                         if (Misc.equals(Utils.getProperty(props, "stripe",
-                                null), "true")) {
+							  null), "true")) {
                             clazz = "stripe " + clazz;
                         }
                         if (Misc.equals(Utils.getProperty(props, "hover",
-                                null), "true")) {
+							  null), "true")) {
                             clazz = "hover " + clazz;
                         }
                     }
@@ -1570,16 +1276,16 @@ public class WikiUtil implements HtmlUtilsConstants {
                                    : "") + ((ordering != null)
                                             ? " table-ordering=" + ordering
                                             : "") + ((paging != null)
-                            ? " table-paging=" + paging
-                            : "") + "><thead>");
+						     ? " table-paging=" + paging
+						     : "") + "><thead>");
                     tableStates.add(new TableState());
                     continue;
                 }
                 if (tline.equals("-table")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1605,9 +1311,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith(":tr")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1616,7 +1322,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append("<tr valign=top>");
                     if (toks.size() == 2) {
                         for (String td :
-                                Utils.parseCommandLine(toks.get(1))) {
+				 Utils.parseCommandLine(toks.get(1))) {
                             if (state.inHead) {
                                 buff.append(HU.th(td));
                             } else {
@@ -1634,9 +1340,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
                 if (tline.startsWith("+tr")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1646,9 +1352,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
                 if (tline.startsWith("-tr")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1665,9 +1371,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                 if (tline.startsWith("+td")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1676,20 +1382,20 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String width = Utils.getProperty(props, ATTR_WIDTH, null);
                     if (state.inHead) {
                         buff.append("<th " + ((width != null)
-                                ? " width=" + width
-                                : "") + ">");
+					      ? " width=" + width
+					      : "") + ">");
                     } else {
                         buff.append("<td valign=top " + ((width != null)
-                                ? " width=" + width
-                                : "") + ">");
+							 ? " width=" + width
+							 : "") + ">");
                     }
                     continue;
                 }
                 if (tline.startsWith("-td")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
@@ -1703,17 +1409,17 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
                 if (tline.startsWith(":td")) {
                     TableState state = (tableStates.size() > 0)
-                                       ? tableStates.get(tableStates.size()
-                                           - 1)
-                                       : null;
+			? tableStates.get(tableStates.size()
+					  - 1)
+			: null;
                     if (state == null) {
                         buff.append("Not in a table");
                         continue;
                     }
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       td   = (toks.size() == 2)
-                                        ? toks.get(1)
-                                        : "";
+			? toks.get(1)
+			: "";
                     if (state.inHead) {
                         buff.append(HU.th(td));
                     } else {
@@ -1836,12 +1542,12 @@ public class WikiUtil implements HtmlUtilsConstants {
                         continue;
                     }
                     List<String> toks    = Utils.splitUpTo(tline, " ",
-                                               2);
+							   2);
                     String       title   = (toks.size() > 1)
-                                           ? toks.get(1)
-                                           : "";
+			? toks.get(1)
+			: "";
                     TabState     tabInfo = tabStates.get(tabStates.size()
-                                               - 1);
+							 - 1);
                     tabInfo.cnt++;
                     tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
                                          + (tabInfo.cnt) + "\">" + title
@@ -1849,30 +1555,30 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String style = "";
                     if (tabInfo.minHeight != null) {
                         style = " style=min-height:" + tabInfo.minHeight
-                                + ";";
+			    + ";";
                     }
                     buff.append(
-                        HU.open(
-                            TAG_DIV,
-                            style + HU.id(tabInfo.id + "-" + (tabInfo.cnt))
-                            + HU.cssClass("ui-tabs-hide")));
+				HU.open(
+					TAG_DIV,
+					style + HU.id(tabInfo.id + "-" + (tabInfo.cnt))
+					+ HU.cssClass("ui-tabs-hide")));
                     buff.append("\n");
                     continue;
                 }
                 if (tabStates.size() > 0) {
                     if (tline.equals("-tab")) {
                         TabState tabInfo = tabStates.get(tabStates.size()
-                                               - 1);
+							 - 1);
                         buff.append(HU.close(TAG_DIV));
                         buff.append("\n");
                         js.append(
-                            "jQuery(function(){\njQuery('#" + tabInfo.id
-                            + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
+				  "jQuery(function(){\njQuery('#" + tabInfo.id
+				  + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
                         continue;
                     }
                     if (tline.equals("-tabs")) {
                         TabState tabInfo = tabStates.get(tabStates.size()
-                                               - 1);
+							 - 1);
                         tabInfo.title.append("\n");
                         tabInfo.title.append("</ul>");
                         tabInfo.title.append("\n");
@@ -1923,7 +1629,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
                 if (tline.startsWith("+accordian")
-                        || tline.startsWith("+accordion")||
+		    || tline.startsWith("+accordion")||
 		    tline.startsWith("+toggle")) {
                     AccordionState accordionState = new AccordionState();
                     accordionStates.add(accordionState);
@@ -1945,11 +1651,11 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                     buff.append("\n");
                     buff.append(
-                        HU.open(
-                            HU.TAG_DIV,
-                            HU.cssClass(
-                                " ui-accordion ui-widget ui-helper-reset") + HU
-                                    .id(accordionState.id)));
+				HU.open(
+					HU.TAG_DIV,
+					HU.cssClass(
+						    " ui-accordion ui-widget ui-helper-reset") + HU
+					.id(accordionState.id)));
                     buff.append("\n");
 		    if(isToggle) {
 			segmentOpen.accept(tline);
@@ -1958,7 +1664,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
 
                 if (tline.startsWith("-accordian")
-                        || tline.startsWith("-accordion")
+		    || tline.startsWith("-accordion")
 		    || tline.startsWith("-toggle")) {
                     if (accordionStates.size() == 0) {
                         buff.append("No open accordion tag");
@@ -1975,13 +1681,13 @@ public class WikiUtil implements HtmlUtilsConstants {
                         accordionStates.get(accordionStates.size() - 1);
                     accordionStates.remove(accordionStates.size() - 1);
                     String args = "{heightStyle: \""
-                                  + accordionState.heightStyle + "\""
-                                  + ", collapsible: "
-                                  + accordionState.collapsible + ", active: "
-                                  + accordionState.activeSegment
-                                  + ", decorate: " + accordionState.decorate
-                                  + ", animate:" + accordionState.animate
-                                  + "}";
+			+ accordionState.heightStyle + "\""
+			+ ", collapsible: "
+			+ accordionState.collapsible + ", active: "
+			+ accordionState.activeSegment
+			+ ", decorate: " + accordionState.decorate
+			+ ", animate:" + accordionState.animate
+			+ "}";
                     js.append("HtmlUtil.makeAccordion(\"#"
                               + accordionState.id + "\" " + "," + args
                               + ");\n");
@@ -2007,7 +1713,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }
                 if (tline.startsWith("+pagehead")) {
                     String weight = StringUtil.findPattern(tline,
-                                        "-([0-9]+)");
+							   "-([0-9]+)");
                     if (weight == null) {
                         weight = "8";
                     }
@@ -2204,14 +1910,14 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String title = Utils.getProperty(props,ATTR_TITLE,(String)null);
                     if (title!=null) {
                         buff.append(
-                            HU.tag(HU.TAG_DIV,
-				   HU.cssClass("ramadda-gridbox-header"),
-                                   title));
+				    HU.tag(HU.TAG_DIV,
+					   HU.cssClass("ramadda-gridbox-header"),
+					   title));
                     }
                     buff.append(
-                        HU.open(
-                            HU.TAG_DIV,
-                            HU.cssClass("ramadda-gridbox-contents")));
+				HU.open(
+					HU.TAG_DIV,
+					HU.cssClass("ramadda-gridbox-contents")));
 
                     continue;
                 }
@@ -2229,8 +1935,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
 		    tline = toks.get(0).trim();
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
                     String clazz = "ramadda-" + tline +" ";
 		    String style="";
 		    String columns = Utils.getProperty(props,"columns",(String)null);
@@ -2241,7 +1947,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append(HU.open(HU.TAG_DIV,
 					HU.style(style)+
                                         HU.cssClass("ramadda-grid "
-                                            + clazz)));
+						    + clazz)));
 
                     continue;
                 }
@@ -2288,7 +1994,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
                     dragToggle = Utils.getProperty(props, "toggle", false);
                     dragToggleVisible = Utils.getProperty(props,
-                            "toggleVisible", true);
+							  "toggleVisible", true);
                     String style  = (String) props.get(ATTR_STYLE);
                     String header = (String) props.get("header");
                     String clazz  = "ramadda-draggable";
@@ -2304,7 +2010,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     if (header != null) {
                         if (dragToggle) {
                             header = HU.image("", "id", dragId + "_img")
-                                     + " " + header;
+				+ " " + header;
                         }
                         HU.div(buff, header,
                                HU.attrs(ATTR_CLASS, "ramadda-draggable-header"));
@@ -2444,8 +2150,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+bigtext")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
 		    
 		    buff.append("<div class=ramadda-bigtext ");
 		    String labelMore =(String)props.get("labelMore");
@@ -2473,15 +2179,15 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+section")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
 
                     String       tag       = toks.get(0).substring(1);
                     List<String> toks2     = Utils.splitUpTo(tag, "-",
-                                                 2);
+							     2);
                     String       remainder = ((toks2.size() > 1)
-                            ? toks2.get(1)
-                            : "");
+					      ? toks2.get(1)
+					      : "");
 
                     String       baseClass = "ramadda-section";
                     if (remainder.length() > 0) {
@@ -2527,7 +2233,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                         }
                         int newCnt = scnt.intValue() + 1;
                         if (((float) newCnt / 2.0)
-                                == (int) ((float) newCnt / 2.0)) {
+			    == (int) ((float) newCnt / 2.0)) {
                             extraClass = "ramadda-section-even";
                         } else {
                             extraClass = "ramadda-section-odd";
@@ -2556,9 +2262,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                     }
                     if (label != null) {
                         buff.append(
-                            HU.open(
-                                HU.TAG_DIV,
-                                HU.cssClass("ramadda-heading-outer")));
+				    HU.open(
+					    HU.TAG_DIV,
+					    HU.cssClass("ramadda-heading-outer")));
                         buff.append(HU.div(label,
                                            HU.cssClass("ramadda-heading")));
                         buff.append(HU.close(HU.TAG_DIV));
@@ -2590,12 +2296,12 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+scroll")) {
                     buff.append("\n");
                     HU.cssLink(
-                        buff,
-                        handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
+			       buff,
+			       handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
                     HU.importJS(
-                        buff,
-                        handler.getHtdocsUrl(
-                            "/lib/scrollify/jquery.scrollify.js"));
+				buff,
+				handler.getHtdocsUrl(
+						     "/lib/scrollify/jquery.scrollify.js"));
 
                     continue;
                 }
@@ -2604,8 +2310,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append("\n");
                     inScroll = false;
                     HU.importJS(
-                        buff,
-                        handler.getHtdocsUrl("/lib/scrollify/template.js"));
+				buff,
+				handler.getHtdocsUrl("/lib/scrollify/template.js"));
 
                     continue;
                 }
@@ -2617,25 +2323,25 @@ public class WikiUtil implements HtmlUtilsConstants {
                         toks.get(0).trim().substring((credit?"+credit":"+callout").length());
 		    if(credit) what = "-info";
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
                     HU.open(buff, TAG_DIV,
                             HU.attrs(ATTR_CLASS,
                                      "ramadda-callout ramadda-callout"
                                      + what));
                     String iconSize = Utils.getProperty(props, "iconSize",
-                                          "24px");
+							"24px");
                     String icon = (String) props.get("icon");
                     if (icon == null) {
                         icon = what.equals("-tip")?
 			    "fa-circle-check":
 			    what.equals("-question")
-                               ? "fa-question-circle"
-                               : what.equals("-info")
-                                 ? "fa-info-circle"
-                                 : what.equals("-warning")
-                                   ? "fa-exclamation-triangle"
-                                   : null;
+			    ? "fa-question-circle"
+			    : what.equals("-info")
+			    ? "fa-info-circle"
+			    : what.equals("-warning")
+			    ? "fa-exclamation-triangle"
+			    : null;
                     }
                     if (icon != null) {
                         icon = HU.faIcon(icon, ATTR_STYLE, (iconSize!=null?"font-size:" + iconSize:""));
@@ -2645,7 +2351,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                         icon = "";
                     }
                     buff.append(
-                        "<table width=100%><tr valign=top><td width=1%>");
+				"<table width=100%><tr valign=top><td width=1%>");
 		    buff.append(icon);
                     buff.append("</td><td>");
                     HU.open(buff, TAG_DIV,
@@ -2664,8 +2370,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       page  = toks.get(1).trim();
                     String       label = (toks.size() > 2)
-                                         ? toks.get(2).trim()
-                                         : Utils.makeLabel(page);
+			? toks.get(2).trim()
+			: Utils.makeLabel(page);
                     HU.href(buff, "https://en.wikipedia.org/wiki/" + page,
                             label);
 
@@ -2676,20 +2382,20 @@ public class WikiUtil implements HtmlUtilsConstants {
                     String       id   = HU.getUniqueId("reload");
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
                     String time = Utils.getProperty(props, "seconds", "60");
                     boolean showCbx = Utils.getProperty(props,
-                                          "showCheckbox", true);
+							"showCheckbox", true);
                     boolean showLabel = Utils.getProperty(props, "showLabel",
-                                            true);
+							  true);
                     if (showCbx) {
                         HU.checkbox(buff, "", "true", true, HU.id(id));
                         buff.append(" ");
                     }
                     HU.span(buff, showLabel
-                                  ? ""
-                                  : "Reload", HU.id(id + "_label"));
+			    ? ""
+			    : "Reload", HU.id(id + "_label"));
                     //                if (showLabel) {
                     //                    buff.append(" ");
                     //                    HU.span(buff, "", HU.id(id + "_label"));
@@ -2712,8 +2418,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append("\n");
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
                     String name  = (String) props.get("name");
                     String style = (String) props.get(ATTR_STYLE);
                     String color = (String) props.get("color");
@@ -2786,8 +2492,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+frame")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
                     String outerClazz = "ramadda-frame-outer";
                     String innerStyle = (String) props.get("innerStyle");
                     if (innerStyle == null) {
@@ -2818,10 +2524,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                             (String) props.get("titleBackground");
                         String titleColor = (String) props.get("titleColor");
                         String titleStyle = Misc.getProperty(props,
-                                                "titleStyle", "");
+							     "titleStyle", "");
                         if (titleBackground != null) {
                             titleStyle += "background:" + titleBackground
-                                          + ";";
+				+ ";";
                         }
                         if (titleColor != null) {
                             titleStyle += "color:" + titleColor + ";";
@@ -2919,7 +2625,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     }
                     style += "position:absolute;";
                     for (String side : new String[] { "top", "left", "bottom",
-                            "right" }) {
+						      "right" }) {
                         String sv = (String) props.get(side);
                         if (sv != null) {
                             sv = getSize(sv);
@@ -2954,10 +2660,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append(HU.open(HU.TAG_DIV,
                                         HU.style("text-align:center;")));
                     buff.append(
-                        HU.open(
-                            HU.TAG_DIV,
-                            HU.style(
-                                "display:inline-block;text-align:left;")));
+				HU.open(
+					HU.TAG_DIV,
+					HU.style(
+						 "display:inline-block;text-align:left;")));
 
                     continue;
                 }
@@ -3033,8 +2739,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":h1")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
+			? toks.get(1)
+			: "";
 		    headingLinker.accept(buff,label,"h1",1);
                     continue;
                 }
@@ -3042,8 +2748,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":h2")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
+			? toks.get(1)
+			: "";
 		    headingLinker.accept(buff,label,"h2",2);
                     continue;
                 }
@@ -3053,8 +2759,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":h3")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
+			? toks.get(1)
+			: "";
 		    headingLinker.accept(buff,label,"h3",3);
                     continue;
                 }
@@ -3072,8 +2778,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":link")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 3);
                     String       label = (toks.size() > 2)
-                                         ? toks.get(2)
-                                         : "link";
+			? toks.get(2)
+			: "link";
                     buff.append(makeHref(toks.get(1), label,""));
                     continue;
                 }
@@ -3081,11 +2787,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":draft")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "Draft";
+			? toks.get(1)
+			: "Draft";
                     buff.append(
-                        "<div class=ramadda-draft-container><div class=ramadda-draft>"
-                        + label + "</div></div>\n");
+				"<div class=ramadda-draft-container><div class=ramadda-draft>"
+				+ label + "</div></div>\n");
 
                     continue;
                 }
@@ -3104,8 +2810,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":anchor")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       label = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
+			? toks.get(1)
+			: "";
                     defineHeading.accept(buff, label, 1);
                     continue;
                 }
@@ -3114,8 +2820,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith(":pagesearch")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-								    ? toks.get(1)
-								    : "");
+							     ? toks.get(1)
+							     : "");
 		    String sel1 = Utils.getProperty(props,"selector",TAG_DIV);
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
@@ -3128,8 +2834,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     String       what = toks.get(0).trim();
                     headingsProps = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							   ? toks.get(1)
+							   : "");
 
                     if (what.equals(":navleft")) {
                         headingsProps.put("navleft", "true");
@@ -3153,20 +2859,20 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    ||  tline.startsWith(":lheading")
 		    ||  tline.startsWith(":nonavheading")		    
 		    ||  tline.startsWith(":noheading")		    
-                        || tline.startsWith(":block")
-                        || tline.startsWith(":credit")
-                        || tline.startsWith(":note")
-                        || tline.startsWith(":box")
-                        || tline.startsWith(":blurb")
-                        || tline.startsWith(":callout")) {
+		    || tline.startsWith(":block")
+		    || tline.startsWith(":credit")
+		    || tline.startsWith(":note")
+		    || tline.startsWith(":box")
+		    || tline.startsWith(":blurb")
+		    || tline.startsWith(":callout")) {
                     List<String> toks  = Utils.splitUpTo(tline, " ", 2);
                     String       what  = toks.get(0).substring(1);
                     List<String> toks2 = Utils.splitUpTo(what, "-", 2);
                     what = toks2.get(0);
                     String clazz = toks.get(0).trim().substring(1);
                     String blob  = (toks.size() > 1)
-                                   ? toks.get(1)
-                                   : "";
+			? toks.get(1)
+			: "";
 		    boolean noNav = what.startsWith("nonavheading");
 		    if(noNav) {
 			clazz="ramadda-heading";
@@ -3194,7 +2900,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    blob = blob.replace("<label>","").replace("</label>","");
                     buff.append(HU.div(HU.div(blob, HU.cssClass(clazz)+attrs),
                                        HU.cssClass("ramadda-" + what
-                                           + "-outer")));
+						   + "-outer")));
 
                     continue;
                 }
@@ -3232,10 +2938,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                 }		
 
                 if (tline.startsWith("+mini") || tline.startsWith("+block")
-                        || tline.startsWith("+note")
-                        || tline.startsWith("+box")
-                        || tline.startsWith("+heading")
-                        || tline.startsWith("+blurb")) {
+		    || tline.startsWith("+note")
+		    || tline.startsWith("+box")
+		    || tline.startsWith("+heading")
+		    || tline.startsWith("+blurb")) {
                     List<String>  toks = Utils.splitUpTo(tline, " ", 2);
                     String        tag       = toks.get(0).substring(1);
                     //box-green
@@ -3249,8 +2955,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                     //box
 
                     String        remainder = ((toks2.size() > 1)
-                            ? toks2.get(1)
-                            : "");
+					       ? toks2.get(1)
+					       : "");
                     //green
 
                     StringBuilder extra     = new StringBuilder();
@@ -3277,18 +2983,18 @@ public class WikiUtil implements HtmlUtilsConstants {
                     extra.append(" \" ");
                     buff.append(HU.open(HU.TAG_DIV,
                                         HU.cssClass("ramadda-" + what
-                                            + "-outer")));
+						    + "-outer")));
                     buff.append(HU.open(TAG_DIV, extra.toString()));
 
                     continue;
                 }
 
                 if (tline.startsWith("-mini") || tline.startsWith("-block")
-                        || tline.startsWith("-heading")
-                        || tline.startsWith("-note")
-                        || tline.startsWith("-box")
-                        || tline.startsWith("-blurb")
-                        || tline.startsWith("-callout")) {
+		    || tline.startsWith("-heading")
+		    || tline.startsWith("-note")
+		    || tline.startsWith("-box")
+		    || tline.startsWith("-blurb")
+		    || tline.startsWith("-callout")) {
                     buff.append("</div></div>");
 
                     continue;
@@ -3305,8 +3011,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 			avatarCount++;
 			if(avatarCount>8) avatarCount=1;
 			balloonAfter = HU.div(HU.image(getHandler().getHtdocsUrl("/avatars/avatar" + avatarCount+".png"),ATTR_WIDTH,"40"),
-					     HU.cssClass(right?"ramadda-balloon-from-right":
-							 "ramadda-balloon-from-left"));
+					      HU.cssClass(right?"ramadda-balloon-from-right":
+							  "ramadda-balloon-from-left"));
 		    }
 		    String style=Utils.getProperty(props,ATTR_STYLE,"");
 		    String width = Utils.getProperty(props,ATTR_WIDTH,null);
@@ -3329,8 +3035,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tline.startsWith("+row")) {
                     List<String> toks = Utils.splitUpTo(tline, " ", 2);
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
-                            ? toks.get(1)
-                            : "");
+							     ? toks.get(1)
+							     : "");
 		    if(tline.equals("+rowtight")) props.put("tight","true");
                     rowStates.add(new RowState(buff, props));
                     continue;
@@ -3389,7 +3095,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                     }
                     rowState.openColumn(buff,
                                         HU.cssClass(clazz
-                                            + " ramadda-col wiki-col"));
+						    + " ramadda-col wiki-col"));
                     buff.append(contents);
                     rowState.closeColumn(buff);
 
@@ -3422,13 +3128,13 @@ public class WikiUtil implements HtmlUtilsConstants {
                             extra.append(HU.style(style));
                         }
                         clazz = clazz + " "
-                                + getAttribute(attrs, ATTR_CLASS, "");
+			    + getAttribute(attrs, ATTR_CLASS, "");
                     }
                     if (clazz.matches("col-[0-9]+")) {
                         clazz = clazz.replace("col-", "col-md-");
                     }
                     rowState.openColumn(buff, HU.cssClass(clazz
-                            + " ramadda-col wiki-col") + extra);
+							  + " ramadda-col wiki-col") + extra);
 
                     continue;
                 }
@@ -3574,8 +3280,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 List<String> toks  = Utils.splitUpTo(property, " ", 3);
                 String       page  = toks.get(1).trim();
                 String       label = (toks.size() > 2)
-                                     ? toks.get(2).trim()
-                                     : Utils.makeLabel(page);
+		    ? toks.get(2).trim()
+		    : Utils.makeLabel(page);
                 HU.href(sb, "https://en.wikipedia.org/wiki/" + page, label);
             } else if (property.equals(PROP_DOP)) {
                 replaceNewlineWithP = true;
@@ -3598,9 +3304,9 @@ public class WikiUtil implements HtmlUtilsConstants {
         if (headingsNav != null) {
             StringBuilder hb = new StringBuilder();
             boolean left = "true".equals(Utils.getProperty(headingsProps,
-                               "navleft", "false"));
+							   "navleft", "false"));
             boolean list = "true".equals(Utils.getProperty(headingsProps,
-                               "navlist", "false"));
+							   "navlist", "false"));
             boolean popup = "true".equals(Utils.getProperty(headingsProps,
 							    "navpopup", "false"));	    
             String delim;
@@ -3637,10 +3343,10 @@ public class WikiUtil implements HtmlUtilsConstants {
                     clazz += " ramadda-nav-link-" + level;
                 } else if (list) {
                     clazz += "ramadda-nav-list-link ramadda-nav-list-link-"
-                             + level;
+			+ level;
                 } else if (popup) {
                     clazz += "ramadda-nav-popup-link ramadda-nav-popup-link-"
-                             + level;
+			+ level;
                 }
                 String href = HU.mouseClickHref((left?"HtmlUtils.navLinkClicked('":"HtmlUtils.scrollToAnchor('")
 						+ id + "',-50,"+(navId==null?"null":"'" + navId+"'")+")", label,
@@ -3658,9 +3364,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		boolean open = Utils.getProperty(headingsProps,"leftOpen", true);
 		String theLeftWidth = Utils.getProperty(headingsProps,"leftWidth", "250px");
                 String theLeftStyle = (String) Utils.getProperty(headingsProps,
-							      "leftStyle", "");
+								 "leftStyle", "");
                 String theRightStyle = (String) Utils.getProperty(headingsProps,
-							       "rightStyle", "");
+								  "rightStyle", "");
 		String title = Utils.getProperty(headingsProps, ATTR_TITLE,null);
 		theLeftStyle = HU.css(ATTR_WIDTH,theLeftWidth) +
 		    theLeftStyle;
@@ -3691,7 +3397,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 s = s.replace("${" + headingsNav + "}",
                               HU.div(hb.toString(),
                                      HU.attrs(ATTR_CLASS, "ramadda-nav-list",
-                                         ATTR_STYLE, style)));
+					      ATTR_STYLE, style)));
             } else if (popup) {
                 String style = Utils.getProperty(headingsProps, ATTR_STYLE, "");
 		String id = HU.getUniqueId("popup");
@@ -3711,7 +3417,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 s = s.replace("${" + headingsNav + "}",
                               HU.div(hb.toString(),
                                      HU.attrs(ATTR_CLASS, "ramadda-nav-top",
-                                         ATTR_STYLE, style)));
+					      ATTR_STYLE, style)));
 
             }
         }
@@ -3797,14 +3503,14 @@ public class WikiUtil implements HtmlUtilsConstants {
             } else {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
                 boolean decorate = Misc.getProperty(props, ATTR_DECORATE,
-                                       false);
+						    false);
                 String title = Misc.getProperty(props, ATTR_TITLE, "");
                 //<block show="ismobile"
                 if (shouldShow) {
                     if (decorate) {
                         sb.append(HU.makeShowHideBlock(title, inner, open,
-                                HU.cssClass("wiki-blockheader"),
-                                HU.cssClass("wiki-block")));
+						       HU.cssClass("wiki-blockheader"),
+						       HU.cssClass("wiki-block")));
                     } else {
                         sb.append(inner);
                     }
@@ -3824,9 +3530,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                 StringBuffer toc = new StringBuffer();
                 makeHeadings(headings, toc, -1, "");
                 String block = HU.makeShowHideBlock("Contents",
-                                   toc.toString(), true,
-                                   HU.cssClass("wiki-tocheader"),
-                                   HU.cssClass("wiki-toc"));
+						    toc.toString(), true,
+						    HU.cssClass("wiki-tocheader"),
+						    HU.cssClass("wiki-toc"));
                 floatBoxes.add(block);
 
                 String blocks =
@@ -3839,15 +3545,15 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         if (categoryLinks.size() > 0) {
             s = s + HU.div(
-                "<b>Categories:</b> "
-                + StringUtil.join(
-                    "&nbsp;|&nbsp; ", categoryLinks), HU.cssClass(
-                    "wiki-categories"));
+			   "<b>Categories:</b> "
+			   + StringUtil.join(
+					     "&nbsp;|&nbsp; ", categoryLinks), HU.cssClass(
+											   "wiki-categories"));
         }
 
 
         for (java.util.Enumeration keys = myVars.keys();
-                keys.hasMoreElements(); ) {
+	     keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = myVars.get(key);
 	    s = s.replace("${" + key + "}", value.toString());
@@ -3861,63 +3567,53 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
-    /**
-     * _more_
-     *
-     * @param property _more_
-     *
-     * @return _more_
-     */
+    
     private String handleProperty(String property) {
         property = property.trim();
         if (property.length() == 0) {
             return "";
         }
         property = property.replaceAll("(?m)^\\s*//.*?$", "");
-        property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
-        List<String> toks;
-        int          i1 = property.indexOf(" ");
-        int          i2 = property.indexOf("\n");
-        if ((i1 >= 0) && (i1 < i2)) {
-            toks = Utils.splitUpTo(property, " ", 2);
-        } else if (i2 >= 0) {
-            toks = Utils.splitUpTo(property, "\n", 2);
-        } else {
-            toks = Utils.splitUpTo(property, " ", 2);
-        }
-        if (toks.size() == 0) {
-            return "<b>Incorrect tag specification:" + property + "</b>";
-        }
-        String tag = toks.get(0);
-        if (notTags != null) {
-            if (notTags.contains(tag)) {
-                return "";
-            }
-        }
-        String remainder = "";
-        if (toks.size() > 1) {
-            remainder = toks.get(1);
-        }
+	    property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
+	    List<String> toks;
+	    int          i1 = property.indexOf(" ");
+	    int          i2 = property.indexOf("\n");
+	    if ((i1 >= 0) && (i1 < i2)) {
+		toks = Utils.splitUpTo(property, " ", 2);
+	    } else if (i2 >= 0) {
+		toks = Utils.splitUpTo(property, "\n", 2);
+	    } else {
+		toks = Utils.splitUpTo(property, " ", 2);
+	    }
+	    if (toks.size() == 0) {
+		return "<b>Incorrect tag specification:" + property + "</b>";
+	    }
+	    String tag = toks.get(0);
+	    if (notTags != null) {
+		if (notTags.contains(tag)) {
+		    return "";
+		}
+	    }
+	    String remainder = "";
+	    if (toks.size() > 1) {
+		remainder = toks.get(1);
+	    }
 
-        MyHandler myHandler = getHandler(tag);
-        if (myHandler != null) {
-            return myHandler.handle(this, tag, remainder);
-        }
+	    MyHandler myHandler = getHandler(tag);
+	    if (myHandler != null) {
+		return myHandler.handle(this, tag, remainder);
+	    }
 
-        if (handler != null) {
-            return handler.getWikiPropertyValue(this, property, tag,
-                    remainder, notTags);
-        }
+	    if (handler != null) {
+		return handler.getWikiPropertyValue(this, property, tag,
+						    remainder, notTags);
+	    }
 
-        return null;
+	    return null;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public HashSet getNotTags() {
         return notTags;
     }
@@ -3929,25 +3625,12 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param label _more_
-     *
-     * @return _more_
-     */
+    
     public String getTitle(String label) {
         return getTitle(label, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param label _more_
-     * @param style _more_
-     *
-     * @return _more_
-     */
+    
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
 	if(url==null) return label;
@@ -3963,13 +3646,7 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param andClear _more_
-     *
-     * @return _more_
-     */
+    
     public String getTitleUrl(boolean andClear) {
         String titleUrl = (String) getProperty("title-url");
         if ((titleUrl != null) && andClear) {
@@ -3986,23 +3663,14 @@ public class WikiUtil implements HtmlUtilsConstants {
 	return target;
     }    
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     */
+    
     public void setTitleUrl(String url,String target) {
         putProperty("title-url", url);
 	if(target!=null)
 	    putProperty("linktarget", target);	    
     }
 
-    /**
-     * _more_
-     *
-     * @param buff _more_
-     * @param tline _more_
-     */
+    
     private void handleEmbed(Appendable buff, String tline) {
         try {
             handleEmbedInner(buff, tline);
@@ -4053,16 +3721,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param buff _more_
-     * @param tline _more_
-     *
-     * @throws Exception _more_
-     */
+    
     private void handleEmbedInner(Appendable buff, String tline)
-            throws Exception {
+	throws Exception {
 
         tline = tline.substring(2);
         if ( !tline.endsWith(")")) {
@@ -4081,13 +3742,13 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
     public void embedMedia(Appendable buff, String url, Hashtable props)
-            throws Exception {	
+	throws Exception {	
         boolean link = Misc.equals("true",
                                    getWikiProperty(props, "link",
-                                       "embedLink", "false"));
+						   "embedLink", "false"));
         boolean decorate = Misc.equals("true",""+getWikiProperty(props,  "decorate","decorateEmbed","false"));
         String label = (String) getWikiProperty(props, "label", "embedLabel",
-                           null);
+						null);
         String width = (String) getWikiProperty(props, ATTR_WIDTH, "embedWidth",
 						"640");
 
@@ -4107,7 +3768,7 @@ public class WikiUtil implements HtmlUtilsConstants {
                 putProperty("embedfacebook", "true");
                 //This is the RAMADDA app id
                 buff.append(
-                    "<div id='fb-root'></div><script async defer crossorigin='anonymous' src='https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=53108697449' nonce='bNyUnLLe'></script>");
+			    "<div id='fb-root'></div><script async defer crossorigin='anonymous' src='https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=53108697449' nonce='bNyUnLLe'></script>");
             }
             width = Utils.getProperty(props, ATTR_WIDTH, "500");
             sb.append("<div class='fb-post' data-href='" + url
@@ -4180,8 +3841,8 @@ public class WikiUtil implements HtmlUtilsConstants {
                 sb.append(response.getHtml());
             } else {
                 buff.append(HU.href(url, (label != null)
-                                         ? label
-                                         : url));
+				    ? label
+				    : url));
                 return;
             }
         }
@@ -4196,31 +3857,23 @@ public class WikiUtil implements HtmlUtilsConstants {
         if (link) {
             sb = new StringBuilder(HU.div(HU.div(sb.toString())
                                           + HU.href(url, (label != null)
-                    ? label
-                    : url), "style=display:inline-block;"));
+						    ? label
+						    : url), "style=display:inline-block;"));
         }
         if (style != null) {
             sb = new StringBuilder(HU.div(sb.toString(),
                                           HU.style("display:inline-block;"
-                                              + style)));
+						   + style)));
         }
         buff.append(sb);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param chunk _more_
-     * @param handler _more_
-     *
-     * @throws IOException _more_
-     */
+    
     public void handleVega(Appendable sb, String chunk,
                            WikiPageHandler handler)
-            throws IOException {
+	throws IOException {
         boolean addResources = getProperty("vegaimport") == null;
         if ( !addResources) {
             putProperty("vegaimport", "true");
@@ -4246,20 +3899,10 @@ public class WikiUtil implements HtmlUtilsConstants {
         HU.script(sb, js.toString());
     }
 
-    /**
-     * _more_
-     *
-     * @param mainBuffer _more_
-     *
-     * @param sb _more_
-     * @param chunk _more_
-     * @param handler _more_
-     *
-     * @throws IOException _more_
-     */
+    
     public boolean handleCode(Appendable sb, Chunk chunk,
-                           WikiPageHandler handler, boolean doDflt)
-            throws IOException {
+			      WikiPageHandler handler, boolean doDflt)
+	throws IOException {
         if (chunk.rest.equals("vega-lite")) {
             handleVega(sb, chunk.buff.toString(), handler);
             return true;
@@ -4292,11 +3935,11 @@ public class WikiUtil implements HtmlUtilsConstants {
         }
         if (chunk.rest.equals("javascript") || chunk.rest.equals("js")) {
             sb.append(
-                HU.cssLink(
-                    handler.getHtdocsUrl("/lib/prettify/prettify.css")));
+		      HU.cssLink(
+				 handler.getHtdocsUrl("/lib/prettify/prettify.css")));
             sb.append(
-                HU.importJS(
-                    handler.getHtdocsUrl("/lib/prettify/prettify.js")));
+		      HU.importJS(
+				  handler.getHtdocsUrl("/lib/prettify/prettify.js")));
             String id = HU.getUniqueId("javascript");
             HU.open(sb,"pre","class='prettyprint'");
             int cnt = 0;
@@ -4327,13 +3970,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     private String getSize(String s) {
         if (s == null) {
             return null;
@@ -4346,27 +3983,12 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
+    
     private String getAttribute(String line, String attr) {
         return getAttribute(line, attr, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param line _more_
-     * @param attr _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     private String getAttribute(String line, String attr, String dflt) {
         String v = StringUtil.findPattern(line,
                                           attr + "\\s*=\\s*\\\"(.*?)\\\"");
@@ -4381,43 +4003,24 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
+    
     public String getWikiVariable(String key) {
         return (String) myVars.get(key);
     }
 
-    /**
-     * _more_
-     *
-     * @param tline _more_
-     *
-     * @return _more_
-     */
+    
     private Hashtable lineToProps(String tline) {
         List<String> toks  = Utils.splitUpTo(tline, " ", 2);
         Hashtable    props = HU.parseHtmlProperties((toks.size() > 1)
-                ? toks.get(1)
-                : "");
+						    ? toks.get(1)
+						    : "");
 
         return props;
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param headings _more_
-     * @param toc _more_
-     * @param parentLevel _more_
-     * @param parentPrefix _more_
-     */
+    
     private static void makeHeadings(List headings, StringBuffer toc,
                                      int parentLevel, String parentPrefix) {
         int    cnt          = 0;
@@ -4456,87 +4059,48 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
-    /**
-     * Set the MakeHeadings property.
-     *
-     * @param value The new value for MakeHeadings
-     */
+    
     public void setMakeHeadings(boolean value) {
         this.makeHeadings = value;
     }
 
-    /**
-     * Get the MakeHeadings property.
-     *
-     * @return The MakeHeadings
-     */
+    
     public boolean getMakeHeadings() {
         return this.makeHeadings;
     }
 
 
-    /**
-     * Set the ReplaceNewlineWithP property.
-     *
-     * @param value The new value for ReplaceNewlineWithP
-     */
+    
     public void setReplaceNewlineWithP(boolean value) {
         this.replaceNewlineWithP = value;
     }
 
-    /**
-     * Get the ReplaceNewlineWithP property.
-     *
-     * @return The ReplaceNewlineWithP
-     */
+    
     public boolean getReplaceNewlineWithP() {
         return this.replaceNewlineWithP;
     }
 
-    /**
-     *  Set the Mobile property.
-     *
-     *  @param value The new value for Mobile
-     */
+    
     public void setMobile(boolean value) {
         mobile = value;
     }
 
-    /**
-     *  Get the Mobile property.
-     *
-     *  @return The Mobile
-     */
+    
     public boolean getMobile() {
         return mobile;
     }
 
-    /**
-     * Set the User property.
-     *
-     * @param value The new value for User
-     */
+    
     public void setUser(String value) {
         user = value;
     }
 
-    /**
-     * Get the User property.
-     *
-     * @return The User
-     */
+    
     public String getUser() {
         return user;
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param note _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void note(Appendable sb, String note) throws Exception {
         sb.append("\n+note\n");
         sb.append(note);
@@ -4551,14 +4115,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         return "\n+box\n"+note+"\n-box\n";
     }        
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param s _more_
-     *
-    * @throws Exception _more_
-     */
+    
     public static void title(Appendable sb, String s) throws Exception {
         sb.append("\n+title\n");
         sb.append(s);
@@ -4566,12 +4123,7 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param buff _more_
-     * @param msg _more_
-     */
+    
     public static String wikiError(Appendable buff, String msg) {
         try {
 	    String m =   HU.span(msg + "", HU.cssClass("ramadda-wiki-error"));
@@ -4582,37 +4134,22 @@ public class WikiUtil implements HtmlUtilsConstants {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param heading _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static void heading(Appendable sb, String heading)
-            throws Exception {
+	throws Exception {
         sb.append("\n:heading ");
         sb.append(heading.trim());
         sb.append("\n");
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jul 31, '19
-     * @author         Enter your name here...
-     */
+    
     public static class ContentState {
 
-        /** _more_ */
+        
         String id;
 
-        /**
-         * _more_
-         */
+        
         public ContentState() {
             this.id = HU.getUniqueId("contents");
         }
@@ -4620,87 +4157,60 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Jan 27, '19
-     * @author         Enter your name here...
-     */
+    
     public static class TabState extends ContentState {
 
-        /** _more_ */
+        
         StringBuilder title = new StringBuilder();
 
-        /** _more_ */
+        
         int cnt = 0;
 
-        /** _more_ */
+        
         String minHeight;
 
-        /**
-         * _more_
-         */
+        
         public TabState() {}
     }
 
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jul 31, '19
-     * @author         Enter your name here...
-     */
+    
     public static class AccordionState extends ContentState {
 
-        /** _more_ */
+        
         int segmentId = 0;
 
-        /** _more_ */
+        
         int activeSegment = 0;
 
-        /** _more_ */
+        
         String heightStyle = "content";
 
-        /** _more_ */
+        
         boolean collapsible = true;
 
-        /** _more_ */
+        
         int animate = 200;
 
-        /** _more_ */
+        
         boolean decorate = true;
 
-        /**
-         * _more_
-         */
+        
         public AccordionState() {}
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Feb 18, '19
-     * @author         Enter your name here...
-     */
+    
     public static class RowState {
 
-        /** _more_ */
+        
         int colCnt = 0;
 
-        /** _more_ */
+        
         Hashtable props;
 
-        /**
-         * _more_
-         *
-         * @param buff _more_
-         * @param props _more_
-         */
+        
         public RowState(Appendable buff, Hashtable props) {
             try {
                 String clazz = "row wiki-row";
@@ -4716,11 +4226,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param buff _more_
-         */
+        
         public void closeRow(Appendable buff) {
             try {
                 closeColumns(buff);
@@ -4730,11 +4236,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param buff _more_
-         */
+        
         public void closeColumn(Appendable buff) {
             try {
                 if (colCnt == 0) {
@@ -4749,12 +4251,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param buff _more_
-         * @param attrs _more_
-         */
+        
         public void openColumn(Appendable buff, String attrs) {
             try {
                 closeColumns(buff);
@@ -4765,11 +4262,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param buff _more_
-         */
+        
         public void closeColumns(Appendable buff) {
             try {
                 while (colCnt > 0) {
@@ -4786,33 +4279,25 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Feb 18, '19
-     * @author         Enter your name here...
-     */
+    
     public static class TableState {
 
-        /** _more_ */
+        
         boolean inHead = true;
 
-        /** _more_ */
+        
         boolean inRow = false;
 
-        /** _more_ */
+        
         boolean inBody = false;
 
-        /** _more_ */
+        
         boolean inTr = false;
 
-        /** _more_ */
+        
         boolean inTd = false;
 
-        /**
-         * _more_
-         */
+        
         public TableState() {}
 
 
@@ -4820,74 +4305,59 @@ public class WikiUtil implements HtmlUtilsConstants {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Feb 25, '21
-     * @author         Enter your name here...
-     */
+    
     public static class Chunk {
 
-        /** _more_ */
+        
         static int TYPE = 0;
 
-        /** _more_          */
+        
         static int TYPE_NA = -1;
 
 
-        /** _more_ */
+        
         static int TYPE_WIKI = TYPE++;
 
-        /** _more_ */
+        
         static int TYPE_CODE = TYPE++;
 
-        /** _more_ */
+        
         static int TYPE_NOWIKI = TYPE++;
 
-        /** _more_ */
+        
         static int TYPE_CSS = TYPE++;
 
-        /** _more_ */
+        
         static int TYPE_JS = TYPE++;
 
         static int TYPE_JSTAG = TYPE++;	
 
-        /** _more_ */
+        
         static int TYPE_PRE = TYPE++;
 
         static int TYPE_PRETAG = TYPE++;	
 
-        /** _more_ */
+        
         static int TYPE_XML = TYPE++;
 
 
-        /** _more_ */
+        
         int type;
 
-        /** _more_ */
+        
         StringBuilder buff = new StringBuilder();
 
 	String attrs;
 
-        /** _more_ */
+        
         String rest;
 
-        /**
-         * _more_
-         *
-         * @param type _more_
-         */
+        
         Chunk(int type) {
             this.type = type;
         }
 
-        /**
-         * _more_
-         *
-         * @param type _more_
-         * @param rest _more_
-         */
+        
         Chunk(int type, String rest) {
             this(type);
             this.rest = rest.trim();
@@ -4899,21 +4369,12 @@ public class WikiUtil implements HtmlUtilsConstants {
 	}
 
 
-        /**
-         * _more_
-         *
-         * @param line _more_
-         */
+        
         public void append(String line) {
             append(line, true);
         }
 
-        /**
-         * _more_
-         *
-         * @param line _more_
-         * @param addNewline _more_
-         */
+        
         public void append(String line, boolean addNewline) {
             buff.append(line);
             if (addNewline) {
@@ -4921,13 +4382,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param type _more_
-         * @return _more_
-         */
+        
         private static String getTypeName(int type) {
             if (type == TYPE_WIKI) {
                 return "WIKI";
@@ -4961,11 +4416,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public String toString() {
             //.replaceAll("\n", "_NL_");
             String tmp = this.buff.toString();
@@ -4974,13 +4425,7 @@ public class WikiUtil implements HtmlUtilsConstants {
             return getTypeName(type) + ":" + tmp;
         }
 
-        /**
-         * _more_
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
+        
         public static List<Chunk> splitText(WikiUtil wikiUtil, String s) {
 
             boolean debug = false;
@@ -5026,8 +4471,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
                 int currentType = (chunk != null)
-                                  ? chunk.type
-                                  : TYPE_NA;
+		    ? chunk.type
+		    : TYPE_NA;
                 if (debug) {
                     System.err.println("code:" + getTypeName(currentType)
                                        + " LINE:" + line);
@@ -5065,9 +4510,9 @@ public class WikiUtil implements HtmlUtilsConstants {
                             lookingForClose = suffixes[i];
                             if (debug) {
                                 System.err.println("opened:"
-                                        + getTypeName(type) + " rest:" + rest
-                                        + " looking for close:"
-                                        + lookingForClose);
+						   + getTypeName(type) + " rest:" + rest
+						   + " looking for close:"
+						   + lookingForClose);
                             }
                             if (type == TYPE_CODE||type==TYPE_PRE || type==TYPE_XML) {
                                 chunks.add(chunk = new Chunk(type, rest));
@@ -5168,39 +4613,21 @@ public class WikiUtil implements HtmlUtilsConstants {
 
 
 
-    /**
-     * Interface description
-     *
-     *
-     * @author         Enter your name here...    
-     */
+    
     public interface MyHandler {
 
-        /**
-         * _more_
-         *
-         * @param wikiUtil _more_
-         * @param tag _more_
-         * @param remainder _more_
-         *
-         * @return _more_
-         */
+        
         public String handle(WikiUtil wikiUtil, String tag, String remainder);
     }
 
 
-    /** _more_          */
+    
     private static Object handlerMutex = new Object();
 
-    /** _more_          */
+    
     private static Hashtable<String, MyHandler> myHandlers;
 
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     * @param handler _more_
-     */
+    
     private static void addHandler(String tag, MyHandler handler) {
         if (myHandlers == null) {
             myHandlers = new Hashtable<String, MyHandler>();
@@ -5208,21 +4635,13 @@ public class WikiUtil implements HtmlUtilsConstants {
         myHandlers.put(tag, handler);
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     private static String errorTag(String msg) {
         return HU.b(msg);
     }
 
 
-    /**
-     * _more_
-     */
+    
     private static void makeHandlers() {
         addHandler("code", (wikiUtil, tag, remainder) ->{return HU.span(remainder,HU.attrs(ATTR_CLASS,"ramadda-code"));});
 	//        addHandler("fa",(wikiUtil, tag, remainder) ->{return "<span><i class='fa " + remainder +"'></i></span>";});
@@ -5305,11 +4724,11 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append(
                                 HU.cssLink(
                                            wikiUtil.getHandler().getHtdocsUrl(
-                                                                        "/lib/odometer/odometer-theme-default.css")));
+									      "/lib/odometer/odometer-theme-default.css")));
                     buff.append(
                                 HU.importJS(
                                             wikiUtil.getHandler().getHtdocsUrl(
-                                                                         "/lib/odometer/odometer.js")));
+									       "/lib/odometer/odometer.js")));
                 }
 
                 buff.append(HU.span(initCount,
@@ -5324,43 +4743,13 @@ public class WikiUtil implements HtmlUtilsConstants {
             });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tag _more_
-     *
-     * @return _more_
-     */
     public static MyHandler getHandler(String tag) {
         if (myHandlers == null) {
             synchronized (handlerMutex) {
                 makeHandlers();
             }
         }
-
         return myHandlers.get(tag);
     }
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String s = "XX ${macro} YY";
-	String   p = "\\$\\{" + "macro" + "\\}";
-	s = s.replaceAll(p,  "${asdsad}MACRO");
-	System.err.println(s);
-	//        System.out.println(Utils.wrap(Chunk.splitText(s), "Chunk:", "\n"));
-
-    }
-
-
-
 
 }
