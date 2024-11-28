@@ -814,7 +814,7 @@ function Entry(props) {
 	    props = props??{};
 	    if(what=="name") {
 		if(this.canEdit() && inlineEdit) {
-		    return HU.input(null,this.getName(),['size','20',
+		    return HU.input(null,this.getName(),['size','30',
 							 'entryid',this.getId(),
 							 'title','Edit name',
 							 'class','ramadda-entry-inlineedit','data-field','name']);
