@@ -424,6 +424,8 @@ showHeading=true
   <property name="form.date.show" value="false"/>
   <property name="form.altitude.show" value="false"/>
 
+
+  <column name="chatgpt_api_key" label="ChatGPT API Key" type="password" help="Note: this is an optional API key to use"/>
   <column name="assistant_id" label="Assistant ID" type="string"/>
   <column name="vector_store_id" label="Vector Store ID" type="string"/>  
   <column name="instructions" size="1000" label="Instructions" rows="5" type="string"/>

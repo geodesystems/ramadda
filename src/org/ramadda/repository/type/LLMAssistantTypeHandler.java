@@ -55,7 +55,9 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
         return request.getUser().getAdmin();
     }
 
-    private String getKey() {
+    private String getKey(Request request, Entry entry) {
+	String key = entry.getStringValue(request, "chatgpt_api_key",null);
+	if(stringDefined(key)) return key;
 	return getLLMManager().getOpenAIKey();
     }
 
@@ -77,12 +79,12 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     */
 
 
-    private IO.Result call(Request request, URL url, String body) throws Exception {
+    private IO.Result call(Request request, Entry entry, URL url, String body) throws Exception {
 	return getLLMManager().call(getRepository().getLLMManager().getOpenAIJobManager(),
 				    url, body,
 				    "OpenAI-Beta","assistants=v2",
 				    "Content-Type","application/json",
-				    "Authorization","Bearer " +getKey());
+				    "Authorization","Bearer " +getKey(request, entry));
     
     }
 
@@ -106,7 +108,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 		  "model",JU.quote("gpt-4o"),
 		  "name",JU.quote(entry.getName()),
 		  "instructions",JU.quote(entry.getStringValue(request,"instructions","")));
-	IO.Result result=call(request,   new URL(URL_ASSISTANTS), JU.map(args));
+	IO.Result result=call(request,  entry, new URL(URL_ASSISTANTS), JU.map(args));
 
 	if(result.getError()) {
 	    throw new IllegalStateException("LLMAssistant: Error creating assistant:" + result.getResult());
@@ -117,7 +119,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	//create a vector store
 	args = new ArrayList<String>();
 	Utils.add(args,  "name",JU.quote(entry.getName() +" Vector Store"));
-	result=call(request,   new URL(URL_VECTOR_STORES), JU.map(args));
+	result=call(request,  entry,  new URL(URL_VECTOR_STORES), JU.map(args));
 	if(result.getError()) {
 	    throw new IllegalStateException("LLMAssistant: Error creating vector store:" + result.getResult());
 	}
@@ -131,7 +133,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
 	args = new ArrayList<String>();
 	Utils.add(args,  "tool_resources",JU.map("file_search",JU.map("vector_store_ids",JU.list(JU.quote(vectorStoreId)))));
-	result=call(request,   new URL(URL_ASSISTANTS+"/" + assistantId), JU.map(args));
+	result=call(request,  entry,  new URL(URL_ASSISTANTS+"/" + assistantId), JU.map(args));
 	if(result.getError()) {
 	    throw new IllegalStateException("LLMAssistant: Error adding vector store:" + result.getResult());
 	}
@@ -142,7 +144,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	List postArgs = new ArrayList();
 	Utils.add(postArgs,"purpose","assistants","file",file);
 	IO.Result result =IO.doMultipartPost(new URL(URL_FILES),
-					     new String[]{"Authorization"," Bearer " +getKey()},
+					     new String[]{"Authorization"," Bearer " +getKey(request, entry)},
 					     postArgs);
 	return result;
     }
@@ -221,7 +223,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	      -H "OpenAI-Beta: assistants=v2"			\
 	      -d ''*/
 
-	    IO.Result result=call(request,  new URL(URL_THREADS), "");
+	    IO.Result result=call(request,  entry, new URL(URL_THREADS), "");
 	    thread = result.getResult();
 	    if(thread!=null) {
 		JSONObject obj     = new JSONObject(thread);
@@ -277,7 +279,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 		} else {
 		    String fileId = getId(fileResult.getResult());
 		    URL url = new URL(URL_VECTOR_STORES_FILES.replace("${vector_store_id}",entry.getStringValue(request,"vector_store_id","")));
-		    IO.Result result= call(request, url, JU.map("file_id",JU.quote(fileId)));
+		    IO.Result result= call(request, entry, url, JU.map("file_id",JU.quote(fileId)));
 		    if(result.getError()) {
 			sb.append(getPageHandler().showDialogError(result.getResult()));
 		    } else {
@@ -325,7 +327,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	List<String> message = new ArrayList<String>();
 	String q = request.getString("question","");
 	Utils.add(message,"role",JU.quote("user"), "content", JU.quote(q));
-	IO.Result result=call(request,   new URL(messagesUrl), JU.map(message));
+	IO.Result result=call(request,  entry, new URL(messagesUrl), JU.map(message));
 	if(result.getError()) {
 	    //	    System.err.println("ERROR:" + result.getResult());
 	    return handleError(request, result.getResult());
@@ -339,7 +341,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	List<String> run = new ArrayList<String>();
 	Utils.add(run,"assistant_id",JU.quote(assistantId), "instructions", JU.quote("Please process the question"));
 	String  runsUrl = URL_RUNS.replace("${thread}",thread);
-	IO.Result runResult= call(request, new URL(runsUrl), JU.map(run));
+	IO.Result runResult= call(request, entry,new URL(runsUrl), JU.map(run));
 	if(runResult.getError()) {
 	    return handleError(request, runResult.getResult());
 	}
@@ -349,7 +351,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	//Give OpenAI a bit to process
 	Misc.sleep(500);
 	while(cnt-->0) {
-	    IO.Result finalResult=call(request,   new URL(messagesUrl+"?limit=10&run_id=" + runId), null);
+	    IO.Result finalResult=call(request, entry,  new URL(messagesUrl+"?limit=10&run_id=" + runId), null);
 	    if(finalResult.getError()) {
 		return handleError(request, finalResult.getResult());
 	    }
