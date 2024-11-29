@@ -15,7 +15,7 @@ function DocumentChat(id,entryId,action,models,args) {
     }
     if(args) $.extend(this.opts,args);
     if(!Utils.stringDefined(this.opts.placeholder)) {
-	this.opts.placeholder = 'LLM Input, e.g., - List the 5 main points\nNote: this will send the document text to the selected LLM model.';
+	this.opts.placeholder = 'LLM Input, e.g., - List the 5 main points. \nNote: this will send the document text to the selected LLM model.';
     }
     let cnt = 0;
     let div  =jqid(id);
