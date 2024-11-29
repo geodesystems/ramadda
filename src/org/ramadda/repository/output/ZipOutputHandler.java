@@ -256,6 +256,7 @@ public class ZipOutputHandler extends OutputHandler {
 
         OutputType output = request.getOutput();
         if (output.equals(OUTPUT_CORPUS)) {
+	    children.add(group);
             return toCorpus(request, group.getName(), children);
 	}
         if (output.equals(OUTPUT_ZIPTREE)) {
