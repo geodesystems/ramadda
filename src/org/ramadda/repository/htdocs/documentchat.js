@@ -1,4 +1,12 @@
 
+var ID_LLM_INPUT_FIELD= 'inputfield';
+var ID_LLM_INPUT_TEXTAREA= 'inputtextarea';    
+var ID_LLM_CHANGEINPUT = 'changeinput';
+var ID_LLM_PROGRESS1='progress1';
+var ID_LLM_PROGRESS2='progress2';
+var ID_LLM_SUBMIT = 'submit';
+var ID_LLM_TEXTAREA_HOLDER = 'textareadiv';
+
 function DocumentChat(id,entryId,action,models,args) {
     if(!models) models =[];
     this.id = id;
@@ -38,35 +46,97 @@ function DocumentChat(id,entryId,action,models,args) {
     }
     
     chat+=HU.div([ATTR_STYLE,'margin:4px;'],HU.leftRightTable(left,right));
-    let text= HU.textarea('','',['placeholder',this.opts.placeholder,
-				 'rows','3',ATTR_STYLE,HU.css('width','100%'),ATTR_ID,this.domId('input'),'class','ramadda-documentchat-input']);    
+    let text=''
+    let submit = HU.span([ATTR_TITLE,'Submit',
+			 ATTR_STYLE, HU.css('margin-right','4px'),
+			  ATTR_ID, this.domId(ID_LLM_SUBMIT)],HU.getIconImage('fa-regular fa-share-from-square'));
+    text += submit;
+    text += HU.input('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
+			    ATTR_STYLE,HU.css('width','100%','min-width,','100%'),
+			    ATTR_ID,this.domId(ID_LLM_INPUT_FIELD),
+			    ATTR_CLASS,'ramadda-documentchat-input']);    
+
+
+
+    let textArea =  HU.textarea('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
+				       'rows','3',ATTR_STYLE,HU.css('width','100%'),
+				       ATTR_ID,this.domId(ID_LLM_INPUT_TEXTAREA),
+				       ATTR_CLASS,'ramadda-documentchat-input']);    
+     
+    let holder = HU.div([ATTR_ID,this.domId(ID_LLM_TEXTAREA_HOLDER),ATTR_STYLE,'width:100%;display:none;'],
+			HU.div([ATTR_STYLE,HU.css('width','100%')], textArea));
+    text=HU.div([ATTR_STYLE,HU.css('width','100%','display','flex','align-items','flex-start','white-space','nowrap','vertical-align','top')],
+		text+holder);
+    let change = HU.span([ATTR_STYLE,HU.css('margin-left','4px','display','inline-block'),
+			  ATTR_TITLE,'Toggle input',
+			  ATTR_ID,this.domId(ID_LLM_CHANGEINPUT)], HU.getIconImage('fa-solid fa-angle-right'));
+    this.inputShown = true;
+    text+=change;
+    text = HU.div([ATTR_STYLE,HU.css('width','100%',
+				     'display','flex','align-items','flex-start','white-space','nowrap','vertical-align','top')],text);
+    
+    let makeProgress = (id,width,top) => {
+	return HU.div([ATTR_ID,this.domId(id),
+		       ATTR_CLASS,'ramadda-clickable',
+		       ATTR_STYLE,HU.css('position','absolute','left','50%',
+					 'display','none',
+					 'transform','translate(-50%, 0)',
+					 'top',top)],
+		      HU.image(ramaddaBaseUrl+'/icons/mapprogress.gif',[ATTR_WIDTH,width,
+									ATTR_TITLE,'Clear',
+									ATTR_TITLE,'ramadda-clickable']));
+
+    };
+
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
-		  HU.div([ATTR_ID,this.domId('progress'),
-			  ATTR_STYLE,HU.css('position','absolute','left','50%',
-					    'display','none',
-					    'transform','translate(-50%, 0)',
-					    'top','10px')],
-			 HU.image(ramaddaBaseUrl+'/icons/mapprogress.gif',['width','60px',
-									   'title','Clear',
-									   'class','ramadda-clickable'])));
-
+		  makeProgress(ID_LLM_PROGRESS1,'16px','0px')+
+		  makeProgress(ID_LLM_PROGRESS2,'40px','10px')		  
+		 );
+		  
 
     chat+=HU.div([ATTR_ID,this.domId('output'),ATTR_STYLE,HU.css('max-height','800px','overflow-y','auto')]);
     chat+='</div>'
     div.html(chat);
+    this.jq(ID_LLM_CHANGEINPUT).button().click(function() {
+	_this.inputShown =  !_this.inputShown;
+	if(_this.inputShown) {
+	    $(this).html(HU.getIconImage('fa-solid fa-angle-right'));
+	    _this.jq(ID_LLM_INPUT_FIELD).show();
+	    _this.jq(ID_LLM_INPUT_FIELD).val(_this.jq(ID_LLM_INPUT_TEXTAREA).val());
+	    _this.jq(ID_LLM_TEXTAREA_HOLDER).hide();
+	} else {
+	    $(this).html(HU.getIconImage('fa-solid fa-angle-down'));
+	    _this.jq(ID_LLM_INPUT_FIELD).hide();
+	    _this.jq(ID_LLM_TEXTAREA_HOLDER).show();
+	    _this.jq(ID_LLM_INPUT_TEXTAREA).val(_this.jq(ID_LLM_INPUT_FIELD).val());
+	}
+	
+    });
     this.history= [];
     let _this = this;
-    let input = this.input = this.jq('input');
     let output = this.jq('output');
-    let progress=this.jq('progress');
+    let progress1=this.jq(ID_LLM_PROGRESS1);
+    let progress2=this.jq(ID_LLM_PROGRESS2);    
     let step = 0;
-    let process = q=>{
+    let toggleProgress = (on1,on2) =>{
+	if(on1) progress1.show();
+	else progress1.hide();
+	if(on2) progress2.show();
+	else progress2.hide();		
+    }
+    let process = (q)=>{
 	if(!q || q.trim().length==0) return;
 	if(!this.history.includes(q)) this.history.push(q);
+	let input = this.getInput();
 	input.prop('disabled',true);
 	input.css('background','#efefef');
-	progress.show();
+	if(this.inputShown)  {
+	    toggleProgress(true,false);
+
+	} else {
+	    toggleProgress(false,true);
+	}
 	if(this.jq('button_clearalways').is(':checked')) output.html('');
 	let url =ramaddaBaseUrl+'/entry/action';
 
@@ -94,7 +164,7 @@ function DocumentChat(id,entryId,action,models,args) {
 		return;
 	    }
 	    clear();
-	    input.val('');
+	    _this.getInput().val('');
 	    let r;
             if (result.error) {
                 r="Error: " + result.error;
@@ -138,13 +208,14 @@ function DocumentChat(id,entryId,action,models,args) {
 	    
 	    let qid = 'id_' + (cnt++);
 	    let guid= HU.getUniqueId('');
-	    let out = HU.div([ATTR_STYLE,'font-weight:bold;',ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
+	    let out = HU.div([ATTR_STYLE,'border:1px solid transparent;font-weight:bold;',ATTR_ID,this.domId(qid),ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,
 			      'Use question'],
 			     q)+HU.div([ATTR_ID,guid],r);
 	    out = HU.div(['style',HU.css('border','1px solid #eee','padding','4px','margin-top','8px')], out);
 	    output.prepend(HU.div([],out));
 	    Utils.initCopyable('#'+guid,{addLink:true,extraStyle:'right:10px;bottom:10px;'});
 	    this.jq(qid).click(function() {
+		let input= _this.getInput();
 		input.val($(this).html()+' ');
 		input.focus();
 	    });
@@ -155,6 +226,7 @@ function DocumentChat(id,entryId,action,models,args) {
 */
 	    input.focus();
         }).fail((d)=>{
+	    toggleProgress();
 	    console.log('fail',d);
 	    alert('request failed');
 	});
@@ -190,18 +262,27 @@ function DocumentChat(id,entryId,action,models,args) {
 
 
     let clear = ()=>{
+	let input = this.getInput();
 	input.prop('disabled',false);
 	input.css('background','#fff');
-	progress.hide();
+	toggleProgress();
 	step++;
     };
 
-    progress.click(()=>{
+    progress1.click(()=>{
 	clear();
     });
-    input.keyup(event=>{
+    progress2.click(()=>{
+	clear();
+    });    
+    this.jq(ID_LLM_SUBMIT).button().click(()=>{
+	process(this.getInput().val());
+	
+    });
+
+    this.jq(ID_LLM_INPUT_FIELD).keyup(event=>{
 	if(!Utils.isReturnKey(event)) return;
-	process(input.val().trim());
+	process(this.jq(ID_LLM_INPUT_FIELD).val().trim());
     });
 }
 
@@ -213,8 +294,12 @@ DocumentChat.prototype = {
     domId:function (domId){
 	return this.id+domId;
     },
+    getInput:function() {
+	if(this.inputShown) return this.jq(ID_LLM_INPUT_FIELD);
+	return this.jq(ID_LLM_INPUT_TEXTAREA);	
+    },
     getTranscribeAnchor:function() {
-	return this.input;
+	return this.getInput();
     },
     handleTranscribeText:function(text) {
     }

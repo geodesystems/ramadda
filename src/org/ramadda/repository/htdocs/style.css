@@ -6663,7 +6663,7 @@ img.ramadda-clickable {
 }
 
 
-input.ramadda-clickable:hover {
+.ramadda-clickable:hover, input.ramadda-clickable:hover {
     border:1px solid var(--hover-color);
 }
 
