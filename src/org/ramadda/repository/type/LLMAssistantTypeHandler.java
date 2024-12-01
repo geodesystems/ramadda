@@ -298,7 +298,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
     private Result processEntryActionInner(Request request, Entry entry)
 	throws Exception {
-	boolean debug = true;
+	boolean debug = false;
         String action = request.getString("action", "");
 	if(action.equals(ACTION_UPLOAD)) {
 	    return processUpload(request, entry);
