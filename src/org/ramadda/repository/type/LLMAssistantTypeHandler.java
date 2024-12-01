@@ -298,6 +298,7 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 
     private Result processEntryActionInner(Request request, Entry entry)
 	throws Exception {
+	boolean debug = true;
         String action = request.getString("action", "");
 	if(action.equals(ACTION_UPLOAD)) {
 	    return processUpload(request, entry);
@@ -312,6 +313,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 
 
+	if(debug)
+	    System.err.println("LLM.getThread");
 	String thread= getThread(request, entry);
 	if(thread==null) {
 	    return handleError(request,"Unable to create thread");
@@ -327,6 +330,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	List<String> message = new ArrayList<String>();
 	String q = request.getString("question","");
 	Utils.add(message,"role",JU.quote("user"), "content", JU.quote(q));
+
+	if(debug)
+	    System.err.println("LLM.querying:" + message);	
+
 	IO.Result result=call(request,  entry, new URL(messagesUrl), JU.map(message));
 	if(result.getError()) {
 	    //	    System.err.println("ERROR:" + result.getResult());
@@ -341,6 +348,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	List<String> run = new ArrayList<String>();
 	Utils.add(run,"assistant_id",JU.quote(assistantId), "instructions", JU.quote("Please process the question"));
 	String  runsUrl = URL_RUNS.replace("${thread}",thread);
+
+	if(debug)
+	    System.err.println("LLM.calling run");
+
 	IO.Result runResult= call(request, entry,new URL(runsUrl), JU.map(run));
 	if(runResult.getError()) {
 	    return handleError(request, runResult.getResult());
@@ -351,6 +362,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	//Give OpenAI a bit to process
 	Misc.sleep(500);
 	while(cnt-->0) {
+	    if(debug)
+		System.err.println("LLM.querying on run results");
 	    IO.Result finalResult=call(request, entry,  new URL(messagesUrl+"?limit=10&run_id=" + runId), null);
 	    if(finalResult.getError()) {
 		return handleError(request, finalResult.getResult());
@@ -375,7 +388,8 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 		    }
 		}
 	    }
-	    //	    System.err.println("No results: sleeping:" + sleep +" result:" + finalResult.getResult().replace("\n"," "));
+	    if(debug)
+		System.err.println("LLM.No results: sleeping:" + sleep +" result:" + finalResult.getResult().replace("\n"," "));
 	    Misc.sleep(sleep);
 	    sleep= Math.min(5000,(int)(sleep*1.5));
 	}
