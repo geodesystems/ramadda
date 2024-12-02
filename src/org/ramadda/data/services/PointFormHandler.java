@@ -846,6 +846,9 @@ public class PointFormHandler extends RecordFormHandler {
 	    products.add(new TwoFacedObject("CSV", "points.csv"));
 	    products.add(new TwoFacedObject("JSON", "points.json"));
 	    products.add(new TwoFacedObject("Generated R", CsvOutputHandler.WHAT_GENERATED_R));	    
+	    products.add(new TwoFacedObject("Generated Python", CsvOutputHandler.WHAT_GENERATED_PYTHON));
+	    products.add(new TwoFacedObject("Generated Matlab", CsvOutputHandler.WHAT_GENERATED_MATLAB));	       
+
 	    //	    products.add(new TwoFacedObject("NetCDF", "points.nc"));
 	    HU.formEntry(subsetSB,msgLabel("Format"),
 			 HU.select(ARG_PRODUCT, products,
