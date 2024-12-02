@@ -28,6 +28,7 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.output.CsvOutputHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
@@ -857,6 +858,15 @@ public class PointOutputHandler extends RecordOutputHandler {
         if (outputType.equals(OUTPUT_FORM)) {
             return getPointFormHandler().outputEntryForm(request, entry);
         }
+	if(request.getString(ARG_PRODUCT,"").equals(CsvOutputHandler.WHAT_GENERATED_R)) {
+	    request.put(ARG_PRODUCT,"points.csv");
+	    request.put(CsvOutputHandler.ARG_WHAT,CsvOutputHandler.WHAT_GENERATED_R);
+	    request.put(ARG_OUTPUT,CsvOutputHandler.OUTPUT_IDS.toString());
+	    return getRepository().getCsvOutputHandler().outputEntry(request,
+								     CsvOutputHandler.OUTPUT_IDS,
+								     entry);
+	}
+
         boolean          asynchronous = request.get(ARG_ASYNCH, false);
         boolean doingPublish = request.defined(ARG_PUBLISH_ENTRY + "_hidden");
         List<PointEntry> pointEntries = new ArrayList<PointEntry>();
@@ -894,6 +904,22 @@ public class PointOutputHandler extends RecordOutputHandler {
 							 outputType, pointEntries);
     }
 
+
+    public String getCsvApiUrl(Request request, Entry entry) {
+	String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+				      ARG_OUTPUT,"points.product",
+				      ARG_GETDATA,"getdata",
+				      ARG_PRODUCT,"points.csv",
+				      ARG_ADD_LATLON,request.getString(ARG_ADD_LATLON,"true"));
+
+	String fmt = request.getString(ARG_DATEFORMAT+"_custom",null);
+	if(fmt==null)
+	    fmt = request.getString(ARG_DATEFORMAT,null);
+	if(fmt!=null) {
+	    url = HU.url(url,ARG_DATEFORMAT,fmt);
+	}
+	return url;
+    }
 
     public void getEntryFormCsv(Request request, Entry entry,   Appendable sb)
 	throws Exception {

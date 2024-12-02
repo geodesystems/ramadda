@@ -26,6 +26,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
 
+
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -844,6 +845,7 @@ public class PointFormHandler extends RecordFormHandler {
 	    List products = new ArrayList();
 	    products.add(new TwoFacedObject("CSV", "points.csv"));
 	    products.add(new TwoFacedObject("JSON", "points.json"));
+	    products.add(new TwoFacedObject("Generated R", CsvOutputHandler.WHAT_GENERATED_R));	    
 	    //	    products.add(new TwoFacedObject("NetCDF", "points.nc"));
 	    HU.formEntry(subsetSB,msgLabel("Format"),
 			 HU.select(ARG_PRODUCT, products,
