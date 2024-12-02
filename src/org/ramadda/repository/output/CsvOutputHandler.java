@@ -72,9 +72,9 @@ public class CsvOutputHandler extends OutputHandler {
     public static final String WHAT_IDS = "ids";
     public static final String WHAT_WGET = "wget";
     public static final String WHAT_CSVAPI = "csvapi";
-    public static final String WHAT_GENERATED_R = "generated_r";
-    public static final String WHAT_GENERATED_PYTHON= "generated_python";
-    public static final String WHAT_GENERATED_MATLAB= "generated_matlab";        
+    public static final String WHAT_WRAPPER_R = "wrapper_r";
+    public static final String WHAT_WRAPPER_PYTHON= "wrapper_python";
+    public static final String WHAT_WRAPPER_MATLAB= "wrapper_matlab";        
 
     /** _more_ */
     public static final OutputType OUTPUT_CSV = new OutputType("CSV Listing",
@@ -165,21 +165,21 @@ public class CsvOutputHandler extends OutputHandler {
 	    sb.append("WGET=wget\n");
 	    request.setReturnFilename("csvget.sh",false);	    
 	    mime = "application/x-sh";
-	} else if(what.equals(WHAT_GENERATED_R)) {
+	} else if(what.equals(WHAT_WRAPPER_R)) {
 	    mime = "text/x-r";
 	    if (group.isDummy()) {
 		request.setReturnFilename("ramadda_download.r",false);
 	    } else {
 		request.setReturnFilename(Utils.makeID(group.getName())+"_download.r",false);
 	    }
-	} else if(what.equals(WHAT_GENERATED_PYTHON)) {
+	} else if(what.equals(WHAT_WRAPPER_PYTHON)) {
 	    mime = "text/x-python";
 	    if (group.isDummy()) {
 		request.setReturnFilename("ramadda_download.py",false);
 	    } else {
 		request.setReturnFilename(Utils.makeID(group.getName())+"_download.py",false);
 	    }
-	} else if(what.equals(WHAT_GENERATED_MATLAB)) {
+	} else if(what.equals(WHAT_WRAPPER_MATLAB)) {
 	    mime = "text/x-matlab";
 	    if (group.isDummy()) {
 		request.setReturnFilename("ramadda_download.m",false);
@@ -195,9 +195,9 @@ public class CsvOutputHandler extends OutputHandler {
 		sb.append("\n");
 	    } else  if(what.equals(WHAT_WGET) ||
 		       what.equals(WHAT_CSVAPI) ||
-		       what.equals(WHAT_GENERATED_R)||
-		       what.equals(WHAT_GENERATED_PYTHON)||
-		       what.equals(WHAT_GENERATED_MATLAB)) {
+		       what.equals(WHAT_WRAPPER_R)||
+		       what.equals(WHAT_WRAPPER_PYTHON)||
+		       what.equals(WHAT_WRAPPER_MATLAB)) {
 		if(what.equals(WHAT_WGET)) {
 		    if(!entry.isFile()) {
 			sb.append("#entry: " + entry.getName() +" is not a file\n");
@@ -218,7 +218,7 @@ public class CsvOutputHandler extends OutputHandler {
 		    PointOutputHandler poh = getRepository().getPointOutputHandler();
 		    url =  poh.getCsvApiUrl(request, entry);
 		    file = Utils.makeID(entry.getName())+".csv";
-		    if(what.equals(WHAT_GENERATED_R)) {
+		    if(what.equals(WHAT_WRAPPER_R)) {
 			if(urlCnt>0) {
 			    sb.append(",\n");
 			}
@@ -227,7 +227,7 @@ public class CsvOutputHandler extends OutputHandler {
 			sb.append("list(url = \"" + url +"\", name = \"" + file+"\")");
 			continue;
 
-		    } else   if(what.equals(WHAT_GENERATED_PYTHON)) {
+		    } else   if(what.equals(WHAT_WRAPPER_PYTHON)) {
 			//    {"url": "https://example.com/file1.csv", "filename": "file1.csv"},
 			//    {"url": "https://example.com/file2.csv", "filename": "file2.csv"}
 			if(urlCnt>0) {
@@ -237,7 +237,14 @@ public class CsvOutputHandler extends OutputHandler {
 			url = request.getAbsoluteUrl(url);
 			sb.append("{\"url\": \"" + url +"\", \"filename\": \"" + file+"\"}");
 			continue;
-		    } else   if(what.equals(WHAT_GENERATED_MATLAB)) {			
+		    } else   if(what.equals(WHAT_WRAPPER_MATLAB)) {			
+			//    'https://example.com/data2.csv', 'data2.csv'; ...
+			//    'https://example.com/data3.csv', 'data3.csv' ...
+			urlCnt++;
+			url = request.getAbsoluteUrl(url);
+			sb.append(HU.squote(url) +"," +HU.squote(file)+";");
+			sb.append(" ...");
+			continue;
 		    }
 		}
 		int cnt=0;
@@ -261,17 +268,17 @@ public class CsvOutputHandler extends OutputHandler {
 	    }
 
 	}
-	if(what.equals(WHAT_GENERATED_R)) {
+	if(what.equals(WHAT_WRAPPER_R)) {
 	    String template =
 		getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/code/template.r");
 	    template = template.replace("${urls}",sb.toString());
 	    sb  = new StringBuilder(template);
-	} else if(what.equals(WHAT_GENERATED_PYTHON)) {
+	} else if(what.equals(WHAT_WRAPPER_PYTHON)) {
 	    String template =
 		getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/code/template.py");
 	    template = template.replace("${urls}",sb.toString());
 	    sb  = new StringBuilder(template);
-	} else if(what.equals(WHAT_GENERATED_MATLAB)) {
+	} else if(what.equals(WHAT_WRAPPER_MATLAB)) {
 	    String template =
 		getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/code/template.m");
 	    template = template.replace("${urls}",sb.toString());

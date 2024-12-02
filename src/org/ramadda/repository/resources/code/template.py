@@ -2,7 +2,7 @@ import os
 import requests
 import pandas as pd
 
-def read_ramadda_data(file_list, download_dir="downloads"):
+def read_ramadda_data(file_list, download_dir="."):
     """
     Downloads CSV files if they don't exist and loads them into a dictionary of DataFrames.
     
@@ -27,11 +27,7 @@ def read_ramadda_data(file_list, download_dir="downloads"):
             response.raise_for_status()  # Raise an error for bad responses
             with open(filename, "wb") as f:
                 f.write(response.content)
-        else:
-            print(f"{filename} already exists. Skipping download.")
-        
         # Load the CSV into a DataFrame
-        print(f"Loading {filename} into a DataFrame...")
         dataframes[file["filename"]] = pd.read_csv(filename)
     
     return dataframes
