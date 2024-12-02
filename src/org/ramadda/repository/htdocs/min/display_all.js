@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec  1 20:23:07 MST 2024";
+var build_date="RAMADDA build date: Mon Dec  2 11:46:12 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -35895,7 +35895,10 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 		    let html = HU.formTable();
 		    html += HU.formEntry('Number of Records:',
 					 HU.input('',size,[ATTR_ID,this.domId('downloadrecords'),ATTR_SIZE,'5']));
-		    let select= [['csv','CSV'],['json','JSON'], ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],['generated_r','Generated R Code']];
+		    let select= [['csv','CSV'],['json','JSON'], ['wget','wget File Download'],['csvapi','wget CSV API'],['ids','IDs'],
+				 ['wrapper_r','R Wrapper'],
+				 ['wrapper_python','Python Wrapper'],
+				 ['wrapper_matlab','Matlab Wrapper']];
 		    html+= HU.formEntry('What to download:',
 					HU.select('',[ATTR_ID,this.domId('downloadwhat')],select));
 		    let buttons = HU.buttons([
