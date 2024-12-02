@@ -859,9 +859,9 @@ public class PointOutputHandler extends RecordOutputHandler {
             return getPointFormHandler().outputEntryForm(request, entry);
         }
 	String product = request.getString(ARG_PRODUCT,"");
-	if(product.equals(CsvOutputHandler.WHAT_GENERATED_R) ||
-	   product.equals(CsvOutputHandler.WHAT_GENERATED_PYTHON) ||
-	   product.equals(CsvOutputHandler.WHAT_GENERATED_MATLAB)) {
+	if(product.equals(CsvOutputHandler.WHAT_WRAPPER_R) ||
+	   product.equals(CsvOutputHandler.WHAT_WRAPPER_PYTHON) ||
+	   product.equals(CsvOutputHandler.WHAT_WRAPPER_MATLAB)) {
 	    request.put(ARG_PRODUCT,"points.csv");
 	    request.put(CsvOutputHandler.ARG_WHAT,product);
 	    request.put(ARG_OUTPUT,CsvOutputHandler.OUTPUT_IDS.toString());
