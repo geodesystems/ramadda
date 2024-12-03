@@ -94,6 +94,22 @@ public class CsvOutputHandler extends OutputHandler {
                        ICON_CSV);
 
 
+    /** _more_ */
+    public static final OutputType OUTPUT_WRAPPER_MATLAB = new OutputType("Matlab Wrapper",
+									  "wrapper_matlab",
+									  OutputType.TYPE_ACTION,
+									  "", ICON_CSV);
+    public static final OutputType OUTPUT_WRAPPER_R = new OutputType("R Wrapper",
+									  "wrapper_r",
+									  OutputType.TYPE_ACTION,
+									  "", ICON_CSV);    
+
+    public static final OutputType OUTPUT_WRAPPER_PYTHON= new OutputType("Python Wrapper",
+									  "wrapper_python",
+									  OutputType.TYPE_ACTION,
+									  "", ICON_CSV);
+
+
     /**
      * _more_
      *
@@ -107,6 +123,9 @@ public class CsvOutputHandler extends OutputHandler {
         addType(OUTPUT_CSV);
         addType(OUTPUT_IDS);
         addType(OUTPUT_ENTRYCSV);
+	addType(OUTPUT_WRAPPER_MATLAB);
+	addType(OUTPUT_WRAPPER_R);
+	addType(OUTPUT_WRAPPER_PYTHON);		
     }
 
 
@@ -125,7 +144,9 @@ public class CsvOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYCSV));
-        }
+            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_MATLAB));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_R));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_PYTHON));	    	           }
     }
 
 
@@ -704,9 +725,21 @@ public class CsvOutputHandler extends OutputHandler {
 								      group, children);
 	}
 
+	//Check for the wrappers
+	if(outputType.getId().startsWith("wrapper")) {
+	    if(outputType.equals(OUTPUT_WRAPPER_MATLAB)) 
+		what=WHAT_WRAPPER_MATLAB;
+	    else if(outputType.equals(OUTPUT_WRAPPER_R)) 
+		what=WHAT_WRAPPER_R;
+	    else 
+		what=WHAT_WRAPPER_PYTHON;	    	    
+	    outputType = OUTPUT_IDS;
+	    request.put(ARG_WHAT, what);
+	}
 
 
         if (!what.equals("csv") && OUTPUT_IDS.equals(outputType)) {
+
             return listIds(request, group, children);
 	}
         if (group.isDummy()) {
