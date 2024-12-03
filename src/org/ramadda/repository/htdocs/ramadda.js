@@ -56,7 +56,6 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			    alert("An error occurred creating entry: "  + data.message);
 			    return;
 			}
-			console.dir(data);
 			let html  = data.message+"<br>"+HU.image(data.imageurl,[ATTR_WIDTH,"600px"]);
 			let dialog =  HU.makeDialog({content:html,my:"left top",at:"left top",
 						     title:'',anchor:$('body'),
