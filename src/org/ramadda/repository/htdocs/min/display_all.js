@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec  2 11:46:12 MST 2024";
+var build_date="RAMADDA build date: Wed Dec  4 10:51:03 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44976,6 +44976,7 @@ var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
+var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
@@ -45003,6 +45004,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
+				PROP_LAYERS_SHOW_SEQUENCE+'=true',
 				PROP_LAYERS_ANIMATION_SHOW+'=true',
 				PROP_LAYERS_ANIMATION_DELAY+'=1000',
 				PROP_LAYERS_ANIMATION_PLAY+'=true'];				
@@ -46405,7 +46407,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
-		let input =  HU.textarea('',this.lastText??'',[ID,this.domId('labeltext'),'rows',3,'cols', 40]);
+		let input =  HU.textarea('',this.lastText??'',[ATTR_ID,this.domId('labeltext'),'rows',3,'cols', 40]);
 		let html =  HU.formTable();
 		html += HU.formEntryTop('Label:',input);
 		let prop = 'externalGraphic';
@@ -47090,7 +47092,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let value  = attrs[key];
 		    userInput+=key+"=" + value+"\n";
 		}
-		let widget =  msg+HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		let widget =  msg+HU.textarea("",userInput,[ATTR_ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
 		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
 					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], "Cancel"));
@@ -47557,7 +47559,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let rows = 1;
 		    if(prop=="label") {
 			size="80";
-			widget =  HU.textarea("",v,[ID,domId,"rows",3,"cols", 60]);
+			if(mapGlyph.attrs.labelTemplate) {
+			    v= mapGlyph.attrs.labelTemplate;
+			}
+			widget =  HU.textarea("",v,[ATTR_ID,domId,"rows",3,"cols", 60]);
 			if(mapGlyph.isEntry()) {
 			    widget+="<br>" +HU.checkbox(this.domId("useentrylabel"),[],mapGlyph.getUseEntryLabel(),"Use label from entry");
 			}
@@ -49582,6 +49587,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    new GlyphType(this,GLYPH_GROUP,"Group",
 			  Utils.clone(
 			      {externalGraphic: externalGraphic,
+			       label:'',
 			       pointRadius:this.getPointRadius(10)},
 			      {fillColor:'transparent',
 			       fillOpacity:1,
@@ -51288,6 +51294,9 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
     if(feature) {
 	this.addFeature(feature);
+	if(this.attrs.labelTemplate) {
+	    style.label = this.attrs.labelTemplate.replace('${name}',this.getName());
+	}
 	MapUtils.setFeatureStyle(feature, style);
 	this.display.addFeatures([feature]);
     }
@@ -51543,6 +51552,19 @@ MapGlyph.prototype = {
 	    });
 	    return
 	}	
+
+	if(this.getProperty(PROP_LAYERS_SHOW_SEQUENCE)) {
+	    children.every(child=>{
+		if(!child.isVisible()) {
+		    child.setVisible(true,true);
+		    return false;
+		}
+		return true;
+	    });
+	    return;
+
+	}
+
 
 	let nextIdx=0;
 	if(!this.visibleChild) nextIdx=0;
@@ -51952,6 +51974,10 @@ MapGlyph.prototype = {
 	     ID_DATAICON_LABEL, ID_DATAICON_PROPS].forEach(prop=>{
 		 dataIconInfo[prop] = this.jq(prop).val();
 	     });
+	}
+
+	if(style.label && this.attrs.labelTemplate) {
+	    this.attrs.labelTemplate= style.label;
 	}
 
 	this.applyStyle(style);
@@ -56588,6 +56614,13 @@ MapGlyph.prototype = {
 	}		
     },
     applyStyle:function(style,skipChangeNotification,isForDataIcon) {
+	if(style && style.label && style.label.indexOf('${name}')>=0) {
+	    this.attrs.labelTemplate = style.label;
+	    style.label = style.label.replace('${name}',this.getName());
+	}  else {
+	    this.attrs.labelTemplate = null;
+	}
+
 	if(style) {
 	    this.style = style;
 	}
