@@ -95,6 +95,9 @@ function MapGlyph(display,type,attrs,feature,style,fromJson,json) {
     }
     if(feature) {
 	this.addFeature(feature);
+	if(this.attrs.labelTemplate) {
+	    style.label = this.attrs.labelTemplate.replace('${name}',this.getName());
+	}
 	MapUtils.setFeatureStyle(feature, style);
 	this.display.addFeatures([feature]);
     }
@@ -350,6 +353,19 @@ MapGlyph.prototype = {
 	    });
 	    return
 	}	
+
+	if(this.getProperty(PROP_LAYERS_SHOW_SEQUENCE)) {
+	    children.every(child=>{
+		if(!child.isVisible()) {
+		    child.setVisible(true,true);
+		    return false;
+		}
+		return true;
+	    });
+	    return;
+
+	}
+
 
 	let nextIdx=0;
 	if(!this.visibleChild) nextIdx=0;
@@ -759,6 +775,10 @@ MapGlyph.prototype = {
 	     ID_DATAICON_LABEL, ID_DATAICON_PROPS].forEach(prop=>{
 		 dataIconInfo[prop] = this.jq(prop).val();
 	     });
+	}
+
+	if(style.label && this.attrs.labelTemplate) {
+	    this.attrs.labelTemplate= style.label;
 	}
 
 	this.applyStyle(style);
@@ -5395,6 +5415,13 @@ MapGlyph.prototype = {
 	}		
     },
     applyStyle:function(style,skipChangeNotification,isForDataIcon) {
+	if(style && style.label && style.label.indexOf('${name}')>=0) {
+	    this.attrs.labelTemplate = style.label;
+	    style.label = style.label.replace('${name}',this.getName());
+	}  else {
+	    this.attrs.labelTemplate = null;
+	}
+
 	if(style) {
 	    this.style = style;
 	}

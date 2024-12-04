@@ -47,6 +47,7 @@ var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
+var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
 var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
@@ -74,6 +75,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 
 
 var IMDV_GROUP_PROPERTY_HINTS= [PROP_LAYERS_STEP_SHOW+'=true',
+				PROP_LAYERS_SHOW_SEQUENCE+'=true',
 				PROP_LAYERS_ANIMATION_SHOW+'=true',
 				PROP_LAYERS_ANIMATION_DELAY+'=1000',
 				PROP_LAYERS_ANIMATION_PLAY+'=true'];				
@@ -1476,7 +1478,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		return
 	    } 
 	    if(glyphType.getType() == GLYPH_MARKER) {
-		let input =  HU.textarea('',this.lastText??'',[ID,this.domId('labeltext'),'rows',3,'cols', 40]);
+		let input =  HU.textarea('',this.lastText??'',[ATTR_ID,this.domId('labeltext'),'rows',3,'cols', 40]);
 		let html =  HU.formTable();
 		html += HU.formEntryTop('Label:',input);
 		let prop = 'externalGraphic';
@@ -2161,7 +2163,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let value  = attrs[key];
 		    userInput+=key+"=" + value+"\n";
 		}
-		let widget =  msg+HU.textarea("",userInput,[ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		let widget =  msg+HU.textarea("",userInput,[ATTR_ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
 		let andZoom = HU.checkbox(this.domId('andzoom'),[],true,"Zoom to display");
 		let buttons  =HU.center(HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], "OK") + SPACE2 +
 					HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], "Cancel"));
@@ -2628,7 +2630,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    let rows = 1;
 		    if(prop=="label") {
 			size="80";
-			widget =  HU.textarea("",v,[ID,domId,"rows",3,"cols", 60]);
+			if(mapGlyph.attrs.labelTemplate) {
+			    v= mapGlyph.attrs.labelTemplate;
+			}
+			widget =  HU.textarea("",v,[ATTR_ID,domId,"rows",3,"cols", 60]);
 			if(mapGlyph.isEntry()) {
 			    widget+="<br>" +HU.checkbox(this.domId("useentrylabel"),[],mapGlyph.getUseEntryLabel(),"Use label from entry");
 			}
@@ -4653,6 +4658,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    new GlyphType(this,GLYPH_GROUP,"Group",
 			  Utils.clone(
 			      {externalGraphic: externalGraphic,
+			       label:'',
 			       pointRadius:this.getPointRadius(10)},
 			      {fillColor:'transparent',
 			       fillOpacity:1,
