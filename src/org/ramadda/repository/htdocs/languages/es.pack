@@ -1,4 +1,4 @@
-################################################################################################
+a################################################################################################
 #
 #This is an example language translation file. All of the phrases below were
 #extracted from the RAMADDA source code.
@@ -115,6 +115,10 @@ Any file type=Cualquier tipo de archivo
 Name = Nombre
 Stop = Detener
 Type = Tipo
+Archive=Archivo
+Media=Medios
+Data=Datos
+Find Type=Buscar tipo
 Move = Mover
 Copy = Copiar
 Name = Nombre
