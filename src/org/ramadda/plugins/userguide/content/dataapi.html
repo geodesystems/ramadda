@@ -1,0 +1,62 @@
+[ht::head {Data API}]
+<%nochildlist%>
+:navtop
+
+Many of the entry types are record oriented data. For example,
+<a href=https://ramadda.org/repository/search/type/type_usgs_gauge>USGS Stream Gauges</a>,
+<a href=https://ramadda.org/repository/search/type/type_ndbc_buoy>NDBC Buoy data</a>
+or <a href=https://ramadda.org/repository/search/type/type_awc_metar>AWC Weather data</a>.
+
+:heading CSV Download Form
+For each of these data files RAMADDA provides a CSV Download Form that enables the user
+to subset the data, choose fields and choose a result format. Under the entry menu select CSV
+Download Form-
+[ht::screenshot data/csvformlink.png]
+
+The form, e.g. the
+<a href=https://ramadda.org/repository/entry/show/Home/Contents/Data+and+Content+Management/Geoscience+Data/Observation+Data/AWC+Real-Time+Weather+Stations/Alaska+Weather+Stations/PAMC+-+McGrath%2C+McGrath+Airport?entryid=496b4f7e-fae6-49cc-9ee8-f6870eb680ab&output=points.formcsv>
+  AWC PAMC - McGrath, McGrath Airport entry</a>
+allows the user to specify a date form, a geospatial subset, max # rows, a skip factor and one can also select
+the fields to download.
+
+[ht::screenshot data/csvform.png]
+
+The Search Values section allows one to specify numeric ranges to download.
+[ht::screenshot data/searchvalues.png]
+
+The link show at the bottom of the form allows one to copy the result URL and use that in external scripts, e.g. with wget, curl, or in code.
+[ht::screenshot data/link.png]
+
+
+:heading Generated Code
+The output of the form can be CSV or JSON. One can also specify the output to be generated code
+that downloads the CSV URL if needed and load the file (or files) into a data stucture. The languages
+that are support are Python, R and Matlab.
+:p
+This facility to download generated wrapper code is also available when entries are listed
+by a parent entry. For example, in the list of
+<a href=https://ramadda.org/repository/entry/show?entryid=ad801b88-3541-46bc-9552-5ac6434e8d5a#data_list>
+  Alabama Weather Stations</a>
+toggle open the form with the  <span><i class="fas fa-caret-down"></i></span> link.
+Select the desired entries and, under Apply Action, select the generated code.
+Then press the "Selected" button or, if you want all of the entries select "All".
+This will download a code file, e.g. ramadda_download.py.
+
+[ht::screenshot data/list.png]
+
+
+One can also use this facility in the search form.
+For example, here is the search form for the AWC Weather stations-
+<a href=https://ramadda.org/repository/search/type/type_awc_metar>https://ramadda.org/repository/search/type/type_awc_metar</a>.
+You can apply the search and, at the bottom of the form select the "Select Output" button. In the
+dialog select the desired language under "What to Download".
+
+[ht::screenshot data/search.png]
+
+Note: you can also have RAMADDA generate a wget shell script for the raw data files or
+for the CSV Form API converted data.
+
+
+
+
+[ht::foot]

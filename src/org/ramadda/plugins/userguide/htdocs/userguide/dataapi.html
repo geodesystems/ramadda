@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>Data API</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#dataapi.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_datafacilities.html">Data Facilities</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="dataexample.html"><table><td valign=center><td><span title="Previous: Data Example"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Data Example</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 8.1: Data API</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="page_griddeddata.html"><table><tr valign=center><td>Gridded Data</td><td><span title="Next: Gridded Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+:navtop
+
+Many of the entry types are record oriented data. For example,
+<a href=https://ramadda.org/repository/search/type/type_usgs_gauge>USGS Stream Gauges</a>,
+<a href=https://ramadda.org/repository/search/type/type_ndbc_buoy>NDBC Buoy data</a>
+or <a href=https://ramadda.org/repository/search/type/type_awc_metar>AWC Weather data</a>.
+
+:heading CSV Download Form
+For each of these data files RAMADDA provides a CSV Download Form that enables the user
+to subset the data, choose fields and choose a result format. Under the entry menu select CSV
+Download Form-
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/csvformlink.png?version=910"><img  src="data/csvformlink.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/csvformlink.png?version=910" ></a></div></div>
+
+The form, e.g. the
+<a href=https://ramadda.org/repository/entry/show/Home/Contents/Data+and+Content+Management/Geoscience+Data/Observation+Data/AWC+Real-Time+Weather+Stations/Alaska+Weather+Stations/PAMC+-+McGrath%2C+McGrath+Airport?entryid=496b4f7e-fae6-49cc-9ee8-f6870eb680ab&output=points.formcsv>
+  AWC PAMC - McGrath, McGrath Airport entry</a>
+allows the user to specify a date form, a geospatial subset, max # rows, a skip factor and one can also select
+the fields to download.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/csvform.png?version=910"><img  src="data/csvform.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/csvform.png?version=910" ></a></div></div>
+
+The Search Values section allows one to specify numeric ranges to download.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/searchvalues.png?version=910"><img  src="data/searchvalues.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/searchvalues.png?version=910" ></a></div></div>
+
+The link show at the bottom of the form allows one to copy the result URL and use that in external scripts, e.g. with wget, curl, or in code.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/link.png?version=910"><img  src="data/link.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/link.png?version=910" ></a></div></div>
+
+
+:heading Generated Code
+The output of the form can be CSV or JSON. One can also specify the output to be generated code
+that downloads the CSV URL if needed and load the file (or files) into a data stucture. The languages
+that are support are Python, R and Matlab.
+:p
+This facility to download generated wrapper code is also available when entries are listed
+by a parent entry. For example, in the list of
+<a href=https://ramadda.org/repository/entry/show?entryid=ad801b88-3541-46bc-9552-5ac6434e8d5a#data_list>
+  Alabama Weather Stations</a>
+toggle open the form with the  <span><i class="fas fa-caret-down"></i></span> link.
+Select the desired entries and, under Apply Action, select the generated code.
+Then press the "Selected" button or, if you want all of the entries select "All".
+This will download a code file, e.g. ramadda_download.py.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/list.png?version=910"><img  src="data/list.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/list.png?version=910" ></a></div></div>
+
+
+One can also use this facility in the search form.
+For example, here is the search form for the AWC Weather stations-
+<a href=https://ramadda.org/repository/search/type/type_awc_metar>https://ramadda.org/repository/search/type/type_awc_metar</a>.
+You can apply the search and, at the bottom of the form select the "Select Output" button. In the
+dialog select the desired language under "What to Download".
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="data/search.png?version=910"><img  src="data/search.png?version=910"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="data/search.png?version=910" ></a></div></div>
+
+Note: you can also have RAMADDA generate a wget shell script for the raw data files or
+for the CSV Form API converted data.
+
+
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="dataexample.html"><table><td valign=center><td><span title="Previous: Data Example"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Data Example</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="page_griddeddata.html"><table><tr valign=center><td>Gridded Data</td><td><span title="Next: Gridded Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
