@@ -143,6 +143,10 @@ public class ZoomifyTypeHandler extends GenericTypeHandler implements WikiTagHan
 	tagHandlers.put("zoomify_collection",this);
     }
 
+    @Override
+    public void addTagDefinition(List<String>  tags) {
+    }
+
     public String handleTag(WikiUtil wikiUtil, Request request,
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder) throws Exception {

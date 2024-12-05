@@ -210,7 +210,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
 				 HU.b("Value " +i+":") +HU.space(1) +
 				 HU.input("geojson_value"+i,
 					  request.getString("geojson_value" +i, ""),
-					  HU.attrs("onkeydown","HtmlUtils.preventSubmitOnEnter(event)")
+					  HU.attrs("size","80",
+						   "onkeydown","HtmlUtils.preventSubmitOnEnter(event)")
 					  ));
 		}
 

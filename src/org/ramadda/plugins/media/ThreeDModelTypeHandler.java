@@ -459,10 +459,14 @@ public class ThreeDModelTypeHandler  extends GenericTypeHandler implements WikiT
 	    });
     }
 
+    @Override
     public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
 	tagHandlers.put("3dmodel",this);
     }
 
+    @Override
+    public void addTagDefinition(List<String>  tags) {
+    }
     /**
      *
      * @param wikiUtil _more_
