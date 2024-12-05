@@ -124,7 +124,8 @@ public class WikiManager extends RepositoryManager
     private boolean defaultTableFormOpen = false;
     private Hashtable<String, String> wikiMacros;
     private WikiUtil dummyWikiUtil = new WikiUtil();
-    private Hashtable<String,WikiTagHandler> tagHandlers =  new Hashtable<String,WikiTagHandler>();
+    private Hashtable<String,WikiTagHandler> tagHandlersMap =  new Hashtable<String,WikiTagHandler>();
+    private List<WikiTagHandler> tagHandlers =  new ArrayList<WikiTagHandler>();    
 
     public WikiManager(Repository repository) {
         super(repository);
@@ -146,7 +147,7 @@ public class WikiManager extends RepositoryManager
         }
         WikiUtil.setGlobalProperties(wikiMacros);
 
-	tagHandlers =  new Hashtable<String,WikiTagHandler>();
+	tagHandlersMap =  new Hashtable<String,WikiTagHandler>();
 	try {
 	    for(Class c: getPluginManager().getSpecialClasses()) {
 		if (WikiTagHandler.class.isAssignableFrom(c)) {
@@ -159,13 +160,15 @@ public class WikiManager extends RepositoryManager
 		    }
 		    if (ctor != null) {
 			WikiTagHandler tagHandler = (WikiTagHandler) ctor.newInstance(new Object[] { getRepository()});
-			tagHandler.initTags(tagHandlers);
+			tagHandlers.add(tagHandler);
+			tagHandler.initTags(tagHandlersMap);
 		    }
 		}
 	    }
 	    for(TypeHandler typeHandler:getRepository().getTypeHandlers()) {
 		if (WikiTagHandler.class.isAssignableFrom(typeHandler.getClass())) {
-		    ((WikiTagHandler)typeHandler).initTags(tagHandlers);
+		    tagHandlers.add(((WikiTagHandler)typeHandler));
+		    ((WikiTagHandler)typeHandler).initTags(tagHandlersMap);
 		}
 	    
 	    }
@@ -1600,6 +1603,18 @@ public class WikiManager extends RepositoryManager
 
 
     
+    public void addWikiTagDefinition(List<String> tags, WikiTags.WikiTag tag) {
+	List<String> tmp = new ArrayList<String>();
+	String label = Utils.makeLabel(tag.label) + " properties";
+	tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
+	for (int j = 0; j < tag.attrsList.size(); j += 2) {
+	    tmp.add(JU.map(Utils.makeListFromValues("p",JU.quote(tag.attrsList.get(j)),"ex",
+						    JU.quote(tag.attrsList.get(j + 1)))));
+	}
+	tags.add(tag.tag);
+	tags.add(JU.list(tmp));
+    }
+
     public Result processWikiTags(Request request) throws Exception {
         StringBuilder sb   = new StringBuilder();
         List<String>  tags = new ArrayList<String>();
@@ -1607,17 +1622,13 @@ public class WikiManager extends RepositoryManager
             WikiTags.WikiTagCategory cat = WikiTags.WIKITAGS[i];
             for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
                 WikiTags.WikiTag      tag = cat.tags[tagIdx];
-                List<String> tmp = new ArrayList<String>();
-		String label = Utils.makeLabel(tag.label) + " properties";
-                tmp.add(JU.map(Utils.makeListFromValues("label",JU.quote(label))));
-                for (int j = 0; j < tag.attrsList.size(); j += 2) {
-                    tmp.add(JU.map(Utils.makeListFromValues("p",JU.quote(tag.attrsList.get(j)),"ex",
-							    JU.quote(tag.attrsList.get(j + 1)))));
-                }
-                tags.add(tag.tag);
-                tags.add(JU.list(tmp));
+		addWikiTagDefinition(tags,tag);
             }
         }
+	for(WikiTagHandler tagHandler:tagHandlers) {
+	    tagHandler.addTagDefinition(tags);
+	}
+
         sb.append(JU.map(tags));
         Result result = new Result("", sb, JU.MIMETYPE);
         result.setShouldDecorate(false);
@@ -1871,7 +1882,7 @@ public class WikiManager extends RepositoryManager
 	    sb.append(HU.formClose());
 	    return sb.toString();
 	}
-	WikiTagHandler tagHandler = tagHandlers.get(theTag);
+	WikiTagHandler tagHandler = tagHandlersMap.get(theTag);
 	if(tagHandler!=null) {
 	    String s = tagHandler.handleTag(wikiUtil, request,
 					    originalEntry, entry, theTag,

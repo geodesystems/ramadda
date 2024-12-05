@@ -382,11 +382,11 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
         String attrs;
 	String tt;
         List<String> attrsList = new ArrayList<String>();
-        WikiTag(String tag) {
+        public WikiTag(String tag) {
             this(tag, null);
         }
 
-        WikiTag(String tag, String label, String... attrs) {
+        public   WikiTag(String tag, String label, String... attrs) {
 	    boolean debug=false;
             this.tag = tag;
             if (label == null) {
