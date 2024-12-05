@@ -9066,10 +9066,9 @@ public class WikiManager extends RepositoryManager
 		if(columns!=null) {
 		    for (Column column : columns) {
 			Object v = entry.getValue(request, column);
-			if(v!=null) {
-			    svalue = svalue.replace("${property:" + column.getName()+"}", v.toString());
-			    change=true;
-			}
+			if(v==null) v="";
+			svalue = svalue.replace("${property:" + column.getName()+"}", v.toString());
+			change=true;
 		    }
 		}
 	    }
