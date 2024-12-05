@@ -1699,21 +1699,45 @@ RamaddaCoreDisplay.prototype = {
 		    if(showPieces && this.isValidBox(box)) {
 			return;
 		    }
-		    let boxAttrs = {
-			x: imageX+scale(box.x),
-			y: imageY+scale(box.y),
-			width: scale(box.width),
-			height:scale(box.height),
-			stroke: 'red',
-			strokeWidth: 1,
+		    if(box.polygon) {
+			let convertedPolygon= [];
+			for(let i=0;i<box.polygon.length;i+=2) {
+			    let x =box.polygon[i];
+			    let y =box.polygon[i+1];			    
+			    x = imageX+scale(x);
+			    y = imageY+scale(y);
+			    if(doRotation) {
+				let boxAttrs =  {x:x,y:y};
+				boxAttrs = this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
+				x=boxAttrs.x - rotOffset.x;
+				y=boxAttrs.y - rotOffset.y;
+			    }
+			    convertedPolygon.push(x,y);
+			}
+			const polygon = new Konva.Line({
+			    points: convertedPolygon,
+			    stroke: 'red',
+			    strokeWidth: 2,
+			    closed: true,
+			});
+			group.add(polygon);
+		    } else {
+			let boxAttrs = {
+			    x: imageX+scale(box.x),
+			    y: imageY+scale(box.y),
+			    width: scale(box.width),
+			    height:scale(box.height),
+			    stroke: 'red',
+			    strokeWidth: 1,
+			}
+			if(doRotation) {
+			    boxAttrs =  this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
+			    boxAttrs.x=boxAttrs.x - rotOffset.x;
+			    boxAttrs.y=boxAttrs.y - rotOffset.y;
+			}
+			let boxRect = new Konva.Rect(boxAttrs);
+			group.add(boxRect);
 		    }
-		    if(doRotation) {
-			boxAttrs =  this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
-			boxAttrs.x=boxAttrs.x - rotOffset.x;
-			boxAttrs.y=boxAttrs.y - rotOffset.y;
-		    }
-		    let boxRect = new Konva.Rect(boxAttrs);
-		    group.add(boxRect);
 		});
 	    }
 

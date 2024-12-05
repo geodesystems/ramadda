@@ -107,13 +107,20 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	    for(Box box:_boxes) {
 		if(boxes==null)boxes=new ArrayList<String>();
-		boxes.add(JU.map("label",JU.quote(box.label),
-				 "x",JU.quote(box.x),
-				 "y",JU.quote(box.y),
-				 "width",JU.quote(box.width),
-				 "height",JU.quote(box.height),
-				 "top",JU.quote(box.top),
-				 "bottom",JU.quote(box.bottom)));
+		if(box.poly!=null) {
+		    boxes.add(JU.map("label",JU.quote(box.label),
+				     "polygon",JU.list(box.poly),
+				     "top",JU.quote(box.top),
+				     "bottom",JU.quote(box.bottom)));
+		} else {
+		    boxes.add(JU.map("label",JU.quote(box.label),
+				     "x",JU.quote(box.x),
+				     "y",JU.quote(box.y),
+				     "width",JU.quote(box.width),
+				     "height",JU.quote(box.height),
+				     "top",JU.quote(box.top),
+				     "bottom",JU.quote(box.bottom)));
+		}
 	    };
 
 	    if(boxes!=null) Utils.add(attrs,"boxes",JU.list(boxes));
@@ -152,6 +159,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	if(stringDefined(annotations)) {
 	    try {
 		//		System.out.println(annotations);
+
 		JSONArray a = new JSONArray(annotations);
 		for(int i=0;i<a.length();i++) {
 		    JSONObject ann = a.getJSONObject(i);
@@ -178,7 +186,23 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		    if(value==null) continue;
 		    //xywh=pixel:428.0892028808594,54.38945770263672,373.4395446777344,74.16742706298828"
 		    int idx = value.indexOf("pixel:");
-		    if(idx<0) continue;
+		    if(idx<0) {
+			String points = StringUtil.findPattern(value,"points=\"(.*)\"");
+			if(points==null)  continue;
+			List<String> toks = Utils.split(points," ",true,true);
+			List<Double> poly = new ArrayList<Double>();
+			for(String pair: toks) {
+			    List<String>tuple = Utils.split(pair,",",true,true);
+			    if(tuple.size()!=2) continue;
+			    poly.add(new Double(tuple.get(0)));
+			    poly.add(new Double(tuple.get(1)));			    
+			}
+			boxes.add(new Box(label,
+					  poly,
+					  top==null?Double.NaN:Double.parseDouble(top),
+					  bottom==null?Double.NaN:Double.parseDouble(bottom)));
+			continue;
+		    }
 		    value = value.substring(idx+"pixel:".length());
 		    List<String> toks = Utils.split(value);
 		    if(toks.size()!=4) continue;
@@ -309,6 +333,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	public double  height;
 	public double  top;
 	public double  bottom;
+	public List<Double> poly;
 
 	Box(Metadata m) {
 	    this(m.getAttr(1),
@@ -343,6 +368,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    double height) {
 	    this(label,x,y,width,height,Double.NaN,Double.NaN);
 	}
+
+
+	Box(String label,
+	    List<Double>poly,
+	    double top,
+	    double bottom) {
+	    this.label = label;
+	    this.poly=poly;
+	    this.top = top;
+	    this.bottom = bottom;
+	}
+
 
 
 	public String toString() {
