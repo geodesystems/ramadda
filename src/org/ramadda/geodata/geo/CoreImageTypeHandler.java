@@ -6,6 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.geodata.geo;
 
 import org.ramadda.repository.output.WikiTagHandler;
+import org.ramadda.repository.output.WikiTags;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -234,6 +235,26 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 
     }
     
+    private static final  WikiTags.WikiTag wikiTag = new WikiTags.WikiTag("core_visualizer",null,
+									  "tt","Core Visualizer",
+									  "otherEntries","comma separated list of other image collections",
+									  "canvasHeight","400",
+									  "top","0",
+									  "showLegend","true",
+									  "showAnnotations","true",
+									  "maxColumnWidth","200",
+									  "doRotation","true",
+									  "scaleY","1",
+									  "showLabels","true",
+									  "showHighlight","true",
+									  "showMenuBar","true",
+									  "initScale","1.0");
+
+    @Override
+    public void addTagDefinition(List<String>  tags) {
+	getWikiManager().addWikiTagDefinition(tags, wikiTag);
+    }
+
     @Override
     public void initTags(Hashtable<String, WikiTagHandler> tagHandlers) {
 	tagHandlers.put("core_visualizer",this);
@@ -274,14 +295,25 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	String other = Utils.getProperty(props,"otherEntries",null);
 	if(other!=null) ids+=","+other;
 	Utils.add(args,"collectionIds",JU.quote(ids));
-	for(String a:new String[]{"height","canvasHeight","scale","top","autoSize",
+	for(String a:new String[]{"height",
+				  "canvasHeight",
+				  "scale",
+				  "top",
+				  "autoSize",
 				  "displayEntries",
-				  "showLegend","showAnnotations",
+				  "showLegend",
+				  "showAnnotations",
 				  "maxColumnWidth",
 				  "doRotation",
 				  "scaleY",
-				  "axisX","legendX","legendTop","legendBottom",
-				  "showLabels","showHighlight","showMenuBar","initScale"}) {
+				  "axisX",
+				  "legendX",
+				  "legendTop",
+				  "legendBottom",
+				  "showLabels",
+				  "showHighlight",
+				  "showMenuBar",
+				  "initScale"}) {
 	    String v=Utils.getProperty(props,a,null);
 	    if(v!=null) {
 		if(v.equals("true") || v.equals("false"))
