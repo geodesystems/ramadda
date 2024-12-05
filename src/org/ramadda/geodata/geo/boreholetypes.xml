@@ -120,6 +120,12 @@ message="" width="80%"  useThumbnail="true" }}
     <property name="form.time.show" value="false"/>    
     <column name="show_labels" type="boolean" group="Display Settings"
 	    label="Show Labels"  showinhtml="false" default="true"/>
+    <column name="other_entries" type="string" size="4000"  rows="5"
+	    columns="80"
+	    label="Other Image Collections"
+	    showinhtml="false"
+	    help="One entry ID per line"/>
+
     <column name="displays" type="string" size="4000"  rows="5"
 	    columns="80"
 	    label="Chart Displays"  showinhtml="false" help="One entry per line. Format:&lt;br&gt;entryid,field1:value1,...,fieldN:valueN&lt;br&gt;e.g.:&lt;br&gt;entryid,fields:gamma,indexField:depth"/>
@@ -129,7 +135,8 @@ message="" width="80%"  useThumbnail="true" }}
 +section title={{name}}
 :navtop
 {{description wikify=true}}
-{{core_visualizer showLabels="${property:show_labels}"  displayEntries="${property:displays}"
+{{core_visualizer showLabels="${property:show_labels}"
+displayEntries="${property:displays}"
 }}
 
 :heading Table

@@ -981,6 +981,10 @@ RamaddaCoreDisplay.prototype = {
 	let url = RamaddaUtils.getUrl('/core/entries');
 	url +='?entryid='+ entryId;
 	$.getJSON(url, (data)=> {
+	    if(data.error) {
+		console.log('Error loading collection:' + entryId +' error:' + data.error);
+		return;
+	    }
 	    _this.addCollection(data);
 	}).fail((data)=>{
 	    window.alert('Failed to load entries');

@@ -291,10 +291,18 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	    Utils.add(args,"canEdit","true");
 	}
 
-	String ids = entry.getId();
+	List<String> ids = new ArrayList<String>();
+	ids.add(entry.getId());
 	String other = Utils.getProperty(props,"otherEntries",null);
-	if(other!=null) ids+=","+other;
-	Utils.add(args,"collectionIds",JU.quote(ids));
+	if(other!=null) {
+	    ids.addAll(Utils.split(other,",",true,true));
+	}
+	other = entry.getStringValue(request,"other_entries",null);
+	if(other!=null) {
+	    ids.addAll(Utils.split(other,"\n",true,true));
+	}
+
+	Utils.add(args,"collectionIds",JU.quote(Utils.join(ids,",")));
 	for(String a:new String[]{"height",
 				  "canvasHeight",
 				  "scale",
