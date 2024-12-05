@@ -12,6 +12,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.util.WikiUtil;
 
 import java.util.Hashtable;
+import java.util.List;
 
 
 /**
@@ -25,6 +26,16 @@ public interface WikiTagHandler {
      * @param tagHandlers _more_
      */
     public void initTags(Hashtable<String, WikiTagHandler> tagHandlers);
+
+    /**
+       This is called by WikiManager in its processWikiTags method
+       the tags list should contain a tag (String) and a Json list:
+       [
+       {"label":"Tag properties"},
+       {"p":"tt", "ex":"Entry name"},
+       {"p":"link","ex":true}]
+     */
+    public void addTagDefinition(List<String>  tags);
 
     /**
      *
