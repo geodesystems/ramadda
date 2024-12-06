@@ -1,0 +1,17 @@
+<types 	priority="10" supercategory="General" category="Archive">
+<type name="type_archive_inventory"  
+      description="Archive Inventory"
+      handler="org.ramadda.plugins.archive.InventoryTypeHandler">
+    <property name="icon" value="/icons/list.png"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.date.show" value="false"/>    
+    <property name="form.area.show" value="false"/>    
+    <property name="form.tags.show" value="false"/>    
+
+<!--
+    <column name="catalog_number" type="string"  label="Catalog Number" columns="30"/>
+    -->
+
+</type>
+
+</types>
