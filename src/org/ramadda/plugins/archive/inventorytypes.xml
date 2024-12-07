@@ -7,10 +7,8 @@
     <property name="form.date.show" value="false"/>    
     <property name="form.area.show" value="false"/>    
     <property name="form.tags.show" value="false"/>    
+    <column name="barcodes" type="clob"  rows="80" label="Bar Codes" columns="30" help="Enter bar codes, one per line"/>
 
-<!--
-    <column name="catalog_number" type="string"  label="Catalog Number" columns="30"/>
-    -->
 
 </type>
 
