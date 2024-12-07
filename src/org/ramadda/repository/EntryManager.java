@@ -6358,10 +6358,18 @@ public class EntryManager extends RepositoryManager {
 
     public String getEntryLink(Request request, Entry entry, boolean addIcon, String hrefAttrs,
                                String... args) {
+	return getEntryLink(request, entry,getEntryDisplayName(entry),addIcon, hrefAttrs,args);
+    }
+
+    public String getEntryLink(Request request, Entry entry, String entryLabel,
+			       boolean addIcon, String hrefAttrs,
+                               String... args) {
+
+
         try {
             String label = (addIcon
                             ?   getPageHandler().getEntryIconImage(request, entry) + " "
-                            : "") + getEntryDisplayName(entry);
+                            : "") + entryLabel;
 
             return HU.href(getEntryURL(request, entry, args), label, hrefAttrs);
         } catch (Exception exc) {
@@ -6512,7 +6520,7 @@ public class EntryManager extends RepositoryManager {
             }
 
         } else if (entry.getResource().isFile()) {
-            if (getAccessManager().canDownload(request, entry)) {
+	    if (getAccessManager().canDownload(request, entry)) {
                 imgUrl = entry.getTypeHandler().getEntryResourceUrl(request, entry);
                 imgText.append(msg("Click to download file"));
             }
