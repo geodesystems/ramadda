@@ -68,7 +68,8 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
 	StringBuilder sb = new StringBuilder();
 	boolean canEdit = getAccessManager().canDoEdit(request, entry);
-	getPageHandler().entrySectionOpen(request, entry, sb, "Inventory");
+	getPageHandler().entrySectionOpen(request, entry, sb, "");
+	sb.append(getWikiManager().wikifyEntry(request, entry, entry.getDescription()));
 	String file = request.getUploadedFile(ARG_FILE);
 	List<String> barcodeList = getBarcodes(request,entry);
 	if(canEdit && file!=null) {
