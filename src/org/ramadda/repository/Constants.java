@@ -2389,6 +2389,8 @@ public interface Constants {
 
 
 
+    public static final String ORDERBY_NONE = "none";
+
     /** _more_ */
     public static final String ORDERBY_DATE = "date";
 
