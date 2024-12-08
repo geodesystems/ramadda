@@ -54,6 +54,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class EntryUtil extends RepositoryManager {
 
+    private boolean debugSort = true;
+
     //Cache for 1 hour
 
     /** _more_ */
@@ -189,6 +191,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnName(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on name:" + entries);
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1     = (Entry) o1;
@@ -224,6 +227,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnNumber(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on number:" + entries);
         List tmp = new ArrayList();
         for (Entry entry : entries) {
             String s1 = StringUtil.findPattern(entry.getName(), "([0-9]+)");
@@ -459,6 +463,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnPattern(List<Entry> entries,
             final boolean descending, String p) {
+	if(debugSort)    System.err.println("sort on pattern:" + entries);
         p = p.replaceAll("_LEFT_", "[").replaceAll("_RIGHT_", "]");
         final Pattern pattern = Pattern.compile(p);
         //      System.err.println("on pattern:" + pattern+":");
@@ -581,6 +586,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public List<Entry> sortEntriesOnDate(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on date:" + entries);
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -619,6 +625,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on create date:" + entries);
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -657,6 +664,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on entry order:" + entries);
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -694,6 +702,7 @@ public class EntryUtil extends RepositoryManager {
      */
     public  List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
             final boolean descending) {
+	if(debugSort)    System.err.println("sort on change date:" + entries);
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
@@ -851,6 +860,7 @@ public class EntryUtil extends RepositoryManager {
     public  List<Entry> sortEntriesOn(List<Entry> entries,
                                             final List<String> ons,
                                             final boolean descending) {
+	if(debugSort)    System.err.println("sort on: "+  ons +" entries:" + entries);
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
 	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
     }
@@ -949,6 +959,7 @@ public class EntryUtil extends RepositoryManager {
     public  List<Entry> sortEntriesOnField(List<Entry> entries,
             final boolean descending, final String type,
             final int sortOrderFieldIndex) {
+	if(debugSort)    System.err.println("sort on field:" + entries);
 	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
