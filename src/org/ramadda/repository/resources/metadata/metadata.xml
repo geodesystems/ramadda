@@ -347,7 +347,7 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
          default="fromdate"
          name="Field"
          datatype="enumeration"
-         values="fromdate:From Date,todate:To Date,createdate:Create Date,name:Name,type:Type,number:Number (extract number from name),mixed:Mixed"/>
+         values="fromdate:From Date,todate:To Date,createdate:Create Date,name:Name,type:Type,number:Number (extract number from name),mixed:Mixed,none:None"/>
       <element
          default="true"
          name="Ascending"
