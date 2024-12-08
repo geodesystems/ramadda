@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unchecked")
 public class EntryUtil extends RepositoryManager {
 
-    private boolean debugSort = true;
+    private boolean debugSort = false;
 
     //Cache for 1 hour
 
@@ -587,7 +587,6 @@ public class EntryUtil extends RepositoryManager {
     public List<Entry> sortEntriesOnDate(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on date:" + entries);
-	System.err.println(Utils.getStack(10));
         Comparator comp = new Comparator() {
             public int compare(Object o1, Object o2) {
                 Entry e1 = (Entry) o1;
