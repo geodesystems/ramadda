@@ -7324,6 +7324,11 @@ public class WikiManager extends RepositoryManager
 	if(debug1)
 	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
 
+	System.err.println("Order by:"+ orderBy);
+	System.err.println("Entries:"+ entries);	
+
+
+
         if (orderBy != null && !orderBy.equals(ORDERBY_NONE)) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
