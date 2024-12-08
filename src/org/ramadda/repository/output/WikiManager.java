@@ -6685,7 +6685,6 @@ public class WikiManager extends RepositoryManager
                                          userDefinedEntries, props);
 
 
-
 	debugGetEntries = false;
 
         String filter = getProperty(wikiUtil, props,
@@ -6963,6 +6962,7 @@ public class WikiManager extends RepositoryManager
 	String prefix = getProperty(wikiUtil,props,"argPrefix","");
         int         max         =   getProperty(wikiUtil, props, ARG_MAX, -1);
         String      orderBy     =  getProperty(wikiUtil, props, "sort");
+
 	if (orderBy == null) {
 	    orderBy = getProperty(wikiUtil, props, "sortby");
 	}
@@ -7324,7 +7324,7 @@ public class WikiManager extends RepositoryManager
 	if(debug1)
 	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
 
-        if (orderBy != null) {
+        if (orderBy != null && !orderBy.equals(ORDERBY_NONE)) {
             if (orderBy.equals(ORDERBY_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries, descending);
             } else if (orderBy.equals(ORDERBY_CREATEDATE)) {
@@ -7339,7 +7339,6 @@ public class WikiManager extends RepositoryManager
                 entries = getEntryUtil().sortEntriesOn(entries, orderBy,descending);
 	    }
         }
-
 
 
 	max = initRequest.get(ARG_MAX,max);

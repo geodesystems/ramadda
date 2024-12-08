@@ -155,9 +155,11 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                 lines.add(line);
             }
             idString = StringUtil.join(",", lines);
+	    Hashtable props = Utils.makeHashtable("sort",ORDERBY_NONE);
             List<Entry> entries = getWikiManager().getEntries(request, null,
-							      mainEntry, mainEntry, idString, null,
+							      mainEntry, mainEntry, idString, props,
 							      false, "");
+
 
 	    if(debug)
 		getLogManager().logSpecial("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
