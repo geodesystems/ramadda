@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Dec  8 18:09:01 MST 2024";
+var build_date="RAMADDA build date: Mon Dec  9 08:35:18 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -46969,9 +46969,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	initGlyphButtons:function(dom) {
 	    if(!dom) return;
 	    let _this = this;
-	    //For some reason we need to do this a couple of times
-	    //so the Step button shows up
-	    dom.find('[' + ATTR_BUTTON_COMMAND +']');
+	    //init any buttons
+	    dom.find('.ramadda-button').button();
 
 	    dom.find('[' + ATTR_BUTTON_COMMAND +']').click(function(event) {
 		event.preventDefault();
@@ -53069,7 +53068,7 @@ MapGlyph.prototype = {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 					  ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
-					 HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
+					  HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 		}
 		**/
 	    }
@@ -53413,10 +53412,10 @@ MapGlyph.prototype = {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	}	    
 	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
-	    body += HU.span([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
-			     ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-			     ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
-			    HU.span([],'Step'));
+	    body += HU.div([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
+			    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+			    ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
+			   HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 	}
 
 
