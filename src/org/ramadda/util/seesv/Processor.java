@@ -576,6 +576,11 @@ public abstract class Processor extends SeesvOperator {
 	    }
 	    if(rowCnt==2) {
 		unitRow = row;
+		for(int i=0;i<unitRow.size();i++) {
+		    String s = unitRow.getString(i);
+		    s = s.replace("³","^3").replace("°"," deg  ");
+		    unitRow.set(i,s);
+		}
 		headerRow.setUnitRow(unitRow);
 		return null;
 	    }
