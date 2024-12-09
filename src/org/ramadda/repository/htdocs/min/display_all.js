@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Dec  9 08:35:18 MST 2024";
+var build_date="RAMADDA build date: Mon Dec  9 08:46:13 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -44976,6 +44976,7 @@ var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+var PROP_DONT_SHOW_IN_LEGEND='dontShowInLegend';
 var PROP_SHOW_LAYER_SELECT_IN_LEGEND = "showLayerSelectInLegend";
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
 var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
@@ -45002,6 +45003,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
 			  'inMapLabel=',			  			  
 			  'showLegendInMap=true',			  
+			  PROP_DONT_SHOW_IN_LEGEND +'=true',
 			  'mapLegendHeight=300px',
 			  'showLegendBox=true',
 			  'showButtons=false',
@@ -53276,6 +53278,7 @@ MapGlyph.prototype = {
 	}
     },
     makeLegend:function(opts) {
+	if(this.getProperty(PROP_DONT_SHOW_IN_LEGEND)) return '';
 	this.addInMapLabel();
 	opts = opts??{};
 	let html = '';
