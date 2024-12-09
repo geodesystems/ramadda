@@ -74,7 +74,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#"+ATTR_ANNOTATE,"true",
 					"raw","true",
 					"#wikify","true"),
-                            new WikiTag(WIKI_TAG_EMBEDMS, "Embed ppt/doc/xls"),
+                            new WikiTag(WIKI_TAG_EMBEDMS, "Embed ppt/doc/xls","entry","entry id"),
                             new WikiTag(WIKI_TAG_TAGS),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "",
 					"fieldPrefix","","fieldSuffix","")),
