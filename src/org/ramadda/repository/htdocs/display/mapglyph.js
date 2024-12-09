@@ -2065,6 +2065,7 @@ MapGlyph.prototype = {
 	}
     },
     makeLegend:function(opts) {
+	if(this.getProperty(PROP_DONT_SHOW_IN_LEGEND)) return '';
 	this.addInMapLabel();
 	opts = opts??{};
 	let html = '';
