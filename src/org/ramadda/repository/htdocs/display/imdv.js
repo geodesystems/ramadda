@@ -42,17 +42,23 @@ var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,
 var GLYPH_TYPES_LINES_STRAIGHT = [GLYPH_LINE,GLYPH_POLYLINE];
 var GLYPH_TYPES_CLOSED = [GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_BOX,GLYPH_TRIANGLE,GLYPH_HEXAGON];
 var MAP_TYPES = ['geo_geojson','geo_gpx','geo_shapefile','geo_kml'];
+
 var LEGEND_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;font-size:9pt;'];
 var BUTTON_IMAGE_ATTRS = [ATTR_STYLE,'color:#ccc;'];
 var CLASS_IMDV_STYLEGROUP= 'imdv-stylegroup';
 var CLASS_IMDV_STYLEGROUP_SELECTED = 'imdv-stylegroup-selected';
+var PROP_SHOW_LAYER_SELECT_IN_LEGEND = "showLayerSelectInLegend";
 var PROP_LAYERS_STEP_SHOW= "showLayersStep";
 var PROP_LAYERS_SHOW_SEQUENCE= "showLayersInSequence";
 var PROP_LAYERS_ANIMATION_SHOW = "showLayersAnimation";
 var PROP_LAYERS_ANIMATION_PLAY = "layersAnimationPlay";
+var PROP_SHOW_CONTROL_IN_HEADER= "showControlInHeader";
+
 var PROP_MOVE_TO_LATEST_LOCATION = "moveToLatestLocation";
 var PROP_LAYERS_ANIMATION_DELAY = "layersAnimationDelay";
 var PROP_LAYERS_ANIMATION_ON = "layersAnimatioOn";
+
+var ATTR_BUTTON_COMMAND='buttoncommand';
 
 var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'filter.zoomonchange.show=false',
@@ -64,7 +70,7 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  PROP_MOVE_TO_LATEST_LOCATION+'=true',
 			  'showLabelInMapWhenVisible=true',
 			  'showViewInLegend=true',
-			  'showLayerSelectInLegend=true',			  
+			  PROP_SHOW_LAYER_SELECT_IN_LEGEND +'=true',			  
 			  'inMapLabel=',			  			  
 			  'showLegendInMap=true',			  
 			  'mapLegendHeight=300px',
@@ -2034,9 +2040,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	initGlyphButtons:function(dom) {
 	    if(!dom) return;
 	    let _this = this;
-	    dom.find('[buttoncommand]').click(function(event) {
+	    //For some reason we need to do this a couple of times
+	    //so the Step button shows up
+	    dom.find('[' + ATTR_BUTTON_COMMAND +']');
+
+	    dom.find('[' + ATTR_BUTTON_COMMAND +']').click(function(event) {
 		event.preventDefault();
-		let command  = $(this).attr('buttoncommand');
+		let command  = $(this).attr(ATTR_BUTTON_COMMAND);
 		let id  = $(this).attr(ID_GLYPH_ID);
 		let mapGlyph   = _this.findGlyph(id);
 		if(!mapGlyph) {
@@ -2076,20 +2086,24 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    };
 	    let showPopup =(mapGlyph.isEntry() ||  Utils.stringDefined(mapGlyph.getPopupText()));
 	    if(showPopup) {
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','popup'],
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Map Popup',ID_GLYPH_ID,mapGlyph.getId(),
+				      ATTR_BUTTON_COMMAND,'popup'],
 				     icon('fas fa-arrow-up-from-bracket')));
 	    }
 	    if(true||(this.canChange() && includeEdit)) {
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand','edit'],
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Settings',ID_GLYPH_ID,mapGlyph.getId(),
+				      ATTR_BUTTON_COMMAND,'edit'],
 				     icon('fas fa-cog')));
 		buttons.push(
-		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Select',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',ID_SELECT],
+		    HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Select',ID_GLYPH_ID,mapGlyph.getId(),
+			     ATTR_BUTTON_COMMAND,ID_SELECT],
 			    icon('fas fa-hand-pointer')));
-		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Delete',ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',ID_DELETE],icon('fas fa-eraser')));
+		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Delete',ID_GLYPH_ID,mapGlyph.getId(),
+				      ATTR_BUTTON_COMMAND,ID_DELETE],icon('fas fa-eraser')));
 
 		if(mapGlyph.isMarker() && this.isIsolineEnabled()) {
 		    buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,TITLE,'Add Isoline',
-					  ID_GLYPH_ID,mapGlyph.getId(),'buttoncommand',"addisoline"],icon('fa-regular fa-circle-dot')));
+					  ID_GLYPH_ID,mapGlyph.getId(),ATTR_BUTTON_COMMAND,"addisoline"],icon('fa-regular fa-circle-dot')));
 		}
 	    }
 	    if(buttons.length==0) return '';
@@ -5100,8 +5114,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		legendLabel=legendLabel.replace(/\\n/,'<br>');
 		top = HU.div([],legendLabel);
 	    }
-	    
-	    if(this.getMapProperty("showLayerSelectInLegend",false)) {
+	    if(this.getMapProperty(PROP_SHOW_LAYER_SELECT_IN_LEGEND,false)) {
 		top+=HU.div([ATTR_STYLE,'text-align:center;margin-bottom:2px;'],
 			    this.getBaseLayersSelect());
 	    }

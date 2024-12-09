@@ -33,6 +33,7 @@ var ID_DATAICON_HEIGHT='dataicon_height';
 var ID_DATAICON_SIZE='dataicon_size';
 var ID_DATAICON_PROPS='dataicon_props';
 
+
 //attr flags
 var ID_DATAICON_SHOWING = 'dataIconShowing';
 var ID_DATAICON_ORIGINAL = 'dataIconOriginal';
@@ -1847,16 +1848,18 @@ MapGlyph.prototype = {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 					  ATTR_TITLE,'Play',
 					  ATTR_ID,this.domId(PROP_LAYERS_ANIMATION_PLAY),
-					  ID_GLYPH_ID,this.getId(),'buttoncommand',PROP_LAYERS_ANIMATION_PLAY],
+					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_ANIMATION_PLAY],
 					 HU.getIconImage(icon_play,[],BUTTON_IMAGE_ATTRS));
 		}
 
+		/** Don't do this for now as we add a Step button to the legend 
 		if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 					  ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-					  ID_GLYPH_ID,this.getId(),'buttoncommand',PROP_LAYERS_STEP_SHOW],
+					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
 					 HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 		}
+		**/
 	    }
 
 	    if(showZoomTo) {
@@ -2175,6 +2178,7 @@ MapGlyph.prototype = {
 	let debug = this.getName()=='Alerts';
 	let buttons = this.display.makeGlyphButtons(this,this.canEdit(),this.getName()=='Alerts');
 
+
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -2193,8 +2197,18 @@ MapGlyph.prototype = {
 	    buttons = '';
 	}
 
-	if(buttons!='')
+	if(buttons!='') {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
+	}	    
+	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
+	    body += HU.span([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
+			     ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+			     ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
+			    HU.span([],'Step'));
+	}
+
+
+
 	//	    body+=HU.center(buttons);
 	if(Utils.stringDefined(this.attrs[ID_LEGEND_TEXT])) {
 	    let text = this.attrs[ID_LEGEND_TEXT].replace(/\n/g,'<br>');
