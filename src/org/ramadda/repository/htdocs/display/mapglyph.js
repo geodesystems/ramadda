@@ -1857,7 +1857,7 @@ MapGlyph.prototype = {
 		    right+=SPACE+HU.span([ATTR_CLASS,CLASS_CLICKABLE,
 					  ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
 					  ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
-					 HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
+					  HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 		}
 		**/
 	    }
@@ -2201,10 +2201,10 @@ MapGlyph.prototype = {
 	    body+=HU.div([ATTR_CLASS,CLASS_LEGEND_OFFSET],buttons);
 	}	    
 	if(this.getProperty(PROP_LAYERS_STEP_SHOW)) {
-	    body += HU.span([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
-			     ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
-			     ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
-			    HU.span([],'Step'));
+	    body += HU.div([ATTR_CLASS,CLASS_CLICKABLE +' ' + 'ramadda-button',
+			    ATTR_TITLE,'Cycle visibility children. Shift-key: all visible; Meta-key: all hidden',
+			    ID_GLYPH_ID,this.getId(),ATTR_BUTTON_COMMAND,PROP_LAYERS_STEP_SHOW],
+			   HU.getIconImage('fas fa-arrows-spin',[],BUTTON_IMAGE_ATTRS));
 	}
 
 

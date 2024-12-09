@@ -2040,9 +2040,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	initGlyphButtons:function(dom) {
 	    if(!dom) return;
 	    let _this = this;
-	    //For some reason we need to do this a couple of times
-	    //so the Step button shows up
-	    dom.find('[' + ATTR_BUTTON_COMMAND +']');
+	    //init any buttons
+	    dom.find('.ramadda-button').button();
 
 	    dom.find('[' + ATTR_BUTTON_COMMAND +']').click(function(event) {
 		event.preventDefault();
