@@ -131,11 +131,22 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	if(debug)
 	    getLogManager().logSpecial("virtual.getSynthIds:" +Utils.clip(idString.replace("\n"," "),100,""));
 
-        String  by         = request.getString(ARG_ORDERBY, (String) null);
+        String  orderBy         = request.getString(ARG_ORDERBY, (String) null);
         boolean descending = !request.get(ARG_ASCENDING, false);
-	//TODO:This doesn't work
-	//	if(by!=null)    idString += "by:" + by + " desc:" + descending;
-	String cacheKey = idString;
+	if (orderBy == null) {
+	    Metadata sortMetadata =
+		getMetadataManager().getSortOrderMetadata(request, mainEntry,true);
+	    if (sortMetadata != null) {
+		orderBy = sortMetadata.getAttr1();
+		descending=!sortMetadata.getAttr2().equals("true");
+	    }
+	}
+	if (orderBy == null) {
+	    orderBy = ORDERBY_FROMDATE;
+	}
+
+
+	String cacheKey = idString +"_" + orderBy +"_" + descending;
         List<String> fromCache = cachedIds.get(cacheKey);
         if (fromCache != null && fromCache.size()==0) {
 	    if(debug)
@@ -164,29 +175,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	    if(debug)
 		getLogManager().logSpecial("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
 
-            if (by == null) {
-                Metadata sortMetadata =
-                    getMetadataManager().getSortOrderMetadata(request,
-							      mainEntry,true);
-                if (sortMetadata != null) {
-                    by = sortMetadata.getAttr1();
-		    descending=!sortMetadata.getAttr2().equals("true");
-                }
-            }
-
-            if (by == null) {
-                by = ORDERBY_FROMDATE;
-            }
 
 
-            if (by.equals(ORDERBY_NAME)) {
-                entries = getEntryManager().getEntryUtil().sortEntriesOnName(
-                    entries, descending);
-            } else {
-                entries = getEntryManager().getEntryUtil().sortEntriesOnDate(
-                    entries, descending);
-            }
-
+	    entries = getEntryManager().getEntryUtil().sortEntries(entries, orderBy,descending);
             for (Entry entry : entries) {
                 fromCache.add(entry.getId());
             }

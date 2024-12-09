@@ -6969,9 +6969,6 @@ public class WikiManager extends RepositoryManager
 	if (orderBy == null) {
 	    orderBy = getProperty(wikiUtil, props, "orderby");
 	}	    
-	if(orderBy==null) {
-	    orderBy = ORDERBY_NAME;
-	}
 
 	//xxxxx
 	String sortDir = getProperty(wikiUtil,props,ATTR_SORT_DIR,
@@ -6993,6 +6990,26 @@ public class WikiManager extends RepositoryManager
 		else if(v.equals("false")) sortDir = DIR_UP;
 	    }
 	}
+
+
+	if(orderBy==null) {
+	    Metadata sortMetadata =
+		getMetadataManager().getSortOrderMetadata(myRequest, baseEntry,true);
+	    if (sortMetadata != null) {
+		orderBy = sortMetadata.getAttr1();
+		if(sortMetadata.getAttr2().equals("true"))
+		    sortDir = DIR_UP;
+		else
+		    sortDir = DIR_DOWN;		    
+	    }
+	}
+
+
+	if(orderBy==null) {
+	    orderBy = ORDERBY_NAME;
+	}
+
+
 
 	if(sortDir==null) {
 	    if (orderBy.equals(ORDERBY_NAME)) {
@@ -7323,11 +7340,6 @@ public class WikiManager extends RepositoryManager
 
 	if(debug1)
 	    System.err.println("get entries:" + baseEntry.getName() +" sort:" + orderBy +" " + descending);
-
-	System.err.println("Order by:"+ orderBy);
-	System.err.println("Entries:"+ entries);	
-
-
 
         if (orderBy != null && !orderBy.equals(ORDERBY_NONE)) {
             if (orderBy.equals(ORDERBY_DATE)) {
