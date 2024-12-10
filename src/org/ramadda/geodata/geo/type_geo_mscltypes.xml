@@ -1,0 +1,94 @@
+<types>
+<!-- Copy this into your ramadda home/plugins directory and restart RAMADDA-->
+<type  name="type_geo_mscl"  description="Multi-Sensor Core Logging"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point" 
+ supercategory="Geoscience" 
+ category="Borehole Data" 
+ pattern="(?i).*mscl.*csv" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="false" />
+<property  name="form.properties.show"  value="false" />
+<property  name="record.file.class"  value="org.ramadda.data.point.text.CsvFile" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-encoding,ISO-8859-1,-unitrow,-set,0
+csvcommands2=0,Section,-change,1-50,^$
+csvcommands3=NaN,-addheader,section.type enumeration
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:rem The navtop stands for navigation top - this shows the link to the Information section below
+:navtop
+:rem Only show at most 10000 records
+{{property max=20000}}
+
+:rem The group tag groups the display tag. We can have properties in the group that get in inherited by all of the displays
+{{group 
+filterFields="section" section.filterIncludeAll=false hideFilterWidget=true 
+indexField=section_depth  marginTop=10   marginRight=10 yAxisReverse=true showLegend=false showMenu=true}}
++skip
+Any display can show filters and the filter values are shared with the other displays in the group
+We use the display_filter here so there is one set of widgets shown to the user
+When the section value is changed then all of the displays change
+-skip
+{{display_filter}}
++skip
+Here we are displaying 3 profiles. The fields="#3", etc define what fields are shown
+The other profile properties are defined in the group above, e.g., indexField, marginTop, yAxisReverse, etc.
+The +row/+col gives us a table using bootstrap. There are 12 units and each column has a weight
+For example, if you wanted to have 4 profiles then each column would be +col-3/-col
+-skip
++row
++col-4
+{{display_profile   fields=#3}} 
+-col
++col-4
+{{display_profile   fields=#4}} 
+-col
++col-4
+{{display_profile   fields=#5}} 
+-col
+-row
+
+:heading Table
+{{display_table  showMenu=false}} 
++skip
+I don't know if a scatter plot is useful but I put this here to show what can be done
+The group tag keeps the scatter plots separate from the above filters
+-skip
+{{group  pointSize=2 }}
+:heading Scatter Plots
++row
++col-4
+{{display_scatterplot    showMenu=true fields="#3,#4"}} 
+-col
++col-4
+{{display_scatterplot   showMenu=true fields="#3,#5"}} 
+-col
++col-4
+{{display_scatterplot   showMenu=true fields="#3,#6"}} 
+-col
+-row
+
+----
+:heading Information
+{{information}}
+
+----
+----
+:heading Wiki Text
+:note This would normally not be in here but I added it so you can see the wiki text used
+{{wikitext}}
+
+:heading SeeSV Convert Commands
+:note Likewise this wouldn't normally be here
+{{seesv}}
+-section]]></wiki>
+</type>
+</types>
