@@ -277,10 +277,12 @@ public class KmlEntryOutputHandler extends ZipFileOutputHandler {
 	    String kml  = IO.readInputStream(inputStream);
 	    String url =  getRepository().getUrlBase()+"/entry/show?entryid=" + entry.getId() +"&output=kml.extract&" + ARG_FILE+"=";
 	    url = url.replace("&","&amp;");
-	    kml = kml.replaceAll("<href>(.*?)</href>",
+	    String regex = "<href>(.*?)</href>";
+	    kml = kml.replaceAll("<href>http","_DUMMYHTTP_");
+	    kml = kml.replaceAll(regex,
 				 "<href>" + url +"$1</href>");
 			      
-	    //	    System.err.println(kml);
+	    kml = kml.replace("_DUMMYHTTP_","<href>http");
 	    InputStream tmp = inputStream;
 	    inputStream = new ByteArrayInputStream(kml.getBytes());
 	    tmp.close();
