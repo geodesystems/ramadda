@@ -1188,17 +1188,19 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
             let records = this.filterData();
             if (!records) return;
 //	    this.writePropertyDef = "";
-	    let indexField = this.getFieldById(null,this.getProperty("indexField"));
+	    let indexField = this.getFieldById(null,this.getIndexField());
 	    if(indexField==null) {
                 this.setContents(this.getMessage("No indexField specified"));
 		return;
 	    }
             let fields = this.getSelectedFields(this.getData().getRecordFields());
 
+
             if (fields.length == 0) {
 		let tmp = this.getFieldsByType(null, "numeric");
 		if(tmp.length>0) fields.push(tmp[0]);
 	    }
+
             if (fields.length == 0) {
                 this.setContents(this.getMessage("No fields found"));
 		return;
