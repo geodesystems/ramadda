@@ -1245,6 +1245,8 @@ RepositoryMap.prototype = {
         }
     },
     handleFeatureclick: function(layer, feature, center,event,extraStyle) {
+	
+
         if (!layer)
             layer = feature.layer;
 
@@ -2150,6 +2152,10 @@ RepositoryMap.prototype = {
                     }
 		    let _attr = attr.toLowerCase();
                     out = out.replace("${" + style.id + "/" + attr + "}", value).replace("${" + attr+"}",value).replace("${" + _attr+"}",value);
+		    try {
+			let r = "\\${.*?/" + attr+"}";
+			out = out.replace(new RegExp(r),value);
+		    } catch(err) {}
                 }
             } else {
 		if(debugPopup) console.log("getFeatureText-using feature attributes");
@@ -2159,7 +2165,9 @@ RepositoryMap.prototype = {
 		    out = MapUtils.makeDefaultFeatureText(p);
 		}
 	    }		
+
 	}
+
 	if(out && out.indexOf('${default}')>=0) {
 	    out = out.replace('${default}',MapUtils.makeDefaultFeatureText(p));
 	}
