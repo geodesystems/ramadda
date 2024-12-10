@@ -603,6 +603,8 @@ public class Seesv implements SeesvCommands {
 	int                doArgsIndex   = 1;
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
+	    arg = arg.trim();
+	    if(arg.startsWith(":rem") || arg.startsWith("#")) continue;
 	    if(arg.equals(CMD_ARGS)) {
 		continue;
 	    }
@@ -6288,13 +6290,13 @@ public class Seesv implements SeesvCommands {
         StringBuilder tmp = new StringBuilder();
         for (String line : StringUtil.split(commandString, "\n")) {
             String tline = line.trim();
+	    if(tline.startsWith(":rem") || tline.startsWith("#")) continue;
+
             if (tline.startsWith("-quit")) {
                 break;
             }
-            if ( !tline.startsWith("#")) {
-                tmp.append(line);
-                tmp.append("\n");
-            }
+	    tmp.append(line);
+	    tmp.append("\n");
         }
         List<StringBuilder> toks =
             Utils.parseMultiLineCommandLine(tmp.toString());

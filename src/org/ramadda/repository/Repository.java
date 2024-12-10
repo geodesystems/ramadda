@@ -3056,21 +3056,28 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
 	sb.append("<type ");
 	sb.append(XU.attrs("name",id,"description",name,"handler",handler));
-	
-
 
 
 	if(request.defined("supertype")) {
 	    sb.append(XU.attr("super",request.getString("supertype","").trim()));
+	    sb.append("\n");
 	}
 
 	if(request.defined("supercategory")) {
 	    sb.append(XU.attr("supercategory",request.getString("supercategory","").trim()));
+	    sb.append("\n");
 	}
 
 	if(request.defined("category")) {
 	    sb.append(XU.attr("category",request.getString("category","").trim()));
+	    sb.append("\n");
 	}
+
+	if(request.defined("pattern"))  {
+	    sb.append(XU.attr("pattern",request.getString("pattern")));
+	    sb.append("\n");
+	}
+
 
 
 	sb.append(">\n");	
@@ -3078,6 +3085,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	sb.append(XU.comment("Properties"));
 	sb.append("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>\n");
+
 	if(request.defined("icon"))  {
 	    sb.append(XU.tag("property",XU.attrs("name","icon","value",request.getString("icon",""))));
 	    sb.append("\n");
@@ -3131,7 +3139,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    seesv+="\n-args";
             List<String> lines  =  Seesv.tokenizeCommands(seesv,false).get(0);
 	    String csvCommands = Seesv.makeCsvCommands(lines);
-	    if(csvCommands!=null) {
+	    if(Utils.stringDefined(csvCommands)) {
 		sb.append("\n");
 		sb.append(XU.comment("SeeSV commands"));
 		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n")));
@@ -3197,8 +3205,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 				  HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","50"))));
         sb.append(HU.formEntryTop(msgLabel("Category"),
 				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","50"))));
+        sb.append(HU.formEntryTop(msgLabel("Pattern"),
+				  HU.input("pattern",
+					   request.getString("pattern",""),
+					   HU.attrs("placeholder",".e.g. .*_data.csv","size","30"))));	
+
+
         sb.append(HU.formEntryTop(msgLabel("Icon"),
-				  HU.input("icon",request.getString("icon",""),HU.attrs("placeholder","/icons/chart.png","size","20"))));	
+				  HU.input("icon",request.getString("icon",""),
+					   HU.attrs("placeholder","/icons/chart.png","size","40"))));	
 
 
 	String dfltProps="#form.resource.show=false\n#form.date.show=false\nform.area.show=false\n";
