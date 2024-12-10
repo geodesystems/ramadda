@@ -327,7 +327,38 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 </faqitem>
 
 
+<faqitem cat="Administration" id="pagedefaults"
+	 q="How can I change the default page style for a file or a folder?" >
 
+The default page style for a Folder or a File are defined by template files that contain wiki text.
+The display of the folder  is defined by both a folder.default.txt file which defines the overall
+layout and a folder.content.txt which defines what is displayed within the layout.
+Likewise there   is a  file.default.txt and a file.default.content file.
+:p
+These files can be viewed on Github at:
+<a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/templates>
+https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/templates
+</a>
+  
+The location of these files are defined in repository.properties as below where the macro
+%resourcedir% refers to the  path /src/org/ramadda/repository/resources.
+
+<pre>
+ramadda.wikitemplate.default.folder=%resourcedir%/templates/folder.default.txt
+ramadda.wikitemplate.default.file=%resourcedir%/templates/file.default.txt
+
+ramadda.wikitemplate.content.file=%resourcedir%/templates/file.content.txt
+ramadda.wikitemplate.content.folder=%resourcedir%/templates/folder.content.txt
+</pre>
+
+If you want to override the default display (e.g., changing the height of the folder table contents) copy the above folder.content.txt file
+into your RAMADDA home directory (e.g. ~/ramadda). Then, in the repository.properties in RAMADDA home add the property:
+
+<pre>
+ramadda.wikitemplate.content.folder=%repositorydir%/folder.content.txt
+</pre>
+
+</faqitem>
 
 
 <faqitem id="checkbox" q="How do I select multiple checkboxes at once?">

@@ -57,7 +57,8 @@ pre {
 <div class="faq-question"> <b>1.20.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
 <div class="faq-question"> <b>1.21.</b> <a class="faq-question-link" href="#formopen">How do I configure the entry table to always show the Apply action form?</a></div>
 <div class="faq-question"> <b>1.22.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
-<div class="faq-question"> <b>1.23.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
+<div class="faq-question"> <b>1.23.</b> <a class="faq-question-link" href="#pagedefaults">How can I change the default page style for a file or a folder?</a></div>
+<div class="faq-question"> <b>1.24.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
 </div></div>
 <div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-item"><div class="faq-question">
 <h3> 1.1.  I forgot my user id. How do I retrieve it?</h3>
@@ -395,8 +396,41 @@ Be careful with this. I (jeffmc) have seen remote file systems go down momentari
 
 
 </div>
+<p><hr align="center" width="10%"></div><p><a name="pagedefaults"></a><div class="faq-item"><div class="faq-question">
+<h3> 1.23.  How can I change the default page style for a file or a folder?</h3>
+</div>
+</a><div class="faq-answer"><b>A.</b> 
+
+The default page style for a Folder or a File are defined by template files that contain wiki text.
+The display of the folder  is defined by both a folder.default.txt file which defines the overall
+layout and a folder.content.txt which defines what is displayed within the layout.
+Likewise there   are file.default.txt and a file.default.content files.
+These files can be viewed on Github at:
+<a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/templates>
+https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/templates
+</a>
+  
+The location of these files are defined in repository.properties as below where the macro
+%resourcedir% refers to the  path /src/org/ramadda/repository/resources.
+
+<pre>
+ramadda.wikitemplate.default.folder=%resourcedir%/templates/folder.default.txt
+ramadda.wikitemplate.default.file=%resourcedir%/templates/file.default.txt
+
+ramadda.wikitemplate.content.file=%resourcedir%/templates/file.content.txt
+ramadda.wikitemplate.content.folder=%resourcedir%/templates/folder.content.txt
+</pre>
+
+If you want to override the default display (e.g., changing the height of the folder table contents) copy the above folder.content.txt file
+into your RAMADDA home directory (e.g. ~/ramadda). Then, in the repository.properties in RAMADDA home add the property:
+
+<pre>
+ramadda.wikitemplate.content.folder=%repositorydir%/folder.content.txt
+</pre>
+
+</div>
 <p><hr align="center" width="10%"></div><p><a name="checkbox"></a><div class="faq-item"><div class="faq-question">
-<h3> 1.23.  How do I select multiple checkboxes at once?</h3>
+<h3> 1.24.  How do I select multiple checkboxes at once?</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
 In RAMADDA when there is a collection of checkboxes in a form (e.g., in the entry list or in the edit metadata form)
