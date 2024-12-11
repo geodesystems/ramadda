@@ -3523,6 +3523,11 @@ pre {
     font-weight:bold;
 }    
 
+.metadata-group {
+    max-height:300px;
+    overflow-y:auto;
+}
+
 .metadata-group .metadata-row {
     /*margin-left: 20px;*/
 }
@@ -5920,7 +5925,7 @@ a.wiki-link-noexist {
 .ramadda-frames-right {
     margin:0px;
     padding:0px;
-    border-left:1px solid #eee;
+    border-left:var(--basic-border);
 }
 
 .ramadda-frames-entries {
