@@ -3031,9 +3031,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return !request.getUser().getAnonymous();
     }
 
-    public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb) throws Exception {
-	String id = request.getString("typeid","").trim();
+    public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb)
+	throws Exception {
 
+	String id = request.getString("typeid","").trim();
 	if(!Utils.stringDefined(id)) {
 	    sb.append(getPageHandler().showDialogError("No ID specified"));
 	    return null;
@@ -3057,7 +3058,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append("<type ");
 	sb.append(XU.attrs("name",id,"description",name,"handler",handler));
 
-
 	if(request.defined("supertype")) {
 	    sb.append(XU.attr("super",request.getString("supertype","").trim()));
 	    sb.append("\n");
@@ -3078,11 +3078,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append("\n");
 	}
 
-
-
 	sb.append(">\n");	
-
-
+	String extra = request.getString("extraxml","");
+	if(Utils.stringDefined(extra)) {
+	    sb.append(extra.replace("\r\n","\n"));	    
+	    sb.append("\n");	    
+	}
 	sb.append(XU.comment("Properties"));
 	sb.append("<property name=\"record.file.class\" value=\"org.ramadda.data.point.text.CsvFile\"/>\n");
 
@@ -3090,9 +3091,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append(XU.tag("property",XU.attrs("name","icon","value",request.getString("icon",""))));
 	    sb.append("\n");
 	}
-	
-
-
 
 	for(String line:Utils.split(request.getString("properties",""),"\n",true,true)) {
 	    if(line.startsWith("#")) continue;
@@ -3103,10 +3101,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	int cnt=0;
 	
-	for(int i=0;i<6;i++) {
+	for(int i=0;i<10;i++) {
 	    String cname = request.getString("column_name_"+i,"").trim();
-	    cname= Utils.makeID(cname);
 	    if(!Utils.stringDefined(cname)) continue;
+	    cname= Utils.makeID(cname);
 	    if(cnt++==0) {
 		sb.append("\n");
 		sb.append(XU.comment("Columns"));
@@ -3153,6 +3151,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append("\n");
 	    sb.append(XU.comment("Wiki text"));
 	    desc=desc.replaceAll("^<wiki>","");
+	    desc = desc.replace("\r\n","\n");	    
 	    sb.append(XU.tag("wiki","",XU.getCdata(desc)));
 	    
 	}
@@ -3178,14 +3177,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.center(HU.href(getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help")));
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
 	String formId = HU.getUniqueId("form_");
-	sb.append(request.form(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
+	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CREATETYPE));
 	sb.append(HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
         sb.append(HU.formTable());
-	
 
-	
 
         sb.append(HU.formEntry(msgLabel("Type ID"),
 			       HU.input("typeid",request.getString("typeid",""),HU.attrs("size","30")) +
@@ -3223,6 +3220,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HU.formEntryTop(msgLabel("Properties"),
 				  HU.textArea("properties",request.getString("properties",dfltProps),8,50)));
 	
+	HU.formEntry(sb,"","Must be valid XML");
+	HU.formEntry(sb,"Extra XML:",
+		     HU.textArea("extraxml",request.getString("extraxml",""),8,50));
+
         sb.append(HU.formTableClose());	
 	sb.append(HU.b("Columns:<br>"));
 	sb.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
