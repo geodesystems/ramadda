@@ -103,6 +103,7 @@ var ATTR_ID = "id";
 var ATTR_CLASS = "class";
 var ATTR_SIZE = "size";
 var ATTR_STYLE = "style";
+var ATTR_TARGET = "target";
 var ATTR_ALIGN = "align";
 var ATTR_VALIGN = "valign";
 var SPACE = "&nbsp;";
@@ -3254,7 +3255,8 @@ var Utils =  {
 	listEntry.addClass('ramadda-frames-entry-active');
 	let href = HU.href(url,
 			   HU.getIconImage('fa-solid fa-link') +  " " +  label,
-			   ['class',CLASS_CLICKABLE]);
+			   [ATTR_TARGET,'_link',
+			    ATTR_CLASS,CLASS_CLICKABLE]);
         jqid(viewId+'_header_link').html(href);
         if (template && template!='default')
             url = url + "&template=" + template;
