@@ -1061,6 +1061,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         String  selectorId = elementId + ( !hasType
                                            ? ""
                                            : "_" + selectType);
+	String type = entryType.length>0?entryType[0]:"";
+	if(type==null) type="";
         String event = HU.call(
                            "RamaddaUtils.selectInitialClick",
 			   "event", HU.squote(selectorId),
@@ -1073,7 +1075,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 			    : "null"),
 			   HU.squote((request == null)
 				     ? ""
-				     : request.getString(ARG_ENTRYTYPE, entryType.length>0?entryType[0]:"")));
+				     : request.getString(ARG_ENTRYTYPE, type)));
         return event;
     }
 
