@@ -1676,6 +1676,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	if(props == null) props = new Hashtable();
 	int wtl = Utils.getProperty(props,"leftWidth",3);
 	int wtr = Utils.getProperty(props,"rightWidth",12-wtl);
+	String tocStyle = Utils.getProperty(props, "tocStyle","");
         StringBuilder listSB = new StringBuilder();
         String entryShowUrl  = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         listSB.append("\n");
@@ -1704,7 +1705,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 firstLink = HU.href(
                     url,
                     HU.img(getRepository().getIconUrl("fa-solid fa-link"))
-                    + " " + label, HU.cssClass("ramadda-clickable"));
+                    + " " + label, HU.attr("target","_link") +HU.cssClass("ramadda-clickable"));
             }
 
             String call = Utils.concatString(
@@ -1719,6 +1720,7 @@ public class HtmlOutputHandler extends OutputHandler {
 				  template==null? HU.squote("empty"):HU.squote(template),
 				  HU.squote(entryIcon))));
             HU.open(listSB, HU.TAG_DIV, HU.attrs(new String[] {"id",labelId,
+			"style",tocStyle,
 			"data-template", template==null? HU.squote("empty"):HU.squote(template),
 			"data-url",url,
 			"data-label",label,
