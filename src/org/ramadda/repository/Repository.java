@@ -3100,8 +3100,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    sb.append(XU.attr("pattern",request.getString("pattern")));
 	    sb.append("\n");
 	}
-
+	String extraattributes = request.getString("extraattributes","");
+	if(Utils.stringDefined(extraattributes)) {
+	    sb.append(extraattributes.trim());
+	    sb.append("\n");
+	}
 	sb.append(">\n");	
+	String mappopup = request.getString("mappopup","");
+	if(Utils.stringDefined(mappopup)) {
+	    sb.append("<property name=\"map.popup\">\n<![CDATA[");
+	    sb.append(mappopup);
+	    sb.append("]]></property>\n");
+	}
+
+
+
 	String extra = request.getString("extraxml","");
 	if(Utils.stringDefined(extra)) {
 	    sb.append(extra.replace("\r\n","\n"));	    
@@ -3242,10 +3255,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	dfltProps+="#record.file.class=org.ramadda.data.point.text.CsvFile\n";
         sb.append(HU.formEntryTop(msgLabel("Properties"),
 				  HU.textArea("properties",request.getString("properties",dfltProps),8,50)));
-	
+
+	HU.formEntry(sb,"","Wiki text for map popup");
+	HU.formEntry(sb,"Map Popup:",
+		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
+
+
+	HU.formEntry(sb,"","Must be valid XML attributes");
+	HU.formEntry(sb,"Extra Attributes:",
+		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
+
+
 	HU.formEntry(sb,"","Must be valid XML");
 	HU.formEntry(sb,"Extra XML:",
-		     HU.textArea("extraxml",request.getString("extraxml",""),8,50));
+		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
 
         sb.append(HU.formTableClose());	
 	sb.append(HU.b("Columns:<br>"));
