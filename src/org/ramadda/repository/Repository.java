@@ -3285,7 +3285,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	sb.append(HU.script("var entryTypeCreateJson = null;\n"));
 	if(jsonMetadata!=null) {
-	    sb.append(HU.script("var entryTypeCreateJson = " + jsonMetadata.getAttr1()+";"));
+	    String json = jsonMetadata.getAttr1();
+	    if(Utils.stringDefined(json)) {
+		sb.append(HU.script("var entryTypeCreateJson = " + json+";"));
+	    }
 	} 
 
 	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()),"entryTypeCreateJson")));

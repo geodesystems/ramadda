@@ -29,11 +29,15 @@ var CreateType  ={
 		return field.name !== 'json_contents' && field.name!=='entryid';
 	    });
 	    let json =   JSON.stringify(formData);
-	    $('<input>').attr({
-		type: 'hidden',
-		name: 'json_contents',
-		value: json
-            }).appendTo($(this));
+	    let jsonContents = form.find('[name="json_contents"]');
+	    if(jsonContents.length==0) {
+		$('<input>').attr({
+		    type: 'hidden',
+		    name: 'json_contents',
+		}).appendTo($(this));
+		jsonContents = form.find('[name="json_contents"]');
+	    }
+	    jsonContents.val(json);
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
