@@ -565,6 +565,11 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		    fields.click(function() {
 			let field = $(this).attr('field-id');
 			let value = $(this).attr('field-value');			
+			//A hack because for some reason clicking on an href isn't doing anything
+			if(value && value.toLowerCase().startsWith('http')) {
+			    window.open(value,'_link');
+			    return;
+			}
 			let args = {
 			    id:field,
 			    fieldId: field,
