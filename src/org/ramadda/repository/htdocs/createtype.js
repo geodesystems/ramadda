@@ -10,8 +10,8 @@ var CreateType  ={
 //		Utils.setLocalStorage(storageKey, null);
 //	    })
 	    for(let i=0;i<formData.length;i++) {
-		if(item.name=='entryid') continue;
 		let item = formData[i];
+		if(item.name=='entryid') continue;
 		let input = form.find('input[name="' + item.name+'"]');
 		if(input.length==0)
 		    input = form.find('textarea[name="' + item.name+'"]');
