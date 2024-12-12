@@ -481,8 +481,17 @@ Add an output that shows up in the list of tools/services for an entry
     <type name="Page Template" id="admin.template"/>
 -->
 <type name="Local File Pattern" id="admin.localfile.pattern"/>
+
+<type name="Entry Type Definition" id="admin.entrytype" searchable="false" browsable="false"
+      showlabel="false"
+      tag="internal"
+      showinhtml="false">
+  <element name="JSON" istitle="false" datatype="noedit"/>
+</type>
+
+
 <type name="Anonymous Upload" id="admin.anonymousupload"
-	tag="internal" 	     showinhtml="false">
+      tag="internal" 	     showinhtml="false">
   <element name="From" />
       <element name="IP" />
       <element name="Type" />
