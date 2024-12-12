@@ -886,6 +886,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             value = request.getString(arg, dflt);
         }
 
+
+
         if (isString(dataType)) {
             if (dataType.equals(DATATYPE_WIKI)) {
                 /*
@@ -916,6 +918,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                        HU.attr(HU.ATTR_SIZE,
                                            "" + columns));
             }
+	} else if (dataType.equals(DATATYPE_NOEDIT)) {
+	    return "Not editable " + HU.hidden(arg, value);
         } else if (dataType.equals(DATATYPE_LATLON)) {
             List<String> toks = Utils.splitUpTo(value, ",", 2);
             MapInfo map = getMapManager().createMap(request, entry, true,
