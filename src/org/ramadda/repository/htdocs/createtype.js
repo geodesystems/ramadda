@@ -1,13 +1,15 @@
 var CreateType  ={
-    init:function(formId,entryId) {
+    init:function(formId,entryId,json) {
+	console.log(json);
 	let storageKey=entryId+'_createtype';
-	let formData = Utils.getLocalStorage(storageKey,true);
+//	let formData = json ?? Utils.getLocalStorage(storageKey,true);
+	let formData = json ?? null;
 	let form = jqid(formId);
 	if(formData) {
-	    jqid(formId+'_button').html(HU.span([ATTR_CLASS,'ramadda-clickable',ATTR_ID,'clearform'],'Clear Saved State'));
-	    jqid('clearform').button().click(()=>{
-		Utils.setLocalStorage(storageKey, null);
-	    })
+//	    jqid(formId+'_button').html(HU.span([ATTR_CLASS,'ramadda-clickable',ATTR_ID,'clearform'],'Clear Saved State'));
+//	    jqid('clearform').button().click(()=>{
+//		Utils.setLocalStorage(storageKey, null);
+//	    })
 	    for(let i=0;i<formData.length;i++) {
 		let item = formData[i];
 		let input = form.find('input[name="' + item.name+'"]');
@@ -32,7 +34,7 @@ var CreateType  ={
 		name: 'json_contents',
 		value: json
             }).appendTo($(this));
-	    Utils.setLocalStorage(storageKey, formData,true);
+//	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
     }

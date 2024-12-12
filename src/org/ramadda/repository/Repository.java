@@ -28,6 +28,7 @@ import org.ramadda.repository.ftp.FtpManager;
 import org.ramadda.repository.harvester.HarvesterManager;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.map.MapManager;
+import org.ramadda.repository.metadata.AdminMetadataHandler;
 import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataManager;
@@ -3051,7 +3052,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String handler = request.getString("handler","");
 	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.GenericTypeHandler";
 	
-	
+
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[]{AdminMetadataHandler.TYPE_ENTRY_TYPE},false);
+
+	Metadata jsonMetadata = null;
+	if(metadataList!=null && metadataList.size()>0) {
+	    jsonMetadata = metadataList.get(0);
+	}
+
+
+
+	String json = request.getString("json_contents",null);
+	if(json!=null) {
+	    if(jsonMetadata==null) {
+		jsonMetadata = new Metadata(getRepository().getGUID(), entry.getId(),
+					    getMetadataManager().findType(AdminMetadataHandler.TYPE_ENTRY_TYPE),
+					    false, json, "", "", "","");
+		getMetadataManager().addMetadata(request,entry,jsonMetadata);
+	    }
+	    jsonMetadata.setAttr1(json);
+	    getEntryManager().updateEntry(null, entry);
+	}
 	
 	sb.append("<types>\n");
 	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
@@ -3248,7 +3271,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	HU.formEntry(sb,"", HU.submit("Create Type","create"));
         sb.append(HU.formTableClose());	
 	sb.append(HtmlUtils.formClose());
-	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()))));
+	
+
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[]{AdminMetadataHandler.TYPE_ENTRY_TYPE},false);
+
+	Metadata jsonMetadata = null;
+	if(metadataList!=null && metadataList.size()>0) {
+	    jsonMetadata = metadataList.get(0);
+	}
+
+
+	sb.append(HU.script("var entryTypeCreateJson = null;\n"));
+	if(jsonMetadata!=null) {
+	    sb.append(HU.script("var entryTypeCreateJson = " + jsonMetadata.getAttr1()+";"));
+	} 
+
+	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()),"entryTypeCreateJson")));
 	
 	
 	getPageHandler().entrySectionClose(request, entry, sb);
