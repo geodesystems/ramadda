@@ -33,6 +33,9 @@ public interface DataTypes {
     public static final String DATATYPE_PASSWORD = "password";
     public static final String DATATYPE_API_KEY = "apikey";    
 
+    public static final String DATATYPE_NOEDIT = "noedit";
+
+
     /** _more_ */
     public static final String DATATYPE_CLOB = "clob";
 
