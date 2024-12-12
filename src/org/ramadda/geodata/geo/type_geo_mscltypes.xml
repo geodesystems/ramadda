@@ -5,9 +5,6 @@
  category="Borehole Data" 
  pattern="(?i).*mscl.*csv" 
 >
-xxx
-yyy
-zzz
 
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
