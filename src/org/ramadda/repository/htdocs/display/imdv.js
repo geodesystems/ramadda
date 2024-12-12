@@ -5733,7 +5733,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let handler = new OpenLayers.Handler.Keyboard(control, callbacks, options);
 	    handler.activate();
 	    this.getMap().getMap().addControl(keyboardControl);
-	    this.addControl(ID_SELECTOR,"Click-drag to select",
+	    this.addControl(ID_SELECTOR,'Click-drag to select',
 			    this.featureSelector = new OpenLayers.Control.SelectFeature(this.myLayer, {
 				select: function(feature) {
 				    if(this.isShiftKey() && feature.mapGlyph.isSelected()) {
@@ -5772,7 +5772,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				box: true
 			    }));
 
-	    this.addControl(ID_EDIT,"Click to edit properties",new OpenLayers.Control.SelectFeature(this.myLayer, {
+	    this.addControl(ID_EDIT,'Click to edit properties',
+			    new OpenLayers.Control.SelectFeature(this.myLayer, {
 		onSelect: function(feature) {
 		    _this.doEdit(feature.mapGlyph);
 		},
@@ -5793,7 +5794,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		}
 		_this.featureChanged();
 	    };
-	    let mover =  this.addControl(ID_MOVER,"Click &amp; drag to move",new OpenLayers.Control.DragFeature(this.myLayer,{
+	    let mover =  this.addControl(ID_MOVER,'Click &amp; drag to move',
+					 new OpenLayers.Control.DragFeature(this.myLayer,{
 		moveFeature: function(pixel) {
 		    let mapGlyph = this.feature.mapGlyph;
 		    if(!mapGlyph) {
@@ -5920,9 +5922,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.ROTATE});		
 
-	    this.addControl(ID_RESIZE,"Click to resize",resizer);
-	    this.addControl(ID_RESHAPE,"Click to reshape",reshaper);
-	    this.addControl(ID_ROTATE,"Click to rotate",rotator);		
+	    this.addControl(ID_RESIZE,'Click to resize',resizer);
+	    this.addControl(ID_RESHAPE,'Click to reshape',reshaper);
+	    this.addControl(ID_ROTATE,'Click to rotate',rotator);		
 
 	    this.glyphTypes.forEach(g=>{
 		this.glyphTypeMap[g.type]  = g;
