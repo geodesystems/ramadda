@@ -1,6 +1,5 @@
 var CreateType  ={
     init:function(formId,entryId,json) {
-	console.log(json);
 	let storageKey=entryId+'_createtype';
 //	let formData = json ?? Utils.getLocalStorage(storageKey,true);
 	let formData = json ?? null;
@@ -11,6 +10,7 @@ var CreateType  ={
 //		Utils.setLocalStorage(storageKey, null);
 //	    })
 	    for(let i=0;i<formData.length;i++) {
+		if(item.name=='entryid') continue;
 		let item = formData[i];
 		let input = form.find('input[name="' + item.name+'"]');
 		if(input.length==0)
@@ -26,7 +26,7 @@ var CreateType  ={
 	}
 	form.submit(function(event){
             let formData = $(this).serializeArray().filter(field=>{
-		return field.name !== 'json_contents'
+		return field.name !== 'json_contents' && field.name!=='entryid';
 	    });
 	    let json =   JSON.stringify(formData);
 	    $('<input>').attr({
