@@ -55,6 +55,9 @@ public class AdminMetadataHandler extends MetadataHandler {
     public static final String TYPE_ANONYMOUS_UPLOAD =
         "admin.anonymousupload";
 
+    public static final String TYPE_ENTRY_TYPE =
+        "admin.entrytype";    
+
 
 
     /**
