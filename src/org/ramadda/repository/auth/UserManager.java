@@ -3186,10 +3186,14 @@ public class UserManager extends RepositoryManager {
 
 
             if (ok) {
+		sb.append(getPageHandler().showDialogNote("You are now registered. Please login"));
+		sb.append(makeLoginForm(request));
+		return addHeader(request, sb, "New User Registration");
                 //make user ...
             }
 
-        }
+	}
+	
 
 
 
