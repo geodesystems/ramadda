@@ -25,7 +25,8 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 
-
+import org.json.*;
+import java.net.URL;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -139,6 +140,8 @@ public class UserManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_USER_DELETE = "user_delete";
 
+    public static final String ARG_USER_DOWNLOAD = "user_download";    
+
     /** _more_ */
     public static final String ARG_USER_DELETE_CONFIRM =
         "user_delete_confirm";
@@ -175,6 +178,8 @@ public class UserManager extends RepositoryManager {
     /** _more_ */
     public static final String PROP_REGISTER_OK = "ramadda.register.ok";
 
+    public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
+    public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
 
 
     /** _more_ */
@@ -2106,6 +2111,7 @@ public class UserManager extends RepositoryManager {
 	
 	
 
+        usersHtml.append(request.formPost(URL_USER_SELECT_DO));
 	String args = JU.map("focus","true");
 	HU.script(usersHtml,
 		  HU.call("HtmlUtils.initPageSearch",
@@ -2116,7 +2122,7 @@ public class UserManager extends RepositoryManager {
 			  "false",args));
 
 
-        usersHtml.append(request.formPost(URL_USER_SELECT_DO));
+        usersHtml.append(HU.submit("Delete Selected Users", ARG_USER_DELETE));
         usersHtml.append(
 			 HU.open(
 				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
@@ -3107,6 +3113,7 @@ public class UserManager extends RepositoryManager {
         }
         String mainKey = getRepository().getProperty(PROP_REGISTER_KEY,
 						     (String) null);
+
         String emailKey = getRepository().getProperty(PROP_REGISTER_EMAIL,
 						      (String) null);
 
@@ -3171,6 +3178,7 @@ public class UserManager extends RepositoryManager {
             }
 
 
+	    System.err.println("OK:" + ok);
 
             if (ok) {
                 ok = getRepository().getUserManager().isHuman(request, sb);
@@ -4052,6 +4060,31 @@ public class UserManager extends RepositoryManager {
      */
     public boolean isHuman(Request request, Appendable response)
 	throws Exception {
+
+	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
+	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
+	if(stringDefined(siteKey) && stringDefined(secretKey)) {
+	    String recaptchaResponse = request.getString("g-recaptcha-response",null);
+	    if(recaptchaResponse==null) return false;
+	    String url = HU.url("https://www.google.com/recaptcha/api/siteverify","secret",secretKey,"response",recaptchaResponse);
+	    String json = IO.readUrl(new URL(url));
+	    System.err.println(json);
+            JSONObject  obj   = new JSONObject(json);
+
+	    if(!obj.getBoolean("success")) {
+                response.append(
+				"Sorry, you failed the check if human test<br>");
+		
+		return false;
+	    } else {
+		return true;
+	    }
+	}
+	
+
+
+
+
         makeHumanAnswers();
         int idx    = request.get(ARG_HUMAN_QUESTION, 0);
         int answer = request.get(ARG_HUMAN_ANSWER, -111111);
@@ -4084,6 +4117,19 @@ public class UserManager extends RepositoryManager {
     public void makeHumanForm(Request request, Appendable sb,
                               FormInfo formInfo)
 	throws Exception {
+	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
+	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
+
+
+	if(stringDefined(siteKey) && stringDefined(secretKey)) {
+	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
+	    sb.append(formEntry(request,"",
+				HU.div("",HU.attrs("class","g-recaptcha","data-sitekey","6Ld7zsgSAAAAABXOc291vy9MxoxG2D2Xuc1ONF4a"))));
+	    return;
+	}
+
+
+
         makeHumanAnswers();
 
         int idx = (int) (Math.random() * QUESTIONS.size());
@@ -4097,13 +4143,13 @@ public class UserManager extends RepositoryManager {
 		   + idx);
 
         formInfo.addRequiredValidation("Human answer", ARG_HUMAN_ANSWER);
-        sb.append(formEntry(request,
-                            msgLabel("Please verify that you are human"),
-                            image
-                            + HU.input(ARG_HUMAN_ANSWER, "",
+	sb.append(formEntry(request,
+			    msgLabel("Please verify that you are human"),
+			    image
+			    + HU.input(ARG_HUMAN_ANSWER, "",
 				       HU.id(ARG_HUMAN_ANSWER)
 				       + HU.SIZE_5)));
-        sb.append(HU.hidden(ARG_HUMAN_QUESTION, idx));
+	sb.append(HU.hidden(ARG_HUMAN_QUESTION, idx));
     }
 
     /**
