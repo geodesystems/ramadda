@@ -150,6 +150,7 @@ CREATE TABLE associations (id varchar(200),
 CREATE TABLE  users (id varchar(200),
                      name  varchar(200),
                      email varchar(200),
+		     institution  varchar(400),
                      question  varchar(200),
                      answer  varchar(200),  
                      password  varchar(200),
@@ -158,9 +159,12 @@ CREATE TABLE  users (id varchar(200),
 		     language varchar(50),
 		     template varchar(200),
                      isguest int,
+		     account_creation_date ramadda.datetime,	
                      properties ramadda.clob);
 
+alter table users add column institution varchar(400);
 alter table users add column description varchar(5000);
+alter table users add column account_creation_date ramadda.datetime;
 
 #if SKIP
 users:
