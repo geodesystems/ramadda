@@ -76,6 +76,41 @@ settings are not applied to the bulk created user accounts.
 When creating or editing a user account you can specify any number of roles in the given text field (one per line).
 The user roles mechanism is used to define access control for entries. See <a href='access.html'>here</a> for  more information.
 
+<a name="registration"></a>
+:heading 9.16.2 <label>User Registration</label>
+
+RAMADDA can be configured to allow arbitrary users to self-register.
+
+To enable this add the following property to your repository.properties file
++pre addCopy=true
+ramadda.register.ok=true
+-pre
+
+You can control who can self-register by  specifying a pass-phrase that the user will be required to enter
++pre addCopy=true
+ramadda.register.passphrase=Somephrase
+-pre
+
+
+Once enabled users can go to the URL:   https://yourserver/repository/user/register
+:p
+
+RAMADDA can also make use of Google's  Recaptcha service to authenticate that the
+user is indeed a real human and not a bot.
+You first need to register your site with Google at
+<a href=https://www.google.com/recaptcha/admin>https://www.google.com/recaptcha/admin</a>.
+Once registered get the site key (which is public) and the secret key
+and add them to your repository.properties file:
+
+
++pre addCopy=true
+google.recaptcha.sitekey=
+google.recaptcha.secret=
+-pre
+
+
+
+
 
 
 </div>
