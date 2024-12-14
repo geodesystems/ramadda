@@ -4076,17 +4076,12 @@ public class UserManager extends RepositoryManager {
             JSONObject  obj   = new JSONObject(json);
 
 	    if(!obj.getBoolean("success")) {
-                response.append(
-				"Sorry, you failed the check if human test<br>");
-		
+                response.append(getPageHandler().showDialogWarning("Sorry, you failed the check if human test"));
 		return false;
 	    } else {
 		return true;
 	    }
 	}
-	
-
-
 
 
         makeHumanAnswers();
