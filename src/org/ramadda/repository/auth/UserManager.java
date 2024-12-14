@@ -183,7 +183,7 @@ public class UserManager extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String PROP_REGISTER_KEY = "ramadda.register.key";
+    public static final String PROP_REGISTER_PASSPHRASE = "ramadda.register.passphrase";
 
     /** _more_ */
     public static final String PROP_REGISTER_EMAIL = "ramadda.register.email";
@@ -3111,7 +3111,7 @@ public class UserManager extends RepositoryManager {
 			      "New User Registration",
 			      new StringBuffer(messageWarning(msg("Registration is not allowed"))));
         }
-        String mainKey = getRepository().getProperty(PROP_REGISTER_KEY,
+        String mainKey = getRepository().getProperty(PROP_REGISTER_PASSPHRASE,
 						     (String) null);
 
         String emailKey = getRepository().getProperty(PROP_REGISTER_EMAIL,
@@ -3184,12 +3184,12 @@ public class UserManager extends RepositoryManager {
                 ok = getRepository().getUserManager().isHuman(request, sb);
             }
 
-
             if (ok) {
+                //make user ...
 		sb.append(HU.center(messageNote("You are now registered. Please login")));
 		sb.append(makeLoginForm(request));
 		return addHeader(request, sb, "New User Registration");
-                //make user ...
+
             }
 
 	}
