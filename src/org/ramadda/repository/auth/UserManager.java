@@ -2047,6 +2047,14 @@ public class UserManager extends RepositoryManager {
 			    return 1;
 			}
 		    }
+		    if(sortBy.equals("guest")) {
+			if(u1.getIsGuest() && !u2.getIsGuest()) {
+			    return -1;
+			}
+			if(!u1.getIsGuest() && u2.getIsGuest()) {
+			    return 1;
+			}
+		    }		    
 		    
 
 		    if(sortBy.equals("date")) {
@@ -2069,6 +2077,13 @@ public class UserManager extends RepositoryManager {
 						       ids);
 		    }
 
+		    if(sortBy.equals("email")) {
+			return Utils.compareIgnoreCase(u1.getEmail(),
+						       u2.getEmail(),
+						       ids);
+		    }
+
+		    
 		    if(sortBy.equals("name")) {
 			return Utils.compareIgnoreCase(u1.getName(),
 					     u2.getName(),
@@ -2104,7 +2119,7 @@ public class UserManager extends RepositoryManager {
         usersHtml.append(request.formPost(URL_USER_SELECT_DO));
         usersHtml.append(
 			 HU.open(
-				 "table", HU.cssClass("ramadda-user-table")));
+				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
 
   
 
@@ -2113,15 +2128,17 @@ public class UserManager extends RepositoryManager {
 	String idHeader = getUserSortLink(request, "id",ascending,"ID");
 	String nameHeader = getUserSortLink(request, "name",ascending,"Name");
 	String adminHeader = getUserSortLink(request, "admin",ascending,"Admin");		
+	String guestHeader = getUserSortLink(request, "guest",ascending,"Guest");		
 	String instHeader = getUserSortLink(request, "institution",ascending,"Institution");
+	String emailHeader = getUserSortLink(request, "email",ascending,"Email");		
 	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
         usersHtml.append(HU.row(HU.cols("",
 					HU.bold(msg("Edit")) + HU.space(2),
 					HU.bold(idHeader) + HU.space(2),
 					HU.bold(nameHeader) + HU.space(2),
 					HU.bold(adminHeader) + HU.space(2),
-					HU.bold(msg("Guest")) + HU.space(2),
-					HU.bold(msg("Email")) + HU.space(2),
+					HU.bold(guestHeader) + HU.space(2),
+					HU.bold(emailHeader) + HU.space(2),
 					HU.bold(instHeader) + HU.space(2),					
 					HU.bold(dateHeader) + HU.space(2),					
 
