@@ -44,6 +44,7 @@ public class User {
 
     /** _more_ */
     private String email = "";
+    private String institution = "";    
 
     /** _more_ */
     private String question = "";
@@ -82,6 +83,8 @@ public class User {
 
     /** _more_ */
     private boolean isGuest = false;
+
+    private Date accountCreationDate;
 
     /** _more_ */
     private Hashtable properties = new Hashtable();
@@ -155,13 +158,19 @@ public class User {
      * @param isGuest _more_
      * @param propertiesBlob _more_
      */
-    public User(String id, String name, String email, String question,
-                String answer, String hashedPassword, String description,
+    public User(String id,
+		String name,
+		String email,
+		String institution,
+		String question,
+                String answer,
+		String hashedPassword, String description,
                 boolean admin, String language, String template,
-                boolean isGuest, String propertiesBlob) {
+                boolean isGuest, Date accountCreationDate, String propertiesBlob) {
         this.id             = id;
         this.name           = name;
         this.email          = email;
+	this.institution    = institution;
         this.question       = question;
         this.answer         = answer;
         this.hashedPassword = hashedPassword;
@@ -173,6 +182,7 @@ public class User {
         this.language = language;
         this.template = template;
         this.isGuest  = isGuest;
+	this.accountCreationDate = accountCreationDate;
         if ((propertiesBlob != null) && (propertiesBlob.length() > 0)) {
             try {
                 properties =
@@ -409,6 +419,26 @@ public class User {
     public String getEmail() {
         return email;
     }
+
+    /**
+       Set the Institution property.
+
+       @param value The new value for Institution
+    **/
+    public void setInstitution (String value) {
+	institution = value;
+    }
+
+    /**
+       Get the Institution property.
+
+       @return The Institution
+    **/
+    public String getInstitution () {
+	return institution;
+    }
+
+
 
     /**
      * Set the Question property.
@@ -758,6 +788,27 @@ public class User {
     public boolean getIsGuest() {
         return isGuest;
     }
+
+    /**
+       Set the AccountCreationDate property.
+
+       @param value The new value for AccountCreationDate
+    **/
+    public void setAccountCreationDate (Date value) {
+	accountCreationDate = value;
+    }
+
+    /**
+       Get the AccountCreationDate property.
+
+       @return The AccountCreationDate
+    **/
+    public Date getAccountCreationDate () {
+	return accountCreationDate;
+    }
+
+
+
 
     /**
      *  Set the CanChangePassword property.

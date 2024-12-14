@@ -725,10 +725,10 @@ public class Admin extends RepositoryManager {
                                     id, name,
                                     request.getString(
                                         UserManager.ARG_USER_EMAIL,
-                                        "").trim(), "", "",
+                                        "").trim(), "","", "",
                                             getUserManager().hashPassword(
                                                 password1), "", true, "", "",
-                                                    false, null);
+				    false, new Date(),null);
                     getUserManager().makeOrUpdateUser(user, false);
                     installStep(ARG_ADMIN_ADMINCREATED);
                     installStep(ARG_ADMIN_INSTALLCOMPLETE);

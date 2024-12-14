@@ -68,7 +68,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
+import java.text.SimpleDateFormat;
 
 
 
@@ -81,6 +81,10 @@ import java.awt.image.BufferedImage;
 @SuppressWarnings("unchecked")
 public class UserManager extends RepositoryManager {
 
+
+    public static final String DEFAULT_INSTITUTION = "";
+    public static final String DEFAULT_QUESTION = "";
+    public static final String DEFAULT_ANSWER = "";        
 
     public static final String LABEL_LOGIN  ="Login";    
     public static final String LABEL_NEW_USER  ="New User";
@@ -139,6 +143,7 @@ public class UserManager extends RepositoryManager {
 
     /** _more_ */
     public static final String ARG_USER_EMAIL = "user_email";
+    public static final String ARG_USER_INSTITUTION = "user_institution";    
 
 
     /** _more_ */
@@ -982,8 +987,7 @@ public class UserManager extends RepositoryManager {
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
                                         Tables.USERS.NAME,
-                                        Clause.eq(Tables.USERS.COL_EMAIL,
-						  email));
+                                        Clause.eq(Tables.USERS.COL_EMAIL, email));
         ResultSet results = statement.getResultSet();
         if ( !results.next()) {
             return null;
@@ -1057,13 +1061,17 @@ public class UserManager extends RepositoryManager {
     public void makeOrUpdateUser(User user, boolean updateIfNeeded)
 	throws Exception {
         if ( !userExistsInDatabase(user)) {
+	    //Note: these have to be lined up with the database/Tables.USERS class defs
             getDatabaseManager().executeInsert(Tables.USERS.INSERT,
 					       new Object[] {
 						   user.getId(), user.getName(), user.getEmail(),
+						   user.getInstitution(),
 						   user.getQuestion(), user.getAnswer(),
 						   user.getHashedPassword(), user.getDescription(),
 						   Boolean.valueOf(user.getAdmin()), user.getLanguage(),
-						   user.getTemplate(),  Boolean.valueOf(user.getIsGuest()),
+						   user.getTemplate(),
+						   Boolean.valueOf(user.getIsGuest()),
+						   user.getAccountCreationDate(),
 						   user.getPropertiesBlob()
 					       });
 	    updateUser(user);
@@ -1081,18 +1089,21 @@ public class UserManager extends RepositoryManager {
 					Tables.USERS.COL_PASSWORD,
 					Tables.USERS.COL_DESCRIPTION,
 					Tables.USERS.COL_EMAIL,
+					Tables.USERS.COL_INSTITUTION,					
 					Tables.USERS.COL_QUESTION,
 					Tables.USERS.COL_ANSWER,
 					Tables.USERS.COL_ADMIN,
 					Tables.USERS.COL_LANGUAGE,
 					Tables.USERS.COL_TEMPLATE,
 					Tables.USERS.COL_ISGUEST,
+					Tables.USERS.COL_ACCOUNT_CREATION_DATE,
 					Tables.USERS.COL_PROPERTIES
 				    }, new Object[] {
 					user.getName(), 
 					user.getHashedPassword(),
 					user.getDescription(),
 					user.getEmail(),
+					user.getInstitution(),
 					user.getQuestion(),
 					user.getAnswer(),
 					user.getAdmin()
@@ -1100,7 +1111,9 @@ public class UserManager extends RepositoryManager {
 					: Integer.valueOf(0),
 					user.getLanguage(),
 					user.getTemplate(),
-					Boolean.valueOf(user.getIsGuest()), user.getPropertiesBlob()
+					Boolean.valueOf(user.getIsGuest()),
+					user.getAccountCreationDate(),
+					user.getPropertiesBlob()
 				    });
         userMap.remove(user.getId());
 
@@ -1183,17 +1196,18 @@ public class UserManager extends RepositoryManager {
     private void applyUserProperties(Request request, User user,
                                      boolean doAdmin)
 	throws Exception {
-        user.setName(request.getString(ARG_USER_NAME, user.getName()));
-        user.setDescription(request.getString(ARG_USER_DESCRIPTION,
+        user.setName(request.getReallyStrictSanitizedString(ARG_USER_NAME, user.getName()));
+        user.setDescription(request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION,
 					      user.getDescription()));
-        user.setEmail(request.getString(ARG_USER_EMAIL, user.getEmail()));
-        user.setTemplate(request.getString(ARG_USER_TEMPLATE,
+        user.setEmail(request.getReallyStrictSanitizedString(ARG_USER_EMAIL, user.getEmail()));
+        user.setInstitution(getInstitution(request,user.getInstitution()));
+        user.setTemplate(request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,
                                            user.getTemplate()));
-        user.setLanguage(request.getString(ARG_USER_LANGUAGE,
+        user.setLanguage(request.getReallyStrictSanitizedString(ARG_USER_LANGUAGE,
                                            user.getLanguage()));
-        user.setQuestion(request.getString(ARG_USER_QUESTION,
+        user.setQuestion(request.getReallyStrictSanitizedString(ARG_USER_QUESTION,
                                            user.getQuestion()));
-        user.setAnswer(request.getString(ARG_USER_ANSWER, user.getAnswer()));
+        user.setAnswer(request.getReallyStrictSanitizedString(ARG_USER_ANSWER, user.getAnswer()));
 	if(request.get(ARG_USER_AVATAR_DELETE,false)) {
 	    File f= getUserAvatarFile(user);
 	    if(f!=null) f.delete();
@@ -1214,8 +1228,8 @@ public class UserManager extends RepositoryManager {
 	}
 
 
-        String phone = request.getString("phone",
-                                         (String) user.getProperty("phone"));
+        String phone = request.getReallyStrictSanitizedString("phone",
+						  (String) user.getProperty("phone"));
         if (phone != null) {
             user.putProperty("phone", phone);
         }
@@ -1223,7 +1237,6 @@ public class UserManager extends RepositoryManager {
         if (doAdmin) {
             applyAdminState(request, user);
         }
-
 
 
         makeOrUpdateUser(user, true);
@@ -1250,7 +1263,7 @@ public class UserManager extends RepositoryManager {
         }
         user.setIsGuest(request.get(ARG_USER_ISGUEST, false));
 
-        List<String> roles = Utils.split(request.getString(ARG_USER_ROLES,
+        List<String> roles = Utils.split(request.getReallyStrictSanitizedString(ARG_USER_ROLES,
 							   ""), "\n", true, true);
 
         user.setRoles(Role.makeRoles(roles));
@@ -1381,23 +1394,27 @@ public class UserManager extends RepositoryManager {
 	sb.append(formEntry(request, msgLabel("ID"), user.getId()));
         if (isAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),
-                                HU.input(ARG_USER_NAME,request.getString(ARG_USER_NAME,user.getName()), size)));
-            sb.append(formEntry(request, msgLabel("Description"),
-                                HU.textArea(ARG_USER_DESCRIPTION,
-					    request.getString(ARG_USER_DESCRIPTION,user.getDescription()), 5, 30)));
+                                HU.input(ARG_USER_NAME,request.getReallyStrictSanitizedString(ARG_USER_NAME,user.getName()), size)));
         }
         if (includeAdmin) {
+            sb.append(formEntry(request, "",
+				HU.span("Note: An administrator can do anything on this RAMADDA",HU.clazz("ramadda-form-help"))));
+
             sb.append(formEntry(request, "",
                                 HU.labeledCheckbox(ARG_USER_ADMIN, "true",
 						   request.get(ARG_USER_ADMIN,user.getAdmin()),
 						   "Is Administrator")));
+
+            sb.append(formEntry(request, "",
+				HU.span("A guest user can login but cannot change their password",HU.clazz("ramadda-form-help"))));
+
             sb.append(formEntry(request, "",
                                 HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
 						   request.get(ARG_USER_ISGUEST,user.getIsGuest()),
 						   "Is Guest User")));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
-            List<Role>   roles     = getStandardRoles();
+            List<Role>   roles     = getUserRoles();
             allRoles.append(
 			    "<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td><b>e.g.:</b></td><td>&nbsp;&nbsp;</td><td>");
             int cnt = 0;
@@ -1413,7 +1430,12 @@ public class UserManager extends RepositoryManager {
             }
             allRoles.append("</table>\n");
 
-            String roleEntry =  HU.hbox(HU.textArea(ARG_USER_ROLES, request.getString(ARG_USER_ROLES,userRoles),
+            sb.append(formEntry(request, "",
+				HU.span("Roles are used in entry permissions",
+					HU.clazz("ramadda-form-help"))));
+
+
+            String roleEntry =  HU.hbox(HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES,userRoles),
 						    5, 20), allRoles.toString());
             sb.append(formEntryTop(request, msgLabel("Roles"), roleEntry));
         }
@@ -1421,11 +1443,18 @@ public class UserManager extends RepositoryManager {
         if (includeAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL,
-					 request.getString(ARG_USER_EMAIL,user.getEmail()), size)));
+					 request.getReallyStrictSanitizedString(ARG_USER_EMAIL,user.getEmail()), size)));
+	    addInstitutionWidget(request, sb,user.getInstitution());
+
+
+            sb.append(formEntry(request, msgLabel("Description"),
+                                HU.textArea(ARG_USER_DESCRIPTION,
+					    request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION,user.getDescription()), 5, 30)));
+
 	    /*
 	      sb.append(formEntry(request, msgLabel("Phone"),
 	      HU.input("phone",
-	      request.getString("phone", (String) user.getProperty("phone", "")),
+	      request.getReallyStrictSanitizedString("phone", (String) user.getProperty("phone", "")),
 	      size)));
 	    */
 	    String file  = HU.fileInput(ARG_USER_AVATAR, "");
@@ -1440,13 +1469,13 @@ public class UserManager extends RepositoryManager {
             getPageHandler().getTemplateSelectList();
         sb.append(formEntry(request, msgLabel("Page Style"),
                             HU.select(ARG_USER_TEMPLATE, templates,
-				      request.getString(ARG_USER_TEMPLATE,user.getTemplate()))));
+				      request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,user.getTemplate()))));
 
         List languages = new ArrayList(getPageHandler().getLanguages());
         languages.add(0, new TwoFacedObject("-default-", ""));
         sb.append(formEntry(request, msgLabel("Language"),
                             HU.select(ARG_USER_LANGUAGE, languages,
-				      request.getString(ARG_USER_LANGUAGE,user.getLanguage()))));
+				      request.getReallyStrictSanitizedString(ARG_USER_LANGUAGE,user.getLanguage()))));
         sb.append(HU.formTableClose());
     }
 
@@ -1568,9 +1597,11 @@ public class UserManager extends RepositoryManager {
                     sb.append(messageError("User already exists:" + id));
                     break;
                 }
-                User user = new User(id, name, email, "", "",
+                User user = new User(id, name, email, DEFAULT_INSTITUTION,
+				     "", "",
                                      hashPassword(password1), "", false, "",
-                                     "", false, null);
+                                     "", false, new Date(),
+				     null);
                 users.add(user);
             }
 
@@ -1587,15 +1618,17 @@ public class UserManager extends RepositoryManager {
             String  name      = "";
             String  desc      = "";
             String  email     = "";
+            String  institution     = "";	    
             String  password1 = "";
             String  password2 = "";
             boolean admin     = false;
             boolean guest     = false;	    
             if (request.defined(ARG_USER_ID)) {
                 id        = cleanUserId(request.getString(ARG_USER_ID, ""));
-                name      = request.getString(ARG_USER_NAME, name).trim();
-                desc = request.getString(ARG_USER_DESCRIPTION, name).trim();
-                email     = request.getString(ARG_USER_EMAIL, "").trim();
+                name      = request.getReallyStrictSanitizedString(ARG_USER_NAME, name).trim();
+                desc = request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION, name).trim();
+                email     = request.getReallyStrictSanitizedString(ARG_USER_EMAIL, "").trim();
+                institution     = getInstitution(request,"");
                 password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
                 password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
                 admin     = request.get(ARG_USER_ADMIN, false);
@@ -1627,9 +1660,11 @@ public class UserManager extends RepositoryManager {
                 }
 
                 if (okToAdd) {
-                    User newUser = new User(id, name, email, "", "",
+                    User newUser = new User(id, name, email, institution,
+					    DEFAULT_QUESTION,DEFAULT_ANSWER,
                                             hashPassword(password1), desc,
-                                            admin, "", "", false, null);
+                                            admin, "", "", false, new Date(),
+					    null);
 		    newUser.setIsGuest(guest);
                     users.add(newUser);
                 }
@@ -1637,7 +1672,7 @@ public class UserManager extends RepositoryManager {
         }
         if (users.size() > 0) {
 	    List<Role> newUserRoles =
-		Role.makeRoles(Utils.split(request.getString(ARG_USER_ROLES, ""),
+		Role.makeRoles(Utils.split(request.getReallyStrictSanitizedString(ARG_USER_ROLES, ""),
 					   "\n", true, true));
 
 	    String homeGroupId = request.getString(ARG_USER_HOME + "_hidden", "");
@@ -1805,14 +1840,17 @@ public class UserManager extends RepositoryManager {
         sb.append(request.uploadForm(URL_USER_NEW_DO));
         StringBuffer formSB = new StringBuffer();
         String       id     = request.getString(ARG_USER_ID, "").trim();
-        String       name   = request.getString(ARG_USER_NAME, "").trim();
-        String       desc = request.getString(ARG_USER_DESCRIPTION, "").trim();
-        String       email  = request.getString(ARG_USER_EMAIL, "").trim();
+        String       name   = request.getReallyStrictSanitizedString(ARG_USER_NAME, "").trim();
+        String       desc = request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION, "").trim();
+        String       email  = request.getReallyStrictSanitizedString(ARG_USER_EMAIL, "").trim();
+        String       institution = getInstitution(request,"");
         boolean      admin  = request.get(ARG_USER_ADMIN, false);
         boolean      guest  = request.get(ARG_USER_ISGUEST, false);	
 
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HU.formTable());
+        formSB.append(HU.formEntry("",HU.span("Lower case, no spaces, no punctuation",
+					      HU.clazz("ramadda-form-help"))));
         formSB.append(formEntry(request, msgLabel("ID"),
                                 HU.input(ARG_USER_ID, id,
 					 size)));
@@ -1836,11 +1874,12 @@ public class UserManager extends RepositoryManager {
         formSB.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL, email,
 					 size)));
-
+	addInstitutionWidget(request, formSB,institution);
+	
         formSB.append(formEntry(request, msgLabel("Password"), HU.password(ARG_USER_PASSWORD1)));
         formSB.append(formEntry(request, msgLabel("Password Again"), HU.password(ARG_USER_PASSWORD2)));
         formSB.append(HU.formEntryTop(msgLabel("Roles"),
-				      HU.textArea(ARG_USER_ROLES, request.getString(ARG_USER_ROLES, ""), 3, 25)));
+				      HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES, ""), 3, 25)));
 
         String groupMsg =
             "Create a folder using the user's name under this folder";
@@ -1852,7 +1891,7 @@ public class UserManager extends RepositoryManager {
 								   request, ARG_USER_HOME, false, "", null)));
 
         StringBuffer msgSB = new StringBuffer();
-        String       msg   =request.getString(ARG_USER_MESSAGE,
+        String       msg   =request.getReallyStrictSanitizedString(ARG_USER_MESSAGE,
 					      "A new RAMADDA account has been created for you.");
         msgSB.append(HU.checkbox(ARG_USER_SENDMAIL, "true", false));
         msgSB.append(HU.space(1));
@@ -1981,6 +2020,16 @@ public class UserManager extends RepositoryManager {
             users.add(getUser(results));
         }
 
+	String args = JU.map("focus","true");
+	HU.script(usersHtml,
+		  HU.call("HtmlUtils.initPageSearch",
+			  "'.ramadda-user-row'",
+			  "null",
+			  //				 "'#" + uid +" .type-list-container'",
+			  "'Find user'",
+			  "false",args));
+
+
         usersHtml.append(request.formPost(URL_USER_SELECT_DO));
         usersHtml.append(
 			 HU.open(
@@ -1989,11 +2038,15 @@ public class UserManager extends RepositoryManager {
 					HU.bold(msg("Edit")) + HU.space(2),
 					HU.bold(msg("ID")) + HU.space(2),
 					HU.bold(msg("Name")) + HU.space(2),
-					HU.bold(msg("Email")) + HU.space(2),
 					HU.bold(msg("Admin")) + HU.space(2),
 					HU.bold(msg("Guest")) + HU.space(2),
+					HU.bold(msg("Email")) + HU.space(2),
+					HU.bold(msg("Institution")) + HU.space(2),					
+					HU.bold(msg("Account Create Date")) + HU.space(2),					
+
 					HU.bold(msg("Log")))));
 
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         for (User user : users) {
             String userEditLink = HU.button(HU.href(request.makeUrl(
 								    getRepositoryBase().URL_USER_EDIT,
@@ -2021,14 +2074,27 @@ public class UserManager extends RepositoryManager {
 
 
 
+	    String corpus = user.getName() +" " + user.getId() +" " + user.getInstitution();
+	    if(user.getIsGuest()) corpus +=" guest ";
+	    if(user.getAdmin()) corpus +=" admin ";
+	    String dttm = "NA";
+	    if(user.getAccountCreationDate()!=null) {
+		dttm = sdf.format(user.getAccountCreationDate());
+	    }
             String row = HU.row(HU.cols(userCbx, userEditLink,
 					userProfileLink, user.getName(),
-					/*user.getRolesAsString("<br>"),*/
-					user.getEmail(), "" + user.getAdmin(), "" + user.getIsGuest(),
-					userLogLink), HU.cssClass(
-								  "ramadda-user-row " + (user.getAdmin()
-											 ? "ramadda-user-admin"
-											 : "")));
+					"" + user.getAdmin(), 
+					"" + user.getIsGuest(),
+					user.getEmail(),
+					user.getInstitution(),
+
+					dttm,
+					userLogLink),
+				HU.attrs("data-corpus",corpus) +
+				HU.cssClass(
+					    "ramadda-user-row " + (user.getAdmin()
+								   ? "ramadda-user-admin"
+								   : "")));
             usersHtml.append(row);
 
             List<Role> roles = user.getRoles();
@@ -2109,18 +2175,21 @@ public class UserManager extends RepositoryManager {
         //id, name, email, question, answer, hashedPassword, description
         //admin, language, template, isGuest, propertiesBlob
 
-        User user = new User(results.getString(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getBoolean(col++),
-                             results.getString(col++),
-                             results.getString(col++),
-                             results.getBoolean(col++),
-                             results.getString(col++));
+        User user = new User(results.getString(col++), //ID
+                             results.getString(col++), //Name
+                             results.getString(col++),//email
+                             results.getString(col++),//institution
+                             results.getString(col++),//question
+                             results.getString(col++),//answer
+                             results.getString(col++),//hashed password
+                             results.getString(col++),//description
+                             results.getBoolean(col++),//admin
+                             results.getString(col++),//language
+                             results.getString(col++),//page template
+                             results.getBoolean(col++),//is guest
+			     getDatabaseManager().getDate(results, col++,null), //acct creation date
+                             results.getString(col++)//properties blob
+			     );
 
         Statement statement = getDatabaseManager().select(
 							  Tables.USERROLES.COL_ROLE,
@@ -3414,6 +3483,41 @@ public class UserManager extends RepositoryManager {
 
         return Role.makeRoles(roles);
     }
+
+    public void   addInstitutionWidget(Request request, Appendable sb,String value) throws Exception {
+	String v = getInstitution(request, value);
+	String sel = HU.select(ARG_USER_INSTITUTION,
+			       getInstitutions(),
+			       value);
+	sb.append(formEntry(request, msgLabel("Institution"),
+			    sel +HU.space(2) +"Or: " +
+			    HU.input(ARG_USER_INSTITUTION+"_extra",
+				     "", HU.SIZE_30)));
+    }
+
+
+    public String getInstitution(Request request,String dflt) {
+	String inst =request.getReallyStrictSanitizedString(ARG_USER_INSTITUTION+"_extra",null);
+	if(!stringDefined(inst)) {
+	    inst =request.getReallyStrictSanitizedString(ARG_USER_INSTITUTION,dflt);
+	}
+	return HU.sanitizeString(inst);
+    }
+
+
+    public List getInstitutions() throws Exception {
+        String[] array =
+            SqlUtil.readString(
+			       getDatabaseManager().getIterator(
+								getDatabaseManager().select(
+											    SqlUtil.distinct(Tables.USERS.COL_INSTITUTION),
+											    Tables.USERS.NAME, new Clause())), 1);
+        List l=  new ArrayList<String>(Misc.toList(array));
+	l.add(0,new HtmlUtils.Selector("None specified",""));
+	return l;
+    }
+
+
 
     /**
      *  @return _more_
