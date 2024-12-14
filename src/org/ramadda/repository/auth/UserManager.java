@@ -2797,18 +2797,13 @@ public class UserManager extends RepositoryManager {
                           "image/gif");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    public boolean isRegistrationEnabled() {
+        return getRepository().getProperty(PROP_REGISTER_OK, false);
+    }
+
     public Result processRegister(Request request) throws Exception {
 
-        if ( !getRepository().getProperty(PROP_REGISTER_OK, false)) {
+        if ( !isRegistrationEnabled()) {
             return new Result(
 			      "New User Registration",
 			      new StringBuffer(messageWarning(msg("Registration is not allowed"))));
@@ -3773,6 +3768,15 @@ public class UserManager extends RepositoryManager {
         }
     }
 
+    public boolean isRecaptchaEnabled() {
+	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
+	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
+	if(stringDefined(siteKey) && stringDefined(secretKey)) {
+	    return true;
+	}
+	return false;
+    }
+
     /**
      * _more_
      *
@@ -3834,11 +3838,7 @@ public class UserManager extends RepositoryManager {
     public void makeHumanForm(Request request, Appendable sb,
                               FormInfo formInfo)
 	throws Exception {
-	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
-
-
-	if(stringDefined(siteKey) && stringDefined(secretKey)) {
+	if(isRecaptchaEnabled()) {
 	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
 	    sb.append(formEntry(request,"",
 				HU.div("",HU.attrs("class","g-recaptcha","data-sitekey","6Ld7zsgSAAAAABXOc291vy9MxoxG2D2Xuc1ONF4a"))));

@@ -1714,6 +1714,12 @@ public class PageHandler extends RepositoryManager {
 
                 _links.add(new Link(url,  "",
 				    HU.faIcon("fa-sign-in-alt") + " " + msg("Login"),"Login"));
+		if(getUserManager().isRegistrationEnabled()) {
+		    _links.add(new Link(getRepository().getUrlPath("/user/register"),"",
+					HU.faIcon("fas fa-user-plus") + " " + msg("Register Account")));
+		}
+
+
             }
 
         } else {
