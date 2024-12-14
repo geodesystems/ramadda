@@ -1897,7 +1897,6 @@ public class Request implements Constants, Cloneable {
         }
         String s = getCheckedString(key, dflt, checker);
         s = HtmlUtils.sanitizeString(s);
-
         return s;
     }
 
@@ -1912,6 +1911,19 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
+    /**
+       This removes any < or > and then sanitizes the string
+    */
+    public String getReallyStrictSanitizedString(String key, String dflt) {
+        String s = getCheckedString(key, dflt, checker);
+	if(s!=null) {
+	    s = s.replace("<","").replace(">","");
+	}
+
+        s = HtmlUtils.strictSanitizeString(s);
+	//	System.err.println(key+"=" + s);
+	return s;
+    }
 
 
     /**
