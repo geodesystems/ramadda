@@ -41,6 +41,7 @@ import java.awt.image.*;
 
 import java.io.*;
 import java.util.Base64;
+import java.util.Comparator;
 
 
 import java.security.MessageDigest;
@@ -54,6 +55,7 @@ import java.sql.Statement;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -1966,6 +1968,16 @@ public class UserManager extends RepositoryManager {
     }
 
 
+    private String getUserSortLink(Request request, String what,boolean ascending, String label) {
+	String url = getRepositoryBase().URL_USER_LIST+"?sortby=" + what;
+	if(request.getString("sortby","").equals(what)) {
+	    url+="&ascending=" + (!ascending);
+	}
+	return HU.href(url, label);
+    }
+	
+
+
     /**
      * _more_
      *
@@ -2020,6 +2032,65 @@ public class UserManager extends RepositoryManager {
             users.add(getUser(results));
         }
 
+	String sortBy = request.getString("sortby","admin");
+	boolean ascending = request.get("ascending",true);
+	Comparator comp = new Comparator() {
+		public int compare(Object o1, Object o2) {
+		    User u1 = (User)o1;
+		    User u2 = (User)o2;			
+		    int ids = Utils.compareIgnoreCase(u1.getId(),u2.getId(),0);
+		    if(sortBy.equals("admin")) {
+			if(u1.getAdmin() && !u2.getAdmin()) {
+			    return -1;
+			}
+			if(!u1.getAdmin() && u2.getAdmin()) {
+			    return 1;
+			}
+		    }
+		    
+
+		    if(sortBy.equals("date")) {
+			Date d1 = u1.getAccountCreationDate();
+			Date d2 = u2.getAccountCreationDate();			
+			if(d1==null && d2!=null)
+			    return -1;
+			if(d1!=null && d2==null)
+			    return 1;
+			if(d1==null && d2==null)
+			    return ids;						
+			if(d1.equals(d2)) return ids;
+			return d1.compareTo(d2);
+		    }
+
+
+		    if(sortBy.equals("institution")) {
+			return Utils.compareIgnoreCase(u1.getInstitution(),
+						       u2.getInstitution(),
+						       ids);
+		    }
+
+		    if(sortBy.equals("name")) {
+			return Utils.compareIgnoreCase(u1.getName(),
+					     u2.getName(),
+					     ids);
+		    }
+		    
+
+		    return ids;
+		}
+	    };
+	Object[] array = users.toArray();
+	Arrays.sort(array, comp);
+	users = (List<User>) Misc.toList(array);
+	if(!ascending) {
+	    List<User> tmp =new ArrayList<User>();
+	    for(int i=users.size()-1;i>=0;i--)
+		tmp.add(users.get(i));
+	    users = tmp;
+	}
+	
+	
+
 	String args = JU.map("focus","true");
 	HU.script(usersHtml,
 		  HU.call("HtmlUtils.initPageSearch",
@@ -2034,15 +2105,25 @@ public class UserManager extends RepositoryManager {
         usersHtml.append(
 			 HU.open(
 				 "table", HU.cssClass("ramadda-user-table")));
+
+  
+
+	    
+	
+	String idHeader = getUserSortLink(request, "id",ascending,"ID");
+	String nameHeader = getUserSortLink(request, "name",ascending,"Name");
+	String adminHeader = getUserSortLink(request, "admin",ascending,"Admin");		
+	String instHeader = getUserSortLink(request, "institution",ascending,"Institution");
+	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
         usersHtml.append(HU.row(HU.cols("",
 					HU.bold(msg("Edit")) + HU.space(2),
-					HU.bold(msg("ID")) + HU.space(2),
-					HU.bold(msg("Name")) + HU.space(2),
-					HU.bold(msg("Admin")) + HU.space(2),
+					HU.bold(idHeader) + HU.space(2),
+					HU.bold(nameHeader) + HU.space(2),
+					HU.bold(adminHeader) + HU.space(2),
 					HU.bold(msg("Guest")) + HU.space(2),
 					HU.bold(msg("Email")) + HU.space(2),
-					HU.bold(msg("Institution")) + HU.space(2),					
-					HU.bold(msg("Account Create Date")) + HU.space(2),					
+					HU.bold(instHeader) + HU.space(2),					
+					HU.bold(dateHeader) + HU.space(2),					
 
 					HU.bold(msg("Log")))));
 
