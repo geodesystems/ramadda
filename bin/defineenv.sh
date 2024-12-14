@@ -2,19 +2,19 @@
 #for configuring command line aliases for an AWS instance
 #This sets up the aliases go$id, put$id, get$id, update$id, devupdate$id
 #usage:
-#sh defineaws.sh  <some id> <some IP> -pem <pem file> -user <user>
+#sh defineenv.sh  <some id> <some IP> -pem <pem file> -user <user>
 
 #e.g.: access with the pem file. defaults to user ec2-user
-#sh defineaws.sh test <some ip> -pem <full path to pem file>
+#sh defineenv.sh test <some ip> -pem <full path to pem file>
 
 #e.g.: password access. user=ubuntu
-#sh defineaws.sh test <some ip> -user ubuntu
+#sh defineenv.sh test <some ip> -user ubuntu
 
 #
 #generated commands:
 #
 #using:
-#defineaws.sh test <some ip> -pem <pem file>
+#defineenv.sh test <some ip> -pem <pem file>
 #will give aliases:
 
 #ssh to machine:
