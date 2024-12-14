@@ -7,6 +7,8 @@ package org.ramadda.repository.auth;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.Utils;
+
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -19,6 +21,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
 
 /**
  * Class FilesInfo _more_
@@ -29,6 +32,9 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class User {
+
+    public static Date DEFAULT_DATE;
+
 
     /** _more_ */
     public static final String PROP_CAN_CHANGE_PASSWORD =
@@ -802,8 +808,11 @@ public class User {
     **/
     public Date getAccountCreationDate () {
 	//Account for legacy users that don't have an account creation date set
-	if(accountCreationDate==null)
-	    return  new Date("2020-01-01");
+	if(accountCreationDate==null) {
+	    if(DEFAULT_DATE==null)
+		DEFAULT_DATE = Utils.parseDate("2020-01-01");
+	    return DEFAULT_DATE;
+	}
 	return accountCreationDate;
     }
 
