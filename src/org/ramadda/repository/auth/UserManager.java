@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -92,172 +92,72 @@ public class UserManager extends RepositoryManager {
     public static final String LABEL_LOGIN  ="Login";    
     public static final String LABEL_NEW_USER  ="New User";
 
-    /** _more_ */
     public static final int MIN_PASSWORD_LENGTH = 8;
-
-    /** _more_ */
     public static final String ARG_HUMAN_QUESTION = "human_question";
-
-    /** _more_ */
     public static final String ARG_HUMAN_ANSWER = "human_answer";
-
-
-    /** _more_ */
     public static final String ARG_USERAGREE = "agree";
-
-    /** _more_ */
     private static List<String> QUESTIONS;
-
-    /** _more_ */
     private static List<Integer> ANSWERS;
-
-
-    /** _more_ */
     public static final String ARG_REGISTER_PASSPHRASE = "passphrase";
-
-    /** _more_ */
     public static final String ARG_USER_ADMIN = "user_admin";
-
-    /** _more_ */
     public static final String ARG_USER_ISGUEST = "user_isguest";
-
-    /** _more_ */
     public static final String ARG_USER_ANSWER = "user_answer";
-
-    /** _more_ */
     public static final String ARG_USER_AVATAR = "user_avatar";    
     public static final String ARG_USER_AVATAR_DELETE = "user_avatar_delete";    
 
-    /** _more_ */
     public static final String ARG_USER_BULK = "user_bulk";
-
-    /** _more_ */
     public static final String ARG_USER_CANCEL = "user_cancel";
-
-    /** _more_ */
     public static final String ARG_USER_CHANGE = "user_change";
-
-    /** _more_ */
     public static final String ARG_USER_DELETE = "user_delete";
-
     public static final String ARG_USER_DOWNLOAD = "user_download";    
-
-    /** _more_ */
-    public static final String ARG_USER_DELETE_CONFIRM =
-        "user_delete_confirm";
-
-    /** _more_ */
+    public static final String ARG_USER_DELETE_CONFIRM =    "user_delete_confirm";
     public static final String ARG_USER_EMAIL = "user_email";
     public static final String ARG_USER_INSTITUTION = "user_institution";    
-
-
-    /** _more_ */
     public static final String ARG_USER_LANGUAGE = "user_language";
-
-    /** _more_ */
     public static final String ARG_USER_NAME = "user_name";
-
-    /** _more_ */
     public static final String ARG_USER_DESCRIPTION = "user_description";
-
-    /** _more_ */
     public static final String ARG_USER_NEW = "user_new";
-
-    /** _more_ */
     public static final String ARG_USER_IMPORT = "userimport";
-
-    /** _more_ */
     public static final String ARG_USER_EXPORT = "userexport";
-
-    /** output type */
     public static final OutputType OUTPUT_FAVORITE =
         new OutputType("Add as Favorite", "user.addfavorite",
                        OutputType.TYPE_OTHER, "", ICON_FAVORITE);
 
 
-    /** _more_ */
-    public static final String PROP_REGISTER_OK = "ramadda.register.ok";
 
+    public static final String PROP_REGISTER_OK = "ramadda.register.ok";
     public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
     public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
-
-
-    /** _more_ */
     public static final String PROP_REGISTER_PASSPHRASE = "ramadda.register.passphrase";
-
-    /** _more_ */
     public static final String PROP_REGISTER_EMAIL = "ramadda.register.email";
-
-
-
-
-
-    /** _more_ */
-    public static final String PROP_LOGIN_ALLOWEDIPS =
-        "ramadda.login.allowedips";
-
-    /** _more_ */
-    public static final String PROP_PASSWORD_DIGEST =
-        "ramadda.password.hash.digest";
-
-
-    /** _more_ */
-    public static final String PROP_PASSWORD_ITERATIONS =
-        "ramadda.password.hash.iterations";
+    public static final String PROP_LOGIN_ALLOWEDIPS =  "ramadda.login.allowedips";
+    public static final String PROP_PASSWORD_DIGEST =   "ramadda.password.hash.digest";
+    public static final String PROP_PASSWORD_ITERATIONS =    "ramadda.password.hash.iterations";
 
     /** Note: we don't actively use the SALT properties anymore but we keep them around for backwards compatibilty */
     public static final String PROP_PASSWORD_SALT =
         "ramadda.password.hash.salt";
 
-
-    /** _more_ */
-    public static final String PROP_PASSWORD_SALT1 =
-        "ramadda.password.hash.salt1";
-
-    /** _more_ */
-    public static final String PROP_PASSWORD_SALT2 =
-        "ramadda.password.hash.salt2";
-
-
-    /** _more_ */
+    public static final String PROP_PASSWORD_SALT1 =     "ramadda.password.hash.salt1";
+    public static final String PROP_PASSWORD_SALT2 =    "ramadda.password.hash.salt2";
     public static final String PROP_USER_AGREE = "ramadda.user.agree";
 
-
-
-
-
-    /** activity type for logging */
     public static final String ACTIVITY_LOGIN = "login";
-
-    /** activity type for logging */
     public static final String ACTIVITY_LOGOUT = "logout";
-
-    /** activity type for logging */
     public static final String ACTIVITY_PASSWORD_CHANGE = "password.change";
 
-    /** _more_ */
     private static final String USER_DEFAULT = "default";
-
-    /** _more_ */
     public static final String USER_ANONYMOUS = "anonymous";
-
-    /** _more_ */
     public static final String USER_LOCALFILE = "localuser";
 
-    /** _more_ */
     public final RequestUrl URL_USER_NEW_FORM = new RequestUrl(this,
 							       "/user/new/form");
 
-    /** _more_ */
     public final RequestUrl URL_USER_NEW_DO = new RequestUrl(this,
 							     "/user/new/do");
 
-    /** _more_ */
     public final RequestUrl URL_USER_SELECT_DO = new RequestUrl(this,
 								"/user/select/do");
-
-
-
 
 
     /** urls to use when the user is logged in */
@@ -267,7 +167,6 @@ public class UserManager extends RepositoryManager {
 		getRepositoryBase().URL_USER_PASSWORD,		
 		getRepositoryBase().URL_USER_HOME});
 
-    /** _more_ */
     protected List<RequestUrl> remoteUserUrls =
         RequestUrl.toList(new RequestUrl[] {
 		getRepositoryBase().URL_USER_HOME});
@@ -281,10 +180,7 @@ public class UserManager extends RepositoryManager {
     /** List of ip addresses (or prefixes) that control where users can login from */
     private List<String> allowedIpsForLogin;
 
-
-    /** _more_ */
     private Hashtable<String, User> userMap = new Hashtable<String, User>();
-
 
     /** any external user authenticators from plugins */
     private List<UserAuthenticator> userAuthenticators =
@@ -295,22 +191,11 @@ public class UserManager extends RepositoryManager {
         new Hashtable<String, PasswordReset>();
 
 
-    /** _more_ */
     private boolean debug = false;
-
-    /** _more_ */
     private String salt;
-
-    /** _more_ */
     private String salt1;
-
-    /** _more_ */
     private String salt2;
-
-    /** _more_ */
     private String userAgree;
-
-
 
     /** store the number of bad login attempts for each user */
     private static Hashtable<String, Integer> badPasswordCount =
@@ -319,25 +204,11 @@ public class UserManager extends RepositoryManager {
     /** how many login tries before we blow up */
     private static int MAX_BAD_PASSWORD_COUNT = 50;
 
-
-
-    /**
-     * ctor
-     *
-     * @param repository the repository
-     */
     public UserManager(Repository repository) {
         super(repository);
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void debugLogin(String msg) {
         if (debug) {
             //System.err.println(getRepository().debugPrefix() + ":" + msg);
@@ -391,14 +262,6 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param result _more_
-     *
-     * @return The result
-     */
     private Result addHeader(Request request, Result result) {
         try {
             return addHeaderToAncillaryPage(request, result);
@@ -407,18 +270,6 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param title _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result addHeader(Request request, Appendable sb, String title)
 	throws Exception {
         Appendable html = new StringBuilder();
@@ -430,20 +281,6 @@ public class UserManager extends RepositoryManager {
         return addHeader(request, result);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param title _more_
-     * @param sb _more_
-     *
-     * @return The result
-     *
-     * @throws Exception _more_
-     */
     public Result makeResult(Request request, String title, Appendable sb)
 	throws Exception {
         StringBuilder headerSB = new StringBuilder();
@@ -454,16 +291,6 @@ public class UserManager extends RepositoryManager {
         return addHeader(request, new Result(title, headerSB));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void addUserHeader(Request request, Appendable sb)
 	throws Exception {
         User             user    = request.getUser();
@@ -572,21 +399,6 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param password _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getPasswordToUse(String password) throws Exception {
         password = password.trim();
         //If we have a salt then use a generated hmac as the password to hash
@@ -601,16 +413,7 @@ public class UserManager extends RepositoryManager {
 
     //From: http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/AuthJavaSampleHMACSignature.html
 
-    /**
-     * _more_
-     *
-     * @param data _more_
-     * @param key _more_
-     *
-     * @return _more_
-     *
-     * @throws java.security.SignatureException _more_
-     */
+
     public static String calculateRFC2104HMAC(String data, String key)
 	throws java.security.SignatureException {
         try {
@@ -652,26 +455,11 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-
-
-
-
-
     public List<FavoriteEntry> getFavorites(Request request)
 	throws Exception {
 	return getFavorites(request, request.getUser());
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param user The user
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public List<FavoriteEntry> getFavorites(Request request, User user)
 	throws Exception {
         if (user ==null ||user.getAnonymous()) {
@@ -717,15 +505,6 @@ public class UserManager extends RepositoryManager {
         return favorites;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param user The user
-     *
-     * @return _more_
-     */
     public User getCurrentUser(User user) {
         if (user == null) {
             return null;
@@ -737,15 +516,6 @@ public class UserManager extends RepositoryManager {
         return user;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     */
     public boolean isRequestOk(Request request) {
         User user = request.getUser();
         if (getRepository().getAdminOnly() && !user.getAdmin()) {
@@ -769,26 +539,11 @@ public class UserManager extends RepositoryManager {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return _more_
-     */
     public String makeLoginForm(Request request) {
         return makeLoginForm(request, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param extra _more_
-     *
-     * @return _more_
-     */
+
     public String makeLoginForm(Request request, String extra) {
 	return makeLoginForm(request, extra, true);
     }
@@ -856,78 +611,27 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public User getDefaultUser() throws Exception {
         return findUser(USER_DEFAULT);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public User getAdminUser() throws Exception {
         User user = new User("admin", true);
         return user;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public User getAnonymousUser() throws Exception {
         return findUser(USER_ANONYMOUS);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public User getLocalFileUser() throws Exception {
         return findUser(USER_LOCALFILE);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public User findUser(String id) throws Exception {
         return findUser(id, false);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param userDefaultIfNotFound _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public User findUser(String id, boolean userDefaultIfNotFound)
 	throws Exception {
         //        debugLogin("RAMADDA.findUser: " + id);
@@ -1531,18 +1235,10 @@ public class UserManager extends RepositoryManager {
 	return id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return The result
-     *
-     * @throws Exception on badness
-     */
     public Result adminUserNewDo(Request request) throws Exception {
         StringBuffer sb          = new StringBuffer();
+
+	request.ensureAdmin();
 	if(!getAuthManager().verify(request,sb)) {
 	    makeNewUserForm(request, sb);
 	    return getAdmin().makeResult(request, LABEL_NEW_USER, sb);
@@ -3188,7 +2884,11 @@ public class UserManager extends RepositoryManager {
             }
 
             if (ok) {
-                //make user ...
+		User user = new User(id,name );
+		user.setPassword(hashPassword(password1));
+		user.setEmail(email);
+		user.setInstitution(getInstitution(request,""));
+		makeOrUpdateUser(user, false);
 		sb.append(HU.center(messageNote("You are now registered. Please login")));
 		sb.append(makeLoginForm(request));
 		return addHeader(request, sb, "New User Registration");
