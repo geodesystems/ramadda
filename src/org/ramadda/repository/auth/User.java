@@ -168,9 +168,9 @@ public class User {
                 boolean admin, String language, String template,
                 boolean isGuest, Date accountCreationDate, String propertiesBlob) {
         this.id             = id;
-        this.name           = name;
-        this.email          = email;
-	this.institution    = institution;
+        setName(name);
+        setEmail(email);
+	setInstitution(institution);
         this.question       = question;
         this.answer         = answer;
         this.hashedPassword = hashedPassword;
@@ -331,10 +331,8 @@ public class User {
      * @param value The new value for Name
      */
     public void setName(String value) {
+	if(value==null) value="";
         name = value;
-        if (name == null) {
-            name = "";
-        }
     }
 
     /**
@@ -405,10 +403,8 @@ public class User {
      * @param value The new value for Email
      */
     public void setEmail(String value) {
+	if(value==null) value="";
         email = value;
-        if (email == null) {
-            email = "";
-        }
     }
 
     /**
@@ -426,6 +422,7 @@ public class User {
        @param value The new value for Institution
     **/
     public void setInstitution (String value) {
+	if(value==null) value="";
 	institution = value;
     }
 
