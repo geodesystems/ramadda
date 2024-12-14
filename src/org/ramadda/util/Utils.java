@@ -3006,6 +3006,26 @@ public class Utils extends IO {
 
 
     /**
+       compare the strings. Handle for null. If they are equal return dflt
+     */
+    public static int compare(String s1, String s2, int dflt) {
+	if(s1==null && s2==null) return dflt;
+	if(s1==null && s2!=null) return 1;
+	if(s1!=null && s2==null) return -1;	
+	if(s1.equals(s2)) return dflt;
+	return s1.compareTo(s2);
+
+    }
+    public static int compareIgnoreCase(String s1, String s2, int dflt) {
+	if(s1==null && s2==null) return dflt;
+	if(s1==null && s2!=null) return 1;
+	if(s1!=null && s2==null) return -1;	
+	if(s1.equals(s2)) return dflt;
+	return s1.compareToIgnoreCase(s2);
+
+    }    
+
+    /**
      * Class description
      *
      *
