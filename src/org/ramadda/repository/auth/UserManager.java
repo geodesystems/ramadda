@@ -3133,23 +3133,29 @@ public class UserManager extends RepositoryManager {
             boolean ok = true;
             if (ok && (id.length() == 0)) {
                 ok = false;
-                sb.append(messageWarning(msg("Bad user id.")));
+                sb.append(HU.center(messageWarning(msg("Bad user id."))));
             }
 
             if (ok) {
                 User user = findUser(id);
                 if (user != null) {
                     ok = false;
-                    sb.append(messageWarning(msg("Sorry, the user ID already exists")));
+                    sb.append(HU.center(messageWarning(msg("Sorry, the user ID already exists"))));
                 }
             }
 
-            String password = request.getString(ARG_USER_PASSWORD, "").trim();
-            if (ok && (password.length() < MIN_PASSWORD_LENGTH)) {
-                ok = false;
-                sb.append(messageWarning(msg("Bad password. Length must be at least "
-					     + MIN_PASSWORD_LENGTH + " characters")));
-
+            String password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
+            String password2 = request.getString(ARG_USER_PASSWORD2, "").trim();	    
+            if (ok) {
+		if(password1.length() < MIN_PASSWORD_LENGTH || password2.length() < MIN_PASSWORD_LENGTH) {
+		    ok = false;
+		    sb.append(HU.center(messageWarning(msg("Bad password. Length must be at least "
+							   + MIN_PASSWORD_LENGTH + " characters"))));
+		}
+		if(!password1.equals(password2)) {
+		    ok = false;
+		    sb.append(HU.center(messageWarning(msg("Passwords do not match"))));
+		}
             }
 
 
@@ -3158,7 +3164,7 @@ public class UserManager extends RepositoryManager {
                                   request.getString(ARG_REGISTER_PASSPHRASE,
 						    null))) {
                     ok = false;
-                    sb.append(messageWarning(msg("Incorrect pass phrase")));
+                    sb.append(HU.center(messageWarning(msg("Incorrect pass phrase"))));
                 }
             }
 
@@ -3166,22 +3172,19 @@ public class UserManager extends RepositoryManager {
             String email = request.getString(ARG_USER_EMAIL, "").trim();
             if (ok && (email.length() < 0)) {
                 ok = false;
-                sb.append(messageWarning(msg("Email required")));
+                sb.append(HU.center(messageWarning(msg("Email required"))));
 
             }
 
             if (ok && Utils.stringDefined(emailKey)) {
                 if ( !Misc.equals(email, emailKey)) {
                     ok = false;
-                    sb.append(messageWarning(msg("Your email does not match the required pattern")));
+                    sb.append(HU.center(messageWarning(msg("Your email does not match the required pattern"))));
                 }
             }
 
-
-	    System.err.println("OK:" + ok);
-
             if (ok) {
-                ok = getRepository().getUserManager().isHuman(request, sb);
+                ok = isHuman(request, sb);
             }
 
             if (ok) {
@@ -3209,8 +3212,10 @@ public class UserManager extends RepositoryManager {
 
         formInfo.addRequiredValidation("User ID", ARG_USER_ID);
         formInfo.addRequiredValidation("Email", ARG_USER_EMAIL);
-        formInfo.addMinSizeValidation("Password", ARG_USER_PASSWORD,
+        formInfo.addMinSizeValidation("Password", ARG_USER_PASSWORD1,
                                       MIN_PASSWORD_LENGTH);
+        formInfo.addMinSizeValidation("Password", ARG_USER_PASSWORD2,
+                                      MIN_PASSWORD_LENGTH);	
 
         sb.append(formEntry(request, msgLabel("User ID"),
                             HU.input(ARG_USER_ID, id,
@@ -3225,14 +3230,23 @@ public class UserManager extends RepositoryManager {
 			    HU.input(
 				     ARG_USER_EMAIL, request.getString(ARG_USER_EMAIL, ""),
 				     HU.id(ARG_USER_EMAIL) + HU.SIZE_20)));
+	addInstitutionWidget(request, sb,"");
+
         sb.append(
 		  formEntry(
-			    request, msgLabel("Your Password"),
+			    request, msgLabel("Enter Password"),
 			    HU.password(
-					ARG_USER_PASSWORD, "",
-					HU.id(ARG_USER_PASSWORD)) + HU.space(1)
+					ARG_USER_PASSWORD1, "",
+					HU.id(ARG_USER_PASSWORD1)) + HU.space(1)
 			    + "Minimum " + MIN_PASSWORD_LENGTH + " "
 			    + "characters"));
+
+        sb.append(
+		  formEntry(
+			    request, msgLabel("Enter Password Again"),
+			    HU.password(
+					ARG_USER_PASSWORD2, "",
+					HU.id(ARG_USER_PASSWORD2))));
 
         if (Utils.stringDefined(mainKey)) {
             sb.append(
@@ -4064,7 +4078,6 @@ public class UserManager extends RepositoryManager {
      */
     public boolean isHuman(Request request, Appendable response)
 	throws Exception {
-
 	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
 	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
 	if(stringDefined(siteKey) && stringDefined(secretKey)) {
@@ -4075,7 +4088,7 @@ public class UserManager extends RepositoryManager {
 	    System.err.println(json);
             JSONObject  obj   = new JSONObject(json);
 	    if(!obj.getBoolean("success")) {
-                response.append(HU.center(messageWarning("Sorry, you failed the check if human test")));
+                response.append(HU.center(messageWarning("Sorry, you were not verified to be a human")));
 		return false;
 	    } else {
 		return true;
