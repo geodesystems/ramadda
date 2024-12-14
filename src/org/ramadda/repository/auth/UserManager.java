@@ -804,7 +804,7 @@ public class UserManager extends RepositoryManager {
 
     public void  makeLoginForm(StringBuilder sb, Request request, String extra,boolean includeForget,String user) {
         if ( !canDoLogin(request)) {
-            sb.append(getPageHandler().showDialogWarning(msg("Login is not allowed")));
+            sb.append(messageWarning("Login is not allowed"));
             return;
         }
 
@@ -3186,7 +3186,7 @@ public class UserManager extends RepositoryManager {
 
 
             if (ok) {
-		sb.append(getPageHandler().showDialogNote("You are now registered. Please login"));
+		sb.append(HU.center(messageNote("You are now registered. Please login")));
 		sb.append(makeLoginForm(request));
 		return addHeader(request, sb, "New User Registration");
                 //make user ...
@@ -4074,9 +4074,8 @@ public class UserManager extends RepositoryManager {
 	    String json = IO.readUrl(new URL(url));
 	    System.err.println(json);
             JSONObject  obj   = new JSONObject(json);
-
 	    if(!obj.getBoolean("success")) {
-                response.append(getPageHandler().showDialogWarning("Sorry, you failed the check if human test"));
+                response.append(HU.center(messageWarning("Sorry, you failed the check if human test")));
 		return false;
 	    } else {
 		return true;
