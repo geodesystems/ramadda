@@ -773,13 +773,19 @@ public class UserManager extends RepositoryManager {
 	throws Exception {
         if ( !userExistsInDatabase(user)) {
 	    //Note: these have to be lined up with the database/Tables.USERS class defs
+	    //COL_ID,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
             getDatabaseManager().executeInsert(Tables.USERS.INSERT,
 					       new Object[] {
-						   user.getId(), user.getName(), user.getEmail(),
+						   user.getId(),
+						   user.getName(),
+						   user.getEmail(),
 						   user.getInstitution(),
-						   user.getQuestion(), user.getAnswer(),
-						   user.getHashedPassword(), user.getDescription(),
-						   Boolean.valueOf(user.getAdmin()), user.getLanguage(),
+						   user.getQuestion(),
+						   user.getAnswer(),
+						   user.getHashedPassword(),
+						   user.getDescription(),
+						   Boolean.valueOf(user.getAdmin()),
+						   user.getLanguage(),
 						   user.getTemplate(),
 						   Boolean.valueOf(user.getIsGuest()),
 						   user.getAccountCreationDate(),
@@ -2815,8 +2821,8 @@ public class UserManager extends RepositoryManager {
 
 
         StringBuffer sb   = new StringBuffer();
-        String       name = request.getString(ARG_USER_NAME, "").trim();
-        String       id   = request.getString(ARG_USER_ID, "").trim();
+        String       name = request.getReallyStrictSanitizedString(ARG_USER_NAME, "").trim();
+        String       id   = request.getReallyStrictSanitizedString(ARG_USER_ID, "").trim();
         if (id.equals(USER_DEFAULT) || id.equals(USER_ANONYMOUS)) {
             id = "";
         }
@@ -2865,7 +2871,7 @@ public class UserManager extends RepositoryManager {
             }
 
 
-            String email = request.getString(ARG_USER_EMAIL, "").trim();
+            String email = request.getReallyStrictSanitizedString(ARG_USER_EMAIL, "").trim();
             if (ok && (email.length() < 0)) {
                 ok = false;
                 sb.append(HU.center(messageWarning(msg("Email required"))));
@@ -2888,6 +2894,7 @@ public class UserManager extends RepositoryManager {
 		user.setPassword(hashPassword(password1));
 		user.setEmail(email);
 		user.setInstitution(getInstitution(request,""));
+		user.setAccountCreationDate(new Date());
 		makeOrUpdateUser(user, false);
 		sb.append(HU.center(messageNote("You are now registered. Please login")));
 		sb.append(makeLoginForm(request));
@@ -3316,7 +3323,7 @@ public class UserManager extends RepositoryManager {
 	sb.append(formEntry(request, msgLabel("Institution"),
 			    sel +HU.space(2) +"Or: " +
 			    HU.input(ARG_USER_INSTITUTION+"_extra",
-				     "", HU.SIZE_30)));
+				     request.getString(ARG_USER_INSTITUTION+"_extra",""), HU.SIZE_30)));
     }
 
 
@@ -3785,7 +3792,6 @@ public class UserManager extends RepositoryManager {
 	    if(recaptchaResponse==null) return false;
 	    String url = HU.url("https://www.google.com/recaptcha/api/siteverify","secret",secretKey,"response",recaptchaResponse);
 	    String json = IO.readUrl(new URL(url));
-	    System.err.println(json);
             JSONObject  obj   = new JSONObject(json);
 	    if(!obj.getBoolean("success")) {
                 response.append(HU.center(messageWarning("Sorry, you were not verified to be a human")));

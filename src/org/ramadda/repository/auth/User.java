@@ -182,7 +182,7 @@ public class User {
         this.language = language;
         this.template = template;
         this.isGuest  = isGuest;
-	this.accountCreationDate = accountCreationDate;
+	setAccountCreationDate(accountCreationDate);
         if ((propertiesBlob != null) && (propertiesBlob.length() > 0)) {
             try {
                 properties =
@@ -801,6 +801,9 @@ public class User {
        @return The AccountCreationDate
     **/
     public Date getAccountCreationDate () {
+	//Account for legacy users that don't have an account creation date set
+	if(accountCreationDate==null)
+	    return  new Date("2020-01-01");
 	return accountCreationDate;
     }
 
