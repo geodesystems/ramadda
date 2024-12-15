@@ -149,6 +149,7 @@ CREATE TABLE associations (id varchar(200),
 -----------------------------------------------------------------------
 CREATE TABLE  users (id varchar(200),
                      name  varchar(200),
+		     status  varchar(200),		     
                      email varchar(200),
 		     institution  varchar(400),
                      question  varchar(200),
@@ -162,6 +163,7 @@ CREATE TABLE  users (id varchar(200),
 		     account_creation_date ramadda.datetime,	
                      properties ramadda.clob);
 
+alter table users add column status  varchar(200);
 alter table users add column institution varchar(400);
 alter table users add column description varchar(5000);
 alter table users add column account_creation_date ramadda.datetime;
