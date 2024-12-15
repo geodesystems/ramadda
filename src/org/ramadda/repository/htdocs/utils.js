@@ -3921,11 +3921,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
 
-    initToggleAll:function(cbx,selector) {
+    initToggleAll:function(cbx,selector,notHidden) {
 	jqid(cbx).change(function(){
 	    let on = $(this).is(':checked');
-	    $(selector).prop('checked',on);
-	    $(selector).trigger('change');
+	    $(selector).each(function() {
+		if(notHidden && $(this).is(':hidden')) return;
+		$(this).prop('checked',on);
+		$(this).trigger('change');
+	    });
 	});
     },
     getEmojis: function(cb) {
