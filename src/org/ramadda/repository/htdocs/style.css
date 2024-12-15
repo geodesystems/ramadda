@@ -4351,6 +4351,10 @@ label {
     background:var(--color-mellow-yellow);
 }
 
+.ramadda-user-guest {
+    background:mintcream;
+}
+
 .ramadda-user-row  {
     border-bottom: 1px #efefef solid;
 }

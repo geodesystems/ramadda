@@ -1887,6 +1887,11 @@ public class UserManager extends RepositoryManager {
 						       u2.getEmail(),
 						       ids);
 		    }
+		    if(sortBy.equals("roles")) {
+			return Utils.compareIgnoreCase(u1.getRoleText(),
+						       u2.getRoleText(),
+						       ids);
+		    }		    
 
 		    
 		    if(sortBy.equals("name")) {
@@ -1946,7 +1951,8 @@ public class UserManager extends RepositoryManager {
 	String adminHeader = getUserSortLink(request, "admin",ascending,"Admin");		
 	String guestHeader = getUserSortLink(request, "guest",ascending,"Guest");		
 	String instHeader = getUserSortLink(request, "institution",ascending,"Institution");
-	String emailHeader = getUserSortLink(request, "email",ascending,"Email");		
+	String emailHeader = getUserSortLink(request, "email",ascending,"Email");
+	String rolesHeader = getUserSortLink(request, "roles",ascending,"Roles");			
 	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
 	String allCbx = HU.checkbox("",	 "true", false, HU.attrs("id","userall","title","Toggle all"));
         usersHtml.append(HU.row(HU.cols(allCbx,
@@ -1955,6 +1961,7 @@ public class UserManager extends RepositoryManager {
 					HU.bold(nameHeader) + HU.space(2),
 					HU.bold(adminHeader) + HU.space(2),
 					HU.bold(guestHeader) + HU.space(2),
+					HU.bold(rolesHeader) + HU.space(2),
 					HU.bold(emailHeader) + HU.space(2),
 					HU.bold(instHeader) + HU.space(2),					
 					HU.bold(dateHeader) + HU.space(2),					
@@ -1992,27 +1999,35 @@ public class UserManager extends RepositoryManager {
 	    String corpus = user.getName() +" " + user.getId() +" " + user.getInstitution();
 	    if(user.getIsGuest()) corpus +=" guest ";
 	    if(user.getAdmin()) corpus +=" admin ";
+	    corpus+=" " +user.getRoleText();
 	    String dttm = "NA";
 	    if(user.getAccountCreationDate()!=null) {
 		dttm = sdf.format(user.getAccountCreationDate());
 	    }
+	    StringBuilder rolesTD  = new StringBuilder();
+	    List<Role> roles = user.getRoles();
+	    if(roles!=null) {
+		for(Role role: roles) {
+                    rolesTD.append(HU.div(role.getRole(),""));
+		}
+	    }
+
+
             String row = HU.row(HU.cols(userCbx, userEditLink,
 					userProfileLink, user.getName(),
 					"" + user.getAdmin(), 
 					"" + user.getIsGuest(),
+					rolesTD.toString(),
 					user.getEmail(),
 					user.getInstitution(),
 
 					dttm,
 					userLogLink),
-				HU.attrs("data-corpus",corpus) +
-				HU.cssClass(
-					    "ramadda-user-row " + (user.getAdmin()
-								   ? "ramadda-user-admin"
-								   : "")));
+				HU.attrs("data-corpus",corpus,"valign","top","class",
+					 "ramadda-user-row " + (user.getAdmin()
+								? "ramadda-user-admin"
+								: user.getIsGuest()?"ramadda-user-guest":"")));
             usersHtml.append(row);
-
-            List<Role> roles = user.getRoles();
             if (roles != null) {
                 for (Role role : roles) {
                     StringBuffer rolesSB = rolesMap.get(role.getRole());

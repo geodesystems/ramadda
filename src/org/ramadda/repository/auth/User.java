@@ -560,6 +560,8 @@ public class User {
         roles = value;
     }
 
+    private String roleText;
+
     /**
      *  Get the Roles property.
      *
@@ -568,6 +570,20 @@ public class User {
     public List<Role> getRoles() {
         return roles;
     }
+
+    public String getRoleText() {
+	if(roleText==null) {
+	    if(roles!=null) {
+		for(Role role:roles) {
+		    roleText+= role.getRole();
+		    roleText+=" ";
+		}
+	    }
+	    if(roles==null) roleText ="";
+	}
+	return roleText;
+    }
+
 
     /**
      * _more_
