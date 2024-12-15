@@ -27,6 +27,8 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.json.*;
 import java.net.URL;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -99,6 +101,16 @@ public class UserManager extends RepositoryManager {
     private static List<String> QUESTIONS;
     private static List<Integer> ANSWERS;
     public static final String ARG_REGISTER_PASSPHRASE = "passphrase";
+    public static final String ARG_USER_APPLY = "user_apply";
+    public static final String ARG_USER_ACTION = "user_action";
+    public static final String ARG_SEND = "send";
+
+
+    public static final String ACTION_DELETE = "delete";
+    public static final String ACTION_CSV = "csv";
+    public static final String ACTION_EMAIL = "email";
+
+
     public static final String ARG_USER_ADMIN = "user_admin";
     public static final String ARG_USER_ISGUEST = "user_isguest";
     public static final String ARG_USER_ANSWER = "user_answer";
@@ -1489,10 +1501,8 @@ public class UserManager extends RepositoryManager {
 
         if (request.defined(ARG_USER_CANCEL)) {
             sb.append(HU.sectionClose());
-            return new Result(
-			      request.makeUrl(getRepositoryBase().URL_USER_LIST));
+            return new Result(request.makeUrl(getRepositoryBase().URL_USER_LIST));
         }
-
 
         if (request.defined(ARG_USER_DELETE_CONFIRM) &&
 	    getAuthManager().verify(request,sb)) {
@@ -1505,27 +1515,115 @@ public class UserManager extends RepositoryManager {
 	    sb.append(HU.sectionClose());
 	    return getAdmin().makeResult(request, "Delete Users", sb);
 	}
-
-	sb.append(request.formPost(URL_USER_SELECT_DO));
-	sb.append(HU.vspace());
-	sb.append(messageNote(msg("Are you sure you want to delete these users?")));
-	sb.append(HU.submit("Yes, really delete these users",
-			    ARG_USER_DELETE_CONFIRM));
-	sb.append(HU.space(2));
-	sb.append(HU.submit(LABEL_CANCEL, ARG_USER_CANCEL));
-	getAuthManager().addVerification(request,sb);
-	sb.append(HU.vspace());
-	for (User user : users) {
-	    String userCbx = HU.checkbox("user_" + user.getId(),
-					 "true", true, "");
-	    sb.append(userCbx);
-	    sb.append(HU.space(1));
-	    sb.append(user.getId());
-	    sb.append(HU.space(1));
-	    sb.append(user.getName());
-	    sb.append(HU.br());
+	if(users.size()==0) {
+	    sb.append(messageWarning("No users selected"));
+	    return getAdmin().makeResult(request, "Apply to Users", sb);
 	}
-	sb.append(HU.formClose());
+
+	String action = request.getString(ARG_USER_ACTION,"");
+	if(action.equals(ACTION_DELETE)) {
+	    sb.append(request.formPost(URL_USER_SELECT_DO));
+	    sb.append(HU.vspace());
+	    sb.append(messageNote(msg("Are you sure you want to delete these users?")));
+	    sb.append(HU.submit("Yes, really delete these users",
+				ARG_USER_DELETE_CONFIRM));
+	    sb.append(HU.space(2));
+	    sb.append(HU.submit(LABEL_CANCEL, ARG_USER_CANCEL));
+	    getAuthManager().addVerification(request,sb);
+	    sb.append(HU.vspace());
+	    for (User user : users) {
+		String userCbx = HU.checkbox("user_" + user.getId(),
+					     "true", true, "");
+		sb.append(userCbx);
+		sb.append(HU.space(1));
+		sb.append(user.getId());
+		sb.append(HU.space(1));
+		sb.append(user.getName());
+		sb.append(HU.br());
+	    }
+	    sb.append(HU.formClose());
+	} else if(action.equals(ACTION_EMAIL)) {
+	    boolean sent = false;
+	    List<Address> to = new ArrayList<Address>();
+	    for(User user: users) {
+		String email = user.getEmail();
+		if(!stringDefined(email)) continue;
+		to.add(new InternetAddress(email, user.getName()));
+	    }
+
+	    if(request.exists(ARG_SEND)) {
+		String from = request.getString("from","");
+		String subject = request.getString("subject","");
+		String contents = request.getString("contents","");		
+		sent = true;
+		if(!stringDefined(from)) {
+		    sent=false;
+		    sb.append(messageWarning("No from email provided"));
+		}
+		if(!stringDefined(subject)) {
+		    sent=false;
+		    sb.append(messageWarning("No subject provided"));
+		}		
+		if(!stringDefined(contents)) {
+		    sent=false;
+		    sb.append(messageWarning("No message provided"));
+		}
+		if(to.size()==0) {
+		    sb.append(messageWarning("No emails available"));
+		    sent = false;
+		}
+		if(sent) {
+		    getMailManager().sendEmail(to,new  InternetAddress(from),
+					       subject,
+					       contents, true, false,null);
+		    sb.append(messageNote("Email sent"));
+		}
+	    }
+
+	    if(!sent) {
+	     	if(to.size()==0) {
+		    sb.append(messageWarning("No emails available"));
+		} else {
+		    sb.append(request.formPost(URL_USER_SELECT_DO));
+		    sb.append(HU.hidden(ARG_USER_ACTION,ACTION_EMAIL));
+		    sb.append(HU.formTable());
+		    sb.append(HU.formEntry("",HU.submit("Send Mail", ARG_SEND)+ HU.space(2) +
+					   HU.submit("Cancel","cancel")));
+		    sb.append(HU.formEntry("From:",HU.input("from",request.getUser().getEmail(),HU.SIZE_50)));
+		    sb.append(HU.formEntry("Subject:",HU.input("subject","",HU.SIZE_50)));
+		    sb.append(HU.formEntryTop("Message:",HU.textArea("contents","",8,80)));
+		    StringBuilder tmp  = new StringBuilder();
+		    for(User user: users) {
+			tmp.append(HU.hidden("user_"+ user.getId(),true));
+			tmp.append(HU.div(user.getId() +" - " + user.getEmail(),""));
+		    }
+		    sb.append(HU.formEntryTop("To:", tmp.toString()));
+		    sb.append(HU.formTableClose());
+		    sb.append(HU.formClose());
+		}
+	    }
+	} else if(action.equals(ACTION_CSV)) {
+	    StringBuilder csv = new StringBuilder();
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    csv.append("id,name,email,instituion,create date\n");
+	    for(User user: users) {
+		csv.append(user.getId());
+		csv.append(",");
+		csv.append(user.getName());
+		csv.append(",");		
+		csv.append(user.getEmail());
+		csv.append(",");
+		csv.append(user.getInstitution());
+		csv.append(",");		
+		csv.append(sdf.format(user.getAccountCreationDate()));
+		csv.append("\n");		
+	    }
+	    request.setReturnFilename("users.csv",true);
+	    return new Result("", csv,"text/csv");
+	} else {
+	    sb.append(messageWarning("No action selected"));
+	    
+	}
 	sb.append(HU.sectionClose());
 	return getAdmin().makeResult(request, "Delete Users", sb);
     }
@@ -1824,7 +1922,17 @@ public class UserManager extends RepositoryManager {
 			  "false",args));
 
 
-        usersHtml.append(HU.submit("Delete Selected Users", ARG_USER_DELETE));
+	List actions =new ArrayList();
+	actions.add(new HtmlUtils.Selector("Select Action",""));
+	actions.add(new HtmlUtils.Selector("Delete",ACTION_DELETE));
+	actions.add(new HtmlUtils.Selector("Download CSV",ACTION_CSV));
+	if(getRepository().getMailManager().isEmailEnabled()) {
+	    actions.add(new HtmlUtils.Selector("Send Mail",ACTION_EMAIL));
+	}
+
+        usersHtml.append(HU.submit("Apply to Selected Users:", ARG_USER_APPLY));
+	usersHtml.append(" ");
+	usersHtml.append(HU.select(ARG_USER_ACTION,actions,""));
         usersHtml.append(
 			 HU.open(
 				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
@@ -1840,7 +1948,8 @@ public class UserManager extends RepositoryManager {
 	String instHeader = getUserSortLink(request, "institution",ascending,"Institution");
 	String emailHeader = getUserSortLink(request, "email",ascending,"Email");		
 	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
-        usersHtml.append(HU.row(HU.cols("",
+	String allCbx = HU.checkbox("",	 "true", false, HU.attrs("id","userall","title","Toggle all"));
+        usersHtml.append(HU.row(HU.cols(allCbx,
 					HU.bold(msg("Edit")) + HU.space(2),
 					HU.bold(idHeader) + HU.space(2),
 					HU.bold(nameHeader) + HU.space(2),
@@ -1875,7 +1984,7 @@ public class UserManager extends RepositoryManager {
 								       "View user log"));
 
             String userCbx = HU.checkbox("user_" + user.getId(),
-					 "true", false, "");
+					 "true", false, HU.attrs("class","ramadda-user-select"));
 
 
 
@@ -1919,9 +2028,8 @@ public class UserManager extends RepositoryManager {
             }
         }
         usersHtml.append("</table>");
+	HU.script(usersHtml,"HU.initToggleAll('userall','.ramadda-user-select',true);\n");
 
-        usersHtml.append(HU.vspace());
-        usersHtml.append(HU.submit("Delete Selected Users", ARG_USER_DELETE));
         usersHtml.append(HU.formClose());
 
         List<String> rolesContent = new ArrayList<String>();
