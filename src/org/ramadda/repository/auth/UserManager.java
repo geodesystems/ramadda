@@ -1193,6 +1193,7 @@ public class UserManager extends RepositoryManager {
         }
 
         if (includeAdmin || user.canChangeNameAndEmail()) {
+            sb.append(HU.formHelp("User Information",true));
             sb.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL,
 					 request.getReallyStrictSanitizedString(ARG_USER_EMAIL,user.getEmail()), size)));
@@ -1702,6 +1703,7 @@ public class UserManager extends RepositoryManager {
 	HU.formEntry(formSB,"",    HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
 						      guest,"Is Guest User"));
 
+	formSB.append(HU.formHelp("User Information",true));
         formSB.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL, email, size)));
 	addInstitutionWidget(request, formSB,institution);
@@ -1709,19 +1711,18 @@ public class UserManager extends RepositoryManager {
                                 HU.textArea(ARG_USER_DESCRIPTION,
 					    desc, 5, cols)));
 	
-        formSB.append(formEntry(request, msgLabel("Password"), HU.password(ARG_USER_PASSWORD1)));
-        formSB.append(formEntry(request, msgLabel("Password Again"), HU.password(ARG_USER_PASSWORD2)));
         formSB.append(HU.formEntryTop(msgLabel("Roles"),
 				      HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES, ""), 3, 25)));
 
-        String groupMsg =
-            "Create a folder using the user's name under this folder";
-        formSB.append(
+	formSB.append(HU.formHelp("Password",true));
+        formSB.append(formEntry(request, msgLabel("Enter Password"), HU.password(ARG_USER_PASSWORD1)));
+        formSB.append(formEntry(request, msgLabel("Password Again"), HU.password(ARG_USER_PASSWORD2)));
+
+	formSB.append(HU.formHelp("Create a folder using the user's name under this folder",true));        formSB.append(
 		      HU.formEntry(
 				   msgLabel("Home Folder"),
-				   groupMsg + "<br>"
-				   + OutputHandler.makeEntrySelect(
-								   request, ARG_USER_HOME, false, "", null)));
+				   OutputHandler.makeEntrySelect(
+								 request, ARG_USER_HOME, false, "", null)));
 
         StringBuffer msgSB = new StringBuffer();
         String       msg   =request.getReallyStrictSanitizedString(ARG_USER_MESSAGE,
