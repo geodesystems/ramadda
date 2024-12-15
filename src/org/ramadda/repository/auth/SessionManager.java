@@ -467,6 +467,16 @@ public class SessionManager extends RepositoryManager {
 
 
     
+    public void removeUserSession(Request request, User user) throws Exception {
+        List<UserSession> sessions = getSessions();
+        for (UserSession session : sessions) {
+	    if(session.getUser().equals(user)) {
+		removeSession(request, session.getId());
+	    }
+	}
+    }
+
+
     public void removeSession(Request request, String sessionId)
             throws Exception {
         debugSession(request, "removeSession:" + sessionId);
@@ -754,11 +764,12 @@ public class SessionManager extends RepositoryManager {
             String url = request.makeUrl(getRepositoryBase().URL_USER_LIST,
                                          ARG_REMOVESESSIONID,
                                          session.getId());
-            sessionHtml.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,
-                    HtmlUtils.img(getIconUrl(ICON_DELETE))) + " "
-                        + session.getUser().getLabel(), formatDate(request,
-                            session.getCreateDate()), formatDate(request,
-                                session.getLastActivity()), session.getId())));
+            sessionHtml.append(HU.row(HU.cols(
+					      HU.href(url,HU.img(getIconUrl(ICON_DELETE)),HU.attrs("title","Delete Session"))
+					      + " "
+					      + session.getUser().getLabel(), formatDate(request,
+											 session.getCreateDate()), formatDate(request,
+															      session.getLastActivity()), session.getId())));
         }
         sessionHtml.append(HtmlUtils.formTableClose());
 
