@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -29,27 +29,15 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-/**
- *
- * @author RAMADDA Development Team
- */
+
 @SuppressWarnings("unchecked")
 public class RepositoryManager implements RepositorySource, Constants, RequestHandler {
-
     public static final String HELP_ROOT =    "https://ramadda.org/repository";
-
     protected Repository repository;
-
-
     public static final HtmlUtils HU = null;
-
     public static final JsonUtil JU = null;    
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+
     public RepositoryManager(Repository repository) {
         this.repository = repository;
         if (this.repository != null) {
@@ -58,81 +46,40 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void shutdown() throws Exception {}
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void applyAdminSettings(Request request) throws Exception {}
 
 
-    /**
-     *
-     * @param args _more_
-     * @param arg _more_
-     * @param dflt _more_
-      * @return _more_
-     */
+    
     public static boolean getArg(Hashtable args, String arg, boolean dflt) {
         return Utils.getProperty(args, arg, dflt);
     }
 
-    /**
-     *
-     * @param args _more_
-     * @param arg _more_
-     * @param dflt _more_
-      * @return _more_
-     */
+    
     public static String getArg(Hashtable args, String arg, String dflt) {
         return Utils.getProperty(args, arg, dflt);
     }
 
-    /**
-     *
-     * @param args _more_
-      * @return _more_
-     */
+    
     public static Hashtable makeArgs(Object... args) {
         return Utils.makeMap(args);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Repository getRepository() {
         return repository;
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+    
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
@@ -155,23 +102,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     
 
 
-    /**
-     *
-     * @param snippet _more_
-     *
-     * @return _more_
-     */
+    
     public String makeSnippet(String snippet) {
         return makeSnippet(snippet, false);
     }
 
-    /**
-     *
-     * @param snippet _more_
-     * @param stripTags _more_
-     *
-     * @return _more_
-     */
+    
     public String makeSnippet(String snippet, boolean stripTags) {
         if (stripTags) {
             snippet = Utils.stripTags(snippet);
@@ -180,11 +116,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return "<snippet>" + snippet + "</snippet>";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RepositoryBase getRepositoryBase() {
         return repository;
     }
@@ -200,15 +132,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param label _more_
-     * @param contents _more_
-     *
-     * @return _more_
-     */
+    
     public String formEntry(Request request, String label, String contents) {
         if (request.isMobile()) {
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
@@ -220,15 +144,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    /**
-     *
-     * @param sb _more_
-     * @param request _more_
-     * @param label _more_
-     * @param contents _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void formEntry(Appendable sb, Request request, String label,
                           String contents)
             throws Exception {
@@ -245,13 +161,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     *
-     * @param request _more_
-     * @param label _more_
-     *
-     * @return _more_
-     */
+    
     public String formEntry(Request request, String label) {
         return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>"
                + label + "</b></td></tr>";
@@ -259,15 +169,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param label _more_
-     * @param contents _more_
-     *
-     * @return _more_
-     */
+    
     public static String formEntryTop(Request request, String label,
                                       String contents) {
         if (request.isMobile()) {
@@ -282,23 +184,13 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    /**
-     *
-     * @param name _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
+    
     public NamedValue arg(String name, Object value) {
         return new NamedValue(name, value);
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getActive() {
         if ((repository == null) || !repository.getActive()) {
             return false;
@@ -308,26 +200,14 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param result _more_
-     *
-     * @return _more_
-     */
+    
     public Result addHeaderToAncillaryPage(Request request, Result result) {
         return result;
         //        return getEntryManager().addEntryHeader(request, null, result);
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param message _more_
-     */
+    
     public void fatalError(Request request, String message) {
         throw new IllegalArgumentException(message);
     }
@@ -337,14 +217,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	return Utils.stringDefined(s);
     }
 
-    /**
-     * _more_
-     *
-     * @param bytes _more_
-     * @param decorate _more_
-     *
-     * @return _more_
-     */
+    
     public static String formatFileLength(double bytes, boolean decorate) {
         String s = formatFileLength(bytes);
         if (decorate && (s.length() > 0)) {
@@ -354,13 +227,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param bytes _more_
-     *
-     * @return _more_
-     */
+    
     public static String formatFileLength(double bytes) {
         if (bytes < 0) {
             return "";
@@ -379,24 +246,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return bytes + " MB";
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String getFileUrl(String url) {
         return getRepository().getFileUrl(url);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String getHtdocsUrl(String url) {
         return getRepository().getHtdocsUrl(url);
     }
@@ -414,25 +269,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
+    
     public String getIconUrl(String url) {
         return getRepository().getIconUrl(url);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
+    
     public String getIconImage(String url, String... args) {
         if (HU.isFontAwesome(url)) {
             return HU.faIcon(url, args);
@@ -442,15 +284,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param label _more_
-     * @param value _more_
-     */
+    
     public void addCriteria(Request request, Appendable sb, String label,
                             Object value) {
         try {
@@ -473,13 +307,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msg(String msg) {
         return PageHandler.msg(msg);
     }
@@ -488,100 +316,49 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return PageHandler.noMsg(msg);
     }    
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String boldMsg(String msg) {
         return HtmlUtils.b(msg(msg));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgLabel(String msg) {
         return Repository.msgLabel(msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
+    
     public static String msgHeader(String h) {
         return Repository.msgHeader(h);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public static String tableSubHeader(String s) {
         return HtmlUtils.row(HtmlUtils.colspan(subHeader(s), 2));
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public static String subHeader(String s) {
         return HtmlUtils.div(s, HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public static String formHeader(String s) {
         return HtmlUtils.div(s, HtmlUtils.cssClass("formgroupheader"));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param label _more_
-     *
-     * @return _more_
-     */
+    
     public String subHeaderLink(String url, String label) {
         return HtmlUtils.href(url, label,
                               HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
     }
 
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param label _more_
-     * @param toggle _more_
-     *
-     * @return _more_
-     */
+    
     public String subHeaderLink(String url, String label, boolean toggle) {
         //        if(true) return "x";
         String img = HtmlUtils.img(getIconUrl(toggle
@@ -598,27 +375,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param d _more_
-     *
-     * @return _more_
-     */
+    
     public String formatDate(Request request, Date d) {
         return getDateHandler().formatDate(request, d);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param d _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String formatDate(Request request, Date d, Entry entry) {
         return getDateHandler().formatDate(request, d,
                                            getEntryUtil().getTimezone(request,entry));
@@ -626,56 +388,31 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public DatabaseManager getDatabaseManager() {
         return repository.getDatabaseManager();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public RegistryManager getRegistryManager() {
         return repository.getRegistryManager();
     }
 
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
+    
     public String getPropertyFromTree(String name, String dflt) {
         return repository.getPropertyFromTree(name, dflt);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
+    
     public String header(String h) {
         return RepositoryUtil.header(h);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public Admin getAdmin() {
         return repository.getAdmin();
     }
@@ -684,20 +421,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	return getRepository().getAdminRequest();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MailManager getMailManager() {
         return repository.getMailManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public UserManager getUserManager() {
         return repository.getUserManager();
     }
@@ -706,83 +435,48 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return repository.getAuthManager();
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public SessionManager getSessionManager() {
         return repository.getSessionManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public LogManager getLogManager() {
         return repository.getLogManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public ActionManager getActionManager() {
         return repository.getActionManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public AccessManager getAccessManager() {
         return repository.getAccessManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public EntryManager getEntryManager() {
         return repository.getEntryManager();
     }
 
-    /**
-     *
-     * @return _more_
-     */
+    
     public EntryUtil getEntryUtil() {
         return repository.getEntryUtil();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public PageHandler getPageHandler() {
         return repository.getPageHandler();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public DateHandler getDateHandler() {
         return repository.getDateHandler();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public SearchManager getSearchManager() {
         return repository.getSearchManager();
     }
@@ -793,79 +487,46 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 					
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public AssociationManager getAssociationManager() {
         return repository.getAssociationManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public MetadataManager getMetadataManager() {
         return repository.getMetadataManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public WikiManager getWikiManager() {
         return repository.getWikiManager();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public HarvesterManager getHarvesterManager() {
         return repository.getHarvesterManager();
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public StorageManager getStorageManager() {
         return repository.getStorageManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public PluginManager getPluginManager() {
         return repository.getPluginManager();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
 
     public MapManager getMapManager() {
         return repository.getMapManager();
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param message _more_
-     */
+    
     protected void log(Request request, String message) {
         getRepository().getLogManager().log(request, message);
 
@@ -873,55 +534,32 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logException(String message, Throwable exc) {
         getRepository().getLogManager().logError(message, exc);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logError(String message, Throwable exc) {
         getRepository().getLogManager().logError(message, exc);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logInfo(String message) {
         System.err.println(message);
         getRepository().getLogManager().logInfo(message);
     }
 
-    /**
-     * _more_
-     */
+    
     public void adminSettingsChanged() {}
 
 
-    /** _more_ */
+    
     private static int dialogCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param message _more_
-     *
-     * @return _more_
-     */
+    
     public String makeFormSubmitDialog(Appendable sb, String message) {
         String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onsubmit=\"return Utils.submitEntryForm('#" + id
@@ -937,14 +575,7 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     }
 
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param message _more_
-     *
-     * @return _more_
-     */
+    
     public String makeButtonSubmitDialog(Appendable sb, String message) {
         String id = HtmlUtils.getUniqueId("dialog-message");
         String onSubmit = " onclick=\"return Utils.submitEntryForm('#" + id
@@ -959,24 +590,12 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
+    
     public String getEntryDisplayName(Entry entry) {
         return getEntryDisplayName(entry, null);
     }
 
-    /**
-     *
-     * @param entry _more_
-     * @param template _more_
-     *
-     * @return _more_
-     */
+    
     public String getEntryDisplayName(Entry entry, String template) {
         String name = entry.getTypeHandler().getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
@@ -996,25 +615,11 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
         return name;
     }
-
-    /**
-     * _more_
-     */
+    
     public void clearCache() {}
-
-    /**
-     * _more_
-     */
+    
     public void initAttributes() {}
-
-    /**
-     * A method to find out if a radio button should be selected based on the request arguments
-     * @param request     the request
-     * @param requestArg  the request argument
-     * @param buttonValue the value to check against
-     * @param dflt        default if requestArg is not defined in request
-     * @return  true if requestArg is present and equals buttonValue, else dflt
-     */
+    
     public static boolean getShouldButtonBeSelected(Request request,
             String requestArg, String buttonValue, boolean dflt) {
         if (request.defined(requestArg)) {
@@ -1023,25 +628,14 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
         return dflt;
     }
-
-
-
-    /** _more_ */
+    
     private HashSet<String> textSuffixes;
 
     public boolean isTextFile(Entry entry, String file) {
 	if(entry.getTypeHandler().isType("type_file_text")) return true;
 	return isTextFile(file);
     }
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
+    
     public boolean isTextFile(String file) {
         String suffix = IO.getFileExtension(file);
         suffix = suffix.replace(".", "");
@@ -1053,67 +647,26 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
                     ",", true, true));
             textSuffixes = tmp;
         }
-
         return textSuffixes.contains(suffix.toLowerCase());
     }
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public String messageNote(String msg) {
         return getPageHandler().showDialogNote(msg);
     }
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+   
     public String messageBlank(String msg) {
         return getPageHandler().showDialogBlank(msg);
     }
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     * @param buttons _more_
-     *
-     * @return _more_
-     */
+    
     public String messageQuestion(String msg, String buttons) {
         return getPageHandler().showDialogQuestion(msg, buttons);
     }
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
+    
     public String messageWarning(String msg) {
         return getPageHandler().showDialogWarning(msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
     public String messageError(String msg) {
         return getPageHandler().showDialogError(msg);
     }
-
-
-
-
 }
