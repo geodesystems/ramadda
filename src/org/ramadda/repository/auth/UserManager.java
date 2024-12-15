@@ -1104,8 +1104,8 @@ public class UserManager extends RepositoryManager {
             makeUserForm(request, user, sb, true);
 	    //            if (user.canChangePassword()) {
 	    sb.append(HU.vspace());
-	    sb.append(RepositoryUtil.header(msgLabel("Password")));
-	    makePasswordForm(request, user, sb);
+	    //	    sb.append(RepositoryUtil.header(msgLabel("Password")));
+	    makePasswordForm(request, user, sb,"Password");
 	    //            }
             sb.append(HU.vspace());
             //            sb.append(buttons);
@@ -1142,9 +1142,7 @@ public class UserManager extends RepositoryManager {
                                 HU.input(ARG_USER_NAME,request.getReallyStrictSanitizedString(ARG_USER_NAME,user.getName()), size)));
         }
         if (includeAdmin) {
-            sb.append(formEntry(request, "",
-				HU.span("Note: An administrator can do anything on this RAMADDA",HU.clazz("ramadda-form-help"))));
-
+            sb.append(HU.formHelp("Note: An administrator can do anything on this RAMADDA",true));
 	    List status = Utils.makeListFromValues(new HtmlUtils.Selector("Active",User.STATUS_ACTIVE),
 					 new HtmlUtils.Selector("Inactive",User.STATUS_INACTIVE),
 					 new HtmlUtils.Selector("Pending",User.STATUS_PENDING));
@@ -1152,14 +1150,13 @@ public class UserManager extends RepositoryManager {
                                 HU.select(ARG_USER_STATUS, status,
 					  request.getString(ARG_USER_STATUS,user.getStatus()))));
 
+            sb.append(HU.formHelp("Note: An administrator can do anything on this RAMADDA",true));
             sb.append(formEntry(request, "",
                                 HU.labeledCheckbox(ARG_USER_ADMIN, "true",
 						   request.get(ARG_USER_ADMIN,user.getAdmin()),
 						   "Is Administrator")));
 
-            sb.append(formEntry(request, "",
-				HU.span("A guest user can login but cannot change their password",HU.clazz("ramadda-form-help"))));
-
+            sb.append(HU.formHelp("A guest user can login but cannot change their password",true));
             sb.append(formEntry(request, "",
                                 HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
 						   request.get(ARG_USER_ISGUEST,user.getIsGuest()),
@@ -1219,6 +1216,7 @@ public class UserManager extends RepositoryManager {
 
         List<TwoFacedObject> templates =
             getPageHandler().getTemplateSelectList();
+	sb.append(HU.formHelp("Preferences",true));
         sb.append(formEntry(request, msgLabel("Page Style"),
                             HU.select(ARG_USER_TEMPLATE, templates,
 				      request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,user.getTemplate()))));
@@ -1242,9 +1240,12 @@ public class UserManager extends RepositoryManager {
      *
      * @throws Exception On badness
      */
-    private void makePasswordForm(Request request, User user, Appendable sb)
+    private void makePasswordForm(Request request, User user, Appendable sb,String...header)
 	throws Exception {
         sb.append(HU.formTable());
+	if(header.length>0) {
+            sb.append(HU.formHelp(header[0],true));	    
+	}
         sb.append(formEntry(request, msgLabel("New Password"),
                             HU.password(ARG_USER_PASSWORD1)));
 
@@ -1681,7 +1682,7 @@ public class UserManager extends RepositoryManager {
 
         formSB.append(msgHeader("Create a single user"));
         formSB.append(HU.formTable());
-        formSB.append(HU.formEntry("",HU.span("Lower case, no spaces, no punctuation",
+        formSB.append(HU.formEntry("",HU.span("ID - Lower case, no spaces, no punctuation",
 					      HU.clazz("ramadda-form-help"))));
         formSB.append(formEntry(request, msgLabel("ID"),
                                 HU.input(ARG_USER_ID, id,
@@ -1690,23 +1691,20 @@ public class UserManager extends RepositoryManager {
                                 HU.input(ARG_USER_NAME, name,
 					 size)));
 
+	formSB.append(HU.formHelp("Note: An administrator can do anything on this RAMADDA",true));
+	HU.formEntry(formSB, "",  HU.labeledCheckbox(ARG_USER_ADMIN, "true",
+						     admin,"Is Administrator"));
+
+	formSB.append(HU.formHelp("A guest user can login but cannot change their password",true));
+	HU.formEntry(formSB,"",    HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
+						      guest,"Is Guest User"));
+
+        formSB.append(formEntry(request, msgLabel("Email"),
+                                HU.input(ARG_USER_EMAIL, email, size)));
+	addInstitutionWidget(request, formSB,institution);
         formSB.append(formEntry(request, msgLabel("Description"),
                                 HU.textArea(ARG_USER_DESCRIPTION,
 					    desc, 5, cols)));
-
-	HU.formEntry(formSB, "",
-		  HU.labeledCheckbox(ARG_USER_ADMIN, "true",
-				     admin,"Is Administrator"));
-
-	HU.formEntry(formSB,"",
-		     HU.labeledCheckbox(ARG_USER_ISGUEST, "true",
-					guest,
-					"Is Guest User"));
-
-        formSB.append(formEntry(request, msgLabel("Email"),
-                                HU.input(ARG_USER_EMAIL, email,
-					 size)));
-	addInstitutionWidget(request, formSB,institution);
 	
         formSB.append(formEntry(request, msgLabel("Password"), HU.password(ARG_USER_PASSWORD1)));
         formSB.append(formEntry(request, msgLabel("Password Again"), HU.password(ARG_USER_PASSWORD2)));
@@ -2850,7 +2848,7 @@ public class UserManager extends RepositoryManager {
 	    //Check status
 	    if(user!=null) {
 		if(!user.getStatus().equals(User.STATUS_ACTIVE)) {
-		    sb.append(messageWarning(msg("User status is not active")));
+		    sb.append(HU.center(messageWarning(msg("Could not login. User status is not active"))));
 		    keepChecking = false;
 		    user=null;
 		}
@@ -2994,7 +2992,7 @@ public class UserManager extends RepositoryManager {
         if ( !isRegistrationEnabled()) {
             return new Result(
 			      "New User Registration",
-			      new StringBuffer(messageWarning(msg("Registration is not allowed"))));
+			      new StringBuffer(HU.center(messageWarning(msg("Registration is not allowed")))));
         }
         String mainKey = getRepository().getProperty(PROP_REGISTER_PASSPHRASE,
 						     (String) null);
