@@ -1996,27 +1996,28 @@ public class UserManager extends RepositoryManager {
 
 
 
-	    String corpus = user.getName() +" " + user.getId();
-	    if(user.getIsGuest()) corpus +=" guest ";
-	    if(user.getAdmin()) corpus +=" admin ";
+	    StringBuilder corpus = new StringBuilder();
+	    corpus.append(user.getName() +" " + user.getId());
+	    if(user.getIsGuest()) corpus.append(" guest ");
+	    if(user.getAdmin()) corpus.append(" admin ");
 	    if(stringDefined(user.getInstitution())) {
-		corpus += " " + user.getInstitution();
-		corpus += " hasinst ";
+		corpus.append(" inst:" + user.getInstitution());
+		corpus.append(" hasinst ");
 	    } else {
-		corpus += " noinst ";
+		corpus.append(" noinst ");
 	    }
 	    if(stringDefined(user.getEmail())) {
-		corpus += " " + user.getEmail();
-		corpus += " hasemail ";
+		corpus.append(" email:" + user.getEmail());
+		corpus.append(" hasemail ");
 	    } else {
-		corpus += " noemail ";
+		corpus.append(" noemail ");
 	    }
 
 	    if(stringDefined(user.getRoleText())) {
-		corpus+=" " +user.getRoleText();
-		corpus+=" hasrole ";
+		corpus.append(" " +user.getRoleText());
+		corpus.append(" hasrole ");
 	    } else {
-		corpus+=" norole ";
+		corpus.append(" norole ");
 	    }
 		    
 	    String dttm = "NA";
@@ -2042,7 +2043,8 @@ public class UserManager extends RepositoryManager {
 
 					dttm,
 					userLogLink),
-				HU.attrs("data-corpus",corpus,"valign","top","class",
+				HU.attrs("data-corpus",corpus.toString(),
+					 "valign","top","class",
 					 "ramadda-user-row " + (user.getAdmin()
 								? "ramadda-user-admin"
 								: user.getIsGuest()?"ramadda-user-guest":"")));
