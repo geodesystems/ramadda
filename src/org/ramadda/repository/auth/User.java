@@ -571,7 +571,14 @@ public class User {
         return roles;
     }
 
-    public String getRoleText() {
+    public String getRoleText(String pre,String post) {
+	if(roles==null) {
+	    return "";
+	}
+	if(pre!=null && post!=null) {
+	    return Utils.wrap(roles,pre,post);
+	}
+
 	if(roleText==null) {
 	    if(roles!=null) {
 		for(Role role:roles) {

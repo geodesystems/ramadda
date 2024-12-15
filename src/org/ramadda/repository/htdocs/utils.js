@@ -3821,10 +3821,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    }
 	}
 
+	let pre;
+	let post;
+	if(Utils.stringDefined(value)) {
+	    value = value.toLowerCase();
+	    let idx = value.indexOf(":");
+	    if(idx>=0) {
+		pre = value.substring(0,idx+1);
+		post = value.substring(idx+1);		
+
+	    }
+	}
+
 	s.each(function() {
 	    let textOk = true;
 	    if(Utils.stringDefined(value)) {
-		value = value.toLowerCase();
 		textOk = false;
 		let html = $(this).html();
 		let category = $(this).attr('data-category');
@@ -3838,6 +3849,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		} 
 		html = Utils.stripTags(html);
 		html = html.toLowerCase();
+		if(pre && post) {
+		    let i1 = html.indexOf(pre);
+		    if(i1>=0) {
+			let h = html.substring(i1+pre.length);
+			let i2 = h.indexOf(":");
+			if(i2>=0) {
+			    h = h.substring(0,i2);
+			    if(h.indexOf(post)>=0) 
+				textOk = true;
+			}
+		    }
+		}
+
 		if(html.indexOf(value)>=0) {
 		    textOk=true;
 		} 

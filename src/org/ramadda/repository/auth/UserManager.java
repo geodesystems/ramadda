@@ -1888,8 +1888,8 @@ public class UserManager extends RepositoryManager {
 						       ids);
 		    }
 		    if(sortBy.equals("roles")) {
-			return Utils.compareIgnoreCase(u1.getRoleText(),
-						       u2.getRoleText(),
+			return Utils.compareIgnoreCase(u1.getRoleText(null,null),
+						       u2.getRoleText(null,null),
 						       ids);
 		    }		    
 
@@ -2001,20 +2001,20 @@ public class UserManager extends RepositoryManager {
 	    if(user.getIsGuest()) corpus.append(" guest ");
 	    if(user.getAdmin()) corpus.append(" admin ");
 	    if(stringDefined(user.getInstitution())) {
-		corpus.append(" inst:" + user.getInstitution());
+		corpus.append(" inst:" + user.getInstitution()+":");
 		corpus.append(" hasinst ");
 	    } else {
 		corpus.append(" noinst ");
 	    }
 	    if(stringDefined(user.getEmail())) {
-		corpus.append(" email:" + user.getEmail());
+		corpus.append(" email:" + user.getEmail()+":");
 		corpus.append(" hasemail ");
 	    } else {
 		corpus.append(" noemail ");
 	    }
-
-	    if(stringDefined(user.getRoleText())) {
-		corpus.append(" " +user.getRoleText());
+	    String roleText= user.getRoleText(" role:",": ");
+	    if(stringDefined(roleText)) {
+		corpus.append(" " +roleText);
 		corpus.append(" hasrole ");
 	    } else {
 		corpus.append(" norole ");
