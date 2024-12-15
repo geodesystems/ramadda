@@ -808,6 +808,8 @@ public abstract class Tables {
         public String getColumns() {return COLUMNS;}
         public static final String COL_ID =  NAME + ".id";
         public static final String COL_NODOT_ID =   "id";
+        public static final String COL_STATUS =  NAME + ".status";
+        public static final String COL_NODOT_STATUS =   "status";	
         public static final String COL_NAME =  NAME + ".name";
         public static final String COL_NODOT_NAME =   "name";
         public static final String COL_EMAIL =  NAME + ".email";
@@ -839,7 +841,7 @@ public abstract class Tables {
         public static final String COL_NODOT_PROPERTIES =   "properties";
 
         public static final String[] ARRAY = new String[] {
-            COL_ID,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
+            COL_ID,COL_STATUS,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
