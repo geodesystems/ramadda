@@ -33,6 +33,10 @@ import java.text.SimpleDateFormat;
 @SuppressWarnings("unchecked")
 public class User {
 
+    public static final String STATUS_ACTIVE = "active";
+    public static final String STATUS_PENDING = "pending";    
+    public static final String STATUS_INACTIVE = "inactive";
+
     public static Date DEFAULT_DATE;
 
 
@@ -44,6 +48,7 @@ public class User {
 
     /** _more_ */
     private String id = "";
+    private String status = STATUS_ACTIVE;
 
     /** _more_ */
     private String name = "";
@@ -148,23 +153,9 @@ public class User {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param name _more_
-     * @param email _more_
-     * @param question _more_
-     * @param answer _more_
-     * @param hashedPassword _more_
-     * @param description _more_
-     * @param admin _more_
-     * @param language _more_
-     * @param template _more_
-     * @param isGuest _more_
-     * @param propertiesBlob _more_
-     */
+
     public User(String id,
+		String status,
 		String name,
 		String email,
 		String institution,
@@ -174,6 +165,7 @@ public class User {
                 boolean admin, String language, String template,
                 boolean isGuest, Date accountCreationDate, String propertiesBlob) {
         this.id             = id;
+	setStatus(status);
         setName(name);
         setEmail(email);
 	setInstitution(institution);
@@ -274,10 +266,10 @@ public class User {
      */
     public int hashCode() {
         return Misc.hashcode(id) ^ Misc.hashcode(name) ^ (admin
-                ? 1
-                : 2) ^ (anonymous
-                        ? 1
-                        : 2);
+							  ? 1
+							  : 2) ^ (anonymous
+								  ? 1
+								  : 2);
     }
 
     /**
@@ -315,6 +307,32 @@ public class User {
     public String getId() {
         return id;
     }
+
+    /**
+       Set the Status property.
+
+       @param value The new value for Status
+    **/
+    public void setStatus (String value) {
+	if(value==null) value=STATUS_ACTIVE;
+	status = value;
+    }
+
+    public boolean isActive() {
+	return Misc.equals(status, STATUS_ACTIVE);
+    }
+
+    /**
+       Get the Status property.
+
+       @return The Status
+    **/
+    public String getStatus () {
+	return status;
+    }
+
+
+
 
     /**
      * _more_

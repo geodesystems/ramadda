@@ -111,6 +111,7 @@ public class UserManager extends RepositoryManager {
     public static final String ACTION_EMAIL = "email";
 
 
+    public static final String ARG_USER_STATUS = "user_status";
     public static final String ARG_USER_ADMIN = "user_admin";
     public static final String ARG_USER_ISGUEST = "user_isguest";
     public static final String ARG_USER_ANSWER = "user_answer";
@@ -789,6 +790,7 @@ public class UserManager extends RepositoryManager {
             getDatabaseManager().executeInsert(Tables.USERS.INSERT,
 					       new Object[] {
 						   user.getId(),
+						   user.getStatus(),
 						   user.getName(),
 						   user.getEmail(),
 						   user.getInstitution(),
@@ -814,6 +816,7 @@ public class UserManager extends RepositoryManager {
 
         getDatabaseManager().update(Tables.USERS.NAME, Tables.USERS.COL_ID,
                                     user.getId(), new String[] {
+					Tables.USERS.COL_STATUS,
 					Tables.USERS.COL_NAME,
 					Tables.USERS.COL_PASSWORD,
 					Tables.USERS.COL_DESCRIPTION,
@@ -828,6 +831,7 @@ public class UserManager extends RepositoryManager {
 					Tables.USERS.COL_ACCOUNT_CREATION_DATE,
 					Tables.USERS.COL_PROPERTIES
 				    }, new Object[] {
+					user.getStatus(),
 					user.getName(), 
 					user.getHashedPassword(),
 					user.getDescription(),
@@ -985,6 +989,11 @@ public class UserManager extends RepositoryManager {
         if ( !request.getUser().getAdmin()) {
             throw new IllegalArgumentException("Need to be admin");
         }
+	user.setStatus(request.getString(ARG_USER_STATUS, user.getStatus()));
+	if(!user.isActive()) {
+	    getSessionManager().removeUserSession(request, user);
+	}
+
         if ( !request.defined(ARG_USER_ADMIN)) {
             user.setAdmin(false);
         } else {
@@ -1128,6 +1137,13 @@ public class UserManager extends RepositoryManager {
         if (includeAdmin) {
             sb.append(formEntry(request, "",
 				HU.span("Note: An administrator can do anything on this RAMADDA",HU.clazz("ramadda-form-help"))));
+
+	    List status = Utils.makeListFromValues(new HtmlUtils.Selector("Active",User.STATUS_ACTIVE),
+					 new HtmlUtils.Selector("Inactive",User.STATUS_INACTIVE),
+					 new HtmlUtils.Selector("Pending",User.STATUS_PENDING));
+            sb.append(formEntry(request, "Status:",
+                                HU.select(ARG_USER_STATUS, status,
+					  request.getString(ARG_USER_STATUS,user.getStatus()))));
 
             sb.append(formEntry(request, "",
                                 HU.labeledCheckbox(ARG_USER_ADMIN, "true",
@@ -1318,7 +1334,8 @@ public class UserManager extends RepositoryManager {
                     sb.append(messageError("User already exists:" + id));
                     break;
                 }
-                User user = new User(id, name, email, DEFAULT_INSTITUTION,
+                User user = new User(id, User.STATUS_ACTIVE,
+				     name, email, DEFAULT_INSTITUTION,
 				     "", "",
                                      hashPassword(password1), "", false, "",
                                      "", false, new Date(),
@@ -1381,7 +1398,8 @@ public class UserManager extends RepositoryManager {
                 }
 
                 if (okToAdd) {
-                    User newUser = new User(id, name, email, institution,
+                    User newUser = new User(id, User.STATUS_ACTIVE,
+					    name, email, institution,
 					    DEFAULT_QUESTION,DEFAULT_ANSWER,
                                             hashPassword(password1), desc,
                                             admin, "", "", false, new Date(),
@@ -1917,14 +1935,6 @@ public class UserManager extends RepositoryManager {
 	
 
         usersHtml.append(request.formPost(URL_USER_SELECT_DO));
-	String args = JU.map("focus","true");
-	HU.script(usersHtml,
-		  HU.call("HtmlUtils.initPageSearch",
-			  "'.ramadda-user-row'",
-			  "null",
-			  //				 "'#" + uid +" .type-list-container'",
-			  "'Find user'",
-			  "false",args));
 
 
 	List actions =new ArrayList();
@@ -1942,11 +1952,23 @@ public class UserManager extends RepositoryManager {
 			 HU.open(
 				 "table", HU.attrs("width","100%","class","ramadda-user-table")));
 
+	usersHtml.append("<br>");
+	String searchButtons ="[{\"label\":\"Status:\"},{\"label\":\"Active\", \"value\":\"status:active\"},{\"label\":\"Inactive\", \"value\":\"status:inactive\"},{\"label\":\"Pending\", \"value\":\"status:pending\"},{\"label\":\"&nbsp;&nbsp;Type:\"},	{\"label\":\"Admin\", \"value\":\"admin\"},{\"label\":\"Guest\", \"value\":\"guest\"},{\"label\":\"&nbsp;&nbsp;\"},{\"label\":\"Show all\",\"clear\":true}]";
+	String args = JU.map("focus","true","buttons",searchButtons);
+
+	HU.script(usersHtml,
+		  HU.call("HtmlUtils.initPageSearch",
+			  "'.ramadda-user-row'",
+			  "null",
+			  //				 "'#" + uid +" .type-list-container'",
+			  "'Find user'",
+			  "false",args));
   
 
 	    
 	
 	String idHeader = getUserSortLink(request, "id",ascending,"ID");
+	String statusHeader = getUserSortLink(request, "status",ascending,"Status");
 	String nameHeader = getUserSortLink(request, "name",ascending,"Name");
 	String adminHeader = getUserSortLink(request, "admin",ascending,"Admin");		
 	String guestHeader = getUserSortLink(request, "guest",ascending,"Guest");		
@@ -1959,6 +1981,7 @@ public class UserManager extends RepositoryManager {
 					HU.bold(msg("Edit")) + HU.space(2),
 					HU.bold(idHeader) + HU.space(2),
 					HU.bold(nameHeader) + HU.space(2),
+					HU.bold(statusHeader) + HU.space(2),
 					HU.bold(adminHeader) + HU.space(2),
 					HU.bold(guestHeader) + HU.space(2),
 					HU.bold(rolesHeader) + HU.space(2),
@@ -2000,6 +2023,7 @@ public class UserManager extends RepositoryManager {
 	    corpus.append(user.getName() +" " + user.getId());
 	    if(user.getIsGuest()) corpus.append(" guest ");
 	    if(user.getAdmin()) corpus.append(" admin ");
+	    corpus.append(" status:" + user.getStatus()+":");
 	    if(stringDefined(user.getInstitution())) {
 		corpus.append(" inst:" + user.getInstitution()+":");
 		corpus.append(" hasinst ");
@@ -2035,6 +2059,7 @@ public class UserManager extends RepositoryManager {
 
             String row = HU.row(HU.cols(userCbx, userEditLink,
 					userProfileLink, user.getName(),
+					user.getStatus(), 
 					"" + user.getAdmin(), 
 					"" + user.getIsGuest(),
 					rolesTD.toString(),
@@ -2126,6 +2151,7 @@ public class UserManager extends RepositoryManager {
         //admin, language, template, isGuest, propertiesBlob
 
         User user = new User(results.getString(col++), //ID
+                             results.getString(col++), //status
                              results.getString(col++), //Name
                              results.getString(col++),//email
                              results.getString(col++),//institution
@@ -2813,6 +2839,17 @@ public class UserManager extends RepositoryManager {
                     keepChecking = false;
                 }
             }
+
+	    //Check status
+	    if(user!=null) {
+		if(!user.getStatus().equals(User.STATUS_ACTIVE)) {
+		    sb.append(messageWarning(msg("User status is not active")));
+		    keepChecking = false;
+		    user=null;
+		}
+	    }
+
+
 
             if (keepChecking) {
                 if (user != null) {
