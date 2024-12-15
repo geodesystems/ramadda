@@ -208,7 +208,8 @@ public class UserManager extends RepositoryManager {
     private String salt;
     private String salt1;
     private String salt2;
-    private String userAgree;
+    private String userPreface;
+    private String userAgree;    
 
     /** store the number of bad login attempts for each user */
     private static Hashtable<String, Integer> badPasswordCount =
@@ -339,6 +340,9 @@ public class UserManager extends RepositoryManager {
         allowedIpsForLogin =
             Utils.split(getRepository().getProperty(PROP_LOGIN_ALLOWEDIPS,
 						    ""), ",", true, true);
+
+        userPreface = getRepository().getProperty("ramadda.user.preface",
+						(String) null);
 
         userAgree = getRepository().getProperty(PROP_USER_AGREE,
 						(String) null);
@@ -588,6 +592,10 @@ public class UserManager extends RepositoryManager {
             }
         }
 
+        if (stringDefined(userPreface)) {
+            sb.append(messageNote(userPreface));
+        }
+
         sb.append(HU.formTable());
         sb.append(
 		  formEntry(
@@ -600,10 +608,9 @@ public class UserManager extends RepositoryManager {
                             HU.password(ARG_USER_PASSWORD)));
         if (userAgree != null) {
             sb.append(formEntry(request, "",
-                                HU.checkbox(ARG_USERAGREE, "true",
-					    request.get(ARG_USERAGREE,
-							false)) + HU.space(2)
-				+ userAgree));
+                                HU.labeledCheckbox(ARG_USERAGREE, "true",
+						   request.get(ARG_USERAGREE,
+							       false),userAgree)));
         }
         sb.append(extra);
 
@@ -2826,7 +2833,7 @@ public class UserManager extends RepositoryManager {
                             return getRepository().makeErrorResult(request,
 								   "You must agree to the terms");
                         }
-                        sb.append(messageWarning(msg("You must agree to the terms")));
+                        sb.append(HU.center(messageWarning(msg("You must agree to the terms"))));
                     } else {
                         loginExtra = "User agreed to terms and conditions";
                     }

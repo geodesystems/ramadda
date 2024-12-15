@@ -1988,7 +1988,7 @@ public class PageHandler extends RepositoryManager {
         }
         sb.append("</tr></table>");
         HU.close(sb, HU.TAG_DIV);
-        sb.append(HU.br());
+	//        sb.append(HU.br());
 
         return sb.toString();
     }
