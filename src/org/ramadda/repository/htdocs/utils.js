@@ -3791,20 +3791,69 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initPageSearch:function(select,parentSelect,label,hideAll,opts) {
 	let args = {
 	    focus:true,
-	    inputSize:'15'
+	    inputSize:'15',
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
 	let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
 				    ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
+	let buttonMap ={};
+	if(args.buttons) {
+	    args.buttons.forEach(b=>{
+		b.id = HU.getUniqueId('button');
+		buttonMap[b.id] =b;
+		if(b.clear) {
+		    input+=HU.span([ATTR_ID,b.id,'clear',true],b.label);
+		    return
+		}
+
+		if(!b.value) {
+		    input+=SPACE1;
+		    input+=HU.b(b.label);
+		    return
+		}
+
+
+
+		input+=SPACE1;
+		input+=HU.span([ATTR_ID,b.id],b.label);
+	    });
+	}
+
+
 	if(args.target)
 	    $(args.target).html(input);
 	else
 	    document.write(input);
+	if(args.buttons) {
+	    args.buttons.forEach(b=>{
+		jqid(b.id).button().click(function() {
+		    let button = buttonMap[$(this).attr('id')];
+		    if(button.clear) {
+			HU.doPageSearch('',select,parentSelect,hideAll);
+		    }
+		    HU.doPageSearch(button.value,select,parentSelect,hideAll);
+		});
+	    })
+	}
+
+
+
 	if(args.focus) {
 	    jqid(id).focus();
 	}
+	jqid(id).keydown(function(event) {
+	    if (event.key === "Enter") {
+		event.preventDefault(); 
+	    }
+	});
+
+
 	jqid(id).keyup(function(){
+	    if (event.key === "Enter") {
+		event.preventDefault(); 
+		return
+	    }
 	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
 	});
     },		       
@@ -3855,8 +3904,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 			let h = html.substring(i1+pre.length);
 			let i2 = h.indexOf(":");
 			if(i2>=0) {
-			    h = h.substring(0,i2);
-			    if(h.indexOf(post)>=0) 
+			    h = h.substring(0,i2).trim();
+			    if(h.startsWith(post)) 
 				textOk = true;
 			}
 		    }
