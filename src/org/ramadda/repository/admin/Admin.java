@@ -722,7 +722,7 @@ public class Admin extends RepositoryManager {
 
                 if (okToAdd) {
                     User user = new User(
-                                    id, name,
+					 id, User.STATUS_ACTIVE,name,
                                     request.getString(
                                         UserManager.ARG_USER_EMAIL,
                                         "").trim(), "","", "",
