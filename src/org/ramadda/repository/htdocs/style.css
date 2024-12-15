@@ -1911,6 +1911,7 @@ mapheader {
     font-weight:bold;
 }
 
+
 .ramadda-message-plain, .ramadda-message {
     display: inline-block;
     border-radius: var(--default-radius);

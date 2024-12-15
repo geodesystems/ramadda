@@ -871,11 +871,13 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public void deleteUser(User user) throws Exception {
+	getSessionManager().removeUserSession(getRepository().getAdminRequest(), user);
         userMap.remove(user.getId());
         deleteRoles(user);
         getDatabaseManager().delete(Tables.USERS.NAME,
                                     Clause.eq(Tables.USERS.COL_ID,
 					      user.getId()));
+
     }
 
     /**
@@ -1092,6 +1094,7 @@ public class UserManager extends RepositoryManager {
 						  HU.submit(LABEL_CANCEL, ARG_USER_CANCEL),
 						  getAuthManager().getVerification(request))));
 	           
+	    sb.append("<br>");
 	} else {
             String buttons =
                 HU.submit("Change User", ARG_USER_CHANGE)
