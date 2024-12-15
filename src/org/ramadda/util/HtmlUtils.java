@@ -1713,6 +1713,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     
+    public static String formHelp(String html) {
+	return span(html,clazz("ramadda-form-help"));
+
+    }
+    public static String formHelp(String html,boolean inForm) {	
+	html = formHelp(html);
+	if(inForm) return formEntry("",html);
+	return html;
+    }
+
+
     public static String form(String url) {
         return form(url, "");
     }
