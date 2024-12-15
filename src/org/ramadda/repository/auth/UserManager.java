@@ -1996,10 +1996,29 @@ public class UserManager extends RepositoryManager {
 
 
 
-	    String corpus = user.getName() +" " + user.getId() +" " + user.getInstitution();
+	    String corpus = user.getName() +" " + user.getId();
 	    if(user.getIsGuest()) corpus +=" guest ";
 	    if(user.getAdmin()) corpus +=" admin ";
-	    corpus+=" " +user.getRoleText();
+	    if(stringDefined(user.getInstitution())) {
+		corpus += " " + user.getInstitution();
+		corpus += " hasinst ";
+	    } else {
+		corpus += " noinst ";
+	    }
+	    if(stringDefined(user.getEmail())) {
+		corpus += " " + user.getEmail();
+		corpus += " hasemail ";
+	    } else {
+		corpus += " noemail ";
+	    }
+
+	    if(stringDefined(user.getRoleText())) {
+		corpus+=" " +user.getRoleText();
+		corpus+=" hasrole ";
+	    } else {
+		corpus+=" norole ";
+	    }
+		    
 	    String dttm = "NA";
 	    if(user.getAccountCreationDate()!=null) {
 		dttm = sdf.format(user.getAccountCreationDate());
