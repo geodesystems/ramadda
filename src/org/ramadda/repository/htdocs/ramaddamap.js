@@ -959,6 +959,16 @@ RepositoryMap.prototype = {
     addPopup:function(popup) {
         this.currentPopup = popup;
 	this.getMap().addPopup(popup);
+	if(popup.id) {
+	    jqid(popup.id).find('a').click(function(e) {
+		let src = $(this).attr('href');
+		if(src) {
+		    window.open(src,'_link');
+		    e.preventDefault();
+		}
+
+	    });
+	}
     },
     makePopup: function(projPoint, text, props) {
 	if(debugPopup)
@@ -2122,6 +2132,7 @@ RepositoryMap.prototype = {
 	if(layer.textGetter) {
 	    let text= layer.textGetter(feature);
 	    if(text) {
+
 		if(debugPopup) console.log("getFeatureText-layer has textGetter");
 		return text;
 	    }
@@ -2219,6 +2230,7 @@ RepositoryMap.prototype = {
         feature.popup = popup;
         popup.feature = feature;
         this.addPopup(popup);
+	
     },
 
     onFeatureUnselect:  function(layer) {
