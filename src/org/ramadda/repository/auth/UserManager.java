@@ -488,8 +488,7 @@ public class UserManager extends RepositoryManager {
             Statement statement = getDatabaseManager().select(
 							      Tables.FAVORITES.COLUMNS,
 							      Tables.FAVORITES.NAME,
-							      Clause.eq(
-									Tables.FAVORITES.COL_USER_ID,
+							      Clause.eq(Tables.FAVORITES.COL_USER_ID,
 									user.getId()));
             SqlUtil.Iterator iter =
                 getDatabaseManager().getIterator(statement);
@@ -506,8 +505,7 @@ public class UserManager extends RepositoryManager {
                 if (entry == null) {
                     getDatabaseManager().delete(
 						Tables.FAVORITES.NAME,
-						Clause.and(
-							   Clause.eq(
+						Clause.and(			   Clause.eq(
 								     Tables.FAVORITES.COL_USER_ID,
 								     user.getId()), Clause.eq(
 											      Tables.FAVORITES.COL_ID, id)));
@@ -1773,22 +1771,15 @@ public class UserManager extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     *  @return _more_
-     *
-     * @throws Exception _more_
-     */
+
     public Result processSearch(Request request) throws Exception {
         List<String> ids     = new ArrayList<String>();
         String       suggest = request.getString("text", "").trim() + "%";
+	Clause clause = Clause.or(Clause.like(Tables.USERS.COL_ID, suggest),
+				  Clause.like(Tables.USERS.COL_NAME, suggest));
         Statement statement =
-            getDatabaseManager().select(
-					Tables.USERS.COL_ID, Tables.USERS.NAME, Clause.or(
-											  Clause.like(Tables.USERS.COL_ID, suggest), Clause.like(
-																		 Tables.USERS.COL_NAME, suggest)), " order by "
-					+ Tables.USERS.COL_ID);
+            getDatabaseManager().select(Tables.USERS.COL_ID, Tables.USERS.NAME,
+					clause,	" order by " + Tables.USERS.COL_ID);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
