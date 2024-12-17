@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${cdnpath}/favicon.png"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+<properties>
+name=Breadcrumbs
+id=breadcrumbs
+</properties>
+${imports}
+<style type="text/css">
+body {
+  margin:0px;
+  padding:0px;
+  font-size: 12pt;
+}
+.navlinks {
+    padding-top:5px;
+    border-bottom : 1px #444 solid;
+}
+.ramadda-section  {
+    padding-left:0%;
+    padding-right:0%;
+}
+.display-area-link {
+   width: 20px;
+}
+.breadcrumbs a {
+   text-decoration: none;
+}
+.breadcrumbs {
+   margin-left:5px;
+}
+.ramadda-breadcrumbs {
+   font-size: 100%;
+}
+.ramadda-header {
+    background:#fff;
+    font-size:12pt;
+    padding:0px;
+    padding-top:2px;
+    padding-left:3px;
+}
+.ramadda-header a {
+    text-decoration:none;
+}
+.formtable td {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      padding-left: 2px;
+      padding-right: 2px;
+}
+.formlabel, .formlabeltop {
+  font-weight: bold;
+  text-align:left;
+}
+</style>
+${headfinal}
+</head>
+<body>
+<div style="border-bottom:var(--basic-border);">
+${entry.header}
+</div>
+<div class="ramadda-content">
+<div class="ramadda-innercontent">${content}</div>
+</div>
+<div class="ramadda-footer">
+${footer.acknowledgement}  
+${bottom}
+</div>
+</body></html>
