@@ -2,11 +2,11 @@
 
 # Define a function to process the URLs
 read_ramadda_data <- function(dest_dir = ".") {
-# Define the list of URLs and corresponding file names
-url_file_pairs <- list(
+  # Define the list of URLs and corresponding file names
+  url_file_pairs <- list(
   ${urls}	       
-)
-
+  )
+  
   # Ensure the destination directory exists
   if (!dir.exists(dest_dir)) {
     dir.create(dest_dir, recursive = TRUE)
@@ -58,6 +58,6 @@ url_file_pairs <- list(
   return(data_list)
 }
 
-data_list <- download_and_read_files(url_file_pairs)
+data_list <- read_ramadda_data()
 
 
