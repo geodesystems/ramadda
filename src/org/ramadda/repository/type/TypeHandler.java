@@ -926,6 +926,11 @@ public class TypeHandler extends RepositoryManager {
 	}
 
 	String bubbleTemplate = getProperty(entry, "bubble",null);
+        if (bubbleTemplate == null) {
+	     bubbleTemplate = getProperty(entry, "map.popup",null);
+	}
+
+
         if (bubbleTemplate != null) {
             return bubbleTemplate;
         }
