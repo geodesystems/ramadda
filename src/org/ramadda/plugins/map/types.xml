@@ -391,6 +391,8 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 -section
 ]]>
 +if property=show_information
+:vspace 1em
+-----
 {{information details=true}}
 -if
 </wiki>
