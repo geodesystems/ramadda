@@ -5,9 +5,11 @@ SGVpZ2h0PSI1MDBweCIgIH19IA0KLXNlY3Rpb24=
 ]]></description>
     <permissions>
       <permission action="view">
-        <role role="atni"/>
+        <role role="user"/>
         <role role="none"/>
       </permission>
     </permissions>
-  </entry>
+</entry>
+<entry  isgroup="true" name="Public" id="%tribe%_public" parent="%parent%"  type="group">
+</entry>
 

@@ -1,7 +1,11 @@
+source $env(RAMADDA_ROOT)/bin/ramadda.tcl
+
+
 package require csv
 package require http
 
 
+set ::files {}
 
 
 set ::entriesfp [open entries.xml w]
@@ -98,22 +102,25 @@ proc cleanTribe {tribe} {
     set text [string trim [string tolower $text]]
 }     
 
-proc geojson {tribe file} {
+proc getReservationMap {tribe file} {
     if {[file exists $file] && [file size $file]>100} {
-#	puts "ok: $tribe"
+	puts stderr "reservation map: $tribe $file"
 	return 1
     }
 
     set text [cleanTribe $tribe]
     regsub -all { } $text {+} text
-    set url "https://ramadda.org/repository/entry/show?entryid=c6969703-c500-49ad-9fe5-ee14c19a5b2d&output=geojsonfilter&geojson_property=name&geojson_filter=Subset&geojson_value=(?i).*$text.*"
+#    set url "https://ramadda.org/repository/entry/show?entryid=c6969703-c500-49ad-9fe5-ee14c19a5b2d&output=geojsonfilter&geojson_property=name&geojson_filter=Subset&geojson_value=(?i).*$text.*"
+    set url "https://ramadda.org/repository/entry/show?entryid=c6969703-c500-49ad-9fe5-ee14c19a5b2d&output=geojsonfilter&matchall=true&geojson_property1=Name&geojson_value1=(%3Fi).*$text.*&geojson_filter=Subset"
+    puts stderr "fetching the reservation map for $tribe"
+    puts stderr "$url"
     catch {exec wget -O $file $url}
     if {[file size $file]<100} {
-	puts stderr "not ok: $tribe text:$text"
+	puts stderr "reservation map: not ok: $tribe text:$text"
 	file delete $file
 	return 0
     }
-#    puts "ok: $tribe"
+    puts stderr "reservation map ok: $tribe"
     return 1
 }
 
@@ -182,19 +189,23 @@ proc findSlug {tribe} {
 }
 
 set ::tribecnt 0
-proc tribe {state tribe wiki lat lon} {
+proc tribe {state tribe wiki lat lon {name {}}} {
     incr ::tribecnt
-    if {$::tribecnt>10} return
+#    if {$::tribecnt>10} return
     set key [cleanTribe $tribe]
     set biaInfo [find  bia  tribe $key]
-    set file [string tolower $tribe]
-    regsub -all { } $file _ file
-    regsub -all {[\(\)]+} $file {} file    
-    set id $file
+    set id [string tolower $tribe]
+    regsub -all { } $id _ id
+    regsub -all {[\(\)]+} $id {} id
     regsub -all {'} $id {} id
-    set file "$file.geojson"
+    set publicId "${id}_public"
+    set reservationMap "reservation_${id}.geojson"
     set tribeName $tribe
-    write "<entry [attr type tribal_datahub] [attr name $tribeName] [attr id $id]";
+    if {$name!=""} {
+	set tribeName $name
+    }
+    set hubName "$tribeName Data Hub"
+    write "<entry [attr type tribal_datahub] [attr name $hubName] [attr id $id]";
     set desc "+callout-info\nThis is an example data hub for the $tribe\n-callout\n"
     append desc "@($wiki imageWidth=100 addHeader=false ignoreError=true)\n"
 
@@ -226,16 +237,20 @@ proc tribe {state tribe wiki lat lon} {
     set west ""
     set south ""
     set east ""
-#    geojson $tribe $file
-    if {[file exists $file]} {
-	set bounds [exec java org.ramadda.util.geo.GeoJson -bounds $file]
+    getReservationMap $tribe $reservationMap
+    if {[file exists $reservationMap]} {
+
+
+
+	lappend ::files $reservationMap
+	set bounds [exec java org.ramadda.util.geo.GeoJson -bounds $reservationMap]
 	regexp {north:(.*) +west:(.*) +south:(.*) +east:(.*)} $bounds match north west south east
 	if {$lat=="N/A"} {
 	    set lat [expr $south+($north-$south)/2]
 	    set lon [expr $west+($east-$west)/2]
 	}
 	append metadata "<metadata [attr type map_displaymap_file] [attr inherited true]>\n"
-	append metadata "<attr [attr fileid $file] [attr index 1] [attr encoded false]>[cdata $file]</attr>\n"
+	append metadata "<attr [attr fileid $reservationMap] [attr index 1] [attr encoded false]>[cdata $reservationMap]</attr>\n"
 	append metadata "<attr  [attr index 4] [attr encoded false]>[cdata blue]</attr>\n"	
 	append metadata "</metadata>\n"
 	append attrs "[attr north $north] [attr west $west] [attr south  $south] [attr east $east]"
@@ -262,36 +277,49 @@ proc tribe {state tribe wiki lat lon} {
     set children ""
     set template $::toptemplate
     regsub -all {%parent%} $template $id template
+    regsub -all {%tribe%} $template $id template    
     append children $template
     append children "\n"
 
     set template $::template
     set dataid ${id}_data
     set dataName "$tribeName Data"
-    append children "<entry [attr type group] [attr name $dataName] [attr parent $id] [attr id ${dataid}]>\n"
+    append children "<entry [attr type group] [attr name $dataName] [attr parent $publicId] [attr id ${dataid}]>\n"
     append children "<metadata [attr type content.alias]><attr [attr index 1] [attr encoded false]><!\[CDATA\[tribe_${id}_data\]\]></attr></metadata>\n"
     append children "</entry>"
-    regsub -all {%tribe%} $template $tribe template
+    regsub -all {%tribe%} $template $tribeName template
     regsub -all {%latitude%} $template $lat template
     regsub -all {%longitude%} $template $lon template
     regsub -all {%parent%} $template $dataid template            
     append children $template
-    append children "<entry [attr type type_document_collection] [attr name Documents] [attr parent $id]/>\n"    
+    append children "<entry [attr type type_document_collection] [attr name Documents] [attr parent $publicId]/>\n"    
     set slug [findSlug $tribe]
     if {$slug==""} {
 #	puts stderr "tribe: $tribe"
     }
 
+
     set mapsid ${id}_maps
-    if {$slug!="" || $hasLocation} {
+    if {$slug!="" || $hasLocation || [file exists $reservationMap]} {
 	set name "$tribeName Maps"
-	append children "<entry [attr type type_map_folder] [attr name $name] [attr parent $id] [attr id ${mapsid}]/>\n"
+	append children "<entry [attr type group] [attr name $name] [attr parent $publicId] [attr id ${mapsid}]/>\n"
     }
+
+    if {[file exists $reservationMap]} {
+	set mapName "$tribeName Reservation Map"
+	append children "<entry [attr north $north] [attr west $west] [attr south $south] [attr east $east] [attr type geo_geojson] [attr name $mapName] [attr filename $reservationMap] [attr file $reservationMap] [attr parent $mapsid]>\n"
+	set mapdesc "+callout-info\nReservation map the $tribe.\n-callout\n"
+	append children "<description>[cdata $mapdesc]</description>\n"
+	append children "</entry>\n"
+    }
+
+
 
     if {$slug!=""} {
 	set tmap "territories_${id}.geojson"
 	if {![file exists $tmap]} {
 	    set url  "https://native-land.ca/api/index.php?maps=territories&name=$slug"
+	    puts stderr $url
 	    puts stderr "fetching $tmap"
 	    catch {exec wget -O dummy.txt $url}
 	    set fp [open dummy.txt r]
@@ -301,11 +329,12 @@ proc tribe {state tribe wiki lat lon} {
 	    puts $fp "{\"type\":\"FeatureCollection\",\"features\":$contents }"
 	    close $fp
 	}
+	lappend ::files $tmap
 	set bounds [exec java org.ramadda.util.geo.GeoJson -bounds $tmap]
 	regexp {north:(.*) +west:(.*) +south:(.*) +east:(.*)} $bounds match north west south east
 	set name "$tribeName Traditional Territories"
 	append children "<entry [attr north $north] [attr west $west] [attr south $south] [attr east $east] [attr type geo_geojson] [attr name $name] [attr filename $tmap] [attr file $tmap] [attr parent $mapsid]>\n"	
-	set mapdesc "+callout-info\nTradiditional territories of the $tribe. Map courtesy of \[https://native-land.ca/ Native Land Digital\]\n-callout\n"
+	set mapdesc "+callout-info\nTraditional territories of the $tribe. Map courtesy of \[https://native-land.ca/ Native Land Digital\]\n-callout\n"
 	append children "<description>[cdata $mapdesc]</description>\n"
 	append children "</entry>\n"
 
@@ -334,9 +363,9 @@ proc tribe {state tribe wiki lat lon} {
 	append children "<entry_ids [attr encoded false]><!\[CDATA\[search.type=type_usgs_gauge\nsearch.bbox=$bbox\nsearch\]\]></entry_ids>\n"
 	append children "</entry>\n"
 	set d 2
-	set name "$tribe Current Conditions"
+	set name "$tribeName Current Conditions"
 	append children "<entry [attr type nwsfeed] [attr name $name] [attr id ${id}_nws] [attr parent ${dataid}] [attr latitude $lat] [attr longitude $lon]/>\n"
-	set name "$tribe Historic Weather"
+	set name "$tribeName Historic Weather"
 	append children "<entry [attr type type_daymet] [attr name $name] [attr parent ${dataid}] [attr latitude $lat] [attr longitude $lon]/>\n"	
 	if {$ocean} {
 	    set bbox "[expr $cy+$d],[expr $cx-$d],[expr $cy-$d],[expr $cx+$d]"
@@ -383,12 +412,15 @@ proc tribe {state tribe wiki lat lon} {
     write $children
 }
 
-source tribes.tcl
+tribe {Wisconsin}  {Menominee}  {https://en.wikipedia.org/wiki/Menominee}  {45.0155}  {-88.7223}   {Oma͞eqnomenew-ahkew}
+puts "files: $::files"
+#source tribes.tcl
 #source navajo.tcl
 write "</entries>"
 
 close $::entriesfp 
 
-set command [concat exec jar -cvf tribes.zip entries.xml [glob *.geojson]]
+set command [concat exec jar -cvf tribes.zip entries.xml $::files]
+puts $command
 eval $command
 puts stderr "tribes.zip generated"
