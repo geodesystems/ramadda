@@ -593,8 +593,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                             : Utils.makeLabel(id), desc, cnt, null);
                     field.setType(type);
                     if (type.equals("date")) {
-                        field.setDateFormat(new MyDateFormat("yyyy-MM-dd'T'HH:mm:ss Z",
-							     getEntryUtil().getTimezone(repository.getTmpRequest(), entry)));
+			String tz =  getEntryUtil().getTimezone(repository.getTmpRequest(), entry);
+			System.err.println("tz: " + tz);
+                        field.setDateFormat(new MyDateFormat("yyyy-MM-dd'T'HH:mm:ss Z",tz));
                     }
 
                     if (type.equals("date") || field.isTypeNumeric()) {
