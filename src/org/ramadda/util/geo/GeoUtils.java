@@ -1676,6 +1676,23 @@ public class GeoUtils {
 
     }
 
+    public static boolean latLonOk(Object o) {
+        if (o == null) {
+            return false;
+        }
+        Double d = (Double) o;
+
+        return latLonOk(d.doubleValue());
+    }
+
+    
+
+    //Hackish as  this is really checking for a -9999 sortof null value
+    public static boolean latLonOk(double v) {
+        return ((v == v) && (v>=-180 && v<=360));
+    }
+
+
     public static boolean latLonOk(double lat, double lon) {
 	return lat>=-90 && lat<=90 &&
 	    lon>=-180 && lon<=360;
