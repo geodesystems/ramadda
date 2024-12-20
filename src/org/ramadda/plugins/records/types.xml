@@ -23,7 +23,9 @@ value  type double
 ]]>
 </default>
 </column>
-     <column  name="records_data"  showinhtml="false" editable="true" label="Raw Data" type="clob" rows="10" size="100000" columns="80"/>
+<column  name="records_data"  showinhtml="false" editable="true" label="Raw Data" type="clob" rows="10"
+	 canedit="false"
+	 columns="80"/>
 <wiki>
 <![CDATA[
 +section  title="{{name}}"

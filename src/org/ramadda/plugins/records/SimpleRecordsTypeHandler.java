@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -10,10 +10,13 @@ import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
+
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.MyDateFormat;
+import org.ramadda.util.geo.GeoUtils;
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
@@ -34,47 +37,19 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
 @SuppressWarnings("unchecked")
 public class SimpleRecordsTypeHandler extends PointTypeHandler {
-
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     private static int IDX_FIELDS = IDX++;
-
-    /** _more_ */
     private static int IDX_DATA = IDX++;
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @throws Exception _more_
-     */
     public SimpleRecordsTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -83,29 +58,12 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
         return new SimpleRecordsRecordFile(getRepository(), entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public String cleanValue(String value) {
         value = value.replaceAll("\r", "");
         value = value.replaceAll(":", "_colon_");
@@ -116,16 +74,8 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param time _more_
-     *
-     * @return _more_
-     */
     public String getTimeValue(String time) {
         if (time.length() == 0) {
-            System.err.println(" adding time");
             time = "00:00:00";
         } else if (time.matches("^\\d\\d?$")) {
             System.err.println(" adding mm:ss");
@@ -134,22 +84,10 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             System.err.println(" adding ss");
             time += ":00";
         }
-        System.err.println("time:" + time);
-
         return "T" + time;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result processEntryAccess(Request request, Entry entry)
             throws Exception {
@@ -165,13 +103,24 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
         if (action.equals("new")) {
             StringBuilder line = new StringBuilder();
             int           cnt  = 0;
+	    boolean skipNextOne = false;
+	    System.err.print(request);
             for (RecordField field : fields) {
+		if(skipNextOne) {
+		    skipNextOne = false;
+		    continue;
+		}
+
                 if (cnt > 0) {
                     line.append(",");
                 }
                 line.append(field.getName());
                 line.append(":");
-                String value = request.getString(field.getName(), "");
+                String value = request.getString(field.getName(), null);
+		if(value==null) {
+		    //Check for latlon
+		    value = request.getString("location."+field.getName(), null);
+		}
                 if (Misc.equals(field.getType(), "date")) {
                     String time = request.getString(field.getName()
                                       + ".time", "").trim();
@@ -222,19 +171,18 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 } else if (rows != null) {
                     widget = HtmlUtils.textArea(field.getName(), dflt,
                             Integer.parseInt(rows), 60);
-                } else if (field.getIsLatitude()) {
-
-                    /**
-                     * MapInfo map = getRepository().getMapManager().createMap(request,
-                     *                                                       entry, true, null);
-                     * widget = map.makeSelector(field.getName(), true,
-                     *                 new String[] { latLonOk(lat)
-                     *                                ? lat + ""
-                     *                                : "", latLonOk(lon)
-                     *                                ? lon + ""
-                     *                                : "" });
-                     * skipNextField = true;
-                     */
+                } else if (field.getIsLatitude() || field.getName().equals("latitude")) {
+		    MapInfo map = getRepository().getMapManager().createMap(request,
+									    entry, true, null);
+		    double lat = 40;
+		    double lon = -107;
+		    widget = map.makeSelector("location", true,
+					      new String[] { GeoUtils.latLonOk(lat)
+							     ? lat + ""
+							     : "", GeoUtils.latLonOk(lon)
+							     ? lon + ""
+							     : "" });
+		    skipNextField = true;
                 } else if (Misc.equals(field.getType(), "date")) {
                     widget = getDateHandler().makeDateInput(request,
                             field.getName(), "flexiform", new Date(),
@@ -378,26 +326,12 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
-        if (tag.equals("simple_add")) {
+        if (tag.equals("simple_add")|| tag.equals("add_buttons")) {
             if ( !getAccessManager().canDoEdit(request, entry)) {
                 return "";
             }
@@ -415,14 +349,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param recordFields _more_
-     *
-     * @return _more_
-     */
+
     public List<List<String>> getRows(Entry entry,
                                       List<RecordField> recordFields) {
 	Request request = getRepository().getAdminRequest();
@@ -459,34 +386,12 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     }
 
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public class SimpleRecordsRecordFile extends CsvFile {
-
-        /** _more_ */
         Repository repository;
-
-        /** _more_ */
         Entry entry;
-
-        /** _more_ */
         List<RecordField> recordFields;
 
-        /**
-         * _more_
-         *
-         *
-         * @param repository _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
+
         public SimpleRecordsRecordFile(Repository repository, Entry entry)
                 throws IOException {
             this.repository = repository;
@@ -494,16 +399,6 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             //            putProperty("output.time","false");
         }
 
-
-        /**
-         * _more_
-         *
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws Exception {
@@ -522,13 +417,6 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
 
         }
 
-        /**
-         * _more_
-         *
-         * @param failureOk _more_
-         *
-         * @return _more_
-         */
         @Override
         public List<RecordField> getFields(boolean failureOk) {
             if (recordFields != null) {
@@ -623,15 +511,6 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             return recordFields;
         }
 
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             super.prepareToVisit(visitInfo);
