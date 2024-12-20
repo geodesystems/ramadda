@@ -25,9 +25,19 @@ public class MyDateFormat {
     }
 
     public MyDateFormat(String format,String timezone) {
-	this(format,TimeZone.getTimeZone(timezone));
+	this(format,makeTimeZone(timezone));
     }
 
+
+    private static TimeZone makeTimeZone(String timezone) {
+	TimeZone tz;
+	if(Utils.stringDefined(timezone)) {
+	    tz = TimeZone.getTimeZone(timezone);
+	} else {
+	    tz= Utils.TIMEZONE_DEFAULT;
+	}
+	return tz;
+    }
 
     public  String  format(Date date) {
 	return getSimpleDateFormat().format(date);
