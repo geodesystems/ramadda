@@ -921,7 +921,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                     ? dflt
                     : "NA");
         }
-        if ( !latLonOk(values[idx])) {
+        if ( !GeoUtils.latLonOk(values[idx])) {
             return "NA";
         }
         double d = ((Double) values[idx]).doubleValue();
@@ -1828,19 +1828,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
-    private boolean latLonOk(Object o) {
-        if (o == null) {
-            return false;
-        }
-        Double d = (Double) o;
-
-        return latLonOk(d.doubleValue());
-    }
-
-    
-    private boolean latLonOk(double v) {
-        return ((v == v) && (v != Entry.NONGEO));
-    }
 
     
     public void addGeoExclusion(List<Clause> clauses) {
@@ -1931,25 +1918,25 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    List<Clause> ns = new ArrayList<Clause>();
 	    List<Clause> ew = new ArrayList<Clause>();	    
 	    Clause top=null,bottom=null,right=null,left=null;
-            if (latLonOk(north)) {
+            if (GeoUtils.latLonOk(north)) {
 		if(doNegate)
 		    ns.add(top=Clause.gt(columnName + "_lat", north));
 		else
 		    ns.add(Clause.le(columnName + "_lat", north));
 	    }
-            if (latLonOk(south)) {
+            if (GeoUtils.latLonOk(south)) {
 		if(doNegate)
 		    ns.add(bottom=Clause.lt(columnName + "_lat", south));
 		else
 		    ns.add(Clause.ge(columnName + "_lat", south));		
             }
-            if (latLonOk(west)) {
+            if (GeoUtils.latLonOk(west)) {
 		if(doNegate)
 		    ew.add(left=Clause.lt(columnName + "_lon", west));
 		else
 		    ew.add(Clause.ge(columnName + "_lon", west));		
             }
-            if (latLonOk(east)) {
+            if (GeoUtils.latLonOk(east)) {
 		if(doNegate)
 		    ew.add(right=Clause.gt(columnName + "_lon", east));
 		else
@@ -1990,16 +1977,16 @@ public class Column implements DataTypes, Constants, Cloneable {
             double west = request.get(searchArg + "_west",
                                       request.get("west", Double.NaN));
 
-            if (latLonOk(north)) {
+            if (GeoUtils.latLonOk(north)) {
                 where.add(Clause.le(columnName + "_north", north));
             }
-            if (latLonOk(south)) {
+            if (GeoUtils.latLonOk(south)) {
                 where.add(Clause.ge(columnName + "_south", south));
             }
-            if (latLonOk(west)) {
+            if (GeoUtils.latLonOk(west)) {
                 where.add(Clause.ge(columnName + "_west", west));
             }
-            if (latLonOk(east)) {
+            if (GeoUtils.latLonOk(east)) {
                 where.add(Clause.le(columnName + "_east", east));
             }
             getRepository().getSessionManager().setArea(request, north, west,
@@ -2428,21 +2415,21 @@ public class Column implements DataTypes, Constants, Cloneable {
             MapInfo map = getRepository().getMapManager().createMap(request,
 								    entry, true, null);
             widget = map.makeSelector(urlArg, true,
-                                      new String[] { latLonOk(latlon[0])
+                                      new String[] { GeoUtils.latLonOk(latlon[0])
 						     ? latlon[0] + ""
-						     : "", latLonOk(latlon[1])
+						     : "", GeoUtils.latLonOk(latlon[1])
 						     ? latlon[1] + ""
 						     : "" });
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwse = null;
             if (values != null) {
-                nwse = new String[] { latLonOk(values[offset + 0])
+                nwse = new String[] { GeoUtils.latLonOk(values[offset + 0])
                                       ? values[offset + 0] + ""
-                                      : "", latLonOk(values[offset + 1])
+                                      : "", GeoUtils.latLonOk(values[offset + 1])
 				      ? values[offset + 1] + ""
-				      : "", latLonOk(values[offset + 2])
+				      : "", GeoUtils.latLonOk(values[offset + 2])
 				      ? values[offset + 2] + ""
-				      : "", latLonOk(values[offset + 3])
+				      : "", GeoUtils.latLonOk(values[offset + 3])
 				      ? values[offset + 3] + ""
 				      : "", };
             }
