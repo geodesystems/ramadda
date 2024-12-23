@@ -156,8 +156,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
 	    cansearch="false" xxxgroup="Collection"/>
-    <column name="accession_number" type="string"  label="Accession Number"   cansearch="false" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="form_number" type="string"  label="Form Number"   cansearch="false" columns="8"/>
+    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
 	    numberformat="#0.0"/>	    
         
@@ -188,7 +188,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="series_number" type="string"  label="Series Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
 <children><![CDATA[
 <entries>
 <entry  name="File 1"  type="type_archive_file"/>
@@ -215,7 +215,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
     <property name="html.owner.show" value="false"/>                
     <column name="file_number" type="string"  label="File Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
 </type>
 
@@ -233,7 +233,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
     <column name="item_number" type="string"  label="Item Number" columns="8"/>
-    <column name="location" type="string"  label="Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
     <xwiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
@@ -391,10 +391,10 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="object_subclass4" type="enumerationplus" size="500" label="Sub-Class 4"  cansearch="true" />
     
 
-    <column name="location" type="enumerationplus" size="1000" label="Location"  cansearch="true"  group="Catalog"/>    
+    <column name="shelf_location" type="enumerationplus" size="1000" label="Shelf Location"  cansearch="true"  group="Catalog"/>    
 
     <column name="catalog_number" type="string"  label="Catalog Number" columns="30"/>
-    <column name="accession_number" type="string"  label="Accession Number" columns="30"/>        
+    <column name="form_number" type="string"  label="Form Number" columns="30"/>        
     
 
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
