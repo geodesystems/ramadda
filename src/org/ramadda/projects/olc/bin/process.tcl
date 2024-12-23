@@ -24,6 +24,11 @@ source ../names.tcl
 source ../keywords.tcl
 source media.tcl
 
+proc cleanType {type} {
+    if {$type=="PHOTOGRAPH"} {set type Photograph}
+    set type
+}
+
 proc processSummary {summary} {
     set summary [clean $summary]
     if {[regexp -nocase {Names included in this collection:(.*)$} $summary match names]} {
@@ -98,7 +103,7 @@ proc processSubjectsAndKeywords {v} {
 	set _what $what
 	set tok [string trim $tok]
 	if {$tok=="Disc"} {
-	    append ::entries [mtd1 archive_media_type $tok]
+	    append ::entries [mtd1 archive_media_description [cleanType $tok]]
 	    continue;
 	}
 	regsub -all {"} $tok {} tok
@@ -192,7 +197,7 @@ proc  iid {cid sid fid iid} {
     return "[fid $cid $sid $fid].$iid"
 }
 
-set ::cp {collection_title collection_nbr location organiz_arrange scope_content bio_org_history user_1 notes provenance column1 _1 _2 _3}
+set ::cp {collection_title collection_nbr shelf_location organiz_arrange scope_content bio_org_history user_1 notes provenance column1 _1 _2 _3}
 proc collection $::cp  {
     incr ::ccnt
     foreach p $::cp {
@@ -207,11 +212,11 @@ proc collection $::cp  {
     set ::cids($cid) $collection_title
     append ::entries [openEntry type_archive_collection $cid "" $collection_title]
     append ::entries [col collection_number [pad $collection_nbr]]
-    append ::entries [col location $location]
+    append ::entries [col shelf_location $shelf_location]
     append ::entries [mtd2 archive_note Note $column1]
     append ::entries [mtd2 archive_note Arrangement $organiz_arrange]
     append ::entries [mtd2 archive_note "Scope and Content" $scope_content]
-    append ::entries [mtd2 archive_note "History" $bio_org_history]
+    append ::entries [mtd2 archive_note "Creator Sketch" $bio_org_history]
     append ::entries [mtd2 archive_note "Provenance" $provenance]
     append ::entries "</entry>\n"
 }
@@ -370,7 +375,7 @@ proc handleDate {date what idx} {
 
 
 
-set ::sp {collection_nbr series_nbr series_title location scope_content notes user_1 bio_org_history organiz_arrange provenance bulk_dates name_type creator summary column1}
+set ::sp {collection_nbr series_nbr series_title shelf_location scope_content notes user_1 bio_org_history organiz_arrange provenance bulk_dates name_type creator summary column1}
 proc series $::sp {
     incr ::scnt
     foreach p $::sp {
@@ -386,10 +391,10 @@ proc series $::sp {
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
     set summary [processSummary $summary]
     append ::entries [col series_number [pad $series_nbr]]
-    append ::entries [col location $location]
+    append ::entries [col shelf_location $shelf_location]
     append ::entries [mtd2 archive_note Scope $scope_content]
     append ::entries [mtd2 archive_note Note $notes]    
-    append ::entries [mtd2 archive_note History $bio_org_history]
+    append ::entries [mtd2 archive_note "Creator Sketch" $bio_org_history]
     append ::entries [mtd2 archive_note Arrangement $organiz_arrange]
     append ::entries [mtd2 archive_note "Provenance" $provenance]
     append ::entries [mtd2 archive_note "Note" $column1]
@@ -407,7 +412,7 @@ proc series $::sp {
 }
 
 
-set ::fp {collection_nbr series_nbr file_unit_nbr title location phys_desc dates summary_note notes_prov creator language}
+set ::fp {collection_nbr series_nbr file_unit_nbr title shelf_location phys_desc dates summary_note notes_prov creator language}
 proc files $::fp {
     if {$file_unit_nbr==""} return
     incr ::fcnt
@@ -427,7 +432,7 @@ proc files $::fp {
     set summary_note [processSummary $summary_note]
 
     append ::entries [col file_number [pad $file_unit_nbr]]
-    append ::entries [col location $location]
+    append ::entries [col shelf_location $shelf_location]
     handlePhysicalDescription $phys_desc 
     handleDate  $dates file $::fcnt
     append ::entries [mtd2 archive_note "Summary" $summary_note]        
@@ -440,7 +445,7 @@ proc files $::fp {
 array set ::seen {}
 
 
-set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
+set ::ip {collection_nbr series_nbr file_unit_nbr item_nbr title shelf_location phys_desc notes_prov pers_fam_name other_terms media_type creator category dates summary_note user_1}
 proc item $::ip {
     foreach p $::ip {
 	set v [string trim [set $p]]
@@ -459,19 +464,19 @@ proc item $::ip {
     incr ::icnt
     set id [iid $collection_nbr $series_nbr $file_unit_nbr $item_nbr]
     set ::iids($id) $title
-    ##TODO - uncomment this
-    return
-
-
     append ::entries [openEntry type_archive_item $id $parent $title]
     append ::entries [col item_number [pad $item_nbr]]
-    append ::entries [col location $location]
+    append ::entries [col shelf_location $shelf_location]
     handlePhysicalDescription $phys_desc 
     append ::entries [mtd2 archive_note "Provenance" $notes_prov]
     append ::entries [mtd2 archive_note "Family Name" $pers_fam_name]
     append ::entries [mtd2 archive_note "Other Term" $other_terms]            
 
-    append ::entries [mtd1 archive_media_type $media_type]
+
+
+
+    set media_type [cleanType $media_type]
+    append ::entries [mtd1 archive_media_description $media_type]
     append ::entries [mtd1 archive_creator $creator]    
     append ::entries [mtd1 archive_category $category]    
     handleDate  $dates item $::icnt
