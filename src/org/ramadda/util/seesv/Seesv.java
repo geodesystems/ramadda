@@ -3118,6 +3118,10 @@ public class Seesv implements SeesvCommands {
                 new Arg("template", "Use ${column_name} or indices: ${0},${1}, etc for values", ATTR_ROWS, "6"),
 		new Arg("row_delimiter", "Output between rows",	ATTR_SIZE, "40"),
 		new Arg("suffix", "", ATTR_SIZE, "40")),
+        new Cmd(CMD_TCL, "Generate a TCL script",
+		ARG_LABEL,"Make TCL Script",
+                new Arg("proc_name", "")),
+	
         new Cmd(CMD_SUBD, "Subdivide into different files",
 		ARG_LABEL,"Subdivide",
 		new Arg(ARG_COLUMNS,"columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		

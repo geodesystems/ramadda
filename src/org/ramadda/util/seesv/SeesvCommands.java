@@ -338,6 +338,7 @@ public interface SeesvCommands {
     public static final String CMD_TOJSON="-tojson";
     public static final String CMD_TODB="-todb";
     public static final String CMD_TEMPLATE="-template";
+    public static final String CMD_TCL="-tcl";
     public static final String CMD_OUTPUT="-o";
     public static final String CMD_SUBD="-subd";
     public static final String CMD_CHUNK="-chunk";
