@@ -171,6 +171,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    return getWikiError("LLM Assistant: OpenAI access is not enabled");
 	}
 
+	if(!getAccessManager().canAccessFile(request, entry)) {
+	    return getPageHandler().showDialogWarning("Sorry, you don't have the correct permissions to call the LLM Assistant");
+	}
+
 
 	String assistantId = entry.getStringValue(request,"assistant_id","");
 	if(!Utils.stringDefined(assistantId)) {
@@ -242,7 +246,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	throws Exception {
 	try {
 	    return processEntryActionInner(request, entry);
-
 	} catch(Exception exc) {
 	    getLogManager().logError("LLMAssistant: " + entry.getName() +" error:" + exc,exc);
 	    return handleError(request,"Error processing request:" + exc);
@@ -307,6 +310,12 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	if (!action.equals(ACTION_ASSISTANT)) {
 	    return super.processEntryAction(request,entry);
 	}
+	if(!getAccessManager().canAccessFile(request, entry)) {
+	    return handleError(request,"Sorry, you don't have the correct permissions to call the LLM Assistant");
+	}
+
+
+
 	String assistantId = entry.getStringValue(request,"assistant_id","");
 	if(!Utils.stringDefined(assistantId)) {
 	    return handleError(request,"no assistant ID defined");
