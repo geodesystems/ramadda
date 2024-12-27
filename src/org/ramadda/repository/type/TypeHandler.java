@@ -350,7 +350,8 @@ public class TypeHandler extends RepositoryManager {
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             help     = Utils.getAttributeOrTag(node, "help", help);
             dictionary = Utils.getAttributeOrTag(node, "data_dictionary", null);
-            editHelp = Utils.getAttributeOrTag(node, "edithelp", editHelp);
+	    String help =  Utils.getAttributeOrTag(node, "help", null);
+            editHelp = Utils.getAttributeOrTag(node, "edithelp", help);
 	    if(editHelp!=null)
 		editHelp = editHelp.replace("\\n","\n");
             newHelp = Utils.getAttributeOrTag(node, "newhelp", editHelp);	    

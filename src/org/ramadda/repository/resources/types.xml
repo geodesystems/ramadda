@@ -409,6 +409,7 @@ showHeading=true
 
 
 <type name="type_llm_assistant"  description="ChatGPT Assistant"
+      help="Note: set 'file' permissions to allow access to others&lt;br&gt;Also note: when deleting this entry the ChatGPT Assistant is not deleted. You will need to delete the Assistant through the ChatGPT console"
       handler="org.ramadda.repository.type.LLMAssistantTypeHandler"
       priority="2"
       editfields="name,instructions,_default"
@@ -425,7 +426,8 @@ showHeading=true
   <property name="form.altitude.show" value="false"/>
 
 
-  <column name="chatgpt_api_key" label="ChatGPT API Key" type="password" help="Note: this is an optional API key to use"/>
+  <column name="chatgpt_api_key" label="ChatGPT API Key" type="password"
+	  help="Note: this is an optional API key to use"/>
   <column name="assistant_id" label="Assistant ID" type="string"/>
   <column name="vector_store_id" label="Vector Store ID" type="string"/>  
   <column name="instructions" size="1000" label="Instructions" rows="5" type="string"/>
