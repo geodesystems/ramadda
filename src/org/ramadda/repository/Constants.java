@@ -1200,6 +1200,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_USER_ID = "user_id";
+    public static final String ARG_EDITUSER_ID = "edituser_id";    
 
 
     /** _more_ */
