@@ -141,6 +141,8 @@ public class UserManager extends RepositoryManager {
 
 
     public static final String PROP_REGISTER_OK = "ramadda.register.ok";
+    public static final String PROP_REGISTER_STATUS_PENDING= "ramadda.register.status.pending";
+    public static final String PROP_REGISTER_NOTIFY = "ramadda.register.notify";
     public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
     public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
     public static final String PROP_REGISTER_PASSPHRASE = "ramadda.register.passphrase";
@@ -3078,12 +3080,35 @@ public class UserManager extends RepositoryManager {
 
             if (ok) {
 		User user = new User(id,name );
+		boolean pending = getRepository().getProperty(PROP_REGISTER_STATUS_PENDING,false);
+		if(pending)
+		    user.setStatus(User.STATUS_PENDING);
+		else
+		    user.setStatus(User.STATUS_ACTIVE);		
 		user.setPassword(hashPassword(password1));
 		user.setEmail(email);
 		user.setInstitution(getInstitution(request,""));
+		user.setCountry(getCountry(request,""));		
 		user.setAccountCreationDate(new Date());
 		makeOrUpdateUser(user, false);
-		sb.append(HU.center(messageNote("You are now registered. Please login")));
+		String notify = getRepository().getProperty(PROP_REGISTER_NOTIFY,null);
+		if(stringDefined(notify)) {
+		    if (getMailManager().isEmailEnabled()) {
+			String editUrl = HU.href(request.makeUrl(getRepositoryBase().URL_USER_EDIT, ARG_USER_ID,
+								 user.getId()), "Edit User");
+			getMailManager().sendEmail(Utils.split(notify,",",true,true),
+						   "New user registration on RAMADDA: " + id,
+						   (pending?"A new user has registered and is pending review. ":
+						    "A new user has registered. ")
+						   + editUrl,
+						   true);
+		    }
+		}
+		if(pending) {
+		    sb.append(HU.center(messageNote("Your registration is pending review by the repository administrator.")));
+		} else {
+		    sb.append(HU.center(messageNote("You are now registered. Please login.")));
+		}
 		sb.append(makeLoginForm(request));
 		return addHeader(request, sb, "New User Registration");
 
@@ -3125,6 +3150,7 @@ public class UserManager extends RepositoryManager {
 				     ARG_USER_EMAIL, request.getString(ARG_USER_EMAIL, ""),
 				     HU.id(ARG_USER_EMAIL) + HU.SIZE_20)));
 	addInstitutionWidget(request, sb,"");
+	addCountryWidget(request, sb,"");	
 
         sb.append(
 		  formEntry(
