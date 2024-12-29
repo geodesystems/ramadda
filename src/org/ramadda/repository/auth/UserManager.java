@@ -3096,13 +3096,15 @@ public class UserManager extends RepositoryManager {
 		String notify = getRepository().getProperty(PROP_REGISTER_NOTIFY,null);
 		if(stringDefined(notify)) {
 		    if (getMailManager().isEmailEnabled()) {
-			String editUrl = HU.href(request.makeUrl(getRepositoryBase().URL_USER_EDIT, ARG_USER_ID,
-								 user.getId()), "Edit User");
+			String editUrl = request.getAbsoluteUrl(HU.url(
+								       getRepository().getUrlPath(request,
+												  getRepositoryBase().URL_USER_EDIT),
+								       ARG_USER_ID,user.getId()));
 			getMailManager().sendEmail(Utils.split(notify,",",true,true),
 						   "New user registration on RAMADDA: " + id,
 						   (pending?"A new user has registered and is pending review. ":
 						    "A new user has registered. ")
-						   + editUrl,
+						   + HU.href(editUrl,"Edit User"),
 						   MailManager.ASHTML_TRUE);
 		    }
 		}
