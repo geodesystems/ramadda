@@ -190,8 +190,6 @@
 
   <group handler="usermanager">
     <api request="/user/register"          method="processRegister"    needs_ssl="true" />
-    <api request="/user/humanquestion/*"     method="processHumanQuestion"  />
-
     <api request="/user/login"              method="processLogin"    needs_ssl="true" />
     <api request="/user/logout"             method="processLogout"   />
     <api request="/user/home"               method="processHome"     />
