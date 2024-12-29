@@ -1142,7 +1142,7 @@ public class Admin extends RepositoryManager {
 	    sb.append(request.formPost(URL_ADMIN_MAINTENANCE));
 	    sb.append(messageNote("You can write out the database for backup or transfer to a new database"));
 	    sb.append(HU.submit("Export the database", ACTION_DUMPDB));
-	    getAuthManager().addVerification(request,sb,null,true);
+	    sb.append(getAuthManager().getVerification(request,null,true));
 	    sb.append(HU.formClose());
             return makeResult(request, msg("RAMADDA-Admin-DB Export"), sb);
 	}	    
@@ -1334,7 +1334,7 @@ public class Admin extends RepositoryManager {
         sb.append(request.formPost(URL_ADMIN_SETTINGS_DO));
         sb.append(HU.sectionOpen(null, false));
         sb.append(HU.submit("Change Settings"));
-	getAuthManager().addVerification(request,sb);
+	sb.append(getAuthManager().getVerification(request));
         sb.append(HU.vspace());
         StringBuffer csb = new StringBuffer();
         csb.append(HU.formTable());
@@ -2166,8 +2166,8 @@ public class Admin extends RepositoryManager {
         StringBuffer formSB = new StringBuffer();
         formSB.append(request.uploadForm(URL_ADMIN_SQL));
         formSB.append(HU.submit("Execute"));
-	getAuthManager().addVerification(request,formSB,
-					 "For verification enter your password. Be very careful what you do here! This evaluates arbitrary SQL and you can really screw up your RAMADDA if you do something wrong here.",true);
+	formSB.append(getAuthManager().getVerification(request,
+						       "For verification enter your password. Be very careful what you do here! This evaluates arbitrary SQL and you can really screw up your RAMADDA if you do something wrong here.",true,false));
         formSB.append(HU.br());
         formSB.append(HU.textArea(ARG_QUERY, (bulkLoad
                 ? ""
@@ -2670,7 +2670,7 @@ public class Admin extends RepositoryManager {
 	topSB.append(messageNote("Note:  All users including you will have to reset their passwords. If you do not have email enabled then only the admin will be able to reset the passwords. So, if you do this then right away, while your session is active, go and change your password. If things go bad and you can't login at all see the  <a href=\"http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6\">FAQ</a> post."));
 
 	topSB.append(HU.submit("Clear all passwords", ACTION_PASSWORDS_CLEAR));
-	getAuthManager().addVerification(request,topSB,null,true);
+	topSB.append(getAuthManager().getVerification(request,null,true));
 	topSB.append(HU.formClose());
 
 	
@@ -2678,7 +2678,7 @@ public class Admin extends RepositoryManager {
 	topSB.append(request.formPost(URL_ADMIN_MAINTENANCE));
 	topSB.append(messageNote("You can write out the database for backup or transfer to a new database"));
 	topSB.append(HU.submit("Export the database", ACTION_DUMPDB));
-	getAuthManager().addVerification(request,topSB,null,true);
+	topSB.append(getAuthManager().getVerification(request,null,true));
 	topSB.append(HU.formClose());
 
 	header.accept(topSB, "Reindex Lucene Index");
@@ -2818,7 +2818,7 @@ public class Admin extends RepositoryManager {
                 request.formPostWithAuthToken(sb, URL_ADMIN_MAINTENANCE, "");
 		header.accept(sb, "Shutdown");
                 sb.append(HU.submit("Shutdown server", ACTION_SHUTDOWN));
-		getAuthManager().addVerification(request,sb,"To verify shutdown please enter your password",true);
+		sb.append(getAuthManager().getVerification(request,"To verify shutdown please enter your password",true));
                 sb.append(HU.formClose());
             }
 

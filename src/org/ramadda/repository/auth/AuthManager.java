@@ -94,17 +94,14 @@ public class AuthManager extends RepositoryManager {
 	return false;
     }
 
-    public void addRecaptcha(Request request, Appendable sb)  {
-	try {
-	    if(isRecaptchaEnabled()) {
-		sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
-		String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-		sb.append(formEntry(request,"",
-				    HU.div("",HU.attrs("class","g-recaptcha","data-sitekey",siteKey))));
-	    }
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
+    public String getRecaptcha(Request request) {
+	StringBuilder sb = new StringBuilder();
+	if(isRecaptchaEnabled()) {
+	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
+	    String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
+	    HU.div(sb,"",HU.attrs("class","g-recaptcha ramadda-recaptcha","data-sitekey",siteKey));
 	}
+	return sb.toString();
     }
 
     public boolean checkRecaptcha(Request request, Appendable response)
@@ -186,32 +183,24 @@ public class AuthManager extends RepositoryManager {
 
 
     public String getVerification(Request request)  {
+	return getVerification(request, null, false);
+    }
+
+
+    public String getVerification(Request request, String msg, boolean forcePassword,boolean...addRecaptcha) {
 	StringBuilder  sb = new StringBuilder();
-	addVerification(request, sb);
-	return sb.toString();
-    }
-
-
-    public void addVerification(Request request, Appendable sb)  {
-	addVerification(request, sb, null,false);
-    }
-
-    public void addVerification(Request request, Appendable sb, String msg)  {
-	addVerification(request, sb,msg,false);
-    }
-
-    public void addVerification(Request request, Appendable sb, String msg, boolean forcePassword)  {	
 	if(msg==null) msg = DEFAULT_MESSAGE;
 	msg = msg(msg);
 	if(doPassword||forcePassword) {
-	    HU.div(sb,
-		   msg+ "<br>" +
+	    String div =    HU.div(msg+ "<br>" +
 		   HU.password(ARG_EXTRA_PASSWORD),
 		   HU.clazz("ramadda-verification"));
+	    Utils.append(sb,div);
 	}
-	if(doCaptcha)
-	    addRecaptcha(request, sb);
+	if(!forcePassword && doCaptcha && Utils.isTrue(addRecaptcha,true))
+	    sb.append(getRecaptcha(request));
 	addAuthToken(request, sb);
+	return sb.toString();
     }
 
 

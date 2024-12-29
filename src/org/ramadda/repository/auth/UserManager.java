@@ -1110,7 +1110,6 @@ public class UserManager extends RepositoryManager {
                 + HU.space(2)
                 + HU.submit(LABEL_CANCEL, ARG_CANCEL);
             sb.append(buttons);
-	    getAuthManager().addVerification(request,sb);
             makeUserForm(request, user, sb, true);
 	    //            if (user.canChangePassword()) {
 	    sb.append(HU.vspace());
@@ -1146,13 +1145,13 @@ public class UserManager extends RepositoryManager {
 
 	String size = HU.SIZE_40;
         sb.append(HU.formTable());
+	HU.formEntry(sb,"",getAuthManager().getVerification(request));
 	sb.append(formEntry(request, msgLabel("ID"), user.getId()));
         if (isAdmin || user.canChangeNameAndEmail()) {
             sb.append(formEntry(request, msgLabel("Name"),
                                 HU.input(ARG_USER_NAME,request.getReallyStrictSanitizedString(ARG_USER_NAME,user.getName()), size)));
         }
         if (includeAdmin) {
-            sb.append(HU.formHelp("Note: An administrator can do anything on this RAMADDA",true));
 	    List status = Utils.makeListFromValues(new HtmlUtils.Selector("Active",User.STATUS_ACTIVE),
 					 new HtmlUtils.Selector("Inactive",User.STATUS_INACTIVE),
 					 new HtmlUtils.Selector("Pending",User.STATUS_PENDING));
@@ -1571,7 +1570,7 @@ public class UserManager extends RepositoryManager {
 				ARG_USER_DELETE_CONFIRM));
 	    sb.append(HU.space(2));
 	    sb.append(HU.submit(LABEL_CANCEL, ARG_USER_CANCEL));
-	    getAuthManager().addVerification(request,sb);
+	    sb.append(getAuthManager().getVerification(request));
 	    sb.append(HU.vspace());
 	    for (User user : users) {
 		String userCbx = HU.checkbox("user_" + user.getId(),
@@ -1779,7 +1778,7 @@ public class UserManager extends RepositoryManager {
         sb.append(HU.vspace());
         sb.append(HU.submit("Create User", ARG_USER_NEW));
 	sb.append("\n");
-	getAuthManager().addVerification(request,sb);
+	sb.append(getAuthManager().getVerification(request));
 	sb.append("\n");
         sb.append(HU.formClose());
 
@@ -3112,16 +3111,15 @@ public class UserManager extends RepositoryManager {
         sb.append(formEntry(request, msgLabel("User ID"),
                             HU.input(ARG_USER_ID, id,
 				     HU.id(ARG_USER_ID)
-				     + HU.SIZE_20)));
+				     + HU.SIZE_20) +HU.space(2) +msg("Lower case, no spaces, no punctuation")));
         sb.append(formEntry(request, msgLabel("Name"),
                             HU.input(ARG_USER_NAME, name,
 				     HU.SIZE_20)));
-        sb.append(
-		  formEntry(
+        sb.append(formEntry(
 			    request, msgLabel("Email"),
 			    HU.input(
 				     ARG_USER_EMAIL, request.getString(ARG_USER_EMAIL, ""),
-				     HU.id(ARG_USER_EMAIL) + HU.SIZE_20)));
+				     HU.id(ARG_USER_EMAIL) + HU.SIZE_20) +HU.space(2) +HU.span("* Required",HU.clazz("ramadda-required-field"))));
 	addInstitutionWidget(request, sb,"");
 	addCountryWidget(request, sb,"");	
 
@@ -3150,7 +3148,7 @@ public class UserManager extends RepositoryManager {
 				+ "You should have been given a pass phrase to register"));
 
         }
-        getAuthManager().addRecaptcha(request, sb);
+        HU.formEntry(sb,"",getAuthManager().getRecaptcha(request));
         sb.append(formEntry(request, "", HU.submit("Register")));
         formInfo.addToForm(sb);
 
@@ -3790,7 +3788,6 @@ public class UserManager extends RepositoryManager {
         sb.append(request.uploadForm(getRepositoryBase().URL_USER_CHANGE_SETTINGS));
 	String buttons = HU.submit("Change Settings", ARG_USER_CHANGE);
         sb.append(buttons);
-	getAuthManager().addVerification(request,sb);
         makeUserForm(request, user, sb, false);
         sb.append(HU.formClose());
         sb.append(HU.vspace());
@@ -3826,7 +3823,7 @@ public class UserManager extends RepositoryManager {
             sb.append(request.formPost(getRepositoryBase().URL_USER_CHANGE_PASSWORD));
             makePasswordForm(request, user, sb);
             sb.append(HU.submit("Change Password", ARG_USER_CHANGE));
-	    getAuthManager().addVerification(request,sb);
+	    sb.append(getAuthManager().getVerification(request));
             sb.append(HU.formClose());
         } else {
             sb.append(messageWarning("You are not allowed to change the password"));
@@ -3852,7 +3849,7 @@ public class UserManager extends RepositoryManager {
         User user = request.getUser();
         if (user.getAnonymous()) {
             StringBuffer sb = new StringBuffer();
-            sb.append(messageWarning(msg("You need to be logged in to change user settings")));
+            sb.append(HU.center(messageWarning(msg("You need to be logged in to change user settings"))));
             sb.append(makeLoginForm(request));
 
             return addHeader(request, sb, "User Settings");
