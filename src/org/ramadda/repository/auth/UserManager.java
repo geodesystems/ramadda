@@ -7,6 +7,8 @@ package org.ramadda.repository.auth;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.admin.Admin;
+import org.ramadda.repository.admin.MailManager;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.output.*;
@@ -3101,7 +3103,7 @@ public class UserManager extends RepositoryManager {
 						   (pending?"A new user has registered and is pending review. ":
 						    "A new user has registered. ")
 						   + editUrl,
-						   true);
+						   MailManager.ASHTML_TRUE);
 		    }
 		}
 		if(pending) {
