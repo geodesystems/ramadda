@@ -59,6 +59,11 @@ import javax.mail.internet.*;
 @SuppressWarnings("unchecked")
 public class MailManager extends RepositoryManager {
 
+    public static final boolean BCC_FALSE = false;
+    public static final boolean BCC_TRUE = true;    
+    public static final boolean ASHTML_FALSE = false;
+    public static final boolean ASHTML_TRUE = true;        
+
     /** _more_ */
     public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
 
@@ -239,8 +244,9 @@ public class MailManager extends RepositoryManager {
 	if(addresses.size()==0) return 0;
 
         sendEmail(addresses,
-                  new InternetAddress( getAdminEmail()), subject, contents, asHtml,
-                  false,null);
+                  new InternetAddress( getAdminEmail()), subject, contents,
+		  BCC_FALSE,
+                  asHtml,null);
 	return addresses.size();
     }    
 
@@ -251,13 +257,15 @@ public class MailManager extends RepositoryManager {
                           String contents, boolean asHtml, File file)
             throws Exception {
         sendEmail((List<Address>) Misc.newList(new InternetAddress(to)),
-                  new InternetAddress(from), subject, contents, false,
+                  new InternetAddress(from), subject, contents,
+		  BCC_FALSE,
                   asHtml, file);
     }
 
 
     public void sendEmail(List<Address> to, InternetAddress from,
-                          String subject, String contents, boolean bcc,
+                          String subject, String contents,
+			  boolean bcc,
                           boolean asHtml, File file)
             throws Exception {
 
@@ -386,7 +394,7 @@ public class MailManager extends RepositoryManager {
         List<Address> to =
             (List<Address>) Misc.newList(new InternetAddress(args[0]));
         InternetAddress from = new InternetAddress(args[0]);
-        sendEmailNew(to, from, "test", "message", false, true);
+        sendEmailNew(to, from, "test", "message", BCC_FALSE, ASHTML_TRUE);
     }
 
 
