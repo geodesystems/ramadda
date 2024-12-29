@@ -917,13 +917,6 @@ public class Utils extends IO {
 	return s.substring(prefix.length());
     }
 
-    public static void append(Appendable sb,Object o) {
-	try {
-	    sb.append(o.toString());
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
-    }
 
     public static boolean isTrue(boolean[]args,boolean...dflt) {
 	if(args.length==0) {
