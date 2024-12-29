@@ -145,10 +145,10 @@ public class MailManager extends RepositoryManager {
         String smtpUser = getSmtpUser();
         String smtpPassword = getSmtpPassword();
 	if(!stringDefined(smtpUser)) {
-	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.user property defined");
+	    //	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.user property defined");
 	}
 	if(!stringDefined(smtpPassword)) {
-	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.password property defined");
+	    //	    getSessionManager().addSessionMessage(request,"No ramadda.admin.smtp.password property defined");
 	}	
 
 
