@@ -95,21 +95,10 @@ ramadda.register.passphrase=Somephrase
 Once enabled users can go to the URL:   https://yourserver/repository/user/register
 :p
 
+<a name=recaptcha></a>
 RAMADDA can also make use of Google's  Recaptcha service to authenticate that the
-user is indeed a real human and not a bot.
-You first need to register your site with Google at
-<a href=https://www.google.com/recaptcha/admin>https://www.google.com/recaptcha/admin</a>.
-Once registered get the site key (which is public) and the secret key
-and add them to your repository.properties file:
-
-
-+pre addCopy=true
-google.recaptcha.sitekey=
-google.recaptcha.secret=
--pre
-
-
-
+user is indeed a real human and not a bot. To configure this see
+<a href=installing.html#recaptch>installing.html#recaptch</a>
 
 
 
