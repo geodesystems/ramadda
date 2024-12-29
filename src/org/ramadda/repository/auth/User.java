@@ -55,7 +55,8 @@ public class User {
 
     /** _more_ */
     private String email = "";
-    private String institution = "";    
+    private String institution = "";
+    private String country = "";    
 
     /** _more_ */
     private String question = "";
@@ -159,6 +160,7 @@ public class User {
 		String name,
 		String email,
 		String institution,
+		String country,		
 		String question,
                 String answer,
 		String hashedPassword, String description,
@@ -169,6 +171,7 @@ public class User {
         setName(name);
         setEmail(email);
 	setInstitution(institution);
+	setCountry(country);	
         this.question       = question;
         this.answer         = answer;
         this.hashedPassword = hashedPassword;
@@ -457,6 +460,25 @@ public class User {
     **/
     public String getInstitution () {
 	return institution;
+    }
+
+    /**
+       Set the Country property.
+
+       @param value The new value for Country
+    **/
+    public void setCountry (String value) {
+	if(value==null) value="";
+	country = value;
+    }
+
+    /**
+       Get the Country property.
+
+       @return The Country
+    **/
+    public String getCountry () {
+	return country;
     }
 
 

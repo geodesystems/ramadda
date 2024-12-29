@@ -268,7 +268,7 @@ public class LocalRepositoryManager extends RepositoryManager {
         User user = childRepository.getUserManager().findUser(adminId);
         if (user == null) {
             user = new User(
-			    adminId, User.STATUS_ACTIVE,"Administrator", "", "", "","",
+			    adminId, User.STATUS_ACTIVE,"Administrator", "", "", "","","",
 			    childRepository.getUserManager().hashPassword(password), "",
 			    true, "", "", false, null,null);
             childRepository.getUserManager().makeOrUpdateUser(user, false);

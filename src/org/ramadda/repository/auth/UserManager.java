@@ -88,6 +88,7 @@ public class UserManager extends RepositoryManager {
 
 
     public static final String DEFAULT_INSTITUTION = "";
+    public static final String DEFAULT_COUNTRY = "";
     public static final String DEFAULT_QUESTION = "";
     public static final String DEFAULT_ANSWER = "";        
 
@@ -125,7 +126,8 @@ public class UserManager extends RepositoryManager {
     public static final String ARG_USER_DOWNLOAD = "user_download";    
     public static final String ARG_USER_DELETE_CONFIRM =    "user_delete_confirm";
     public static final String ARG_USER_EMAIL = "user_email";
-    public static final String ARG_USER_INSTITUTION = "user_institution";    
+    public static final String ARG_USER_INSTITUTION = "user_institution";
+    public static final String ARG_USER_COUNTRY = "user_country";        
     public static final String ARG_USER_LANGUAGE = "user_language";
     public static final String ARG_USER_NAME = "user_name";
     public static final String ARG_USER_DESCRIPTION = "user_description";
@@ -791,7 +793,7 @@ public class UserManager extends RepositoryManager {
 	throws Exception {
         if ( !userExistsInDatabase(user)) {
 	    //Note: these have to be lined up with the database/Tables.USERS class defs
-	    //COL_ID,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
+	    //COL_ID,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_COUNTRY,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
             getDatabaseManager().executeInsert(Tables.USERS.INSERT,
 					       new Object[] {
 						   user.getId(),
@@ -799,6 +801,7 @@ public class UserManager extends RepositoryManager {
 						   user.getName(),
 						   user.getEmail(),
 						   user.getInstitution(),
+						   user.getCountry(),
 						   user.getQuestion(),
 						   user.getAnswer(),
 						   user.getHashedPassword(),
@@ -826,7 +829,8 @@ public class UserManager extends RepositoryManager {
 					Tables.USERS.COL_PASSWORD,
 					Tables.USERS.COL_DESCRIPTION,
 					Tables.USERS.COL_EMAIL,
-					Tables.USERS.COL_INSTITUTION,					
+					Tables.USERS.COL_INSTITUTION,
+					Tables.USERS.COL_COUNTRY,
 					Tables.USERS.COL_QUESTION,
 					Tables.USERS.COL_ANSWER,
 					Tables.USERS.COL_ADMIN,
@@ -842,6 +846,7 @@ public class UserManager extends RepositoryManager {
 					user.getDescription(),
 					user.getEmail(),
 					user.getInstitution(),
+					user.getCountry(),
 					user.getQuestion(),
 					user.getAnswer(),
 					user.getAdmin()
@@ -941,6 +946,7 @@ public class UserManager extends RepositoryManager {
 					      user.getDescription()));
         user.setEmail(request.getReallyStrictSanitizedString(ARG_USER_EMAIL, user.getEmail()));
         user.setInstitution(getInstitution(request,user.getInstitution()));
+        user.setCountry(getCountry(request,user.getCountry()));	
         user.setTemplate(request.getReallyStrictSanitizedString(ARG_USER_TEMPLATE,
                                            user.getTemplate()));
         user.setLanguage(request.getReallyStrictSanitizedString(ARG_USER_LANGUAGE,
@@ -1196,6 +1202,7 @@ public class UserManager extends RepositoryManager {
                                 HU.input(ARG_USER_EMAIL,
 					 request.getReallyStrictSanitizedString(ARG_USER_EMAIL,user.getEmail()), size)));
 	    addInstitutionWidget(request, sb,user.getInstitution());
+	    addCountryWidget(request, sb,user.getCountry());	    
 
 
             sb.append(formEntry(request, msgLabel("Description"),
@@ -1346,6 +1353,7 @@ public class UserManager extends RepositoryManager {
                 }
                 User user = new User(id, User.STATUS_ACTIVE,
 				     name, email, DEFAULT_INSTITUTION,
+				     DEFAULT_COUNTRY,
 				     "", "",
                                      hashPassword(password1), "", false, "",
                                      "", false, new Date(),
@@ -1366,7 +1374,8 @@ public class UserManager extends RepositoryManager {
             String  name      = "";
             String  desc      = "";
             String  email     = "";
-            String  institution     = "";	    
+            String  institution     = "";
+            String  country     = "";	    	    
             String  password1 = "";
             String  password2 = "";
             boolean admin     = false;
@@ -1377,6 +1386,7 @@ public class UserManager extends RepositoryManager {
                 desc = request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION, name).trim();
                 email     = request.getReallyStrictSanitizedString(ARG_USER_EMAIL, "").trim();
                 institution     = getInstitution(request,"");
+                country     = getCountry(request,"");		
                 password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
                 password2 = request.getString(ARG_USER_PASSWORD2, "").trim();
                 admin     = request.get(ARG_USER_ADMIN, false);
@@ -1410,6 +1420,7 @@ public class UserManager extends RepositoryManager {
                 if (okToAdd) {
                     User newUser = new User(id, User.STATUS_ACTIVE,
 					    name, email, institution,
+					    country,
 					    DEFAULT_QUESTION,DEFAULT_ANSWER,
                                             hashPassword(password1), desc,
                                             admin, "", "", false, new Date(),
@@ -1679,6 +1690,7 @@ public class UserManager extends RepositoryManager {
         String       desc = request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION, "").trim();
         String       email  = request.getReallyStrictSanitizedString(ARG_USER_EMAIL, "").trim();
         String       institution = getInstitution(request,"");
+        String       country = getCountry(request,"");	
         boolean      admin  = request.get(ARG_USER_ADMIN, false);
         boolean      guest  = request.get(ARG_USER_ISGUEST, false);	
 
@@ -1705,6 +1717,7 @@ public class UserManager extends RepositoryManager {
         formSB.append(formEntry(request, msgLabel("Email"),
                                 HU.input(ARG_USER_EMAIL, email, size)));
 	addInstitutionWidget(request, formSB,institution);
+	addCountryWidget(request, formSB,country);	
         formSB.append(formEntry(request, msgLabel("Description"),
                                 HU.textArea(ARG_USER_DESCRIPTION,
 					    desc, 5, cols)));
@@ -1900,6 +1913,12 @@ public class UserManager extends RepositoryManager {
 						       ids);
 		    }
 
+		    if(sortBy.equals("country")) {
+			return Utils.compareIgnoreCase(u1.getCountry(),
+						       u2.getCountry(),
+						       ids);
+		    }
+		    
 		    if(sortBy.equals("email")) {
 			return Utils.compareIgnoreCase(u1.getEmail(),
 						       u2.getEmail(),
@@ -1973,6 +1992,7 @@ public class UserManager extends RepositoryManager {
 	String adminHeader = getUserSortLink(request, "admin",ascending,"Admin");		
 	String guestHeader = getUserSortLink(request, "guest",ascending,"Guest");		
 	String instHeader = getUserSortLink(request, "institution",ascending,"Institution");
+	String countryHeader = getUserSortLink(request, "country",ascending,"Country");	
 	String emailHeader = getUserSortLink(request, "email",ascending,"Email");
 	String rolesHeader = getUserSortLink(request, "roles",ascending,"Roles");			
 	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
@@ -1986,7 +2006,8 @@ public class UserManager extends RepositoryManager {
 					HU.bold(guestHeader) + HU.space(2),
 					HU.bold(rolesHeader) + HU.space(2),
 					HU.bold(emailHeader) + HU.space(2),
-					HU.bold(instHeader) + HU.space(2),					
+					HU.bold(instHeader) + HU.space(2),
+					HU.bold(countryHeader) + HU.space(2),										
 					HU.bold(dateHeader) + HU.space(2),					
 
 					HU.bold(msg("Log")))));
@@ -2030,6 +2051,12 @@ public class UserManager extends RepositoryManager {
 	    } else {
 		corpus.append(" noinst ");
 	    }
+	    if(stringDefined(user.getCountry())) {
+		corpus.append(" country:" + user.getCountry()+":");
+		corpus.append(" hascountry ");
+	    } else {
+		corpus.append(" nocountry ");
+	    }	    
 	    if(stringDefined(user.getEmail())) {
 		corpus.append(" email:" + user.getEmail()+":");
 		corpus.append(" hasemail ");
@@ -2065,7 +2092,7 @@ public class UserManager extends RepositoryManager {
 					rolesTD.toString(),
 					user.getEmail(),
 					user.getInstitution(),
-
+					user.getCountry(),					
 					dttm,
 					userLogLink),
 				HU.attrs("data-corpus",corpus.toString(),
@@ -2155,6 +2182,7 @@ public class UserManager extends RepositoryManager {
                              results.getString(col++), //Name
                              results.getString(col++),//email
                              results.getString(col++),//institution
+                             results.getString(col++),//country			     
                              results.getString(col++),//question
                              results.getString(col++),//answer
                              results.getString(col++),//hashed password
@@ -2428,12 +2456,10 @@ public class UserManager extends RepositoryManager {
         StringBuffer sb   = new StringBuffer();
         User         user = findUser(request.getString(ARG_USER_ID, ""));
         HU.titleSectionOpen(sb, "User Profile");
-
         if (user == null) {
             sb.append(msgLabel("Unknown user"));
             sb.append(request.getStrictSanitizedString(ARG_USER_ID, ""));
             sb.append(HU.sectionClose());
-
             return new Result("User Profile", sb);
         }
 
@@ -2455,10 +2481,20 @@ public class UserManager extends RepositoryManager {
                             user.getId() + HU.space(2) + searchLink));
         sb.append(formEntry(request, msgLabel("Name"), user.getLabel()));
         String email = user.getEmail();
-        if (email.length() > 0) {
+        if (stringDefined(email)) {
             email = email.replace("@", " _AT_ ");
             sb.append(formEntry(request, msgLabel("Email"), email));
         }
+
+        String inst = user.getInstitution();
+	sb.append(formEntry(request, msgLabel("Institution"), inst));
+        String country = user.getCountry();
+	sb.append(formEntry(request, msgLabel("Country"), country));	
+	String desc = user.getDescription();
+	if(stringDefined(desc)) {
+	    sb.append(formEntryTop(request, msgLabel("Description"), desc));	
+	}
+	
         sb.append(HU.formTableClose());
 
         sb.append(HU.sectionClose());
@@ -2469,42 +2505,17 @@ public class UserManager extends RepositoryManager {
 
 
 
-    /**
-     * Class PasswordReset _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
+
     private static class PasswordReset {
-
-        /** _more_ */
         String user;
-
-        /** _more_ */
         Date dttm;
 
-        /**
-         * _more_
-         *
-         * @param user The user
-         * @param dttm _more_
-         */
         public PasswordReset(String user, Date dttm) {
             this.user = user;
             this.dttm = dttm;
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return The result
-     *
-     * @throws Exception On badness
-     */
     public Result processFindUserId(Request request) throws Exception {
         StringBuffer sb    = new StringBuffer();
         String       title = "Find User ID";
@@ -3502,11 +3513,31 @@ public class UserManager extends RepositoryManager {
 				     request.getString(ARG_USER_INSTITUTION+"_extra",""), HU.SIZE_30)));
     }
 
-
     public String getInstitution(Request request,String dflt) {
 	String inst =request.getReallyStrictSanitizedString(ARG_USER_INSTITUTION+"_extra",null);
 	if(!stringDefined(inst)) {
 	    inst =request.getReallyStrictSanitizedString(ARG_USER_INSTITUTION,dflt);
+	}
+	return HU.sanitizeString(inst);
+    }
+
+
+    public void   addCountryWidget(Request request, Appendable sb,String value) throws Exception {
+	String v = getCountry(request, value);
+	String sel = HU.select(ARG_USER_COUNTRY,
+			       getCountrys(),
+			       value);
+	sb.append(formEntry(request, msgLabel("Country"),
+			    sel +HU.space(2) +"Or: " +
+			    HU.input(ARG_USER_COUNTRY+"_extra",
+				     request.getString(ARG_USER_COUNTRY+"_extra",""), HU.SIZE_30)));
+    }
+    
+
+    public String getCountry(Request request,String dflt) {
+	String inst =request.getReallyStrictSanitizedString(ARG_USER_COUNTRY+"_extra",null);
+	if(!stringDefined(inst)) {
+	    inst =request.getReallyStrictSanitizedString(ARG_USER_COUNTRY,dflt);
 	}
 	return HU.sanitizeString(inst);
     }
@@ -3524,6 +3555,18 @@ public class UserManager extends RepositoryManager {
 	return l;
     }
 
+    public List getCountrys() throws Exception {
+        String[] array =
+            SqlUtil.readString(
+			       getDatabaseManager().getIterator(
+								getDatabaseManager().select(
+											    SqlUtil.distinct(Tables.USERS.COL_COUNTRY),
+											    Tables.USERS.NAME, new Clause())), 1);
+        List l=  new ArrayList<String>(Misc.toList(array));
+	l.add(0,new HtmlUtils.Selector("None specified",""));
+	return l;
+    }
+    
 
 
     /**

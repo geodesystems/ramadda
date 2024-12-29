@@ -721,13 +721,16 @@ public class Admin extends RepositoryManager {
 
 
                 if (okToAdd) {
-                    User user = new User(
-					 id, User.STATUS_ACTIVE,name,
-                                    request.getString(
-                                        UserManager.ARG_USER_EMAIL,
-                                        "").trim(), "","", "",
-                                            getUserManager().hashPassword(
-                                                password1), "", true, "", "",
+                    User user = new User(id, User.STATUS_ACTIVE,name,
+					 request.getString(
+							   UserManager.ARG_USER_EMAIL,
+							   "").trim(),
+					 UserManager.DEFAULT_INSTITUTION,
+					 UserManager.DEFAULT_COUNTRY,
+					 "",
+					 "",
+					 getUserManager().hashPassword(
+								       password1), "", true, "", "",
 				    false, new Date(),null);
                     getUserManager().makeOrUpdateUser(user, false);
                     installStep(ARG_ADMIN_ADMINCREATED);

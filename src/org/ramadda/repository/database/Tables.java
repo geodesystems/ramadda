@@ -815,7 +815,9 @@ public abstract class Tables {
         public static final String COL_EMAIL =  NAME + ".email";
         public static final String COL_NODOT_EMAIL =   "email";
         public static final String COL_INSTITUTION =  NAME + ".institution";
-        public static final String COL_NODOT_INSTITUTION =   "institution";	
+        public static final String COL_NODOT_INSTITUTION =   "institution";
+        public static final String COL_COUNTRY =  NAME + ".country";
+        public static final String COL_NODOT_COUNTRY =   "country";		
         public static final String COL_QUESTION =  NAME + ".question";
         public static final String COL_NODOT_QUESTION =   "question";
         public static final String COL_ANSWER =  NAME + ".answer";
@@ -841,7 +843,22 @@ public abstract class Tables {
         public static final String COL_NODOT_PROPERTIES =   "properties";
 
         public static final String[] ARRAY = new String[] {
-            COL_ID,COL_STATUS,COL_NAME,COL_EMAIL,COL_INSTITUTION,COL_QUESTION,COL_ANSWER,COL_PASSWORD,COL_DESCRIPTION,COL_ADMIN,COL_LANGUAGE,COL_TEMPLATE,COL_ISGUEST,COL_ACCOUNT_CREATION_DATE,COL_PROPERTIES
+            COL_ID,
+	    COL_STATUS,
+	    COL_NAME,
+	    COL_EMAIL,
+	    COL_INSTITUTION,
+	    COL_COUNTRY,
+	    COL_QUESTION,
+	    COL_ANSWER,
+	    COL_PASSWORD,
+	    COL_DESCRIPTION,
+	    COL_ADMIN,
+	    COL_LANGUAGE,
+	    COL_TEMPLATE,
+	    COL_ISGUEST,
+	    COL_ACCOUNT_CREATION_DATE,
+	    COL_PROPERTIES
         };
         public static final String COLUMNS = SqlUtil.comma(ARRAY);
         public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
