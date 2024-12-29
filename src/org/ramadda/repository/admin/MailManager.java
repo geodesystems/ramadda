@@ -213,24 +213,21 @@ public class MailManager extends RepositoryManager {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param asHtml _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(String to, String subject, String contents,
                           boolean asHtml)
 	throws Exception {
         sendEmail(to, getAdminEmail(), subject, contents, asHtml);
     }
 
-    public int sendEmail(List<String> to, String subject, String contents,
-                          boolean asHtml)
+    public void sendEmail(String to, String from, String subject,
+                          String contents, boolean asHtml)
+            throws Exception {
+
+        sendEmail(to, from, subject, contents, asHtml, null);
+    }
+
+
+    public int sendEmail(List<String> to, String subject, String contents, boolean asHtml)
             throws Exception {
 	
         List<Address> addresses = new ArrayList<Address>();
@@ -242,42 +239,14 @@ public class MailManager extends RepositoryManager {
 	if(addresses.size()==0) return 0;
 
         sendEmail(addresses,
-                  new InternetAddress( getAdminEmail()), subject, contents, false,
+                  new InternetAddress( getAdminEmail()), subject, contents, asHtml,
                   false,null);
 	return addresses.size();
     }    
 
 
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param from _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param asHtml _more_
-     *
-     * @throws Exception _more_
-     */
-    public void sendEmail(String to, String from, String subject,
-                          String contents, boolean asHtml)
-            throws Exception {
 
-        sendEmail(to, from, subject, contents, asHtml, null);
-    }
 
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param from _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param asHtml _more_
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(String to, String from, String subject,
                           String contents, boolean asHtml, File file)
             throws Exception {
@@ -287,19 +256,6 @@ public class MailManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param to _more_
-     * @param from _more_
-     * @param subject _more_
-     * @param contents _more_
-     * @param bcc _more_
-     * @param asHtml _more_
-     * @param file _more_
-     *
-     * @throws Exception _more_
-     */
     public void sendEmail(List<Address> to, InternetAddress from,
                           String subject, String contents, boolean bcc,
                           boolean asHtml, File file)
