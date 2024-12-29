@@ -145,8 +145,7 @@ public class UserManager extends RepositoryManager {
     public static final String PROP_REGISTER_OK = "ramadda.register.ok";
     public static final String PROP_REGISTER_STATUS_PENDING= "ramadda.register.status.pending";
     public static final String PROP_REGISTER_NOTIFY = "ramadda.register.notify";
-    public static final String PROP_RECAPTCHA_SITEKEY = "google.recaptcha.sitekey";
-    public static final String PROP_RECAPTCHA_SECRETKEY = "google.recaptcha.secret";    
+
     public static final String PROP_REGISTER_PASSPHRASE = "ramadda.register.passphrase";
     public static final String PROP_REGISTER_EMAIL = "ramadda.register.email";
     public static final String PROP_LOGIN_ALLOWEDIPS =  "ramadda.login.allowedips";
@@ -1056,7 +1055,7 @@ public class UserManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public Result adminUserEdit(Request request) throws Exception {
-        String userId = request.getString(ARG_USER_ID, "");
+        String userId = request.getString(ARG_EDITUSER_ID, request.getString(ARG_USER_ID,""));
         User   user   = findUser(userId);
         if (user == null) {
             throw new IllegalArgumentException(msgLabel("Could not find user") + userId);
@@ -2964,35 +2963,7 @@ public class UserManager extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public Result processHumanQuestion(Request request) throws Exception {
-        makeHumanAnswers();
-        int    idx = request.get(ARG_HUMAN_QUESTION, 0);
-        String s   = QUESTIONS.get(idx) + "=";
-
-        BufferedImage image = new BufferedImage(50, 20,
-						BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = (Graphics2D) image.getGraphics();
-        g.setColor(Color.white);
-        g.fillRect(0, 0, 100, 100);
-        g.setColor(Color.black);
-        g.drawString(s, 2, 17);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageUtils.writeImageToFile(image, "question.gif", bos, 1.0f);
-
-        return new Result(BLANK, new ByteArrayInputStream(bos.toByteArray()),
-                          "image/gif");
-    }
-
+    
     public boolean isRegistrationEnabled() {
         return getRepository().getProperty(PROP_REGISTER_OK, false);
     }
@@ -3077,7 +3048,7 @@ public class UserManager extends RepositoryManager {
             }
 
             if (ok) {
-                ok = isHuman(request, sb);
+                ok = getAuthManager().checkRecaptcha(request, sb);
             }
 
             if (ok) {
@@ -3099,7 +3070,7 @@ public class UserManager extends RepositoryManager {
 			String editUrl = request.getAbsoluteUrl(HU.url(
 								       getRepository().getUrlPath(request,
 												  getRepositoryBase().URL_USER_EDIT),
-								       ARG_USER_ID,user.getId()));
+								       ARG_EDITUSER_ID,user.getId()));
 			getMailManager().sendEmail(Utils.split(notify,",",true,true),
 						   "New user registration on RAMADDA: " + id,
 						   (pending?"A new user has registered and is pending review. ":
@@ -3115,9 +3086,7 @@ public class UserManager extends RepositoryManager {
 		}
 		sb.append(makeLoginForm(request));
 		return addHeader(request, sb, "New User Registration");
-
             }
-
 	}
 	
 
@@ -3181,7 +3150,7 @@ public class UserManager extends RepositoryManager {
 				+ "You should have been given a pass phrase to register"));
 
         }
-        makeHumanForm(request, sb, formInfo);
+        getAuthManager().addRecaptcha(request, sb);
         sb.append(formEntry(request, "", HU.submit("Register")));
         formInfo.addToForm(sb);
 
@@ -4022,123 +3991,8 @@ public class UserManager extends RepositoryManager {
         }
     }
 
-    public boolean isRecaptchaEnabled() {
-	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
-	if(stringDefined(siteKey) && stringDefined(secretKey)) {
-	    return true;
-	}
-	return false;
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param response _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public boolean isHuman(Request request, Appendable response)
-	throws Exception {
-	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
-	String secretKey = getRepository().getProperty(PROP_RECAPTCHA_SECRETKEY,null);	
-	if(stringDefined(siteKey) && stringDefined(secretKey)) {
-	    String recaptchaResponse = request.getString("g-recaptcha-response",null);
-	    if(recaptchaResponse==null) return false;
-	    String url = HU.url("https://www.google.com/recaptcha/api/siteverify","secret",secretKey,"response",recaptchaResponse);
-	    String json = IO.readUrl(new URL(url));
-            JSONObject  obj   = new JSONObject(json);
-	    if(!obj.getBoolean("success")) {
-                response.append(HU.center(messageWarning("Sorry, you were not verified to be a human")));
-		return false;
-	    } else {
-		return true;
-	    }
-	}
-
-
-        makeHumanAnswers();
-        int idx    = request.get(ARG_HUMAN_QUESTION, 0);
-        int answer = request.get(ARG_HUMAN_ANSWER, -111111);
-        if ((idx < 0) || (idx >= ANSWERS.size())) {
-            response.append("Bad answer");
-
-            return false;
-        } else {
-            if (ANSWERS.get(idx).intValue() != answer) {
-                response.append(
-				"Sorry, but you got the answer wrong. Are you a human?<br>");
-
-                return false;
-            }
-        }
-
-        return true;
-
-    }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param formInfo _more_
-     *
-     * @throws Exception _more_
-     */
-    public void makeHumanForm(Request request, Appendable sb,
-                              FormInfo formInfo)
-	throws Exception {
-	if(isRecaptchaEnabled()) {
-	    sb.append("<script src='https://www.google.com/recaptcha/api.js' async defer></script>");
-	    sb.append(formEntry(request,"",
-				HU.div("",HU.attrs("class","g-recaptcha","data-sitekey","6Ld7zsgSAAAAABXOc291vy9MxoxG2D2Xuc1ONF4a"))));
-	    return;
-	}
 
 
 
-        makeHumanAnswers();
-
-        int idx = (int) (Math.random() * QUESTIONS.size());
-        if (idx >= QUESTIONS.size()) {
-            idx = QUESTIONS.size() - 1;
-        }
-
-        String image =
-            HU.img(getRepository().getUrlBase()
-		   + "/user/humanquestion/image.gif?human_question="
-		   + idx);
-
-        formInfo.addRequiredValidation("Human answer", ARG_HUMAN_ANSWER);
-	sb.append(formEntry(request,
-			    msgLabel("Please verify that you are human"),
-			    image
-			    + HU.input(ARG_HUMAN_ANSWER, "",
-				       HU.id(ARG_HUMAN_ANSWER)
-				       + HU.SIZE_5)));
-	sb.append(HU.hidden(ARG_HUMAN_QUESTION, idx));
-    }
-
-    /**
-     * _more_
-     */
-    private void makeHumanAnswers() {
-        if (ANSWERS == null) {
-            List<String>  questions = new ArrayList<String>();
-            List<Integer> answers   = new ArrayList<Integer>();
-            for (int i = 0; i < 1000; i++) {
-                int v1 = (int) (Math.random() * 12);
-                int v2 = (int) (Math.random() * 12);
-                questions.add(v1 + "+" + v2);
-                answers.add(Integer.valueOf(v1 + v2));
-            }
-            ANSWERS   = answers;
-            QUESTIONS = questions;
-        }
-    }
 
 }
