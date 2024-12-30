@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Dec 17 16:27:28 MST 2024";
+var build_date="RAMADDA build date: Sun Dec 29 18:36:05 MST 2024";
 
 /**
    Copyright (c) 2008-2023 Geode Systems LLC
@@ -54572,7 +54572,20 @@ MapGlyph.prototype = {
 	Utils.makeDownloadFile(file,JSON.stringify(json));
     },
 
+    groupMakeCsv:function() {
+	let csv = 'name,latitude,longitude\n';
+	this.applyChildren(child=>{
+	    let geometry=child.getGeometry();
+	    if(!geometry) return;
+	    let centroid = geometry.getCentroid(true);
+	    if(!centroid) return;
+	    let lonlat = this.getMap().transformProjPoint(centroid)
+	    csv+=child.name+','+lonlat.y+','+ lonlat.x+'\n';
 
+	});
+	let file = Utils.makeID(this.name)+'.csv';
+	Utils.makeDownloadFile(file,csv);
+    },
 
     initPropertiesComponent: function(dialog) {
 
@@ -54580,6 +54593,9 @@ MapGlyph.prototype = {
 	    this.jq('makegeojson').button().click(()=>{
 		this.groupMakeGeoJson();
 	    });
+	    this.jq('makecsv').button().click(()=>{
+		this.groupMakeCsv();
+	    });	    
 	}
 
 
@@ -55080,6 +55096,9 @@ MapGlyph.prototype = {
 	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
 	    html+=SPACE;
 	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
+
+	    html+='<p>'
+	    html += HU.div([ATTR_ID,this.domId('makecsv')],'Make CSV File');	    
 	    content.push({header:'Make Map',contents:html});
 	}
 
