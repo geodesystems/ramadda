@@ -290,42 +290,12 @@ are a number of configuration options that can be placed in a properties file, e
 <a href="#ssl">ssl options</a>, etc.
 <p>
 When loading properties files the first one that is loaded (if it exists) is &quot;repository.properties&quot;. 
+An initial repository.properties is written out when RAMADDA is first configured.
 RAMADDA will then load any
 other .properties file in the home directory. It then loads any  properties files found in the 
 [ug::link plugins.html plugins] directory.
 <p>
 
-To configure RAMADDA copy <a href="${root}/userguide/repository.dummy_properties">this example</a> and
-rename it repository.properties. 
-<p>
-
-<a name="dopassword"></a>
-For an additional layer of system security RAMADDA can be configured to
-require the user's password before a site administration change or password change.
-You can enable this behavior by setting the following property in your repository.properties
-file
-<pre>
-ramadda.auth.dopassword=true
-</pre>
-
-<a name="recaptcha"></a>
-RAMADDA can also make use of Google's  Recaptcha service to authenticate that the
-user is indeed a real human and not a bot.
-You first need to register your site with Google at
-<a href=https://www.google.com/recaptcha/admin>https://www.google.com/recaptcha/admin</a>.
-Once registered get the site key (which is public) and the secret key
-and add them to your repository.properties file:
-
-
-+pre addCopy=true
-google.recaptcha.sitekey=
-google.recaptcha.secret=
--pre
-
-Once recaptcha is enabled you can require its use in the Admin forms by setting the below flag
-+pre
-ramadda.auth.dorecaptcha=true
--pre
 
 :heading Directory Structure
 
@@ -352,8 +322,6 @@ If you had a URL:<pre>
 Then RAMADDA looks in:<pre>
     htdocs/somedir/somefile.gif
 </pre>
-
-
 
 
 
