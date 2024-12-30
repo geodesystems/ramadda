@@ -3007,6 +3007,14 @@ public class UserManager extends RepositoryManager {
                 }
             }
 
+	    if(ok) {
+		String agree = getRepository().getProperty("ramadda.register.agree",null);
+		if(stringDefined(agree)) ok = request.get(ARG_USERAGREE,false);
+		if(!ok) {
+		    sb.append(HU.center(messageWarning(msg("You must agree to the conditions"))));
+		}
+	    }
+
             String password1 = request.getString(ARG_USER_PASSWORD1, "").trim();
             String password2 = request.getString(ARG_USER_PASSWORD2, "").trim();	    
             if (ok) {
@@ -3099,6 +3107,14 @@ public class UserManager extends RepositoryManager {
 							 request,
 							 getRepositoryBase().URL_USER_REGISTER), HU.id(
 												       formId)));
+
+
+	String message = getRepository().getProperty("ramadda.register.message",null);
+	if(stringDefined(message)) {
+	    sb.append(HU.center(messageNote(message)));
+	}
+
+
         sb.append(HU.formTable());
 
         formInfo.addRequiredValidation("User ID", ARG_USER_ID);
@@ -3138,6 +3154,15 @@ public class UserManager extends RepositoryManager {
 			    HU.password(
 					ARG_USER_PASSWORD2, "",
 					HU.id(ARG_USER_PASSWORD2))));
+
+	String agree = getRepository().getProperty("ramadda.register.agree",null);
+	if(stringDefined(agree)) {
+	    //	    HU.formEntry(sb, messageNote(agree));
+	    HU.formEntry(sb, "", HU.labeledCheckbox(ARG_USERAGREE,
+						    "true", false,agree));
+
+	}
+
 
         if (Utils.stringDefined(mainKey)) {
             sb.append(
