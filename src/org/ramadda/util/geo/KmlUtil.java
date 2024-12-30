@@ -1440,7 +1440,9 @@ public class KmlUtil {
         System.out.println("set ::type community_resource;");
         System.out.println("set ::resource other;");
         List placemarks = XmlUtil.findDescendants(root, TAG_PLACEMARK);
+	int cnt = 0;
         for (Element placemark : (List<Element>) placemarks) {
+	    cnt++;
             StringBuilder sb = new StringBuilder();
             String        id = XmlUtil.getGrandChildText(placemark, "name");
             String desc = XmlUtil.getGrandChildText(placemark, "description",
@@ -1459,7 +1461,8 @@ public class KmlUtil {
                                TAG_COORDINATES);
             for (Element coord : (List<Element>) coords) {
                 String c = XmlUtil.getChildText(coord);
-                for (String triple : StringUtil.split(c, " ")) {
+		List<String> locToks = Utils.split(c, " ");
+                for (String triple : locToks) {
                     List<String> toks = StringUtil.split(triple, ",");
                     if (toks.size() < 2) {
                         continue;
@@ -1480,10 +1483,18 @@ public class KmlUtil {
             double centerLon = west + (east - west) / 2;
             sb.append(" {" + centerLat + "}");
             sb.append(" {" + centerLon + "}");
+
+	    List simpleData = XmlUtil.findDescendants(placemark, TAG_SIMPLEDATA);
+            for (Element data : (List<Element>) simpleData) {
+		String name = XmlUtil.getAttribute(data,"name");
+		sb.append(" {{" + name+"} {"+ XmlUtil.getChildText(data) +" }} ");
+	    }
+
             System.out.println(sb);
 
         }
         System.out.println("Util::placemarkEnd");
+	System.exit(0);
     }
 
 
