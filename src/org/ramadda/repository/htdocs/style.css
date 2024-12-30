@@ -1898,7 +1898,7 @@ mapheader {
     margin:8px;
     padding:8px;
     border:var(--basic-border);
-    background:var(--color-mellow-yellow);
+    background-color : #f9f9f9;
     border-radius:var(--default-radius);
     max-width:500px;
 }
