@@ -28,6 +28,8 @@ import org.ramadda.util.sql.SqlUtil;
 
 
 import org.json.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.net.URL;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -1815,55 +1817,13 @@ public class UserManager extends RepositoryManager {
     }
 	
 
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     *
-     * @return The result
-     *
-     * @throws Exception On badness
-     */
-    public Result adminUserList(Request request) throws Exception {
-
-        if (request.exists(ARG_REMOVESESSIONID)) {
-            getSessionManager().debugSession(
-					     request,
-					     "RAMADDA.adminUserList: removing session:"
-					     + request.getString(ARG_REMOVESESSIONID));
-            getSessionManager().removeSession(request,
-					      request.getString(ARG_REMOVESESSIONID));
-
-            return new Result(
-			      request.makeUrl(
-					      getRepositoryBase().URL_USER_LIST, ARG_SHOWTAB, "2"));
-        }
-
-
-        Hashtable<String, StringBuffer> rolesMap = new Hashtable<String,
-	    StringBuffer>();
-        List<Role>   rolesList = new ArrayList<Role>();
-        StringBuffer usersHtml = new StringBuffer();
-        StringBuffer rolesHtml = new StringBuffer();
-
-        StringBuffer sb        = new StringBuffer();
-
-
-        sb.append(request.form(URL_USER_NEW_FORM));
-        HU.sectionOpen(sb, null, false);
-        sb.append(HU.submit("Create New User"));
-        sb.append(HU.formClose());
-        sb.append(HU.vspace());
-
+    private List<User> getUsers(Request request) throws Exception {
         Statement statement =
             getDatabaseManager().select(Tables.USERS.COLUMNS,
                                         Tables.USERS.NAME, new Clause(),
                                         " order by " + Tables.USERS.COL_ID);
 
         SqlUtil.Iterator iter  = getDatabaseManager().getIterator(statement);
-
-
         List<User>       users = new ArrayList();
         ResultSet        results;
         while ((results = iter.getNext()) != null) {
@@ -1952,12 +1912,34 @@ public class UserManager extends RepositoryManager {
 		tmp.add(users.get(i));
 	    users = tmp;
 	}
-	
-	
+	return users;
+    }
 
+    private String getUserLogLink(Request request, User user) {
+	return HU.href(
+		       request.makeUrl(
+				       getRepositoryBase().URL_USER_ACTIVITY, ARG_USER_ID,
+				       user.getId()), HU.getIconImage(
+								      getRepository().getIconUrl(ICON_LOG), "title",
+								      "View user log"));
+    }
+
+
+    private String getUserEditButton(Request request, User user) {
+	return  HU.button(HU.href(request.makeUrl(
+						  getRepositoryBase().URL_USER_EDIT,
+						  ARG_USER_ID,
+						  user.getId()), "Edit", HU.title("Edit user")));
+    }
+
+
+
+    private String getUsersList(Request request,List<User>users)  throws Exception {
+
+	String sortBy = request.getString("sortby","admin");
+	boolean ascending = request.get("ascending",true);
+        StringBuffer usersHtml = new StringBuffer();
         usersHtml.append(request.formPost(URL_USER_SELECT_DO));
-
-
 	List actions =new ArrayList();
 	actions.add(new HtmlUtils.Selector("Select Action",""));
 	actions.add(new HtmlUtils.Selector("Delete",ACTION_DELETE));
@@ -1977,6 +1959,7 @@ public class UserManager extends RepositoryManager {
 	String searchButtons ="[{\"label\":\"Status:\"},{\"label\":\"Active\", \"value\":\"status:active\"},{\"label\":\"Inactive\", \"value\":\"status:inactive\"},{\"label\":\"Pending\", \"value\":\"status:pending\"},{\"label\":\"&nbsp;&nbsp;Type:\"},	{\"label\":\"Admin\", \"value\":\"admin\"},{\"label\":\"Guest\", \"value\":\"guest\"},{\"label\":\"&nbsp;&nbsp;\"},{\"label\":\"Show all\",\"clear\":true}]";
 	String args = JU.map("focus","true","buttons",searchButtons);
 
+	usersHtml.append(HU.vspace());
 	HU.script(usersHtml,
 		  HU.call("HtmlUtils.initPageSearch",
 			  "'.ramadda-user-row'",
@@ -1985,8 +1968,6 @@ public class UserManager extends RepositoryManager {
 			  "'Find user'",
 			  "false",args));
   
-
-	    
 	
 	String idHeader = getUserSortLink(request, "id",ascending,"ID");
 	String statusHeader = getUserSortLink(request, "status",ascending,"Status");
@@ -1999,8 +1980,9 @@ public class UserManager extends RepositoryManager {
 	String rolesHeader = getUserSortLink(request, "roles",ascending,"Roles");			
 	String dateHeader = getUserSortLink(request, "date",ascending,"Create Date");		
 	String allCbx = HU.checkbox("",	 "true", false, HU.attrs("id","userall","title","Toggle all"));
+
         usersHtml.append(HU.row(HU.cols(allCbx,
-					HU.bold(msg("Edit")) + HU.space(2),
+					HU.space(2),
 					HU.bold(idHeader) + HU.space(2),
 					HU.bold(nameHeader) + HU.space(2),
 					HU.bold(statusHeader) + HU.space(2),
@@ -2016,11 +1998,7 @@ public class UserManager extends RepositoryManager {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         for (User user : users) {
-            String userEditLink = HU.button(HU.href(request.makeUrl(
-								    getRepositoryBase().URL_USER_EDIT,
-								    ARG_USER_ID,
-								    user.getId()), "Edit", HU.title("Edit user")));
-
+            String userEditLink = getUserEditButton(request, user);
             String userProfileLink =
                 HU.href(
 			HU.url(
@@ -2028,14 +2006,8 @@ public class UserManager extends RepositoryManager {
 			       ARG_USER_ID, user.getId()), user.getId(),
 			"title=\"View user profile\"");
 
-            String userLogLink =
-                HU.href(
-			request.makeUrl(
-					getRepositoryBase().URL_USER_ACTIVITY, ARG_USER_ID,
-					user.getId()), HU.getIconImage(
-								       getRepository().getIconUrl(ICON_LOG), "title",
-								       "View user log"));
-
+            String userLogLink =getUserLogLink(request,user);
+	    
             String userCbx = HU.checkbox("user_" + user.getId(),
 					 "true", false, HU.attrs("class","ramadda-user-select"));
 
@@ -2103,28 +2075,78 @@ public class UserManager extends RepositoryManager {
 								? "ramadda-user-admin"
 								: user.getIsGuest()?"ramadda-user-guest":"")));
             usersHtml.append(row);
-            if (roles != null) {
-                for (Role role : roles) {
-                    StringBuffer rolesSB = rolesMap.get(role.getRole());
-                    if (rolesSB == null) {
-                        rolesSB = new StringBuffer("");
-                        rolesList.add(role);
-                        rolesMap.put(role.getRole(), rolesSB);
-                    }
-                    rolesSB.append(HU.row(HU.cols("<li>",
-						  userEditLink, user.getId(), user.getName(),
-						  user.getEmail())));
-                }
-            }
         }
         usersHtml.append("</table>");
 	HU.script(usersHtml,"HU.initToggleAll('userall','.ramadda-user-select',true);\n");
 
         usersHtml.append(HU.formClose());
+	return usersHtml.toString();
 
+    }	
+
+
+
+    /**
+     * _more_
+     *
+     * @param request the request
+     *
+     * @return The result
+     *
+     * @throws Exception On badness
+     */
+    public Result adminUserList(Request request) throws Exception {
+
+        if (request.exists(ARG_REMOVESESSIONID)) {
+            getSessionManager().debugSession(
+					     request,
+					     "RAMADDA.adminUserList: removing session:"
+					     + request.getString(ARG_REMOVESESSIONID));
+            getSessionManager().removeSession(request,
+					      request.getString(ARG_REMOVESESSIONID));
+
+            return new Result(
+			      request.makeUrl(
+					      getRepositoryBase().URL_USER_LIST, ARG_SHOWTAB, "2"));
+        }
+
+
+
+	List<User> users = getUsers(request);
+	Hashtable<String, StringBuffer> rolesMap = new Hashtable<String, StringBuffer>();
+	List<String> rolesList  = new ArrayList<String>();
+        StringBuffer rolesHtml = new StringBuffer();
+        StringBuffer sb        = new StringBuffer();
+        sb.append(request.form(URL_USER_NEW_FORM));
+        HU.sectionOpen(sb, null, false);
+        sb.append(HU.submit("Create New User"));
+        sb.append(HU.formClose());
+        sb.append(HU.vspace());
+
+
+
+
+	for(User user: users) {
+	    List<Role> roles = user.getRoles();
+            if (roles != null) {
+                for (Role role : roles) {
+                    StringBuffer rolesSB = rolesMap.get(role.getRole());
+                    if (rolesSB == null) {
+                        rolesSB = new StringBuffer("");
+                        rolesList.add(role.getRole());
+                        rolesMap.put(role.getRole(), rolesSB);
+                    }
+		    rolesSB.append(HU.row(HU.cols("<li>",
+						  getUserEditButton(request, user),
+						  user.getId(), user.getName(),
+						  user.getEmail())));
+                }
+            }
+	}
+	
         List<String> rolesContent = new ArrayList<String>();
-        for (Role role : rolesList) {
-            StringBuffer rolesSB = rolesMap.get(role.getRole());
+        for (String role : rolesList) {
+            StringBuffer rolesSB = rolesMap.get(role);
             rolesContent.add("<table class=formtable>\n" + rolesSB.toString()
                              + "\n</table>");
         }
@@ -2141,7 +2163,7 @@ public class UserManager extends RepositoryManager {
 
         int  showTab    = request.get(ARG_SHOWTAB, 0);
         tabTitles.add(msg("User List"));
-        tabContent.add(usersHtml.toString());
+        tabContent.add(getUsersList(request,users));
 
         tabTitles.add(msg("Roles"));
         tabContent.add(rolesHtml.toString());
@@ -3655,18 +3677,6 @@ public class UserManager extends RepositoryManager {
         return getAdmin().makeResult(request, "User Log", sb);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request the request
-     * @param theUser The user
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private String getUserActivities(Request request, User theUser)
 	throws Exception {
         StringBuffer sb          = new StringBuffer();

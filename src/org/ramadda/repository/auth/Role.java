@@ -264,4 +264,10 @@ public class Role {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+	return role.hashCode();
+    }
+
+
 }
