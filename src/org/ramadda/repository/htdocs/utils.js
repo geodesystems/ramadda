@@ -3813,8 +3813,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    return
 		}
 
-
-
 		input+=SPACE1;
 		input+=HU.span([ATTR_ID,b.id],b.label);
 	    });

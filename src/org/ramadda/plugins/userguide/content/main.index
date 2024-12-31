@@ -40,7 +40,7 @@ index.html
 #>>gridvisualization.html
 >>idvpublisher.html
 
->title:Installation and Site Administration:These pages are intended for Site Administrators
+>title:Installation and Site Administration:+callout-info_nl_These pages are intended for Site Administrators_nl_-callout
 >>installing.html
 >>linux.html
 >>awsec2.html

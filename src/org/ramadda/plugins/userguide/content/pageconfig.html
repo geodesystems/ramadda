@@ -6,34 +6,6 @@ Various ways to configure the entry pages.
 -callout
 
 
-:heading Footer
-The Footer property can be added and set to inherited=true to add a footer to every entry page.
-The Footer can be arbitrary wiki text.
-For example, you can add a <a href=#share_bar>share bar</a> and a <a href=wiki/licenses.html>license</a>
-with a Footer property, e.g.:
-[ht::screenshot images/footerproperty.png]
-
-
-Which results in the below on every page:
-[ht::screenshot images/footer.png]
-
-:heading Share Bar
-You can add a social media share bar to a page or to every page with the <i>share</i> tag:
-[ht::screenshot images/sharebar.png]      
-If here=true then the bar is shown in place on the page. Else it is shown fixed either to the left, right
-or the bottom of the page (depending on the horizontail attribute).
-+pre
-{<skip>{share
-position="left|right"
-theme="circle|square"
-horizontal="true"
-here="true"
-channels="facebook,twitter,linkedin,tumblr,digg,googleplus,reddit,pinterest,stumbleupon,email" 
-animate="false"
-}} 
--pre
-
-
 :heading  Page Header
 Most of the <a href=templates.html>page templates</a> have a location in the header
 marked to hold a "page header", e.g.:
@@ -51,8 +23,10 @@ Results in:
 
 
 By making this property be inherited then all entries within the repository would have the same
-page navigation links. For example, on ramadda.org we have the following navbar. Here the links are aliases.
-The extra id.label=... attributes allow one to specify a label to be used. If a label is not defined
+page navigation links. For example, on ramadda.org we have the following navbar.
+In this example the links are aliases but they can be entry IDs.
+The <i>extra id.label=...</i>
+attributes allow one to specify an alternate label to be used. If a label is not defined
 then the name of the entry is used.
 +pre
 {<skip>{navbar 
@@ -83,6 +57,37 @@ e.g.:
 links="https://google.com;Google,/repository/search/form;Search,2e485e95-eb29-44fc-8987-76e6ac74365a,e2a0c8ee-4276-4fe3-bc70-76243faed1a2,..."
  }}
 -pre
+
+
+
+:heading Footer
+The Footer property can be added and set to inherited=true to add a footer to every entry page.
+The Footer can be arbitrary wiki text.
+For example, you can add a <a href=#share_bar>share bar</a> and a <a href=wiki/licenses.html>license</a>
+with a Footer property, e.g.:
+[ht::screenshot images/footerproperty.png]
+
+
+Which results in the below on every page:
+[ht::screenshot images/footer.png]
+
+:heading Share Bar
+You can add a social media share bar to a page or to every page with the <i>share</i> tag:
+[ht::screenshot images/sharebar.png]      
+If here=true then the bar is shown in place on the page. Else it is shown fixed either to the left, right
+or the bottom of the page (depending on the horizontail attribute).
++pre
+{<skip>{share
+position="left|right"
+theme="circle|square"
+horizontal="true"
+here="true"
+channels="facebook,twitter,linkedin,tumblr,digg,googleplus,reddit,pinterest,stumbleupon,email" 
+animate="false"
+}} 
+-pre
+
+
 
 :heading Popup Menu
 You can use the navbar tag to create a fixed popup menu <i class="fa-solid fa-bars"></i> like:
