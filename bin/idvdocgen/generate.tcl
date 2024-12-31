@@ -1255,7 +1255,10 @@ proc gen::walkTree {indexFile {parent ""}} {
 	    if {![regexp {^([^:]+):([^:]*):(.*)$} $title match title overview body]} {
 		regexp {^([^:]+):(.*)$} $title match title overview
 	    }
-            set fileName "page_[string tolower $title]"
+
+            regsub -all {_nl_} $overview "\n" overview
+	    puts $overview
+	    set fileName "page_[string tolower $title]"
             regsub -all {[^a-zAZ0-9_]} $fileName {} fileName
             append fileName ".html"
 
