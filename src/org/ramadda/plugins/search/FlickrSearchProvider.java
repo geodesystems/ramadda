@@ -143,7 +143,7 @@ public class FlickrSearchProvider extends SearchProvider {
             throws Exception {
 
         List<Entry> entries = new ArrayList<Entry>();
-        //https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=c83a63910f7fd1cdaee7f507d41eb78a&text=colorado&per_page=20&page=2&format=rest
+        //https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=<key>&text=colorado&per_page=20&page=2&format=rest
 
         String url = URL;
         url = HtmlUtils.url(url, ARG_API_KEY, getApiKey(), ARG_TEXT,
