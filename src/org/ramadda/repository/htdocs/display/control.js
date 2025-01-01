@@ -1,5 +1,6 @@
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 

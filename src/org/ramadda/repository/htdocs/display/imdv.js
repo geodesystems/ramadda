@@ -1,5 +1,6 @@
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 var DISPLAY_IMDV = 'imdv';
@@ -487,6 +488,34 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	isHereEnabled:function() {
 	    return this.getProperty('hereRoutingEnabled');
+	},
+	handleNewRoute:function(cmd,pts) {
+	    let html = this.createRouteForm();
+	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+	    html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
+	    html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
+	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
+	    let message = 'New Route';
+	    let ok = ()=>{
+		this.routeProvider = this.jq('routeprovider').val();
+		this.routeType = this.jq('routetype').val();
+		dialog.remove();
+		if(pts) {
+		    this.createRoute(this.routeProvider,this.routeType,pts,{
+			doSequence:true});
+		    return
+		}
+		if(cmd) {
+		    cmd.handler.finishedWithRoute = false;
+		    this.showCommandMessage(message+': ' + Utils.makeLabel(this.routeType)+' - Draw one or more line segments');
+		    cmd.activate();
+		}
+	    };
+	    dialog.find('.ramadda-button-ok').button().click(ok);
+	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.remove();
+	    });
 	},
 	createRouteForm:function(addSequence) {
 	    let html='';
@@ -1548,31 +1577,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let message = glyphType?'New ' + glyphType.getName():cmd.message??'';
 
 	    if(glyphType.isRoute()) {
-		let html = this.createRouteForm();
-		let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-		html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
-		html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
-		let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
-		let ok = ()=>{
-		    cmd.handler.finishedWithRoute = false;
-		    this.routeProvider = this.jq('routeprovider').val();
-		    this.routeType = this.jq('routetype').val();
-		    dialog.remove();
-		    this.showCommandMessage(message+': ' + Utils.makeLabel(this.routeType)+' - Draw one or more line segments');
-		    cmd.activate();
-		};
-		dialog.find('.ramadda-button-ok').button().click(ok);
-		dialog.find('.ramadda-button-cancel').button().click(()=>{
-		    dialog.remove();
-		});
+		this.handleNewRoute(cmd);
 		return
 	    }
 
 	    this.showCommandMessage('New ' + glyphType.getName() +(glyphType.getNewHelp()?
 								   ' - '+ glyphType.getNewHelp():''));
 	    cmd.activate();	    
-
 
 	},
 	

@@ -1,3 +1,7 @@
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 var debugDataIcons = false;
 
@@ -3435,9 +3439,6 @@ MapGlyph.prototype = {
 	     });
 	});
 
-
-
-
 	this.jq('createroute').button().click(()=>{
 	    this.makeGroupRoute();
 	});
@@ -3801,8 +3802,6 @@ MapGlyph.prototype = {
 	return null;
     },
     makeGroupRoute: function() {
-	let mode = this.display.jq('routetype').val()??'car';
-	let provider = this.display.jq('routeprovider').val();
 	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
 	this.applyChildren(child=>{
@@ -3817,7 +3816,7 @@ MapGlyph.prototype = {
 	    alert('No points to make route from');
 	    return;
 	}
-	this.display.createRoute(provider,mode,pts,{
+	this.display.handleNewRoute(null,pts,{
 	    doSequence:doSequence});
     },
     applyTemplate:function(template,attrs) {
@@ -3879,6 +3878,8 @@ MapGlyph.prototype = {
 
 	    html+='<p>'
 	    html += HU.div([ATTR_ID,this.domId('makecsv')],'Make CSV File');	    
+	    html+='<p>'
+	    html += HU.div([ATTR_ID,this.domId('createroute')],'Create Route');	    
 	    content.push({header:'Make Map',contents:html});
 	}
 

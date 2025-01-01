@@ -1,3 +1,9 @@
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
+
 
 function Glyph(display, scale, fields, records, args, attrs) {
     var props = this.properties = this.p = {};

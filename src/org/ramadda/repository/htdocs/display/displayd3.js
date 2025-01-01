@@ -1,6 +1,8 @@
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
