@@ -55,6 +55,13 @@ services that can be configured. See <a href=services.html>here</a> for more inf
 
 These properties are added to your repository.properties file when RAMADDA is initialized
 
+
+To show the login/logout link in the header instead of in the cog menu popup set:
++pre addCopy=true
+ramadda.showlogin=true
+-pre
+
+
 +pre addCopy=true
 #You can add an extra layer of security when doing admin tasks (e.g., changing passwords, adding users, etc)
 #Uncomment this and the admin password is required when doing the above tasks
@@ -467,12 +474,12 @@ The entry's <a href=#snippet>snippet</a> is used for the description.
 :p
 There is also a Twitter Card property type that can be used to specify the title, creator, description and image.
 Under Add Property-&gt;Miscellaneous add the Twitter Card property:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=227"><img  src="images/twittercard1.png?version=227"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=227" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard1.png?version=386"><img  src="images/twittercard1.png?version=386"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard1.png?version=386" ></a></div></div>
 
 Enter any of the values. If defined in the property these will override the defaults of the entry's name,
 snippet, etc.
 
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=227"><img  src="images/twittercard2.png?version=227"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=227" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/twittercard2.png?version=386"><img  src="images/twittercard2.png?version=386"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/twittercard2.png?version=386" ></a></div></div>
 
 These properties can be inherited. For example, you can add an inherited Twitter Card property at the top-level
 of your repository with just the Twitter handle specified. Then for any descendent entry you can specify a title, thumbnail, etc.
