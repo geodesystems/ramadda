@@ -267,6 +267,12 @@ ramadda-heading, .ramadda-page-heading {
 }
 
 
+.ramadda-favorites-header {
+    text-align:center;
+    font-weight:bold;
+    border-bottom:var(--basic-border);
+    background:var(--header-background);
+}
 .ramadda-bigtext-toggle {
     font-size:80%;
     position:absolute;
@@ -4486,6 +4492,18 @@ td .ramadda-role {
 
 .ramadda-page-link {
     transition: transform .3s ease-in-out;
+    padding-right:5px;
+    display:inline-block;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.ramadda-page-link-simple a {
+    text-decoration:none;
+}
+
+.ramadda-page-link-simple {
+    padding-left:5px;
     padding-right:5px;
     display:inline-block;
     display: table-cell;

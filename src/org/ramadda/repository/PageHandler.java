@@ -140,6 +140,7 @@ public class PageHandler extends RepositoryManager {
     private boolean showJsonLd;    
     private boolean showTwitterCard;
     private boolean showSearch;
+    private boolean showLogin;    
     private String shortDateFormat;
     private String createdDisplayMode;
     private String myLogoImage;
@@ -190,6 +191,7 @@ public class PageHandler extends RepositoryManager {
         showJsonLd = getRepository().getProperty("ramadda.showjsonld", false);
         showTwitterCard = getRepository().getProperty("ramadda.showtwittercard", true);	
         showSearch = getRepository().getProperty("ramadda.showsearch", true);
+	showLogin = getRepository().getProperty("ramadda.showlogin",false);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
                                         "all").trim();
@@ -655,6 +657,7 @@ public class PageHandler extends RepositoryManager {
 
 	List<String> pageLinks = new ArrayList<String>();
 
+
         if (showSearch) {
 	    pageLinks.add(wrapPageLink(
 				       HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');", searchImg, "")+
@@ -713,6 +716,19 @@ public class PageHandler extends RepositoryManager {
 	    if(messages!=null && messages.size()>0) {
 		getSessionManager().clearSessionMessages(request);
 		HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
+	    }
+	}
+
+
+	if(showLogin) {
+	    List<Link> links = new ArrayList<Link>();
+	    getUserLoginLinks(request,links,new StringBuilder(),true);
+	    for (Link _link:links) {
+		if(_link.getUrl()==null) {continue;}
+		String link = HU.href(_link.getUrl(),_link.getLabel());
+		link = link.replace("${tooltip}", Utils.getNonNull(_link.getTooltip(),"").toString());
+		//		link = link.replace("${extra}", "");
+		pageLinks.add("<span class='ramadda-page-link-simple'>" +link+"</span>");
 	    }
 	}
 
@@ -1675,25 +1691,8 @@ public class PageHandler extends RepositoryManager {
 
 
 
-    /**
-     * Get the login/settings/help links
-     *
-     * @param request the request
-     * @param template template to make the links
-     * @param prefix _more_
-     * @param makePopup _more_
-     *
-     * @return user links
-     */
-    private List<String> getUserLinks(Request request, String template,
-                                      StringBuilder prefix,
-                                      boolean makePopup) throws Exception {
-        User user   = request.getUser();
-	List<Link> _links = new ArrayList<Link>();
-	
-        List urls   = new ArrayList();
-        List labels = new ArrayList();
-        List tips   = new ArrayList();
+    private void getUserLoginLinks(Request request, List<Link> _links, StringBuilder prefix,boolean makePopup)  throws Exception  {
+	User user = request.getUser();
         if (user.getAnonymous()) {
             if (getUserManager().canDoLogin(request)) {
                 String url;
@@ -1716,12 +1715,9 @@ public class PageHandler extends RepositoryManager {
 				    HU.faIcon("fa-sign-in-alt") + " " + msg("Login"),"Login"));
 		if(getUserManager().isRegistrationEnabled()) {
 		    _links.add(new Link(getRepository().getUrlPath("/user/register"),"",
-					HU.faIcon("fas fa-user-plus") + " " + msg("Register Account")));
+					HU.faIcon("fas fa-user-plus") + " " + msg("Register")));
 		}
-
-
             }
-
         } else {
 	    _links.add(new Link(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT),
 				"",
@@ -1748,6 +1744,31 @@ public class PageHandler extends RepositoryManager {
 				    label,"Go to user settings"));
             }
         }
+    }
+
+    /**
+     * Get the login/settings/help links
+     *
+     * @param request the request
+     * @param template template to make the links
+     * @param prefix _more_
+     * @param makePopup _more_
+     *
+     * @return user links
+     */
+    private List<String> getUserLinks(Request request, String template,
+                                      StringBuilder prefix,
+                                      boolean makePopup) throws Exception {
+        User user   = request.getUser();
+	List<Link> _links = new ArrayList<Link>();
+	
+        List urls   = new ArrayList();
+        List labels = new ArrayList();
+        List tips   = new ArrayList();
+	if(!showLogin) {
+	    getUserLoginLinks(request,_links,prefix,makePopup);
+	}
+	
 
         if (showHelp
                 && (getRepository().getPluginManager().getDocUrls().size()
@@ -1763,10 +1784,11 @@ public class PageHandler extends RepositoryManager {
 	List<FavoriteEntry> favs = getUserManager().getFavorites(request);
 	if(favs.size()>0) {
 	    StringBuilder sb = new StringBuilder();
-	    _links.add(new Link(null,"",HU.b(HU.center("Favorites"))));
+	    _links.add(new Link(null,"",HU.div("Favorites","class=ramadda-favorites-header")));
 	    for(FavoriteEntry fav: favs) {
                 String url = getEntryManager().getEntryUrl(request, fav.getEntry());
-		sb.append(HU.div(fav.getEntry().getName(),HU.cssClass("ramadda-user-link")+HU.onMouseClick("document.location=" + HU.squote(url))));
+		sb.append(HU.div(getEntryIconImage(request,fav.getEntry()) + HU.SPACE + fav.getEntry().getName(),
+				 HU.cssClass("ramadda-user-link")+HU.onMouseClick("document.location=" + HU.squote(url))));
 	    }
 	    _links.add(new Link(null,"",HU.div(sb.toString(),HU.style("max-height:6em;overflow-y:auto;white-space:nowrap;"))));
 	}
