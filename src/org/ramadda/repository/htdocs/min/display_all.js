@@ -1,7 +1,7 @@
-var build_date="RAMADDA build date: Tue Dec 31 17:28:00 MST 2024";
+var build_date="RAMADDA build date: Wed Jan  1 08:04:18 MST 2025";
 
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -496,7 +496,8 @@ var defaultColorTables=[
 Utils.addColorTables(defaultColorTables);
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 function AreaWidget(display,arg) {
@@ -1678,8 +1679,10 @@ let Gfx = {
 
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 function DisplayAnimation(display, enabled,attrs) {
@@ -2553,6 +2556,14 @@ function DisplayAnimation(display, enabled,attrs) {
 
     });
 }
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
+
+
+
 function ColorByInfo(display, fields, records, prop,colorByMapProp, defaultColorTable, propPrefix, theField, props,lastColorBy) {
     this.properties = props || {};
     if(!prop) prop = "colorBy";
@@ -3471,6 +3482,12 @@ SizeBy.prototype = {
 
 }
 
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
+
+
 
 function Glyph(display, scale, fields, records, args, attrs) {
     var props = this.properties = this.p = {};
@@ -4009,7 +4026,8 @@ Glyph.prototype = {
 
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 
@@ -13548,8 +13566,10 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 //Properties
@@ -14277,9 +14297,9 @@ function RamaddaMultiDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
-
 
 
 if (window.pointDataCache == null) {
@@ -18093,8 +18113,10 @@ function makeInlineData(display, src) {
     return  new PointData(src, fields, records,"#" + src);
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 var FILTER_ALL = "-all-";
 
@@ -19379,8 +19401,10 @@ function TextMatcher (pattern,myId) {
 
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 const DISPLAY_LINECHART = "linechart";
@@ -24022,9 +24046,11 @@ function OrgchartDisplay(displayManager, id, properties) {
 	}
     });
 }
-/*
-  Copyright 2008-2024 Geode Systems LLC
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 const DISPLAY_SLIDES = "slides";
 const DISPLAY_IMAGES = "images";
@@ -25186,7 +25212,8 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 
@@ -26436,7 +26463,8 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 const DISPLAY_NOTEBOOK = "notebook";
@@ -29137,8 +29165,10 @@ function NotebookChunk(cell, props) {
     this.initChunk(props);
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
@@ -30766,9 +30796,11 @@ function RamaddaD3bubbleDisplay(displayManager, id, properties) {
 	}
     })
 }
-/*
-  Copyright 2008-2024 Geode Systems LLC
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 const DISPLAY_WORDCLOUD = "wordcloud";
 const DISPLAY_TEXTSTATS = "textstats";
@@ -33420,7 +33452,7 @@ function RamaddaGlossaryDisplay(displayManager, id, properties) {
 
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -38101,7 +38133,8 @@ function DisplayEntryMetadataElement(display,metadata,element) {
     });
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 
@@ -38174,8 +38207,10 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 const DISPLAY_MAP = "map";
 
@@ -44933,7 +44968,8 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 }
 
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 var DISPLAY_IMDV = 'imdv';
@@ -45421,6 +45457,34 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	},
 	isHereEnabled:function() {
 	    return this.getProperty('hereRoutingEnabled');
+	},
+	handleNewRoute:function(cmd,pts) {
+	    let html = this.createRouteForm();
+	    let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
+		HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
+	    html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
+	    html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
+	    let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
+	    let message = 'New Route';
+	    let ok = ()=>{
+		this.routeProvider = this.jq('routeprovider').val();
+		this.routeType = this.jq('routetype').val();
+		dialog.remove();
+		if(pts) {
+		    this.createRoute(this.routeProvider,this.routeType,pts,{
+			doSequence:true});
+		    return
+		}
+		if(cmd) {
+		    cmd.handler.finishedWithRoute = false;
+		    this.showCommandMessage(message+': ' + Utils.makeLabel(this.routeType)+' - Draw one or more line segments');
+		    cmd.activate();
+		}
+	    };
+	    dialog.find('.ramadda-button-ok').button().click(ok);
+	    dialog.find('.ramadda-button-cancel').button().click(()=>{
+		dialog.remove();
+	    });
 	},
 	createRouteForm:function(addSequence) {
 	    let html='';
@@ -46482,31 +46546,13 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let message = glyphType?'New ' + glyphType.getName():cmd.message??'';
 
 	    if(glyphType.isRoute()) {
-		let html = this.createRouteForm();
-		let buttons  =HU.div([ATTR_CLASS,'ramadda-button-ok display-button'], 'OK') + SPACE2 +
-		    HU.div([ATTR_CLASS,'ramadda-button-cancel display-button'], 'Cancel');	    
-		html+=HU.div([ATTR_STYLE,HU.css('text-align','right','margin-top','5px')], buttons);
-		html=HU.div([ATTR_STYLE,HU.css('margin','5px')],html);
-		let dialog = HU.makeDialog({content:html,title:'Select Route Type',header:true,my:'left top',at:'left bottom',anchor:this.jq(ID_MENU_NEW)});
-		let ok = ()=>{
-		    cmd.handler.finishedWithRoute = false;
-		    this.routeProvider = this.jq('routeprovider').val();
-		    this.routeType = this.jq('routetype').val();
-		    dialog.remove();
-		    this.showCommandMessage(message+': ' + Utils.makeLabel(this.routeType)+' - Draw one or more line segments');
-		    cmd.activate();
-		};
-		dialog.find('.ramadda-button-ok').button().click(ok);
-		dialog.find('.ramadda-button-cancel').button().click(()=>{
-		    dialog.remove();
-		});
+		this.handleNewRoute(cmd);
 		return
 	    }
 
 	    this.showCommandMessage('New ' + glyphType.getName() +(glyphType.getNewHelp()?
 								   ' - '+ glyphType.getNewHelp():''));
 	    cmd.activate();	    
-
 
 	},
 	
@@ -51218,6 +51264,10 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 
 
 
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
+*/
 
 var debugDataIcons = false;
 
@@ -54655,9 +54705,6 @@ MapGlyph.prototype = {
 	     });
 	});
 
-
-
-
 	this.jq('createroute').button().click(()=>{
 	    this.makeGroupRoute();
 	});
@@ -55021,8 +55068,6 @@ MapGlyph.prototype = {
 	return null;
     },
     makeGroupRoute: function() {
-	let mode = this.display.jq('routetype').val()??'car';
-	let provider = this.display.jq('routeprovider').val();
 	let doSequence = this.display.jq('routedosequence').is(':checked');
 	let pts = [];
 	this.applyChildren(child=>{
@@ -55037,7 +55082,7 @@ MapGlyph.prototype = {
 	    alert('No points to make route from');
 	    return;
 	}
-	this.display.createRoute(provider,mode,pts,{
+	this.display.handleNewRoute(null,pts,{
 	    doSequence:doSequence});
     },
     applyTemplate:function(template,attrs) {
@@ -55099,6 +55144,8 @@ MapGlyph.prototype = {
 
 	    html+='<p>'
 	    html += HU.div([ATTR_ID,this.domId('makecsv')],'Make CSV File');	    
+	    html+='<p>'
+	    html += HU.div([ATTR_ID,this.domId('createroute')],'Create Route');	    
 	    content.push({header:'Make Map',contents:html});
 	}
 
@@ -57798,9 +57845,11 @@ FeatureInfo.prototype= {
     
     
 }
-/*
-  Copyright 2008-2024 Geode Systems LLC
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
+
 
 
 const DISPLAY_GRAPH = "graph";
@@ -63550,7 +63599,8 @@ function RamaddaStripesDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 
@@ -65516,9 +65566,9 @@ function RamaddaParcoordsDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
-
 
 
 const DISPLAY_THREE_GLOBE = "three_globe";
@@ -66810,9 +66860,9 @@ function RamaddaThree_gridDisplay(displayManager, id, properties) {
     });
 }
 /**
-   Copyright 2008-2024 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
-
 
 
 function RamaddaXlsDisplay(displayManager, id, properties) {
