@@ -389,6 +389,14 @@ public class SessionManager extends RepositoryManager {
 	}
     }
 
+    private void throwRequestError(Request request,String msg) {
+	if ( !request.responseAsData()) {
+	    request.put(ARG_RESPONSE, RESPONSE_JSON);
+	}
+	throw new IllegalArgumentException(msg);
+    }
+
+
     public UserSession getSession(Request request, String sessionId)
             throws Exception {
         return getSession(request, sessionId, true);
@@ -575,29 +583,39 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
+	String userArg = null;
+	String passwordArg = null;
+        if (user == null) {
+            userArg   = request.getString(ARG_AUTH_USER, null);
+            passwordArg = request.getString(ARG_AUTH_PASSWORD, null);
+	    if(userArg==null) {
+		String auth = request.getHeaderArg("Authorization");
+		if(auth!=null && auth.startsWith("Basic ")) {
+		    try {
+			auth = new String(Utils.decodeBase64(auth.substring("Basic ".length())));
+		    } catch(Exception exc) {
+			throwRequestError(request,"Badly formed Authorization:" + exc);
+		    }
+		    List<String>toks = Utils.splitUpTo(auth,":",2);
+		    if(toks.size()!=2) {
+			throwRequestError(request,"Badly formed Authorization");
+		    }
+		    userArg = toks.get(0);
+		    passwordArg = toks.get(1);		    
+		}
+	    }
+	}
 
         //Check for url auth
-        if ((user == null) && request.exists(ARG_AUTH_USER)
-                && request.exists(ARG_AUTH_PASSWORD)) {
-            String userId   = request.getString(ARG_AUTH_USER, "");
-            String password = request.getString(ARG_AUTH_PASSWORD, "");
+        if (user == null && userArg!=null && passwordArg!=null) {
             request.remove(ARG_AUTH_USER);
             request.remove(ARG_AUTH_PASSWORD);
-            user = getUserManager().findUser(userId, false);
+            user = getUserManager().findUser(userArg, false);
             if (user == null) {
-                if ( !request.responseAsData()) {
-                    request.put(ARG_RESPONSE, RESPONSE_JSON);
-                }
-
-                throw new IllegalArgumentException(msgLabel("Unknown user")
-                        + userId);
+		throwRequestError(request,"Unknown user:" + userArg);
             }
-            if ( !getUserManager().isPasswordValid(user, password)) {
-                if ( !request.responseAsData()) {
-                    request.put(ARG_RESPONSE, RESPONSE_JSON);
-                }
-
-                throw new IllegalArgumentException(msg("Incorrect password"));
+            if ( !getUserManager().isPasswordValid(user, passwordArg)) {
+		throwRequestError(request,"Incorrect password");
             }
 
             String      sessionId = "auth.session." + user.getId();
