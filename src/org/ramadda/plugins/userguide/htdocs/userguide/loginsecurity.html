@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>Login and Security</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#loginsecurity.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_installationandsiteadministration.html">Installation and Site Administration</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="awsec2.html"><table><td valign=center><td><span title="Previous: Creating an AWS EC2 Instance"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Creating an AWS EC2 Instance</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 9.3: Login and Security</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="configuration.html"><table><tr valign=center><td>Server Configuration Options</td><td><span title="Next: Server Configuration Options"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+
+:navtop
+
+:heading User Login
+
+The below properties are added to your repository.properties file when RAMADDA is initialized.
+:p
+
+To show the login/logout link in the header instead of in the cog menu popup set:
++pre addCopy=true
+ramadda.showlogin=true
+-pre
+
+You can add text to the login form with:
++pre addCopy=true
+#This is shown at the top of the login form
+ramadda.user.preface=By logging in you agree to be cool and do good things
+
+#This is shown as a checkbox when logging in
+ramadda.user.agree=I have read and agree to the terms of use ...
+
+-pre
+
+:heading Google Recaptcha
+Google Recaptcha can be used for verifying non-bot access to some services (below).
+To enable Recaptcha you must obtain a sitekey and secret from google. See:
+<a target=_other href=https://www.google.com/recaptcha/admin>https://www.google.com/recaptcha/admin</a>
+:p
+And set the following properties:
++pre addCopy=true
+google.recaptcha.sitekey=
+google.recaptcha.secret=
+-pre
+
+
+:heading Security
+You can add an extra layer of security when doing admin tasks (e.g., changing passwords, adding users, etc).
+This can prevent certain cross-site scripting (XSS) attacks.
+Google Recaptcha can be used, if configured, and/or a password can be required.
+
++pre addCopy=true
+#If Google recaptcha is enabled then set this to true
+ramadda.auth.dorecaptcha=true
+-pre
+
+If you want to require a password for certain administrative tasks then set:
++pre addCopy=true
+ramadda.auth.dopassword=true
+-pre
+
+:heading User Account Creation
+RAMADDA can also be configured to allow users to self-register
+The entry point to the user registration is at  https://&lt;server&gt;/repository/user/register
+If Google Recaptcha is enabled then that is required when users create an account.
+To enable users self-registration then set the below to true:
+
++pre addCopy=true
+ramadda.register.ok=true
+-pre
+
+You can specify a pass phrase that has to be entered by the user to allow them to register
+
++pre addCopy=true
+ramadda.register.passphrase=some_phrase
+-pre
+
+Specify a message and a checkbox:
++pre addCopy=true
+ramadda.register.message=This is the message shown at the top of the registration form
+
+#This is shown as a checkbox when registering
+ramadda.register.agree=I agree to be cool and do good things
+-pre
+
+
+The default behavior is to set the new user to active.
+If you want to set their status to pending and not allow them to login until the site Administrator
+changes their status to active  set this to true:
+
++pre addCopy=true
+ramadda.register.status.pending=true
+-pre
+
+Specify a comma separated list of emails to send a notification of new users registering
++pre addCopy=true
+ramadda.register.notify=foo@bar.com
+-pre
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="awsec2.html"><table><td valign=center><td><span title="Previous: Creating an AWS EC2 Instance"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Creating an AWS EC2 Instance</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="configuration.html"><table><tr valign=center><td>Server Configuration Options</td><td><span title="Next: Server Configuration Options"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
