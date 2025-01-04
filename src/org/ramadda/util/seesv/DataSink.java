@@ -364,7 +364,7 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	private String qt(String s) {
 	    s = s.replace("\\"," ");
 	    s = s.replace("\"","\\\"");
-	    return HU.quote(s);
+	    return JsonUtil.quote(s);
 	}
         /**
          * _more_
