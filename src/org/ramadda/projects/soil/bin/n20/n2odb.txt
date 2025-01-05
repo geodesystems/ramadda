@@ -1,5 +1,5 @@
-table.id soil_test1_n02   
-table.label Test Soil N02 Database   
+table.id soil_test1_n2o   
+table.label Test Soil N2O Database   
 table.showmultiples true
 #db.install true    
 #db.droptable true

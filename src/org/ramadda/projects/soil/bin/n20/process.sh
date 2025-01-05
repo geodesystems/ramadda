@@ -3,7 +3,7 @@
 ## This processes the data from https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=877 
 #It cleans up  the file DailyGHG_V1.csv producing dailyghg.csv
 #It them samples 0.01% of dailyghg.csv to make a samples.csv
-#it then generates a RAMADDA Datatables plugin soil_no2_db.xml which defines the database schema
+#it then generates a RAMADDA Datatables plugin soil_n2o_db.xml which defines the database schema
 #################################################
 
 set -e
@@ -84,9 +84,9 @@ if [ ! -e "sample.csv" ]; then
 fi
 
 #Generate the database schema
-#The settings are in the file n02db.txt
-echo "creating the soil_no2_db.xml database schema"
-seesv -db  "file:${mydir}/n02db.txt"  sample.csv > soil_no2_db.xml
+#The settings are in the file n2odb.txt
+echo "creating the soil_n2o_db.xml database schema"
+seesv -db  "file:${mydir}/n2odb.txt"  sample.csv > soil_no2_db.xml
 
 
 #If -install then copy the plugin to the local RAMADDA plugins
@@ -99,5 +99,5 @@ fi
 #This can be used if the schema has markedly changed during development
 if [ "$dropdb" -eq 1 ]; then
     echo "running RAMADDA. dropping table"
-    sh ~/bin/ramadda.sh -dropdbtable  soil_test1_n02   
+    sh ~/bin/ramadda.sh -dropdbtable  soil_test1_n2o   
 fi
