@@ -49,20 +49,34 @@
     <column type="enumerationplus" cansearch="true" name="taxon_variety" label="Variety"/>    
     <column type="string" cansearch="true" name="tsn_number" label="TSN Number" columns="8"/>
 
-    <column group="Object" name="handling" label="Handling" type="enumerationplus" cansearch="true" />
+    <column group="Object" name="handling" label="Handling" type="enumerationplus" cansearch="true" 
+	    adminonly="true"
+/>
     <column name="catalog_number" type="string"  label="Catalog Number" columns="8"
+	    adminonly="true"
 	    cansearch="false" xxxgroup="Collection"/>
 
     
     <column name="object_status" label="Object Status" type="enumerationplus" cansearch="true"
+	    adminonly="true"
 	    values="file:/org/ramadda/plugins/archive/resources/objectstatus.txt"/>
   
-    <column name="condition" label="Condition" type="enumerationplus" cansearch="true" />
+    <column name="condition" label="Condition" type="enumerationplus" cansearch="true"
+	    adminonly="true"
+	    />
 
-    <column name="preparation_material" label="Preparation Material" type="enumerationplus" cansearch="true" />
-    <column name="item_count" label="Item Count" default="0" type="int" cansearch="false"/>
-    <column name="quantity" label="Quantity" default="0" type="int" cansearch="false"/>      
-    <column name="storage_unit" label="Storage Unit" type="enumerationplus" cansearch="true"/>
+    <column name="preparation_material" label="Preparation Material" type="enumerationplus" cansearch="true"
+	    adminonly="true"
+	    />
+    <column name="item_count" label="Item Count" default="0" type="int" cansearch="false"
+	    adminonly="true"	    
+	    />
+    <column name="quantity" label="Quantity" default="0" type="int" cansearch="false"
+	    adminonly="true"	    
+/>      
+    <column name="storage_unit" label="Storage Unit" type="enumerationplus" cansearch="true"
+	    adminonly="true"
+	    />
 
     <column group="Biology" name="habitat" label="Habitat" type="enumerationplus" cansearch="true"
 	    values="file:/org/ramadda/plugins/archive/resources/habitats.txt"/>

@@ -156,9 +156,12 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="form.tags.show" value="false"/>    
     <column name="collection_number" type="string"  label="Collection Number" columns="8"
 	    cansearch="false" xxxgroup="Collection"/>
-    <column name="form_number" type="string"  label="Form Number"   cansearch="false" columns="8"/>
-    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
-    <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="0"
+    <column name="form_number" type="string"  label="Form Number"   cansearch="false" columns="8"
+	    adminonly="true"/>
+    <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000"
+	    adminonly="true"	    changetype="true"/>
+    <column name="size" type="double"  label="Size" displaysuffix="Linear feet" default="NaN"
+	    showempty="false"
 	    numberformat="#0.0"/>	    
         
 
@@ -391,10 +394,16 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <column name="object_subclass4" type="enumerationplus" size="500" label="Sub-Class 4"  cansearch="true" />
     
 
-    <column name="shelf_location" type="enumerationplus" size="1000" label="Shelf Location"  cansearch="true"  group="Catalog"/>    
+    <column name="shelf_location" type="enumerationplus" size="1000" label="Shelf Location"  cansearch="true"
+	    adminonly="true"	    
+	    group="Catalog"/>    
 
-    <column name="catalog_number" type="string"  label="Catalog Number" columns="30"/>
-    <column name="form_number" type="string"  label="Form Number" columns="30"/>        
+    <column name="catalog_number" type="string"  label="Catalog Number" columns="30"
+	    adminonly="true"	    
+	    />
+    <column name="form_number" type="string"  label="Form Number" columns="30"
+	    adminonly="true"	    	    
+/>        
     
 
     <embedwiki><![CDATA[{{information details=true}}]]></embedwiki>
