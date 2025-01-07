@@ -824,15 +824,13 @@ public class GenericTypeHandler extends TypeHandler {
 		if(seen.contains(column.getName())) {
 		    continue;
 		}
-		if ((column.getDisplayGroup() != null)
+		if (column.getDisplayGroup() != null 
 		    && !Misc.equals(lastGroup, column.getDisplayGroup())) {
-		    lastGroup = column.getDisplayGroup();
-		    sb.append(
-				  HU.row(
-						HU.col(
-							      HU.div(
-									    lastGroup,
-									    " class=\"formgroupheader\" "), " colspan=2 ")));
+		    if(!column.getAdminOnly() ||
+		       (request.isAdmin() ||request.isOwner(entry))) {
+			lastGroup = column.getDisplayGroup();
+			sb.append(HU.row(HU.col(HU.div(lastGroup," class=\"formgroupheader\" "), " colspan=2 ")));
+		    }
 		}
 		addColumnToTable(request, entry,column,sb);
 	    }
@@ -860,6 +858,10 @@ public class GenericTypeHandler extends TypeHandler {
 	if(column==null) return;
 	StringBuilder tmpSb = new StringBuilder();
 	Object[]      values = getEntryValues(entry);
+	if(column.getAdminOnly()) {
+	    if(!request.isAdmin() &&!request.isOwner(entry)) return;
+	}
+
 	if (values != null) {
 	    formatColumnHtmlValue(request, entry, column, tmpSb, values);
 	}

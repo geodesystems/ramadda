@@ -177,6 +177,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean doPolygonSearch  = false;
     private boolean addFileToSearch = false;
     private boolean isMediaUrl = false;
+    private boolean adminOnly=false;
     private boolean isGeoAccess=false;
     private boolean doInlineEdit = false;
     private boolean addBulkUpload = false;
@@ -365,6 +366,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         addNot     = getAttributeOrTag(element, "addnot", isType(DATATYPE_LATLON));
         addFileToSearch = getAttributeOrTag(element, "addfiletosearch",
                                             addFileToSearch);
+	adminOnly= XmlUtil.getAttribute(element, "adminonly", false);
+
 	isGeoAccess= getAttributeOrTag(element, "isgeoaccess", false);
         isMediaUrl = getAttributeOrTag(element, "ismediaurl", false);
         dflt       = getAttributeOrTag(element, ATTR_DEFAULT, "").trim();
@@ -843,8 +846,15 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
+    public boolean getAdminOnly() {
+	return adminOnly;
+    }
+
     private boolean accessOk(Request request,Entry entry) {
 	if(isPrivate()) {
+	    return request.isAdmin() || request.isOwner(entry);
+	}
+	if(adminOnly) {
 	    return request.isAdmin() || request.isOwner(entry);
 	}
 	if(isGeoAccess || isGeo()) {
@@ -947,7 +957,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
     public Object getValue(Request request, Entry entry) {
-	if(!accessOk(request, entry)) return null;
+	if(!accessOk(request, entry)) {
+	    return null;
+
+	}
 	return getValue(request, entry.getValues());
     }
 
@@ -1028,12 +1041,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         formatValue(request, entry, sb, output, values, null, raw);
     }
     
-    public void formatValue(Request request, Entry entry,
-			    Appendable result,
-                            String output, Object[] values,
-                            SimpleDateFormat sdf, boolean raw)
+    public boolean
+	formatValue(Request request, Entry entry,
+		    Appendable result,
+		    String output, Object[] values,
+		    SimpleDateFormat sdf, boolean raw)
 	throws Exception {
-	if(!accessOk(request, entry)) return;
+	if(!accessOk(request, entry)) return false;
 	boolean addSuffix = true;
         Appendable sb  = new StringBuilder();
         boolean    csv = Misc.equals(output, OUTPUT_CSV);
@@ -1085,12 +1099,15 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 Double v = Utils.getDouble(values[offset]);
                 if (v == null) {
-                    return;
+                    return false;
                 }
                 if ((v == dfltDouble) && !getShowEmpty()) {
-                    return;
+                    return false;
                 }
 		if(Double.isNaN(v)) {
+		    if ( !getShowEmpty()) {
+			return false;
+		    }
 		    sb.append("NA");
 		    addSuffix = false;
 		} else {
@@ -1263,7 +1280,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
             if (s.length() == 0) {
                 if ( !getShowEmpty()) {
-                    return;
+                    return false;
                 }
             }
 
@@ -1307,6 +1324,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 	s = typeHandler.applyMacros(request,entry,macros,values[offset],s);
         s = typeHandler.decorateValue(null, entry, this, s);
 	result.append(s);
+	return true;
+
     }
 
 
