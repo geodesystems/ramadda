@@ -3682,9 +3682,9 @@ img.metadata-tag-selected {
     background:transparent;
 }
 
-.metadata-image {
-    max-width: 400px; 
-    overflow-x: hidden;
+
+.ramadda-metadata-image, .metadata-image {
+    max-width: 100%;
 }
 
 .ramadda-system-message {
