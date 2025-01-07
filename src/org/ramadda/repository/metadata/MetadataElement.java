@@ -412,7 +412,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 return new MetadataHtml(
                     "",
                     HU.img(
-                        url, HU.cssClass("ramadda-metadata-image")));
+			   url, "", HU.cssClass("ramadda-metadata-image")));
             }
 
             return null;
