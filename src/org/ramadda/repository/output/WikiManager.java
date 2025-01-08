@@ -8097,7 +8097,7 @@ public class WikiManager extends RepositoryManager
 			l2.call("Internal link", "Link to another entry","[[id|link text", "]]"),
 			l2.call("External link", "Link to an external URL","[http://www.example.com link title", "]"),
 			l2.call("Embed YT, etc.","Embed content from YouTube, Wikipedia, etc",
-				"@(youtube, wikipedia, etc, URL)",""),
+				"@(youtube URL, wikipedia, etc, URL #width=600 #height=800)",""),
 			l.call("Horizontal line", "\\n----\\n", ""),
 			l2.call("Button", "Add a button with a URL",":button url label", ""),
 			l2.call("Language Block", "Show/hide block based on user's language preference","+lang one of es en fr etc.\\n", "-lang"),

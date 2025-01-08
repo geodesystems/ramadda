@@ -3749,6 +3749,7 @@
                 "schemes": [
                     "https://*.youtube.com/watch*",
                     "https://*.youtube.com/v/*",
+                    "https://*.youtube.com/live/*",		    
                     "https://youtu.be/*"
                 ],
                 "url": "https://www.youtube.com/oembed",
