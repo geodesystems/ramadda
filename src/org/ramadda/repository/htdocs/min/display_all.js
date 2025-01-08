@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Jan  1 08:04:18 MST 2025";
+var build_date="RAMADDA build date: Tue Jan  7 18:42:49 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5719,6 +5719,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'showChildTitle',canCache:true},
 	{p:'showEntryIcon',ex:true},
 	{p:'layoutHere',ex:true},
+	{p:'headerCenter',ex:'false',tt:'Are the filter widgets centered'},
 	{p:'headerDiv',tt:'div id of an alternate place to display the header'},
 	{p:'footerDiv',tt:'div id of an alternate place to display the footer'},		
 	{p:'width',doGetter:false,ex:'100%'},
@@ -11143,7 +11144,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		header2 = HU.div([CLASS,"display-header-vertical"],header2);
 	    } else {
 		let style = HU.css('line-height','0px');
-		if(this.getProperty('headerCenter',true)) style +=HU.css('text-align','center');
+		if(this.getHeaderCenter(true)) style +=HU.css('text-align','center');
 		header2=HU.div([STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
