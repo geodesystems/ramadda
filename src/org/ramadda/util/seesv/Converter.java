@@ -5985,6 +5985,46 @@ public abstract class Converter extends Processor {
 
     }
     
+    public static class ChangeCounter extends Converter {
+	String name;
+	int counter=0;
+	double lastValue=Double.NaN;
+
+        /**
+         * @param keys _more_
+         * @param indices _more_
+         */
+        public ChangeCounter(String col, String name) {
+            super(col);
+	    this.name = name;
+        }
+
+
+        /**
+         * @param ctx _more_
+         * @param row _more_
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		row.add(name);
+                return row;
+            }
+	    int index = getIndex(ctx);
+	    if(!row.indexOk(index)) return row;
+	    double v = row.getDouble(index);
+	    if(Double.isNaN(lastValue) || v!=lastValue) {
+		counter++;
+	    }
+	    lastValue = v;
+	    row.add(""+(counter));
+            return row;
+        }
+
+    }
+    
+
 
     /**
      * Class description

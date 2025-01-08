@@ -2832,10 +2832,14 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_RUNNINGSUM,
                 "Make a running sum of the column values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+        new Cmd(CMD_CHANGECOUNTER,
+                "Make counter field that is incremented everytime the value column changes",
+		new Arg(ARG_COLUMN,"The value column",ATTR_TYPE,TYPE_COLUMN),
+		new Arg("name","Name of counter column")),
         new Cmd(CMD_TRENDCOUNTER,
                 "Make counter field that is incremented everytime the value column decreases",
 		new Arg(ARG_COLUMN,"The value column",ATTR_TYPE,TYPE_COLUMN),
-		new Arg("name","Name of counter column")),	
+		new Arg("name","Name of counter column")),		
         new Cmd(CMD_OPERATOR,
                 "Apply the operator to the given columns and create new one",
                 new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS),
@@ -5158,7 +5162,11 @@ public class Seesv implements SeesvCommands {
 	defineFunction(CMD_TRENDCOUNTER, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.TrendCounter(args.get(++i),args.get(++i)));
 		return i;
-	    });		
+	    });
+	defineFunction(CMD_CHANGECOUNTER, 2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ChangeCounter(args.get(++i),args.get(++i)));
+		return i;
+	    });			
 
 
 
