@@ -337,7 +337,7 @@ inherited="false"  }}
 -center
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
-{{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true" showCaption="true" style="border:var(--basic-border);"}}
 
 <table class="formtable">
 {{field  name="call_number" row.label="Call #:"}}
