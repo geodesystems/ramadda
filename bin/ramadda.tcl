@@ -128,3 +128,9 @@ proc  mtdN {type args} {
 
 
 
+proc makeThumbnail {file {caption {}} } {
+    set xml  {<metadata type="content.thumbnail">}
+    append xml "<attr encoded=\"false\" fileid=\"$file\" index=\"1\"><!\[CDATA\[$file\]\]></attr>"
+    append xml "<attr encoded=\"false\" index=\"2\"><![CDATA[$caption]]></attr><attr encoded=\"false\" index=\"3\"><![CDATA[false]]></attr></metadata>"
+    set xml
+}
