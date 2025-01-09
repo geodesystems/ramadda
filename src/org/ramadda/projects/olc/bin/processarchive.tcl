@@ -24,35 +24,40 @@ source ../names.tcl
 source ../keywords.tcl
 source media.tcl
 
+proc makeNote {note} {
+    return  [mtd1 archive_internal $note]
+
+}
+
 proc cleanType {type} {
     if {$type=="PHOTOGRAPH"} {set type Photograph}
     set type
 }
 
-proc processSummary {summary} {
+proc processSummary {summary {from Summary}} {
     set summary [clean $summary]
     if {[regexp -nocase {Names included in this collection:(.*)$} $summary match names]} {
 	set summary [string map [list $match { }] $summary]
 	regsub -all {\n} $names { } names
-	processSubjectsAndKeywords $names
+	processSubjectsAndKeywords $names $from
     }
     if {[regexp -nocase {Keywords:(.*)$} $summary match keywords]} {
 	set summary [string map [list $match { }] $summary]
 	regsub -all {\n} $keywords { } keywords
-	processSubjectsAndKeywords $keywords
+	processSubjectsAndKeywords $keywords $from
     }
     if {[regexp  {Keywords [^:]+:(.*)$} $summary match keywords]} {
 	regsub -all {\([^\)]+\)} $keywords { }  keywords
 	set summary [string map [list $match { }] $summary]
 	regsub -all  $match $summary { } summary
 	regsub -all {\n} $keywords { } keywords
-	processSubjectsAndKeywords $keywords
+	processSubjectsAndKeywords $keywords $from
     }    
 
     return $summary
 }
 
-proc processSubjectsAndKeywords {v} {
+proc processSubjectsAndKeywords {v {from {Subjects and Keywords}}} {
     set v [clean $v]
     regsub -all {\n} $v { }  v
     regsub -all {Interview with} $v {, } v
@@ -126,7 +131,7 @@ proc processSubjectsAndKeywords {v} {
 	    set tok [string trim $tok]
 	    append ::entries [mtd1 archive_subject $tok]
 	} else {
-	    append ::entries [mtd2 archive_note Note $tok]
+	    append ::entries [makeNote $tok]
 	}
 
 	if {![info exists ::seen($tok)]} {
@@ -213,7 +218,8 @@ proc collection $::cp  {
     append ::entries [openEntry type_archive_collection $cid "" $collection_title]
     append ::entries [col collection_number [pad $collection_nbr]]
     append ::entries [col shelf_location $shelf_location]
-    append ::entries [mtd2 archive_note Note $column1]
+#    puts "$collection_title  $column1"
+    append ::entries [makeNote $column1]
     append ::entries [mtd2 archive_note Arrangement $organiz_arrange]
     append ::entries [mtd2 archive_note "Scope and Content" $scope_content]
     append ::entries [mtd2 archive_note "Creator Sketch" $bio_org_history]
@@ -389,16 +395,18 @@ proc series $::sp {
     set id [sid $collection_nbr $series_nbr]
     set ::sids($id) $series_title
     append ::entries [openEntry type_archive_series $id $parent  $series_title]
-    set summary [processSummary $summary]
+    set from "series: $series_title"
+    set summary [processSummary $summary $from]
     append ::entries [col series_number [pad $series_nbr]]
     append ::entries [col shelf_location $shelf_location]
     append ::entries [mtd2 archive_note Scope $scope_content]
-    append ::entries [mtd2 archive_note Note $notes]    
+    
+    append ::entries [makeNote $notes]    
     append ::entries [mtd2 archive_note "Creator Sketch" $bio_org_history]
     append ::entries [mtd2 archive_note Arrangement $organiz_arrange]
     append ::entries [mtd2 archive_note "Provenance" $provenance]
-    append ::entries [mtd2 archive_note "Note" $column1]
-    append ::entries [mtd2 archive_note "Note" $summary]        
+    append ::entries [makeNote $column1]
+    append ::entries [makeNote $summary]        
     append ::entries [mtd1 archive_creator $creator]    
     handleDate $bulk_dates series $::scnt
     if {[regexp {.*\d\d\d\d-.*} $name_type]} {
@@ -429,7 +437,7 @@ proc files $::fp {
     set id [fid $collection_nbr $series_nbr $file_unit_nbr]
     set ::fids($id) $title
     append ::entries [openEntry type_archive_file $id $parent $title]
-    set summary_note [processSummary $summary_note]
+    set summary_note [processSummary $summary_note "file: $title"]
 
     append ::entries [col file_number [pad $file_unit_nbr]]
     append ::entries [col shelf_location $shelf_location]
@@ -481,7 +489,7 @@ proc item $::ip {
     append ::entries [mtd1 archive_category $category]    
     handleDate  $dates item $::icnt
 #    puts $user_1
-    processSubjectsAndKeywords $user_1
+    processSubjectsAndKeywords $user_1 "item: $title <span style='color:blue;'>field:user_1</span>"
     set summary_note [processSummary $summary_note]
     append ::entries [mtd2 archive_note "Summary" $summary_note]        
     append ::entries "</entry>\n"
@@ -506,3 +514,4 @@ puts stderr "#collections: $::ccnt #series: $::scnt #files: $::fcnt #items: $::i
 
 
 
+#puts "</table>"
