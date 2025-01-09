@@ -119,7 +119,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     }
 
     @Override
-    public String getPathForEntry(Request request, Entry entry, boolean forRead)
+    public IO.Path getPathForRecordEntry(Request request,Entry entry,  Hashtable requestProperties)
 	throws Exception {
         String location = entry.getStringValue(request,IDX_LOCATION_ID, (String) null);
         if ( !Utils.stringDefined(location)) {
@@ -138,6 +138,10 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         String endDate = Utils.format(dateSDF,cal.getTime());
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
         String startDate = Utils.format(dateSDF,cal.getTime());
+	String key = getRepository().getProperty("openaq.api.key",null);
+	if(key==null) {
+	    throw new IllegalStateException("No OpenAQ API key is defined");
+	}
 	String url  = HU.url("https://api.openaq.org/v2/measurements",
 			     "format","csv",
 			     "limit","1000",
@@ -149,7 +153,9 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 			     "date_to", endDate,			     
 			     "location_id",location);
 
-        return url;
+	IO.Path path = new IO.Path(url);
+	path.setRequestArgs(new String[]{"X-API-Key",key});
+        return path;
     }
 
 
