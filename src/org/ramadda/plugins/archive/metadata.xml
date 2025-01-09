@@ -4,6 +4,7 @@
     <type id="archive_internal" name="Archive Internal" restrictions="user"
 	  tag="archiveinternal"	  > 
       <element id="note" name="Internal note" datatype="string" rows="4"/>
+      <template type="html"><![CDATA[<div style='background:#CCFFFF;border:var(--basic-border);padding:5px;'>${attr1}</div>]]></template>
     </type>
 
 
