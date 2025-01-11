@@ -3524,6 +3524,11 @@ public class WikiManager extends RepositoryManager
 	    return tmp.toString();
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
+	    if(theTag.equals(WIKI_TAG_MAPENTRY)) {
+		if(getAccessManager().canDoEdit(request, entry)) {
+		    props.put("canMove","true");
+		}
+	    }
             handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
                          props, sb);
 

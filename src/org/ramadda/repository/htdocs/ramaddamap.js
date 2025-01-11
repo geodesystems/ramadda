@@ -71,6 +71,7 @@ function RepositoryMap(mapId, params) {
         defaultMapLayer: map_default_layer,
 	overlayers:null,
 
+	canMove:false,
 	displayDivSticky:true,
 	showLayerToggle:false,
 	showLatLonLines:false,
@@ -3162,6 +3163,8 @@ RepositoryMap.prototype = {
 	    if(!marker) break;
 	    this.addMarkerEmbed(marker);
 	}	
+
+
     },
 
     finishInit:function() {
@@ -3446,6 +3449,44 @@ RepositoryMap.prototype = {
     addVectorLayer:  function(layer, canSelect) {
         this.addLayer(layer);
         this.vectorLayers.push(layer);
+	if(this.params.canMove && layer==this.markers && !this.mover) {
+	    let _this = this;
+	    this.mover =    new OpenLayers.Control.DragFeature(this.markers,{
+		moveFeature: function(pixel) {
+		    if(!this.feature || !this.feature.ramaddaId) return;
+		    if(!this.feature.geometry) return;
+		    let res = this.map.getResolution();
+		    let dx = res * (pixel.x - this.lastPixel.x);
+		    let dy = res * (this.lastPixel.y - pixel.y);
+		    this.lastPixel = pixel;
+		    this.feature.geometry.move(dx,dy);
+		    this.feature.layer.drawFeature(this.feature);
+		},
+		onComplete: function() {
+		    if(!this.feature || !this.feature.ramaddaId || !this.feature.geometry) return;
+		    let centroid  = this.feature.geometry.getCentroid(true);
+		    let ll = _this.transformProjPoint(centroid);
+		    let id  = this.feature.ramaddaId;
+		    id = id.replace(/_/g,'-');
+		    let url = ramaddaBaseUrl + "/entry/changefield?entryid=" + id+'&what=location&latitude='+ ll.y+"&longitude=" + ll.x;
+		    $.getJSON(url, function(data) {
+			if(data.error) {
+			    alert('An error has occurred: '+data.error);
+			    return;
+			}
+			alert('Entry location has changed');
+		    }).fail(data=>{
+			console.dir(data);
+			alert('An error occurred:' + data);
+		    });
+		},
+		onDrag: function(feature, pixel) {
+		}
+	    });
+	    this.getMap().addControl(this.mover);
+	    this.mover.activate();
+	}
+
         if (this.getCanSelect(canSelect)) {
             let _this = this;
             if (!this.getMap().featureSelect) {

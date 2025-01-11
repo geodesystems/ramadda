@@ -449,6 +449,9 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
+	    if(this.getProperty('canMove',false)) {
+		params.canMove=true;
+	    }
 	    if(!this.getProperty('addMapLocationToUrl',true)) {
 		params.addToUrl=false;
 	    }

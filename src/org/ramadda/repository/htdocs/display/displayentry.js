@@ -2411,7 +2411,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 			titles.push('Map');
 			let id = HU.getUniqueId(type +'_');
 			this.myDisplays.push({id:id,type:type,entries:this.areaEntries});
-			addContents(HU.div([ID,id,ATTR_STYLE,HU.css('width','100%')]));
+			addContents(HU.div([ATTR_ID,id,ATTR_STYLE,HU.css('width','100%')]));
 		    }
 
 		} else if(type=='metadata') {		    
@@ -2666,6 +2666,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
 
 				 showTableOfContentsTooltip:false,
 				 addMapLocationToUrl:false,
+				 canMove:true,
 				 iconField:"iconUrl",
 				 iconSize:16,
 				 displayEntries:false,

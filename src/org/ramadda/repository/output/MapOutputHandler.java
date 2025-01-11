@@ -115,6 +115,10 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "true");
         props.put(ATTR_LISTENTRIES, "false");
+	if ( getAccessManager().canDoEdit(request, entry)) {
+	    props.put("canMove","true");
+	}
+
         MapInfo map = getMapManager().getMap(request, entry, entriesToUse,
                                              sb, "700", "500", null, props);
 
@@ -170,6 +174,11 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
+	if ( getAccessManager().canDoEdit(request, group)) {
+	    props.put("canMove","true");
+	}
+
+
         MapInfo map = getMapManager().getMap(request, group, children, sb,
                                              "100%", "500", null, props);
 
