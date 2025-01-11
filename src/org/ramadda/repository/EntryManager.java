@@ -2055,9 +2055,11 @@ public class EntryManager extends RepositoryManager {
 	}
 
 
-
 	try {
 	    String what = request.getString("what",null);
+	    if(what.equals("location")&& request.defined(ARG_LATITUDE) && request.defined(ARG_LONGITUDE)) {
+		entry.setLocation(request.get(ARG_LATITUDE,0.0), request.get(ARG_LONGITUDE,0.0));
+	    }
 	    String value  = request.getString("value",null);
 	    Result r =     applyProperty(request,entry,what,value);
 	    if(r!=null) return r;
