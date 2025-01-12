@@ -306,11 +306,24 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="volume" type="string"  label="Volume" columns="30"/>
     <column name="series" type="string"  label="Series" size="500" columns="30"/>            
     <column name="item_count"   type="int"  label="Item Count" default="0"/>
-    <column name="call_number" type="string"  label="Call Number" columns="30" showinhtml="false"/>
     <column name="isbn" type="string"  label="ISBN" columns="30"/>
     <column name="lccn" type="string"  label="LCCN" columns="30"/>    
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
     
+    <column name="condition" type="enumerationplus"  label="Condition" group="Internal Information"
+	    adminonly="true"/>
+    <column name="cost" type="double"  label="Cost"	    adminonly="true"/>
+    <column name="edition" type="string"  size="500" label="Edition"	adminonly="true"/>
+    <column name="donor" type="string"  size="500" label="Donor"	adminonly="true"/>
+    <column name="call_number" type="string"  label="Call Number" columns="30" adminonly="true"/>
+    <column name="holdings_note" type="string"  size="3000" rows="4"
+	    label="Holdings Note" columns="30" adminonly="true"/>
+    <column name="note" type="string"  size="3000" rows="4"
+	    label="Note" columns="30" adminonly="true"/>    
+    <column name="copyright_date" type="date"  label="Copyright date"  adminonly="true"/>
+    <column name="purchase_date" type="date"  label="Purchase date"  adminonly="true"/>            
+
+
     <property name="search.form.orderby" value="name,date,createdate"/>
     <property name="search.form.args"><![CDATA[
     tooltip="${display_html}"
@@ -413,7 +426,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 +col-8
 {{description wikify="true"}}
 :vspace 1em
-+tabs
++tabs cullEmpty=true
 +tab Information
 {{information  showDetails="true"  showTitle="false"   }} 
 {{properties  message=""

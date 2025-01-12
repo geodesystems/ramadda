@@ -103,7 +103,7 @@
 +col-8
 {{description wikify="true"}}
 :vspace 1em
-+tabs
++tabs  cullEmpty=true
 +tab Information
 {{information  showDetails="true"  showTitle="false"   }} 
 <div class=metadata-full>
