@@ -1497,7 +1497,9 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    if (Utils.getProperty(props,"center",false)) {
 			divClass += " ramadda-tabs-center ";
 		    }
-
+		    if(Utils.getProperty(props,"cullEmpty",false)) {
+			tabInfo.cullEmpty=true;
+		    }
 		    if (Utils.getProperty(props,"min",false)) {
 			divClass += " ramadda-tabs-min ";
 		    } else if (Utils.getProperty(props,"minarrow",false) ||
@@ -1568,17 +1570,21 @@ public class WikiUtil implements HtmlUtilsConstants {
                 if (tabStates.size() > 0) {
                     if (tline.equals("-tab")) {
                         TabState tabInfo = tabStates.get(tabStates.size()
-							 - 1);
-                        buff.append(HU.close(TAG_DIV));
+							 - 1); 
+                       buff.append(HU.close(TAG_DIV));
                         buff.append("\n");
-                        js.append(
-				  "jQuery(function(){\njQuery('#" + tabInfo.id
-				  + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
                         continue;
                     }
                     if (tline.equals("-tabs")) {
                         TabState tabInfo = tabStates.get(tabStates.size()
 							 - 1);
+			/*
+                        js.append(
+				  "jQuery(function(){\njQuery('#" + tabInfo.id
+				  + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
+			*/
+                        js.append(
+				  "jQuery(function(){\nHtmlUtils.initTabs(" + HU.squote(tabInfo.id)+"," + tabInfo.cullEmpty+")});");
                         tabInfo.title.append("\n");
                         tabInfo.title.append("</ul>");
                         tabInfo.title.append("\n");
@@ -4163,6 +4169,7 @@ public class WikiUtil implements HtmlUtilsConstants {
         
         StringBuilder title = new StringBuilder();
 
+	boolean cullEmpty=false;
         
         int cnt = 0;
 
