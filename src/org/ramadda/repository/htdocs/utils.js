@@ -3720,6 +3720,36 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
     },
 
+    //this method creates the tabs
+    //if cullThem=true then it also hides any tabs that are empty
+    //unless all of them are empty
+    //But if the first tab, the active tab,  is empty then this doesn't work as it doesn't show
+    //the non culled tabs
+    initTabs:function(id,cullThem) {
+	let tabsContainer = jqid(id).tabs({activate: HtmlUtil.tabLoaded});
+	//If there is one tab then don't hide them
+	if(!cullThem) return;
+	let tabsToHide =[];
+	let tabs =[];
+	for(let i=1;true;i++) {
+	    let tabId = id +'-'+i;
+	    let sel = '[aria-controls="' + tabId+'"]';
+	    let tab = tabsContainer.find(sel);
+	    if(tab.length==0) break;
+	    tabs.push(tab);
+	    let contents = jqid(tabId);
+	    if(contents.length==0) break;
+	    let html = contents.html();
+	    if(!html || html.trim().length==0)  {
+		tabsToHide.push(tab);
+	    }
+	}
+	if(tabs.length==1 || tabs.length==tabsToHide.length) return;
+	tabsToHide.forEach(tab=>{
+	    tab.hide();
+	});
+    },
+
     initTypeMenu: function(selectId, textAreaId) {
 	jqid(selectId).change(function() {
 	    let v = $(this).val();
