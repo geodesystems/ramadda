@@ -1,6 +1,7 @@
 
 source $env(RAMADDA_ROOT)/bin/ramadda.tcl
 
+array set ::titles {}
 
 package require json
 
@@ -29,6 +30,9 @@ set ::termsHtml [open terms.html w]
 set ::messy [open messyterms.html w]
 puts $::termsHtml  "<body><div style='font-size:70%;font-family:helvetica;line-height:1.2em;'>"
 puts $::messy "<body><div style='font-size:70%;font-family:helvetica;line-height:1.2em;'>"
+
+
+
 
 set ::files {}
 
@@ -68,7 +72,11 @@ proc getParent {title} {
     }
     if {![info exists ::parent($id)]} {
 	set ::parent($id)  1
-	append ::entries [openEntry group $id {} $id]
+	append ::entries [openEntry type_document_collection $id {} $id]
+	append ::entries [col show_tag_search false]
+	append ::entries [col show_information false]
+	append ::entries [col show_new false]
+	append ::entries [col add_tags false]	
 	append ::entries "</entry>\n"
     }
     return $id
@@ -79,25 +87,35 @@ set ::bookArgs {
 }
 
 proc book $::bookArgs  {
-#    incr ::cnt
-    if {$::cnt>100} return
+
+#    if {$::cnt>100} return
+    set uid ""
     foreach p $::bookArgs {
 	set v [string trim [set $p]]
 	set v [spell $v]
-	if {$v==""} {
-	    if {![regexp date $p]} {
-		set $p "UNKNOWN: $p"
+	set $p $v
+	append uid " $v"
+	if {0} {
+	    if {$v==""} {
+		if {![regexp date $p]} {set $p "UNKNOWN: $p"}
+	    } else {
+		set $p $v
 	    }
-	} else {
-	    set $p $v
 	}
 	check books $::cnt $p $v
     }
+
+    if {[info exists ::titles($title)]} {
+    }
+    set ::titles($title) $uid
+    set entryExtra ""
     set description ""
     set googleDate ""
-    set thumbnailFile ""
+    set thumbnail1File ""
+    set thumbnail2File ""    
 
 #    catch {set isbn [format %.0f $isbn]}	
+    set isbnClean {}
     foreach _isbn [split $isbn " "] {
 	set _isbn [string trim $_isbn]
 	if {$_isbn == ""} continue
@@ -105,12 +123,24 @@ proc book $::bookArgs  {
 	    continue;
 	}
 	if {[string length $_isbn]<5} continue;
+		
+	lappend isbnClean $_isbn
+
 	set isbnFile "isbn/${_isbn}.json"
 	if {![file exists $isbnFile]} {
 	    set url  "https://www.googleapis.com/books/v1/volumes?q=isbn:$_isbn"
 	    catch {exec curl -o $isbnFile $url}
 	    after 2000
 	}
+
+
+	set isbnFile2 "openlib/${_isbn}.json"
+	if {![file exists $isbnFile2]} {
+	    set url  "https://openlibrary.org/api/books?bibkeys=ISBN:${_isbn}&format=json&jscmd=data"
+	    puts "openlib: $_isbn"
+	    catch {exec curl -o $isbnFile2 $url}
+	    after 2000
+	}	
 
 	if {[file exists $isbnFile]} {
 	    set fp [open $isbnFile r]
@@ -129,9 +159,9 @@ proc book $::bookArgs  {
 		    if {[dict exists $volume imageLinks]} {
 			set images  [dict get $volume imageLinks]
 			set thumbnail [dict get $images thumbnail]
-			set thumbnailFile "thumbnails/${_isbn}.jpg"
-			if {![file exists $thumbnailFile]} {
-			    catch {exec curl -o $thumbnailFile $thumbnail}
+			set thumbnail1File "thumbnails1/${_isbn}.jpg"
+			if {![file exists $thumbnail1File]} {
+			    catch {exec curl -o $thumbnail1File $thumbnail}
 			}
 		    }
 		    if {[dict exists $volume categories]} {
@@ -142,11 +172,66 @@ proc book $::bookArgs  {
 		    }
 		    if {[dict exists $volume description]} { 
 			set description [dict get  $volume description]	    
+			puts $description
 		    }
 		}
 	    }
 	}
 
+	if {[file exists $isbnFile2]} {
+	    array set seen {}
+	    set fp [open $isbnFile2 r]
+	    set json [read $fp]
+	    close $fp
+	    set j [json::json2dict $json]
+	    set keys [dict keys $j]
+	    if {[llength $keys]>=1} {
+#		puts "<p><b>$title</b>"
+		set book   [dict get  $j [lindex $keys 0]]	    
+		if {[dict exists $book ebooks]} {
+		    foreach ebook [dict get $book ebooks] { 
+			set preview [dict get $ebook preview_url]
+			if {![info exists seen($preview)]} {
+			    set seen($preview) 1
+#			    puts " <a href=$preview>Preview link</a>"
+			    append entryExtra [mtd2 archive_link $preview "Open Library Preview Link"]
+			}
+		    }
+		}
+		if {[dict exists $book cover]} {
+		    set cover [dict get $book cover]
+		    if {[dict exists $cover large]} {
+			set large [dict get $cover large]
+			set thumbnail2File "thumbnails2/${_isbn}.jpg"
+			if {[file size $thumbnail2File]< 100} {
+			    file delete $thumbnail2File
+			}
+
+			if {![file exists $thumbnail2File]} {
+			    puts "fetching $thumbnail2File $large"
+			    catch {exec curl -L -o $thumbnail2File $large}
+			}
+		    } else {
+			puts "no large:$title"
+		    }
+		}
+		
+		array set seenSubjects {}
+		foreach key {subjects subject_people} {
+		    if {[dict exists $book $key]} {
+			set scnt 0
+			foreach subject [dict get  $book $key] {
+			    if {[info exists seenSubjects($subject)]} continue;
+			    set seenSubjects($subject) 1
+			    set name [dict get $subject name]
+			    incr scnt
+#			    puts "<br>&nbsp;&nbsp;&nbsp;subject:$name"
+			    append entryExtra [mtd1 archive_subject $name]
+			}
+		    }
+		}
+	    }
+	}
     }
 
 
@@ -172,17 +257,31 @@ proc book $::bookArgs  {
 #	puts "pub: $date google: $googleDate"
     }
 
+
+    set thumbnailFile ""
+    set credit ""
+    if {[file exists $thumbnail2File]} {
+	set thumbnailFile  $thumbnail2File 
+	set credit "Credit: openlibrary.org"
+    } elseif {[file exists $thumbnail1File]} {
+	set thumbnailFile  $thumbnail1File 
+	set credit "Credit: Google Books"
+    }
+
     if {![file exists $thumbnailFile]} {
 	return
     }
+
+
 
     append ::entries [openEntry type_archive_book {} $parent  $title]    
     if {[file exists $thumbnailFile]} { 
 	incr ::cnt
 	lappend ::files $thumbnailFile
-	append ::entries [makeThumbnail $thumbnailFile "Credit: Google Books"] 
+	append ::entries [makeThumbnail $thumbnailFile $credit] 
     }
 
+    append ::entries $entryExtra
 
     if {$date !=""} {
 	append ::entries [col fromdate $date]    
@@ -191,21 +290,27 @@ proc book $::bookArgs  {
 	append ::entries [col todate $date]    
     }    
 
+
     set place_of_publication [string trim $place_of_publication]
     regsub {:$} $place_of_publication {} place_of_publication
     regsub {^\[} $place_of_publication {} place_of_publication
     regsub {\]$} $place_of_publication {} place_of_publication        
 
-
-
     if {$summary!=""} {
-	append ::entries [col description $summary]
-    } elseif {$description!=""} {
+	set description $summary
+    }
+
+    if {$description!=""} {
 	append ::entries [col description $description]
     }
+
+
+    regsub -all {\s+;} $series_title {;} series_title
     append ::entries [col authors $authors_name]
     append ::entries [col series_title $series_title]
     append ::entries [col series_volume $series_volume]
+
+    set isbn [join $isbnClean "\n"]
     append ::entries [col isbn $isbn]
     append ::entries [col lccn $lc_control_number]
 
@@ -231,6 +336,8 @@ proc book $::bookArgs  {
     append ::entries [col holdings_note $holdings_note]
     append ::entries [col notes $notes]        
 
+
+
     if {[regexp {(.*)/(.*)/(.*)} $purchase_date match mm dd yyyy]} {
 	if {[string length $dd]==1} {
 	    set dd "0$dd"
@@ -239,8 +346,6 @@ proc book $::bookArgs  {
 	    set mm "0$mm"
 	}
 	append ::entries [col purchase_date "${yyyy}-${mm}-${dd}"]
-    } else {
-	puts "bad: $purchase_date
     }
 
 
