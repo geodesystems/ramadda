@@ -112,6 +112,7 @@ var SPACE2 = "&nbsp;&nbsp;";
 var SPACE3 = "&nbsp;&nbsp;&nbsp;";
 var SPACE4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
+var ARG_PAGESEARCH='pagesearch';
 
 
 function noop() {}
@@ -3825,7 +3826,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
-	let input = HU.input('','',[ATTR_CLASS,'ramadda-pagesearch-input',
+	let initValue = HU.getUrlArgument(ARG_PAGESEARCH)??'';
+	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
 				    ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
 	let buttonMap ={};
 	if(args.buttons) {
@@ -3882,8 +3884,21 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		event.preventDefault(); 
 		return
 	    }
-	    HU.doPageSearch($(this).val(),select,parentSelect,hideAll);
+	    let value = $(this).val();
+	    HU.doPageSearch(value,select,parentSelect,hideAll);
+	    if(Utils.stringDefined(value)) {
+		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
+	    } else {
+		HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+	    }
+
 	});
+
+	if(Utils.stringDefined(initValue)) {
+	    HU.doPageSearch(initValue,select,parentSelect,hideAll);
+	}
+
+
     },		       
     classes:function() {
 	return Utils.join(Array.from(arguments),' ');
