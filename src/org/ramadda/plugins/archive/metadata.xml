@@ -159,7 +159,7 @@
        displaygroup="Links" >
       <element datatype="url" name="URL"/>
       <element name="Name"/>
-      <template type="html"><![CDATA[<a href="${attr1}">${attr2}</a>]]></template>
+      <template type="html"><![CDATA[<a target=_link href="${attr1}">${attr2}</a>]]></template>
     </type>
 
 

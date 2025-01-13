@@ -282,6 +282,8 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="search.metadatatypes" value="archive_term,archive_note"/>
     <property name="icon" value="/archive/book.png"/>
     <property name="form.date.label" value="Publication Date"/>
+    <property name="form.todate.show" value="false"/>
+    <property name="form.time.show" value="false"/>    
     <property name="form.name.label" value="Title"/>
     <property  name="html.type.show"  value="false" />
 
@@ -294,7 +296,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
     <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
     <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>        <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true" xgroup="Classification" />
-    <column name="isbn" type="string"  label="ISBN" columns="30"/>
+    <column name="isbn" type="list"  label="ISBN" columns="30" rows="3" suffix="One per line"/>
     <column name="lccn" type="string"  label="LCCN" columns="30"/>    
             
     <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
