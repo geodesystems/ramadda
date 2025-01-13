@@ -3603,6 +3603,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
 
+    public static void makeTabs(Appendable sb, List<NamedBuffer>buffers) throws Exception {
+	List<String> titles = new ArrayList<String>();
+	List<StringBuilder> contents = new ArrayList<StringBuilder>();
+	for(NamedBuffer buff: buffers) {
+	    titles.add(buff.getName());
+	    contents.add(buff.getBuffer());
+	}
+	makeTabs(sb,titles, contents);
+    }
+
 
     public static void makeTabs(Appendable sb, List titles,
                                      List contents)
