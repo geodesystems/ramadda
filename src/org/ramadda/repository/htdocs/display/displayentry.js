@@ -56,7 +56,6 @@ var ID_TYPEFIELDS = "typefields";
 var ID_METADATA_FIELD = "metadatafield";
 var ID_COLUMN = "column";
 var ID_SEARCH_HIDEFORM = "searchhideform";
-
 var ATTR_TEXT_INPUT='data-text-input';
 
 addGlobalDisplayType({
@@ -2957,6 +2956,15 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	    
 	    let eg = this.getEgText();
 	    let text  = this.getFormText();
+	    let hadInitText = false;
+	    if(!Utils.stringDefined(text) && this.getDoPageSearch()) {
+		text = HU.getUrlArgument(ARG_PAGESEARCH)??'';
+		if(Utils.stringDefined(text)) {
+		    hadInitText = true;
+		}
+	    }
+
+
 	    let size = HU.getDimension(this.getPropertyInputSize());
             let textField = HU.input("", text, [ATTR_STYLE, HU.css("width", size), ATTR_PLACEHOLDER, eg, ATTR_CLASS, "display-search-input", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
@@ -2964,6 +2972,11 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
             form += "<input type=\"submit\" style=\"position:absolute;left:-9999px;width:1px;height:1px;\"/>";
             form += HU.closeTag("form");
 	    form+=HU.div([ID,this.domId(ID_FORM)]);
+	    if(hadInitText) {
+		setTimeout(()=>{
+		    this.doInlineSearch();
+		},1);
+	    }
             return form;
 	},
 	handleNoEntries: function() {
@@ -3064,6 +3077,9 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 
 	    if(!value && !selectedTags) {
 		this.clearPageSearch();
+		if(this.getDoPageSearch()) {
+		    HU.removeFromDocumentUrl(ARG_PAGESEARCH);
+		}
 		return
 	    }
 	    let sel = this.getPageSearchSelectors();
@@ -3096,6 +3112,10 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    $(this).show();
 		}
 	    });
+
+	    if(this.getDoPageSearch()) {
+		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
+	    }
 					  
 	    
 	},
