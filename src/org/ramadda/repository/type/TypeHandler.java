@@ -2921,6 +2921,7 @@ public class TypeHandler extends RepositoryManager {
 	    entryIsImage = false;
 	}
 
+	if(contents.size()==0)  contents.add(new NamedBuffer(""));
 	Appendable sb = contents.get(contents.size()-1);
 	if (showDescription) {
 	    addDescriptionToHtml(request,typeHandler,entry,sb);
