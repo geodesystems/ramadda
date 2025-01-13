@@ -29,6 +29,7 @@ import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOutput;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
@@ -2236,20 +2237,22 @@ public class TypeHandler extends RepositoryManager {
 				      boolean showResource,
 				      Hashtable props,
 				      boolean forOutput,
-				      Appendable sb)
+				      Appendable buff)
 	throws Exception {
+	NamedBuffer sb = new NamedBuffer("");
+	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
+	contents.add(sb);
+
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
             String html = getRepository().getResource(displayTemplatePath);
-            sb.append(processDisplayTemplate(request, entry, html));
+            buff.append(processDisplayTemplate(request, entry, html));
 	    return;
         }
         if (request.get(WikiConstants.ATTR_SHOWTITLE, true)) {
-            HU.sectionHeader(sb, getPageHandler().getEntryHref(request,entry));
+            HU.sectionHeader(buff, getPageHandler().getEntryHref(request,entry));
         }
-        sb.append(HU.formTable());
-
 	HashSet<String> seen = new HashSet<String>();
 
 	List<String> fields = displayFields;
@@ -2283,11 +2286,12 @@ public class TypeHandler extends RepositoryManager {
 		//		else if(field.equals("altitude"))
 		//		    addAltitudeToHtml(request,typeHandler,entry,sb);
 		else if(field.equals("_columns")) {
-		    addColumnsToHtml(request,typeHandler, entry, sb,seen);
+		    addColumnsToHtml(request,typeHandler, entry, contents,seen);
+		    sb=contents.get(contents.size()-1);
 		} else if(field.equals("_default")) {
 		    getInnerEntryContent(entry, request, null, output,
 					 showDescription, showResource, true,
-					 props,seen,forOutput,sb);
+					 props,seen,forOutput,contents);
 		} else {
 		    group = addColumnToHtml(request, typeHandler,entry,field, sb, group);
 		}
@@ -2295,14 +2299,46 @@ public class TypeHandler extends RepositoryManager {
 	} else {
 	    getInnerEntryContent(entry, request, null, output,
 				 showDescription, showResource, true,
-				 props,seen,forOutput,sb);
+				 props,seen,forOutput,contents);
 	}
-        sb.append(HU.formTableClose());
+
+	applyContents(request, buff,contents);
+    }
+
+    public void applyContents(Request request, Appendable buff, List<NamedBuffer> contents) throws Exception {
+	if(getTypeProperty("html.tabs",false) && contents.size()>1) {
+	    for(NamedBuffer namedBuffer:contents) {
+		if(!stringDefined(namedBuffer.getName())) {
+		    namedBuffer.setName("Information");
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(HU.formTable());
+		sb.append(namedBuffer.getBuffer());
+		sb.append(HU.formTableClose());
+		namedBuffer.setBuffer(sb);
+	    }		      
+	    HU.makeTabs(buff, contents);
+	    return;
+	}
+
+
+	for(NamedBuffer namedBuffer:contents) {
+	    String title   = namedBuffer.getName();
+	    buff.append(HU.formTable());
+	    if(stringDefined(title)) {
+		buff.append(HU.row(HU.col(HU.div(title," class=\"formgroupheader\" "), " colspan=2 ")));
+	    }
+	    buff.append(namedBuffer.getBuffer());
+	    buff.append(HU.formTableClose());
+	}
+
+
     }
 
 
-
-    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry, Appendable sb,HashSet<String> seen) throws Exception {
+    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry,
+				 List<NamedBuffer> contents,
+				 HashSet<String> seen) throws Exception {
     }
 
     
@@ -2838,15 +2874,13 @@ public class TypeHandler extends RepositoryManager {
 	return link;
     }
 
-
-
     
     public void getInnerEntryContent(Entry entry, Request request,
 				     TypeHandler typeHandler, OutputType output,
 				     boolean showDescription, boolean showResource,
 				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
 				     boolean forOutput,
-				     Appendable sb)
+				     List<NamedBuffer>  contents)
 	throws Exception {
 
 	if(seen==null) seen=new HashSet<String>();
@@ -2856,7 +2890,7 @@ public class TypeHandler extends RepositoryManager {
         if (parent != null) {
             parent.getInnerEntryContent(entry, request, typeHandler,
 					output, showDescription, showResource, linkToDownload,
-					props,seen,forOutput,sb);
+					props,seen,forOutput,contents);
 	    return;
         }
 
@@ -2887,6 +2921,7 @@ public class TypeHandler extends RepositoryManager {
 	    entryIsImage = false;
 	}
 
+	Appendable sb = contents.get(contents.size()-1);
 	if (showDescription) {
 	    addDescriptionToHtml(request,typeHandler,entry,sb);
 	}

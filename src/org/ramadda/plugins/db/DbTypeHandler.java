@@ -33,6 +33,7 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -1606,14 +1607,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     @Override
     public void  getInnerEntryContent(Entry entry, Request request,
-					      TypeHandler typeHandler, OutputType output,
-					      boolean showDescription, boolean showResource,
-				      boolean linkToDownload, Hashtable props,HashSet<String> seen, boolean forOutput,Appendable sb)
+				      TypeHandler typeHandler, OutputType output,
+				      boolean showDescription, boolean showResource,
+				      boolean linkToDownload,
+				      Hashtable props,
+				      HashSet<String> seen,
+				      boolean forOutput,
+				      List<NamedBuffer> contents)
             throws Exception {
 	super.getInnerEntryContent(entry, request,
 				   typeHandler, output,
 				   showDescription, showResource,
-				   linkToDownload, props,seen,forOutput,sb);
+				   linkToDownload, props,seen,forOutput,contents);
 	
 
 
@@ -1626,7 +1631,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    url+="&amp;" +c.getName()+"=" + sample;
 	}
 	url+="&amp;key=HIDDEN";
-	sb.append(HU.formEntry("Upload URL:",url));
+	contents.get(contents.size()-1).append(HU.formEntry("Upload URL:",url));
     }
 
     public Result processEntryAction(Request request, Entry entry)

@@ -33,6 +33,7 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.MapProvider;
 import org.ramadda.util.MapRegion;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -1377,11 +1378,11 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 							 WikiUtil.box(snippet)));
 	    } else {
 		info.append("<table class=\"formtable\">");
-		StringBuilder tb = new StringBuilder();
+		List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
 		entry.getTypeHandler().getInnerEntryContent(entry,
-							    request, null, OutputHandler.OUTPUT_HTML, true, false,false, null,null,false,tb);
-		info.append(tb.toString());
+							    request, null, OutputHandler.OUTPUT_HTML, true, false,false, null,null,false,contents);
 
+		entry.getTypeHandler().applyContents(request, info,contents);
 	    }
 	    List<String> urls = new ArrayList<String>();
 	    getMetadataManager().getThumbnailUrls(request, entry, urls);

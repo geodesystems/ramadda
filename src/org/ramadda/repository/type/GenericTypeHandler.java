@@ -15,6 +15,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GroupedBuffers;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -792,7 +793,7 @@ public class GenericTypeHandler extends TypeHandler {
 				     boolean showDescription, boolean showResource,
 				     boolean linkToDownload, Hashtable props,HashSet<String> seen,
 				     boolean forOutput,
-				     Appendable sb )
+				     List<NamedBuffer> contents )
             throws Exception {
         if (typeHandler == null) {
             typeHandler = this;
@@ -804,19 +805,24 @@ public class GenericTypeHandler extends TypeHandler {
         boolean justBasic =Utils.getProperty(props,"justBasic",false);
         super.getInnerEntryContent(entry, request,
 				   typeHandler, output, showDescription,
-				   showResource, linkToDownload, props,seen,forOutput,sb);
+				   showResource, linkToDownload, props,seen,forOutput,contents);
         if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
             return;
         }
 
-	addColumnsToHtml(request,typeHandler, entry, sb,seen);
+
+	addColumnsToHtml(request,typeHandler, entry, contents,seen);
     }
 
     @Override
-    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry, Appendable sb,HashSet<String> seen) throws Exception {
+    public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry,
+				 List<NamedBuffer> contents,
+				 HashSet<String> seen) throws Exception {
 	Object[]      values = getEntryValues(entry);
 	if (values != null) {
-	    String lastGroup = "";
+	    NamedBuffer buff=contents.size()>0?contents.get(0):null;
+	    String lastGroup = buff!=null?buff.getName():"";
+
 	    for (Column column : getMyColumns()) {
 		if ( !column.getCanShow()) {
 		    continue;
@@ -829,11 +835,16 @@ public class GenericTypeHandler extends TypeHandler {
 		    if(!column.getAdminOnly() ||
 		       (request.isAdmin() ||request.isOwner(entry))) {
 			lastGroup = column.getDisplayGroup();
-			sb.append(HU.row(HU.col(HU.div(lastGroup," class=\"formgroupheader\" "), " colspan=2 ")));
+			contents.add(buff = new NamedBuffer(lastGroup));
+			//			sb.append(HU.row(HU.col(HU.div(lastGroup," class=\"formgroupheader\" "), " colspan=2 ")));
 		    }
 		}
-		addColumnToTable(request, entry,column,sb);
+		if(buff==null) {
+		    contents.add(buff=new NamedBuffer(""));
+		}
+		addColumnToTable(request, entry,column,buff);
 	    }
+
 	}
 
     }
