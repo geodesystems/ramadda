@@ -75,20 +75,29 @@ proc getParent {title} {
 }    
 
 set ::bookArgs {
-    accompanying_material  author_analytics  author_dates  authors_name  barcode_name  call_number  condition  copyright  cost  donor  edition  extended_title  f_p_printed  f_p_reading_level  first_upc  funding_source  hidden_from_opac  holdings_barcode  holdings_note  isbn  last_checked_out_to  lc_control_number  material_type  notes  number_of_part  number_of_visible_copies  physical_details  place_of_publication  price_availability  publication_date  publisher  purchase_date  series_title  series_volume  statement_of_responsibility  subject_headings  summary  technical_description  title  title_analytics  uniform_title
+    accompanying_material  author_analytics  author_dates  authors_name  barcode_name  call_number  condition  copyright  cost  donor  edition  extended_title  f_p_printed  f_p_reading_level  first_upc  funding_source  hidden_from_opac  holdings_barcode  holdings_note  isbn  last_checked_out_to  lc_control_number  material_type  notes  number_of_part  number_of_visible_copies  physical_details  place_of_publication  price_availability  date  publisher  purchase_date  series_title  series_volume  statement_of_responsibility  subject_headings  summary  technical_description  title  title_analytics  uniform_title
 }
 
 proc book $::bookArgs  {
-    incr ::cnt
-#    if {$::cnt>100} return
+#    incr ::cnt
+    if {$::cnt>100} return
     foreach p $::bookArgs {
 	set v [string trim [set $p]]
 	set v [spell $v]
-	set $p $v
+	if {$v==""} {
+	    if {![regexp date $p]} {
+		set $p "UNKNOWN: $p"
+	    }
+	} else {
+	    set $p $v
+	}
 	check books $::cnt $p $v
     }
-#    catch {set isbn [format %.0f $isbn]}	
+    set description ""
+    set googleDate ""
+    set thumbnailFile ""
 
+#    catch {set isbn [format %.0f $isbn]}	
     foreach _isbn [split $isbn " "] {
 	set _isbn [string trim $_isbn]
 	if {$_isbn == ""} continue
@@ -98,13 +107,10 @@ proc book $::bookArgs  {
 	if {[string length $_isbn]<5} continue;
 	set isbnFile "isbn/${_isbn}.json"
 	if {![file exists $isbnFile]} {
-	    puts "isbn: $_isbn"
 	    set url  "https://www.googleapis.com/books/v1/volumes?q=isbn:$_isbn"
-	    puts $url
 	    catch {exec curl -o $isbnFile $url}
 	    after 2000
 	}
-	set thumbnailFile ""
 
 	if {[file exists $isbnFile]} {
 	    set fp [open $isbnFile r]
@@ -112,17 +118,19 @@ proc book $::bookArgs  {
 	    close $fp
 	    set j [json::json2dict $json]
 	    set cnt   [dict get  $j totalItems]
+
 	    if {$cnt>=1} {
 		set items   [dict get  $j items]	    
 		foreach item $items {
 		    set volume [dict get  $item volumeInfo]
-#		    puts  [dict get  $item description]	    
+		    if {[dict exists $volume publishedDate]} {
+			set googleDate [dict get $volume publishedDate]
+		    }
 		    if {[dict exists $volume imageLinks]} {
 			set images  [dict get $volume imageLinks]
 			set thumbnail [dict get $images thumbnail]
 			set thumbnailFile "thumbnails/${_isbn}.jpg"
 			if {![file exists $thumbnailFile]} {
-			    puts $thumbnailFile
 			    catch {exec curl -o $thumbnailFile $thumbnail}
 			}
 		    }
@@ -132,10 +140,8 @@ proc book $::bookArgs  {
 #			    puts $cat
 			}
 		    }
-
 		    if {[dict exists $volume description]} { 
-			set desc [dict get  $volume description]	    
-#			puts "title: $title description: $desc"
+			set description [dict get  $volume description]	    
 		    }
 		}
 	    }
@@ -144,90 +150,138 @@ proc book $::bookArgs  {
     }
 
 
-
-
     set category [getCategory $call_number $title]
     set parent [getParent $title]
+
+
+    regsub -all {[\[\]]} $date {} date
+    regsub -all unk $date {} date
+    regsub -all n/a $date {} date        
+
+    set endDate ""
+    regexp {(.*)-(.*)} $date match date endDate
+
+    if {$date!=""} {
+#	puts $date
+    }
+    if {$date==""} {
+	set date $googleDate
+    }
+
+    if {$date!=""} {
+#	puts "pub: $date google: $googleDate"
+    }
+
+    if {![file exists $thumbnailFile]} {
+	return
+    }
+
     append ::entries [openEntry type_archive_book {} $parent  $title]    
-
-
-    puts $publication_date
-    return
-    set year $publication_date
-    set year1 ""
-    regsub -all "l" $year 1 year
-    regsub -all {^[^\d]*(\d\d\d\d).*} $year {\1} year1
-    
-    set year [string trim $year1]
-    if {![regexp {^\d\d\d\d$} $year]} {
-	set year ""
-    }
-    if {[string length $lccn]>20} {
-	set other_terms "$other_terms .  $lccn"
-	set lccn ""
-    }
-
-    if {[file exists $thumbnailFile]} {
-	append ::entries [makeThumbnail $thumbnailFile "Image courtesy of Google Books"]
+    if {[file exists $thumbnailFile]} { 
+	incr ::cnt
+	lappend ::files $thumbnailFile
+	append ::entries [makeThumbnail $thumbnailFile "Credit: Google Books"] 
     }
 
 
-    if {$year !=""} {
-	append ::entries [col fromdate $year]    
+    if {$date !=""} {
+	append ::entries [col fromdate $date]    
     }
-    if {[regexp Kurz $item_type]} {
-	set item_type ""
-    }
+    if {$endDate !=""} {
+	append ::entries [col todate $date]    
+    }    
 
-    append ::entries [col description $notes]    
-    append ::entries [col item_type $item_type]
-    append ::entries [col item_count $item_count]    
-    append ::entries [col call_number $call_nbr]
-    append ::entries [col physical_characteristic $phys_char]
-    append ::entries [col authors $author]
-    append ::entries [col publisher $publisher]
+    set place_of_publication [string trim $place_of_publication]
+    regsub {:$} $place_of_publication {} place_of_publication
+    regsub {^\[} $place_of_publication {} place_of_publication
+    regsub {\]$} $place_of_publication {} place_of_publication        
+
+
+
+    if {$summary!=""} {
+	append ::entries [col description $summary]
+    } elseif {$description!=""} {
+	append ::entries [col description $description]
+    }
+    append ::entries [col authors $authors_name]
+    append ::entries [col series_title $series_title]
+    append ::entries [col series_volume $series_volume]
     append ::entries [col isbn $isbn]
-    append ::entries [col lccn $lccn]
-    append ::entries [col barcode $barcode]    
-    append ::entries [col volume $volume]
-    append ::entries [col series $series]        
-    if {$other_terms!=""} {
-	set fp $::termsHtml
-	set messy 0
-	if {[string length $other_terms]>1000} {
-	    set messy 1
-	    set fp $::messy
+    append ::entries [col lccn $lc_control_number]
+
+    append ::entries [col publisher $publisher]
+    append ::entries [col publication_place $place_of_publication]    
+    append ::entries [col subject_headings $subject_headings]	
+    append ::entries [col item_type Book]
+    
+#    append ::entries [col physical_details $physical_details]
+    append ::entries [col barcode $holdings_barcode]    
+
+    if {[regexp {(\d\d\d\d)} $copyright match cp]} {
+	append ::entries [col copyright_date $cp]
+    }
+
+
+    append ::entries [col condition $condition]
+    append ::entries [col cost $cost]
+    append ::entries [col donor $donor]        
+    append ::entries [col edition $edition]        
+    append ::entries [col call_number $call_number]
+    append ::entries [col accompanying_material $accompanying_material]
+    append ::entries [col holdings_note $holdings_note]
+    append ::entries [col notes $notes]        
+
+    if {[regexp {(.*)/(.*)/(.*)} $purchase_date match mm dd yyyy]} {
+	if {[string length $dd]==1} {
+	    set dd "0$dd"
 	}
-
-	puts $fp "<div style='font-weight:bold;'>#$::cnt: $title<div style='margin-left:30px;'>Terms: $other_terms</div></div>"
-	regsub -all {\t} $other_terms { } other_terms
-
-	regsub -all {(\d+)\.(\d+)} $other_terms {\1_dot\2} other_terms
-	foreach dot {{G.P.O.} {St.} {S.D.}  {U.S.} {D. F.}  {Mont.} { ca.} {Hist.} {etc.} {Wyo.} {D. C.} {1st.} { L.} {C. d. } {A. R.} {Neb.} {n B.} {M. R} {d. } {H. } { Co.} { E. C. } { Fla.} { J.,} {Wis.} {regt.} { S.} {-ca. } {N.D. } {J. A. } { C.} { G.} { F.} {N.D.} { fl. } {D.C.} {Minn.} {Feb.} {Jan.} { 1. } { 2. } { Pa.} {7.100} { J. H.} {0.00} {Ft. } {S.D} {U.S } {970.1} {N.Y.}  { A.} {H.H.} {....} { 2. } { 3. } { O.--b. } {N.J.}  {W. } {Vol.} {T.C.} {Dak. } { E. } {T. } { p. } {Soc. } {United States. Army. } {United States. Army.} {J. } {Dept.} {Calif. } {s.n.} {Supt.} {Docs.}} {
-	    regsub -all {\.} $dot {\\.} p
-	    regsub -all {\.} $dot {_dot} w	
-	    regsub -all -- $p $other_terms $w other_terms
+	if {[string length $mm]==1} {
+	    set mm "0$mm"
 	}
-	array set seen {}
+	append ::entries [col purchase_date "${yyyy}-${mm}-${dd}"]
+    } else {
+	puts "bad: $purchase_date
+    }
 
-	foreach term [split $other_terms .] {
-	    set term [string trim $term]
-	    if {$term==""} continue
-	    regsub -all _dot $term . term
-	    regsub -all etc $term etc. term
-	    regsub -all {etc\.\.} $term etc. term	    
-	    regsub {^--} $term {} term
-	    set term [fixme $term]
-	    if {[info exists seen($term)]} continue
-	    set seen($term) 1
-	    puts $fp "<div style='padding:2px;border-bottom:1px solid #ccc;white-space: nowrap;margin-left:60px;'> $term</div>\n"
-	    if {!$messy} {
-		append ::entries [mtd1 archive_term $term]
+
+    if {false} {
+	append ::entries [col item_count $item_count]    
+	if {$other_terms!=""} {
+	    set fp $::termsHtml
+	    set messy 0
+	    if {[string length $other_terms]>1000} {
+		set messy 1
+		set fp $::messy
 	    }
+	    
+	    puts $fp "<div style='font-weight:bold;'>#$::cnt: $title<div style='margin-left:30px;'>Terms: $other_terms</div></div>"
+	    regsub -all {\t} $other_terms { } other_terms
+	    regsub -all {(\d+)\.(\d+)} $other_terms {\1_dot\2} other_terms
+	    foreach dot {{G.P.O.} {St.} {S.D.}  {U.S.} {D. F.}  {Mont.} { ca.} {Hist.} {etc.} {Wyo.} {D. C.} {1st.} { L.} {C. d. } {A. R.} {Neb.} {n B.} {M. R} {d. } {H. } { Co.} { E. C. } { Fla.} { J.,} {Wis.} {regt.} { S.} {-ca. } {N.D. } {J. A. } { C.} { G.} { F.} {N.D.} { fl. } {D.C.} {Minn.} {Feb.} {Jan.} { 1. } { 2. } { Pa.} {7.100} { J. H.} {0.00} {Ft. } {S.D} {U.S } {970.1} {N.Y.}  { A.} {H.H.} {....} { 2. } { 3. } { O.--b. } {N.J.}  {W. } {Vol.} {T.C.} {Dak. } { E. } {T. } { p. } {Soc. } {United States. Army. } {United States. Army.} {J. } {Dept.} {Calif. } {s.n.} {Supt.} {Docs.}} {
+		regsub -all {\.} $dot {\\.} p
+		regsub -all {\.} $dot {_dot} w	
+		regsub -all -- $p $other_terms $w other_terms
+	    }
+	    array set seen {}
+	    foreach term [split $other_terms .] {
+		set term [string trim $term]
+		if {$term==""} continue
+		regsub -all _dot $term . term
+		regsub -all etc $term etc. term
+		regsub -all {etc\.\.} $term etc. term	    
+		regsub {^--} $term {} term
+		set term [fixme $term]
+		if {[info exists seen($term)]} continue
+		set seen($term) 1
+		puts $fp "<div style='padding:2px;border-bottom:1px solid #ccc;white-space: nowrap;margin-left:60px;'> $term</div>\n"
+		if {!$messy} {
+		    append ::entries [mtd1 archive_term $term]
+		}
 
 
+	    }
+	    puts $fp "<div style='margin-top:10px;'></div>"
 	}
-	puts $fp "<div style='margin-top:10px;'></div>"
     }
     append ::entries "</entry>\n"
 }
@@ -251,5 +305,4 @@ close $::messy
 
 
 
-
-
+eval exec zip books.zip bookentries.xml $::files
