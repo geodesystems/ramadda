@@ -277,7 +277,8 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
       xnewfields="name,description,_default"
       xeditfields="name,description,_default"
       metadata="archive_term,archive_note,content.thumbnail"     >
-
+    <property name="form.tabs" value="true"/>    
+    <property name="html.tabs" value="true"/>    
     <property name="search.metadatatypes" value="archive_term,archive_note"/>
     <property name="icon" value="/archive/book.png"/>
     <property name="form.date.label" value="Publication Date"/>
@@ -285,43 +286,53 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property  name="html.type.show"  value="false" />
 
     <property name="date.format" value="yyyy"/>
-    <property name="date.format" value="yyyy"/>
     <property name="date.nullok" value="true"/>
     <property name="html.changedate.show" value="false"/>
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
 
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
+    <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
+    <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>        <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true" xgroup="Classification" />
+    <column name="isbn" type="string"  label="ISBN" columns="30"/>
+    <column name="lccn" type="string"  label="LCCN" columns="30"/>    
+            
     <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
-    <column name="item_type"
+    <column name="publication_place" type="string"  size="2000" label="Place of Publication"
+	    columns="30"/>    
+    <column name="subject_headings"
+	    type="string"  size="2000" label="Subject Headings" columns="30" rows="3"/>
+    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
+
+    <column name="item_type" group="TODO"
 	    enumeration_show_checkboxes="true"
 	    type="enumerationplus"  label="Item Type"
 	    cansearch="true" values="Book,CD,DVD,Government Document,Kit,Microfiche,Periodicals,Video"/>
 
-    <column name="physical_characteristic"
-	    enumeration_show_checkboxes="true"
-	    type="enumerationplus"  label="Physical Characteristic"
-	    cansearch="true" values="New,Like New,Good,Fair,Damaged"/>
-
-    <column name="volume" type="string"  label="Volume" columns="30"/>
-    <column name="series" type="string"  label="Series" size="500" columns="30"/>            
-    <column name="item_count"   type="int"  label="Item Count" default="0"/>
-    <column name="isbn" type="string"  label="ISBN" columns="30"/>
-    <column name="lccn" type="string"  label="LCCN" columns="30"/>    
-    <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
+    <!--
+    <column name="physical_details"
+	    type="string" size="400"  label="Physical Details"
+	    cansearch="true"/>
+	    -->
     
-    <column name="condition" type="enumerationplus"  label="Condition" group="Internal Information"
+    <column name="condition" type="enumerationplus"  label="Condition"
+	    values="New,Like New,Good,Fair,Poor,Damaged"
+	    cansearch="true"
+	    group="Internal Information"
 	    adminonly="true"/>
+    <column name="copyright_date" type="date"  label="Copyright date"  adminonly="true"/>
     <column name="cost" type="double"  label="Cost"	    adminonly="true"/>
-    <column name="edition" type="string"  size="500" label="Edition"	adminonly="true"/>
     <column name="donor" type="string"  size="500" label="Donor"	adminonly="true"/>
+    <column name="edition" type="string"  size="500" label="Edition"	adminonly="true"/>
     <column name="call_number" type="string"  label="Call Number" columns="30" adminonly="true"/>
+    <column name="accompanying_material" type="string"  size="1000"
+	    label="Accompanying Material" columns="30" adminonly="true"/>    
     <column name="holdings_note" type="string"  size="3000" rows="4"
 	    label="Holdings Note" columns="30" adminonly="true"/>
-    <column name="note" type="string"  size="3000" rows="4"
-	    label="Note" columns="30" adminonly="true"/>    
-    <column name="copyright_date" type="date"  label="Copyright date"  adminonly="true"/>
+    <column name="notes" type="string"  size="3000" rows="4"
+	    label="Notes" columns="30" adminonly="true"/>    
     <column name="purchase_date" type="date"  label="Purchase date"  adminonly="true"/>            
+
 
 
     <property name="search.form.orderby" value="name,date,createdate"/>
@@ -355,6 +366,7 @@ inherited="false"  }}
 <table class="formtable">
 {{field  name="call_number" row.label="Call #:"}}
 </table>
+
 
 +if anonymous=false
 {{barcode field=barcode}}
