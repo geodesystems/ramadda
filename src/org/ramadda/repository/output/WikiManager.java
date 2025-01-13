@@ -8530,36 +8530,41 @@ public class WikiManager extends RepositoryManager
 	    User user = request.getUser();
 	    if(user==null) user = getUserManager().getAnonymousUser();
 	    if(props.get("anonymous")!=null) {
+		boolean value = Utils.getProperty(props,"anonymous",true);
 		props.remove("anonymous");
-		if(request.isAnonymous() !=Utils.getProperty(props,"anonymous",true)) {
+		if(request.isAnonymous() !=value) {
 		    return false;
 		}
 	    }
 
 	    if(props.get("admin")!=null) {
+		boolean value = Utils.getProperty(props,"admin",true);
 		props.remove("admin");
-		if(request.isAdmin() !=Utils.getProperty(props,"admin",true)) {
+		if(request.isAdmin() !=value) {
 		    return false;
 		}
 	    }	    
 
 	    if(props.get("users")!=null) {
+		String users = Utils.getProperty(props,"users","");
 		props.remove("users");
-		if(!Utils.split(Utils.getProperty(props,"users",""),",",true,true).contains(user.getId()))
+		if(!Utils.split(users,",",true,true).contains(user.getId()))
 		    return false;
 	    }
 
 	    if(props.get("notusers")!=null) {
+		String users = Utils.getProperty(props,"notusers","");
 		props.remove("notusers");
-		if(Utils.split(Utils.getProperty(props,"notusers",""),",",true,true).contains(user.getId()))
+		if(Utils.split(users,",",true,true).contains(user.getId()))
 		    return false;
 	    }
 	    
 	    Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    if(props.get("canedit")!=null) {
+		boolean value = Utils.getProperty(props,"canedit",true);
 		props.remove("canedit");
 		if(entry==null) return false;
-		if(getAccessManager().canDoEdit(request, entry) !=Utils.getProperty(props,"canedit",true)) {
+		if(getAccessManager().canDoEdit(request, entry) !=value) {
 		    return false;
 		}
 	    }
@@ -8569,10 +8574,10 @@ public class WikiManager extends RepositoryManager
 
 	    String property = (String) props.get("property");
 	    if(property!=null) {
+		String match = (String) props.get("match");
 		props.remove("property");
 		Object value = entry.getValue(request, property);
 		if(value==null) return false;
-		String match = (String) props.get("match");
 		if(match!=null) 
 		    return value.toString().equals(match);
 		return value.toString().equals("true");
