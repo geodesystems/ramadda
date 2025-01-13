@@ -349,7 +349,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 +section  title="Book: {{name}}"
 +row
 +col-8
-{{description wikify="true"}}
+{{description wikify="true" prefix="+callout" suffix="-callout"}}
 {{information  showDetails="true"  showTitle="false"   }} 
 {{properties  message=""  metadata.types="!tag:archiveinternal,!tag:internal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
