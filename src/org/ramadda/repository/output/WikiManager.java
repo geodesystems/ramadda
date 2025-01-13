@@ -2737,9 +2737,9 @@ public class WikiManager extends RepositoryManager
 	    }
 	    return snippet;
         } else if (theTag.equals(WIKI_TAG_DESCRIPTION)) {
-            String prefix = getProperty(wikiUtil, props, "prefix",
+            String prefix = getProperty(wikiUtil, props, "description_prefix",
                                         (String) null);
-            String suffix = getProperty(wikiUtil, props, "suffix",
+            String suffix = getProperty(wikiUtil, props, "description_suffix",
                                         (String) null);
             String desc = entry.getTypeHandler().getEntryText(entry);
             desc = desc.trim();
@@ -2761,7 +2761,6 @@ public class WikiManager extends RepositoryManager
             if (getProperty(wikiUtil, props, "convert_newline", false)) {
                 desc = desc.replaceAll("\n", "<p>");
             }
-
             return desc;
         } else if (theTag.equals(WIKI_TAG_LAYOUT)) {
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
