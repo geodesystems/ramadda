@@ -266,6 +266,8 @@ priority="2"       >
 	     label="Show List"  showinhtml="false" default="true"/>
      <column name="show_information" type="boolean"
 	     label="Show Information"  showinhtml="false" default="true"/>
+     <column name="show_new" type="boolean"
+	     label="Show New"  showinhtml="false" default="true"/>     
 
 
    <wikimacro name="document_search" label="Document Search">
@@ -312,7 +314,9 @@ showHeading=true
 +section title={{name}}
 {{description wikify=true}}
 +center
++if property=show_new
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
+-if
 :vspace 0.5em
 +if property=show_text_search
 +center
