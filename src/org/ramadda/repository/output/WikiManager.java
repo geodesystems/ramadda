@@ -6190,7 +6190,7 @@ public class WikiManager extends RepositoryManager
 	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholderImage",
 					      getProperty(wikiUtil, props, "showPlaceholder", false));
         boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail", true);
-        boolean inherited = getProperty(wikiUtil, props, "inherited", false);	
+        boolean inherited = getProperty(wikiUtil, props, "inherited", true);	
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
         boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", true);
 	boolean showDescription = getProperty(wikiUtil, props,"showDescription", false)	;
