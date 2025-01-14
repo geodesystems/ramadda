@@ -1969,6 +1969,37 @@ public class Filter extends Processor {
         }
     }
 
+    public static class NonUnique extends Filter {
+        private HashSet<String> seen = new HashSet<String>();
+        private List<String> past = new ArrayList<String>();
+
+        public NonUnique(TextReader ctx, List<String> toks) {
+            super(toks);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+	    if(rowCnt++==0) return true;
+            StringBuilder sb      = new StringBuilder();
+            for (int i : getIndices(ctx)) {
+                if ((i < 0) || (i >= row.size())) {
+                    continue;
+                }
+                Object value = row.getString(i);
+		if(sb.length()>0) sb.append("---");
+                sb.append(value);
+            }
+            String s = sb.toString();
+            if (seen.contains(s)) {
+                return true;
+            }
+            seen.add(s);
+            return false;
+        }
+    }
+
+
+
     /**
      * Class description
      *

@@ -98,6 +98,7 @@ public interface SeesvCommands {
     public static final String CMD_SAME="-same";
     public static final String CMD_NOTSAME="-notsame";
     public static final String CMD_UNIQUE="-unique";
+    public static final String CMD_NONUNIQUE="-nonunique";    
     public static final String CMD_DUPS="-dups";
     public static final String CMD_SAMPLE="-sample";
     public static final String CMD_MINVALUE="-minvalue";

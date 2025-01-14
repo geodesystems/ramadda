@@ -2156,6 +2156,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_UNIQUE, "Pass through unique values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values)",ATTR_TYPE,"enumeration","values","exact,clean,fuzzy:threshold")),
+        new Cmd(CMD_NONUNIQUE, "Pass through non-unique values",
+		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+
         new Cmd(CMD_DUPS, "Pass through duplicate values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_SAMPLE, "Pass through rows based on probablity",
@@ -3792,7 +3795,8 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Filter.UniqueHeader(ctx));
 		ctx.setUniqueHeader(true);
 		return i;
-	    });	
+	    });
+
 	
 
 	defineFunction(CMD_ENSURE_NUMERIC,1,(ctx,args,i) -> {
@@ -4056,6 +4060,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Filter.Unique(ctx, toks,args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_NONUNIQUE,1,(ctx,args,i) -> {
+		List<String> toks = getCols(args.get(++i));
+		ctx.addProcessor(new Filter.NonUnique(ctx, toks));
+		return i;
+	    });	
 	defineFunction(new String[]{CMD_SAMPLE},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.Sample(ctx, parseDouble(args.get(++i))));
 		return i;
