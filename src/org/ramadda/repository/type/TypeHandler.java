@@ -811,7 +811,9 @@ public class TypeHandler extends RepositoryManager {
         List<Column> columns = getColumns();
         if (columns != null) {
             for (Column column : columns) {
-                cols.add(column.getJson(request));
+		String json = column.getJson(request);
+		if(json!=null)
+		    cols.add(json);
             }
         }
         items.add("columns");

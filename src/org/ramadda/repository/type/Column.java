@@ -709,6 +709,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     
     public String getJson(Request request) throws Exception {
+	if(adminOnly &&!request.isAdmin()) return null;
         List<String> col = new ArrayList<String>();
         col.add("name");
         col.add(JsonUtil.quote(getName()));
