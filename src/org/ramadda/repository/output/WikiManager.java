@@ -6190,6 +6190,7 @@ public class WikiManager extends RepositoryManager
 	boolean showPlaceholder = getProperty(wikiUtil, props, "showPlaceholderImage",
 					      getProperty(wikiUtil, props, "showPlaceholder", false));
         boolean useThumbnail = getProperty(wikiUtil, props, "useThumbnail", true);
+        boolean inherited = getProperty(wikiUtil, props, "inherited", false);	
         boolean showSnippet = getProperty(wikiUtil, props, "showSnippet", false);
         boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover", true);
 	boolean showDescription = getProperty(wikiUtil, props,"showDescription", false)	;
@@ -6211,7 +6212,7 @@ public class WikiManager extends RepositoryManager
 
         String imageUrl = null;
         if (useThumbnail) {
-	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry,false);
+	    String[]tuple = getMetadataManager().getThumbnailUrl(request, entry,inherited);
 	    if(tuple!=null)             imageUrl = tuple[0];
         }
 
@@ -6220,7 +6221,7 @@ public class WikiManager extends RepositoryManager
                 imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
 									      request, entry);
             } else if ( !useThumbnail) {
-		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry,false);
+		String[] tuple = getMetadataManager().getThumbnailUrl(request, entry,inherited);
 		if(tuple!=null)
 		    imageUrl = tuple[0];
             }
