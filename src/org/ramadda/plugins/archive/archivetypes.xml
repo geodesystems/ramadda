@@ -276,7 +276,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
       handler="org.ramadda.repository.type.GenericTypeHandler"
       xnewfields="name,description,_default"
       xeditfields="name,description,_default"
-      metadata="archive_term,archive_note,content.thumbnail"     >
+      metadata="archive_subject,archive_term,archive_note,content.thumbnail"     >
     <property name="form.tabs" value="true"/>    
     <property name="html.tabs" value="true"/>    
     <property name="search.metadatatypes" value="archive_term,archive_note"/>
@@ -361,7 +361,8 @@ inherited="false"  }}
 +center
 {{new_entry fromEntry="true" class="ramadda-button-small" message=""}}
 -center
-{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"
+addEditPropertiesLink="true"}}
 +center
 {{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true" showCaption="true" style="border:var(--basic-border);"}}
 
