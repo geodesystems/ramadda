@@ -115,6 +115,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"showHeading","true",
 					"showPlaceholderImage","true",
 					"#useThumbnail","false",
+					"#inherited","true",
 					"#expand","true",
 					"#childrenWiki","wiki text to display children, e.g. {{tree details=false}}",
 					"#weights","4,4,4"), 
