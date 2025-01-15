@@ -210,15 +210,17 @@ public class CsvOutputHandler extends OutputHandler {
 	}
 	HashSet<String> seen = new HashSet<String>();
 	int urlCnt=0;
+	boolean isMatlab =      what.equals(WHAT_WRAPPER_MATLAB);
+	boolean isR =      what.equals(WHAT_WRAPPER_R);
+	boolean isPython =      what.equals(WHAT_WRAPPER_PYTHON);		
+
+
 	for(Entry entry: entries) {
 	    if(what.equals(WHAT_IDS)) {
 		sb.append(entry.getId());
 		sb.append("\n");
 	    } else  if(what.equals(WHAT_WGET) ||
-		       what.equals(WHAT_CSVAPI) ||
-		       what.equals(WHAT_WRAPPER_R)||
-		       what.equals(WHAT_WRAPPER_PYTHON)||
-		       what.equals(WHAT_WRAPPER_MATLAB)) {
+		       isMatlab || isR || isPython) {
 		if(what.equals(WHAT_WGET)) {
 		    if(!entry.isFile()) {
 			sb.append("#entry: " + entry.getName() +" is not a file\n");
@@ -226,7 +228,8 @@ public class CsvOutputHandler extends OutputHandler {
 		    }
 		} else {
 		    if(!entry.getTypeHandler().isType("type_point")) {
-			sb.append("#entry: " + entry.getName() +" is not point data\n");
+			String comment =isMatlab?"%":"#";
+			sb.append(comment+"entry: " + entry.getName() +" is not point data\n");
 			continue;
 		    }
 		}
