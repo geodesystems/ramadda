@@ -304,17 +304,6 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 	    columns="30"/>    
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
 
-    <column name="item_type" group="TODO"
-	    enumeration_show_checkboxes="true"
-	    type="enumerationplus"  label="Item Type"
-	    cansearch="true" values="Book,CD,DVD,Government Document,Kit,Microfiche,Periodicals,Video"/>
-
-    <!--
-    <column name="physical_details"
-	    type="string" size="400"  label="Physical Details"
-	    cansearch="true"/>
-	    -->
-    
     <column name="condition" type="enumerationplus"  label="Condition"
 	    values="New,Like New,Good,Fair,Poor,Damaged"
 	    cansearch="true"
