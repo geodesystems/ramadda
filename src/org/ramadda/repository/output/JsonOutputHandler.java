@@ -840,7 +840,8 @@ public class JsonOutputHandler extends OutputHandler {
         }
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes && (columns != null)) {
-            if (typeHandler.isType(mainTypeHandler.getType())) {
+	    System.err.println("main:" + mainTypeHandler +" type:" + typeHandler);
+            if (mainTypeHandler == null || typeHandler.isType(mainTypeHandler.getType())) {
                 for (Column column : columns) {
                     Object v = entry.getValue(request, column);
 		    //extraParameters[column.getOffset()];
