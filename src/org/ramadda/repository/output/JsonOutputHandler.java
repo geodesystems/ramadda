@@ -272,8 +272,8 @@ public class JsonOutputHandler extends OutputHandler {
         List<Column> columns     = null;
         if (addAttributes && (entries.size() > 0)) {
             Entry    entry           = entries.get(0);
-	    TypeHandler otherTypeHandler = entry.getTypeHandler();
-	    columns     = otherTypeHandler.getColumnsForPointJson();
+	    if(typeHandler==null) typeHandler =entry.getTypeHandler();
+	    columns     = typeHandler.getColumnsForPointJson();
 	    if(columns!=null) {
 		for (Column column : columns) {
 		    String columnName = column.getName();
@@ -839,8 +839,8 @@ public class JsonOutputHandler extends OutputHandler {
                                        : url));
         }
         TypeHandler typeHandler = entry.getTypeHandler();
-        if (addAttributes && (columns != null) && mainTypeHandler!=null) {
-            if (typeHandler.isType(mainTypeHandler.getType())) {
+        if (addAttributes && (columns != null)) {
+            if (mainTypeHandler!=null && typeHandler.isType(mainTypeHandler.getType())) {
                 for (Column column : columns) {
                     Object v = entry.getValue(request, column);
 		    //extraParameters[column.getOffset()];
