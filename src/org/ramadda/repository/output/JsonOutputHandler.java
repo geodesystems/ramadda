@@ -758,7 +758,7 @@ public class JsonOutputHandler extends OutputHandler {
                                boolean addSnippets, boolean addAttributes,
                                boolean addPointUrl, boolean addThumbnails,
                                boolean addImages, boolean addMediaUrl,  
-                             TypeHandler mainTypeHandler,
+			       TypeHandler mainTypeHandler,
                                List<Column> columns, boolean showFileUrl,
                                boolean remote)
             throws Exception {
@@ -839,8 +839,8 @@ public class JsonOutputHandler extends OutputHandler {
                                        : url));
         }
         TypeHandler typeHandler = entry.getTypeHandler();
-        if (addAttributes && (columns != null)) {
-            if (mainTypeHandler == null || typeHandler.isType(mainTypeHandler.getType())) {
+        if (addAttributes && (columns != null) && mainTypeHandler!=null) {
+            if (typeHandler.isType(mainTypeHandler.getType())) {
                 for (Column column : columns) {
                     Object v = entry.getValue(request, column);
 		    //extraParameters[column.getOffset()];
