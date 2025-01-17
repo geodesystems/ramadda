@@ -9810,14 +9810,16 @@ public class WikiManager extends RepositoryManager
 
 
 
-    public static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
+    //    public static final String OSD_PATH = "/lib/openseadragon-bin-3.0.0";
+    public static final String OSD_PATH = "/lib/openseadragon-bin-5.0.1";    
     public static final String ANN_PATH = "/lib/annotorius";
 
     public void initZoomifyImports(Request request, StringBuilder sb) throws Exception {
         if (request.getExtraProperty("seadragon_added") == null) {
 	    HU.cssLink(sb, getHtdocsPath(ANN_PATH+"/annotorious.min.css"),
 		       getHtdocsPath("/media/annotation.css"));
-            HU.importJS(sb,getHtdocsPath(OSD_PATH+"/openseadragon.min.js"),
+            HU.importJS(sb,
+			getHtdocsPath(OSD_PATH+"/openseadragon.js"),
 			getHtdocsPath(OSD_PATH+"/openseadragon-bookmark-url.js"),
 			getHtdocsPath(ANN_PATH+"/openseadragon-annotorious.min.js"),
 			getHtdocsPath(ANN_PATH+"/annotorious-toolbar.min.js"),
@@ -9908,13 +9910,15 @@ public class WikiManager extends RepositoryManager
 	    }
 
         } else if (Utils.stringDefined(entry.getStringValue(request,"tiles_url",null))) {
-	    String        width  = Utils.getProperty(props, "width", (String)entry.getStringValue(request,"image_width",null));
-	    if(width==null) width="800px";
-	    String        height  = Utils.getProperty(props, "height", (String)entry.getStringValue(request,"image_height",null));
-	    if(height==null) height="600px";	    
+	    String        width  = Utils.getProperty(props, "imageWidth",
+						     (String)entry.getStringValue(request,"image_width",null));
+	    if(!stringDefined(width)) width="2000";
+	    String        height  = Utils.getProperty(props, "imageHeight",
+						      (String)entry.getStringValue(request,"image_height",null));
+	    if(!stringDefined(height)) height="2000";	    
             Utils.add(tiles, "type", JU.quote("zoomifytileservice"),
                       "tilesUrl", JU.quote(entry.getValue(request,2)));
-	    //            Utils.add(tiles, "width", JU.quote(width), "height", JU.quote(height));
+	    Utils.add(tiles, "width", width, "height", height);
             Utils.add(jsonProps, "tileSources", JU.map(tiles));
         } else {
             throw new IllegalArgumentException(
