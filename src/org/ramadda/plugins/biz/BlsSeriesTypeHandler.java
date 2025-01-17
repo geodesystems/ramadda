@@ -214,7 +214,11 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                 /*
                   var dqtChart = {"categories":["Qtr1 2016","Qtr2 2016","Qtr3 2016","Qtr4 2016","Qtr1 2017","Qtr2 2017","Qtr3 2017","Qtr4 2017","Qtr1 2018","Qtr2 2018","Qtr3 2018"],"tickInterval":1,"chart":{"title":"Office of Productivity And Technology and Percent/Rate/Ratio and Productivity : Nonfarm Business","subTitle":"","yAxis":"Labor productivity (output per hour)"},"series":[{"data":[0.3,0.9,1.3,1.3,0.4,1.6,2.3,-0.3,0.3,3.0,2.3],"name":"PRS85006092"}]};
                 */
-                String   html = Utils.doPost(new URL(getFilename()), body);
+		String url = getFilename();
+		//A hack
+
+		url = url.replace("beta.bls.gov","data.bls.gov");
+                String   html = Utils.doPost(new URL(url), body);
                 String   dataPattern       = "\"data\":\\[(.*?)\\]";
                 String   categoriesPattern = ".*\"categories\":\\[(.*?)\\]";
                 String[] result            = null;
@@ -233,7 +237,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
 
                 if ((categories == null) || (data == null)) {
                     throw new IllegalArgumentException(
-                        "Could not extract data");
+                        "Could not extract data from BLS");
                 }
                 StringBuilder sb      = new StringBuilder("#date,value\n");
                 List<String>  times   = new ArrayList<String>();
