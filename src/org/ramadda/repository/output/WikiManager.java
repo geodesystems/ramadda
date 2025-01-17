@@ -9907,14 +9907,14 @@ public class WikiManager extends RepositoryManager
 				   + "/images.dzi"));
 	    }
 
-        } else if (Utils.stringDefined("" + entry.getValue(request,"tiles_url"))) {
+        } else if (Utils.stringDefined(entry.getStringValue(request,"tiles_url",null))) {
 	    String        width  = Utils.getProperty(props, "width", (String)entry.getStringValue(request,"image_width",null));
 	    if(width==null) width="800px";
 	    String        height  = Utils.getProperty(props, "height", (String)entry.getStringValue(request,"image_height",null));
 	    if(height==null) height="600px";	    
             Utils.add(tiles, "type", JU.quote("zoomifytileservice"),
                       "tilesUrl", JU.quote(entry.getValue(request,2)));
-            Utils.add(tiles, "width", JU.quote(width), "height", JU.quote(height));
+	    //            Utils.add(tiles, "width", JU.quote(width), "height", JU.quote(height));
             Utils.add(jsonProps, "tileSources", JU.map(tiles));
         } else {
             throw new IllegalArgumentException(
