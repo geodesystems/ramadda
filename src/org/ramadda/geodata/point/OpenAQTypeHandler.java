@@ -109,7 +109,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
 	throws Exception {
-	IO.Path path = new IO.Path(getPathForEntry(request, entry,true));
+	IO.Path path = getPathForRecordEntry(request, entry,requestProperties);
 	String key = getRepository().getProperty("openaq.api.key",null);
 	if(key==null) {
 	    throw new IllegalStateException("No OpenAQ API key is defined");
@@ -154,6 +154,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 			     "location_id",location);
 
 	IO.Path path = new IO.Path(url);
+	System.err.println(url);
 	path.setRequestArgs(new String[]{"X-API-Key",key});
         return path;
     }
