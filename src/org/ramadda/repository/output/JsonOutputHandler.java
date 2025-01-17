@@ -757,8 +757,8 @@ public class JsonOutputHandler extends OutputHandler {
     private String toPointJson(Request request, Entry entry,
                                boolean addSnippets, boolean addAttributes,
                                boolean addPointUrl, boolean addThumbnails,
-                               boolean addImages, boolean addMediaUrl,
-                               TypeHandler mainTypeHandler,
+                               boolean addImages, boolean addMediaUrl,  
+                             TypeHandler mainTypeHandler,
                                List<Column> columns, boolean showFileUrl,
                                boolean remote)
             throws Exception {
@@ -840,7 +840,6 @@ public class JsonOutputHandler extends OutputHandler {
         }
         TypeHandler typeHandler = entry.getTypeHandler();
         if (addAttributes && (columns != null)) {
-	    System.err.println("main:" + mainTypeHandler +" type:" + typeHandler);
             if (mainTypeHandler == null || typeHandler.isType(mainTypeHandler.getType())) {
                 for (Column column : columns) {
                     Object v = entry.getValue(request, column);
@@ -855,7 +854,9 @@ public class JsonOutputHandler extends OutputHandler {
                         if (column.isDate()) {
                             items.add(JU.quote(formatDate((Date) v)));
                         } else if (column.isNumeric()) {
-                            items.add(v.toString());
+			    String s = v.toString();
+			    if(s.length()==0) items.add("null");
+                            else items.add(s);
                         } else {
                             items.add(JU.quote(v.toString()));
                         }
