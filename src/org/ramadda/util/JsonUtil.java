@@ -1304,5 +1304,10 @@ public class JsonUtil {
 	return result;
     }
 
+    public static String getString(JSONArray array,int idx) {
+	Object obj = array.get(idx);
+	return obj.toString();
+    }
+
 
 }
