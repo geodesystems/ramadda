@@ -54,6 +54,7 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public abstract class DataProvider extends SeesvOperator {
 
+    public static final JsonUtil JU = null;
     boolean debugInput = false;
 
 
@@ -685,6 +686,8 @@ public abstract class DataProvider extends SeesvOperator {
          */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
+	    Row firstRow = ctx.getFirstRow();
+	    boolean addingTuple = false;
             boolean    debug = false;
 	    debug = debugInput;
 	    if(debug) 	System.err.println("Json.tokenize: array path:" + arrayPath +" object path:" + objectPath);
@@ -768,8 +771,7 @@ public abstract class DataProvider extends SeesvOperator {
                     for (String tok : objectPathList) {
 			//			System.err.println("\ttok:" + tok);
                         if (tok.equals("*")) {
-                            primary.putAll(JsonUtil.getHashtable(jrow, true,
-                                    arrayKeys));
+                            primary.putAll(JU.getHashtable(jrow, true, arrayKeys));
                         } else if (tok.endsWith("[]")) {
                             JSONArray a = JsonUtil.readArray(jrow,
                                               tok.substring(0,
@@ -809,18 +811,28 @@ public abstract class DataProvider extends SeesvOperator {
                     }
                 } else {
                     try {
-                        primary.putAll(
-                            JsonUtil.getHashtable(
-                                array.getJSONArray(arrayIdx), true,
-                                arrayKeys));
+			JSONArray tuple = array.getJSONArray(arrayIdx);
+			//We have a fixed header
+			if(firstRow!=null) {
+			    addingTuple=true;
+			    Row row = makeRow();
+			    addRow(row);
+                            for (int tupleIdx = 0;
+                                    tupleIdx < tuple.length(); tupleIdx++) {
+				row.add(JU.getString(tuple,tupleIdx));
+			    }
+			    continue;
+			}
+                        primary.putAll(JU.getHashtable(tuple, true,  arrayKeys));
+			if(arrayIdx<3) System.err.println("PRIMARY1:" + primary);
 			//			if(debug && arrayIdx<5) System.err.println("PRIMARY1:" + primary);
                     } catch (Exception exc) {
                         try {
                             primary.putAll(
-                                JsonUtil.getHashtable(
+					   JU.getHashtable(
                                     array.getJSONObject(arrayIdx), true,
                                     arrayKeys));
-			    //			    if(debug && arrayIdx<5) System.err.println("PRIMARY2:" + primary);
+			    if(debug && arrayIdx<2) System.err.println("PRIMARY2:" + primary);
                         } catch (Exception exc2) {
                             //Maybe it is an array of strings
                             for (int arrayIdx2 = 0;
@@ -883,7 +895,6 @@ public abstract class DataProvider extends SeesvOperator {
                   row.add("Index " + k);
                   }
                 ***/
-
 
 
                 for (Hashtable h : secondary) {
