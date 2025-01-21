@@ -1022,6 +1022,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'showTableOfContents',ex:'true',tt:'Show left table of contents'},
 	{p:'tocTitle'},
 	{p:'tocWidth'},
+	{p:'tocZoom',ex:3,tt:'zoom level when clicking on a table of contents item'},
 	{p:'tocFields',ex:'',tt:'fields to show in TOC'},
 	{p:'tocTemplate',ex:'',tt:'template to show in TOC'},	
 
@@ -3184,9 +3185,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    let title = this.getTocTitle(this.getProperty('tableOfContentsTitle',''));
 	    if(template) {
 		let clazz = "ramadda-clickable  display-map-toc-item ramadda-noselect";
-		records.forEach(record=>{
+		records.forEach((record,idx)=>{
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, template);
-		    html+=HU.div([ATTR_CLASS,clazz], label);
+		    html+=HU.div([ATTR_CLASS,clazz,RECORD_INDEX,idx], label);
 		});
 	    } else   if(fields && fields.length>0) {
 		let iconField = this.getFieldById(null, this.getProperty("iconField"));
@@ -3262,7 +3263,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(!record) return;
 		    _this.highlightPoint(record.getLatitude(), record.getLongitude(),true, false,false,record);
 		    _this.map.setCenter(MapUtils.createLonLat(record.getLongitude(),record.getLatitude()));
-		    _this.map.setZoom(10);
+		    if(_this.getProperty("tocZoom")) {
+		    	_this.map.setZoom(_this.getProperty("tocZoom"));
+		    }
+
 		    if(record.trackData) {
 			setTimeout(()=>{
 			    _this.getDisplayManager().notifyEvent("dataSelection", _this, {data:record.trackData});
