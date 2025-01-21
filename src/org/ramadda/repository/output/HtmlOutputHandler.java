@@ -1363,8 +1363,8 @@ public class HtmlOutputHandler extends OutputHandler {
             tabContents.add(attachments);
         }
 
-        StringBuilder associationBlock =
-            getAssociationManager().getAssociationBlock(request, entry);
+        StringBuilder associationBlock = new StringBuilder();
+	getAssociationManager().getAssociationBlock(request, entry,associationBlock);
         if (associationBlock.length() > 0) {
             if (request.get(ARG_SHOW_ASSOCIATIONS, false)) {
                 tabTitles.add(0, msg(ASSOCIATION_LABEL));
