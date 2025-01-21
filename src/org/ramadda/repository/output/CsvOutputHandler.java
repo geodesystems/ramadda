@@ -97,16 +97,16 @@ public class CsvOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_WRAPPER_MATLAB = new OutputType("Matlab Wrapper",
 									  "wrapper_matlab",
-									  OutputType.TYPE_ACTION,
+									  OutputType.TYPE_OTHER,
 									  "", ICON_CSV);
     public static final OutputType OUTPUT_WRAPPER_R = new OutputType("R Wrapper",
 									  "wrapper_r",
-									  OutputType.TYPE_ACTION,
+									  OutputType.TYPE_OTHER,
 									  "", ICON_CSV);    
 
     public static final OutputType OUTPUT_WRAPPER_PYTHON= new OutputType("Python Wrapper",
 									  "wrapper_python",
-									  OutputType.TYPE_ACTION,
+									  OutputType.TYPE_OTHER,
 									  "", ICON_CSV);
 
 
