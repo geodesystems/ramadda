@@ -426,6 +426,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
 						      (String) null);
+
             if (valueString != null) {
                 setEnums(valueString, ",");
             } else {
@@ -2503,7 +2504,17 @@ public class Column implements DataTypes, Constants, Cloneable {
 					       : value));
 	    //For now ask the typehandler for the enum values
 	    //we used to just use the  TypeHandler.enumValues but that is wrong?
-	    List<HtmlUtils.Selector> enumValues = typeHandler.getEnumValues(request, this, null);
+	    List<HtmlUtils.Selector> enumValues;
+	    
+	    if(false &&
+	       isType(DATATYPE_ENUMERATION) &&
+	       this.enumValues!=null && this.enumValues.size()>0) {
+		enumValues = this.enumValues;
+	    } else {
+		enumValues = typeHandler.getEnumValues(request, this, null);
+	    }
+
+
 
             widget = HU.select(urlArg, enumValues, value,
 			       HU.cssClass("ramadda-pulldown-with-icons"));

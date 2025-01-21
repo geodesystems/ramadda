@@ -5147,6 +5147,24 @@ public class TypeHandler extends RepositoryManager {
     
     public String getEntryIconUrl(Request request, Entry entry)
 	throws Exception {
+	//check if the entry has a field for the icon
+        String field = getTypeProperty("icon.column",null);
+        if (field!=null) {
+	    String value = entry.getStringValue(request, field,null);
+	    if(stringDefined(value)) {
+		value = value.trim();
+		String icon = getRepository().getProperty("icon." + value,   (String) null);
+		
+		if(icon==null)
+		    icon = getRepository().getProperty(value,   (String) null);
+
+		if(icon==null) {
+		    value = value.toLowerCase();
+		    icon = getRepository().getProperty("icon." + value,   (String) null);
+		}
+		if(stringDefined(icon)) return icon;
+	    }
+        }
 
         String icon = entry.getIcon();
         if (icon != null) {
@@ -6563,19 +6581,24 @@ public class TypeHandler extends RepositoryManager {
     }
     public List<HtmlUtils.Selector> getEnumValues(Request request, Column column, Entry entry)
 	throws Exception {
-        HashSet   set  = getEnumValuesInner(request, column,  entry,request.get("forsearch",false)|| true);
-
+	boolean forSearch = request.get("forsearch",false);
+        HashSet   set  = getEnumValuesInner(request, column,  entry,forSearch|| true);
 	//If we get back null then the column should have values
-	if(set==null) {
-	    List<HtmlUtils.Selector> tmp = column.getValues();
-	    if(tmp!=null) {
-		return tmp;
+	List<HtmlUtils.Selector> columnValues = column.getValues();
+
+
+        List<HtmlUtils.Selector> tfos = new ArrayList<HtmlUtils.Selector>();
+	if(!forSearch && columnValues!=null) {
+	    for(HtmlUtils.Selector sel: columnValues) {
+		if(!tfos.contains(sel)) tfos.add(sel);
 	    }
 	}
 
-        List<HtmlUtils.Selector> tfos = new ArrayList<HtmlUtils.Selector>();
         List                 tmp  = new ArrayList();
-        tmp.addAll(set);
+	if(set!=null)
+	    tmp.addAll(set);
+
+
 
         for (String s : (List<String>) Misc.sort(tmp)) {
             String label = s;
@@ -6584,8 +6607,13 @@ public class TypeHandler extends RepositoryManager {
             } else {
 		label = column.getEnumLabel(label);
 	    }
-            tfos.add(new HtmlUtils.Selector(label, s));
+	    
+	    HtmlUtils.Selector sel = new HtmlUtils.Selector(label, s);
+	    if(!tfos.contains(sel)) {
+		tfos.add(sel);
+	    }
         }
+
 
         return tfos;
     }
