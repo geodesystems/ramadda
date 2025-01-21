@@ -699,6 +699,9 @@ public interface WikiConstants {
     public static final String WIKI_TAG_LABEL = "label";
 
 
+    public static final String WIKI_TAG_ASSOCIATIONS = "associations";
+
+
     /** wiki import */
     public static final String WIKI_TAG_LINKS = "links";
 

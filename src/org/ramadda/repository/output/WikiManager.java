@@ -3074,6 +3074,9 @@ public class WikiManager extends RepositoryManager
 	    } else {
 		return txt.toString();
 	    }
+        } else if (theTag.equals(WIKI_TAG_ASSOCIATIONS)) {
+	    getAssociationManager().getAssociationBlock(request, entry,sb);
+	    return sb.toString();
         } else if (theTag.equals(WIKI_TAG_FIELD)) {
             String name = getProperty(wikiUtil, props, ATTR_FIELDNAME,
                                       (String) null);
@@ -8284,7 +8287,7 @@ public class WikiManager extends RepositoryManager
 
 
 
-        String entriesButton = makeMenuButton("Entries",
+        String entriesButton = makeMenuButton("Entry",
 					      HU.span(makeTagsMenu(entry,textAreaId),
 						      HU.attrs("data-title","Entries","class","wiki-menubar-tags")));
 	
