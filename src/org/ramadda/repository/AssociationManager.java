@@ -695,48 +695,22 @@ public class AssociationManager extends RepositoryManager {
         return text;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception On badness
-     */
-    public StringBuilder getAssociationBlock(Request request, Entry entry)
+    public void  getAssociationBlock(Request request, Entry entry,StringBuilder sb)
             throws Exception {
 
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         List<Association> associations =
             getAssociationManager().getAssociations(request, entry);
         if (associations.size() == 0) {
-            StringBuilder sb = new StringBuilder();
-
-            return sb;
+	    return;
         }
 
-        return getAssociationList(request, associations, entry, canEdit);
+	getAssociationList(request, associations, entry, canEdit,sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param associations _more_
-     * @param entry _more_
-     * @param canEdit _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
-    public StringBuilder getAssociationList(Request request,
-                                            List<Association> associations,
-                                            Entry entry, boolean canEdit)
+    public void getAssociationList(Request request,
+				   List<Association> associations,
+				   Entry entry, boolean canEdit,StringBuilder sb)
             throws Exception {
 
         List cols1 = new ArrayList();
@@ -842,9 +816,9 @@ public class AssociationManager extends RepositoryManager {
         cols.addAll(cols1);
         cols.addAll(cols2);
 
-        return HU.table(cols, 5,
-                        HU.attr(HU.ATTR_CELLSPACING, "3")
-                        + HU.attr(HU.ATTR_CELLPADDING, "3"));
+        sb.append(HU.table(cols, 5,
+			   HU.attr(HU.ATTR_CELLSPACING, "3")
+			   + HU.attr(HU.ATTR_CELLPADDING, "3")));
     }
 
 
@@ -896,8 +870,8 @@ public class AssociationManager extends RepositoryManager {
             getAssociationsSearchForm(request, sb);
             sb.append(HU.sectionOpen(null, false));
             getRepository().getHtmlOutputHandler().showNext(request, cnt, sb);
-            sb.append(getAssociationManager().getAssociationList(request,
-                    associations, null, false));
+            getAssociationManager().getAssociationList(request,
+						       associations, null, false,sb);
             sb.append(HU.sectionClose());
         }
 
