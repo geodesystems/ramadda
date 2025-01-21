@@ -32,7 +32,7 @@ proc runGroup {group id {groupLimit 10000}} {
 	foreach     {name id} [split $line2 ,] break
 	set url "$::root/entry/show?entryid=$id#fortest"
 	writeUrl $url $name
-	capture $_group $name $url
+	capture $_group $name $url 0 $::sleep
     }
 }
 
@@ -43,7 +43,7 @@ proc usage {} {
 
 set groupID ""
 set urls [list]
-set sleep 5
+set ::sleep 5
 for {set i 0} {$i <[llength $argv]} {incr i} {
     set  arg [lindex $argv $i]
     if {$arg == "-help"} {
@@ -69,7 +69,7 @@ for {set i 0} {$i <[llength $argv]} {incr i} {
 
     if {$arg == "-sleep"} {
 	incr i
-	set sleep [lindex $argv $i]
+	set ::sleep [lindex $argv $i]
 	continue;
     }
     if {$arg == "-group"} {
@@ -116,7 +116,7 @@ if {$groupID!=""} {
 	    exec sleep $pause
 	    continue
 	}
-	capture ""  "Page $cnt" $url 0 $sleep
+	capture ""  "Page $cnt" $url 0 $::sleep
     }
 } else {
 #Run with the default ramadda.org entries
