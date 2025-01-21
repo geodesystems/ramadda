@@ -1033,6 +1033,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    addScriptPath(path);
 	}
 
+        getMetadataManager().applySchemaChanges();
+
+
+
     }
 
     /**
@@ -3279,7 +3283,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	String isize  =HU.attr("size","12");
 	
 	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
-	for(int i=0;i<6;i++) {
+	for(int i=0;i<8;i++) {
 	    sb.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
 			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
 			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
