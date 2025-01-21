@@ -439,7 +439,7 @@ public class Metadata implements Constants {
 
 
     
-    public String getAttr(int idx) {
+    public String getAttr(int idx,boolean...checkExtra) {
         if (values != null) {
             return (String) getValue(idx);
         }
@@ -455,8 +455,8 @@ public class Metadata implements Constants {
         if (idx == 4) {
             return attr4;
         }
+	if(checkExtra.length>0 && !checkExtra[0]) return null;
         Hashtable<Integer, String> extraMap = getExtraMap();
-
         return extraMap.get(Integer.valueOf(idx));
         //        throw new IllegalArgumentException("Bad attr idx:" + idx);
 
@@ -669,6 +669,8 @@ public class Metadata implements Constants {
 
 
     
+
+
     public Hashtable<Integer, String> getExtraMap() {
         if (extraMap != null) {
             return extraMap;

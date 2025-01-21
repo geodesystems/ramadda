@@ -1354,11 +1354,22 @@ public class MetadataManager extends RepositoryManager {
 	    return metadataList;
         }
 
-        final List<Metadata> finalMetadataList = new ArrayList();
+        List<Metadata> finalMetadataList = readMetadata(Clause.eq(Tables.METADATA.COL_ENTRY_ID, entry.getId()));
+        metadataList = Metadata.sort(finalMetadataList);
+	if(debugGetMetadata) System.err.println("getMetadata 3 list:" +metadataList);
+        entry.setMetadata(metadataList);
+        metadataList = getMetadata(request,entry,metadataList, type);
+	if(debugGetMetadata) System.err.println("getMetadata 4 list:" +metadataList);
+	return metadataList;
+    }
+
+
+    private List<Metadata> readMetadata(Clause clause) throws Exception {
+	final List<Metadata> finalMetadataList = new ArrayList();
         Statement stmt =
             getDatabaseManager().select(
 					Tables.METADATA.COLUMNS, Tables.METADATA.NAME,
-					Clause.eq(Tables.METADATA.COL_ENTRY_ID, entry.getId()),
+					clause,
 					getDatabaseManager().makeOrderBy(Tables.METADATA.COL_TYPE));
 
         getDatabaseManager().iterate(stmt, new SqlUtil.ResultsHandler() {
@@ -1380,19 +1391,12 @@ public class MetadataManager extends RepositoryManager {
                         getAttrString(results, col++),
                         getAttrString(results, col++),
                         dbm.getString(results, col++)));
-
-                return true;
+		return true;
             }
         });
-
-        metadataList = Metadata.sort(finalMetadataList);
-	if(debugGetMetadata) System.err.println("getMetadata 3 list:" +metadataList);
-
-        entry.setMetadata(metadataList);
-        metadataList = getMetadata(request,entry,metadataList, type);
-	if(debugGetMetadata) System.err.println("getMetadata 4 list:" +metadataList);
-	return metadataList;
+	return finalMetadataList;
     }
+
 
 
     /**
@@ -1711,6 +1715,57 @@ public class MetadataManager extends RepositoryManager {
         return handler;
     }
 
+
+    private void applySchemaChange(String type,String command,int index,String value) throws Exception {
+	int MAX = 15;
+        List<Metadata> list = readMetadata(Clause.eq(Tables.METADATA.COL_TYPE,type));
+	for(Metadata metadata: list) {
+	    System.err.println("metadata:");
+	    if(command.equals("delete")) {
+		for(int i=index+1;i<MAX;i++) {
+		    String  v = metadata.getAttr(i);
+		    System.err.println("\tvalue:["+i+"]=" + v);
+		    if(v!=null) {
+			System.err.println("\tsetting: " + (i-1) +" to :" + v);
+			metadata.setAttr(i-1,v);
+		    }
+		}
+		continue;
+	    }
+	    getLogManager().logError("MetadataManager.applySchemaChange: unknown command:" + command);
+	}
+    }
+
+    public void applySchemaChanges() throws Exception {
+	boolean haveAppliedVersion = false;
+	for(String line:
+		Utils.split(getRepository().getResource("/org/ramadda/repository/resources/propertychange.txt"),"\n",true,true)) {
+	    if(line.startsWith("#")) continue;
+	    if(line.startsWith("version:")) {
+		String version ="propertychange.version." +line.substring("version:".length()).trim();
+		haveAppliedVersion = getRepository().getDbProperty(version,false);
+		if(haveAppliedVersion)
+		    getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: have applied version:" + version);
+		else 
+		    getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: applying version:" + version);
+		//		getRepository().writeGlobal(version,true);
+		continue;
+	    }
+	    if(haveAppliedVersion) continue;
+	    List<String> toks = Utils.split(line,",",true,true);
+	    if(toks.size()<=1) continue;
+	    String type = toks.get(0);
+	    for(int i=1;i<toks.size();i++) {
+		List<String>toks2 = Utils.split(toks.get(i),":",true,true);
+		if(toks2.size()<2) {
+		    continue;
+		}
+		System.err.println("command:" + type +" - " + toks2);
+		applySchemaChange(type,toks2.get(0),Integer.parseInt(toks2.get(1)),
+				  toks2.size()>2?toks2.get(2):"");
+	    }
+	}
+    }
 
     /**
      * _more_
