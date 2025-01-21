@@ -43,31 +43,6 @@ public class IncidentTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public String getEntryIconUrl(Request request, Entry entry)
-            throws Exception {
-        String disaster = entry.getStringValue(request,0, (String) null);
-        if (disaster == null) {
-            return super.getIconUrl(request, entry);
-        }
-        String icon = getRepository().getProperty("icon." + disaster.trim(),
-                          (String) null);
-        if ((icon == null) || (icon.trim().length() == 0)) {
-            return super.getIconUrl(request, entry);
-        }
-
-        return getIconUrl(icon);
-    }
 
 
 

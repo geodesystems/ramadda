@@ -26,58 +26,25 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-/**
- *
- *
- */
 public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public LocationTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getEntryName(Entry entry) {
         String name = super.getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
             name = entry.getStringValue(getRepository().getAdminRequest(),0, "");
         }
-
         //        System.err.println("NAME:" + name);
         return name;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
+
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -86,16 +53,6 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
         georeferenceEntry(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
@@ -106,11 +63,6 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     */
     private void georeferenceEntry(Request request, Entry entry) {
         if (entry.isGeoreferenced(request)) {
             return;
@@ -133,17 +85,6 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {

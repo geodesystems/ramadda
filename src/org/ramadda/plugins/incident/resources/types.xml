@@ -1,10 +1,13 @@
 <types supercategory="Miscellaneous">
 
   <type name="incident"  description="Incident" handler="org.ramadda.plugins.incident.IncidentTypeHandler" category="Events">
-     <property name="icon" value="/incident/incident.png"/>
+    <property name="icon" value="/incident/incident.png"/>
+    <property name="icon.column" value="incidenttype"/>    
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
-     <column name="incidenttype" type="enumeration" label="Incident Type"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/incidents.txt" cansearch="true" canlist="true"/>
+     <column name="incidenttype"
+	     type="enumeration" label="Incident Type"  showinhtml="true"
+	     values="file:/org/ramadda/plugins/incident/resources/incidents.txt" cansearch="true" canlist="true"/>
      <column name="cause" type="enumerationplus" label="Cause"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/causes.txt" cansearch="true" canlist="true"/>
      <column name="state" type="enumeration" label="State"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/states.txt" cansearch="true" canlist="true" />
      <column name="location" type="string" label="Location"  showinhtml="true"/>
