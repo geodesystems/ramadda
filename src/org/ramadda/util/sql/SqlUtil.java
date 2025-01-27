@@ -912,6 +912,10 @@ public class SqlUtil {
             stmt.setDouble(col, ((Double) value).doubleValue());
         } else if (value instanceof Integer) {
             stmt.setInt(col, ((Integer) value).intValue());
+        } else if (value instanceof Boolean) {
+	    //we treat boolean as integer
+	    boolean v = (boolean) value;
+            stmt.setInt(col, v?1:0);
         } else if (value instanceof Date) {
             Date dttm = (Date) value;
             stmt.setTimestamp(col, new java.sql.Timestamp(dttm.getTime()),
