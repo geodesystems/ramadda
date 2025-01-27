@@ -142,6 +142,7 @@ public class PageHandler extends RepositoryManager {
     private boolean showSearch;
     private boolean showLogin;    
     private String shortDateFormat;
+    private String googleTagContent;
     private String createdDisplayMode;
     private String myLogoImage;
     private String footer;
@@ -184,6 +185,13 @@ public class PageHandler extends RepositoryManager {
 
         //Clear out any loaded templates
         clearCache();
+	googleTagContent = null;
+	String googleTag =             getRepository().getProperty("ramadda.google.tag",null);
+	if(googleTag!=null) {
+	    googleTagContent="\n<!-- Google tag (gtag.js) -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={tag}\"></script>\n<script>\n window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '{tag}');\n</script>\n".replace("{tag}",googleTag);
+	    System.err.println("tg:" +googleTagContent);
+	}
+
         showCreateDate =
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
@@ -524,6 +532,12 @@ public class PageHandler extends RepositoryManager {
 		headFinal = headContent;
 	    }
 	}
+
+	if(googleTagContent!=null) {
+	    headFinal+=googleTagContent;
+	}
+
+
 
         Appendable contents      = new StringBuilder();
 
