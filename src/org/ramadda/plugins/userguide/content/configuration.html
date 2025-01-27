@@ -20,6 +20,8 @@ services that can be configured. See <a href=services.html>here</a> for more inf
 -callout
 
 
+
+
 <a name="pdf"></a>
 [item {Generating thumbnails of PDFs} {
 Install the <a href="https://www.ghostscript.com/doc/current/Install.htm">Ghostscript</a>
@@ -45,6 +47,23 @@ which gs
 
 
 [item {Using LLM Models} {See <a href=llm.html>llm.html</a>}]
+
+
+<a name="googleanalytics"></a>
+[item {Google Analytics} {
+You can configure your RAMADDA to uses Google Analytics.
+<ul>
+  <li> First, go to <a href=https://analytics.google.com/analytics/web>https://analytics.google.com/analytics/web</a> and create an account.
+  <li> You will need to create a project for your site and create a tag or measurement ID, e.g.
+    "G-R123456789"
+  <li> On your RAMADDA set the property:
+<pre>
+ramadda.google.tag=&lt;your measurement ID&gt;
+</pre>
+<li> RAMADDA will then include the appropriate Javasscript in the HEAD of each HTML page.
+</ul>
+}]
+
 
 
 <a name="zoomable"></a>

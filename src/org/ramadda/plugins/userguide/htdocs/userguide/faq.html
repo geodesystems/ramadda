@@ -88,21 +88,23 @@ select Reindex.
 <h3> 1.4.  I want to blacklist certain IP address</h3>
 </div>
 </a><div class="faq-answer"><b>A.</b> 
-  If you add a file "ipblacklist.txt" into your RAMADDA home directory the IP addresses
-  in the file will be blacklisted.
-  The file is if the form:
+If you add an "ipblacklist.txt" file  into your RAMADDA home directory the IP addresses
+in the file will be blacklisted.
+The file is of the form:
 <pre>
 ipaddress1
 ipadddres2
 ipaddres.with.wild.card*
+</pre>
 e.g.:
+<pre>
 190.2.132.128
 89.187.164.247
 78.46.9*
 123.46.9*
 </pre>
 
-If a request comes in at one of the blacklisted IPs then the request is paused for a bit
+If a request comes in from one of the blacklisted IPs then the request is paused for a bit
 and then  a 403 Forbidden  result is returned. You will need to restart your RAMADDA for
 changes to take effect.
 </div>
