@@ -1,5 +1,23 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <metadata>
+
+<!--
+    <type
+       name="Test it"
+       tag="internal"
+       showinhtml="false"       
+       id="testit">
+      <element name="field1" datatype="string" default="default value 1"/>
+      <element name="inserted field" datatype="string"/>
+      <element name="field2" datatype="string" default="default value 2"/>
+      <element name="field3" datatype="string" default="default value 3"/>
+      <element name="field5" datatype="string" default="default value 5"/>
+      <element name="field6" datatype="string" default="default value 6"/>      
+      </type>
+      -->
+
+
+
 
   <handler category="Basic Properties">
 <!--

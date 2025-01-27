@@ -864,6 +864,8 @@ public class MetadataManager extends RepositoryManager {
 
 
 
+
+
     /**
      * _more_
      *
@@ -1716,39 +1718,75 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
+    private void updateMetadata(Metadata mtd)  throws Exception {
+	getDatabaseManager().update(Tables.METADATA.NAME,
+				    Clause.eq(Tables.METADATA.COL_ID, mtd.getId()),
+				    Tables.METADATA.ARRAY,
+				    new Object[]{
+					mtd.getId(),
+					mtd.getEntryId(),
+					mtd.getType(),
+					mtd.getInherited(),
+					mtd.getAccess(),
+					mtd.getAttr1(),
+					mtd.getAttr2(),
+					mtd.getAttr3(),
+					mtd.getAttr4(),
+					mtd.getExtra()
+				    });
+
+	//	COL_ID,COL_ENTRY_ID,COL_TYPE,COL_INHERITED,COL_ACCESS,COL_ATTR1,COL_ATTR2,COL_ATTR3,COL_ATTR4,COL_EXTRA
+    }
+
     private void applySchemaChange(String type,String command,int index,String value) throws Exception {
-	int MAX = 15;
+	MetadataType mtdType = findType(type);
+	if(mtdType==null) {
+	    getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: could not find type:" + type);
+	    return;
+	}
+
         List<Metadata> list = readMetadata(Clause.eq(Tables.METADATA.COL_TYPE,type));
+
 	for(Metadata metadata: list) {
-	    System.err.println("metadata:");
+	    int maxElements =  metadata.getExtraCount();
 	    if(command.equals("delete")) {
-		for(int i=index+1;i<MAX;i++) {
+		System.err.println("delete: #" + maxElements);
+		for(int i=index+1;i<=maxElements;i++) {
 		    String  v = metadata.getAttr(i);
 		    System.err.println("\tvalue:["+i+"]=" + v);
-		    if(v!=null) {
-			System.err.println("\tsetting: " + (i-1) +" to :" + v);
-			metadata.setAttr(i-1,v);
-		    }
+		    metadata.setAttr(i-1,v);
 		}
+	    } else if(command.equals("insert")) {
+		System.err.println("insert:" + value +" #:" + maxElements +  " " + metadata.getExtraMap());
+		for(int i=maxElements;i>=index;i--) {
+		    String  v = metadata.getAttr(i);
+		    if(v==null) v="";
+		    System.err.println("\tvalue:["+i+"]=" + v);
+		    metadata.setAttr(i+1,v);
+		}
+		metadata.setAttr(index,value);
+	    } else {
+		getLogManager().logError("MetadataManager.applySchemaChange: unknown command:" + command);
 		continue;
 	    }
-	    getLogManager().logError("MetadataManager.applySchemaChange: unknown command:" + command);
+	    updateMetadata(metadata);
 	}
     }
 
     public void applySchemaChanges() throws Exception {
 	boolean haveAppliedVersion = false;
 	for(String line:
-		Utils.split(getRepository().getResource("/org/ramadda/repository/resources/propertychange.txt"),"\n",true,true)) {
+		Utils.split(getRepository().getResource("/org/ramadda/repository/resources/metadatachange.txt"),"\n",true,true)) {
 	    if(line.startsWith("#")) continue;
 	    if(line.startsWith("version:")) {
 		String version ="propertychange.version." +line.substring("version:".length()).trim();
 		haveAppliedVersion = getRepository().getDbProperty(version,false);
-		if(haveAppliedVersion)
+		if(haveAppliedVersion) {
 		    getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: have applied version:" + version);
-		else 
+		} else  {
+		    getRepository().writeGlobal(version,true);
 		    getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: applying version:" + version);
-		//		getRepository().writeGlobal(version,true);
+		}
 		continue;
 	    }
 	    if(haveAppliedVersion) continue;
@@ -1760,7 +1798,7 @@ public class MetadataManager extends RepositoryManager {
 		if(toks2.size()<2) {
 		    continue;
 		}
-		System.err.println("command:" + type +" - " + toks2);
+		getLogManager().logInfoAndPrint("MetadataManager.applySchemaChange: applying command to:" + type +" command:" + toks2);
 		applySchemaChange(type,toks2.get(0),Integer.parseInt(toks2.get(1)),
 				  toks2.size()>2?toks2.get(2):"");
 	    }

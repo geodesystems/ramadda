@@ -315,10 +315,11 @@ public class Metadata implements Constants {
             attr4 = value;
         }
         Hashtable<Integer, String> extraMap = getExtraMap();
+	int index =Integer.valueOf(idx);
         if (value == null) {
-            extraMap.remove(Integer.valueOf(idx));
+            extraMap.remove(index);
         } else {
-            extraMap.put(Integer.valueOf(idx), value);
+            extraMap.put(index, value);
         }
         this.extra = null;
     }
@@ -654,6 +655,10 @@ public class Metadata implements Constants {
     }
 
     
+    public String getExtraRaw() {
+	return extra;
+    }
+
     public String getExtra() {
         String tmp = this.extra;
         if (tmp == null) {
@@ -668,7 +673,10 @@ public class Metadata implements Constants {
     }
 
 
-    
+    public int getExtraCount() {
+	if(!Utils.stringDefined(extra)) return 0;
+	return getExtraMap().size();
+    }
 
 
     public Hashtable<Integer, String> getExtraMap() {

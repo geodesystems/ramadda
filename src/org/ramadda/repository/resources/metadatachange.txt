@@ -1,0 +1,8 @@
+#metadata type,one of more - delete:<index>,insert:<index>:value,...
+#Note: the indices are 1 based
+
+version:testx8
+testit,delete:5
+
+version:testx13
+testit,insert:2:new value
