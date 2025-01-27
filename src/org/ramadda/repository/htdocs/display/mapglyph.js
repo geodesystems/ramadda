@@ -480,7 +480,9 @@ MapGlyph.prototype = {
 	    let url = this.getMapServerUrl();
 	    if(Utils.stringDefined(url)) {
 		let extra = HU.formEntry("Server URL:",
-				    HU.input('',url,[ATTR_ID,this.domId('serverurl'),'size','60']));
+					 HU.input('',url,
+						  [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
+						   ATTR_ID,this.domId('serverurl'),'size','60']));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
 		    extra += HU.formEntry("WMS Layer:",
@@ -735,6 +737,9 @@ MapGlyph.prototype = {
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.png/, "/${z}/${x}/${y}.png");
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpg/, "/${z}/${x}/${y}.jpg");
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpeg/, "/${z}/${x}/${y}.jpeg");
 		this.attrs.mapServerUrl = url;
 	    }
 	}
