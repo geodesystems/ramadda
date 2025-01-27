@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jan 21 08:56:58 EST 2025";
+var build_date="RAMADDA build date: Mon Jan 27 14:35:34 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -51775,7 +51775,9 @@ MapGlyph.prototype = {
 	    let url = this.getMapServerUrl();
 	    if(Utils.stringDefined(url)) {
 		let extra = HU.formEntry("Server URL:",
-				    HU.input('',url,[ATTR_ID,this.domId('serverurl'),'size','60']));
+					 HU.input('',url,
+						  [ATTR_PLACEHOLDER,'e.g. ...${z}/${x}/${y}.png',
+						   ATTR_ID,this.domId('serverurl'),'size','60']));
 
 		if(Utils.stringDefined(this.attrs.wmsLayer)) {
 		    extra += HU.formEntry("WMS Layer:",
@@ -52030,6 +52032,9 @@ MapGlyph.prototype = {
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.png/, "/${z}/${x}/${y}.png");
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpg/, "/${z}/${x}/${y}.jpg");
+		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpeg/, "/${z}/${x}/${y}.jpeg");
 		this.attrs.mapServerUrl = url;
 	    }
 	}
@@ -53732,7 +53737,7 @@ MapGlyph.prototype = {
 	    item(HU.center(HU.href(this.style.imageUrl,HU.image(this.style.imageUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',ATTR_WIDTH,'150px','filter',filter??'')]),['target','_image'])));
 	}
 	if(Utils.stringDefined(this.style.legendUrl)) {
-	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',ATTR_WIDTH,'150px')]),['target','_image'])));
+	    item(HU.center(HU.href(this.style.legendUrl,HU.image(this.style.legendUrl,[ATTR_STYLE,HU.css('margin-bottom','4px','border','1px solid #ccc',ATTR_WIDTH,'100%')]),['target','_image'])));
 	}
 
 
