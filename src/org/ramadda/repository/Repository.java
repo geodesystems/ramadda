@@ -5762,9 +5762,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	js = js.replace("${ramadda.user}",
 			request.getUser().getId());
 	String language  = request.getLanguage();	
+	//quote and remove any non-ascii to prevent XSS
+	if(Utils.stringDefined(language)) 
+	    language = HU.quote(language.toLowerCase().replaceAll("[^a-z]+","_"));
+	else 
+	    language="null";
+	js = js.replace("${ramadda.user.language}",language);
 
-	js = js.replace("${ramadda.user.language}",
-			Utils.stringDefined(language)?"\"" + language+"\"":"null");
 	js = js.replace("${ramadda.languages}",
 			getPageHandler().getLanguagesJson());
 	js = js.replace("${ramadda.languages.enabled}",
