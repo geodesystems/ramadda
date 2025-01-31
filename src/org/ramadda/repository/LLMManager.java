@@ -81,7 +81,7 @@ public class LLMManager extends  AdminHandlerImpl {
 
     public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
     public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
-    public static final String URL_GEMINI_PRO="https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
+    public static final String URL_GEMINI_PRO="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
     public static final String URL_GEMINI_FLASH="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";    
 
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
