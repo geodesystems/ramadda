@@ -961,14 +961,15 @@ RepositoryMap.prototype = {
         this.currentPopup = popup;
 	this.getMap().addPopup(popup);
 	if(popup.id) {
-	    jqid(popup.id).find('a').click(function(e) {
-		let src = $(this).attr('href');
-		if(src) {
-		    window.open(src,'_link');
-		    e.preventDefault();
-		}
-
-	    });
+	    setTimeout(()=> {
+		jqid(popup.id).find('a').click(function(e) {
+		    let src = $(this).attr('href');
+		    if(src) {
+			window.open(src,'_link');
+			e.preventDefault();
+		    }
+		});
+	    },100);
 	}
     },
     makePopup: function(projPoint, text, props) {
@@ -4869,8 +4870,6 @@ RepositoryMap.prototype = {
 	//["star", "cross", "x", "square", "triangle", "circle", "lightning", "rectangle", "church"];
         let center = MapUtils.createPoint(point.x, point.y);
         center.transform(this.displayProjection, this.sourceProjection);
-
-
         let feature = MapUtils.createVector(center, null, cstyle);
         feature.center = center;
         feature.ramaddaId = id;
