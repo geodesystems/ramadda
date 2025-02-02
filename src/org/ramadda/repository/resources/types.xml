@@ -267,7 +267,10 @@ priority="2"       >
      <column name="show_information" type="boolean"
 	     label="Show Information"  showinhtml="false" default="true"/>
      <column name="show_new" type="boolean"
-	     label="Show New"  showinhtml="false" default="true"/>     
+	     label="Show New"  showinhtml="false" default="true"/>
+     <column name="orderby" type="string"
+	     suffix="e.g. name, date, changedate, createdate, entryorder, size, number"
+	     label="Order by"  showinhtml="false" default="entryorder,name"/>          
 
 
    <wikimacro name="document_search" label="Document Search">
@@ -351,7 +354,7 @@ pageSearchParent=.ramadda-grid-container
 -toggle
 -if
 <div class=ramadda-grid-container>
-{{grid tag=card orderby="entryorder,name"  ascending=true 
+{{grid tag=card orderby="${property:orderby}"  ascending=true 
 embedLink="property:embed_link"
 addTags=true
 addTagSearchLink=false
@@ -372,7 +375,7 @@ showHeading=true
 +if property=show_table
 +tab List
 +inset left=10px
-{{namelist}}
+{{namelist orderby="${property:orderby}"}}
 -inset
 -tab
 -if
