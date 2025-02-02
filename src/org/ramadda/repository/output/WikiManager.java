@@ -4873,11 +4873,13 @@ public class WikiManager extends RepositoryManager
 	    return sb.toString();
 
 	} else if(theTag.equals(WIKI_TAG_NAMELIST)) {
+	    checkProperties(request, entry, props);
 	    String wiki = "";
 	    if(getProperty(wikiUtil,props,"showToggleAll",true)) {
 		wiki += "{{toggle_all}}\n";
 	    }
-	    wiki+="{{entries_template  orderby=entryorder,name  ascending=true template=\"<div class='search-component ramadda-namelist-entry' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
+	    String orderBy = getProperty(wikiUtil, props,"orderby","entryorder,name");
+	    wiki+="{{entries_template  orderby=" + orderBy+"  ascending=true template=\"<div class='search-component ramadda-namelist-entry' entryid={{entryid}}><div style='font-size:120%;'>{{icon}} {{name showTooltip=true tooltipWidth=500px link=true}}</div>{{information includeSnippet=true block.title=Details block.open=false block.show=true details=true showToggle=true toggleOpen=false}}</div>\" }}";
 	    String html =  wikifyEntry(request,entry,wiki);
 	    return html;
         } else if (theTag.equals(WIKI_TAG_LINKS)
