@@ -392,7 +392,7 @@ viewBounds="<bounds>" details="true" displayDiv="mapDisplay" }}
 ]]>
 +if property=show_information
 :vspace 1em
------
+----
 {{information details=true}}
 -if
 </wiki>
