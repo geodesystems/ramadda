@@ -3851,10 +3851,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 
 
-	if(args.target)
+	if(args.target) {
 	    $(args.target).html(input);
-	else
+	} else {
 	    document.write(input);
+	}
 	if(args.buttons) {
 	    args.buttons.forEach(b=>{
 		jqid(b.id).button().click(function() {
@@ -4918,8 +4919,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
 
         if(opts.header) {
-            let closeImage = HtmlUtils.div([TITLE,'Close',CLASS,'ramadda-popup-close'],
-					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ID,id+'_close',STYLE,HU.css('cursor','pointer')]));
+            let closeImage = HtmlUtils.div([ATTR_TITLE,'Close',ATTR_CLASS,'ramadda-popup-close'],
+					   HU.jsLink('',HtmlUtils.getIconImage(icon_close), [ATTR_ID,id+'_close',ATTR_STYLE,HU.css('cursor','pointer')]));
             let title = HU.div([CLASS,'ramadda-popup-title'],opts.title);
 	    if(opts.rightSideTitle)
 		title+=HU.div([ATTR_CLASS,'ramadda-popup-title-right'],opts.rightSideTitle);
