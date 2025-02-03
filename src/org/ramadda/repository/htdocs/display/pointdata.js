@@ -3719,32 +3719,6 @@ RequestMacro.prototype = {
 
 
 
-function RamaddaBounds(north,west,south,east) {
-    if(Utils.isDefined(north.north)) {
-	let b = north;
-	this.north = b.north;
-	this.west  = b.west;
-	this.south  =b.south;
-	this.east = b.east;
-    } else if(Utils.isDefined(north.top)) {
-	let b = north;
-	this.north = b.top;
-	this.west  = b.left;
-	this.south  =b.bottom;
-	this.east = b.right
-    }  else { 
-	this.north = north;
-	this.west  = west;
-	this.south  =south;
-	this.east = east;
-    }
-    $.extend(this,{
-	toString: function() {
-	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
-	}
-    });
-	      
-}
 
 
 function makeInlineData(display, src) {
