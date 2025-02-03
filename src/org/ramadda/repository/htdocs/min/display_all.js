@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb  2 17:48:13 MST 2025";
+var build_date="RAMADDA build date: Mon Feb  3 07:01:48 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -57250,14 +57250,11 @@ MapGlyph.prototype = {
 	    }
 	}
 
-
-
 	this.attrs.visible = visible;
 	this.checkInMapLabel();
 	if(!skipChildren) {
     	    this.applyChildren(child=>{child.setVisible(visible, callCheck);});
 	}
-
 
 	Utils.forEach(this.extraFeatures,f=>{MapUtils.setFeatureVisible(f,visible);});
 
@@ -57323,7 +57320,6 @@ MapGlyph.prototype = {
 	let min = Utils.stringDefined(range.min)?+range.min:-1;
 	let max = Utils.stringDefined(range.max)?+range.max:10000;
 	let visible=  this.getVisible() && (level>=min && level<=max);
-//	console.log(this.getName(),range,level,visible);
 	if(this.getVisible() && showMarker && !visible && !this.showMarkerMarker) {
 	    let featuresToUse = this.features;
 	    if(!featuresToUse || featuresToUse.length==0) {
@@ -57361,9 +57357,11 @@ MapGlyph.prototype = {
 	    else
 		jqid(this.getFixedId()).hide();
 	}
+
 	if(this.getMapLayer() && !this.imageLayers) {
 	    this.getMapLayer().setVisibility(visible);
 	}
+	
 	if(this.imageLayers) {
 	    this.imageLayers.forEach(obj=>{
 		let imageVisible = visible && this.isImageLayerVisible(obj);
@@ -57371,6 +57369,8 @@ MapGlyph.prototype = {
 		    obj.layer.setVisibility(imageVisible);
 	    })
 	}
+
+
 	if(this.getMapServerLayer()) {
 	    this.getMapServerLayer().setVisibility(visible);
 	}	
@@ -57381,6 +57381,8 @@ MapGlyph.prototype = {
 	    });
 	    ImdvUtils.scheduleRedraw(this.display.selectionLayer);
 	}
+
+
 	if(this.image) {
 	    this.image.setVisibility(visible);
 	}	
@@ -57388,12 +57390,17 @@ MapGlyph.prototype = {
 	    this.checkDataDisplayVisibility();
 	}
 
+
+
+
 	this.checkDeclutter(this.mapLabels,visible,true);
 	let features = this.getMapFeaturesToGrid();
-	if(features) {
+	if(features && visible) {
 	    this.checkDeclutter(features,visible,false);
 	    ImdvUtils.scheduleRedraw(this.mapLayer);
 	}
+
+
     	this.applyChildren(child=>{child.checkVisible();});
 	ImdvUtils.scheduleRedraw(this.display.myLayer);
 	if(visible && this.isMultiEntry() && !this.haveAddedEntries) {
