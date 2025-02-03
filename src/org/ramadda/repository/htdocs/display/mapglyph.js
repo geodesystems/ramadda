@@ -588,7 +588,7 @@ MapGlyph.prototype = {
 	});
 
 	let miscHelp =this.display.makeSideHelp(miscLines,this.domId('miscproperties'),{style:'height:350px;max-height:350px;',suffix:'\n'});
-	let ex = HU.b('Add property:') + miscHelp
+	let ex = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) + miscHelp
 
 	html += HU.hbox([HU.textarea('',this.attrs.properties??'',[ATTR_ID,this.domId('miscproperties'),'rows',16,'cols', 40]),
 			 HU.space(2),ex]);
@@ -3377,6 +3377,9 @@ MapGlyph.prototype = {
     },
 
     initPropertiesComponent: function(dialog) {
+	HU.initPageSearch('.imdv-property',
+			  null,null,true,
+			  {target:'#'+this.domId('propsearch')});
 
 	if (this.isGroup()) {
 	    this.jq('makegeojson').button().click(()=>{

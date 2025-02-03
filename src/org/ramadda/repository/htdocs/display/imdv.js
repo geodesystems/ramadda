@@ -37,6 +37,7 @@ var GLYPH_MAP = 'map';
 var GLYPH_MAPSERVER = 'mapserver'
 
 var GLYPH_DATA = 'data';
+var GLYPH_OSM_LOCATIONS = 'osmlocations';
 var GLYPH_TYPES_SHAPES = [GLYPH_POINT,GLYPH_BOX,GLYPH_CIRCLE,GLYPH_TRIANGLE,GLYPH_HEXAGON,GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED];
 var GLYPH_TYPES_LINES_OPEN = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_ROUTE];
 var GLYPH_TYPES_LINES = [GLYPH_LINE,GLYPH_POLYLINE,GLYPH_FREEHAND,GLYPH_POLYGON,GLYPH_FREEHAND_CLOSED,GLYPH_ROUTE];
@@ -120,6 +121,8 @@ var ID_LEVEL_RANGE_MAX = 'level_range_max';
 
 var ID_LEVEL_RANGE_SAMPLE_MIN = 'level_range_sample_min';
 var ID_LEVEL_RANGE_SAMPLE_MAX = 'level_range_sample_max';
+var ID_OSM_LABEL = 'osmlabel';
+var ID_OSM_TEXT = 'osmtext';
 
 let ImdvUtils = {
     getImdv: function(id) {
@@ -1176,6 +1179,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    });
 	},
 	initGlyphCommand:function(glyphType, cmd,args) {
+	    if(glyphType.isOSM()) {
+		this.initOSMSearch();
+		return;
+	    }
+
 	    args = args ??{};
 	    this.setCommandCursor();
 	    let styleMap = MapUtils.createStyleMap({'default':{}});
@@ -1184,8 +1192,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		type:glyphType.type
 	    }
 	    if(glyphType.isFixed() || glyphType.isGroup()) {
-		let text = prompt(glyphType.isFixed()?'Text:':'Name:');
-		if(!text) return
+		let text = args.text;
+		if(!text) text = prompt(glyphType.isFixed()?'Text:':'Name:');
+		if(!text) return;
 		let style = Utils.clone({},tmpStyle);
 		let mapOptions = Utils.clone({},tmpMapOptions);
 		style.text = text;
@@ -1201,7 +1210,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(glyphType.isFixed()) {
 		    mapGlyph.addFixed();
 		}
-		return;
+		return mapGlyph;
 	    }
 
 	    if(glyphType.isMapServer()) {
@@ -1329,6 +1338,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		});
 		return;
 	    }
+
 
 
 
@@ -1503,6 +1513,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		if(extra!=null) {
 		    extra = this.wrapDialog(extra + '<br>Or select entry:');
 		}
+
+
+
 		let props = {title:glyphType.isImage()?'Select Image':
 			     (glyphType.isEntry()||glyphType.isMultiEntry()?'Select Entry':glyphType.isData()?'Select Data':'Select Map'),
 			     extra:extra,
@@ -1587,6 +1600,225 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	setOSMLabel:function(l,hide) {
+	    this.jq(ID_OSM_LABEL).html(l);
+	    this.jq(ID_OSM_LABEL).show();
+	    if(hide) {
+		setTimeout(() =>{
+		    this.jq(ID_OSM_LABEL).fadeOut(500)
+		},1500);
+	    }
+	},
+
+	initOSMSearch:function() {
+	    if(!this.osm) this.osm = {
+		markers:[],
+		ids:{}
+
+	    }
+	    if(this.osm.dialog) return;
+
+	    let makeList = l=> {
+		return l.map(a=>{return [a,Utils.makeLabel(a)];});
+	    };
+
+
+	    let places = makeList(['city', 'town', 'village', 'hamlet',  'island', 'suburb', 'locality']);
+	    let tourism = makeList(['hotel','motel','guest_house','alpine_hut','apartment','artwork','attraction','camp_site','caravan_site','chalet','gallery','heritage','hostel','information','museum','picnic_site','theme_park','viewpoint','wilderness_hut','zoo']);
+	    let shops = makeList(['supermarket', 'convenience', 'bakery', 'butcher',    'clothes', 'electronics', 'hardware', 'books',    'car', 'bicycle', 'sports', 'shoes' ]);
+	    let amenities =makeList(['bar','bbq','bicycle_parking','bicycle_rental','biergarten','bus_station','cafe','car_rental','car_sharing','car_wash','charging_station','cinema','clinic','college','community_centre','courthouse','dentist','doctors','drinking_water','fast_food','ferry_terminal','fire_station','food_court','fountain','fuel','gym','hospital','ice_cream','kindergarten','library','marketplace','monastery','nightclub','nursing_home','park','parking','pharmacy','place_of_worship','police','post_box','post_office','prison','public_bath','pub','recycling','restaurant','school','shelter','taxi','theatre','toilets','townhall','university','veterinary','waste_basket','waste_disposal','water_point']);
+
+	    let html = ''
+	    html += HU.formTable();
+	    let bbox = this.getMap().getBounds();
+
+	    let fmt = v=>{
+		return Utils.trimDecimals(v,1);
+	    }
+//	    html+=HU.formEntry('BBOX:','N: '+ fmt(bbox.top) +' W: '+fmt(bbox.left) +' S: ' + fmt(bbox.bottom) +
+//			       ' E: '+  fmt(bbox.right));
+	    html+=HU.formEntry('Text:',
+			       HU.input('',this.osm.text??'',[ATTR_ID,this.domId(ID_OSM_TEXT)]));
+	    let widgets = [];
+	    let widget = (id,label,list) =>{
+		widgets.push(HU.b(label+=':')+'<br>'+
+			     HU.select('',[ATTR_STYLE,'min-width:200px;',ATTR_ID,this.domId('osm' + id),'multiple','true','size','3'],
+				       list,null));
+	    }
+	    widget('tourism','Tourism',tourism);
+	    widget('place','Place',places);
+	    widget('shop','Shop',shops);
+	    widget('amenity','Amenity',amenities);	    	    	    	    
+
+	    html += HU.formTableClose();
+	    html += HU.formTable();	    
+	    for(let i=0;i<widgets.length;i+=2) {
+		html+=HU.tr([],HU.tds([],[widgets[i],widgets[i+1]]));
+	    }
+	    html += HU.formTableClose();
+	    html += HU.formTable();	    
+	    html+=HU.formEntry('Limit:',
+			       HU.input('',this.osm.limit??'100',[ATTR_ID,this.domId('osmlimit'),ATTR_SIZE,10]));	    
+	    html += HU.formTableClose();	    
+	    let buttons =Utils.join([HU.div([ATTR_CLASS,'ramadda-button-ok ramadda-button'], 'Search'),
+				     HU.div([ATTR_CLASS,'ramadda-button-clear ramadda-button'], 'Clear Markers'),
+				     HU.div([ATTR_CLASS,'ramadda-button-add ramadda-button',ATTR_TITLE,'Add markers as glyphs'], 'Add'),				     
+				    HU.div([ATTR_CLASS,'ramadda-button-cancel ramadda-button'], 'Close')],
+				    SPACE1);
+
+	    html+=HU.vspace();
+	    html+=HU.center(buttons);
+	    html+=HU.div([ATTR_STYLE,HU.css('min-width','150px')],
+			 "&nbsp;" +
+			 HU.span([ATTR_ID,this.domId(ID_OSM_LABEL)],'&nbsp;'));
+	    html = HU.div([ATTR_CLASS, 'ramadda-dialog'],html);
+	    this.osm.dialog = HU.makeDialog({content:html,anchor:this.jq(ID_MENU_NEW),
+					     callback:()=>{this.osm.dialog=null;},
+					     draggable:true,title:'Open Street Map Query',header:true});
+
+	    let _this = this;
+	    this.jq(ID_OSM_TEXT).keydown(e=>{
+		if(Utils.isReturnKey(e)) {
+		    this.doOSMSearch();
+		}
+	    });
+	    this.osm.dialog.find('.ramadda-button-cancel').button().click(function() {
+		_this.osm.dialog.remove();
+		_this.osm.dialog=null;
+	    });
+	    this.osm.dialog.find('.ramadda-button-add').button().click(()=> {
+		this.addOSMMarkers();
+	    });
+	    this.osm.dialog.find('.ramadda-button-clear').button().click(() =>{
+		this.clearOSMMarkers();
+	    });
+	    this.osm.dialog.find('.ramadda-button-ok').button().click(() =>{
+		this.doOSMSearch();
+	    });
+	},
+
+	doOSMSearch:function() {
+	    let bbox = this.getMap().getBounds();
+	    let bboxq ='(' + Utils.join([bbox.bottom,bbox.left,bbox.top,bbox.right],',') +')';
+	    let query = '[out:json];(\n';
+	    let clauses = [];
+	    let add = key=>{
+		let l=this.osm[key] = this.jq('osm' + key).val();
+		if(typeof l=='string') {
+		    l = [l];
+		}
+		l.forEach(v=>{
+		    if(v!='---') {
+			clauses.push('["' + key +'"="' + v+'"]');
+		    }
+		});	    
+	    };
+	    add('tourism');
+	    add('place');
+	    add('shop');
+	    add('amenity');
+
+	    let text = this.osm.text = this.jq(ID_OSM_TEXT).val();
+	    if(Utils.stringDefined(text)) {
+		clauses.push('["name"~"' + text+'", i]');
+	    }
+
+	    if(clauses.length==0) {
+		alert('Please select a search criteria');
+		return;
+	    }
+	    clauses.forEach(c=>{
+		query+='node' +c+bboxq+';\n';
+	    });
+
+	    query +=');\nout body;';
+	    console.log('osm query:',query);
+	    this.setOSMLabel(HU.image(icon_progress) +'&nbsp;&nbsp;Searching...');
+	    let url = "https://overpass-api.de/api/interpreter";
+	    let callback = data => {
+		if(!data.elements?.length) {
+		    this.setOSMLabel('No locations found',true);
+		    return;
+		}
+		let limit = this.osm.limit = (this.jq('osmlimit').val()??'500');
+		this.handleOSMResults(data,limit);
+		this.setOSMLabel('Found ' + data.elements.length +' locations',true);
+	    };
+	    let  error = error => {
+		console.error("Error fetching data:", error)
+		let msg = 'An error has occurred.';
+		if(error.statusText) msg+=' Error:' + error.statusText;
+		this.setOSMLabel(msg);
+	    };
+	    $.post(url,{data:query},callback).fail(error);
+	},
+
+	clearOSMMarkers: function() {
+	    this.osm.markers.forEach(m=>{
+		this.getMap().removeMarker(m.marker);
+	    });
+	    this.osm.markers=[];
+	    this.osm.ids={};
+	},
+	addOSMMarkers:function() {
+	    let group =    this.initGlyphCommand(this.groupGlyphType,null,{text:'OSM Group'});
+	    this.osm.markers.forEach(m=>{
+		let points = [m.latitude,m.longitude];
+		let style = $.extend({},this.markerGlyphType.glyphStyle);
+		style.label = m.name??'';
+		style.popupText = m.text;
+		let mapGlyph = this.createMapMarker(GLYPH_MARKER,{type:GLYPH_MARKER,name:m.name,legendText:m.text}, style,points,true);
+		group.addChildGlyph(mapGlyph);
+	    });
+	    this.clearOSMMarkers();
+	    this.makeLegend();
+
+	},
+	handleOSMResults: function(data,limit) {
+	    limit = +limit;
+//	    console.dir(data);
+	    let cnt = 0;
+	    let bounds = new RamaddaBounds();
+	    data.elements.every((e,idx)=>{
+		if(idx>=limit) return false;
+		if(this.osm.ids[e.id]) return true;
+		this.osm.ids[e.id] = true;
+		let lonlat = MapUtils.createLonLat(e.lon,e.lat);
+		let name =null;
+
+		let popup = '<table>';
+		if(e.tags) {
+		    Object.keys(e.tags).forEach(k=>{
+			let v = e.tags[k];
+			if(k=='name') {
+			    name = v;
+			    return;
+			}
+			v  = String(v);
+			if(v.startsWith('http')) {
+			    v = HU.href(v,v);
+			}
+			let label  =k;
+			if(label.startsWith('addr:')) label = label.substring('addr:'.length);
+			label = Utils.makeLabel(label);
+			popup+=HU.formEntry(label+':',v);
+		    });
+		}
+		popup += '</table>';
+
+		if(name) popup  =HU.center(HU.b(name)) + popup;
+		let marker = this.getMap().addMarker('location', lonlat, null, '', popup, 20, 20);
+		cnt++;
+		bounds.expand(e.lat,e.lon);
+		this.osm.markers.push({ latitude:e.lat,longitude:e.lon,
+					marker:marker,name:name??'',
+					text:popup,data:e});
+		return true;
+	    });
+	    if(cnt>0) {
+		this.getMap().setViewToBounds(bounds);
+	    }
+	},
 	initStac:function(dialog) {
 	    let load;
 	    let stac= HU.div([ATTR_ID,this.domId('stac_top')]) +
@@ -1636,7 +1868,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    html+= HU.buttons([
 			HU.div([ATTR_CLASS,'stac-add-ok display-button'], 'OK'),
 			HU.div([ATTR_CLASS,'stac-add-cancel display-button'], 'Cancel')]);
-		    html=HU.div([ATTR_STYLE,'margin:5px;margin-top:10px;'],html);
+		    html=HU.div([ATTR_STYLE,'margin:5px;margin-top:10px;'],html);	
 		    let dialog =  HU.makeDialog({content:html,anchor:$(this),remove:false,xmodal:true,sticky:true});
 
 		    _this.jq('stac_add_url').keypress((event)=>{
@@ -3737,8 +3969,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			 'addCurrentLocationMarker=true',
 			 'centerOnCurrentLocation=true',
 			 'currentLocationUpdateTime=seconds',
+			 'showAddress=true',
 			 'graticuleStyle=strokeColor:#000,strokeWidth:1,strokeDashstyle:dot'];
-	    let help = 'Add property:' + this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
+	    let help = HU.b('Add property: ') + HU.span([ATTR_ID,this.domId('propsearch')]) +
+		this.makeSideHelp(lines,this.domId('otherproperties_input'),{suffix:'\n'});
 	    accords.push({header:'Other Properties',
 			  contents:
 			  HU.hbox([
@@ -3788,6 +4022,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.featureChanged(true);
 
 	    };
+
+	    HU.initPageSearch('.imdv-property',
+			      this.domId('otherproperties_input'),null,true,
+			      {target:'#'+this.domId('propsearch')});
+
 
 	    dialog.find('.ramadda-button-apply').button().click(()=>{
 		apply();
@@ -4681,7 +4920,9 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			    dotFillColor:'blue',
 			    dotExternalGraphic:''};
 	    
-	    new GlyphType(this,GLYPH_GROUP,"Group",
+
+	    this.groupGlyphType =
+		new GlyphType(this,GLYPH_GROUP,"Group",
 			  Utils.clone(
 			      {externalGraphic: externalGraphic,
 			       label:'',
@@ -4697,7 +4938,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  MyEntryPoint,
 			  {isGroup:true, tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
-	    new GlyphType(this,GLYPH_MARKER,"Marker",
+	    this.markerGlyphType =
+		new GlyphType(this,GLYPH_MARKER,"Marker",
 			  Utils.clone({label : "label",
 				       externalGraphic: externalGraphic,
 				       pointRadius:this.getPointRadius(10),
@@ -4892,6 +5134,12 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  {isData:true,
 			   tooltip:'Select a map data entry to display',
 			   icon:Ramadda.getUrl("/icons/chart.png")});
+	    new GlyphType(this,GLYPH_OSM_LOCATIONS,"Query OSM",
+ 			  {externalGraphic: externalGraphic},
+			  MyEntryPoint,
+			  {isOsm:true,
+			   tooltip:'Query Open Stree Map for locations',
+			   icon:Ramadda.getUrl("/icons/osm.png")});	    
 
 	},
 	clearMessage2:function(time) {
@@ -5554,7 +5802,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'),
 				    ATTR_ID,this.domId(ID_MAP)+'_header']);
 	    if(this.canChange()) {
-		menuBar= HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
+		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
 											 HU.td([ATTR_WIDTH,'50%'], message) +
 											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;',ATTR_WIDTH,'50%'],mapHeader+address)));
 	    } else {
@@ -6009,6 +6257,9 @@ GlyphType.prototype = {
     isData:  function() {
 	return this.options.isData;
     },
+    isOSM:  function() {
+	return this.options.isOsm;
+    },    
     isFixed:  function() {
 	return this.options.isFixed;
     },
