@@ -1142,3 +1142,48 @@ CollisionInfo.prototype = {
 }
 
 
+function RamaddaBounds(north,west,south,east) {
+    if(north && Utils.isDefined(north.north)) {
+	let b = north;
+	this.north = b.north;
+	this.west  = b.west;
+	this.south  =b.south;
+	this.east = b.east;
+    } else if(north && Utils.isDefined(north.top)) {
+	let b = north;
+	this.north = b.top;
+	this.west  = b.left;
+	this.south  =b.bottom;
+	this.east = b.right
+    }  else { 
+	this.north = north;
+	this.west  = west;
+	this.south  =south;
+	this.east = east;
+    }
+    $.extend(this,{
+	toString: function() {
+	    return "N:" + this.north +" W:" + this.west +" S:" + this.south +" E:" + this.east;
+	}
+    });
+	      
+}
+RamaddaBounds.prototype= {
+    expand:function(lat,  lon) {
+        this.north = isNaN(this.north)
+                     ? lat
+                     : Math.max(this.north, lat);
+        this.south = isNaN(this.south)
+                     ? lat
+                     : Math.min(this.south, lat);
+        this.west  = isNaN(this.west)
+                     ? lon
+                     : Math.min(this.west, lon);
+        this.east  = isNaN(this.east)
+                     ? lon
+                     : Math.max(this.east, lon);
+    }
+
+
+    
+};
