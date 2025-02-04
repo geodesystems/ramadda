@@ -3739,7 +3739,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
-    public Result makeErrorResult(Request request, String msg,boolean decorate, boolean sanitize) {	
+    public Result makeErrorResult(Request request, String msg,boolean decorate, boolean sanitize,boolean...asText) {	
 	StringBuilder sb = new StringBuilder(decorate?makeErrorResponse(request, msg,sanitize):sanitize?HU.strictSanitizeString(msg):msg);
         Result        result = null;
         if (request.responseAsJson()) {
@@ -3748,7 +3748,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         } else if (request.responseAsXml()) {
             result = new Result("", sb, MIME_XML);
             result.setShouldDecorate(false);
-        } else if (request.responseAsText()) {
+        } else if (Utils.isTrue(asText,false) || request.responseAsText()) {
             result = new Result("", sb, MIME_TEXT);
             result.setShouldDecorate(false);
         } else {
@@ -5569,6 +5569,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     
     public Result processProxy(Request request) throws Exception {
+	try {
+	    return processProxyInner(request);
+	} catch(Exception exc) {
+	    String msg = "Error handling proxy request:" + exc.getMessage();
+	    getLogManager().logError(msg, exc);
+	    //            String json =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
+	    return  makeErrorResult(request,  msg,false,true,true);
+	}
+    }
+
+    private Result processProxyInner(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String) null);
         if (url != null) {
             if ( !url.startsWith("http:") && !url.startsWith("https:")) {
