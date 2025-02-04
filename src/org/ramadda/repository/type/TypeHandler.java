@@ -2308,7 +2308,8 @@ public class TypeHandler extends RepositoryManager {
 	applyContents(request, buff,contents);
     }
 
-    public void applyContents(Request request, Appendable buff, List<NamedBuffer> contents) throws Exception {
+    public void applyContents(Request request, Appendable buff, List<NamedBuffer> contents)
+	throws Exception {
 	if(getTypeProperty("html.tabs",false) && contents.size()>1) {
 	    for(NamedBuffer namedBuffer:contents) {
 		if(!stringDefined(namedBuffer.getName())) {
@@ -2327,12 +2328,12 @@ public class TypeHandler extends RepositoryManager {
 
 	for(NamedBuffer namedBuffer:contents) {
 	    String title   = namedBuffer.getName();
-	    buff.append(HU.formTable());
+	    entryTableOpen(request,buff);
 	    if(stringDefined(title)) {
 		buff.append(HU.row(HU.col(HU.div(title," class=\"formgroupheader\" "), " colspan=2 ")));
 	    }
 	    buff.append(namedBuffer.getBuffer());
-	    buff.append(HU.formTableClose());
+	    entryTableClose(request,buff);
 	}
 
 
@@ -2345,6 +2346,28 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
+    public void entryTableOpen(Request request, Appendable sb) throws Exception {
+	sb.append("<table class=formtable width=100%>\n");
+    }
+
+    public void entryTableClose(Request request, Appendable sb) throws Exception {
+	sb.append("</table>\n");
+    }
+    
+    public void addEntryProperty(Request request, Appendable sb, String label,String value) throws Exception {
+	label = msgLabel(label);
+        if (request.isMobile()) {
+	    sb.append(formEntry(request, label, value));
+	    return;
+	}
+	sb.append("<tr valign=top><td class=\"ramadda-entry-property-label\">");
+	sb.append(label);
+	sb.append("</td><td>");
+	sb.append(value);
+	sb.append("</td></tr>");
+    }
+
+
     public Column findColumn(String columnName) {
         return null;
     }
@@ -2995,7 +3018,7 @@ public class TypeHandler extends RepositoryManager {
 	  HU.attrs("title","Search for entries of this type"));
 	*/
 	String label =icon + HU.space(1)+ getFileTypeDescription(request,  entry);
-	sb.append(formEntry(request, msgLabel("Kind"),label));
+	addEntryProperty(request, sb,"Kind",label);
     }
 
     public void addResourceToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
@@ -3011,12 +3034,10 @@ public class TypeHandler extends RepositoryManager {
 	} else {
 	    resourceLabel = "Resource (" + resource.getType() + ")";
 	}
-	resourceLabel = msgLabel(resourceLabel);
 	if (resourceLink.length() > 0) {
 	    if (entry.getResource().isUrl()) {
 		try {
-		    resourceLink = typeHandler.getPathForEntry(request,
-							       entry,false);
+		    resourceLink = typeHandler.getPathForEntry(request, entry,false);
 		    resourceLink = HU.href(resourceLink,
 					   resourceLink);
 		} catch (Exception exc) {
@@ -3028,7 +3049,7 @@ public class TypeHandler extends RepositoryManager {
 		//Not sure why we were doing this but it screws up chinese characters
 		//                    resourceLink =
 		//                        HU.urlEncodeExceptSpace(resourceLink);
-		resourceLabel = msgLabel("File");
+		resourceLabel = "File";
 		if (getAccessManager().canDownload(request, entry)) {
 		    String url = getEntryResourceUrl(request, entry, false);
 		    resourceLink =    HU.href(url,resourceLink) +
@@ -3044,7 +3065,7 @@ public class TypeHandler extends RepositoryManager {
 		    resourceLink + HU.space(2)
 		    + formatFileLength(entry.getResource().getFileSize());
 	    }
-	    sb.append(formEntry(request, resourceLabel, resourceLink));
+	    addEntryProperty(request, sb, resourceLabel, resourceLink);
 
 	}
     }
@@ -3054,11 +3075,8 @@ public class TypeHandler extends RepositoryManager {
 	String desc = entry.getDescription();
 	if ((desc != null) && (desc.length() > 0)
 	    && ( !isWikiText(desc))) {
-	    sb.append(
-		      formEntry(
-				request, msgLabel("Description"),
-				getEntryManager().getEntryText(
-							       request, entry, desc)));
+	    addEntryProperty(request, sb, "Description",
+			     getEntryManager().getEntryText(request, entry, desc));
 	}
     }
 
@@ -3098,22 +3116,20 @@ public class TypeHandler extends RepositoryManager {
     public void addArkToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String ark = getPageHandler().getArk(request, entry,false);
 	if(ark!=null) {
-	    sb.append(formEntry(request, msgLabel("ARK ID"),ark));
+	    addEntryProperty(request, sb,"ARK ID",ark);
 	}
     }
 
 
     public void addCreateDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
-	sb.append(formEntry(request, msgLabel("Created"),
-			    getDateHandler().formatDate(request,
-							entry, entry.getCreateDate())));
+	addEntryProperty(request, sb,"Created",
+			 getDateHandler().formatDate(request,
+						     entry, entry.getCreateDate()));
 	    
 	if (entry.getCreateDate() != entry.getChangeDate()) {
-	    sb.append(
-		      formEntry(
-				request, msgLabel("Modified"),
-				getDateHandler().formatDate(
-							    request, entry, entry.getChangeDate())));
+	    addEntryProperty(request, sb,"Modified",
+			     getDateHandler().formatDate(
+							 request, entry, entry.getChangeDate()));
 	    
 	}
     }
@@ -3124,7 +3140,7 @@ public class TypeHandler extends RepositoryManager {
 
     public void addAltitudeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	if (entry.hasAltitude() && (entry.getAltitude() != 0)) {
-	    sb.append(formEntry(request, msgLabel("Elevation"),"" + entry.getAltitude()));
+	    addEntryProperty(request, sb,"Elevation","" + entry.getAltitude());
 	}
     }
 
@@ -3141,10 +3157,10 @@ public class TypeHandler extends RepositoryManager {
 	if (entry.getEndDate() != entry.getStartDate()) {
 	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
 	    String endDate = getDateHandler().formatDate(request,   entry, entry.getEndDate());
-	    //sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"startdate","Start Date")),startDate));
-	    //sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"enddate","End Date")),endDate));
-	    sb.append(formEntry(request, msgLabel(getFormLabel(null,null,"date","Date")),
-				startDate +" - "+ endDate));
+	    //	    addEntryProperty(request, sb, getFormLabel(null,null,"startdate","Start Date")),startDate);
+	    //addEntryProperty(request, sb,msgLabel(getFormLabel(null,null,"enddate","End Date")),endDate);
+	    addEntryProperty(request, sb,getFormLabel(null,null,"date","Date"),
+			     startDate +" - "+ endDate);
 	} else {
 	    StringBuilder dateSB = new StringBuilder();
 	    String startDate =  getFieldHtml(request,  entry,  null,"startdate",false);
@@ -3156,8 +3172,8 @@ public class TypeHandler extends RepositoryManager {
 							  entry, entry.getEndDate()));
 	    }
 	    Entry parentEntry = entry==null?null:entry.getParentEntry();
-	    String formLabel = msgLabel(getFormLabel(parentEntry,entry, ARG_DATE, "Date"));
-	    sb.append(formEntry(request, formLabel, dateSB.toString()));
+	    String formLabel = getFormLabel(parentEntry,entry, ARG_DATE, "Date");
+	    addEntryProperty(request, sb,formLabel, dateSB.toString());
 	}
     }
 
@@ -3193,14 +3209,13 @@ public class TypeHandler extends RepositoryManager {
 	    userSearchLink+="<br>" + overview;
 	    
 	}
-	sb.append(formEntry(request, msgLabel("Created by"),
-			    userSearchLink));
+	addEntryProperty(request, sb,"Created by", userSearchLink);
 
 	if(entry.hasAreaDefined(request)) {
-	    sb.append(formEntry(request, msgLabel("Bounds"),entry.getBoundsString(request,true)));
+	    addEntryProperty(request, sb,"Bounds",entry.getBoundsString(request,true));
 	} else 	if(entry.hasLocationDefined(request)) {
-	    sb.append(formEntry(request, msgLabel("Location"),
-				"Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request)));
+	    addEntryProperty(request, sb,"Location",
+			     "Latitude: " + entry.getLatitude(request) +" Longitude: " + entry.getLongitude(request));
 	}
 	//	seen.add("altitude");
 	addAltitudeToHtml(request,this,entry,sb);

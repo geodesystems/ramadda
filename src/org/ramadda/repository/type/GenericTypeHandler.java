@@ -895,8 +895,7 @@ public class GenericTypeHandler extends TypeHandler {
 		    label  =HU.href(searchUrl,label);
 		}
 	    }
-
-	    sb.append(formEntry(request, column.getLabel() + ":", label));
+	    addEntryProperty(request, sb,column.getLabel(), label);
 	} else {
 	    sb.append(HU.row(HU.col(tmpSb.toString(), " colspan=2 ")));
 	}
