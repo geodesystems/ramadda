@@ -282,6 +282,10 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="search.metadatatypes" value="archive_term,archive_note"/>
     <property name="icon" value="/archive/book.png"/>
     <property name="form.date.label" value="Publication Date"/>
+    <property name="form.resource.show" value="false"/>
+    <property name="form.tags.show" value="false"/>    
+    <property name="search.form.area.show" value="false"/>
+    <property name="form.area.show" value="false"/>    
     <property name="form.todate.show" value="false"/>
     <property name="form.time.show" value="false"/>    
     <property name="form.name.label" value="Title"/>
@@ -293,9 +297,11 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="html.createdate.show" value="false"/>
     <property name="html.owner.show" value="false"/>                
 
+    <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true"
+	    enumeration_show_checkboxes="true"/>
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
     <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
-    <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>        <column name="category" type="enumerationplus" size="500" label="Category"  cansearch="true" xgroup="Classification" enumeration_show_checkboxes="true"/>
+    <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>
     <column name="isbn" type="list"  label="ISBN" columns="30" rows="3" suffix="One per line"/>
     <column name="lccn" type="string"  label="LCCN" columns="30"/>    
             
@@ -351,12 +357,14 @@ inherited="false"  }}
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"
 addEditPropertiesLink="true"}}
 +center
-{{image  inherited="true" message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true" showCaption="true" style="border:var(--basic-border);"}}
+{{image  xxxxdefault=/archive/booklarge.png inherited="true" message="" width="150px"
+style="margin-bottom:10px;"  useThumbnail="true" showCaption="true"
+xxxstyle="border:var(--basic-border);"
+}}
 
 <table class="formtable">
 {{field  name="call_number" row.label="Call #:"}}
 </table>
-
 
 +if anonymous=false
 {{barcode field=barcode}}

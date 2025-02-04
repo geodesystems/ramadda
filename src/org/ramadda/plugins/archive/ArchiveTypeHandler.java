@@ -141,7 +141,7 @@ public class ArchiveTypeHandler extends ExtensibleGroupTypeHandler {
 
     private void addThumbnails(Request request, StringBuilder sb,Entry entry) throws Exception {
 	List<String[]> thumbs = new ArrayList<String[]>();
-        getMetadataManager().getFullThumbnailUrls(request, entry, thumbs);
+        getMetadataManager().getFullThumbnailUrls(request, entry, thumbs,false);
 	if(thumbs.size()>0) {
 	    sb.append("<center>");
 	    for(String[] tuple: thumbs) {

@@ -221,7 +221,7 @@ public class StacOutputHandler extends OutputHandler {
 
 	List<String> thumbs = new ArrayList<String>();
 	List<String[]> thumbUrls = new ArrayList<String[]>();
-	getMetadataManager().getFullThumbnailUrls(request, entry, thumbUrls);
+	getMetadataManager().getFullThumbnailUrls(request, entry, thumbUrls,false);
 	for(String[] tuple: thumbUrls) {
 	    String url = tuple[0];
 	    String _url = url.toLowerCase();
