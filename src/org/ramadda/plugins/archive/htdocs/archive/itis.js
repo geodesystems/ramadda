@@ -32,9 +32,10 @@ var Itis = {
 	    let puid = HU.getUniqueId('');
 	    let extra='';
 	    extra+=HU.span([ATTR_ID,uid],"Search Taxonomy");
+	    extra += " From <a target=_other href=https://www.itis.gov/>Integrated Taxonomic Information System</a>";
 	    extra += HU.span([ATTR_ID, puid, ATTR_STYLE,
 				 'margin-left:5px;height:20px;width:25px;padding:5px;min-width:25px;'],this.spacer);
-	    this.nameInput.after(HU.div([],extra));
+	    this.nameInput.after(HU.div([ATTR_STYLE,HU.css('margin-top','4px')],extra));
 	    this.searchButton =    jqid(uid);
 	    this.searchButton.button().click(() =>{
 		let v = prompt("Search term:",this.nameInput.val());
@@ -59,7 +60,15 @@ var Itis = {
 	}
 	$.getJSON(_url, ok).fail(data=>{
 	    this.progress.html(this.spacer);
-	    alert('Call to itis.gov failed:' + data);
+	    let msg = '';
+	    if(data.responseJSON) {
+		msg = data.responseJSON;
+	    } else if(data.responseText) {
+		msg = data.responseText;
+	    } else {
+		msg = data;
+	    }
+	    alert('Call to itis.gov failed:' + msg);
 	    console.dir(data);
 	});
     },
