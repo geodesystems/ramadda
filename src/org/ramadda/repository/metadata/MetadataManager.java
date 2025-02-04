@@ -555,7 +555,7 @@ public class MetadataManager extends RepositoryManager {
         List<String> keywords = null;
 
 	List<String[]> thumbs = new ArrayList<String[]>();
-	getFullThumbnailUrls(request, entry, thumbs);
+	getFullThumbnailUrls(request, entry, thumbs,false);
 	if(thumbs.size()==0 && entry.isImage()) {
 	    thumbs.add(new String[]{getEntryManager().getEntryResourceUrl(request, entry),null});
 	}
@@ -941,10 +941,10 @@ public class MetadataManager extends RepositoryManager {
 
 
     public  List<String> getThumbnailUrls(Request request, Entry entry,
-					  List<String> urls,boolean...inherited)
+					  List<String> urls,boolean...checkParent)
             throws Exception {
 	List<String[]> tmp = new ArrayList<String[]>();
-	getFullThumbnailUrls(request, entry, tmp,inherited);
+	getFullThumbnailUrls(request, entry, tmp,checkParent==null?false:checkParent[0]);
 	if(urls==null) urls = new ArrayList<String>();
 	for(String[]tuple: tmp) {
 	    urls.add(tuple[0]);
@@ -952,52 +952,35 @@ public class MetadataManager extends RepositoryManager {
 	return urls;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param urls _more_
-     *
-     * @throws Exception On badness
-     */
     public void getFullThumbnailUrls(Request request, Entry entry,
-				     List<String[]> urls,boolean...inheritedArg)
+				     List<String[]> urls,boolean checkParent,boolean...mustBeInherited)
             throws Exception {
-	boolean inherited= inheritedArg.length>0?inheritedArg[0]:true;
 	int size = urls.size();
+
         for (Metadata metadata : getMetadata(request,entry)) {
+	    if(mustBeInherited!=null && mustBeInherited.length>0 && mustBeInherited[0]) {
+		if(!metadata.getInherited()) continue;
+	    }
             MetadataHandler handler = findMetadataHandler(metadata.getType());
             handler.getThumbnailUrls(request, entry, urls, metadata);
         }
-	if(inherited && size==urls.size()) {
+	if(checkParent && size==urls.size()) {
 	    Entry parent = entry.getParentEntry();
 	    if(parent!=null) {
-		getFullThumbnailUrls(request, parent, urls,inheritedArg);
+		getFullThumbnailUrls(request, parent, urls,checkParent,true);
 	    }
 	}	    
 	       
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    public String[] getThumbnailUrl(Request request, Entry entry,boolean...inherited)
+    public String[] getThumbnailUrl(Request request, Entry entry,boolean...checkParent)
             throws Exception {
         List<String[]> urls = new ArrayList<String[]>();
-        getFullThumbnailUrls(request, entry, urls,inherited);
+	getFullThumbnailUrls(request, entry, urls,Utils.isTrue(checkParent,false));
         if (urls.size() > 0) {
             return urls.get(0);
         }
-
         return null;
     }
 
