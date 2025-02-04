@@ -1304,10 +1304,20 @@ public class WikiManager extends RepositoryManager
 		images+= getWikiImage(wikiUtil, request, imageUrl[0],entry,props);
 		if(!multiples) break;
 	    }
+	    if(urls.size()==0) {
+		String dflt =  getProperty(wikiUtil, props,"default",null);
+		if(dflt!=null)
+		    return  getWikiImage(wikiUtil, request, dflt,entry,props);
+	    }
 	    return images;
 	}
 
         if (!stringDefined(src)) {
+	    String dflt =  getProperty(wikiUtil, props,"default",null);
+	    if(dflt!=null)
+		return  getWikiImage(wikiUtil, request, dflt,entry,props);		
+
+
             if ( !entry.isImage()) {
                 return getMessage(wikiUtil, props, msg("Not an image"));
             }
