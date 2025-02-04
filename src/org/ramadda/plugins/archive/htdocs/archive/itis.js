@@ -69,7 +69,6 @@ var Itis = {
 		msg = data;
 	    }
 	    alert('Call to itis.gov failed:' + msg);
-	    console.dir(data);
 	});
     },
     showNamesPopup:function(fromNameInput,data,v) {
@@ -86,7 +85,13 @@ var Itis = {
 	this.items = {};
 	data.commonNames.forEach((item,idx)=>{
 	    this.items[idx] = item;
-	    html+=HU.div(['index',idx,ATTR_CLASS,'ramadda-clickable'],item.commonName);
+	    let name = item.commonName;
+	    let link = HU.href('https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + item.tsn,
+			       HU.image(RamaddaUtil.getUrl('/archive/itis.png'),[ATTR_WIDTH,'24px']),
+			       ['title','View record at itis.gov','target','itis']);
+
+	    html+=HU.div([ATTR_CLASS,'ramadda-hoverable'],
+			 HU.leftRightTable(HU.div(['index',idx,ATTR_CLASS,'ramadda-clickable'],name),link,null,'30px'));
 	});
         html=HU.div([ATTR_STYLE,HU.css('margin','5px','max-height','400px','overflow-y','auto')],html);
         let dialog= HU.makeDialog({content:html,my:"left top",at:"left bottom",	
