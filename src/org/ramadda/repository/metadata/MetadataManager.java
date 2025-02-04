@@ -944,7 +944,7 @@ public class MetadataManager extends RepositoryManager {
 					  List<String> urls,boolean...checkParent)
             throws Exception {
 	List<String[]> tmp = new ArrayList<String[]>();
-	getFullThumbnailUrls(request, entry, tmp,checkParent==null?false:checkParent[0]);
+	getFullThumbnailUrls(request, entry, tmp,Utils.isTrue(checkParent,false));
 	if(urls==null) urls = new ArrayList<String>();
 	for(String[]tuple: tmp) {
 	    urls.add(tuple[0]);
