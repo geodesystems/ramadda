@@ -919,7 +919,7 @@ public class Utils extends IO {
 
 
     public static boolean isTrue(boolean[]args,boolean...dflt) {
-	if(args.length==0) {
+	if(args==null || args.length==0) {
 	    return isTrue(dflt,false);
 	}
 	return args[0];
