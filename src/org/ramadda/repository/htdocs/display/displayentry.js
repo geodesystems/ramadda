@@ -487,6 +487,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
         {p:'entriesWidth',d: 0},
 	{p:'displayTypes',ex:'list,images,timeline,map,metadata'},
 	{p:'defaultImage',ex:'blank.gif',canCache:true},
+	{p:'showColumns',tt:'Comma separated list of columns to show'},
 	{p:'showEntryImage',d:true,tt:'Show the entry thumbnail'},
         {p:'showDetailsForGroup',d: false},
 	{p:'inputSize',d:'200px',tt:'Text input size'},
@@ -500,7 +501,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'areaToggleClose',ex:true},
 	{p:'columnsToggleClose',ex:true},		
 	{p:'orderByTypes',d:'relevant,name,createdate,date,size'},
-	{p:'showOutputs',ex:'false'},
+	{p:'showOutputs',ex:'false',d:true},
 	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
 	];
@@ -1064,7 +1065,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	    let url= this.getRamadda().getSearchUrl(settings);
 	    let copyId = HU.getUniqueId('copy');
 	    let extra = [];
-
 	    if(this.getProperty('searchOutputs')) {
 		extra = Utils.mergeLists(extra,Utils.split(this.getProperty('searchOutputs'),',',true,true));
 	    }
@@ -1098,7 +1098,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			 ATTR_ID,copyId,
 			 'data-copy',url],
 			HU.getIconImage("fas fa-clipboard"));
-            this.footerRight = outputs == null ? "" :  outputs;
+	    if(this.getShowOutputs()) {
+		this.footerRight = outputs == null ? "" :  outputs;
+	    } else {
+		this.footerRight = '';
+	    }
             this.writeHtml(ID_FOOTER_RIGHT, this.footerRight);
 	    let _this = this;
 	    this.jq(ID_FOOTER_RIGHT).find('.ramadda-search-link').button().click(function(event){
@@ -2004,8 +2008,16 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             if (cols == null) {
                 return searchable;
             }
+	    let onlyShow = null;
+	    if(this.getShowColumns()) {
+		onlyShow = {};
+		Utils.split(this.getShowColumns(),',',true,true).forEach(c=>{
+		    onlyShow[c] = true;
+		});
+	    }
             for (let i = 0; i < cols.length; i++) {
                 let col = cols[i];
+		if(onlyShow &&!onlyShow[col.getName()]) continue;
                 if (!col.getCanSearch()) continue;
                 searchable.push(col);
             }
@@ -2067,10 +2079,13 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}		
 		
                 if (col.isEnumeration()) {
+		    let showCheckboxes=col.showCheckboxes()
+		    let prop = this.getProperty(col.getName()+'.showCheckboxes');
+		    if(prop!=null) showCheckboxes= (String(prop)=='true');
 		    let showLabels = this.getShowSearchLabels();
 		    let values = col.getValues();
 		    let searchValue = this.getSearchValue(col.getName());
-		    if(col.showCheckboxes()) {
+		    if(showCheckboxes) {
 			for (let vidx in values) {
                             let value = values[vidx].value||"";
 			    if(value=="") {
@@ -2142,9 +2157,15 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     field = HU.input("", savedValue??this.getSearchValue(col.getName()), [ATTR_PLACEHOLDER,col.getSearchLabel(),ATTR_CLASS, "input display-simplesearch-input", ATTR_SIZE, this.getTextInputSize(), ATTR_ID, id]);
                     widget =  field + " " + help;
 		}
+		let close = !inGroup;
+		let toggleCloseProperty = this.getProperty(col.getName()+'.toggleClose',this.getToggleClose());
+		if(Utils.isDefined(toggleCloseProperty)) {
+		    close = String(toggleCloseProperty)=='true';
+		}
+
 		extra+=this.addWidget(label,widget,{
 		    addToggle:!inGroup,
-		    toggleClose:!inGroup
+		    toggleClose:close
 		});
 	    }
 
