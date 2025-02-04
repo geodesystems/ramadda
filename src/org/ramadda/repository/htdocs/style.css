@@ -5704,7 +5704,7 @@ a.toggleblocklabellink:visited {
 }
 
 .ramadda-entry-property-label {
-    max-width:200px;
+    max-width:300px;
     width:1px;
     overflow: hidden; 
     text-overflow: ellipsis;
