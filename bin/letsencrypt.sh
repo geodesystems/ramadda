@@ -26,7 +26,7 @@
 ##  sudo yum install epel-release-latest-7.noarch.rpm
 ##  sudo yum install certbot
 ##
-## and run with makekeystore.sh -certbot /path/to/certbot
+## and run with letsencrypt.sh -certbot /path/to/certbot
 ######################################################################################################
 
 ##params set from args
@@ -55,7 +55,7 @@ PASSWORD=
 function usage()
 {
     printf "usage:\n"
-    printf "makekeystore.sh\n"
+    printf "letsencrypt.sh\n"
     printf "\t-new (create new certificate)\n"
     printf "\t-renew (renew certificate)\n"
     printf "\t-certbot /path/to/certbot\n"
