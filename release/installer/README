@@ -1,32 +1,120 @@
 
-##### installer.sh #####
-
-install.sh - Installs for an Amazon Linux and other Linuxes (tested on Ubuntu, Redhat and Centos)
-
+########################################
+## installer.sh 
+########################################
+install.sh - Installs RAMADDA for an Amazon Linux and other Linuxes (tested on Ubuntu, Redhat and Centos). It only installs PostGRES on Amazon Linux
 
 Run as:
 sudo sh ramaddainstaller/install.sh
 
+This will -
+Setup the directories
+On Amazon Linux install and configure Postgres
+Create a self-signed SSL certificate
+Install RAMADDA as a service
 
-This will walk you through a number of installation steps to setup the directories, and,
-on Amazon Linux, install and configure Postgres
+
+Once the installer is run go to:
+https://<your IP address>
+to complete the RAMADDA configuration
+
+Once RAMADDA is installed there are a number of other configuration options that can
+be configured. See https://ramadda.org/repository/userguide/configuration.html
 
 
-##
-## Service
-##
+########################################
+## RAMADDA Service
+########################################
 On Amazon Linux to start/stop RAMADDA:
 sudo service ramadda stop
 sudo  service ramadda start
 
-On other linuxes
+On other Linuxes
 sudo systemctl start ramadda
 sudo systemctl stop ramadda
 
-##
-## Updating
-##
 
+########################################
+## Updating RAMADDA
+########################################
+To update RAMADDA:
 sudo sh ramaddainstaller/update.sh
+
+To update RAMADDA with the latest development release:
+sudo sh ramaddainstaller/update.sh -dev
+
+This downloads the ramaddaserver.zip from:
+https://ramadda.org/release
+
+
+########################################
+## Main disk and directories
+########################################
+
+The main storage volume is mounted at /mnt/ramadda
+This is the only disk that needs to be backed up (in the AWS console)
+
+The RAMADDA home directory is at:
+/mnt/ramadda/ramaddahome/
+This is where the data files are stored, etc
+
+The PostGRES database is stored at:
+/mnt/ramadda/pgsql
+
+The RAMADDA server software is installed at:
+/mnt/ramadda/ramaddainstall/
+
+
+########################################
+## RAMADDA properties
+########################################
+RAMADDA needs to have some properties defined, e.g., paths to programs,
+API keys, etc. This is done by editing the file:
+/mnt/ramadda/ramaddahome/repository.properties
+
+The ssl.properties file is generated and holds the password and keypassword
+/mnt/ramadda/ramaddahome/ssl.properties
+
+
+
+########################################
+## RAMADDA plugins
+########################################
+
+RAMADDA uses plugins to add functionality. All of the plugins are stored in:
+/mnt/ramadda/ramaddahome/plugins
+
+When updating RAMADDA the core plugins are also updated. If you have non-core
+plugins copy them to this directory and restart RAMADDA
+
+
+
+########################################
+## https certificate
+########################################
+The installer will create a self-signed SSL certificate to enable the initial RAMADDA install.
+You will need to accept the security warning in the browser.
+
+As a convenience the installer also has a letsencrypt.sh script that supports using
+letsencrypt.org to create a real certificate. You can run this with
+sudo sh ramaddainstaller/letsencrypt.sh  -help
+
+The  letsencrypt certificate needs to be renewed every 3 months. To renew it do:
+sudo sh ramaddainstaller/letsencrypt.sh  -renew ...
+
+You can also use:
+sudo sh ramaddainstaller/renewcertificate.sh
+
+This is a wrapper that uses a DOMAIN environment variable set in .bashrc
+export DOMAIN=yourdomain.org
+
+and  calls:
+sudo sh  sh ramaddainstaller/letsencrypt.sh  -renew -domain ${DOMAIN}
+
+renewcertificate.sh logs its output to:
+ramaddainstaller/certificate.log
+
+You can also run this as a cron job. Consult renewcertificate.sh for instructions
+
 
 
