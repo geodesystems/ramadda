@@ -5703,6 +5703,19 @@ a.toggleblocklabellink:visited {
     text-align:left;
 }
 
+.ramadda-entry-property-label {
+    max-width:200px;
+    width:1px;
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    //word-wrap: break-word;
+    white-space: nowrap;
+    font-weight: bold;
+    text-align:right;
+    vertical-align: top;
+    color: #000;
+}
+
 .formlabel, .formlabeltop {
     font-weight: bold;
     text-align:right;
