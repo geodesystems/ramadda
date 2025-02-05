@@ -2389,6 +2389,7 @@ public class EntryManager extends RepositoryManager {
 
         List<Entry> entries       = new ArrayList<Entry>();
         String      category      = "";
+	boolean clear = request.get(ARG_CLEAR_RESOURCE,false);
         if (request.defined(ARG_CATEGORY)) {
             category = request.getString(ARG_CATEGORY, "");
         } else {
@@ -2663,9 +2664,7 @@ public class EntryManager extends RepositoryManager {
 		       && !_resource.startsWith("https:")) {
 			throw new IllegalArgumentException("Malformed URL:" + theResource);
 		    }
-
 		}
-
 
                 TypeHandler typeHandlerToUse = typeHandler;
                 //See if we can figure out the type 
@@ -2752,6 +2751,7 @@ public class EntryManager extends RepositoryManager {
 		if(noName)
 		    entry.putTransientProperty("noname","true");
 		    
+
                 initEntry(entry, name, description, info.parent, request.getUser(),
 			  new Resource(theResource, resourceType),
 			  category, entryOrder,
@@ -2806,13 +2806,16 @@ public class EntryManager extends RepositoryManager {
 	    }
 
 
-            if ((newResourceName != null)
-		|| request.get(ARG_DELETEFILE, false)) {
+	    if (newResourceName != null
+		|| request.get(ARG_DELETEFILE, false)
+		|| (clear &&entry.getResource().isUrl())) {
                 //If it was a stored file then remove the old one
                 if (!testNew && entry.getResource().isStoredFile()) {
                     getStorageManager().removeFile(entry.getResource());
                 }
-                if (newResourceName != null) {
+		if(clear && entry.getResource().isUrl()) {
+                    entry.setResource(new Resource());
+		} else  if (newResourceName != null) {
                     entry.setResource(new Resource(newResourceName,
 						   newResourceType));
                 } else {

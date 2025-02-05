@@ -3012,7 +3012,7 @@ public class TypeHandler extends RepositoryManager {
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String icon = getPageHandler().getEntryIconImage(request,entry);
-	/*
+	/* why is this commented out?
 	  String label =icon + HU.space(1)+HU.href(getSearchManager().getTypeSearchUrl(entry.getTypeHandler()),
 	  getFileTypeDescription(request,  entry),
 	  HU.attrs("title","Search for entries of this type"));
@@ -4564,9 +4564,10 @@ public class TypeHandler extends RepositoryManager {
                         if (accept != null) {
                             fileAttrs += HU.attr("accept", accept);
                         }
-                        String formContent = HU.fileInput(ARG_FILE,
-							  fileAttrs);
+                        String formContent = HU.fileInput(ARG_FILE, fileAttrs);
                         tabTitles.add(msg(fileLabel));
+
+
 			boolean showDnd =getTypeProperty("form.dnd.show",true);
                         if (entry == null) {
 			    if(showDnd) {
@@ -4592,6 +4593,9 @@ public class TypeHandler extends RepositoryManager {
                         if ((entry != null) && entry.getResource().isUrl()) {
                             url = entry.getResource().getPath();
                         }
+
+                        String clear =  stringDefined(url)?
+			    HU.labeledCheckbox(ARG_CLEAR_RESOURCE,"true",false,  "Delete URL"):"";
                         String download = !showDownload
 			    ? ""
 			    : HU.space(1)
@@ -4599,8 +4603,13 @@ public class TypeHandler extends RepositoryManager {
 						 ARG_RESOURCE_DOWNLOAD,
 						 "true",false,
 						 "Download");
+			String label="";
+			if(entry != null && entry.isFile()) {
+			    label = HU.div("Note: entering a URL will result in the existing file being deleted");
+			}
                         String formContent = HU.input(ARG_URL, url,
-						      HU.SIZE_90) + "&nbsp;" + download;
+						      HU.SIZE_80) + label+
+			    HU.div(download + HU.space(2) + clear);
                         tabTitles.add(urlLabel);
 			//                        tabContent.add(HU.inset(formContent, 8));
                         tabContent.add(formContent);
@@ -4633,7 +4642,7 @@ public class TypeHandler extends RepositoryManager {
 		    StringBuilder extras = new StringBuilder();
                     getFileExtras(request, entry,extras);
 		    String extra =
-                        HU.makeShowHideBlock(msg("Upload Settings"),
+                        HU.makeShowHideBlock(msg("Upload Options"),
 					     HU.insetLeft(extras.toString(),30),
 					     false);
                     if (forUpload/* || !showDownload*/) {
@@ -4663,7 +4672,13 @@ public class TypeHandler extends RepositoryManager {
                             String resource = request.getUser().getAdmin()
 				? entry.getResource().getPath()
 				: getStorageManager().getFileTail(entry);
-                            HU.formEntry(sb, HU.b("Resource: ") + resource);
+			    sb.append(HU.formTableClose());
+			    sb.append(HU.formTable());
+
+                            HU.formEntry(sb,msgLabel("Resource"), resource);
+			    sb.append(HU.formTableClose());
+			    sb.append(HU.formTable());
+
                             /*
                               sb.append(
                               formEntry(
@@ -4671,7 +4686,7 @@ public class TypeHandler extends RepositoryManager {
                               getStorageManager().getFileTail(
                               entry)));
                             */
-                        }
+			}
                         if (tabTitles.size() > 1) {
                             HU.formEntry(sb,
                                          HU.b("New Resource:<br>")
@@ -4792,6 +4807,11 @@ public class TypeHandler extends RepositoryManager {
     public void getFileExtras(Request request, Entry entry, Appendable extras)
 	throws Exception {
 	String space = HU.space(3);
+
+
+	
+
+
 	String uploadFlags = getTypeProperty("upload.flags",null);
 	if(uploadFlags!=null) {
 	    for(String pair:Utils.split(uploadFlags,",",true,true)) {
@@ -4843,10 +4863,6 @@ public class TypeHandler extends RepositoryManager {
 					  "Date formats to use to extract date from filename. e.g.:" +
 					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm"));
 
-        String deleteFileWidget = ((entry != null) && entry.isFile())
-	    ? HU.labeledCheckbox(ARG_DELETEFILE,
-				 "true", false, "Delete file")
-	    : "";
 
 
         String extraMore = "";
@@ -4874,6 +4890,13 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	};
 
+	if(entry != null && entry.isFile()) {
+	    String file = getStorageManager().getOriginalFilename(entry.getResource().getTheFile().getName());
+	    extra.accept("",HU.labeledCheckbox(ARG_DELETEFILE,"true", false, "Delete existing file")
+			 +" --- " + file);
+	}
+
+
 	extra.accept("Entry type:",extraMore);
 	extra.accept("Zip files:",unzipWidget);	
 	extra.accept("Images:",images);
@@ -4890,9 +4913,12 @@ public class TypeHandler extends RepositoryManager {
 	if(entry==null)
 	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 
+
+
 	extras.append("</table>");	
 
-	extras.append(deleteFileWidget);
+
+
     }
 
 
