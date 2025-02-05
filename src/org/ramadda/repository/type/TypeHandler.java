@@ -4640,10 +4640,12 @@ public class TypeHandler extends RepositoryManager {
 
 
 		    StringBuilder extras = new StringBuilder();
+		    extras.append("<div class=ramadda-entry-edit-options>");
                     getFileExtras(request, entry,extras);
+		    extras.append("</div>");
 		    String extra =
                         HU.makeShowHideBlock(msg("Upload Options"),
-					     HU.insetLeft(extras.toString(),30),
+					     extras.toString(),
 					     false);
                     if (forUpload/* || !showDownload*/) {
                         extra = "";
@@ -4858,10 +4860,10 @@ public class TypeHandler extends RepositoryManager {
         String makeNameWidget = HU.labeledCheckbox(ARG_MAKENAME,
 						   "true", true, "Make name from filename");
 	String dateFormatWidget = HU.hbox(HU.textArea(ARG_DATE_PATTERN,request.getString(ARG_DATE_PATTERN,""),
-						      5,50),
+						      3,50),
 					  HU.space(1),
 					  "Date formats to use to extract date from filename. e.g.:" +
-					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm"));
+					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm",HU.style("max-height:50px;overflow-y:auto;")));
 
 
 
@@ -4892,7 +4894,7 @@ public class TypeHandler extends RepositoryManager {
 
 	if(entry != null && entry.isFile()) {
 	    String file = getStorageManager().getOriginalFilename(entry.getResource().getTheFile().getName());
-	    extra.accept("",HU.labeledCheckbox(ARG_DELETEFILE,"true", false, "Delete existing file")
+	    extra.accept("",HU.span(HU.labeledCheckbox(ARG_DELETEFILE,"true", false, "Delete existing file"),HU.clazz("ramadda-important"))
 			 +" --- " + file);
 	}
 
@@ -4909,7 +4911,7 @@ public class TypeHandler extends RepositoryManager {
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
 
-	extra.accept("Date format:",dateFormatWidget);	
+	extra.accept("Date Format:",dateFormatWidget);	
 	if(entry==null)
 	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 

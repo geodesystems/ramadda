@@ -10056,14 +10056,14 @@ public class EntryManager extends RepositoryManager {
 	String select = getRepository().makeTypeSelect(items, request,"noop",attrs,
 						       false,"",false,null,false);
 	String textArea = HtmlUtils.textArea(arg, typePatterns==null?"":typePatterns, 
-					     5, 60,HU.id(textid));
+					     3, 50,HU.id(textid));
 	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
 	    
         sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
 					 HU.hbox(
 						 textArea,
 						 select+ HU.space(1) + help +
-						 "<br>Form:<pre>entry type:pattern</pre>")));
+						 "<br>" + msgLabel("Form")+"&nbsp;<i>entry type:pattern</i>")));
         HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
     }
 

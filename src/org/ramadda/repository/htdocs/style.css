@@ -78,6 +78,11 @@ select, input, password, .fileinput, textarea {
     border  :var(--basic-border);
 }
 
+.ramadda-important input[type="checkbox"]:checked + label {
+    background:red;
+}
+
+
 inlineblock {
     display:inline-block;
 }
@@ -5648,6 +5653,13 @@ a.toggleblocklabellink:visited {
 .entry-toggleblock-label:hover {
     background-color : var(--highlight-border);
     cursor:pointer;
+}
+
+.ramadda-entry-edit-options {
+    margin-left:40px;
+    margin-bottom:10px;    
+    padding:10px;    
+    border:var(--basic-border);
 }
 
 .ramadda-entry-edit  {
