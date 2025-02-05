@@ -4595,7 +4595,7 @@ public class TypeHandler extends RepositoryManager {
                         }
 
                         String clear =  stringDefined(url)?
-			    HU.labeledCheckbox(ARG_CLEAR_RESOURCE,"true",false,  "Delete URL"):"";
+			    HU.span(HU.labeledCheckbox(ARG_CLEAR_RESOURCE,"true",false,  "Delete URL"),HU.clazz("ramadda-important")):"";
                         String download = !showDownload
 			    ? ""
 			    : HU.space(1)
