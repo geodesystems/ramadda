@@ -4335,22 +4335,25 @@ public class WikiManager extends RepositoryManager
 		    if(weights.size()==0) weights=null;
                 }
 
-                int innerHeight = getProperty(wikiUtil, props, "inner-height", getProperty(wikiUtil,props,"innerHeight",200));
-                int minHeight = getProperty(wikiUtil, props,  "inner-minheight", -1);
-                int maxHeight = getProperty(wikiUtil, props, "inner-maxheight", 300);
+                String innerHeight =
+		    getProperty(wikiUtil, props, "inner-height",
+				getProperty(wikiUtil,props,"innerHeight",null));
+                String minHeight = getProperty(wikiUtil, props,  "inner-minheight",
+					       getProperty(wikiUtil,props,"innerMinHeight",null));
+                String maxHeight = getProperty(wikiUtil, props, "inner-maxheight",
+					       getProperty(wikiUtil,props,"innerMaxHeight",null));
                 StringBuilder innerStyle = new StringBuilder();
-                if (innerHeight > 0) {
-                    Utils.concatBuff(innerStyle, "height:",
-                                     innerHeight + "px;");
-                    innerStyle.append("overflow-y: auto;");
+                if (innerHeight !=null) {
+                    Utils.concatBuff(innerStyle,
+				     HU.css("height", HU.makeDim(innerHeight),"overflow-y","auto"));
                 }
-                if (minHeight > 0) {
-                    Utils.concatBuff(innerStyle, "min-height:", minHeight + "px;");
-                    innerStyle.append("overflow-y: auto;");
+                if (minHeight !=null) {
+                    Utils.concatBuff(innerStyle,
+				     HU.css("min-height", HU.makeDim(minHeight),"overflow-y","auto"));
                 }
-                if (maxHeight > 0) {
-                    Utils.concatBuff(innerStyle, "max-height:", maxHeight + "px;");
-                    innerStyle.append("overflow-y: auto;");
+                if (maxHeight !=null) {
+                    Utils.concatBuff(innerStyle,
+				     HU.css("max-height:", HU.makeDim(maxHeight),"overflow-y","auto"));
                 }
 		String id = Utils.getGuid();
 		if(getProperty(wikiUtil, props, "addPageSearch",false)) {

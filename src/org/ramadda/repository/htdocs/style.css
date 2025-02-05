@@ -1599,10 +1599,12 @@ a.ramadda-menubar-button:hover {
 
 }
 
+/**
 .ramadda-card  {
     max-height:100%;
     overflow-y:auto;
 }    
+*/
 
 .ramadda-card-image {
     border : 1px solid #efefef;
@@ -1610,11 +1612,13 @@ a.ramadda-menubar-button:hover {
 }
 
 
+/***
 .ramadda-imagewrap {
     height:180px;
     overflow: hidden;
     position: relative;
 }
+
 
 .ramadda-imagewrap .ramadda-card-image {
     width: 100%; 
@@ -1624,6 +1628,7 @@ a.ramadda-menubar-button:hover {
     object-position: top;
 }
 
+***/
 
 
 .ramadda-draft-container {
