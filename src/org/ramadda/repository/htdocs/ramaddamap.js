@@ -23,8 +23,6 @@ function RepositoryMap(mapId, params) {
 	params.initialLocation = {lon:lon,lat:lat};
     }
 
-
-
     let showDflt = true;
     if(params.simple)
 	showDflt = false;
@@ -963,6 +961,10 @@ RepositoryMap.prototype = {
 	if(popup.id) {
 	    setTimeout(()=> {
 		jqid(popup.id).find('a').click(function(e) {
+		    //check for tabs
+		    if($(this).hasClass('ui-tabs-anchor')) {
+			return
+		    }
 		    let src = $(this).attr('href');
 		    if(src) {
 			window.open(src,'_link');
@@ -5204,6 +5206,13 @@ RepositoryMap.prototype = {
 	    markerText =marker.text;
 	}
 
+	if(markerText.contents) {
+	    if(markerText.init) {
+		inputProps = $.extend(inputProps,{init:markerText.init});
+		markerText=  markerText.contents;
+	    }
+	}
+
 	if(!markerText) {
 	    if(debugPopup) console.log("\tno marker text");
 	    return;
@@ -5225,7 +5234,6 @@ RepositoryMap.prototype = {
     },
 
     showMarkerPopupInner:  function(marker, fromClick, simplePopup,markerText,inputProps) {
-
 	let html = markerText;
 	if(this.params.displayDiv) {
 	    this.showText(markerText);
@@ -5327,6 +5335,12 @@ RepositoryMap.prototype = {
 	if(this.popupHandler) {
 	    this.popupHandler(marker,popup);
 	}
+
+	if(inputProps.init) {
+	    inputProps.init(marker,popup);
+	}
+
+
     },
 
 
