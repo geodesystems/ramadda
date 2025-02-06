@@ -2,6 +2,7 @@
 <!-- Copy this into your ramadda home/plugins directory and restart RAMADDA-->
 <type  name="type_sd_waterrights"  description="South Dakota Water Rights"  handler="org.ramadda.data.services.PointTypeHandler"  super="type_point"  supercategory="Geoscience" >
 <!-- Properties-->
+<property name="search.tabs" value="map,list"/>
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/emojis/1f6b0.png" />
 <property  name="form.area.show"  value="false" />
