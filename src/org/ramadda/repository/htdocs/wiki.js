@@ -324,11 +324,9 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
     this.editor.container.addEventListener("mouseup", (e) =>{
 	this.handleMouseUp(e);
     });
-    //For now don't do this
-    //    this.editor.container.addEventListener("mousedown", (e) =>{});
-    //    this.editor.container.addEventListener("dblclick", (e) =>{
-    //	this.handleMouseUp(e,null, true);
-    //    });    
+    this.editor.container.addEventListener("dblclick", (e) =>{
+    	this.handleMouseUp(e,null, true);
+    });    
     this.editor.container.addEventListener("mouseleave", (e) => {
 	this.handleMouseLeave(e);
     });
@@ -1367,7 +1365,7 @@ WikiEditor.prototype = {
 	if(!position) return;
 	let tagInfo = this.getTagInfo(position);
 	if(!tagInfo) return;
-	doPopup = doPopup || this.editMode || e.metaKey || doubleClick;
+	doPopup = doPopup || this.editMode || doubleClick;
 	this.setEditMode(false);
 
 	if(!doPopup) {
