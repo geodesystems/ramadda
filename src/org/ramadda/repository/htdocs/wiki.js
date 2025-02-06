@@ -1367,7 +1367,6 @@ WikiEditor.prototype = {
 	if(!tagInfo) return;
 	doPopup = doPopup || this.editMode || doubleClick;
 	this.setEditMode(false);
-
 	if(!doPopup) {
 	    if(tagInfo.entryId) {
 		if(e.shiftKey)  {
@@ -1596,7 +1595,7 @@ WikiEditor.prototype = {
 	if(tagInfo && !tagInfo.chunk) return;
 	if(c) {
 	    scroller.css("cursor","context-menu");
-	    let message= "Right-click to show property menu";
+	    let message= HU.b("Right-click: property menu; Double-click: editor");
 	    //	    if(type!="plus")message+="<br>Double click to edit";
 	    this.showMessage(message);
 	} else {
