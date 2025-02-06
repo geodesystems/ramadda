@@ -6355,6 +6355,9 @@ a.wiki-link-noexist {
     font-weight:bold;
 }
 
+.wiki-editor-menu-icon i {
+    font-size:18px;
+}
 
 .wiki-editor-message {
     position:absolute;
