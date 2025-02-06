@@ -21,6 +21,22 @@ children:&lt;other entry id&gt;
 -pre
 
 
+:heading Adding Search URLs
+The line may be a search URL for a particular entry type. To use this:
+<ul>
+  <li> Go to the search form,
+    e.g.  for Archive Books
+    <a target=_other href=https://ramadda.org/repository/search/type/type_archive_book>https://ramadda.org/repository/search/type/type_archive_book</a>
+  <li> Perform your search. Optionally adjust the "# Records" to the desired number
+  <li> At the bottom of the search page press the Copy URL button:
+    <span class="ramadda-search-link ramadda-clickable ui-button ui-corner-all ui-widget" id="copy1738847497002" data-copy="/repository/search/do?forsearch=true&amp;type=type_archive_book&amp;provider=this&amp;orderby=name&amp;ascending=true&amp;max=100&amp;skip=0" role="button"><span><i class="fas fa-clipboard"></i></span></span>
+  <li> Go to the Edit page of the Virtual entry and paste the URL into the list of entry IDS, e.g.:
+    <pre>
+      /repository/search/do?forsearch=true&type=type_archive_book&provider=this&orderby=name&ascending=true&max=100&skip=0
+    </pre>
+</ul>
+   
+
 :heading Specifying Search Criteria
 The Entry IDs can also contain search criteria.
 The parameters of the search are specified one per line and the search is evaluated when seeing the term "search" on
