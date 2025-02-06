@@ -7135,6 +7135,10 @@ public class WikiManager extends RepositoryManager
 		continue;
 	    }
 
+	    if (entryId.startsWith("/repository/search/do")) {
+		entryId = "searchurl:" + entryId;
+	    }
+
 	    if (entryId.startsWith("searchurl:")) {
 		entryId = entryId.substring("searchurl:".length());
 		Request searchRequest = new Request(getRepository(),myRequest.getUser());
