@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb  6 06:19:40 MST 2025";
+var build_date="RAMADDA build date: Fri Feb  7 09:02:25 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5783,6 +5783,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
 	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
+	{p:'showMapInTooltip',ex:true,tt:'Include a map inside the tooltip or map popup'},
+	{p:'tooltipMapLayer',d:'osm',tt:'The map layer to use in the popup'},
+
+
+
 	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',
@@ -36478,6 +36483,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		}		    
 	    }
 
+	    console.log(this.getPageSearchSelector());
 	    let sel=parent.find(this.getPageSearchSelector());
 	    if(sel.length==0) {
 		console.log(this.type+" could not find page search components:" + this.getPageSearchSelector());
@@ -40924,12 +40930,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    feature.style.strokeWidth=strokeWidth;
 		    feature.style.strokeColor=strokeColor;		    
 		    feature.style.fillOpacity=fillOpacity;
+
 		    if(!feature.style.fillColor) {
 			feature.style.fillColor = "rgba(230,230,230,0.5)";
 			feature.style.strokeColor = "rgba(200,200,200,0.5)";
 		    }
 		    redrawCnt++;
 		    this.vectorLayer.drawFeature(feature);
+	    
 		}
 		feature.newStyle = null;
 	    });
@@ -42806,7 +42814,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let highlightGetter = f=>{
 		if(f.record) {
-                    return   HU.div([STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
+                    return   HU.div([ATTR_STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
 	    };	    
@@ -42844,7 +42852,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let collisionTextGetter = collisionTooltip==null?null:(records)=>{
 		    let html = "#" + records.length+" records<hr class=ramadda-thin-hr>";
 		    records.forEach(record=>{
-			html+=HU.div([STYLE,HU.css("border-bottom","1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
+			html+=HU.div([ATTR_STYLE,HU.css("border-bottom","1px solid #ccc")], this.getRecordHtml(record, null,collisionTooltip));
 		    });
 		    return html;
 		};
@@ -43185,7 +43193,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			if(hideNaN && isNaN(value)) return;
 			colorByValue = value;
 			theColor =  colorBy.getColorFromRecord(record, theColor,false);
-//			if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
+			//if(idx<5) console.log("%cpt:" + value + " " + theColor,"background:" + theColor);
 		    }
                 }
 
@@ -43196,7 +43204,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    hasColorByValue  = true;
 		    colorByColor = props.fillColor = colorBy.convertColor(theColor, colorByValue);
 		}
-
 		if(highlightRecords && !record.isHighlight(this)) {
 		    props.fillColor =  unhighlightFillColor;
 		    props.strokeColor =  unhighlightStrokeColor;
@@ -43373,7 +43380,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			props.rotation = rotateScale*record.getValue(rotateField.getIndex());
 		    }
 		    props.fillColor =   colorBy.getColorFromRecord(record, props.fillColor);
-
 		    if(radius>0) {
 			if(haveTooltip) {
 			    props.cursor = 'pointer';
@@ -43460,9 +43466,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		let legend = sizeBy.getLegend(5,fillColor,legendSide=="left" || legendSide=="right");
 		if(legend !="") {
 		    let label = this.getSizeByLegendLabel();
-		    if(label) legend=HU.div(['style','text-align:center;font-weight:bold'],label)+legend;
+		    if(label) legend=HU.div([ATTR_STYLE,'text-align:center;font-weight:bold'],label)+legend;
 		    let style = this.getSizeByLegendStyle();
-		    if(style) legend = HU.div([STYLE,style],legend);
+		    if(style) legend = HU.div([ATTR_STYLE,style],legend);
 		    this.jq(ID_SIZEBY_LEGEND).html(legend);
 		    this.callingUpdateSize = true;
 		    this.map.getMap().updateSize();
@@ -43550,7 +43556,38 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		});
 		if(debugPopup) console.log("textGetter: getRecordHtml:"  + text);
 		if(text=="") return null;
-		return text;
+		
+		let  tabs = [];
+		tabs.push({label:'Properties', contents:text});
+		let mapDiv;
+		let theRecord;
+		if(records.length>0 && this.getShowMapInTooltip()) {
+		    theRecord = records[0];
+		    let lat = theRecord.getLatitude();
+		    let lon = theRecord.getLongitude();		    
+		    mapDiv= HU.getUniqueId('');
+		    let div  = HU.div([ATTR_ID,mapDiv,ATTR_STYLE,HU.css('height','400px')]);
+		    tabs.push({label:'Overview Map', contents:div});
+		}
+		if(tabs.length==1) {
+		    return text;
+		}
+
+		let t =  HU.makeTabs(tabs);
+		let tabInit = t.init;	
+		let popupInit = () =>{
+		    tabInit();
+		    if(!mapDiv) return;
+		    var params = {
+			initialZoom:14,
+			mapCenter:theRecord.getLongitude()+','+ theRecord.getLatitude(),
+			defaultMapLayer:this.getTooltipMapLayer("osm"),
+		    };
+		    let theMap = new RepositoryMap(mapDiv, params);
+		    theMap.initMap(false);
+		}
+		t.init = popupInit;
+		return t;
 	    };
 	},
 
@@ -43668,7 +43705,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(keyLegend.length>0) {
 		if(!this.legendId) {
 		    this.legendId = this.domId("legendid");
-		    this.jq(ID_RIGHT).append(HU.div([ID,this.legendId, CLASS,"display-map-legend",STYLE, HU.css("max-height",this.getHeight("400px"))]));
+		    this.jq(ID_RIGHT).append(HU.div([ID,this.legendId, CLASS,"display-map-legend",ATTR_STYLE, HU.css("max-height",this.getHeight("400px"))]));
 		}
 		this.jq("legendid").html(keyLegend);
 	    }
