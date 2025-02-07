@@ -4984,8 +4984,10 @@ public class WikiManager extends RepositoryManager
     }
 
 
-    private String  makeLinks(Request request,Entry originalEntry, Entry entry, WikiUtil wikiUtil,Hashtable props,
-			      boolean isList, List<Entry>children,List<String> pre, List<String> post) throws Exception {
+    private String  makeLinks(Request request,Entry originalEntry, Entry entry,
+			      WikiUtil wikiUtil,Hashtable props,
+			      boolean isList, List<Entry>children,
+			      List<String> pre, List<String> post) throws Exception {
 
 	String template = getProperty(wikiUtil, props,
 				      "template", null);
@@ -5018,7 +5020,8 @@ public class WikiManager extends RepositoryManager
 	String output = getProperty(wikiUtil, props, "output",   (String) null);
 	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
-	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<div class='search-component ramadda-li'>");
+	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,
+				      "<div class='search-component ramadda-li'>");
 	String tagClose =  getProperty(wikiUtil, props, ATTR_TAGCLOSE,"</div>");
 
 	if(decorate) {
@@ -5038,7 +5041,9 @@ public class WikiManager extends RepositoryManager
 
 	List<String> links = new ArrayList<String>();
 	if(pre!=null) {
-	    for(String s: pre) links.add("<li> " + s);
+	    for(String s: pre) {
+		links.add(tagOpen+s+tagClose);
+	    }
 	}
         List<Utils.Macro> macros   = null;
 	if(template!=null) {
@@ -5108,7 +5113,12 @@ public class WikiManager extends RepositoryManager
 	    links.add(s);
 	}
 
-	if(post!=null) for(String s: post)links.add("<li> " + s);
+	if(post!=null) {
+	    for(String s: post) {
+		links.add(tagOpen+s+tagClose);
+	    }
+	}
+
 	if(decorate) {
 	    return Utils.join(links,"",false);
 	}
