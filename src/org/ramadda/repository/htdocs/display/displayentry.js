@@ -3050,6 +3050,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		}		    
 	    }
 
+	    console.log(this.getPageSearchSelector());
 	    let sel=parent.find(this.getPageSearchSelector());
 	    if(sel.length==0) {
 		console.log(this.type+" could not find page search components:" + this.getPageSearchSelector());

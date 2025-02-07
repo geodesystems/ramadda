@@ -1756,6 +1756,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
 	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
+	{p:'showMapInTooltip',ex:true,tt:'Include a map inside the tooltip or map popup'},
+	{p:'tooltipMapLayer',d:'osm',tt:'The map layer to use in the popup'},
+
+
+
 	{p:'selectPopup',ex:'${default}',tt:'Template to use to make a popup when a record is selected'},
 	{p:'selectPopupTitle'},
 	{p:'headerText',ex:'blah blah ${command labels=\"log scale,linear scale\" xAxisType=log,linear} blah',

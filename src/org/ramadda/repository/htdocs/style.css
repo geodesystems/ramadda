@@ -614,6 +614,23 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
     padding-left:30px;
 }    
 
+.ramadda-li {
+    position: relative;
+    padding-left:10px;
+}
+
+.ramadda-li::before {
+    content: "•"; /* Bullet character */
+    position: absolute;
+    left: 0;
+    color: black;
+    font-size: 1.2em;
+}
+
+
+
+
+
 .ramadda-nav-list-link::before{
    content: '';
    display: inline-block;
