@@ -5018,21 +5018,21 @@ public class WikiManager extends RepositoryManager
 	String output = getProperty(wikiUtil, props, "output",   (String) null);
 	String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
 	String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
-	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<li>");
-	String tagClose =  getProperty(wikiUtil, props, ATTR_TAGCLOSE,"");
+	String tagOpen  = getProperty(wikiUtil, props, ATTR_TAGOPEN,  "<div class='search-component ramadda-li'>");
+	String tagClose =  getProperty(wikiUtil, props, ATTR_TAGCLOSE,"</div>");
 
 	if(decorate) {
-	    tagOpen = "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
+	    tagOpen = "<div class=' search-component  ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-nav-page-label'>";
 	    tagClose = "</div></div>";
 	} else {
 	    if (showicon) {
-		tagOpen  = "<div class=ramadda-entry-link>";
+		tagOpen  = "<div class='search-component  ramadda-entry-link'>";
 		tagClose = "</div>";
 	    }
 	}
 
 	if (horizontal) {
-	    tagOpen  = "<div class='ramadda-links-horizontal'>";
+	    tagOpen  = "<div class='search-component  ramadda-links-horizontal'>";
 	    tagClose = "</div>";
 	}
 
@@ -5083,7 +5083,7 @@ public class WikiManager extends RepositoryManager
 				  + HU.style(style));
 	    
 	    if(decorate) {
-		href=   "<div class=' ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + href +"</div></div>";
+		href=   "<div class=' search-component ramadda-entry-nav-page  ramadda-entry-nav-page-decorated '><div class='ramadda-entry-nav-page-label'>" + href +"</div></div>";
 	    }
 	    if(snippet!=null) {
 		href+=snippet;
