@@ -616,15 +616,15 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
 
 .ramadda-li {
     position: relative;
-    padding-left:10px;
+    padding-left:0.8em;
 }
 
 .ramadda-li::before {
-    content: "•"; /* Bullet character */
+    content: "•"; 
     position: absolute;
     left: 0;
     color: black;
-    font-size: 1.2em;
+    font-size: 1.5em;
 }
 
 
