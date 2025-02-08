@@ -723,7 +723,7 @@ public class LogManager extends RepositoryManager {
         File         f        = getLogDir();
         File[]       logFiles = f.listFiles(new FileFilter(){
 		public boolean accept(File f) {
-		    return f.getName().endsWith(".log") && f.length() > 0;
+		    return (f.getName().endsWith(".log.gz") || f.getName().endsWith(".log")) && f.length() > 0;
 		}
 	    });
         String       log      = request.getString(ARG_LOG, "ramadda.log");
@@ -733,6 +733,7 @@ public class LogManager extends RepositoryManager {
         sb.append(HtmlUtils.sectionOpen());
         sb.append("Logs are in: " + HtmlUtils.italics(f.toString()));
         for (File logFile : logFiles) {
+	    if(logFile.getName().endsWith(".log.gz")) continue;
             String name  = logFile.getName();
             String label = IO.stripExtension(name);
 	    boolean first = false;
@@ -767,7 +768,6 @@ public class LogManager extends RepositoryManager {
 				  "entryactivity"), "Recent Access"));
         }
 	*/
-
 
 
 	for (File logFile : logFiles) {
@@ -1130,7 +1130,10 @@ public class LogManager extends RepositoryManager {
 
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
-	if(logFile==null) return;
+	if(logFile==null) {
+	    sb.append("No log file provided");
+	    return;
+	}
 	int    numBytes = request.get(ARG_BYTES, 10000);
 	String match=request.getString(ARG_MATCH,"");
 	boolean isEntryActivity = logFile.getName().indexOf("entryactivity")>=0;
