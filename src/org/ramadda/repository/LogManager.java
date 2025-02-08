@@ -754,8 +754,11 @@ public class LogManager extends RepositoryManager {
 						 request.makeUrl(getAdmin().URL_ADMIN_LOG),
 						 ARG_LOG, name), label);
             }
-	    if(first) header.add(1,link);
-	    else header.add(link);
+	    if(first && header.size()>0) {
+		header.add(1,link);
+	    }   else {
+		header.add(link);
+	    }
         }
 	/**
         if (log.equals("access")) {
