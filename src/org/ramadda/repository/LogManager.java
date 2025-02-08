@@ -726,22 +726,12 @@ public class LogManager extends RepositoryManager {
 		    return f.getName().endsWith(".log") && f.length() > 0;
 		}
 	    });
-        String       log      = request.getString(ARG_LOG, "access");
+        String       log      = request.getString(ARG_LOG, "ramadda.log");
         File         theFile  = null;
         boolean      didOne   = false;
 
         sb.append(HtmlUtils.sectionOpen());
         sb.append("Logs are in: " + HtmlUtils.italics(f.toString()));
-        if (log.equals("access")) {
-            header.add(HtmlUtils.bold("Recent Access"));
-        } else {
-            header.add(
-                HtmlUtils.href(
-                    HtmlUtils.url(
-				  request.makeUrl(getAdmin().URL_ADMIN_LOG), ARG_LOG,
-				  "access"), "Recent Access"));
-        }
-
         for (File logFile : logFiles) {
             String name  = logFile.getName();
             String label = IO.stripExtension(name);
@@ -766,6 +756,20 @@ public class LogManager extends RepositoryManager {
 	    if(first) header.add(1,link);
 	    else header.add(link);
         }
+	/**
+        if (log.equals("access")) {
+            header.add(HtmlUtils.bold("Recent Access"));
+        } else {
+            header.add(
+                HtmlUtils.href(
+                    HtmlUtils.url(
+				  request.makeUrl(getAdmin().URL_ADMIN_LOG), ARG_LOG,
+				  "entryactivity"), "Recent Access"));
+        }
+	*/
+
+
+
 	for (File logFile : logFiles) {
             String name  = logFile.getName();
             if (log.equals(name)) {
@@ -774,6 +778,7 @@ public class LogManager extends RepositoryManager {
 	    }
 	}
 
+	if(theFile==null) theFile = logFiles[0];
 
         sb.append(HtmlUtils.br());
         sb.append(HtmlUtils.space(10));
@@ -1125,6 +1130,7 @@ public class LogManager extends RepositoryManager {
 
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
+	if(logFile==null) return;
 	int    numBytes = request.get(ARG_BYTES, 10000);
 	String match=request.getString(ARG_MATCH,"");
 	boolean isEntryActivity = logFile.getName().indexOf("entryactivity")>=0;
