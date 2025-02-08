@@ -68,4 +68,4 @@ printf "y\nn\n" | \
        -other "${RAMADDA_OTHER_DOMAINS}" \
        -domain "${RAMADDA_DOMAIN}" >>  "${MYDIR}/certificate.log"
 
-service ramadda start
+/usr/sbin/service ramadda start
