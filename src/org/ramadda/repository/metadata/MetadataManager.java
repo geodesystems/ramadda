@@ -809,18 +809,20 @@ public class MetadataManager extends RepositoryManager {
      * @param name _more_
      */
     public void addThumbnailUrl(Request request, Entry entry, String url,
-                                String name) {
+                                String name,String...extra) {
         try {
+	    if(name==null)
+		name = IOUtil.getFileTail(url);
             InputStream is =
                 getRepository().getStorageManager().getInputStream(url);
-	    addThumbnailUrl(request, entry, is, name);
+	    addThumbnailUrl(request, entry, is, name,extra);
         } catch (Exception exc) {
             System.err.println("Error fetching thumbnail:" + url);
         }
     }
 
     public void addThumbnailUrl(Request request, Entry entry, InputStream is,
-                                String name) {
+                                String name,String...extra) {
         try {	    
             File f = getRepository().getStorageManager().getTmpFile(name);
             OutputStream fos =
@@ -834,7 +836,7 @@ public class MetadataManager extends RepositoryManager {
                     new Metadata(
                         getRepository().getGUID(), entry.getId(),
                         findType(ContentMetadataHandler.TYPE_THUMBNAIL), false,
-                        f.getName(), null, null, null, null));
+                        f.getName(),extra!=null && extra.length>0?extra[0]:null, null, null,null));
             } finally {
                 IO.close(fos);
                 IO.close(is);
