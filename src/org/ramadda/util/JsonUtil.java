@@ -1304,7 +1304,14 @@ public class JsonUtil {
 	return result;
     }
 
+    public static String optString(JSONObject obj,String key) {
+	if(obj==null) return null;
+	return obj.optString(key,null);
+    }
+
+
     public static String getString(JSONArray array,int idx) {
+	if(array==null) return null;
 	Object obj = array.get(idx);
 	return obj.toString();
     }
