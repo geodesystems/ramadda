@@ -237,7 +237,7 @@ public class BookTypeHandler extends GenericTypeHandler  {
 			}
 		    }
 		    if(state.thumb!=null) {
-			state.thumbCredit = "Credit Google Books";
+			state.thumbCredit = "Credit: Google Books";
 			state.thumbName = "thumbnail.jpg";
 		    }
 		}
