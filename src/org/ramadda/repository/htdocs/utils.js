@@ -2878,7 +2878,7 @@ var Utils =  {
             target.parent().attr('title','');
 	    target.tooltip({
 		content:()=>{return html;},
-		position: { my: "left+15 top", at: "left bottom-50" },
+		position: { my: "left+15 top", at: "left top+30" },
 		classes: {
 		    "ui-tooltip": clazz
 		},
