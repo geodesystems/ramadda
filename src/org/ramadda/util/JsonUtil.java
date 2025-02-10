@@ -1310,6 +1310,17 @@ public class JsonUtil {
     }
 
 
+    public static List<String> getStrings(JSONArray array) {
+	List<String> s = new ArrayList<String>();
+	if(array!=null) {
+	    for (int i = 0; i < array.length(); i++) {
+		s.add(array.getString(i));
+	    }
+	}
+	return s;
+    }
+
+
     public static String getString(JSONArray array,int idx) {
 	if(array==null) return null;
 	Object obj = array.get(idx);
