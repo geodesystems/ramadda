@@ -307,7 +307,8 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <column name="authors" type="list"  size="2000" label="Authors" rows="5" columns="30"/>
     <column name="series_title" type="string"  label="Series Title" size="500" columns="30"/>
     <column name="series_volume" type="string"  label="Series Volume" size="500" columns="30"/>
-    <column name="isbn" type="list"  label="ISBN" columns="30" rows="3" suffix="One per line"/>
+    <column name="isbn" type="list"  label="ISBN" columns="30" rows="3" suffix="One per line"
+	    cansearch="true"/>
     <column name="lccn" type="list"  size="1000" label="LCCN" columns="30"/>    
             
     <column name="publisher" type="string"  size="2000" label="Publisher" columns="30" rows="3"/>
