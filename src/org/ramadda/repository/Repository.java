@@ -6201,6 +6201,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    throw new RuntimeException(exc);
 	}
     }
+    public Request getDefaultUserRequest()  {
+	try {
+	    User    user    = getUserManager().getDefaultUser();
+	    Request request = new Request(getRepository(), "", new Hashtable());
+	    request.setUser(user);
+	    request.setSessionId(getGUID());
+	    return request;
+	}catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }
+
 
 
 
