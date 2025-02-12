@@ -242,6 +242,7 @@ ramadda-heading, .ramadda-page-heading {
 }
 
 .ramadda-access-status {
+    margin:5px;
     border-radius:var(--default-radius);
     padding:4px;
     display:inline-block;
