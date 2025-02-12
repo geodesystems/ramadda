@@ -1,52 +1,16 @@
 <wiki>
 +skip
-Hi, this is RAMADDA's wiki text. The wiki tag above tells RAMADDA to treat this description as wiki
-The +section, +row, +col etc tags do the layout
+This is RAMADDA's wiki text. 
 Documentation here: {{root}}/userguide/wiki/wikitext.html
+Feel free to delete any of this intro up to the content up to the ":rem **** main page content ****"
 -skip
-+section title="Welcome to your RAMADDA" #
-+row
-+col-md-6
-+box
-Thanks for trying RAMADDA.
-:br
-Keep in touch by joining the <a href=https://groups.google.com/g/ramadda>RAMADDA mailing list</a>.
-If you have any problems or suggestions please send a note to <a href="mailto:info@ramadda.org">info@ramadda.org</a>
-:vspace
-Jeff McWhirter
-:br
-Geode Systems
--box
--col
-+col-md-6
-* Use the {{fa icon="fas fa-cog"}} icon above to:
-** View <a href='{{root}}/userguide/index.html'>documentation</a>
-** <a  href="{{root}}/user/login">Login</a> to your account
-** <a href="{{root}}/admin/settings">Administer</a> your RAMADDA
-* Use the entry menu ({{fa icon="fas fa-caret-down"}}) menu above to:
-** <a href="{{root}}/entry/form?entryid=${topid}">Edit</a> this page - <a target="_docs" href="{{root}}/userguide/wiki/wiki.html">{{fa icon="fas fa-question-circle"}}</a>
-** Create new <a href="{{root}}/entry/form?group=${topid}&type=group">folders</a>
-** Upload <a href="{{root}}/entry/form?group=${topid}&type=file">files</a>
-** Add <a href="{{root}}/metadata/addform?entryid=${topid}">properties</a>
-:vspace
--col
--row
--section
-----
-+section label="Folders"  
-:note Here are some folders to get you started. Feel free to add, delete or rename any of this content.
-<p>
-{{tree showtoggle="false"}}
-<p>
--section
- ----
-+section label="Repository Contents"
-:note This is a listing of all of the entries and their count in the repository.
-{{typesearchlist  showHeader="false"  showSearchField="false"  
-#width="200px"  #height="400px"  #supers="comma separated list of super categories" 
-#cats="comma separated list of categories"  #types="comma separated list of types"  }} 
--section
-----
-+section label="Search your repository" 
-{{display_entrylist}}
++section title="{{name}}" 
+{{import entry=tophelp showTitle=false}}
+:p
++skip
+The contents of the this top-level page are held in a "homepage" entry
+This way you can make a copy of the homepage when you want to edit it
+-skip
+:rem **** main page content ****
+{{import entry=homepage showTitle=false}}
 -section
