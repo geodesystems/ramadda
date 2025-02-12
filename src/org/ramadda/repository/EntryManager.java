@@ -5570,12 +5570,22 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    private  Result processEntryImportInner(Request request, Entry parent, String file, boolean deleteFile) throws Exception {	
+    public  Result processEntryImportInner(Request request, Entry parent, String file, boolean deleteFile) throws Exception {	
+        InputStream fis = getStorageManager().getFileInputStream(file);
+	Result result = processEntryImportInner(request, parent, file,fis);
+	if(deleteFile) {
+	    getStorageManager().deleteFile(new File(file));
+	}
+
+	return result;
+    }
+
+    public  Result processEntryImportInner(Request request, Entry parent, String file, InputStream fis) throws Exception {	
+
         String entriesXml = null;
         Hashtable<String, File> origFileToStorage = new Hashtable<String,
 	    File>();
 
-        InputStream fis = getStorageManager().getFileInputStream(file);
         try {
             if (file.endsWith(".zip")) {
                 ZipInputStream zin =
@@ -5635,9 +5645,6 @@ public class EntryManager extends RepositoryManager {
             }
         } finally {
             IO.close(fis);
-	    if(deleteFile) {
-		getStorageManager().deleteFile(new File(file));
-	    }
         }
 
 
