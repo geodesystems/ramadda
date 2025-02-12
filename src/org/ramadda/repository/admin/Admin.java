@@ -765,19 +765,6 @@ public class Admin extends RepositoryManager {
                     Entry topEntry = request.getRootEntry();
                     topEntry.setName(request.getString(PROP_REPOSITORY_NAME,
                             topEntry.getName()));
-                    String description = null;
-                    File initDescFile =
-                        new File(
-                            IOUtil.joinDir(
-                                getStorageManager().getRepositoryDir(),
-                                "initdescription.txt"));
-                    if (initDescFile.exists()) {
-                        FileInputStream fis =
-                            new FileInputStream(initDescFile);
-                        description = IOUtil.readContents(fis);
-                        IO.close(fis);
-                    }
-
                     //Make sure we do this now before we do the final init entries
                     boolean didPlugin = false;
                     for (String plugin : PluginManager.PLUGINS) {
@@ -794,22 +781,30 @@ public class Admin extends RepositoryManager {
 		    //Load the metadata
 		    getMetadataManager().loadMetadataHandlers(getPluginManager());
 
-                    if (description == null) {
-			String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
-			resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
-                        description = getRepository().getResource(resourcePath);
-                    }
-
-                    description = description.replace("${topid}",
-                            topEntry.getId());
-                    description = description.replace("${root}",
-                            getRepository().getUrlBase());
+		    String resourcePath = "/org/ramadda/repository/resources/install/initdescription.txt";
+		    resourcePath = getRepository().getProperty("ramadda.install.initdescription",resourcePath);
+		    String description = Utils.replace(getRepository().getResource(resourcePath),
+						       "${topid}", topEntry.getId(),
+						       "${root}", getRepository().getUrlBase());
                     topEntry.setDescription(description);
+
+		    getMetadataManager().addMetadata(request,topEntry,
+						     "content.alias",
+						     false, false,"rootentry");		    
+
+
+		    String header = "+skip\nThis is wiki text that shows up in the header.\nlinks is a comma separated list of entry aliases, entry IDs or URLs\nof the form: <URL>;<label>,alias,entryid,etc\n-skip\n{{navbar links=\"https://ramadda.org;ramadda.org,homepage\"}}\n";
+		    getMetadataManager().addMetadata(request,topEntry,
+						     "content.header",
+						     true, false,header);
+		    String footer = "+skip\nThis is wiki text that shows up in the footer.\nIt can be anything\n-skip\n";
+		    getMetadataManager().addMetadata(request,topEntry,
+						     "content.footer",
+						     true, false,footer);		    
+
+
+
                     getEntryManager().updateEntry(null, topEntry);
-
-		    
-
-
                     addInitEntries(user);
                     sb.append(getUserManager().makeLoginForm(request));
                     if (errorBuffer.length() > 0) {
@@ -933,59 +928,21 @@ public class Admin extends RepositoryManager {
 
         return new Result(msg(title), finalSB);
 
-
-
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param user _more_
-     *
-     * @throws Exception _more_
-     */
     public void addInitEntries(User user) throws Exception {
-        String initEntriesXml = null;
-        File initFile =
-            new File(IOUtil.joinDir(getStorageManager().getRepositoryDir(),
-                                    "initentries.xml"));
-        if (initFile.exists()) {
-            FileInputStream fis = new FileInputStream(initFile);
-            initEntriesXml = IOUtil.readContents(fis);
-            IO.close(fis);
-        }
-
-        if (initEntriesXml == null) {
-	    String resourcePath = "/org/ramadda/repository/resources/install/initentries.xml";
-	    resourcePath = getRepository().getProperty("ramadda.install.initentries",resourcePath);
-            initEntriesXml = getRepository().getResource(resourcePath);
-        }
-        Element root       = XmlUtil.getRoot(initEntriesXml);
-        Request tmpRequest = getRepository().getRequest(user);
-        //        System.err.println("entry xml");
-        List<Entry> newEntries =
-            getEntryManager().processEntryXml(tmpRequest, root, null,
-                new Hashtable<String, File>(), new StringBuilder());
-        //        System.err.println("after entry xml");
+	
+	Entry root = getEntryManager().getRootEntry();
+	String resourcePath = "/org/ramadda/repository/resources/install/initentries.zip";
+	//	String resourcePath = "/org/ramadda/repository/resources/install/initentries.xml";	
+	InputStream fis = getStorageManager().getInputStream(resourcePath);
+	Request tmpRequest = getRepository().getRequest(user);
+	getEntryManager().processEntryImportInner(tmpRequest, root,resourcePath,fis);
+	fis.close();
     }
 
 
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processShutdown(Request request) throws Exception {
         if ( !getRepository().getShutdownEnabled()) {
             throw new IllegalStateException("Shutdown not enabled");
