@@ -1,3 +1,11 @@
+
+//jeffmc: a hack to check for multiple imports of this .js file
+//we use this in the animation  to check for stranded animation loops
+if(typeof window.olLoad=='undefined') {
+    window.olLoad=0;
+}    
+window.olLoad++;
+
 /*
 
   OpenLayers.js -- OpenLayers Map Viewer Library
@@ -25520,7 +25528,8 @@ OpenLayers.Animation = (function(window) {
     // private variables for animation loops
     var counter = 0;
     var loops = {};
-    
+    var myVersion = window.olLoad;
+
     /**
      * Function: start
      * Executes a method with <requestFrame> in series for some 
@@ -25541,6 +25550,11 @@ OpenLayers.Animation = (function(window) {
         var id = ++counter;
         var start = +new Date;
         loops[id] = function() {
+	    //jeffmc: a hack to check for multiple imports of this .js file
+	    if(myVersion != window.olLoad) {
+		delete loops[id];
+		return;
+	    }
             if (loops[id] && +new Date - start <= duration) {
                 callback();
                 if (loops[id]) {
