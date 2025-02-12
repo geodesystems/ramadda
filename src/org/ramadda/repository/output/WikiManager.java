@@ -1955,40 +1955,12 @@ public class WikiManager extends RepositoryManager
 	    //Only do this if it is an owner or an admin
 	    if(request.isAnonymous()) return "";
 	    if(!request.isAdmin() && !request.getUser().equals(entry.getUser())) return "";
+	    makeAccessStatus(getRepository().getAnonymousRequest(), entry, "Anonymous",sb);
+	    if(getProperty(wikiUtil, props, "showLoggedInUser",false)) {
+		makeAccessStatus(getRepository().getDefaultUserRequest(), entry, "Logged in user",sb);
+	    }
 
-	    Request anon = getRepository().getAnonymousRequest();
-	    boolean full = getProperty(wikiUtil,props,"fullAccess",false);
-	    boolean canView = getAccessManager().canDoView(anon,entry);
-	    boolean canGeo = getAccessManager().canDoGeo(anon,entry);
-	    boolean canFile = getAccessManager().canDoFile(anon,entry);
-	    boolean canExport = getAccessManager().canDoExport(anon,entry);
-	    boolean canEdit = getAccessManager().canDoEdit(anon,entry);	    	    	    	    
-	    String yes= HU.span("yes;"," style='color:green;font-weight:bold;' ");
-	    String no = HU.span("no;"," style='color:red;font-weight:bold;' ");
-	    sb.append("<div class=ramadda-access-status>");
-	    sb.append("Anonymous user can: ");
-	    sb.append(" view entry: " + (canView?yes:no));
-	    sb.append(" access file: " + (canFile?yes:no));
-	    sb.append(" export: " + (canExport?yes:no));	    
-	    sb.append(" access location: " + (canGeo?yes:no));
-	    sb.append(" edit: " + (canEdit?yes:no));	    
-
-	    String bad="";
-	    if(getAccessManager().canDoNew(anon,entry)) {
-		bad+=" do new entry. ";
-	    }
-	    if(getAccessManager().canDoEdit(anon,entry)) {
-		bad+= " edit entry. ";
-	    }
-	    if(getAccessManager().canDoDelete(anon,entry)) {
-		bad+= " delete entry. ";
-	    }	    	    
-	    if(stringDefined(bad)) {
-		sb.append("<br>");
-		HU.span(sb,"Anonymous user can: "+bad, HU.style("background:red;padding:2px;border:1px solid #000;display:inline-block;"));
-	    }
-	    sb.append("</div>");
-	    if(full) {
+	    if(getProperty(wikiUtil, props, "full",false)) {
 		getAccessManager().getCurrentAccess(request,  entry,sb);
 	    }
 
@@ -2438,9 +2410,15 @@ public class WikiManager extends RepositoryManager
 					       ATTR_LINKRESOURCE, false);
             String name  = getEntryDisplayName(entry);
             String title = getProperty(wikiUtil, props, ATTR_TITLE, name);
+            String action = getProperty(wikiUtil, props, "action",null);
             title = title.replace("${name}", name);
             String url;
-            if (linkResource
+	    if(action!=null) {
+		if(action.equals("edit"))
+		    url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
+	    else
+		return "Unknown action: " + action;
+	    } else  if (linkResource
 		&& (entry.getTypeHandler().isType("link")
 		    || entry.isFile() || entry.getResource().isUrl())) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
@@ -2519,7 +2497,6 @@ public class WikiManager extends RepositoryManager
             if ( !entry.getResource().isDefined()) {
                 return  getProperty(wikiUtil, props, ATTR_MESSAGE,"");
 	    }
-	    boolean full   = getProperty(wikiUtil, props, "full",false);
 	    boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
 	    String popupCaption = getProperty(wikiUtil, props, "popupCaption","");
 	    if (popup) {
@@ -2529,6 +2506,7 @@ public class WikiManager extends RepositoryManager
 	    String height = getProperty(wikiUtil, props,"height", (String) null);
 	    String path   = entry.getResource().getPath();
 	    String _path   = path.toLowerCase();
+	    boolean full   = getProperty(wikiUtil, props, "full",false);
 	    String imageUrl = null;
 	    if(entry.isImage()) {
 		imageUrl= entry.getTypeHandler().getEntryResourceUrl(request, entry);
@@ -2889,6 +2867,8 @@ public class WikiManager extends RepositoryManager
 	    return entry.getTypeHandler().getDescription();
         } else if (theTag.equals(WIKI_TAG_THIS)) {
 	    return entry.getId();
+        } else if (theTag.equals(WIKI_TAG_TOPENTRY)) {
+	    return getEntryManager().getRootEntry().getId();	    
         } else if (theTag.equals(WIKI_TAG_CHILDREN_COUNT)) {
 	    List<Entry> children = getEntries(request, wikiUtil,
 					      originalEntry, entry, props);
@@ -4724,7 +4704,7 @@ public class WikiManager extends RepositoryManager
 	    String style = getProperty(wikiUtil,props,"menuStyle","");
 	    if (addPrefix) 
 		style = "list-style-type:none;" + style;
-	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",30);
+	    int labelWidth = getProperty(wikiUtil,props,"labelWidth",40);
 	    sb.append(HU.open("span","class","ramadda-menutree"));
 	    int count =
 		doFullTree(request, wikiUtil, originalEntry, entry, props, true, doMenu, menuId,  
@@ -4981,6 +4961,39 @@ public class WikiManager extends RepositoryManager
         }
 
         return null;
+    }
+
+
+    private void makeAccessStatus(Request request, Entry entry, String who, StringBuilder sb) throws Exception {
+	boolean canView = getAccessManager().canDoView(request,entry);
+	boolean canGeo = getAccessManager().canDoGeo(request,entry);
+	boolean canFile = getAccessManager().canDoFile(request,entry);
+	boolean canExport = getAccessManager().canDoExport(request,entry);
+	boolean canEdit = getAccessManager().canDoEdit(request,entry);	    	    	    	    
+	String yes= HU.span("yes;"," style='color:green;font-weight:bold;' ");
+	String no = HU.span("no;"," style='color:red;font-weight:bold;' ");
+	sb.append("<div class=ramadda-access-status>");
+	sb.append(who +" user can: ");
+	sb.append(" view entry: " + (canView?yes:no));
+	sb.append(" access file: " + (canFile?yes:no));
+	sb.append(" export: " + (canExport?yes:no));	    
+	sb.append(" access location: " + (canGeo?yes:no));
+	sb.append(" edit: " + (canEdit?yes:no));	    
+	String bad="";
+	if(getAccessManager().canDoNew(request,entry)) {
+	    bad+=" do new entry. ";
+	}
+	if(getAccessManager().canDoEdit(request,entry)) {
+	    bad+= " edit entry. ";
+	}
+	if(getAccessManager().canDoDelete(request,entry)) {
+	    bad+= " delete entry. ";
+	}	    	    
+	if(stringDefined(bad)) {
+	    sb.append("<br>");
+	    HU.span(sb,who+" user can: "+bad, HU.style("background:red;padding:2px;border:1px solid #000;display:inline-block;"));
+	}
+	sb.append("</div>");
     }
 
 
