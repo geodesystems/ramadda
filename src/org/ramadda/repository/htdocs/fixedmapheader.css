@@ -15,7 +15,8 @@
 }
 
 
-.ramadda-header .ramadda-navbar {
+
+.ramadda-header-floating .ramadda-navbar, .ramadda-header .ramadda-navbar {
     background:#fff;
     border-radius:var(--default-radius);
     margin:4px;
