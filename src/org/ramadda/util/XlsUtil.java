@@ -135,10 +135,9 @@ public class XlsUtil {
                                 for (short col = firstCol;
                                         col < row.getLastCellNum(); col++) {
                                     Cell cell = row.getCell(col);
-                                    if (cell == null) {
-                                        break;
-                                    }
-				    String value = getCellValue(cell);
+				    //Don't skip null cells
+				    //                                    if (cell == null) {break;}
+				    String value = cell==null?"":getCellValue(cell);
                                     if (col > firstCol) {
                                         pw.print(",");
                                     }
@@ -148,7 +147,7 @@ public class XlsUtil {
                             }
 
                             break;
-                        }
+			}
 
                         pw.flush();
                         pw.close();
@@ -335,10 +334,10 @@ public class XlsUtil {
                             for (short col = firstCol;
                                     col < row.getLastCellNum(); col++) {
                                 HSSFCell cell = row.getCell(col);
-                                if (cell == null) {
-                                    break;
-                                }
-                                String value = cell.toString();
+				//Just keep adding values for null cells
+                                //if (cell == null) {break;}
+				
+                                String value = cell==null?"":cell.toString();
                                 if (col > firstCol) {
                                     pw.print(",");
                                 }
