@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed Feb 12 10:47:45 MST 2025";
+var build_date="RAMADDA build date: Thu Feb 13 15:15:37 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -15142,6 +15142,9 @@ function RecordField(props, source) {
         isFieldString: function() {
             return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldAbsoluteString: function() {
+            return this.type == "string";
+        },
         isFieldBoolean: function() {
             return this.type == "boolean";
 	},
@@ -18270,6 +18273,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.disabled) return false;
 	    return this.getField().isFieldEnumeration();
 	},
+	isFieldText: function() {
+	    if(this.isText) return true;
+	    if(this.disabled) return false;
+	    return this.getField().isFieldAbsoluteString();
+	},
 	isFieldDate: function() {
 	    if(this.disabled) return false;
 	    return this.getFieldType()=="date";
@@ -18395,6 +18403,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.mySearch = null;
 	    }
 //	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
+	},
+	getFilterValues:function() {
+	    if(!this.mySearch) this.prepareToFilter();
+	    return this.mySearch;
 	},
 	isRecordOk:function(record,debug) {
 	    let ok = true;
@@ -19275,10 +19287,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		});
 
 
-		if(this.getProperty(this.getId() +".filterSortCount") ||
+		let sortCount =this.getProperty(this.getId() +".filterSortCount",this.getProperty('filterSortCount'));
+		if(sortCount ||
 		   this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sort = this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',false));
-		    let sortCount = this.getProperty(this.getId() +".filterSortCount",!sort);
+		    if(!sort) 
+			sortCount  = this.getProperty(this.getId() +".filterSortCount",this.getProperty('filterSortCount',true));
 		    enumValues.forEach(e=>{
 			if(!Utils.isDefined(e.count)) e.count=0;
 		    });
@@ -32926,20 +32940,22 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
-            var pointData = this.getData();
+            let pointData = this.getData();
             this.allRecords = pointData.getRecords();
-            var pattern = this.getProperty("pattern");
+            let pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
 	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
 	    let input = "";
 	    if(!this.filters || this.filters.length==0) 
-		input += " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.domId(ID_SEARCH)]);
+		input += " " + HU.input("pattern", (pattern ? pattern : "") ,
+					[ATTR_PLACEHOLDER, "Search text",
+					 ATTR_ID, this.domId(ID_SEARCH)]);
 	    this.showShrink = this.getProperty("showShrink",false);
 	    if(this.showShrink) {
-		input += " " + HU.checkbox("shrink",[ID,this.domId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
+		input += " " + HU.checkbox("shrink",[ATTR_ID,this.domId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
 	    }
 
-            this.writeHtml(ID_TOP_RIGHT, HU.span([ID,this.domId(ID_LABEL)]," ") + input);
+            this.writeHtml(ID_TOP_RIGHT, HU.span([ATTR_ID,this.domId(ID_LABEL)]," ") + input);
             let _this = this;
 	    this.jq(ID_SHRINK).click(function() {
 		_this.doShrink = _this.jq(ID_SHRINK).is(':checked');
@@ -32983,12 +32999,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    this.records = records;
  	    this.recordToIndex = {};
 	    this.indexToRecord = {};
-            var pattern = this.getProperty("pattern");
+            let pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-	    var asHtml = this.getProperty("asHtml", true);
-            var addLineNumbers = this.getProperty("addLineNumbers", true);
-	    var labelTemplate = this.getProperty("labelTemplate","");
-	    var labelWidth = "10px";
+	    let asHtml = this.getProperty("asHtml", true);
+            let addLineNumbers = this.getProperty("addLineNumbers", true);
+	    let labelTemplate = this.getProperty("labelTemplate","");
+	    let labelWidth = "10px";
 	    if(labelTemplate == "") {
 		labelWidth = "1px";
 	    }
@@ -33114,8 +33130,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 }
 		rowAttrs.push(CLASS);
 		rowAttrs.push("display-raw-row");
-		var matches=patternMatch.matches(line);
-		var hasMatch = matches && patternMatch.hasPattern();
+		let matches=patternMatch.matches(line);
+		let hasMatch = matches && patternMatch.hasPattern();
 		if(hasMatch) {
 		    rowAttrs.push("matched");
 		    rowAttrs.push(true);
