@@ -176,6 +176,11 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.disabled) return false;
 	    return this.getField().isFieldEnumeration();
 	},
+	isFieldText: function() {
+	    if(this.isText) return true;
+	    if(this.disabled) return false;
+	    return this.getField().isFieldAbsoluteString();
+	},
 	isFieldDate: function() {
 	    if(this.disabled) return false;
 	    return this.getFieldType()=="date";
@@ -301,6 +306,10 @@ function RecordFilter(display,filterFieldId, properties) {
 		this.mySearch = null;
 	    }
 //	    console.log(this +"prepare:" + JSON.stringify(this.mySearch));
+	},
+	getFilterValues:function() {
+	    if(!this.mySearch) this.prepareToFilter();
+	    return this.mySearch;
 	},
 	isRecordOk:function(record,debug) {
 	    let ok = true;
@@ -1181,10 +1190,12 @@ function RecordFilter(display,filterFieldId, properties) {
 		});
 
 
-		if(this.getProperty(this.getId() +".filterSortCount") ||
+		let sortCount =this.getProperty(this.getId() +".filterSortCount",this.getProperty('filterSortCount'));
+		if(sortCount ||
 		   this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',true))) {
 		    let sort = this.getProperty(this.getId() +".filterSort",this.getProperty('filterSort',false));
-		    let sortCount = this.getProperty(this.getId() +".filterSortCount",!sort);
+		    if(!sort) 
+			sortCount  = this.getProperty(this.getId() +".filterSortCount",this.getProperty('filterSortCount',true));
 		    enumValues.forEach(e=>{
 			if(!Utils.isDefined(e.count)) e.count=0;
 		    });
