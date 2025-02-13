@@ -838,6 +838,9 @@ function RecordField(props, source) {
         isFieldString: function() {
             return this.type == "string" || this.type == "enumeration" || this.type == "multienumeration";
         },
+        isFieldAbsoluteString: function() {
+            return this.type == "string";
+        },
         isFieldBoolean: function() {
             return this.type == "boolean";
 	},
