@@ -2148,20 +2148,22 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
-            var pointData = this.getData();
+            let pointData = this.getData();
             this.allRecords = pointData.getRecords();
-            var pattern = this.getProperty("pattern");
+            let pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
 	    if(pattern) pattern = pattern.replace(/"/g,"&quot;");
 	    let input = "";
 	    if(!this.filters || this.filters.length==0) 
-		input += " " + HU.input("pattern", (pattern ? pattern : "") , ["placeholder", "Search text", ID, this.domId(ID_SEARCH)]);
+		input += " " + HU.input("pattern", (pattern ? pattern : "") ,
+					[ATTR_PLACEHOLDER, "Search text",
+					 ATTR_ID, this.domId(ID_SEARCH)]);
 	    this.showShrink = this.getProperty("showShrink",false);
 	    if(this.showShrink) {
-		input += " " + HU.checkbox("shrink",[ID,this.domId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
+		input += " " + HU.checkbox("shrink",[ATTR_ID,this.domId(ID_SHRINK)], this.getProperty("initialShrink", true)) +" Shrink ";
 	    }
 
-            this.writeHtml(ID_TOP_RIGHT, HU.span([ID,this.domId(ID_LABEL)]," ") + input);
+            this.writeHtml(ID_TOP_RIGHT, HU.span([ATTR_ID,this.domId(ID_LABEL)]," ") + input);
             let _this = this;
 	    this.jq(ID_SHRINK).click(function() {
 		_this.doShrink = _this.jq(ID_SHRINK).is(':checked');
@@ -2205,12 +2207,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
 	    this.records = records;
  	    this.recordToIndex = {};
 	    this.indexToRecord = {};
-            var pattern = this.getProperty("pattern");
+            let pattern = this.getProperty("pattern");
             if (pattern && pattern.length == 0) pattern = null;
-	    var asHtml = this.getProperty("asHtml", true);
-            var addLineNumbers = this.getProperty("addLineNumbers", true);
-	    var labelTemplate = this.getProperty("labelTemplate","");
-	    var labelWidth = "10px";
+	    let asHtml = this.getProperty("asHtml", true);
+            let addLineNumbers = this.getProperty("addLineNumbers", true);
+	    let labelTemplate = this.getProperty("labelTemplate","");
+	    let labelWidth = "10px";
 	    if(labelTemplate == "") {
 		labelWidth = "1px";
 	    }
@@ -2336,8 +2338,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 }
 		rowAttrs.push(CLASS);
 		rowAttrs.push("display-raw-row");
-		var matches=patternMatch.matches(line);
-		var hasMatch = matches && patternMatch.hasPattern();
+		let matches=patternMatch.matches(line);
+		let hasMatch = matches && patternMatch.hasPattern();
 		if(hasMatch) {
 		    rowAttrs.push("matched");
 		    rowAttrs.push(true);
