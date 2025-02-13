@@ -609,8 +609,9 @@ WikiEditor.prototype = {
     },
     insertAtCursor:function(value) {
 	value = Utils.decodeText(value);    
-	let sel = this.getEditor().getSelectedText();
-	if(sel) value = value+'\n' + sel;
+	//Not sure why we had this here
+	//	let sel = this.getEditor().getSelectedText();
+	//	if(sel) value = value+'\n' + sel;
 
 	if(this.popupShowing) {
 	    let popup = this.jq(this.ID_WIKI_POPUP_EDITOR)[0];
