@@ -1215,7 +1215,7 @@ public class GeoUtils {
 	place = getGeocodeCache().get(address);
 	if (place != null) {
 	    if (debug) {
-		System.err.println("\tfound in cached address list");
+		System.err.println("\tfound in cached address list:" + place);
 	    }
 	    return place;
         }
@@ -1278,9 +1278,10 @@ public class GeoUtils {
 		    place = new Place(name, latString, lonString);
 		}
 	    } catch(Exception exc) {
-		throw new IllegalArgumentException("Error geocoding address:" + address+" error:" + exc);
+		System.err.println("Geocode Error:" + url +" error:" + exc);
+		//throw new IllegalArgumentException("Error geocoding address:" + address+" error:" + exc);
 	    }
-		if (debug) {
+	    if (debug) {
                 System.err.println("\tgeocodeio:" + place);
             }
         }
