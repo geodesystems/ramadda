@@ -1891,7 +1891,13 @@ public class RowCollector extends Processor {
 		}
 		key = keySB.toString();
 	    } else if(uniqueIndices.size()==1) {
-		key  = values.get(uniqueIndices.get(0)).toString();
+
+		int idx = uniqueIndices.get(0);
+		if(idx<values.size()) {
+		    key  = values.get(idx).toString();
+		} else {
+		    key = "";
+		}
 	    } else {
 		key  ="";
 	    }
@@ -1941,11 +1947,19 @@ public class RowCollector extends Processor {
                     Row       newRow   = new Row();
                     newRows.add(newRow);
                     for (int i : uniqueIndices) {
-                        newRow.add(row.get(i));
+			if(row.indexOk(i)) {
+			    newRow.add(row.get(i));
+			} else {
+			    newRow.add("");
+			}
                     }
                     newRow.add(count.count);
                     for (int j : extraIndices) {
-                        newRow.add(row.get(j));
+			if(row.indexOk(j)) {
+			    newRow.add(row.get(j));
+			} else {
+			    newRow.add("");
+			}
                     }
                     continue;
                 }
