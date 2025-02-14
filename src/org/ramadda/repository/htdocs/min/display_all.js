@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 13 15:15:37 MST 2025";
+var build_date="RAMADDA build date: Thu Feb 13 17:50:41 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -19367,7 +19367,11 @@ function TextMatcher (pattern,myId) {
         } else {
             pattern.split(" ").map(p=>{
                 p = p.trim();
-                this.regexps.push(new RegExp("(" + p + ")","ig"));
+		try {
+                    this.regexps.push(new RegExp("(" + p + ")","ig"));
+		} catch(err) {
+		    console.log('Error creating pattern matcher:' + err,p);
+		}
             });
         }
     }   
@@ -31335,6 +31339,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_average}'},
 	{p:'highlightOnScroll',ex:'true'},
 	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'},
+
+        {p:'highlightFilterText',ex:'true',tt:'Highlight any filter text'},	
 	{p:'colorBackground',d:false, canCache:true},
 	{p:'addCopyToClipboard',ex:true,tt:'Add a link to copy the output to the clipboard'},
 	{p:'copyToClipboardDownloadFile',ex:'somefile.txt',tt:'Instead of copying to the clipboard download the file'}	
@@ -31408,6 +31414,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let selected = [];
 	    let summary = {};
 	    let goodRecords = [];
+	    let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 	    records.forEach(record=>{
 		if(uniqueFields.length>0) {
 		    var key= "";
@@ -31724,6 +31731,16 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    } else {
 			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
+		    if(matchers) {
+			let sv = String(s);
+			fields.forEach(field=>{
+			    matchers.forEach(h=>{
+				sv  = h.highlight(sv,field.getId());
+			    });
+			});
+			s = sv;
+		    }
+
 
 
 		    let macros = Utils.tokenizeMacros(s);
@@ -59647,6 +59664,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    let cellCnt = 0;
 	    let even=false;
+	    let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		even=!even;
@@ -59690,7 +59708,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
-		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 		fields.forEach((f,idx)=>{
 		    if(maxColumns>0 && idx>=maxColumns) return;
 		    cellCnt++;
