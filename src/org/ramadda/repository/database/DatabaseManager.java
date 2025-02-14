@@ -674,17 +674,17 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     public void delete(String table, Clause clause) throws Exception {
         Connection connection = getConnection();
         try {
-            SqlUtil.delete(connection, table, clause);
+	    delete(connection, table, clause);
         } finally {
             closeConnection(connection);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    public void delete(Connection connection, String table, Clause clause) throws Exception {
+	SqlUtil.delete(connection, table, clause);
+    }
+
+
     @Override
     public void shutdown() throws Exception {
         if (dataSource != null) {
