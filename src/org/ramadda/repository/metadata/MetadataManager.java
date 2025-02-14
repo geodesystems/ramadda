@@ -1568,18 +1568,6 @@ public class MetadataManager extends RepositoryManager {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param value _more_
-     * @param checkUnique _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean addMetadata(Request request, Entry entry, Metadata value,
                                boolean checkUnique)
             throws Exception {
@@ -1589,22 +1577,10 @@ public class MetadataManager extends RepositoryManager {
             return false;
         }
         metadata.add(value);
-
         return true;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fileWriter _more_
-     * @param doc _more_
-     * @param parent _more_
-     *
-     * @throws Exception On badness
-     */
     public void addMetadata(Request request, Entry entry,
                             FileWriter fileWriter, Document doc,
                             Element parent,boolean encode)
@@ -1621,35 +1597,10 @@ public class MetadataManager extends RepositoryManager {
         }
     }
 
-
-
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<MetadataHandler> getMetadataHandlers() {
         return metadataHandlers;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public MetadataHandler findMetadataHandler(Metadata metadata)
             throws Exception {
         MetadataHandler handler = handlerMap.get(metadata.getType());
@@ -2021,21 +1972,34 @@ public class MetadataManager extends RepositoryManager {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataChange(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
             Entry entry = getEntryManager().getEntry(request);
             Entry parent = getEntryManager().getParent(request, entry);
+
+            if (request.defined(ARG_ENTRY_TIMESTAMP)) {
+                String formTimestamp = request.getString(ARG_ENTRY_TIMESTAMP, "0");
+                String currentTimestamp = getEntryManager().getEntryTimestamp(entry);
+                if ( !Misc.equals(formTimestamp, currentTimestamp)) {
+                    StringBuilder sb        = new StringBuilder();
+                    String        dateRange = "";
+                    try {
+			dateRange = getDateHandler().parseDate(formTimestamp) + ":"
+			    + getDateHandler().parseDate(currentTimestamp);
+                    } catch (Exception ignore) {}
+                    sb.append(getPageHandler().showDialogError(
+							       msgLabel(
+								   "Error: The entry you are editing has been edited since the time you began the edit" + dateRange)));
+		    
+
+
+
+		    return  processMetadataForm(request, entry, sb);
+		}
+	    }		
+
+
+
             boolean canEditParent = (parent != null)
                                     && getAccessManager().canDoEdit(request,
                                         parent);
@@ -2402,16 +2366,6 @@ public class MetadataManager extends RepositoryManager {
 	}
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataView(Request request) throws Exception {
         long  t1    = System.currentTimeMillis();
         Entry entry = getEntryManager().getEntry(request);
@@ -2463,17 +2417,6 @@ public class MetadataManager extends RepositoryManager {
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataForm(Request request) throws Exception {
         Entry         entry = getEntryManager().getEntry(request);
         StringBuilder sb    = new StringBuilder();
@@ -2482,17 +2425,6 @@ public class MetadataManager extends RepositoryManager {
         return processMetadataForm(request, entry, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataForm(Request request, Entry entry,
                                       Appendable sb)
             throws Exception {
@@ -2524,6 +2456,8 @@ public class MetadataManager extends RepositoryManager {
 
             sb.append("\n");
             sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
+	    sb.append(HU.hidden(ARG_ENTRY_TIMESTAMP,
+				getEntryManager().getEntryTimestamp(entry)));
             sb.append("\n");
             String buttons = HU.buttons(
                                  HU.submit("Change"),
@@ -2602,17 +2536,6 @@ public class MetadataManager extends RepositoryManager {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataAddForm(Request request) throws Exception {
         StringBuilder sb    = new StringBuilder();
         Entry         entry = getEntryManager().getEntry(request);
@@ -2666,15 +2589,6 @@ public class MetadataManager extends RepositoryManager {
                 msg("Add Property"), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception On badness
-     */
     private void makeAddList(Request request, Entry entry, Appendable sb)
             throws Exception {
         List<String>   groups    = new ArrayList<String>();
@@ -2765,17 +2679,6 @@ public class MetadataManager extends RepositoryManager {
 	//        HU.makeAccordion(sb, titles, tabs);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processMetadataAdd(Request request) throws Exception {
         synchronized (MUTEX_METADATA) {
             Entry entry = getEntryManager().getEntry(request);
@@ -2794,7 +2697,7 @@ public class MetadataManager extends RepositoryManager {
 
 	    getEntryManager().metadataHasChanged(entry);
             getRepository().checkModifiedEntries(request,
-                    Misc.newList(entry));
+						 Misc.newList(entry));
 
             return new Result(request.makeUrl(URL_METADATA_FORM, ARG_ENTRYID,
                     entry.getId()));
@@ -2854,17 +2757,8 @@ public class MetadataManager extends RepositoryManager {
         return values;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @throws Exception On badness
-     */
     public void insertMetadata(Metadata metadata) throws Exception {
         distinctMap = null;
-
         DatabaseManager dbm = getDatabaseManager();
         String          lbl = metadata.getType();
         dbm.executeInsert(Tables.METADATA.INSERT, new Object[] {
@@ -2893,13 +2787,6 @@ public class MetadataManager extends RepositoryManager {
 	return clause;
     }
 
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @throws Exception On badness
-     */
     public void deleteMetadata(Entry entry,Metadata metadata) throws Exception {
 	MetadataType type = getType(metadata);
 	if(type!=null) {
