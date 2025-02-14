@@ -409,7 +409,8 @@ Change how entries are sorted. e.g., by name, by date, ascending, etc.
        >
       <help>
 <![CDATA[
-Specify a short hand alias for the entry. Will link to /repository/alias/&lt;alias/&gt;
+	 Specify a short hand alias for the entry. Will link to /repository/alias/&lt;alias/&gt;
+	 <br>Should be lower case with no spaces
 ]]>
 </help>
       <element name="Alias" />
