@@ -1995,7 +1995,7 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    private String getEntryTimestamp(Entry entry) {
+    public String getEntryTimestamp(Entry entry) {
         long changeDate = entry.getChangeDate();
 
         return "" + changeDate;
@@ -2334,7 +2334,7 @@ public class EntryManager extends RepositoryManager {
                     sb.append(
 			      getPageHandler().showDialogError(
 							       msg(
-								   "Error: The entry you are editing has been edited since the time you began the edit"
+								   "Error: The entry you are editing has been edited since the time you began the edit:<br> "
 								   + dateRange+"<p>Below is the text you were editing")));
 		    
 
@@ -7786,6 +7786,13 @@ public class EntryManager extends RepositoryManager {
         Connection connection = getDatabaseManager().getConnection();
         try {
             insertEntriesInner(request, entries, connection, isNew, callCheckModified);
+	} catch(Exception exc) {
+	    try {
+		connection.rollback();
+	    } catch(Exception rollbackException) {
+		getLogManager().logError("Error rolling back connection",rollbackException);
+	    }
+	    throw exc;
         } finally {
             getDatabaseManager().closeConnection(connection);
         }
@@ -7864,7 +7871,7 @@ public class EntryManager extends RepositoryManager {
             List<Metadata>  metadataList = entry.getMetadata(null);
             if (metadataList != null) {
                 if ( !isNew) {
-                    dbm.delete(Tables.METADATA.NAME,
+                    dbm.delete(connection, Tables.METADATA.NAME,
                                Clause.eq(Tables.METADATA.COL_ENTRY_ID,
                                          entry.getId()));
                 }
