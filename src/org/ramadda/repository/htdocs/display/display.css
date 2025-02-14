@@ -128,7 +128,7 @@ table.dataTable {
 }
 
 .display-filter-input, .display-filter textarea, .display-filter input, .display-filter select  {
-  font-size:80% !important;
+    font-size:80%;
 }
 
 .display-filter-popup-item {

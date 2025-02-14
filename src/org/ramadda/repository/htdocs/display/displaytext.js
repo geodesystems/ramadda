@@ -543,6 +543,8 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:'${&lt;field&gt;_average}'},
 	{p:'highlightOnScroll',ex:'true'},
 	{p:'scrollOnHighlight',ex:'true',d:'true',tt:'Scroll to the record when it is highlighted'},
+
+        {p:'highlightFilterText',ex:'true',tt:'Highlight any filter text'},	
 	{p:'colorBackground',d:false, canCache:true},
 	{p:'addCopyToClipboard',ex:true,tt:'Add a link to copy the output to the clipboard'},
 	{p:'copyToClipboardDownloadFile',ex:'somefile.txt',tt:'Instead of copying to the clipboard download the file'}	
@@ -616,6 +618,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    let selected = [];
 	    let summary = {};
 	    let goodRecords = [];
+	    let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 	    records.forEach(record=>{
 		if(uniqueFields.length>0) {
 		    var key= "";
@@ -932,6 +935,16 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    } else {
 			s= this.applyRecordTemplate(record, row,fields,s,props);
 		    }
+		    if(matchers) {
+			let sv = String(s);
+			fields.forEach(field=>{
+			    matchers.forEach(h=>{
+				sv  = h.highlight(sv,field.getId());
+			    });
+			});
+			s = sv;
+		    }
+
 
 
 		    let macros = Utils.tokenizeMacros(s);

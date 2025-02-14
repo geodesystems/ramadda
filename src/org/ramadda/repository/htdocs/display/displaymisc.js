@@ -1459,6 +1459,7 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 	    }
 	    let cellCnt = 0;
 	    let even=false;
+	    let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 	    records.every((record,recordIdx)=>{
 		if(numRecords>-1 && recordIdx>numRecords) return false;
 		even=!even;
@@ -1502,7 +1503,6 @@ function RamaddaHtmltableDisplay(displayManager, id, properties,type) {
 		}
 		this.recordMap[record.rowIndex] = record;
 		this.recordMap[record.getId()] = record;
-		let matchers = this.getHighlightFilterText()?this.getFilterTextMatchers():null;
 		fields.forEach((f,idx)=>{
 		    if(maxColumns>0 && idx>=maxColumns) return;
 		    cellCnt++;
