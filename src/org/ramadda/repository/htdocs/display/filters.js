@@ -1270,7 +1270,11 @@ function TextMatcher (pattern,myId) {
         } else {
             pattern.split(" ").map(p=>{
                 p = p.trim();
-                this.regexps.push(new RegExp("(" + p + ")","ig"));
+		try {
+                    this.regexps.push(new RegExp("(" + p + ")","ig"));
+		} catch(err) {
+		    console.log('Error creating pattern matcher:' + err,p);
+		}
             });
         }
     }   
