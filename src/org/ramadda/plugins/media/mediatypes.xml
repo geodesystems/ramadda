@@ -466,7 +466,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 -inset
 -toggle
 {{field name="rights"  prefix=":lheading Rights" box.maxheight="100"}}
-{{field name="usage"  prefix=":lheading Usage" box.maxheight="100"}}
+{{field name="ohms_usage"  prefix=":lheading Usage" box.maxheight="100"}}
 {{properties}}
 -col
 -row
