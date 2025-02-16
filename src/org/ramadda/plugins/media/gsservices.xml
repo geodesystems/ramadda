@@ -1,5 +1,6 @@
-<services command="${service.gs}" >
-   <service id="media_gs_thumbnail" label="Make an image from PDF" outputToStderr="true">
+<services command="${service.gs}"  	   icon="/icons/pdf.png">
+  <service id="media_gs_thumbnail" label="Make an image from PDF" outputToStderr="true"
+	   >
 <process_description><![CDATA[<wiki>
 {{description}}
 {{gallery}}
