@@ -267,7 +267,7 @@ public class Hipchat {
                             .getImageUrl(request, entry, true)));
             }
         }
-        List<Metadata> metadataList = entry.getMetadata(request);
+        List<Metadata> metadataList = repository.getMetadataManager().getMetadataList(request,entry);
         if (metadataList != null) {
             for (Metadata metadata : metadataList) {
                 //A hack for urls

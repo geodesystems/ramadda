@@ -2047,7 +2047,8 @@ public class TypeHandler extends RepositoryManager {
         TypeHandler parent  = this.parent;
 
         while (parent != null) {
-            if (parent.getClass().isAssignableFrom(myClass)) {
+	    //            if (myClass.isAssignableFrom(parent.getClass().isAssignableFrom(myClass)) {
+            if (myClass.isAssignableFrom(parent.getClass())) {
                 return true;
             }
             parent = parent.getParent();

@@ -19,6 +19,7 @@ import org.ramadda.repository.metadata.ContentMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.output.WikiConstants;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -1787,7 +1788,7 @@ public class EntryManager extends RepositoryManager {
 
 
         if (entry != null) {
-            getPageHandler().entrySectionOpen(request, entry, sb, "Edit");
+	    getEntryManager().addEntryEditHeader(request, entry,sb, getRepository().URL_ENTRY_FORM);
         } else {
             getPageHandler().entrySectionOpen(request, group, sb,
 					      ((typeHandler != null)
@@ -1920,6 +1921,9 @@ public class EntryManager extends RepositoryManager {
             HU.row(sb, HU.colspan(buttons, 2));
 
         }
+	HU.addFormChangeListener(sb,formId);
+
+
         HU.formTableClose(sb);
 	//Add some space here so the map popup flows ok
 	sb.append("<div style='height:100px;'></div>");
@@ -4306,6 +4310,26 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    public void addEntryEditHeader(Request request, Entry entry,Appendable sb, RequestUrl url) throws Exception {
+	List<String> links = new ArrayList<String>();
+	for(RequestUrl rurl:new RequestUrl[]{getRepository().URL_ENTRY_FORM,
+						 getMetadataManager().URL_METADATA_FORM,
+						 getMetadataManager().URL_METADATA_ADDFORM}) {
+	    if(rurl.equals(url)) {
+		links.add(HU.span(rurl.getLabel(),
+				  HU.clazz("ramadda-linksheader-on")));
+	    } else {
+		links.add(HU.span(HU.href(request.entryUrl(rurl,entry),rurl.getLabel()),
+				  HU.clazz("ramadda-linksheader-off")));
+	    }
+	}
+
+
+	String header = Utils.join(links,"<span class=\"ramadda-separator\">" + WikiUtil.NAVDELIM+"</span>");
+	getPageHandler().entrySectionOpen(request, entry, sb, header);
+    }
+
+
     public Result processEntryLinks(Request request) throws Exception {
         Entry entry = getEntry(request);
         if (entry == null) {
@@ -5020,7 +5044,7 @@ public class EntryManager extends RepositoryManager {
 			    getMetadataManager().copyMetadata(
 							      oldEntry, newEntry, oldMetadata));
 	}
-	newEntry.setMetadata(newMetadata);
+	getMetadataManager().setMetadataList(newEntry,newMetadata);
 	if(doMetadata) {
 	    List<Entry> entries = new ArrayList<Entry>();
 	    entries.add(newEntry);
@@ -6791,7 +6815,7 @@ public class EntryManager extends RepositoryManager {
 	finisher.accept(actionSB,"Edit");
 	finisher.accept(viewSB,"View");
 	finisher.accept(exportSB,"Links");
-	finisher.accept(otherSB,"Etc");	
+	finisher.accept(otherSB,"Actions");	
 	
         if (typeMask!=OutputType.TYPE_ALL && (typeMask & OutputType.TYPE_CHILDREN) != 0) {
             List<Entry> children = getChildrenSafe(request, entry);
@@ -7868,8 +7892,8 @@ public class EntryManager extends RepositoryManager {
 
             DatabaseManager dbm          = getDatabaseManager();
 
-            List<Metadata>  metadataList = entry.getMetadata(null);
-            if (metadataList != null) {
+            List<Metadata>  metadataList = getMetadataManager().getMetadataList(null,entry);
+            if (entry.getMetadataChanged() && metadataList != null) {
                 if ( !isNew) {
                     dbm.delete(connection, Tables.METADATA.NAME,
                                Clause.eq(Tables.METADATA.COL_ENTRY_ID,
@@ -7899,7 +7923,8 @@ public class EntryManager extends RepositoryManager {
                     metadataStmt.addBatch();
                     batchCnt++;
                 }
-            }
+		entry.setMetadataChanged(false);
+	    }
 
             if (batchCnt > 1000) {
                 //                    if(isNew)
@@ -9796,7 +9821,6 @@ public class EntryManager extends RepositoryManager {
 				    new String[] {Tables.ENTRIES.COL_CHANGEDATE},
 				    new Object[]{date});
 	entry.setChangeDate(date.getTime());
-	entry.setMetadata(null);
     }
 
 

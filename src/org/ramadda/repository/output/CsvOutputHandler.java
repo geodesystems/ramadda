@@ -144,9 +144,12 @@ public class CsvOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYCSV));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_MATLAB));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_R));
-            links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_PYTHON));	    	           }
+	    if(state.getEntry().getTypeHandler().isType("type_point")) {
+		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_MATLAB));
+		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_R));
+		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_PYTHON));
+	    }
+	}
     }
 
 

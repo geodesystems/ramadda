@@ -196,18 +196,6 @@ public class PointTypeHandler extends RecordTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
-
-	//Check for some of the files that act like CSV but aren't
-	/*
-	String resource = entry.getResource().getPath();
-	if(Utils.stringDefined(resource)) {
-	    resource = resource.toLowerCase();
-	    if(resource.endsWith(".pdf")) {
-		return;
-	    }
-	}
-	*/
-
         if (entry.getXmlNode() != null) {
             return;
         }
@@ -216,25 +204,21 @@ public class PointTypeHandler extends RecordTypeHandler {
             return;
         }
 
-
-        if (anySuperTypesOfThisType()) {
-            super.initializeNewEntry(request, entry, newType);
-            return;
-        }
-
-
-
 	if(!isNew(newType)) {
             return;
         }
-	initializeColumns(request, entry, newType);
-	addInitialMetadata(request, entry,false);
 
+	addInitialMetadata(request, entry,false);
+	super.initializeNewEntry(request, entry, newType);
     }
 
 
     @Override
     public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
+	//only do this once
+	if(entry.getTransientProperty("addedinitialmetadata")!=null) return;
+	entry.putTransientProperty("addedinitialmetadata","yes");
+
         log("initialize new entry:" + entry.getResource());
         File file = entry.getFile();
         if ((file != null) && !file.exists()) {
@@ -413,86 +397,18 @@ public class PointTypeHandler extends RecordTypeHandler {
     }
 
 
-    /**
-     * @Override
-     * public boolean processCommandView(org.ramadda.repository.harvester
-     *       .CommandHarvester.CommandRequest cmdRequest, Entry entry,
-     *           org.ramadda.repository.harvester.CommandHarvester harvester,
-     *           final List<String> args, final Appendable sb,
-     *           List<FileInfo> files)
-     *       throws Exception {
-     *   Request            request = cmdRequest.getRequest();
-     *   PointOutputHandler poh =
-     *       (PointOutputHandler) getRecordOutputHandler();
-     *   PointEntry pointEntry = (PointEntry) poh.doMakeEntry(request, entry);
-     *   File       processDir = getStorageManager().createProcessDir();
-     *   File imageFile = new File(IOUtil.joinDir(processDir,
-     *                        entry.getName() + "_timeseries.png"));
-     *
-     *   PointFormHandler.PlotInfo plotInfo = new PointFormHandler.PlotInfo();
-     *   //        System.err.println ("calling makeTimeSeriesImage");
-     *   long t1 = System.currentTimeMillis();
-     *   BufferedImage newImage =
-     *       poh.getPointFormHandler().makeTimeseriesImage(request,
-     *           pointEntry, plotInfo);
-     *   //        System.err.println ("Done makeTimeSeriesImage");
-     *   long t2 = System.currentTimeMillis();
-     *   //        System.err.println("File:  " + imageFile);
-     *   ImageUtils.writeImageToFile(newImage, imageFile);
-     *   long t3 = System.currentTimeMillis();
-     *   //        System.err.println ("Done writeImageToFile:" + (t3-t2));
-     *
-     *
-     *   FileInfo fileInfo = new FileInfo(imageFile);
-     *   if ( !isWikiText(entry.getDescription())) {
-     *       fileInfo.setDescription(entry.getDescription());
-     *   }
-     *   fileInfo.setTitle("Time series - " + entry.getName());
-     *   files.add(fileInfo);
-     *
-     *
-     *
-     *   //Now we get the process entry id
-     *   String processId = processDir.getName();
-     *   String processEntryId =
-     *       getStorageManager().getEncodedProcessDirEntryId(processId);
-     *
-     *   String entryUrl =
-     *       HtmlUtils.url(
-     *           request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-     *           ARG_ENTRYID,
-     *   // Use this if you want to return the process directory
-     *   //        processEntryId);
-     *   getStorageManager().getEncodedProcessDirEntryId(processId + "/"
-     *       + imageFile.getName()));
-     *
-     *   //        System.err.println("URL:" + entryUrl);
-     *   return true;
-     * }
-     */
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
 
-        if (anySuperTypesOfThisType()) {
+        if (entry.getTransientProperty("checkedpropertyfile")!=null) {
             super.initializeEntryFromForm(request, entry, parent, newEntry);
-
             return;
         }
 
+	entry.putTransientProperty("checkedpropertyfile","yes");
         //Check for an uploaded properties file and set the ARG_PROPERTIES 
         String propertyFileName =
             request.getUploadedFile(ARG_PROPERTIES_FILE);
@@ -501,11 +417,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 getStorageManager().readSystemResource(propertyFileName);
             request.put(getColumns().get(1).getEditArg(), contents);
         }
-
-        //        System.err.println ("Values after:" +         entry.getTypeHandler().getEntryValues(entry)[1]);
-
         super.initializeEntryFromForm(request, entry, parent, newEntry);
-
     }
 
 
@@ -521,12 +433,13 @@ public class PointTypeHandler extends RecordTypeHandler {
                                            boolean fromImport) {
         try {
             super.doFinalEntryInitialization(request, entry, fromImport);
-            if ( !anySuperTypesOfThisType()) {
+            /** if ( !anySuperTypesOfThisType()) {
+		Lets not do this for now since it is presumptous that the user wants to do this    
                 getRepository().getExtEditor().setBoundsFromChildren(request,
                         entry.getParentEntry());
                 getRepository().getExtEditor().setTimeFromChildren(request,
                         entry.getParentEntry(), null);
-            }
+            }		*/
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
@@ -544,21 +457,6 @@ public class PointTypeHandler extends RecordTypeHandler {
         return new PointMetadataHarvester();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param column _more_
-     * @param formBuffer _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param baseTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addColumnToEntryForm(Request request, Column column,
                                      Appendable formBuffer, Entry parentEntry,Entry entry,

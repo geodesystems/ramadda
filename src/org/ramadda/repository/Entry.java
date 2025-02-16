@@ -103,6 +103,8 @@ public class Entry implements Cloneable {
     private String treeId;
 
 
+    private boolean metadataChanged = false;
+
     /** the user (owner) */
     private User user;
 
@@ -289,7 +291,7 @@ public class Entry implements Cloneable {
 		    values[i] = HU.strictSanitizeString(o.toString());
 	    }
 	}
-	List<Metadata> mtd = getMetadata(null);
+	List<Metadata> mtd = getMetadataList(null);
 	if(mtd!=null) {
 	    for(Metadata m: mtd) {
 		m.sanitize();
@@ -453,13 +455,14 @@ public class Entry implements Cloneable {
             this.resource = new Resource(template.resource);
         }
 
-        if (template.getMetadata(null) != null) {
+        if (template.getMetadataList(null) != null) {
             List<Metadata> thisMetadata = new ArrayList<Metadata>();
-            for (Metadata metadata : template.getMetadata(null)) {
+            for (Metadata metadata : template.getMetadataList(null)) {
                 metadata.setEntryId(getId());
                 thisMetadata.add(metadata);
             }
             setMetadata(thisMetadata);
+	    setMetadataChanged(true);
         }
 
 
@@ -597,6 +600,25 @@ public class Entry implements Cloneable {
 
 
     }
+
+    /**
+       Set the MetadataChanged property.
+
+       @param value The new value for MetadataChanged
+    **/
+    public void setMetadataChanged (boolean value) {
+	metadataChanged = value;
+    }
+
+    /**
+       Get the MetadataChanged property.
+
+       @return The MetadataChanged
+    **/
+    public boolean getMetadataChanged () {
+	return metadataChanged;
+    }
+
 
 
     /**
@@ -1362,8 +1384,8 @@ public class Entry implements Cloneable {
      */
     public double getSouth(Request request) {
         return filterGeo(request,((south == south)
-                ? south
-			       : NONGEO));
+				  ? south
+				  : NONGEO));
     }
 
     /**
@@ -1406,8 +1428,8 @@ public class Entry implements Cloneable {
      */
     public double getNorth(Request request) {
         return filterGeo(request,((north == north)
-                ? north
-			       : NONGEO));
+				  ? north
+				  : NONGEO));
     }
 
     /**
@@ -1571,8 +1593,8 @@ public class Entry implements Cloneable {
      */
     public double getEast(Request request) {
         return filterGeo(request,((east == east)
-			       ? east
-			       : NONGEO));
+				  ? east
+				  : NONGEO));
     }
 
     /**
@@ -1591,8 +1613,8 @@ public class Entry implements Cloneable {
      */
     public double getWest(Request request) {
         return filterGeo(request,((west == west)
-			       ? west
-			       : NONGEO));
+				  ? west
+				  : NONGEO));
     }
 
 
@@ -2238,12 +2260,11 @@ public class Entry implements Cloneable {
      *
      * @return The Metadata
      */
-    public List<Metadata> getMetadata(Request request) {
-	return getMetadata(request, true);
-
+    public List<Metadata> getMetadataList(Request request) {
+	return getMetadataList(request, true);
     }
 
-    public List<Metadata> getMetadata(Request request,boolean checkAccess) {	
+    public List<Metadata> getMetadataList(Request request,boolean checkAccess) {	
 	if(checkAccess && metadata!=null && request!=null) {
 	    List<Metadata> restricted=new ArrayList<Metadata>();
 	    if(MetadataManager.debugGetMetadata) System.err.println("Entry getMetadata:" + this +" list:" +metadata);

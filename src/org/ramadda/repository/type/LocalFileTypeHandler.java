@@ -650,7 +650,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             entry.initWith(templateEntry);
         } else {
             //Tack on the metadata
-            entry.setMetadata(metadataList);
+            getMetadataManager().setMetadataList(entry,metadataList);
         }
         long t2 = System.currentTimeMillis();
 
@@ -663,17 +663,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entryNames _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeSynthEntry(Request request, Entry mainEntry,
                                 List<String> entryNames)
             throws Exception {

@@ -286,10 +286,6 @@ public class PageHandler extends RepositoryManager {
         return result;
     }
 
-
-
-
-
     
     public void addDisplayImports(Request request, Appendable sb)
 	throws Exception {

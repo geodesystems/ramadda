@@ -272,7 +272,7 @@ public class XmlOutputHandler extends OutputHandler {
             descNode.appendChild(XmlUtil.makeCDataNode(doc,
                     entry.getDescription(), encode));
         }
-        getMetadataManager().addMetadata(request, entry, fileWriter, doc,
+        getMetadataManager().addXmlMetadata(request, entry, fileWriter, doc,
                                          node,encode);
         entry.getTypeHandler().addToEntryNode(request, entry, fileWriter,
 					      node,encode);
