@@ -3313,6 +3313,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
         return js;
     }
 
+    public static void addFormChangeListener(Appendable sb,String formId)  throws Exception {
+	script(sb,call("HtmlUtils.checkInputChange", quote(formId)));
+    }
+
+
+
     /*
      * _more_
      *
