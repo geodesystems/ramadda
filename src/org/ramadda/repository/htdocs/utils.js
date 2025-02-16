@@ -3713,6 +3713,30 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     me:"HtmlUtils",
 
     loaded:{},
+    checkInputChange:function(formId) {
+	let changed = false;
+    	$(window).bind('beforeunload', (event)=>{
+	    if(changed) {
+		event.preventDefault();
+		event.returnValue= 'Changes have been made. Are you sure you want to exit?';
+	    }
+	});
+	let form = formId?jqid(formId):$('body');
+	form.find("input[type='submit']").on("click", function() {
+	    changed=false;
+	    console.log("button clicked");
+	});
+	
+	form.on('change','input, select, textarea',
+		function() {
+	    console.log('changed');
+	    changed = true;
+	});
+
+    },
+
+
+
     onReturn:function(obj,func) {
 	obj.keydown(function(event) {
 	    if (event.key === "Enter" || event.keyCode === 13) {
@@ -6780,6 +6804,8 @@ $( document ).ready(function() {
 
 
 Utils.areDisplaysReady()
+
+
 
 
 
