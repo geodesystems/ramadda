@@ -438,6 +438,8 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
             this.makePlot(plotData, layout);
         },
     });
+
+
 }
 
 
@@ -449,7 +451,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 	{p:'axisLineColor',d:'rgb(255,255,255)'},
 	{p:'xaxisBackground',d:'rgb(200, 200, 230)'},
 	{p:'yaxisBackground',d:'#ccc'},	
-	{p:'zaxisBackground',d:'rgb(230, 230,200)'}	
+	{p:'zaxisBackground',d:'rgb(230, 230,200)'},
+	{p:'chartBackground', d:'rgb(255,255,255,0)'}
     ];
     defineDisplay(this, SUPER, myProps, {
         initPlot: function(plot, myPlot) {
@@ -555,7 +558,8 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                 },
 		legend: {
 		    yanchor:"top", y:1,   xanchor: 'center', x: 0.5, orientation: 'h' 
-		}
+		},
+		paper_bgcolor: this.getChartBackground()
             };
             this.setDimensions(layout, 2);
 	    layout.showLegend=false;
@@ -1765,7 +1769,7 @@ function CombochartDisplay(displayManager, id, properties) {
 	{p:'xAxisShowLine',ex:''},
 	{p:'legendBackground',ex:''},
 	{p:'legendBorder',ex:''},
-	{p:'chartBackground',ex:''},
+	{p:'chartBackground',ex:'#ccc'},
 	{p:'plotBackground',ex:''},
 	{p:'marginLeft',ex:''},
 	{p:'marginRight',ex:''},
