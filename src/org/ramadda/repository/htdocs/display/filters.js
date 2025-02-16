@@ -506,12 +506,15 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 	    }
-	    if(this.isFieldEnumeration() && this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
+
+	    let showPopupSelect = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple')) ||
+		this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		HU.makeSelectTagPopup(jqid(widgetId),{
 		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
 		    makeButton:false,
-		    hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
+		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {

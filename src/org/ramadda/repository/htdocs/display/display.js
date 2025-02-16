@@ -1840,6 +1840,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
+	{p:'&lt;field&gt;.filterShowPopup',tt:'Show the popup dialog button',ex:true},
 	{p:'filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterDateSelects',
