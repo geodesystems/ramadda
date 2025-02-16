@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb 16 11:53:48 MST 2025";
+var build_date="RAMADDA build date: Sun Feb 16 12:39:32 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5867,6 +5867,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultiple',ex:true},
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
+	{p:'&lt;field&gt;.filterShowPopup',tt:'Show the popup dialog button',ex:true},
 	{p:'filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterDateSelects',
@@ -18603,12 +18604,15 @@ function RecordFilter(display,filterFieldId, properties) {
 		    });
 		}
 	    }
-	    if(this.isFieldEnumeration() && this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
+
+	    let showPopupSelect = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple')) ||
+		this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		HU.makeSelectTagPopup(jqid(widgetId),{
 		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
 		    makeButton:false,
-		    hide:false,after:true,buttonLabel:HU.getIconImage('fa-solid fa-list-check')});
+		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
 
 	    if(!this.hideFilterWidget && this.getProperty(this.getId()+".filterSuggest",false)) {
