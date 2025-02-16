@@ -34,12 +34,14 @@ ${imports}
      top:110px;
 }
 .sicangu-pageheader {
-      position:absolute;
-      top:10px;
-      right:10px;
-      font-size: 9pt;
-      /*font-size: min(2vw, 100%);*/
- }
+    line-height:0.8em;
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size: min(2vw, 80%);
+    padding:0px;
+}
+
 .sicangu-title {
     font-size: min(2vw, 120%);
 }
@@ -96,12 +98,19 @@ ${headfinal}
 <body>
 <div class="ramadda-header">
 <div style="position:absolute;left:10px;top:20px;top:50%;    transform: translateY(-50%);">
-<a href="${root}">
+<a href="https://www.rosebudsiouxtribe-nsn.gov/" title="Rosebud Sioux Tribe">
 <img class="ramadda-logo-image"  src="${root}/ocetisakowin/rosebudflag.png" style="width:var(--sicangu-logo-width);">
 </a>
 </div>
+<div style="position:absolute;left:110px;top:20px;top:50%;    transform: translateY(-50%);">
+<a href="${root}" title="Sicangu Climate Data Hub">
+<img class="ramadda-logo-image"  src="${root}/scc/scclogo.png" style="width:var(--sicangu-logo-width);">
+</a>
+</div>
+
 <div class="sicangu-pageheader">${pageheader}</div>
-<div class="sicangu-title" style="position:absolute;left:var(--sicangu-logo-width);margin-left:20px;bottom:0px;">
+<div class="sicangu-title"
+     style="position:absolute;left: 50%;transform: translateX(-50%);xleft:var(--sicangu-logo-width);xmargin-left:20px;bottom:0px;">
 <a href="${root}" style="text-decoration:none;xccolor:#fff;font-size:130%">
 Sicangu Climate Data Repository
 </a>
