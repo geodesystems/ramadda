@@ -47,12 +47,12 @@ isPath=true  showPathEndPoint=false pathColor=blue radius=3 fillColor=blue strok
 {{group  colorTable=blues}}
 +row
 +col-6
-{{display_3dscatter width="100%"  colorByFields="#" colorBy="temp.*|press.*|#"
+{{display_3dscatter chartBackground="#efefef" width="100%"  colorByFields="#" colorBy="temp.*|press.*|#"
 fields="latitude,longitude,alt.*|elev.*"}}
 -col
 +col-6
 {{display_map tooltip="${default}"
-height=400px isPath=true radius=6 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
+height=400px isPath=true pathWidth=8 radius=6 strokeWidth=0 colorBy=# colorByFields="#" colorBy="temp.*|press.*|#"}}
 -col
 -row
 +row tight=true
