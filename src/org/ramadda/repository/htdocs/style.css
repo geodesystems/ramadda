@@ -5046,8 +5046,8 @@ snippet-hide {
 
 .ramadda-linksheader-on, .ramadda-linksheader-off  {
     padding: 0px;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
     margin-left: 6px;
     margin-right: 6px;    
     display:inline-block;
@@ -5055,6 +5055,7 @@ snippet-hide {
 
 .ramadda-linksheader-on {
     background:#efefef;
+    border-radius: var(--default-radius);
 }
 
 
@@ -5155,7 +5156,7 @@ snippet-hide {
 }
 
 .ramadda-pagesearch-input {
-    border-radius: var(--default-radius);
+    border-radius
 }
 
 .pagesubtitle {
@@ -6115,6 +6116,7 @@ a.wiki-link-noexist {
 
 .ui-helper-reset, .ui-accordion .ui-accordion-header {
     font-size:var(--font-size);
+    line-height: 1.5em;
 }
 
 .ui-accordion-header a {
