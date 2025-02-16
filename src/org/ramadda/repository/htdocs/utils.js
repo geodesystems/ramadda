@@ -3724,12 +3724,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let form = formId?jqid(formId):$('body');
 	form.find("input[type='submit']").on("click", function() {
 	    changed=false;
-	    console.log("button clicked");
 	});
 	
 	form.on('change','input, select, textarea',
 		function() {
-	    console.log('changed');
 	    changed = true;
 	});
 
