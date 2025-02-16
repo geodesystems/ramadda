@@ -11,8 +11,10 @@
 <description><![CDATA[
 Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target="_help">Extract Text</a>
 ]]></description>
-          <arg value="ExtractText"/>
+          <arg value="export:text"/>
+          <arg value="-i"/>
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" label="Input PDF File" ></arg>
+          <arg value="-o"/>
           <arg value="${file}" file="${entry.file.base}.txt"></arg>
           <output type="file" pattern=".*\.txt"/>
     </service>
@@ -35,9 +37,10 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#extractText" target
 <description><![CDATA[
 Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target="_help">Extract Images</a>
 ]]></description>
-          <arg value="ExtractImages"/>
+          <arg value="export:images"/>
           <arg value="-prefix"/>
           <arg value="${file}"  file="${entry.file.base}"/>
+          <arg value="-i"/>
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
           <output type="file" pattern=".*(\.jpg|\.png)"/>
     </service>
@@ -53,26 +56,32 @@ Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target=
 <description><![CDATA[
 Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfToImage" target="_help">PDF to image</a>
 ]]></description>
-          <arg value="PDFToImage"/>
+          <arg value="render"/>
           <arg value="-outputPrefix"/>
           <arg value="${file.base}"  file="${entry.file.base}.jpg" filePattern=".*${unique}${entry.file.base}[0-9]+.jpg"/>
+          <arg value="-i"/>
           <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
           <output type="file" pattern=".*\.jpg"/>
    </service>
 
     <service id="media_pdfbox_pdfsplit" label="Split PDF" outputToStderr="true">
       <description><![CDATA[Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#pdfSplit" target="_help">PDF Split</a>]]></description>
-      <arg value="PDFSplit"/>
+      <arg value="split"/>
+      <arg value="-i"/>
       <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
-      <arg type="int" prefix="-split" label="Split" help="Number of pages per splitted part of the PDF"/>
+      <arg value="-split"/>
+      <arg type="int"  label="Split" help="Number of pages per splitted part of the PDF" default="1"/>
       <output type="type_document_pdf" pattern=".*\.pdf"/>
     </service>
 
    <service id="media_pdfbox_pdfencrypt" label="Encrypt PDF" outputToStderr="true">
      <description><![CDATA[Runs PDFBox  <a href="https://pdfbox.apache.org/commandline/#encrypt" target="_help">encrypt</a>]]></description>
-     <arg value="Encrypt"/>
-     <arg type="string" prefix="-U" label="Password" />
+     <arg value="encrypt"/>
+     <arg value="-U"/>
+     <arg type="string"  label="Password" />
+     <arg value="-i"/>
      <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" copy="true" label="Input PDF File"></arg>
+     <arg value="-o"/>
      <arg value="${file}" file="${entry.file.base}.pdf"></arg>
      <output type="type_document_pdf" pattern=".*\.pdf"/>
    </service>
