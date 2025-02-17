@@ -223,13 +223,13 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return this.display.getPropertyFromUrl(key, dflt,true);
 	},	
 	prepareToFilter: function() {
-//	    console.log(this+" prepareToFilter");
 	    this.mySearch = null;
 	    if(this.filterIDependOn) {
 		this.checkDependency();
 	    }
 
 	    if(!this.isEnabled()) {
+		console.log('not enabled');
 		return;
 	    }
 	    let value=null;
@@ -272,6 +272,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
+		console.log('values',values);
 		if(!values) {
 		    return;
 		}

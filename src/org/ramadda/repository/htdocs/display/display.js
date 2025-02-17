@@ -4270,6 +4270,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 //	    debug = this.type=='template';
 	    if(this.filters.length) {
+		console.log('filter');
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter(debug));
