@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 17 08:11:17 MST 2025";
+var build_date="RAMADDA build date: Mon Feb 17 12:43:36 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -39263,6 +39263,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'scaleRadiusMin',d:1},
 	{p:'scaleRadiusMax',d:10},	
 	{p:'scaleRadiusMaxPoints',d:5000},
+	{p:'radiusList',tt:'comma separated list of count:size',
+	 ex:'100:15,200:12,300:10'},
 	{p:'maxRadius',ex:'16',d:1000},
 	{p:'shape',d:'circle',ex:shapes,tt:'Use shape'},
 	{p:'shapeBy',tt:'field to shape by'},
@@ -42619,9 +42621,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 
-	    if(this.getScaleRadius()) {
+	    let radiusList = this.getRadiusList();
+	    let numLocs = 0;
+	    if(this.getScaleRadius()|| radiusList) {
 		let seen ={};
-		let numLocs = 0;
 		points.every(p=>{
 		    let key = p.x+"_"+p.y;
 		    if(!seen[key]) {
@@ -42630,14 +42633,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    }
 		    return true;
 		});
+	    }
+	    if(this.getScaleRadius()) {
 		let minRadius = this.getScaleRadiusMin();
 		let maxRadius=this.getScaleRadiusMax();
 		let maxLocs = this.getScaleRadiusMaxPoints();
 		let perc = Math.min(1.0,numLocs/maxLocs);
 		radius = Math.max(1,Math.round(maxRadius-(maxRadius-minRadius)*perc));
 	    }
-	    radius = Math.min(radius, this.getMaxRadius());
+	    if(radiusList) {
+		Utils.split(radiusList,',',true,true).every(tuple=>{
+		    let pair = Utils.split(tuple,':',true,true);
+		    if(pair.length!=2) return true;
+		    let cnt =+pair[0];
+		    if(numLocs<=cnt) {
+			radius = +pair[1];
+			return false;
+		    }
+		    return true;
+		});
+	    }
 
+
+	    radius = Math.min(radius, this.getMaxRadius());
             let strokeWidth = +this.getPropertyStrokeWidth();
             let strokeColor = this.getPropertyStrokeColor();
             let isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
@@ -42982,7 +43000,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			    lineOffset*=delta;
 			let ep = Utils.rotate(collisionPoint.x,collisionPoint.y,collisionPoint.x,collisionPoint.y-lineOffset,
 					      info.records.length*anglePer-180,true);
-			console.log('addline');
 			let line = this.getMap().createLine("line-" + idx, "", collisionPoint.y,collisionPoint.x, ep.y,ep.x, {strokeColor:CH.lineColor,strokeWidth:CH.lineWidth});
 
 			if(!info.visible) {
