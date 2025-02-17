@@ -220,6 +220,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
+	    key = this.getId()+'.'+ key;
 	    return this.display.getPropertyFromUrl(key, dflt,true);
 	},	
 	prepareToFilter: function() {
@@ -272,7 +273,6 @@ function RecordFilter(display,filterFieldId, properties) {
 		    value = [date1,date2]; 
 	    }  else {
 		values = this.getFieldValues();
-		console.log('values',values);
 		if(!values) {
 		    return;
 		}
@@ -513,7 +513,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		HU.makeSelectTagPopup(jqid(widgetId),{
-		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
+		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-right:4px;margin-bottom:0px;'>${widget}</span>",
 		    makeButton:false,
 		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
@@ -761,7 +761,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    labels.push([String(idx),op.label]);
 		});
 
-		let selected = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let selected = this.getPropertyFromUrl('fv',FILTER_ALL);
 		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
@@ -787,7 +787,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue =
-		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
@@ -964,8 +964,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getPropertyFromUrl(this.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getPropertyFromUrl(this.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl('fvmin',this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl('fvmax',this.getProperty("filterValueMax"));
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -1022,9 +1022,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
             } else {
-		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
+		let dfltValue = this.getPropertyFromUrl('fv',"");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
+		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push("width");
 		attrs.push(width);

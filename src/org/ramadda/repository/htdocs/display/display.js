@@ -1457,14 +1457,30 @@ function DisplayThing(argId, argProperties) {
 	    return null;
         },
         getPropertyFromUrl: function(key, dflt,checkKey) {
-	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
-	    if(fromUrl) return fromUrl;
+	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,
+					    'display'+ this.displayCount+'.' + key);
+	    if(Utils.stringDefined(fromUrl)) {
+//		console.log('from url full key:' + key + ' value:' + fromUrl);
+		return fromUrl;
+	    }
 	    if(checkKey) {
 		fromUrl = HU.getUrlArgument(key);
-		if(fromUrl) return fromUrl;
+		if(fromUrl) {
+//		    console.log('from url:' + key + ' value:' + fromUrl);
+		    return fromUrl;
+		}
 	    }
-	    return this.getProperty(key,dflt);
+	    let value = this.getProperty(key,dflt);
+//	    console.log('NOT from url:' + key + ' property is dflt:' + (value==dflt)+ ' value:' +value);
+	    return value;
+
+
 	},
+        addToDocumentUrl: function(key, value,skipPrefix) {
+	    HU.addToDocumentUrl(
+		(skipPrefix?'':'d'+ this.displayCount+'.') + key,value);
+	},
+
 	getPropertyFields: function(dflt) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
@@ -2137,10 +2153,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
-        addToDocumentUrl: function(key, value,skipPrefix) {
-	    HU.addToDocumentUrl(
-		(skipPrefix?'':"display"+ this.displayCount+".") + key,value);
-	},
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
@@ -4270,7 +4282,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 //	    debug = this.type=='template';
 	    if(this.filters.length) {
-		console.log('filter');
 		let newData = [];
 		let logic = this.getProperty("filterLogic","and");
 		this.filters.forEach(f=>f.prepareToFilter(debug));
@@ -7267,11 +7278,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
+
+		let urlKey = fieldId+".fv";
+		let urlValue = value;
+		if(input2) {
+		    if(id.endsWith('_min')) {
+			urlKey+='min';
+		    } else   if(id.endsWith('_max')) {
+			urlKey+='max';
+			urlValue = input2.val();
+		    }
+		}
 		if(this.getIsMasterFilter()) {
 		    //true=>don't add the display id prefix
-		    this.addToDocumentUrl(fieldId+".filterValue",value,true);
+		    this.addToDocumentUrl(urlKey,urlValue,true);
 		} else {
-		    this.addToDocumentUrl(fieldId+".filterValue",value);
+		    this.addToDocumentUrl(urlKey,urlValue);
 		}
 		let args = {
 		    id:id,
