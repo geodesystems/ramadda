@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Feb 16 12:39:32 MST 2025";
+var build_date="RAMADDA build date: Mon Feb 17 06:57:28 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5484,14 +5484,30 @@ function DisplayThing(argId, argProperties) {
 	    return null;
         },
         getPropertyFromUrl: function(key, dflt,checkKey) {
-	    let fromUrl = HU.getUrlArgument("display"+ this.displayCount+"." + key);
-	    if(fromUrl) return fromUrl;
+	    let fromUrl = HU.getUrlArgument('d'+this.displayCount+'.'+key,
+					    'display'+ this.displayCount+'.' + key);
+	    if(Utils.stringDefined(fromUrl)) {
+//		console.log('from url full key:' + key + ' value:' + fromUrl);
+		return fromUrl;
+	    }
 	    if(checkKey) {
 		fromUrl = HU.getUrlArgument(key);
-		if(fromUrl) return fromUrl;
+		if(fromUrl) {
+//		    console.log('from url:' + key + ' value:' + fromUrl);
+		    return fromUrl;
+		}
 	    }
-	    return this.getProperty(key,dflt);
+	    let value = this.getProperty(key,dflt);
+//	    console.log('NOT from url:' + key + ' property is dflt:' + (value==dflt)+ ' value:' +value);
+	    return value;
+
+
 	},
+        addToDocumentUrl: function(key, value,skipPrefix) {
+	    HU.addToDocumentUrl(
+		(skipPrefix?'':'d'+ this.displayCount+'.') + key,value);
+	},
+
 	getPropertyFields: function(dflt) {
 	    return this.getPropertyFromUrl(PROP_FIELDS,dflt);
 	},
@@ -6164,10 +6180,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
-        addToDocumentUrl: function(key, value,skipPrefix) {
-	    HU.addToDocumentUrl(
-		(skipPrefix?'':"display"+ this.displayCount+".") + key,value);
-	},
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
@@ -11293,11 +11305,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    return true;
 		});
 
+
+		let urlKey = fieldId+".fv";
+		let urlValue = value;
+		if(input2) {
+		    if(id.endsWith('_min')) {
+			urlKey+='min';
+		    } else   if(id.endsWith('_max')) {
+			urlKey+='max';
+			urlValue = input2.val();
+		    }
+		}
 		if(this.getIsMasterFilter()) {
 		    //true=>don't add the display id prefix
-		    this.addToDocumentUrl(fieldId+".filterValue",value,true);
+		    this.addToDocumentUrl(urlKey,urlValue,true);
 		} else {
-		    this.addToDocumentUrl(fieldId+".filterValue",value);
+		    this.addToDocumentUrl(urlKey,urlValue);
 		}
 		let args = {
 		    id:id,
@@ -18318,16 +18341,17 @@ function RecordFilter(display,filterFieldId, properties) {
 	    return v;
 	},
 	getPropertyFromUrl: function(key, dflt) {
+	    key = this.getId()+'.'+ key;
 	    return this.display.getPropertyFromUrl(key, dflt,true);
 	},	
 	prepareToFilter: function() {
-//	    console.log(this+" prepareToFilter");
 	    this.mySearch = null;
 	    if(this.filterIDependOn) {
 		this.checkDependency();
 	    }
 
 	    if(!this.isEnabled()) {
+		console.log('not enabled');
 		return;
 	    }
 	    let value=null;
@@ -18610,7 +18634,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
 		HU.makeSelectTagPopup(jqid(widgetId),{
-		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-bottom:0px;'>${widget}</span>",
+		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-right:4px;margin-bottom:0px;'>${widget}</span>",
 		    makeButton:false,
 		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
@@ -18858,7 +18882,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		    labels.push([String(idx),op.label]);
 		});
 
-		let selected = this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		let selected = this.getPropertyFromUrl('fv',FILTER_ALL);
 		let showLabel = this.getProperty(this.getId() +".showFilterLabel",this.getProperty("showFilterLabel",true));
 		let allName = this.getProperty(this.getId() +".allName",!showLabel?this.getLabel():"All");
 		let enums = Utils.mergeLists([[FILTER_ALL,allName]],labels);
@@ -18884,7 +18908,7 @@ function RecordFilter(display,filterFieldId, properties) {
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
 		let dfltValue = this.defaultValue =
-		    this.getPropertyFromUrl(this.getId() +".filterValue",FILTER_ALL);
+		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
 		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
@@ -19061,8 +19085,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    }
 		    cnt++;
 		});
-		let tmpMin = this.getPropertyFromUrl(this.getId() +".filterValueMin",this.getProperty("filterValueMin"));
-		let tmpMax = this.getPropertyFromUrl(this.getId() +".filterValueMax",this.getProperty("filterValueMax"));		
+		let tmpMin = this.getPropertyFromUrl('fvmin',this.getProperty("filterValueMin"));
+		let tmpMax = this.getPropertyFromUrl('fvmax',this.getProperty("filterValueMax"));
 		let minStyle = "";
 		let maxStyle = "";
 		let dfltValueMin = min;
@@ -19119,9 +19143,9 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 
             } else {
-		let dfltValue = this.getPropertyFromUrl(this.getId() +".filterValue","");
+		let dfltValue = this.getPropertyFromUrl('fv',"");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
+		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push("width");
 		attrs.push(width);
