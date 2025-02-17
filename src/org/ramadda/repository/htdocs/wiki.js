@@ -995,19 +995,19 @@ WikiEditor.prototype = {
 	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntry('Prompt prefix:',HU.textarea('',this.lastPromptPrefix??'',
-						      [ATTR_CLASS,'wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
+						      [ATTR_CLASS,'wiki-llm-input',ATTR_STYLE,'width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
 	    HU.formEntry('Prompt suffix:',
-			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input','style','width:500px;','id',this.domId('llm-prompt-suffix')])) +
+			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input',ATTR_STYLE,'width:500px;','id',this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
-	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
 
 	html+='<br>';
 	html+=HU.span(['id',this.domId('llm-call')],'Evaluate');	    
 	
-	html+=HU.div(['style','position:relative;'],
-		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-		     HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
-			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
+	html+=HU.div([ATTR_STYLE,'position:relative;'],
+		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		     HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
+			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:100px;'])));
 
 
 
@@ -1103,7 +1103,7 @@ WikiEditor.prototype = {
     },    
 
     doColor: function (event) {
-	let html = HU.tag("input",['style',HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
+	let html = HU.tag("input",[ATTR_STYLE,HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
 	html+= HU.div([ATTR_CLASS,'ramadda-buttons'],
 		      HU.span([ID,this.domId("color_apply")],"Apply") + SPACE1 +
 		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
@@ -1169,19 +1169,28 @@ WikiEditor.prototype = {
 	    } else {
 		let left = Utils.join([
 		    HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',[ATTR_TITLE,'Preview Again'])),
-		    HU.checkbox('',[TITLE,'Live Preview',ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
-		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Wordcount',ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
+		    HU.checkbox('',[ATTR_TITLE,'Live Preview',
+				    ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
+		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,
+			     ATTR_TITLE,'Wordcount',
+			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
-		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Copy',ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
-		    HU.span([CLASS, CLASS_CLICKABLE,TITLE,'Download',ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
+		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,ATTR_TITLE,'Copy',
+			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
+		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,TITLE,'Download',
+			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
 		],SPACE2);
 
-		let right  = HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)], HtmlUtils.getIconImage('fa-window-close',[ATTR_TITLE,'Close Preview']));
+		let right  = HU.span([ATTR_CLASS, CLASS_CLICKABLE,
+				      ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)],
+				     HtmlUtils.getIconImage('fa-window-close',[ATTR_TITLE,'Close Preview']));
 
-		let bar = HtmlUtils.div([CLASS,'ramadda-menubar','style','xtext-align:center;width:100%;border:1px solid #ccc'],
+		let bar = HtmlUtils.div([ATTR_CLASS,'ramadda-menubar',
+					 ATTR_STYLE,'xtext-align:center;width:100%;border:1px solid #ccc'],
 					HU.leftRight(left,right));
 
-		html = HtmlUtils.div([ID,this.domId(this.ID_WIKI_PREVIEW_INNER), CLASS,'wiki-editor-preview-inner'], html);
+		html = HtmlUtils.div([ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_INNER),
+				      ATTR_CLASS,'wiki-editor-preview-inner'], html);
 		html = bar + html;
 		let preview = $("#"+this.domId(this.ID_WIKI_PREVIEW));
 		try {
@@ -1311,32 +1320,36 @@ WikiEditor.prototype = {
 	let display = result.display;
 
 	if(blocks.length==0) return;
-	let menu =  HU.open('div',[CLASS,'wiki-editor-popup','style','min-width:400px;']);
+	let menu =  HU.open('div',[ATTR_CLASS,'wiki-editor-popup',ATTR_STYLE,'min-width:400px;']);
 	if(!title) {
 	    title = Utils.makeLabel(tagInfo.tag) +' Properties';
 	}
-	let search =  HU.span(['id',this.domId('searchattributes'),CLASS,'wiki-popup-menu-header ramadda-clickable',ATTR_TITLE,'Search attributes'],HU.getIconImage('fa-binoculars'));
-	let edit =  HU.span(['id',this.domId('edittag'),CLASS,'wiki-popup-menu-header ramadda-clickable',ATTR_TITLE,'Edit tag'],HU.getIconImage('fas fa-edit'));
+	let search =  HU.span([ATTR_ID,this.domId('searchattributes'),
+			       ATTR_CLASS,'wiki-popup-menu-header ramadda-clickable',
+			       ATTR_TITLE,'Search attributes'],HU.getIconImage('fa-binoculars'));
+	let edit =  HU.span([ATTR_ID,this.domId('edittag'),
+			     ATTR_CLASS,'wiki-popup-menu-header ramadda-clickable',
+			     ATTR_TITLE,'Edit tag'],HU.getIconImage('fas fa-edit'));
 	menu += HU.div([CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId('entrieslist');
-	    menu +=HU.toggleBlock('Entries', HU.div([ID,id,CLASS,'wiki-editor-popup-items'],'Loading ...'));
+	    menu +=HU.toggleBlock('Entries', HU.div([ATTR_ID,id,ATTR_CLASS,'wiki-editor-popup-items'],'Loading ...'));
 	    this.handleEntriesPopup(ids,id);
 	}	
 
 
 	Utils.splitList(blocks,5).forEach(blocks=>{
-	    menu += HU.open('div',[CLASS,'wiki-editor-popup-section']);
+	    menu += HU.open('div',[ATTR_CLASS,'wiki-editor-popup-section']);
 	    blocks.forEach(block=>{
 		if(typeof block=='string') {
 		    menu+=block;
 		    return;
 		}
 		let title = block.title;
-		title = HU.div([CLASS,'wiki-editor-popup-header'], title)
+		title = HU.div([ATTR_CLASS,'wiki-editor-popup-header'], title)
 		let contents  = block.items.join('');
-		contents = HU.div([CLASS,'wiki-editor-popup-items'],contents);
+		contents = HU.div([ATTR_CLASS,'wiki-editor-popup-items'],contents);
 		menu +=HU.toggleBlock(block.title, contents);
 	    });
 	    menu += HU.close('div');
@@ -1403,13 +1416,19 @@ WikiEditor.prototype = {
 
 
 	let width =$(window).width()-100;
-	let html = HU.div([ID,this.domId("wiki-editor-popup"),CLASS,"wiki-editor-editor"],
+	let html = HU.div([ATTR_ID,this.domId("wiki-editor-popup"),
+			   ATTR_CLASS,"wiki-editor-editor"],
 			  menubar +
-			  HU.textarea("",contents,["spellcheck","false",STYLE,HU.css('width',width+'px','height','300px'),ID,this.domId(this.ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
-			  HU.div([STYLE,HU.css("text-align","center","padding","4px")],
-				 HU.span([TITLE,"Tidy the text",ID,this.domId(this.ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
-				 HU.span([TITLE,"Compact the text",ID,this.domId(this.ID_WIKI_POPUP_COMPACT)], HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
-				 HU.span([ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel")));
+			  HU.textarea("",contents,["spellcheck","false",
+						   ATTR_STYLE,HU.css('width',width+'px','height','300px'),
+						   ATTR_ID,this.domId(this.ID_WIKI_POPUP_EDITOR),"xrows","10","xcols","120"]) + "<br>" +
+			  HU.div([ATTR_STYLE,HU.css("text-align","center","padding","4px")],
+				 HU.span([ATTR_TITLE,"Tidy the text",
+					  ATTR_ID,this.domId(this.ID_WIKI_POPUP_TIDY)],HU.getIconImage("fas fa-broom")) + SPACE1 +
+				 HU.span([ATTR_TITLE,"Compact the text",
+					  ATTR_ID,this.domId(this.ID_WIKI_POPUP_COMPACT)],
+					 HU.getIconImage("fas fa-snowplow")) + SPACE1 +								 HU.span([ATTR_ID,this.domId(this.ID_WIKI_POPUP_OK)],"Ok") + SPACE1 +
+				 HU.span([ATTR_ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel")));
 
 	let dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
 				    sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
@@ -1493,11 +1512,12 @@ WikiEditor.prototype = {
 	    all+=items;
 	    all+="</div>";
 	});
-	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search','id',_this.domId('allsearch'),'width','10'])) +
+	all = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search',
+					ATTR_ID,_this.domId('allsearch'),'width','10'])) +
 	    HU.div([ATTR_ID,_this.domId('allsearch_corpus'),
 		    ATTR_CLASS,'wikieditor-menu-popup',
 		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
-	all  = HU.div(['style','margin:5px;'], all);
+	all  = HU.div([ATTR_STYLE,'margin:5px;'], all);
 	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
 				    sticky:true,draggable:true,modal:model});
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
@@ -1573,7 +1593,7 @@ WikiEditor.prototype = {
     
     showEntryPopup:function(entryId) {
 	let entryDiv = HU.getUniqueId('');
-	let message= HU.div(['id',entryDiv,'style',HU.css('display','inline-block')]);
+	let message= HU.div([ATTR_ID,entryDiv,ATTR_STYLE,HU.css('display','inline-block')]);
 
 	this.showMessage(message);
 	this.showingEntryPopup=true;
@@ -1716,7 +1736,9 @@ WikiEditor.prototype = {
 	    let tooltip = type.tooltip??(type.label?HU.b(type.label):'');
 	    tooltip = tooltip.replace(/"/g,"&quot;");
 	    let click = "WikiUtil.insertDisplayText('" + id + "','" + type.type+"')";
-	    let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[CLASS,"display-link ",TITLE,tooltip,"onclick", click]));
+	    let link = HU.div(['data-category',category,'data-corpus',type.label+' ' + tooltip,
+			       ATTR_CLASS,"wiki-editor-popup-link"],HU.href("#",type.label,[ATTR_CLASS,"display-link ",
+											    ATTR_TITLE,tooltip,"onclick", click]));
 	    links[category].push(link);
         });
 	let menuTags = '';
@@ -1726,9 +1748,10 @@ WikiEditor.prototype = {
 	    let menuItems = Utils.join(links[cat],"<div>\n");
 	    menuTags+=  HU.div([ATTR_STYLE,"vertical-align:top;margin-right4px;display:inline-block;"],
 			       Utils.join(links[cat],""));	    
-	    menu += HU.td(['data-category',cat,CLASS,'wiki-editor-display-category'],HU.div([STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
+	    menu += HU.td(['data-category',cat,ATTR_CLASS,'wiki-editor-display-category'],
+			  HU.div([ATTR_STYLE,'margin-right:5px;'], HU.b(cat)) +"<div style='margin-right:5px;max-height:250px;overflow-y:auto;'>" + menuItems);
         }
-	menu = HU.div([ID,"wiki-display-popup",STYLE,"font-size:10pt;width:800px;"], menu);
+	menu = HU.div([ATTR_ID,"wiki-display-popup",ATTR_STYLE,"font-size:10pt;width:800px;"], menu);
 	this.displaysText = menuTags;
 
 
@@ -1736,11 +1759,12 @@ WikiEditor.prototype = {
 			      ATTR_CLASS,CLASS_CLICKABLE,
 			      ATTR_ID,this.domId('expandwikimenu')], 
 			     HU.getIconImage("fas fa-maximize"));
-	let header = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search','id',this.domId('displaysearch'),'width','10'])+
+	let header = HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Search',
+					       ATTR_ID,this.domId('displaysearch'),ATTR_WIDTH,'10'])+
 			       HU.space(2) + expand);
 
 
-	let contents = HU.div(['style','margin:10px;'],
+	let contents = HU.div([ATTR_STYLE,'margin:10px;'],
 			      header+ HU.div([ATTR_ID,this.domId('expandedwikimenu')]) +
 			      HU.div([ATTR_ID,this.domId('unexpandedwikimenu')],menu));
 
@@ -1878,8 +1902,8 @@ WikiEditor.prototype = {
 	if(this.displaysText)
 	    popup+='<thin_hr>' +
 	    HU.center(HU.b("Data Displays")) +this.displaysText;
-	popup =HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Tag','id', this.domId('tagsearch'),
-					 'style','margin-top:4px;','width','10'])) + popup;
+	popup =HU.center(HU.input('','',[ATTR_PLACEHOLDER,'Find Tag',ATTR_ID, this.domId('tagsearch'),
+					 ATTR_STYLE,'margin-top:4px;','width','10'])) + popup;
 	popup = HU.div([ATTR_STYLE,HU.css('width','600px',
 					  'height','300px',
 					  'max-height','300px','overflow-y','auto')],popup);
@@ -2320,7 +2344,7 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	    return;
 	}
 	if(tag.info) {
-	    block.items.push(HU.div([CLASS, itemClass], "<i>"+tag.info+"</i>"));
+	    block.items.push(HU.div([ATTR_CLASS, itemClass], "<i>"+tag.info+"</i>"));
 	    return;
 	}
 	if(!tag.p)  {
@@ -2356,7 +2380,8 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	    }
 	    if(id)
 		label = HtmlUtils.onClick(call,label);
-	    block.items.push(HU.div(['data-block-index',block.index,'data-corpus',corpus,CLASS,itemClass,TITLE,tag.tt||"",'data-attribute',attr], label));
+	    block.items.push(HU.div(['data-block-index',block.index,'data-corpus',corpus,
+				     ATTR_CLASS,itemClass,ATTR_TITLE,tag.tt||"",'data-attribute',attr], label));
 	} else {
 	    console.log("no attribute block");
 	}
@@ -2372,7 +2397,9 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 
 function getWikiEditorMenuBar(blocks,id, prefix) {
     let menu  = "";
-    menu += HU.tag(TAG_LI, [],HU.div(['id','searchattributes',CLASS,"wiki-popup-menu-header ramadda-clickable",'title','Search attributes'],HU.getIconImage('fa-binoculars')));
+    menu += HU.tag(TAG_LI, [],HU.div([ATTR_ID,'searchattributes',
+				      ATTR_CLASS,"wiki-popup-menu-header ramadda-clickable",
+				      ATTR_TITLE,'Search attributes'],HU.getIconImage('fa-binoculars')));
     blocks.forEach((block,idx)=>{
 	if(typeof block=="string") {
 	    //	    console.log(block);
@@ -2388,9 +2415,9 @@ function getWikiEditorMenuBar(blocks,id, prefix) {
 	}
 	if(block.items.length==0) return
 	let sub = Utils.wrap(block.items,"<li>","");
-	menu += HU.tag(TAG_LI, [],HU.div([CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [CLASS,"wiki-popup-menu-item"], sub));
+	menu += HU.tag(TAG_LI, [],HU.div([ATTR_CLASS,"wiki-popup-menu-header"],title) + HU.tag("ul", [ATTR_CLASS,"wiki-popup-menu-item"], sub));
     });
-    let menubar = HU.div([CLASS,"wiki-popup-menubar",  ATTR_ID, id],
+    let menubar = HU.div([ATTR_CLASS,"wiki-popup-menubar",  ATTR_ID, id],
 			 HU.tag("ul", [ATTR_ID, id+"_inner", ATTR_CLASS, "sf-menu"], menu))
     return menubar;
 }
@@ -2528,20 +2555,20 @@ Transcriber.prototype = {
 	    });
 	    let html = '';
 	    let controls =HU.hbox([
-		HU.span([ATTR_TITLE,'Start recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
-		HU.span([ATTR_TITLE,'Transcribe recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
+		HU.span([ATTR_TITLE,'Start recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_play')],HU.getIconImage('fa-solid fa-microphone fa-gray')),
+		HU.span([ATTR_TITLE,'Transcribe recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_pen')],HU.getIconImage('fa-solid fa-pen fa-gray')),
 		HU.b(' Time: ')+
-		    HU.div(['style',HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),'id',this.domId('transcribe_label')],'0 seconds'),
-		HU.span([ATTR_TITLE,'Delete recording',ATTR_CLASS,CLASS_CLICKABLE,'id',this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
+		    HU.div([ATTR_STYLE,HU.css('display','inline-block','text-align','right','width','150px','xborder','var(--basic-border)'),ATTR_ID,this.domId('transcribe_label')],'0 seconds'),
+		HU.span([ATTR_TITLE,'Delete recording',ATTR_CLASS,CLASS_CLICKABLE,ATTR_ID,this.domId('transcribe_delete')],HU.getIconImage('fa-solid fa-delete-left fa-gray')),
 	    ],HU.css('margin-right','5px'));
 
 	    let right =    HU.checkbox('',
-				       ['id',this.domId('transcribe_sendtochat'),
+				       [ATTR_ID,this.domId('transcribe_sendtochat'),
 					ATTR_TITLE,'Send to LLM'],
 				       false,'Send to LLM');
 	    right+=SPACE2;
 	    right+= HU.checkbox(this.domId('transcribe_addfile'),
-				['id',this.domId('transcribe_addfile'),
+				[ATTR_ID,this.domId('transcribe_addfile'),
 				 ATTR_TITLE,'Add audio file as entry'],
 				false,'Add file');
 	    if(this.opts.addExtra)
@@ -2549,10 +2576,10 @@ Transcriber.prototype = {
 	    else
 		html=controls;
 
-	    html+=HU.div(['style','position:relative;'],
-			 HU.textarea('','',[ATTR_PLACEHOLDER,'','id',this.domId('transcribe_text'), 'rows',6,'cols',80, 'style','border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-			 HU.div(['style','display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('transcribe_loading')],
-				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),['style','width:100px;'])));
+	    html+=HU.div([ATTR_STYLE,'position:relative;'],
+			 HU.textarea('','',[ATTR_PLACEHOLDER,'',ATTR_ID,this.domId('transcribe_text'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+			 HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);',ATTR_ID,this.domId('transcribe_loading')],
+				HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:100px;'])));
 
 
 	    html+=HU.buttons([HU.span([ATTR_CLASS,CLASS_DIALOG_BUTTON,'append','true'],this.opts.appendLabel),
