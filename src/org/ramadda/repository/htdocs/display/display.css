@@ -387,8 +387,7 @@ table.dataTable {
 
 .display-header-span {
     display:inline-block;
-    line-height:1.25em;
-    /**text-align:center; **/
+    line-height:1.75em;
 }
 
 .display-header-span:empty {
