@@ -7136,6 +7136,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    } else {
 		let style = HU.css('line-height','0px');
 		if(this.getHeaderCenter(true)) style +=HU.css('text-align','center');
+		else style +=HU.css('text-align','left');		
 		header2=HU.div([STYLE,style],   header2);
 	    }
 	    header2 = HU.leftRightTable(header2,
