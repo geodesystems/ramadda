@@ -325,7 +325,9 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 	this.handleMouseUp(e);
     });
     this.editor.container.addEventListener("dblclick", (e) =>{
-    	this.handleMouseUp(e,null, true);
+	if(e.shiftKey) {
+    	    this.handleMouseUp(e,null, true);
+	}
     });    
     this.editor.container.addEventListener("mouseleave", (e) => {
 	this.handleMouseLeave(e);
