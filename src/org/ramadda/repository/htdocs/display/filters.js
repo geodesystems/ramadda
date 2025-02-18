@@ -786,10 +786,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		widget = HU.select("",attrs,enums,this.dflt);
 	    } else   if(this.isFieldEnumeration()) {
 		if(debug) console.log("\tis enumeration");
-		let dfltValue = this.defaultValue =
+		let filterValue = this.getProperty(this.getId()+".filterValue");
+		let dfltValue = this.defaultValue = filterValue?filterValue:
 		    this.getPropertyFromUrl('fv',FILTER_ALL);
                 let enums = this.getEnums(records);
-		let attrs= ["style",widgetStyle, "id",widgetId,"fieldId",this.getId()];
+		let attrs= [ATTR_STYLE,widgetStyle, ATTR_ID,widgetId,"fieldId",this.getId()];
 		if(this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple'))) {
 		    attrs.push("multiple");
 		    attrs.push("");
@@ -799,8 +800,11 @@ function RecordFilter(display,filterFieldId, properties) {
 		    dfltValue = dfltValue.split(",");
 		}
 
+
 		if(this.displayType!="menu") {
 		    if(debug) console.log("\tnot menu");
+
+
 		    if(!includeAll && dfltValue == FILTER_ALL) dfltValue = enums[0].value;
 		    let buttons = "";
 		    let colorMap = Utils.parseMap(this.getProperty(this.getId() +".filterColorByMap"));
@@ -824,7 +828,7 @@ function RecordFilter(display,filterFieldId, properties) {
 			    imageAttrs.push("50");
 			}
 			
-			imageAttrs.push("style");
+			imageAttrs.push(ATTR_STYLE);
 			imageAttrs.push(this.getProperty(this.getId() +".filterImageStyle","border-radius:50%;"));
 		    }
 		    for(let j=0;j<enums.length;j++) {
@@ -859,23 +863,23 @@ function RecordFilter(display,filterFieldId, properties) {
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style, "data-value",v,"title",label],
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style, "data-value",v,"title",label],
 						       HtmlUtils.image(image,imageAttrs));
 			    } else {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz,"style",style,"data-value",v,"title",label],label);
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style,"data-value",v,"title",label],label);
 			    }
 			} else {
-			    buttons+=HtmlUtils.div(["fieldId",this.getId(),"class",clazz, "style",style,"data-value",v],label);
+			    buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz, ATTR_STYLE,style,"data-value",v],label);
 			}
 			buttons+="\n";
 		    }
 
 
 		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
-			buttons+=HtmlUtils.div(["class","display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
+			buttons+=HtmlUtils.div([ATTR_CLASS,"display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= this.prefix + 
-			HtmlUtils.div(["data-value",dfltValue,"class","display-filter-items","id",widgetId,"isButton","true", "fieldId",
+			HtmlUtils.div(["data-value",dfltValue,ATTR_CLASS,"display-filter-items","id",widgetId,"isButton","true", "fieldId",
 				       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
@@ -1024,7 +1028,7 @@ function RecordFilter(display,filterFieldId, properties) {
             } else {
 		let dfltValue = this.getPropertyFromUrl('fv',"");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),"class","display-filter-input"];
+		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push("width");
 		attrs.push(width);
@@ -1068,7 +1072,7 @@ function RecordFilter(display,filterFieldId, properties) {
 		if(vertical) {
 		    widget = HtmlUtils.div([],(showLabel?widgetLabel:"") + widget+this.suffix);
 		} else {
-		    widget = HtmlUtils.div(["style","display:inline-block;"],(showLabel?widgetLabel:"") + widget+this.suffix);
+		    widget = HtmlUtils.div([ATTR_STYLE,"display:inline-block;"],(showLabel?widgetLabel:"") + widget+this.suffix);
 		}
 	    }
 	    if(!vertical)
