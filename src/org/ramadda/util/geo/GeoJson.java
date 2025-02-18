@@ -572,6 +572,22 @@ public class GeoJson extends JsonUtil {
             if (pts != null) {
                 pts.add(p2);
             }
+        } else if (type.equals("MultiPoint")) {
+            for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                JSONArray coords2 = coords1.getJSONArray(idx1);
+		double      lon = coords2.getDouble(0);
+		double      lat = coords2.getDouble(1);
+		List<Point> p2  = new ArrayList<Point>();
+		p2.add(new Point(lat, lon));
+		if (pts != null) {
+		    pts.add(p2);
+		}
+		if (bounds == null) {
+		    bounds = new Bounds(lat, lon, lat, lon);
+		} else {
+		    bounds.expand(lat, lon);
+		}
+            }
         } else {
             double      lon = coords1.getDouble(0);
             double      lat = coords1.getDouble(1);
