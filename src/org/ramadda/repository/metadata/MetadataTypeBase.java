@@ -275,8 +275,12 @@ public class MetadataTypeBase extends RepositoryManager {
 	    
 	    if(macro.getProperty("encoded", false)) value = XmlUtil.encodeString(value);
 	    if(macro.getProperty("cdata", false)) value = wrapCdata(value);
+	    boolean addSearch = macro.getProperty("addSearch",false);
 	    String prefix = macro.getProperty("prefix","");
 	    String suffix = macro.getProperty("suffix","");		
+	    if(addSearch) {
+		value = HU.href(getHandler().getSearchUrl(request,  metadata.getMetadataType(),value),value);
+	    }
 	    if(prefix!=null) sb.append(prefix);
 	    sb.append(value);
 	    if(suffix!=null) sb.append(suffix);		
@@ -408,8 +412,7 @@ public class MetadataTypeBase extends RepositoryManager {
 
 	entryType = XmlUtil.getAttribute(node, ATTR_ENTRYTYPE, (String) null);
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
-        setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
-						   false));
+        setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,  false));
 
         setIsTitle(XmlUtil.getAttribute(node, "istitle",false));
 

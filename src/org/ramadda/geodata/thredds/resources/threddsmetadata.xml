@@ -101,10 +101,11 @@
        displaycategory="Variables"
        name="Variable"
        id="thredds.variable" searchable="true"   browsable="true">
-      <template type="html"><![CDATA[${variable prefix="ID:"} ${units prefix="(" suffix=")" skipempty=true} ${long_name  prefix=" Long name: " skipempty=true}]]></template>
+
       <element name="Variable" searchable="true"/>
       <element name="Long Name" />
       <element name="Units" columns="10"/>
+      <template type="html"><![CDATA[${variable addsearch=true prefix="ID:&nbsp;"} ${units prefix="(" suffix=")" skipempty=true} ${long_name  prefix=" Long name: " skipempty=true}]]></template>
       <template type="dif"><![CDATA[
 <Parameters>
 <Category></Category>
