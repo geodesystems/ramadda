@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 17 12:43:36 MST 2025";
+var build_date="RAMADDA build date: Tue Feb 18 07:14:52 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -39354,7 +39354,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{label:'Map Collisions'},
 	{p:'handleCollisions',ex:true,tt:'Handle point collisions'},
 	{p:'showCollisionToggle',ex:true,tt:'Show the toggle checkbox'},
-	{p:'collisionFixed',d:false,ex:true,tt:'If true, don\'t show the grouped markers on a click'},
+	{p:'collisionFixed',d:false,ex:true,
+	 tt:'If true, don\'t show the grouped markers on a click'},
 	{p:'collisionPointSize',d:16,tt:'Size of each point. Higher # is more spread out'},
 	{p:'collisionDotColor',d:'#fff',tt:'Color of dot drawn at center'},
 	{p:'collisionDotOpacity',d:'0.9',tt:'Opacity of dot drawn at center'},	
