@@ -644,7 +644,7 @@ public class ExtEditor extends RepositoryManager {
 				    File file = child.getFile();
 				    size[0] += file.length();
 				    numFiles[0]++;
-				    append("" + file.length());
+				    append(formatFileLength(file.length()));
 				} else {
 				    append("Missing:" + child.getResource());
 				}
@@ -664,7 +664,7 @@ public class ExtEditor extends RepositoryManager {
 		};
 	    visit(finalEntry,extEntries, walker);
 	    suffix.append(HU.openInset(5, 30, 20, 0));
-            suffix.append("<table><tr><td><b>" + msg("File") + "</b></td><td><b>"
+            suffix.append("<table><tr><td><b>" + msg("Entry") + "</b></td><td><b>" + msg("File")+"</b></td><td><b>"
 			  + msg("Size") + "</td><td></td></tr>");
             suffix.append(walker.getMessageBuffer());
             suffix.append("<tr><td><b>" + msgLabel("Total")
