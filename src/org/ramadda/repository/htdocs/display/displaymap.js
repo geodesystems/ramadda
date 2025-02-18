@@ -5471,6 +5471,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			keyLegend+=keyMap[v]+": " + v+"<br>";
 		    }
 		    labelFeature.attributes["_key"] = keyMap[v];
+		    style.label = style.label.replace('${_key}',keyMap[v]);
                 }
                 features.push(labelFeature);
 	    }
