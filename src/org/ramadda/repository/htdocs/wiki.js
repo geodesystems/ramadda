@@ -1433,7 +1433,7 @@ WikiEditor.prototype = {
 				 HU.span([ATTR_ID,this.domId(this.ID_WIKI_POPUP_CANCEL)],"Cancel")));
 
 	let dialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:title,header:true,
-				    sticky:true,draggable:true,modal:true,modalContentsCss:HU.css('left','50px')});
+				    sticky:true,draggable:true,xmodal:true,modalContentsCss:HU.css('left','50px')});
 	jqid('searchattributes').click(function(){
 	    _this.makeSearchAttributesDialog($(this),blocks,true);
 	});
@@ -1498,7 +1498,7 @@ WikiEditor.prototype = {
 	    this.getSession().replace(tagInfo.range, text);
 	});	    
     },
-    makeSearchAttributesDialog:function(anchor,blocks,model) {
+    makeSearchAttributesDialog:function(anchor,blocks,modal) {
 	let _this = this;
 	let all = "";
 	blocks.forEach((block,idx)=>{
@@ -1521,7 +1521,8 @@ WikiEditor.prototype = {
 		    ATTR_STYLE,HU.css('width','500px','max-height','400px','overflow-y','auto')], all);
 	all  = HU.div([ATTR_STYLE,'margin:5px;'], all);
 	let dialog = HU.makeDialog({content:all,anchor:anchor,title:"Attributes",header:true,
-				    sticky:true,draggable:true,modal:model});
+				    sticky:true,draggable:true,xmodal:modal});
+
 	let commands = jqid(_this.domId('allsearch_corpus')).find('span');
 	let headers = jqid(_this.domId('allsearch_corpus')).find('.wiki-searchheader');	
 	jqid(_this.domId('allsearch')).focus();
@@ -2382,8 +2383,13 @@ function getWikiEditorMenuBlocks(attrs,forPopup,id) {
 	    }
 	    if(id)
 		label = HtmlUtils.onClick(call,label);
-	    block.items.push(HU.div(['data-block-index',block.index,'data-corpus',corpus,
-				     ATTR_CLASS,itemClass,ATTR_TITLE,tag.tt||"",'data-attribute',attr], label));
+	    block.items.push(HU.div([
+		'data-block-index',block.index,
+		'data-corpus',corpus,
+		ATTR_CLASS,itemClass,
+		'data-title',tag.tt??'',
+		ATTR_TITLE,tag.tt??'',
+		'data-attribute',attr], label));
 	} else {
 	    console.log("no attribute block");
 	}
