@@ -479,6 +479,7 @@ RepositoryMap.prototype = {
 		bounds = MapUtils.extendBounds(bounds,this.transformProjBounds(dataBounds));
 		didMarkers = true;
             }
+
 	    if(bounds && isNaN(bounds.left)) bounds = null;
             if (this.circles) {
                 let dataBounds = this.circles.getDataExtent();
@@ -490,7 +491,6 @@ RepositoryMap.prototype = {
 	    }
 
 	    if(bounds && isNaN(bounds.left)) bounds = null;
-
             if ( !bounds || !didMarkers || !justMarkerLayer) {
                 if (this.lines) {
                     let dataBounds = this.lines.getDataExtent();
@@ -506,11 +506,21 @@ RepositoryMap.prototype = {
                     if (layer.isBaseLayer || !layer.getVisibility()) {
 			continue;
 		    }
-                    let dataBounds = layer.getDataExtent();
-                    if (dataBounds) {
-                        let latLonBounds = this.transformProjBounds(dataBounds);
-			if(!this.validBounds(latLonBounds)) continue;
-			bounds = MapUtils.extendBounds(bounds,latLonBounds);
+		    //for some reason the getDataExtent sometimes gives a too big result
+		    //so we'll just do it by feature
+		    //let dataBounds = layer.getDataExtent();
+		    //if (dataBounds) {
+		    //let latLonBounds = this.transformProjBounds(dataBounds);
+		    //if(!this.validBounds(latLonBounds)) continue;
+		    //bounds = MapUtils.extendBounds(bounds,latLonBounds);
+		    if(layer.features) {
+			layer.features.forEach((f,idx)=>{
+			    if(f?.style.display=='none') return;
+			    let b = f?.geometry.bounds;
+			    if(!b) return;
+			    b = this.transformProjBounds(b);
+			    bounds = MapUtils.extendBounds(bounds,b);
+			})
 			if(debugBounds)
 			    console.log("centerOnMarkers using layer.getDataExtent: " + latLonBounds +" layer=" + layer.name +" " + layer.ramaddaId);
                     }
@@ -544,6 +554,7 @@ RepositoryMap.prototype = {
         }
 	if(debugBounds)
 	    console.log("calling setViewToBounds: ",bounds);
+//	console.log("final: " + bounds);
         this.setViewToBounds(bounds);
     },
     initRegionSelector:function(selectId,div,forSelection) {
