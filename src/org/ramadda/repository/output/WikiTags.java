@@ -71,7 +71,6 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"name","macroname",
 					ATTR_ENTRY,""),			    
 
-                            new WikiTag("multi", null, "_attrs", "attr1,attr2"),
                             new WikiTag(WIKI_TAG_SIMPLE, null, ATTR_TEXTPOSITION, POS_LEFT),
                             new WikiTag(WIKI_TAG_SHOW_AS, null, ATTR_ENTRY,"","type","entry type to display as","#target","target entry"),
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",
