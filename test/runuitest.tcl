@@ -136,6 +136,7 @@ if {$groupID!=""} {
     runGroup "Text" 23847d93-4bca-4d54-a6db-f96a19be250b
     runGroup "Boulder and Colorado" 4624f63d-cd71-43e8-a558-83835c6b5541
     runGroup "Dashboards" eb4102f8-720f-4ef3-9211-0ce5940da04d
+    runGroup "Archive" cc4fbc93-b3af-406c-9ebf-1c80f241d84a
     runGroup "Media" bca6228e-3f8e-49d4-a20e-b5a0ea8a6441
     runGroup "Cards" e4b6667d-d640-4048-a756-b06e4c352a62 3
     #runGroup Features 26fff0d9-3de7-4bbd-8a6f-a26d8a287f4a
