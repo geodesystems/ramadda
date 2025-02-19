@@ -1919,20 +1919,15 @@ mapheader {
     border:1px #aaa solid;
 }
 
-
-
-			    
-
 .ramadda-recaptcha {
 }
-
 
 .ramadda-verification {
     display:inline-block;
     margin:8px;
     padding:8px;
     border:var(--basic-border);
-    background-color : #f9f9f9;
+    background-color : var(--color-mellow-yellow);
     border-radius:var(--default-radius);
     max-width:500px;
 }
@@ -3086,7 +3081,8 @@ table.dataTable tbody td {
     padding:4px;
     padding-left:8px;
     padding-right:8px;    
-    background:#f0f8ff;
+    /*background:#eef6fd;*/
+    background:#e7f4e4;
     display:inline-block;
     border:var(--basic-border);
     border-radius: var(--default-radius);
