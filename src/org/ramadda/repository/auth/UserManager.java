@@ -1047,17 +1047,18 @@ public class UserManager extends RepositoryManager {
 						   "Is Guest User")));
             String       userRoles = user.getRolesAsString("\n");
             StringBuffer allRoles  = new StringBuffer();
+	    
             List<Role>   roles     = getUserRoles();
             allRoles.append(
-			    "<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td><b>e.g.:</b></td><td>&nbsp;&nbsp;</td><td>");
+			    "<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td>");
             int cnt = 0;
-            allRoles.append("</td><td>&nbsp;&nbsp;</td><td>");
+
             for (int i = 0; i < roles.size(); i++) {
-                if (cnt++ > 4) {
+                if (cnt++ >= 4) {
                     allRoles.append("</td><td>&nbsp;&nbsp;</td><td>");
                     cnt = 0;
                 }
-                allRoles.append("<i>");
+                allRoles.append("<i class='ramadda-clickable ramadda-role'>");
                 allRoles.append(roles.get(i).getRole());
                 allRoles.append("</i><br>");
             }
@@ -1069,8 +1070,9 @@ public class UserManager extends RepositoryManager {
 
 
             String roleEntry =  HU.hbox(HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES,userRoles),
-						    5, 20), allRoles.toString());
+						    5, 20,HU.attrs("id",ARG_USER_ROLES)), allRoles.toString());
             sb.append(formEntryTop(request, msgLabel("Roles"), roleEntry));
+	    sb.append(HU.script("Utils.initCopyable('.ramadda-role',{addNL:true,textArea:'" +ARG_USER_ROLES+"'});"));
         }
 
         if (includeAdmin || user.canChangeNameAndEmail()) {
@@ -1084,7 +1086,7 @@ public class UserManager extends RepositoryManager {
 
             sb.append(formEntry(request, msgLabel("Description"),
                                 HU.textArea(ARG_USER_DESCRIPTION,
-					    request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION,user.getDescription()), 5, 30)));
+					    request.getReallyStrictSanitizedString(ARG_USER_DESCRIPTION,user.getDescription()), 5, 50)));
 
 	    /*
 	      sb.append(formEntry(request, msgLabel("Phone"),
@@ -1522,7 +1524,7 @@ public class UserManager extends RepositoryManager {
 	throws Exception {
         HU.titleSectionOpen(sb, "Create New Users");
 	String size = HU.SIZE_30;
-	int cols = 30;
+	int cols = 50;
 
         sb.append(request.uploadForm(URL_USER_NEW_DO));
         StringBuffer formSB = new StringBuffer();
@@ -1563,8 +1565,28 @@ public class UserManager extends RepositoryManager {
                                 HU.textArea(ARG_USER_DESCRIPTION,
 					    desc, 5, cols)));
 	
+	StringBuffer allRoles  = new StringBuffer();
+	List<Role>   roles     = getUserRoles();
+	allRoles.append(
+			"<table border=0 cellspacing=0 cellpadding=0><tr valign=\"top\"><td>");
+	int cnt = 0;
+	for (int i = 0; i < roles.size(); i++) {
+	    if (cnt++ >= 4) {
+		allRoles.append("</td><td>&nbsp;&nbsp;</td><td>");
+		cnt = 0;
+	    }
+	    allRoles.append("<i class='ramadda-clickable ramadda-role'>");
+	    allRoles.append(roles.get(i).getRole());
+	    allRoles.append("</i><br>");
+	}
+	allRoles.append("</table>\n");
         formSB.append(HU.formEntryTop(msgLabel("Roles"),
-				      HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES, ""), 3, 25)));
+				      HU.hbox(
+					      HU.textArea(ARG_USER_ROLES, request.getReallyStrictSanitizedString(ARG_USER_ROLES, ""), 3, 25,
+							  HU.attrs("id",ARG_USER_ROLES)),
+					      allRoles.toString())));
+
+	formSB.append(HU.script("Utils.initCopyable('.ramadda-role',{addNL:true,textArea:'" +ARG_USER_ROLES+"'});"));
 
 	formSB.append(HU.formHelp("Password",true));
         formSB.append(formEntry(request, msgLabel("Enter Password"), HU.password(ARG_USER_PASSWORD1)));
@@ -1579,9 +1601,8 @@ public class UserManager extends RepositoryManager {
         StringBuffer msgSB = new StringBuffer();
         String       msg   =request.getReallyStrictSanitizedString(ARG_USER_MESSAGE,
 								   "A new RAMADDA account has been created for you.");
-        msgSB.append(HU.checkbox(ARG_USER_SENDMAIL, "true", false));
-        msgSB.append(HU.space(1));
-        msgSB.append(msgLabel("Send an email to the new user with message"));
+        msgSB.append(HU.labeledCheckbox(ARG_USER_SENDMAIL, "true", false,
+					"Send an email to the new user with message"));
         msgSB.append(HU.br());
         msgSB.append(HU.textArea(ARG_USER_MESSAGE, msg, 5, cols));
         if (getMailManager().isEmailEnabled()) {
