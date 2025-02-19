@@ -5421,24 +5421,24 @@ public class TypeHandler extends RepositoryManager {
             List typeList = request.get(ARG_TYPE, new ArrayList());
             typeList.remove(TYPE_ANY);
 
+	    String typeId = HU.getUniqueId("type_");
             String typeSelect = HU.select(ARG_TYPE, tmp, typeList,
 					  (advancedForm
 					   ? " MULTIPLE SIZE=4 "
-					   : ""));
+					   : "")+HU.attrs("id",typeId));
             String groupCbx = (advancedForm
                                ? HU.labeledCheckbox(ARG_TYPE_EXCLUDE, "true",
 						    request.get(ARG_TYPE_EXCLUDE,
 								false),"Exclude")
                                : "");
-
-
-            String submit = HU.submitImage(
-					   getRepository().getIconUrl(ICON_SEARCH),
-					   "submit_type",
-					   "Show search form with this type", "");
             basicSB.append(formEntry(request, msgLabel("Kind"),
-                                     typeSelect + HU.SPACE + submit
-                                     + HU.SPACE + groupCbx));
+                                     typeSelect + HU.SPACE +
+                                     HU.SPACE + groupCbx));
+
+	    String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:false}";
+	    basicSB.append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+					     HU.quote("#"+typeId),
+					     popupArgs)));
         } else if (typeHandlers.size() == 1) {
             basicSB.append(HU.hidden(ARG_TYPE,
 				     typeHandlers.get(0).getType()));

@@ -6013,7 +6013,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    label:'Select',
 	    single:false,
 	    buttonLabel:'Select',
-	    hide: true,
+	    hide: false,
 	    addBreak:false,
 	    after:false,
 	    tooltip:'Select multiple',
@@ -6026,6 +6026,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let label = opts.label??'Select';
 	if(opts.hide)
 	    select.hide();
+
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
