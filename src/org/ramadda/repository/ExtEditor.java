@@ -735,6 +735,9 @@ public class ExtEditor extends RepositoryManager {
 	List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,true, true, entry);
 	tfos.add(0,new HtmlUtils.Selector("Select one","",""));
 
+	String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:true}";
+		
+
 	for(String form: what) {
 	    if(form.equals(ARG_EXTEDIT_EDIT)) {
 		opener.accept("Spatial and Temporal Metadata");
@@ -784,7 +787,10 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Change Entry Type");
 		buff[0].append(msgLabel("New type"));
 		buff[0].append(HU.space(1));
-		buff[0].append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos, request.getString(ARG_EXTEDIT_NEWTYPE,"")));
+		String id = HU.getUniqueId("select");
+		buff[0].append(HU.select(ARG_EXTEDIT_NEWTYPE, tfos,
+					 request.getString(ARG_EXTEDIT_NEWTYPE,""),
+					 HU.attrs("id",id)));
 		buff[0].append(HU.p());
 		List<Column> columns = entry.getTypeHandler().getColumns();
 		if ((columns != null) && (columns.size() > 0)) {
@@ -797,22 +803,35 @@ public class ExtEditor extends RepositoryManager {
 		    }
 		    buff[0].append(msgLabel("Note: this metadata would be lost") + note);
 		}
-
+		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+						 HU.quote("#"+id),
+						 popupArgs)));
 		closer.accept(form, "Change type of this entry");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE_RECURSE)){
 		opener.accept("Change Descendants Entry Type");
 		buff[0].append(HU.formTable());
+		String id1 = HU.getUniqueId("select");
+		String id2 = HU.getUniqueId("select");
 		HU.formEntry(buff[0], msgLabel("Old type"),
 			     HU.select(ARG_EXTEDIT_OLDTYPE,
-				       tfos,request.getString(ARG_EXTEDIT_OLDTYPE,"")));
-
+				       tfos,request.getString(ARG_EXTEDIT_OLDTYPE,""),
+				       HU.attrs("id",id1)));
 		HU.formEntry(buff[0], msgLabel("Regexp Pattern"),
 			     HU.input(ARG_EXTEDIT_NEWTYPE_PATTERN, request.getString(ARG_EXTEDIT_NEWTYPE_PATTERN,"")) + " "
 			     + msg("Only change type for entries that match this pattern"));
 
 		HU.formEntry(buff[0], msgLabel("New type"),
 			     HU.select(ARG_EXTEDIT_NEWTYPE,
-				       tfos,request.getString(ARG_EXTEDIT_NEWTYPE,"")));
+				       tfos,request.getString(ARG_EXTEDIT_NEWTYPE,""),
+				       HU.attrs("id",id2)));
+		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+						 HU.quote("#"+id1),
+						 popupArgs)));
+		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+						 HU.quote("#"+id2),
+						 popupArgs)));		
+
+
 		HU.formEntry(buff[0], "",
 			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
 						false, "Yes, change them"));
@@ -833,9 +852,15 @@ public class ExtEditor extends RepositoryManager {
 		buff[0].append(HU.formTable());
 		String cbx = request.addCheckbox(buff[0],ARG_EXTEDIT_THISONE,"Apply to this entry",true);
 		String cbx2 = request.addCheckbox(buff[0],ARG_EXTEDIT_RECURSE,"Recurse",true);
+		String id = HU.getUniqueId("select");
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
-			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null))
-			     + HU.space(1) +cbx + HU.space(1) + cbx2);	
+			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null),
+				       HU.attrs("id",id))+
+			     "<br>" +cbx + HU.space(1) + cbx2);	
+		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+						 HU.quote("#"+id),
+						 popupArgs)));		
+
 		List<String> helpTitles= new ArrayList<String>();
 		List<String> helpTabs = new ArrayList<String>();		
 		String eg =

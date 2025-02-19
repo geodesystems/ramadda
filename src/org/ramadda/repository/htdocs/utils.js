@@ -326,6 +326,7 @@ var Utils =  {
 	});
     },
     initPage: function() {
+	
         this.initContent();
         this.pageLoaded = true;
         this.initDisplays();
@@ -5846,7 +5847,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	return html;
     },
 
-    radio: function(id, name, radioclass, value, checked, extra) {
+    radio: function(id, name, radioclass, value, checked, extra,label) {
         if (!extra) extra = "";
         let html = "<input id='" + id + "'  class='" + radioclass + "' name='" + name + "' type=radio value='" + value + "' ";
         if (checked) {
@@ -5854,6 +5855,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         html += " " + extra
         html += "/>";
+	if(label) {
+	    html+=HU.tag('label',['for',id],label);
+	}
         return html;
     },
 
@@ -6007,14 +6011,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     makeSelectTagPopup:function(select,args) {
 	let opts ={
 	    label:'Select',
+	    single:false,
 	    buttonLabel:'Select',
 	    hide: true,
 	    addBreak:false,
 	    after:false,
 	    tooltip:'Select multiple',
 	    wrap:'${widget}',
-	    makeButton:true
+	    makeButton:true,
+	    makeButtons:true
 	}
+	if(typeof select =='string') select=$(select);
 	if(args) $.extend(opts,args);
 	let label = opts.label??'Select';
 	if(opts.hide)
@@ -6022,20 +6029,23 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',
 			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
-			opts.buttonLabel)+(opts.addBreak?'<br>':'');
+			 opts.buttonLabel)+(opts.addBreak?'<br>':'');
 	btn = opts.wrap.replace('${widget}',btn);
 	if(opts.after)
 	    select.after(' ' +btn);
 	else
-	    select.before(btn);
+	    select.before(btn+SPACE);
 	let optionMap = {};
 	let handleChange = function(cbx,trigger) {
 	    let option = optionMap[cbx.attr(ATTR_ID)];
-	    if(option) {
-		let selected=cbx.is(':checked');
-		option.prop('selected',selected);
-		if(trigger)
-		    select.change();
+	    if(!option) return;
+	    let selected=cbx.is(':checked');
+	    option.prop('selected',selected);
+	    if(trigger) {
+		select.change();
+		if(select.iconselectmenu && select.iconselectmenu('instance')) {
+		    select.iconselectmenu('refresh');
+		}
 	    }
 	}
 
@@ -6045,33 +6055,44 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let makeDialog = anchor=>{
 	    let html = '';
 	    let cbxs=[];
+	    let radioName = HU.getUniqueId('radio');
 	    select.find('option').each(function() {
 		let value = $(this).attr('value');
+		if(!Utils.stringDefined(value)) return;
+		let label = $(this).html();
+		label = label.replace('&nbsp;',' ');
+		if($(this).attr('img-src')) {
+		    label = HU.image($(this).attr('img-src'),[ATTR_WIDTH,'16px']) +' ' +label;
+		}
+
 		let selected=$(this).is(':selected');
 		let id = HU.getUniqueId('cbx')
 		optionMap[id] = $(this);
-		let cbx = HU.checkbox(id,[],selected,value);
+		let cbx = opts.single?
+		    HU.radio(id, radioName,'',label,selected,null,label):
+		    HU.checkbox(id,[],selected,label);
+
 		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag','tag',$(this).html() +' ' + value], cbx);
 		cbxs.push(cbx);
 	    });
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
-	    let buttons = '';
-	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
-	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','selectshown'],'Select shown');	    
-	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showselected'],'Show selected');
-	    buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showall'],'Show all');	    	    
-	    input+=HU.div([ATTR_STYLE,
-			   HU.css('border-bottom','var(--basic-border)','padding','6px')],buttons);
-
-
+	    if(opts.makeButtons) {
+		let buttons = '';
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','selectshown'],'Select shown');	    
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showselected'],'Show selected');
+		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','showall'],'Show all');	   
+		input+=HU.div([ATTR_STYLE,
+			       HU.css('border-bottom','var(--basic-border)','padding','6px')],buttons);
+	    }
 
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
-
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
 					draggable:true,header:true});
 	    dialog.find(":checkbox").change(cbxChange);
+	    dialog.find(":radio").change(cbxChange);
 	    let tags = dialog.find(".ramadda-select-tag");
 	    dialog.find('.ramadda-select-action').button().click(function() {
 		let action =$(this).attr('data-action');
