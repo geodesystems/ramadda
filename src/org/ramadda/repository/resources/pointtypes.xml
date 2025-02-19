@@ -197,7 +197,7 @@ addTooltip=false useMultipleAxes=true
   </type>
 
   <type name="type_point_text"  description="Record Text File" super="type_point" foruser="true" handler="org.ramadda.data.services.PointTypeHandler" priority="2"
-	help="A unstructured text data file"
+	help="An unstructured text data file"
 	>
     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
     <property name="form.area.show" value="false"/>
