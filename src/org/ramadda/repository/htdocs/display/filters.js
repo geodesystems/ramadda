@@ -863,10 +863,10 @@ function RecordFilter(display,filterFieldId, properties) {
 			    if(imageMap) image = imageMap[v];
 			    if(!image || image=="") image = enums[j].image;
 			    if(image) {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style, "data-value",v,"title",label],
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style, "data-value",v,ATTR_TITLE,label],
 						       HtmlUtils.image(image,imageAttrs));
 			    } else {
-				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style,"data-value",v,"title",label],label);
+				buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz,ATTR_STYLE,style,"data-value",v,ATTR_TITLE,label],label);
 			    }
 			} else {
 			    buttons+=HtmlUtils.div(["fieldId",this.getId(),ATTR_CLASS,clazz, ATTR_STYLE,style,"data-value",v],label);
@@ -876,10 +876,10 @@ function RecordFilter(display,filterFieldId, properties) {
 
 
 		    if(useImage && this.getProperty(this.getId() +".filterShowButtonsLabel")) {
-			buttons+=HtmlUtils.div([ATTR_CLASS,"display-filter-item-label","id",this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
+			buttons+=HtmlUtils.div([ATTR_CLASS,"display-filter-item-label",ATTR_ID,this.display.getDomId("filterby_" + this.getId() +"_label")],"&nbsp;");
 		    }
 		    bottom[0]+= this.prefix + 
-			HtmlUtils.div(["data-value",dfltValue,ATTR_CLASS,"display-filter-items","id",widgetId,"isButton","true", "fieldId",
+			HtmlUtils.div(["data-value",dfltValue,ATTR_CLASS,"display-filter-items",ATTR_ID,widgetId,"isButton","true", "fieldId",
 				       this.getId()], buttons);
 		    if(debug) console.log("\treturn 1");
 		    return "";
@@ -987,12 +987,12 @@ function RecordFilter(display,filterFieldId, properties) {
 					    this.getProperty('filterWidgetSize', '60px'));
 		minStyle+=HU.css('width',size);
 		maxStyle+=HU.css('width',size);
-                widget = HtmlUtils.input('',dfltValueMin,[STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,'class','display-filter-range display-filter-input', 'id',widgetId+'_min','xsize',3,'fieldId',this.getId()]);
+                widget = HtmlUtils.input('',dfltValueMin,[STYLE,minStyle,'data-type',this.getFieldType(),'data-min',min,ATTR_CLASS,'display-filter-range display-filter-input', ATTR_ID,widgetId+'_min','xsize',3,'fieldId',this.getId()]);
 		widget += '-';
-                widget += HtmlUtils.input('',dfltValueMax,[STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,'class','display-filter-range display-filter-input', 'id',widgetId+'_max','xsize',3,'fieldId',this.getId()]);
+                widget += HtmlUtils.input('',dfltValueMax,[STYLE,maxStyle,'data-type',this.getFieldType(),'data-max',max,ATTR_CLASS,'display-filter-range display-filter-input', ATTR_ID,widgetId+'_max','xsize',3,'fieldId',this.getId()]);
 	    } else if(this.getFieldType() == 'date') {
-                widget =HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date_from','fieldId',this.getId()]) +'-' +
-		    HtmlUtils.datePicker('','',['class','display-filter-input','style',widgetStyle, 'id',widgetId+'_date_to','fieldId',this.getId()]);
+                widget =HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',ATTR_STYLE,widgetStyle, ATTR_ID,widgetId+'_date_from','fieldId',this.getId()]) +'-' +
+		    HtmlUtils.datePicker('','',[ATTR_CLASS,'display-filter-input',ATTR_STYLE,widgetStyle, ATTR_ID,widgetId+'_date_to','fieldId',this.getId()]);
 		this.dateIds.push(widgetId+'_date_from');
 		this.dateIds.push(widgetId+'_date_to');
 
@@ -1028,7 +1028,7 @@ function RecordFilter(display,filterFieldId, properties) {
             } else {
 		let dfltValue = this.getPropertyFromUrl('fv',"");
 		let width = this.getProperty(this.getId() +".filterWidth","150px");		
-		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), "id",widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
+		let attrs =[ATTR_STYLE,widgetStyle+"width:" + HU.getDimension(width), ATTR_ID,widgetId,"fieldId",this.getId(),ATTR_CLASS,"display-filter-input"];
 		let placeholder = this.getProperty(this.getId() +".filterPlaceholder");
 		attrs.push("width");
 		attrs.push(width);

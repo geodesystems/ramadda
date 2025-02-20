@@ -270,25 +270,25 @@ function DisplayManager(argId, argProperties) {
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+            var titles = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Titles: " + HU.onClick(layout + ".titlesOn();", "On") + "/" + HU.onClick(layout + ".titlesOff();", "Off"));
+            var dates = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
 				      "Set date range: " +
 				      HU.onClick(layout + ".askMinDate();", "Min") + "/" +
 				      HU.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"],
 							"Set axis range :" +
 							HU.onClick(layout + ".askMinZAxis();", "Min") + "/" +
 							HU.onClick(layout + ".askMaxZAxis();", "Max"))) +
                 HU.tag(TAG_LI, [], dates) +
                 HU.tag(TAG_LI, [], titles) + "\n" +
-                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
+                HU.tag(TAG_LI, [], HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Details: " + HU.onClick(layout + ".detailsOn();", "On", []) + "/" +
 							HU.onClick(layout + ".detailsOff();", "Off", []))) +
                 HU.tag(TAG_LI, [], HU.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
-            var table = HU.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
+            var table = HU.tag(TAG_DIV, [ATTR_CLASS, "ramadda-menu-block"], "Table: " +
 				      HU.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
 				      HU.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
 				      HU.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
@@ -542,8 +542,8 @@ function DisplayManager(argId, argProperties) {
     addDisplayManager(this);
 
     let displaysHtml = HU.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container",STYLE,HU.css("display","block")]);
-    let html = HU.openTag(TAG_DIV,["style","position:relative;"]);
-    html += HU.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
+    let html = HU.openTag(TAG_DIV,[ATTR_STYLE,"position:relative;"]);
+    html += HU.div([ATTR_ID, this.getDomId(ID_MENU_CONTAINER)]);
     html +=  this.getEntriesMenu(argProperties);
 
     if(this.getShowMenu()) {
@@ -572,7 +572,7 @@ function DisplayManager(argId, argProperties) {
     $("#" + divid).html(html)
     this.initializeEntriesMenu();
 
-    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[TITLE,"Display menu"],['style','color:#aaa;'] )).button({
+    this.jq(ID_MENU_BUTTON).html(HU.getIconImage("fas fa-cog",[TITLE,"Display menu"],[ATTR_STYLE,'color:#aaa;'] )).button({
 	classes: {
 	    "ui-button": "display-manager-button",
 	}	

@@ -753,7 +753,7 @@ function DisplayThing(argId, argProperties) {
 			return;
 		    }
 		    let labels = token.attrs.labels.split(',');
-		    cmd+=HU.select('',['class','display-command','commandId',token.id],labels);
+		    cmd+=HU.select('',[ATTR_CLASS,'display-command','commandId',token.id],labels);
 		    return;
 		}
 		console.dir('Unknown command token',token);
@@ -818,7 +818,7 @@ function DisplayThing(argId, argProperties) {
 		    imageAttrs.push("width");
 		    imageAttrs.push("300");
 		}
-		imageAttrs.push("style");
+		imageAttrs.push(ATTR_STYLE);
 		imageAttrs.push("vertical-align:top");
 		return HU.image(value, imageAttrs);
 	    };
@@ -952,7 +952,7 @@ function DisplayThing(argId, argProperties) {
 			    imageAttrs.push("width");
 			    imageAttrs.push("100%");
 			}
-			imageAttrs.push("style");
+			imageAttrs.push(ATTR_STYLE);
 			imageAttrs.push("vertical-align:top");
 			let img =  HU.image(value, imageAttrs);
 
@@ -1719,7 +1719,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
 	{p:'labelStyle',ex:''},			
-	{p:'title',ex:''},
+	{p:ATTR_TITLE,ex:''},
 	{p:'titleTemplate',ex:'${title} - ${field1} Date range: ${recordDate_first format=yyyymmdd} - ${recordDate_last format=yyyymmdd}',
 	 tt:'Template for title. Use ${title} for the default title. Use ${field} for field values of first record. Use ${field_first} for first record value. Use ${field_ast} for last record value '},	
 	{p:'itemsPerColumn',canCache:true,d:50,tt:'How many items to show in each column in a tooltip'},
@@ -2304,15 +2304,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		let val = $(this).attr('data-value');
 		let html = '';
 		let items = [];
-		items.push(HU.b('Range: ') +  HU.input('',min,['size',4,'class','colortable-min']) + ' - ' +
-			   HU.input('',max,['size',4,'class','colortable-max']));
+		items.push(HU.b('Range: ') +  HU.input('',min,['size',4,ATTR_CLASS,'colortable-min']) + ' - ' +
+			   HU.input('',max,['size',4,ATTR_CLASS,'colortable-max']));
 		items.push(HU.div([CLASS,'ramadda-clickable ramadda-menu-item','what','reset'],'Reset range'),
 			   HU.div([CLASS,'ramadda-clickable ramadda-menu-item','what','ussedata'],'Use data range'));
-		items.push(HU.checkbox('colortableuselog',['id','colortableuselog'],
+		items.push(HU.checkbox('colortableuselog',[ATTR_ID,'colortableuselog'],
 				       _this.getProperty('colorByLog'),'Use Log Scale'));
 		html = Utils.wrap(items,'<div style=margin-bottom:4px;>','</div>');
 		html = HU.hbox([html, HU.space(3),HU.b('Color Table') +'<br>' +Utils.getColorTablePopup(null,null,null,false)]);
-		html =HU.div(['style',HU.css('padding','8px')], html);
+		html =HU.div([ATTR_STYLE,HU.css('padding','8px')], html);
 		if(_this.colorTableDialog) _this.colorTableDialog.remove();
 		let dialog =  _this.colorTableDialog = HU.makeDialog({content:html,title:'Color Table Settings',anchor:$(this),
 					     draggable:true,header:true});
@@ -2894,7 +2894,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(displayDebug.notifyEvent)
 		console.log(this.type+".propagateEventRecordSelection");
 	    if(this.shareEvent(DisplayEvent.setEntry,this.getProperty(DisplayEvent.setEntry.shareGroup,this.getProperty("shareSelectedEntry")))) {
-		let entryId = args.record.getValueFromField("id");
+		let entryId = args.record.getValueFromField(ATTR_ID);
 		if(displayDebug.setEntry)
 		    console.log(this.type+" sharing entry:" + entryId);
 		if(entryId) {
@@ -5540,7 +5540,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let tags = $(metadata).appendTo(bar);
 	    if(!entry.isSynth()) {
 		tags.click(function() {
-		    _this.metadataTagClicked(metadataMap[$(this).attr("id")]);
+		    _this.metadataTagClicked(metadataMap[$(this).attr(ATTR_ID)]);
 		});
 	    }
 
@@ -6138,7 +6138,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let get = this.getGet();
             let button = HU.onClick(get + ".showDialog();",
 				    HU.image(RamaddaUtil.getCdnUrl("/icons/downdart.png"),
-					     ['title','Show display menu',ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
+					     [ATTR_TITLE,'Show display menu',ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)]));
 	    button+=" ";
 	    return button;
 	},
@@ -6181,7 +6181,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (button == "") {
                     topLeft = titleDiv;
                 } else {
-                    topLeft = HU.div(["class","display-header"], button + SPACE + titleDiv);
+                    topLeft = HU.div([ATTR_CLASS,"display-header"], button + SPACE + titleDiv);
                 }
 		
             }
@@ -6189,8 +6189,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	    let headerStyle = this.getProperty('headerStyle','');
 	    let h2Separate = this.getAnimationEnabled();
-	    let h1 = 	HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
-	    let h2 = HU.div(['style',headerStyle,ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
+	    let h1 = 	HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER1),CLASS,"display-header-block display-header1"], "");
+	    let h2 = HU.div([ATTR_STYLE,headerStyle,ID,this.getDomId(ID_HEADER2),CLASS,"display-header-block display-header2"], "");
             let topCenter = HU.div([ID, this.getDomId(ID_TOP),CLASS,"display-header-block"], h2Separate?"":h2);
             let topRight = HU.div([ID, this.getDomId(ID_TOP_RIGHT)], rightContents);
 	    let top =  this.getProperty("showHeader",true)?HU.leftCenterRight(topLeft, topCenter, topRight, null, null, null,{
@@ -6549,8 +6549,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    let list = [];
 	    let space = HU.space(2);
 	    if(!live)
-		requestProps+=HU.span(['class','ramadda-button-small',
-				       'title','Reload data','style','','class','','id',this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
+		requestProps+=HU.span([ATTR_CLASS,'ramadda-button-small',
+				       ATTR_TITLE,'Reload data',ATTR_STYLE,'',ATTR_CLASS,'',ATTR_ID,this.domId('requestapply')],HU.getIconImage('fa-solid fa-rotate-right')) + space;
 
 	    macros.forEach(macro=>{
 		requestProps+=macro.getWidget(macroDateIds);
@@ -6566,7 +6566,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    if(Utils.stringDefined(requestProps)) {
 		let show = this.getRequestFieldsShow();
 		if(!show) {
-		    requestProps = HU.div(['style','display:none;'], requestProps);
+		    requestProps = HU.div([ATTR_STYLE,'display:none;'], requestProps);
 		} 
 		this.writeHeader(ID_REQUEST_PROPERTIES,  HU.div([],requestProps));
 		if(!this.getRequestFieldsShow()) {
@@ -7101,7 +7101,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!filter.isEnabled()) return;
 		    let widget = filter.getWidget(fieldMap, bottom,records, vertical);
 		    if(!vertical)
-			widget = HU.span(['class','display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
+			widget = HU.span([ATTR_CLASS,'display-filter-container display-filter-'+ filter.displayType,ID,this.domId("filtercontainer_" + filter.id)], widget);
 		    if(filter.group!=null) {
 			if(filter.group!=group && groupHtml!=null) {
 			    searchBar+=HU.toggleBlock(group,groupHtml,false);

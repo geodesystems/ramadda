@@ -425,7 +425,7 @@ function RamaddaOtherMapDisplay(displayManager, id, type, properties) {
 	makeTooltipDiv: function() {
 	    if(!this.tooltipDiv) {
 		this.tooltipDiv = d3.select("body").append("div")
-		    .attr("class", "ramadda-shadow-box  display-tooltip")
+		    .attr(ATTR_CLASS, "ramadda-shadow-box  display-tooltip")
 		    .style("opacity", 0)
 		    .style("position", "absolute")
 		    .style("background", "#fff")
@@ -1073,7 +1073,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 		imageAttrs.push("width");
 		imageAttrs.push("100%");
 	    }
-	    imageAttrs.push("style");
+	    imageAttrs.push(ATTR_STYLE);
 	    imageAttrs.push("vertical-align:top");
 	    let img =  HU.image(value, imageAttrs);
 	    attrs["imageField" +"_image"] =  img;
@@ -1111,7 +1111,7 @@ function RamaddaMapimagesDisplay(displayManager, id, properties) {
 		    let uid = HtmlUtils.getUniqueId();
 		    if(values!=null) {
 			defs.append("svg:pattern")
-			    .attr("id", "bgimage"+ uid)
+			    .attr(ATTR_ID, "bgimage"+ uid)
 			    .attr("x", "1")
 			    .attr("y", "1")
 			    .attr("width", "100%")

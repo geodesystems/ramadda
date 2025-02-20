@@ -204,9 +204,9 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         makePlot: function(data, layout) {
             this.clearHtml();
 	    let html = 
-		HtmlUtils.div(["id",this.getDomId(ID_HEADER)],"") +
-		HtmlUtils.div(["id", this.getDomId(ID_PLOT), "style", "width:100%;"+this.getDisplayStyle()], "") +
-		HtmlUtils.div(["id",this.getDomId(ID_FOOTER)],"");
+		HtmlUtils.div([ATTR_ID,this.getDomId(ID_HEADER)],"") +
+		HtmlUtils.div([ATTR_ID, this.getDomId(ID_PLOT), ATTR_STYLE, "width:100%;"+this.getDisplayStyle()], "") +
+		HtmlUtils.div([ATTR_ID,this.getDomId(ID_FOOTER)],"");
 	    this.setContents(html);
 	    //do the plot creation a bit later so the width of the ID_PLOT div gets set OK
 	    setTimeout(()=>{
@@ -1655,8 +1655,8 @@ function TextcountDisplay(displayManager, id, properties) {
     ];
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {
         getDialogContents: function(tabTitles, tabContents) {
-	    let html = HtmlUtils.div(["id",this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
-		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),["id", this.getDomId("dialog_patterns"),"rows","10"]);
+	    let html = HtmlUtils.div([ATTR_ID,this.getDomId("dialog_set_pattern")],"Change patterns") + "<br>" +
+		HtmlUtils.textarea("",Utils.join(this.patternList||[],"\n"),[ATTR_ID, this.getDomId("dialog_patterns"),"rows","10"]);
 
 	    
             tabTitles.push("Patterns");

@@ -222,7 +222,7 @@ var Utils =  {
     /**
        make and return a copy of any objects given as arguments
        this can handle null args
-     */
+    */
     clone:function() {
 	if(arguments.length==0) return {};
 	let first =  arguments[0]?$.extend({},arguments[0]):{};
@@ -286,7 +286,7 @@ var Utils =  {
 	}
 	if(args) $.extend(opts,args);
 	$(selector).each(function(){
-	    $(this).attr('title',opts.title??'Click to copy');
+	    $(this).attr(ATTR_TITLE,opts.title??'Click to copy');
 	    let link = $(this);
 	    if(opts.addLink) {
 		let parent = $(this).parent();
@@ -294,7 +294,7 @@ var Utils =  {
 		let style = HU.css('position','absolute') +(opts.extraStyle??HU.css('top','5px',  'right','5px'));
 		link = $(HU.div([ATTR_CLASS,'ramadda-clickable',
 				 ATTR_STYLE,style],
-				 
+				
 				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
 	    } else {
 		$(this).addClass('ramadda-clickable');
@@ -576,14 +576,16 @@ var Utils =  {
 	let downloadId = id+"_download";	
 	let pos = 10;
 	if(div.attr('add-copy')=='true') {
-	    let copy = HU.div([ATTR_ID,copyId,ATTR_TITLE,"Copy to clipboard",
+	    let copy = HU.div([ATTR_ID,copyId,
+			       ATTR_TITLE,"Copy to clipboard",
 			       ATTR_CLASS,CLASS_CLICKABLE,
 			       ATTR_STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-clipboard"));
 	    pos+=20;
 	    jqid(id).append(copy);
 	}
 	if(div.attr('add-download')=='true') {
-	    let download = HU.div([ATTR_ID,downloadId,ATTR_TITLE,"Download",
+	    let download = HU.div([ATTR_ID,downloadId,
+				   ATTR_TITLE,"Download",
 				   ATTR_CLASS,CLASS_CLICKABLE,
 				   ATTR_STYLE,HU.css("position","absolute","right",pos+"px","top","5px")], HU.getIconImage("fas fa-download"));
 
@@ -616,7 +618,7 @@ var Utils =  {
     copyToClipboard:function(text) {
 	navigator.clipboard.writeText(text)
 	    .then(() => {
-//		console.log('Text successfully copied to clipboard!');
+		//		console.log('Text successfully copied to clipboard!');
 	    })
 	    .catch((error) => {
 		console.error('Unable to write to clipboard with navigator.clipboard.writeText:'+ error);
@@ -1234,12 +1236,12 @@ var Utils =  {
         html+=  blob.value;
         if(blob.inner) {
             var imageid = HtmlUtils.getUniqueId();
-            var toggle = HtmlUtils.image(icon_tree_closed,["id",imageid]);
+            var toggle = HtmlUtils.image(icon_tree_closed,[ATTR_ID,imageid]);
             var innerid = HtmlUtils.getUniqueId();
             var click = "Utils.formatJsonClick('" + imageid +"','" + innerid +"')";
-            html = HtmlUtils.div(["onclick",click,"class","json-label"],toggle + " " + html);
+            html = HtmlUtils.div(["onclick",click,ATTR_CLASS,"json-label"],toggle + " " + html);
             var display = level<levelsShown?"block":"none";
-            html += HtmlUtils.div(["style","display:" + display+";","class","json-inner","id",innerid],blob.inner);
+            html += HtmlUtils.div([ATTR_STYLE,"display:" + display+";",ATTR_CLASS,"json-inner",ATTR_ID,innerid],blob.inner);
         }
         return html;
     },
@@ -1250,25 +1252,25 @@ var Utils =  {
             var clazz="json-string";
             if(json.match("^http")) {
                 clazz="json-url";
-                json = HtmlUtils.href(json,json,["class",clazz]);
+                json = HtmlUtils.href(json,json,[ATTR_CLASS,clazz]);
             }
-            return {value:HtmlUtils.span(["class",clazz],"\"" +json +"\"")};
+            return {value:HtmlUtils.span([ATTR_CLASS,clazz],"\"" +json +"\"")};
         }
         if(type == "number" || type == "boolean") {
-            return {value:HtmlUtils.span(["class","json-"+type],json)};
+            return {value:HtmlUtils.span([ATTR_CLASS,"json-"+type],json)};
         }
 
         if(json.toISOString) {
-            return {value:HtmlUtils.span(["class","json-date"],"\"" +json.toISOString()+"\"")};
+            return {value:HtmlUtils.span([ATTR_CLASS,"json-date"],"\"" +json.toISOString()+"\"")};
         }
         if(type == "function") {
             var args = (json + '').replace(/[/][/].*$/mg,'').replace(/\s+/g, '');
             args = args.replace(/[/][*][^\/*]*[*][/]/g, ''); 
             args = args.split('){', 1)[0].replace(/^[^\(]*[\(]/, '').replace(/=[^,]+/g, '').split(',').filter(Boolean);
-            return {value:HtmlUtils.span(["class","json-function"], json.name +"(" + args+") {...}")};
+            return {value:HtmlUtils.span([ATTR_CLASS,"json-function"], json.name +"(" + args+") {...}")};
         }
         var isArray  = Array.isArray(json);
-        var label = isArray?HtmlUtils.span(["class","json-number"],"["  + json.length +"]"):"";
+        var label = isArray?HtmlUtils.span([ATTR_CLASS,"json-number"],"["  + json.length +"]"):"";
         var  html = HtmlUtils.openTag("div");
         var labels = [];
         var indices = [];
@@ -1278,7 +1280,7 @@ var Utils =  {
                 indices.push(i);
             }
             if(indices.length==0) {
-                html += this.formatJsonBlob({value:HtmlUtils.span(["class","json-none"],"[]")},null,level+1,levelsShown);
+                html += this.formatJsonBlob({value:HtmlUtils.span([ATTR_CLASS,"json-none"],"[]")},null,level+1,levelsShown);
             }
         } else {
             for(var name in json) {
@@ -1286,7 +1288,7 @@ var Utils =  {
                 indices.push(name);
             }
             if(indices.length==0) {
-                html += this.formatJsonBlob({value:HtmlUtils.span(["class","json-none"],"No properties")},null,level+1,levelsShown);
+                html += this.formatJsonBlob({value:HtmlUtils.span([ATTR_CLASS,"json-none"],"No properties")},null,level+1,levelsShown);
             }
         }
 
@@ -1411,7 +1413,7 @@ var Utils =  {
 	let link = document.createElement('a');
 	link.href = url;
 	link.target='_download';
-//	link.setAttribute('download', 'file.csv');
+	//	link.setAttribute('download', 'file.csv');
 	// This part is necessary for older browsers
 	if (document.createEvent) {
             let event = document.createEvent('MouseEvents');
@@ -2017,7 +2019,7 @@ var Utils =  {
 				return true;
 			    });
 			}
-//			console.log(t.tag +" " + value);
+			//			console.log(t.tag +" " + value);
                         let s = "";
                         if(t.tag=="func") {
                             let f = t.attrs.f;
@@ -2077,15 +2079,15 @@ var Utils =  {
                             }
                             if(Utils.isDefined(min,max)) {
                                 let color  = t.attrs["color"]||"#4E79A7";
-                                let width = t.attrs["width"]||"100%";
+                                let width = t.attrs[ATTR_WIDTH]||"100%";
                                 let height = parseFloat(t.attrs["height"]||12);
                                 let percent = (100-100*(value-min)/(max-min))+"%";
                                 let border = t.attrs["border"]||"1px solid #ccc";
                                 let includeValue = t.attrs["includeValue"]||true;
                                 let bar =  HU.div([ATTR_TITLE,value+"/"+max,
-						   ATTR_STYLE,HU.css("display","inline-block","position","relative", "height",(height+2)+"px","width",width,"border",border,"border-left","none")],
+						   ATTR_STYLE,HU.css("display","inline-block","position","relative", "height",(height+2)+"px",ATTR_WIDTH,width,"border",border,"border-left","none")],
                                                   HU.div([ATTR_STYLE,HU.css("position","absolute","left","0px","right",percent,"height",height+"px","background",color)]));
-                                if(includeValue) return HU.row([["width","1%"],value],bar);
+                                if(includeValue) return HU.row([[ATTR_WIDTH,"1%"],value],bar);
                                 return bar;
 
                                 
@@ -2113,7 +2115,7 @@ var Utils =  {
 						   ATTR_STYLE,HU.css("display","inline-block","position","relative")],
                                                   starsbase+
                                                   HU.div([ATTR_STYLE,HU.css("white-space","nowrap","overflow-x","hidden","position","absolute","left","0px","right",percent,"top","0px","bottom","0px")], stars));
-                                if(includeValue) return HU.row([["width","1%"],value],bar);
+                                if(includeValue) return HU.row([[ATTR_WIDTH,"1%"],value],bar);
                                 return bar;
                             }
                         }
@@ -2249,18 +2251,18 @@ var Utils =  {
 
                             if(value!="") {
                                 let title = "";
-                                if(t.attrs["title"]) {
-                                    title = t.attrs["title"];
+                                if(t.attrs[ATTR_TITLE]) {
+                                    title = t.attrs[ATTR_TITLE];
                                     for(a in source)
                                         title = title.replace("{" + a+"}",source[a]);
                                 }
-                                let attrs = ["title", title,'data-caption',title];
+                                let attrs = [ATTR_TITLE, title,'data-caption',title];
                                 if(t.attrs["height"]) {
                                     attrs.push("height");
                                     attrs.push(t.attrs["height"]);
                                 } else {
-                                    attrs.push("width");
-                                    attrs.push(t.attrs["width"]||"100%");
+                                    attrs.push(ATTR_WIDTH);
+                                    attrs.push(t.attrs[ATTR_WIDTH]||"100%");
                                 }
                                 attrs.push("loading");
                                 attrs.push("lazy");
@@ -2271,7 +2273,7 @@ var Utils =  {
                                         t.attrs['popupBase'] = "gallery"+Utils.getUniqueId();
                                     }
                                     let base = t.attrs['popupBase'];
-                                    value = HU.href(url,value,[ATTR_CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,'title',title]);
+                                    value = HU.href(url,value,[ATTR_CLASS,"popup_image","data-fancybox","fancybox","data-caption",title,ATTR_TITLE,title]);
                                 }
                             }
                         }
@@ -2290,18 +2292,18 @@ var Utils =  {
                                     }
                                 }
                                 let title = "";
-                                if(t.attrs["title"]) {
-                                    title = t.attrs["title"];
+                                if(t.attrs[ATTR_TITLE]) {
+                                    title = t.attrs[ATTR_TITLE];
                                     for(a in source)
                                         title = title.replace("{" + a+"}",source[a]);
                                 }
-                                let attrs = ["title", title];
+                                let attrs = [ATTR_TITLE, title];
                                 if(t.attrs["height"]) {
                                     attrs.push("height");
                                     attrs.push(t.attrs["height"]);
                                 } else {
-                                    attrs.push("width");
-                                    attrs.push(t.attrs["width"]||"100%");
+                                    attrs.push(ATTR_WIDTH);
+                                    attrs.push(t.attrs[ATTR_WIDTH]||"100%");
                                 }
                                 console.log("VALUE:" + value);
                                 value ="";
@@ -2407,14 +2409,14 @@ var Utils =  {
 
                         if(has('maxHeight')) {
                             value =  HU.div([ATTR_STYLE,HU.css("display","inline-block",
-							  "max-height",HU.getDimension(get('maxHeight')),
-							  "overflow-y","auto")],value);
+							       "max-height",HU.getDimension(get('maxHeight')),
+							       "overflow-y","auto")],value);
                         }
 
                         if(has("maxWidth")) {
                             value =  HU.div([ATTR_STYLE,HU.css("display","inline-block","white-space","nowrap",
-							  "max-width",HU.getDimension(get('maxWidth')),
-							  "overflow-x","auto")],value);
+							       "max-width",HU.getDimension(get('maxWidth')),
+							       "overflow-x","auto")],value);
                         }
                         s+=value;
                         return s;
@@ -2474,7 +2476,7 @@ var Utils =  {
         let s =  "";
 	if(attrs['includeLink']) s +=HU.href(url,"Link") +"<br>";
         s+=  HU.tag('iframe',[ATTR_ID,'ytplayer', 'allow', 'autoplay; fullscreen','type','text/html','frameborder','0',
-                              ATTR_WIDTH,attrs['width']||640,ATTR_HEIGHT,attrs['height']||360, 
+                              ATTR_WIDTH,attrs[ATTR_WIDTH]||640,ATTR_HEIGHT,attrs['height']||360, 
                               SRC,embedUrl
                              ]);
 	return s;
@@ -2887,7 +2889,7 @@ var Utils =  {
 		clazz += ' ramadda-snippet-popup-large';
 	    }
 	    let target = $(this).attr('hover-target')?jqid($(this).attr('hover-target')):snippet.parent();
-            target.parent().attr('title','');
+            target.parent().attr(ATTR_TITLE,'');
 	    target.tooltip({
 		content:()=>{return html;},
 		position: { my: "left+15 top", at: "left top+30" },
@@ -2934,19 +2936,19 @@ var Utils =  {
         let headings = $(parent + '.ramadda-linkable');
 
         headings.mouseenter(function(){
-            let id = $(this).attr("id");
+            let id = $(this).attr(ATTR_ID);
             if(!id) return;
             $("#" + id +"-hover").html(HtmlUtils.getIconImage("fa-link",null,[ATTR_STYLE,"font-size:10pt;"]));
             $("#" + id +"-hover").show();
         });
         headings.click(function(){
-            let id = $(this).attr("id");
+            let id = $(this).attr(ATTR_ID);
             if(id) {
                 HU.scrollToAnchor(id,-50);
             }
         });
         headings.mouseleave(function(){
-            let id = $(this).attr("id");
+            let id = $(this).attr(ATTR_ID);
             if(!id) return;
             $("#" + id +"-hover").hide();
         });     
@@ -2972,7 +2974,7 @@ var Utils =  {
             resultsId = HU.getUniqueId();
             let width = input.width();
             let results = HU.div([ATTR_ID,resultsId,
-				  ATTR_STYLE,HU.css("border","0px","width",width+"px","position","absolute"),
+				  ATTR_STYLE,HU.css("border","0px",ATTR_WIDTH,width+"px","position","absolute"),
 				  ATTR_CLASS,'ramadda-popup ramadda-search-popup'],"");
             input.parent().append(results);
         }
@@ -3054,8 +3056,8 @@ var Utils =  {
                 let v = name.replace(/\"/g, "_quote_");
 		
                 let entryLink =  HU.href(RamaddaUtil.getUrl("/entry/show?entryid=" + id),
-					 HU.getIconImage(value.icon||icon_blank16,["width",ramaddaGlobals.iconWidth]) + SPACE+name,[ATTR_TITLE,"View entry",'data-type',value.typeName,'data-name',value.name,'data-icon',value.icon,
-																    ATTR_STYLE,HU.css("display","inline-block","width","100%"), ATTR_CLASS,"ramadda-highlightable"]);
+					 HU.getIconImage(value.icon||icon_blank16,[ATTR_WIDTH,ramaddaGlobals.iconWidth]) + SPACE+name,[ATTR_TITLE,"View entry",'data-type',value.typeName,'data-name',value.name,'data-icon',value.icon,
+																       ATTR_STYLE,HU.css("display","inline-block",ATTR_WIDTH,"100%"), ATTR_CLASS,"ramadda-highlightable"]);
                 let searchLink;
                 if(submitForm) {
                     searchLink =  HU.span([ATTR_CLASS,"ramadda-highlightable ramadda-search-input","index",i,
@@ -3078,7 +3080,7 @@ var Utils =  {
 		content: function() {
 		    let name = $(this).attr('data-name');
 		    return 'Click to view entry<br>'+
-			HU.image($(this).attr('data-icon'),["width",ramaddaGlobals.iconWidth])+' ' +
+			HU.image($(this).attr('data-icon'),[ATTR_WIDTH,ramaddaGlobals.iconWidth])+' ' +
 			HU.b(name)+
 			HU.div([],'Type: ' + $(this).attr('data-type'));
 		}});
@@ -3116,7 +3118,7 @@ var Utils =  {
         let value = Utils.searchLastInput||"";
         let form = "<form action='" + RamaddaUtil.getUrl('/search/do')+"'>";
         let searchInput = HU.tag('input',['value', value, ATTR_PLACEHOLDER,'Search text', 'autocomplete','off','autofocus','true',ATTR_ID,'popup_search_input',ATTR_CLASS, 'ramadda-search-input',
-                                    ATTR_STYLE,HU.css('margin-left','4px', 'padding','2px','width','250px','border','0px'),'name','text']);
+					  ATTR_STYLE,HU.css('margin-left','4px', 'padding','2px',ATTR_WIDTH,'250px','border','0px'),'name','text']);
 	let right = '';
         if(ramaddaThisEntry) {
             right=HU.span([ATTR_STYLE,HU.css('margin-right','5px'),ATTR_TITLE,"Search under this entry"],
@@ -3137,7 +3139,7 @@ var Utils =  {
 		    HU.span([ATTR_TITLE, 'Go to type search form',
 			     ATTR_CLASS,CLASS_CLICKABLE],  /*HU.getIconImage('fa-solid fa-t')+' '+*/'Types'));
 
-        let links =  HU.div(["id", linksId,ATTR_STYLE,HU.css('text-align','right','font-size','12px')],
+        let links =  HU.div([ATTR_ID, linksId,ATTR_STYLE,HU.css('text-align','right','font-size','12px')],
 			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
         let resultsId = HU.getUniqueId('searchresults');
         let results = HU.div([ATTR_ID,resultsId,ATTR_CLASS,'ramadda-search-popup-results']);
@@ -3166,8 +3168,8 @@ var Utils =  {
                     Utils.tooltipObject = null;
                 }
                 if(HtmlUtils.hasPopupObject()) {
-                    let thisId = HtmlUtils.getPopupObject().attr("id");
-                    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr("id")) {
+                    let thisId = HtmlUtils.getPopupObject().attr(ATTR_ID);
+                    if (HtmlUtils.checkToHidePopup() && thisId == HtmlUtils.getPopupObject().attr(ATTR_ID)) {
                         HtmlUtils.hidePopupObject();
                     }
                 }
@@ -3286,15 +3288,15 @@ var Utils =  {
 
 	let header = jqid(viewId+'_leftheader');
 	header.append(HU.div([ATTR_CLASS,'ramadda-frames-nav'],
-			     HU.span(['title','View previous',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
+			     HU.span([ATTR_TITLE,'View previous',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-prev','data-nav','prev'],
 				     HU.getIconImage('fas fa-caret-left',null,
 						     [ATTR_STYLE,'font-size:130%']))+
 			     HU.space(1) +
-			     HU.span(['title','View next',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
+			     HU.span([ATTR_TITLE,'View next',ATTR_CLASS,'ramadda-clickable ramadda-frames-nav-link ramadda-frames-nav-link-next','data-nav','next'],
 				     HU.getIconImage('fas fa-caret-right',null,
 						     [ATTR_STYLE,'font-size:130%']))));			     
 	let navClick=nav=>{
-//	    nav.focus();
+	    //	    nav.focus();
 	    let dir = nav.attr('data-nav');
 	    let active = list.find('.ramadda-frames-entry-active');
 	    let next;
@@ -3420,19 +3422,19 @@ var Utils =  {
     },
 
     enumTypeCount: -1,
-//    enumColorPalette:['#6B7280 ',"rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
+    //    enumColorPalette:['#6B7280 ',"rgb(141, 211, 199)", "rgb(255, 255, 179)", "rgb(190, 186, 218)", "rgb(251, 128, 114)", "rgb(128, 177, 211)", "rgb(253, 180, 98)", "rgb(179, 222, 105)", "rgb(252, 205, 229)", "rgb(217, 217, 217)", "rgb(188, 128, 189)", "rgb(204, 235, 197)", "rgb(255, 237, 111)"],
     enumColorPalette:
     [
-    "#9CA3AF", // Muted Slate (softer gray-blue)
-    "#BDB7D0", // Muted Lavender (desaturated lavender)
-    "#D8A29D", // Muted Coral (muted coral pink)
-    "#BCCAB3", // Muted Sage (soft, grayish-green)
-    "#D9C7A8", // Muted Beige (light beige)
-    "#C4A69A", // Muted Terracotta (soft, muted rust)
-    "#E7C4B0", // Muted Peach (muted peach)
-    "#9CAAC0", // Muted Steel Blue (soft steel blue)
-    "#A8A895", // Muted Olive (faded olive green)
-    "#D4A5A4"  // Muted Blush (soft, muted pink)
+	"#9CA3AF", // Muted Slate (softer gray-blue)
+	"#BDB7D0", // Muted Lavender (desaturated lavender)
+	"#D8A29D", // Muted Coral (muted coral pink)
+	"#BCCAB3", // Muted Sage (soft, grayish-green)
+	"#D9C7A8", // Muted Beige (light beige)
+	"#C4A69A", // Muted Terracotta (soft, muted rust)
+	"#E7C4B0", // Muted Peach (muted peach)
+	"#9CAAC0", // Muted Steel Blue (soft steel blue)
+	"#A8A895", // Muted Olive (faded olive green)
+	"#D4A5A4"  // Muted Blush (soft, muted pink)
     ],
     enumColors: {},
     getEnumColor:function(type) {
@@ -3743,8 +3745,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	
 	form.on('change','input, select, textarea',
 		function() {
-	    changed = true;
-	});
+		    changed = true;
+		});
 
     },
 
@@ -3826,7 +3828,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 		HU.toggleBlockVisibility(blockId,imgId, i1,i2,null,visible);
 	    });
-					
+	    
 	});
     },
     initTooltip:function(select) {
@@ -3835,7 +3837,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    open: function(event, ui) {
 		let width = $(this).attr('tooltip-width');
 		if(width)
-		    ui.tooltip.css('width', width).css('max-width',width);
+		    ui.tooltip.css(ATTR_WIDTH, width).css('max-width',width);
             },
 	    show: {
 		delay: 1000
@@ -3848,7 +3850,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             },
 	    hide:false,
 	    content: function() {
-		let title = $(this).attr('title');
+		let title = $(this).attr(ATTR_TITLE);
 		title = Utils.convertText(title??'');
 		let contents = HU.div([ATTR_CLASS,'ramadda-tooltip',ATTR_STYLE,'margin:5px;'],title);
 		return contents;
@@ -3865,7 +3867,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let id = HU.getUniqueId('search_');
 	let initValue = HU.getUrlArgument(ARG_PAGESEARCH)??'';
 	let input = HU.input('',initValue,[ATTR_CLASS,'ramadda-pagesearch-input',
-				    ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
+					   ATTR_ID,id,ATTR_PLACEHOLDER,label??'Search','size',args.inputSize]);
 	let buttonMap ={};
 	if(args.buttons) {
 	    args.buttons.forEach(b=>{
@@ -4187,7 +4189,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                     suggest+=HU.div([ATTR_CLASS,CLASS_CLICKABLE +' ramadda-suggest',"suggest",d],d);
                 });
                 let html = HU.div([ATTR_CLASS,"ramadda-search-popup",ATTR_STYLE,HU.css("max-width","200px",
-                                                                             "padding","4px")],suggest);
+										       "padding","4px")],suggest);
                 let dialog = HU.makeDialog({content:html,my:"left top",at:"left bottom",anchor:input});
                 dialog.find(".ramadda-suggest").click(function() {
                     HtmlUtils.hidePopupObject();
@@ -4214,7 +4216,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     isPopupObject: function(obj) {
         if(this.popupObject && obj) {
-            return this.popupObject.attr("id") == obj.attr("id");
+            return this.popupObject.attr(ATTR_ID) == obj.attr(ATTR_ID);
         }
         return false;
     },
@@ -4244,7 +4246,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let diff = now.getTime()-this.popupObjectTime.getTime();
 	    //wait half a second?
 	    if(diff<500) {
-//		console.log('hide popup time  - too soon - diff:' + diff);
+		//		console.log('hide popup time  - too soon - diff:' + diff);
 		return;
 	    }
 	    //	    console.log('hide popup time - ok - diff:' + diff);
@@ -4252,14 +4254,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	this.popupObjectTime=null;
 
         if (this.popupObject) {
-//	    console.log('close');
+	    //	    console.log('close');
             this.popupObject.hide();
             if(this.popupObject.attr("removeonclose")== "true") {
                 this.popupObject.remove();
             }
             this.popupObject = null;
         } else {
-//	    console.log('no popup');
+	    //	    console.log('no popup');
 	}
         this.popupTime = new Date();
         if(event) {
@@ -4502,9 +4504,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let clazz = "";
             let a;
             if(url.startsWith("fa-thin") || url.startsWith("fa-light") || url.startsWith("fa-regular") || url.startsWith("fa-solid") ||url.startsWith("fas ") || url.startsWith("fab ")|| url.startsWith("far")) {
-                a = ["class",url];
+                a = [ATTR_CLASS,url];
             } else {
-                a = ["class","fas " + url];
+                a = [ATTR_CLASS,"fas " + url];
             }
             if(attrs2)
                 a = Utils.mergeLists(a, attrs2);
@@ -4614,7 +4616,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if (right) {
             style += "padding-right: " + right + "px; ";
         }
-        return HtmlUtils.div(["style", style], html);
+        return HtmlUtils.div([ATTR_STYLE, style], html);
 
     },
     makeTabs(list,args) {
@@ -4728,19 +4730,19 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     leftRight: function(left, right, leftWeight, rightWeight) {
         if (leftWeight == null) leftWeight = "6";
         if (rightWeight == null) rightWeight = "6";
-        return this.div(["class", "row"],
-                        this.div(["class", "col-md-" + leftWeight], left) +
-                        this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
+        return this.div([ATTR_CLASS, "row"],
+                        this.div([ATTR_CLASS, "col-md-" + leftWeight], left) +
+                        this.div([ATTR_CLASS, "col-md-" + rightWeight, ATTR_STYLE, "text-align:right;"], right));
     },
     leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs,cellStyle) {
         if (!attrs) attrs = {};
         if (!attrs.valign) attrs.valign = "top";
         if(!cellStyle) cellStyle = "";
-        return this.tag("table", ["border", 0, "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag("table", ["border", 0, ATTR_WIDTH, "100%", "cellspacing", "0", "cellpadding", "0"],
                         this.tr(["valign", attrs.valign],
-                                this.td(["align", "left", "width", leftWidth, ATTR_STYLE,cellStyle], left) +
-                                this.td(["align", "center", "width", centerWidth, ATTR_STYLE,cellStyle], center) +
-                                this.td(["align", "right", "width", rightWidth, ATTR_STYLE,cellStyle], right)));
+                                this.td(["align", "left", ATTR_WIDTH, leftWidth, ATTR_STYLE,cellStyle], left) +
+                                this.td(["align", "center", ATTR_WIDTH, centerWidth, ATTR_STYLE,cellStyle], center) +
+                                this.td(["align", "right", ATTR_WIDTH, rightWidth, ATTR_STYLE,cellStyle], right)));
     },
 
     row: function() {
@@ -4758,7 +4760,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     hrow: function() {
         let row = "";
         Array.from(arguments).forEach(h=>{
-            row+=HtmlUtils.div(["style", "display:inline-block"],h);
+            row+=HtmlUtils.div([ATTR_STYLE, "display:inline-block"],h);
         })
         return row;
     },
@@ -4769,14 +4771,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         var leftAttrs = ["align", "left"];
         var rightAttrs = ["align", "right"];
         if (leftWidth) {
-            leftAttrs.push("width");
+            leftAttrs.push(ATTR_WIDTH);
             leftAttrs.push(leftWidth);
         }
         if (rightWidth) {
-            rightAttrs.push("width");
+            rightAttrs.push(ATTR_WIDTH);
             rightAttrs.push(rightWidth);
         }
-        return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag("table", ["border", "0", ATTR_WIDTH, "100%", "cellspacing", "0", "cellpadding", "0"],
                         this.tr(["valign", attrs.valign],
                                 this.td(leftAttrs, left) +
                                 this.td(rightAttrs, right)));
@@ -4822,7 +4824,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	box = jqid(box);
 	let width = opts.width??opts.boxWidth??'200px';
 	if(opts.buttonWidth) {
-	    btn.css('width',opts.buttonWidth);
+	    btn.css(ATTR_WIDTH,opts.buttonWidth);
 	}
 	if(opts.fontSize) {
 	    btn.css('font-size',opts.fontSize);
@@ -4850,7 +4852,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.boxTop??opts.top) {
 	    box.css('top',opts.boxTop??opts.top);
 	}	
-	box.css('width',width);
+	box.css(ATTR_WIDTH,width);
 	box.css('left','-'+width);
 	let anim = (e,v)=>{
 	    e.animate({
@@ -4986,7 +4988,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    popup.find('a,div').tooltip({
 		classes: {"ui-tooltip": "wiki-editor-tooltip"},
 		content: function () {
-		    return $(this).prop('title');
+		    return $(this).prop(ATTR_TITLE);
 		},
 		show: { effect: 'slide', delay: 500, duration: 400 },
 		position: { my: "left top", at: "right top" }
@@ -4999,7 +5001,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(opts.inPlace) {
             let src =  $("#" + opts.contentId);
             let dest = $("#"+ parentId);
-            dest.css("display","block").css("width","fit-content").css("height","fit-content");
+            dest.css("display","block").css(ATTR_WIDTH,"fit-content").css("height","fit-content");
             src.appendTo(dest);
             src.show();
         }
@@ -5007,7 +5009,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
         if(opts.anchor) {
             if(opts.width) {
-                popup.css("width",opts.width);
+                popup.css(ATTR_WIDTH,opts.width);
             }
             popup.position({
                 of: opts.anchor,
@@ -5442,7 +5444,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         $("#" + id).html(val);
     },
     formTable: function() {
-        return this.openTag("table", ["class", "formtable", "cellspacing", "0", "cellspacing", "0"]);
+        return this.openTag("table", [ATTR_CLASS, "formtable", "cellspacing", "0", "cellspacing", "0"]);
     },
     formTableClose: function() {
         return this.closeTag("table");
@@ -5450,12 +5452,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     formEntryTop: function(label, value, value2) {
         if(value2) 
             return HU.tag("tr", ["valign", "top"],
-                          HU.tag("td", ["class", "formlabel", "align", "right"],
+                          HU.tag("td", [ATTR_CLASS, "formlabel", "align", "right"],
                                  label) +
                           HU.tag("td", [],   value) +
                           HU.tag("td", [],   value2));
         return this.tag("tr", ["valign", "top"],
-                        this.tag("td", ["class", "formlabel", "align", "right"],
+                        this.tag("td", [ATTR_CLASS, "formlabel", "align", "right"],
                                  label) +
                         this.tag("td", [],
                                  value));
@@ -5463,7 +5465,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     formEntry: function(label, value) {
         return this.tag("tr", [],
-                        this.tag("td", ["class", "formlabel", "align", "right"],
+                        this.tag("td", [ATTR_CLASS, "formlabel", "align", "right"],
                                  label) +
                         this.tag("td", [],
                                  value));
@@ -5524,7 +5526,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     openRow: function() {
-        return this.openTag("div", ["class", "row"]);
+        return this.openTag("div", [ATTR_CLASS, "row"]);
     },
     closeRow: function() {
         return this.closeTag("div");
@@ -5584,11 +5586,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         return html;
     },
     styleAttr: function(s) {
-        return this.attr("style", s);
+        return this.attr(ATTR_STYLE, s);
     },
 
     classAttr: function(s) {
-        return this.attr("class", s);
+        return this.attr(ATTR_CLASS, s);
     },
     makeFullScreen:function(elem) {
         if(elem==null) {
@@ -5641,7 +5643,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(opts.left) style+=HU.css('left',opts.left);
 	else style+=HU.css('right',opts.right);
 	style+=HU.css('top',opts.top);		
-        let html= HtmlUtils.div(["id",id,"title","Expand", "class","ramadda-expandable-link",
+        let html= HtmlUtils.div([ATTR_ID,id,ATTR_TITLE,"Expand", ATTR_CLASS,"ramadda-expandable-link",
 				 ATTR_STYLE,style],icon);
         $(selector).append(html);
         let btn = $("#"+id);
@@ -5659,20 +5661,20 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             let expanded = $(this).attr("data-expanded")=="true";
             if(expanded) {
                 icon  = HtmlUtils.getIconImage("fa-expand-arrows-alt");
-                $(this).attr("title","Expand");
+                $(this).attr(ATTR_TITLE,"Expand");
                 $(selector).css("left","").css("right","").css("top","").css("bottom","").css("position","relative").css("height", "").css("z-index","").css("background",origBackground?origBackground:"");
 		$(selector).removeClass('ramadda-expandable-expanded');
                 btn.css("display","none");
                 $(selector).find(".ramadda-expandable-target").each(function() {
                     $(this).attr("isexpanded","false");
 		    //                    $(this).css("height",$(this).attr("original-height"));
-                    $(this).attr("style",$(this).attr("original-style"));		    
+                    $(this).attr(ATTR_STYLE,$(this).attr("original-style"));		    
                 });
             } else {
                 let h = $(window).height();
                 icon  = HtmlUtils.getIconImage("fa-compress-arrows-alt");
                 let top = $(selector).offset().top;
-                $(this).attr("title","Contract");
+                $(this).attr(ATTR_TITLE,"Contract");
                 if(fullScreen) {
                     let target  = $(selector).find(".ramadda-expandable");
                     target.css("background","#fff");
@@ -5724,7 +5726,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         });
     },
     idAttr: function(s) {
-        return this.attr("id", s);
+        return this.attr(ATTR_ID, s);
     },
     link: function(url, label, attrs) {
         if (attrs == null) attrs = [];
@@ -5734,7 +5736,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         attrs = a;
         attrs.push("url");
         attrs.push(url);
-        attrs.push("class");
+        attrs.push(ATTR_CLASS);
         attrs.push("ramadda-link");
         if (attrs.style) attrs.style += "display:inline-block;";
         else attrs.style = "style='display:inline-block;'";
@@ -5782,7 +5784,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     onClick: function(call, html, attrs) {
-        let myAttrs = ["onclick", call, "style", "color:black;   cursor:pointer;"];
+        let myAttrs = ["onclick", call, ATTR_STYLE, "color:black;   cursor:pointer;"];
         if (attrs != null) {
             for (let i = 0; i < attrs.length; i++) {
                 myAttrs.push(attrs[i]);
@@ -5818,12 +5820,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         if(label) {
 	    let title='';
 	    for(let i=0;i<attrs.length;i+=2) {
-		if(attrs[i]=='title') {
+		if(attrs[i]==ATTR_TITLE) {
 		    title = attrs[i+1];
 		    break;
 		}
 	    }
-            cbx += "&nbsp;" + HU.tag("label",["for", id,'title',title],label);
+            cbx += "&nbsp;" + HU.tag("label",["for", id,ATTR_TITLE,title],label);
         }
         return cbx;
     },
@@ -5923,9 +5925,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 	    let defaultValue = item.attributes["default-value"]?.value;
 	    if(item.name=='dbsortdir1') {
-//		console.dir(item.attributes);
+		//		console.dir(item.attributes);
 	    }
-//            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+	    //            console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
             var values = [];
             if (item.type == "select-multiple" && item.selectedOptions) {
                 for (a in item.selectedOptions) {
@@ -5968,16 +5970,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let base = window.location.protocol + "//" + window.location.host;
         url = base + url;
 
-        let input = opts.showInputField?HtmlUtils.input("formurl", url, ["size", "80","id","formurl"]):
-	    HtmlUtils.hidden("formurl", url, ["size", "80","id","formurl"]);
-        let html = HU.vspace() +HtmlUtils.div(["class", "ramadda-form-url"], 
-					input+SPACE2+
-					(opts.includeCopyArgs?
-					 HU.span([ATTR_ID,'argscopy',ATTR_CLASS,CLASS_CLICKABLE,'title','Copy json for subset action'],
-						 HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
-					HU.span([ATTR_ID,'clipboard',ATTR_CLASS,CLASS_CLICKABLE,'title','Copy URL to clipboard'],
-						HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
-					HU.href(url, HtmlUtils.getIconImage('fas fa-link'),['title','Form URL']));
+        let input = opts.showInputField?HtmlUtils.input("formurl", url, [ATTR_SIZE, "80",ATTR_ID,"formurl"]):
+	    HtmlUtils.hidden("formurl", url, [ATTR_SIZE, "80",ATTR_ID,"formurl"]);
+        let html = HU.vspace() +HtmlUtils.div([ATTR_CLASS, "ramadda-form-url"], 
+					      input+SPACE2+
+					      (opts.includeCopyArgs?
+					       HU.span([ATTR_ID,'argscopy',ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Copy json for subset action'],
+						       HtmlUtils.getIconImage('fas fa-earth-americas')) +SPACE2:'')+
+					      HU.span([ATTR_ID,'clipboard',ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Copy URL to clipboard'],
+						      HtmlUtils.getIconImage('fas fa-clipboard')) + SPACE2+
+					      HU.href(url, HtmlUtils.getIconImage('fas fa-link'),[ATTR_TITLE,'Form URL']));
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -6076,9 +6078,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag','tag',$(this).html() +' ' + value], cbx);
 		cbxs.push(cbx);
 	    });
-	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", "width","600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
+	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", ATTR_WIDTH,"600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
 	    let inputId = HU.getUniqueId("input_");
-	    let input = HU.input("","",[ATTR_STYLE,HU.css("width","200px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
+	    let input = HU.input("","",[ATTR_STYLE,HU.css(ATTR_WIDTH,"200px;"), ATTR_PLACEHOLDER,'Search for ' + label.toLowerCase(),ATTR_ID,inputId]);
 	    if(opts.makeButtons) {
 		let buttons = '';
 		buttons+=HU.space(1)+HU.div([ATTR_CLASS,'ramadda-select-action','data-action','clear'],'Clear all');
@@ -6174,7 +6176,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		if(item.imgsrc)
 		    attrs.push('img-src',item.imgsrc);
 		if(item.datatitle)
-		    attrs.push('title',item.datatitle);
+		    attrs.push(ATTR_TITLE,item.datatitle);
 		if(item.datastyle)
 		    attrs.push('data-style',item.datastyle);		
 		let value = String(item.value).replace(/"/g,'\\"');
@@ -6198,14 +6200,14 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		if(item.indexOf && item.indexOf('base64')<0) 
 		    tt = tt+HU.getTitleBr() + item;
 	    }
-	    attrs.push('title',tt,extra,null,'value',item);
+	    attrs.push(ATTR_TITLE,tt,extra,null,'value',item);
             options+=HU.tag("option",attrs,label);
         });
         return options;
     },
 
     datePicker: function(name,value,attrs) {
-        attrs.push("size");
+        attrs.push(ATTR_SIZE);
         attrs.push("8");
         return  HtmlUtils.input(name, value,attrs);
     },
@@ -6238,7 +6240,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    yearRange: '1900:2100'});
     },
     rangeInput: function(name,id) {
-        var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div(["id",id]) +"</form>";
+        var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div([ATTR_ID,id]) +"</form>";
         console.log(html);
         return html;
     },
@@ -6355,7 +6357,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
             inner += HU.center(HU.div([ATTR_ID,closeId+"_button"],"OK"));
         }
         inner = HU.div([ATTR_CLASS,"ramadda-shadow-box ramadda-splash",
-                        ATTR_STYLE,HU.css("width",opts.width)+ opts.style],
+                        ATTR_STYLE,HU.css(ATTR_WIDTH,opts.width)+ opts.style],
                        inner);
 
         let container = $(HU.div([ATTR_CLASS,"ramadda-splash-container"],inner)).appendTo($("body"));
@@ -6456,13 +6458,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         let img1 = "fas fa-caret-down";
         let img2 = "fas fa-caret-right";        
         let img = HU.span([ATTR_ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
-	let attrs = ['toggle-block-id',id,'toggle-block-visible',visible,ATTR_STYLE,opts.headerStyle,"class", opts.headerClass];
+	let attrs = ['toggle-block-id',id,'toggle-block-visible',visible,ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass];
 	if(opts.extraAttributes) {
 	    attrs = Utils.mergeLists(attrs,opts.extraAttributes);
 	}
         let header = HtmlUtils.div(attrs,  img +  " " + label);
         let style = (visible ? "display:block;visibility:visible" : "display:none;");
-        let body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
+        let body = HtmlUtils.div([ATTR_CLASS, "hideshowblock", ATTR_ID, id, ATTR_STYLE, style],
                                  contents);
 	if(opts.separate)
 	    return {header:header,body:body,id:id};
@@ -6555,22 +6557,23 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 
         let label = item.label;
         let img = item.element.attr("img-src");
-        let title = item.element.attr("title");	
+        let title = item.element.attr(ATTR_TITLE);	
 	if(label=='<blank>') label='&lt;blank&gt;';
         if(img) {
             if(img.startsWith("fa")) {
                 img = HU.getIconImage(img);
             } else {
-                img = HU.image(img, [ATTR_STYLE,item.element.attr("data-style")||"", "width",64,
-                                     'title',title,
-				     "class", "ui-icon " + item.element.attr("data-class")]);
+                img = HU.image(img, [ATTR_STYLE,item.element.attr("data-style")||"",
+				     ATTR_WIDTH,64, ATTR_TITLE,title,
+				     ATTR_CLASS, "ui-icon " + item.element.attr("data-class")]);
             }
             $(img).appendTo(wrapper);
         }
 
 	if(!item.element.attr("isheader")) {
-            label = HU.span(['title',label,ATTR_STYLE,HU.css('display','inline-block','width','100%',
-							'margin-left',img?'32px':'4px','white-space','nowrap')], label);
+            label = HU.span([ATTR_TITLE,label,ATTR_STYLE,
+			     HU.css('display','inline-block',ATTR_WIDTH,'100%',
+				    'margin-left',img?'32px':'4px','white-space','nowrap')], label);
         } else {
 	    wrapper.css('padding-left','0px').css('pointer-events','none');
 	    li.css('pointer-events','none');
@@ -6579,7 +6582,7 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 
         let labelClass = item.element.attr("label-class");
         if(labelClass) {
-            label = HU.div([ATTR_STYLE,HU.css('width','100%'), ATTR_CLASS, labelClass],label);
+            label = HU.div([ATTR_STYLE,HU.css(ATTR_WIDTH,'100%'), ATTR_CLASS, labelClass],label);
         }
 
         wrapper.append(label);
@@ -6600,7 +6603,7 @@ function Div(contents, clazz) {
     this.setHidden = function() {
     }
     this.toString = function() {
-        return HtmlUtils.div(["class", clazz || "", "id", this.id], this.contents);
+        return HtmlUtils.div([ATTR_CLASS, clazz || "", ATTR_ID, this.id], this.contents);
     }
     this.getId = function() {
         return this.id;
@@ -6692,7 +6695,7 @@ var SvgUtils  = SU = {
     makeBlur:function(svg,id,blur) {
         var filter = svg.append("defs")
             .append("filter")
-            .attr("id", id)
+            .attr(ATTR_ID, id)
             .append("feGaussianBlur")
             .attr("stdDeviation", blur);
         return filter;

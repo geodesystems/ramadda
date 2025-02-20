@@ -1018,7 +1018,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    HU.createFancyBox( this.jq(ID_DISPLAY_CONTENTS).find("a.popup_image"), {
                 caption : function( instance, item ) {
 		    let caption =   $(this).attr('data-caption');
-		    if(!Utils.stringDefined(caption)) caption = $(this).attr('title') || '';
+		    if(!Utils.stringDefined(caption)) caption = $(this).attr(ATTR_TITLE) || '';
 		    return caption;
                 }});
 

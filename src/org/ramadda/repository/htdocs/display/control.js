@@ -218,8 +218,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    
 
 	    let btn = (data,title,icon,id)=>{
-		let attrs = ['style','margin-right:6px;','class','ramadda-clickable','title',title,'command',data];
-		if(id) attrs.push('id',this.domId(id));
+		let attrs = [ATTR_STYLE,'margin-right:6px;',ATTR_CLASS,'ramadda-clickable',ATTR_TITLE,title,'command',data];
+		if(id) attrs.push(ATTR_ID,this.domId(id));
 		html +=HU.span(attrs,HU.getIconImage(icon))
 	    }
 
@@ -232,7 +232,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 	    btn("-","Slower",this.iconSlower);
 	    btn("+","Faster",this.iconFaster);	    	    	    
     
-            html += HU.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
+            html += HU.div([ATTR_STYLE, "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
 
@@ -415,7 +415,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let title = '';
 		if(selectable)
 		    title = 'Click to toggle. Shift-click toggle all';
-		block =HU.div([TITLE,title,'field-selected',selected, 'field-id', f.getId(),'class',c], block);
+		block =HU.div([TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
 		fs.push(block);
 	    });
 	    let fhtml = Utils.wrap(fs,'','');
@@ -573,8 +573,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     if (properties.text) this.text = properties.text;
     else if (properties.label) this.text = properties.label;
     else if (properties.html) this.text = properties.html;
-    if (properties["class"]) this["class"] = properties["class"];
-    else this["class"] = "display-text";
+    if (properties[ATTR_CLASS]) this[ATTR_CLASS] = properties[ATTR_CLASS];
+    else this[ATTR_CLASS] = "display-text";
 
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_LABEL, properties);
     let myProps =[];
@@ -582,12 +582,12 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
         initDisplay: function() {
             var theDisplay = this;
             this.createUI();
-            var textClass = this["class"];
+            var textClass = this[ATTR_CLASS];
             if (this.editMode) {
                 textClass += " display-text-edit ";
             }
             var style = "color:" + this.getTextColor("contentsColor") + ";";
-            var html = HU.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), "style", style], this.text);
+            var html = HU.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), ATTR_STYLE, style], this.text);
             if (this.editMode) {
                 html += HU.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }
@@ -689,12 +689,12 @@ function RamaddaLegendDisplay(displayManager, id, properties) {
 		let color = colors[i]||"#fff";
 		if(i>0) html+=delim;
 		if(!inBox) {
-		    html+=HU.div(["class","display-legend-item"], HU.div(["class","display-legend-color " + (circles?"display-colortable-dot":""),"style","background:" + color+";width:" + colorWidth+";"+(circles?"height:" + colorWidth+";":	  "height:15px;")]) +
-				 HU.div(["class","display-legend-label"],label));
+		    html+=HU.div([ATTR_CLASS,"display-legend-item"], HU.div([ATTR_CLASS,"display-legend-color " + (circles?"display-colortable-dot":""),ATTR_STYLE,"background:" + color+";width:" + colorWidth+";"+(circles?"height:" + colorWidth+";":	  "height:15px;")]) +
+				 HU.div([ATTR_CLASS,"display-legend-label"],label));
 		} else {
 		    let lc = labelColors?labelColors[i]:labelColor || labelColor;
-		    html+=HU.div(["class","display-legend-color","style","margin-left:8px;background:" + color+";"],
-				 HU.div(["class","display-legend-label","style","margin-left:8px;margin-right:8x;color:" + lc+";"],label));
+		    html+=HU.div([ATTR_CLASS,"display-legend-color",ATTR_STYLE,"margin-left:8px;background:" + color+";"],
+				 HU.div([ATTR_CLASS,"display-legend-label",ATTR_STYLE,"margin-left:8px;margin-right:8x;color:" + lc+";"],label));
 		}
 	    }
 	    if(orientation!="vertical") {
@@ -743,10 +743,10 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	updateUI: function() {
 	    let records = this.filterData();
 	    let label = this.getDownloadLabel(this.getProperty("csvLabel","Download Data"));
-	    label = label.replace("${title}",this.getProperty("title",""));
+	    label = label.replace("${title}",this.getProperty(ATTR_TITLE,""));
 	    let useIcon = this.getUseIcon(true);
 	    let iconSize = this.getIconSize();
-	    label = HU.div(['style','display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",['style','line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
+	    label = HU.div([ATTR_STYLE,'display:inline-block;',ID,this.getDomId("csv")], useIcon?HU.getIconImage("fa-download",[ATTR_STYLE,'line-height:0px;display:block;'],[STYLE,"cursor:pointer;font-size:" + iconSize+";",TITLE,label]):label);
 	    if(this.getShowRecordCount()) {
 		label=label+HU.space(2)+HU.span([ATTR_ID,this.domId(ID_COUNT)],records?('# '+records.length+' records'):'');
 	    }
@@ -829,7 +829,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    if(this.getShowCopyButton(true))
 		buttons+=  HU.div([ID,this.getDomId(ID_DOWNLOAD_COPY)],"Copy") +space;
 	    buttons+=  HU.div([ID,this.getDomId(ID_CANCEL)],"Cancel");
-	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),'title','Select # records to download','size','4']) +" records");
+	    let html = HU.center("#" +HU.input('',records.length,[ATTR_ID,this.getDomId('number_records'),ATTR_TITLE,'Select # records to download','size','4']) +" records");
 	    html+=HU.center(HU.span([ATTR_STYLE,'font-size:80%;'], 'Note: this downloads the data currently<br>being shown in the browser'));
 	    html+=HU.center(buttons);
 	    if(this.getShowDateSelect()) {
@@ -837,7 +837,7 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 		html+=HU.formEntry('From date:',
 				   HU.tag("input",[ATTR_ID,this.domId(ID_FROMDATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectFromDate??'']));
 		html+=HU.formEntry('To date:',
-				   HU.tag("input",['id',this.domId(ID_TODATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectToDate??'']));
+				   HU.tag("input",[ATTR_ID,this.domId(ID_TODATE),'placeholder','yyyy-MM-dd','size','10','value',this.selectToDate??'']));
 		html+=HU.formTableClose();
 	    }
     
@@ -983,7 +983,7 @@ function RamaddaReloaderDisplay(displayManager, id, properties) {
 		    this.setTimer(this.lastTime);
 		}
 	    });
-	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css("cursor","pointer").attr("title","Reload").click(()=>{
+	    this.jq(ID_COUNTDOWN).addClass("ramadda-clickable").css("cursor","pointer").attr(ATTR_TITLE,"Reload").click(()=>{
 		this.checkReload(-1);
 	    });
 	    this.setTimer(this.getPropertyInterval());
@@ -1170,7 +1170,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		let maxPerRow  = this.getProperty('maxPerRow',-1);
 		let html = '';
 		if(maxPerRow>=0) {
-		    html=HU.open('div',['style','text-align:center;']);
+		    html=HU.open('div',[ATTR_STYLE,'text-align:center;']);
 		}
 		this.records.forEach((record,idx)=>{
 		    if(maxPerRow>=0) {
@@ -1184,7 +1184,7 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    let label = this.getRecordHtml(record, null, labelTemplate);
 		    let style = buttonStyle;
 		    if(idx==0) style+=buttonStyleOn;
-		    tabs.push(HU.span(['class','display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),'style',style,RECORD_ID,record.getId()], label));
+		    tabs.push(HU.span([ATTR_CLASS,'display-menu-button-item ramadda-hoverable ramadda-clickable ' + (idx==0?'display-menu-button-item-on':''),ATTR_STYLE,style,RECORD_ID,record.getId()], label));
 		    this.idToRecord[record.getId()] = record;
 		});
 		html+=Utils.join(tabs,"");
@@ -1197,10 +1197,10 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 		    if($(this).hasClass('display-menu-button-item-on')) return;
 		    let record = _this.idToRecord[$(this).attr(RECORD_ID)];
 		    items.removeClass('display-menu-button-item-on');
-		    items.attr('style',buttonStyle);		    
+		    items.attr(ATTR_STYLE,buttonStyle);		    
 		    items.removeClass('display-menu-button-item-on');
 		    $(this).addClass('display-menu-button-button-on');
-		    $(this).attr('style',buttonStyle+buttonStyleOn);
+		    $(this).attr(ATTR_STYLE,buttonStyle+buttonStyleOn);
 		    _this.propagateEventRecordSelection({record: record});
 		});
 		return

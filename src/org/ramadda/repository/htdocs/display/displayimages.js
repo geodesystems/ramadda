@@ -744,7 +744,7 @@ function RamaddaImagezoomDisplay(displayManager, id, properties) {
 	    this.popupHeight = +this.getProperty("popupHeight",300);
 
 	    let rect = HU.div([STYLE,HU.css("border","1px solid " +this.getHighlightColor(),"width","20px","height","20px","left","10px","top","10px","display","none","position","absolute","z-index",1000,"pointer-events","none"),ID, this.domId(ID_RECT)]);
-	    let imageDiv = HU.div(["style","position:relative"],
+	    let imageDiv = HU.div([ATTR_STYLE,"position:relative"],
 				  rect+
 				  HU.div([ID,this.domId(ID_IMAGE),STYLE,HU.css("position","relative") ]) +
 				  HU.div([ID,this.domId(ID_POPUP),CLASS,"display-imagezoom-popup",STYLE,HU.css("z-index","100","display","none",WIDTH,this.popupWidth+"px",HEIGHT,this.popupHeight+"px","overflow-y","hidden","overflow-x","hidden", "position","absolute","top","0px","left", imageWidth+"px")],""));
@@ -990,7 +990,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 	    this.showStrip = this.thumbnailField && this.getProperty("showStrip");
 	    if(this.showStrip) {
 		let stripStyle = HU.css('overflow-x','auto','max-width','100%') +this.getProperty('stripStyle','');
-		top = HU.div([ID,this.domId(ID_STRIP),CLASS,'display-slides-strip','tabindex','0','style',stripStyle]);
+		top = HU.div([ID,this.domId(ID_STRIP),CLASS,'display-slides-strip','tabindex','0',ATTR_STYLE,stripStyle]);
 	    }
 	    let contents = top+HU.div([ATTR_STYLE,HU.css('position','relative')],
 				      slide + left + right);
@@ -1017,7 +1017,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 
 
 		    if(Utils.isImage(url)) {
-			strip += HU.div([],HU.image(url,['loading','lazy','title',tt,'width',width,'class',clazz,RECORD_INDEX,idx]));
+			strip += HU.div([],HU.image(url,['loading','lazy',ATTR_TITLE,tt,'width',width,ATTR_CLASS,clazz,RECORD_INDEX,idx]));
 		    } else {
 			let label = "";
 			if(this.labelField) {
@@ -1032,7 +1032,7 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 			    label = HU.image(ramaddaBaseUrl +"/media/youtube.png") +" " + label;
 			}
 			tt = tt.replace(/<br>/g,HtmlUtils.BR_ENTITY);
-			strip += HU.div(['title',tt,'style',HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),'class',clazz,RECORD_INDEX,idx],label);
+			strip += HU.div([ATTR_TITLE,tt,ATTR_STYLE,HU.css('display','inline-block','min-width',width,'width',width,'overflow-x','hidden'),ATTR_CLASS,clazz,RECORD_INDEX,idx],label);
 		    }
 		});
 		let stripDom = this.jq(ID_STRIP);
@@ -1136,16 +1136,16 @@ function RamaddaSlidesDisplay(displayManager, id, properties) {
 		    html = HU.div([TITLE,tt], html);
 		}
 		if(this.labelField) {
-		    html = html+HU.div(['class','display-slides-label'], this.labelField.getValue(record));
+		    html = html+HU.div([ATTR_CLASS,'display-slides-label'], this.labelField.getValue(record));
 		}
 		if(this.topLabelTemplate) {
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.topLabelTemplate);
 		    if(mainUrl) label = HU.href(mainUrl,label);
-		    html=HU.div(['class','display-slides-label'], label)+html;
+		    html=HU.div([ATTR_CLASS,'display-slides-label'], label)+html;
 		}
 		if(this.labelTemplate) {
 		    let label = this.applyRecordTemplate(record,this.getDataValues(record),null, this.labelTemplate);
-		    html=html+HU.div(['class','display-slides-label'], label);
+		    html=html+HU.div([ATTR_CLASS,'display-slides-label'], label);
 		}
 			
 

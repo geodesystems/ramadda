@@ -578,7 +578,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			       pos +
 			       rotate+
 			       popup +
-			       HU.div(['style',HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),ID, this.domId(ID_GLOBE)]));
+			       HU.div([ATTR_STYLE,HU.css('width',(w+2)+'px')+this.getGlobeStyle(''),ID, this.domId(ID_GLOBE)]));
 	    let html = HU.center(globe);
 	    html  = globe;
 	    this.setContents(html);
@@ -865,7 +865,7 @@ up: {x:0.3485760134063413,y:0.8418048847668705,z:-0.4121399020482765}
 			this.globe.polygonLabel(f=>{
 			    if(!f.record) return null;
 			    let html =  this.getRecordHtml(f.record,null,this.getProperty("tooltip"));
-			    html = HU.div([CLASS,"display-three-globe-popup",'style',this.getProperty('popupStyle','')], html);
+			    html = HU.div([CLASS,"display-three-globe-popup",ATTR_STYLE,this.getProperty('popupStyle','')], html);
 			    return html;
 			});
 		    }

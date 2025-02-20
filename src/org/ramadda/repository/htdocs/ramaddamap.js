@@ -765,16 +765,19 @@ RepositoryMap.prototype = {
 	let getId = id=>{
 	    return this.mapDivId+"_" + id;
 	};
-	let html = HU.open("table",[STYLE,HU.css("height","100%"), WIDTH,"100%","border","0"  ]);
-	let theMap = HtmlUtils.div([CLASS, "ramadda-map-inner", "style","width:100%;height:100%;position:relative;","id",getId("themap")]);
-	html+=HU.tr([STYLE,HU.css("height","100%")],HU.td([WIDTH,"100%"],theMap));
+	let html = HU.open("table",[ATTR_STYLE,HU.css("height","100%"),
+				    ATTR_WIDTH,"100%","border","0"  ]);
+	let theMap = HtmlUtils.div([ATTR_CLASS, "ramadda-map-inner",
+				    ATTR_STYLE,"width:100%;height:100%;position:relative;",
+				    ATTR_ID,getId("themap")]);
+	html+=HU.tr([ATTR_STYLE,HU.css("height","100%")],HU.td([ATTR_WIDTH,"100%"],theMap));
 	html+="</table>";
 	//	$("#" + this.mapDivId).html(html);
 	$("#" + this.mapDivId).html(theMap);
 
-	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("progress"), CLASS,"ramadda-map-progess", "style","z-index:3000;position:absolute;top:10px;left:40%;"],""));
-	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("label"), "style","z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
-	$("#" + getId("themap")).append(HtmlUtils.div(["id",getId("toolbar"), "style","z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("progress"), ATTR_CLASS,"ramadda-map-progess", ATTR_STYLE,"z-index:3000;position:absolute;top:10px;left:40%;"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("label"), ATTR_STYLE,"z-index:1000;position:absolute;bottom:10px;left:10px;"],""));
+	$("#" + getId("themap")).append(HtmlUtils.div([ATTR_ID,getId("toolbar"), ATTR_STYLE,"z-index:1000;position:absolute;top:10px;left:50%;    transform: translateX(-50%);"],""));
 
         this.map = new OpenLayers.Map(this.mapDivId+"_themap", this.mapOptions);
 
@@ -830,10 +833,10 @@ RepositoryMap.prototype = {
 	//Do this later for when this map is being shown for a display_map
 	let makeSlider = () =>{
 	    let slider = "Image Opacity:&nbsp;" + 
-		HU.div([ID,this.mapDivId +"_opacity_slider_div",STYLE,HU.css("display",
-									     "inline-block","width","150px")],"");
+		HU.div([ATTR_ID,this.mapDivId +"_opacity_slider_div",
+			ATTR_STYLE,HU.css("display", "inline-block","width","150px")],"");
 
-	    slider = HU.span(['id',this.mapDivId+'_opacity_slider','style',
+	    slider = HU.span([ATTR_ID,this.mapDivId+'_opacity_slider',ATTR_STYLE,
 			      (this.params.showOpacitySlider)?'display:inline':'display:none'], slider);	    
 
 	    $("#" + this.mapDivId+"_header").append(slider);
@@ -1103,7 +1106,7 @@ RepositoryMap.prototype = {
 		    if (!Utils.stringDefined(text))  {text = feature.text;}
 		    if (Utils.stringDefined(text)) {
 			let projPoint = this.transformLLPoint(location);
-			text =HtmlUtils.div(["style","padding:2px;"],text);
+			text =HtmlUtils.div([ATTR_STYLE,"padding:2px;"],text);
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
 								   feature.highlightSize,
@@ -2082,7 +2085,7 @@ RepositoryMap.prototype = {
         } else {
             if (didSearch || (didOn && didOff)) {
                 let id = this.mapDivId + "_features";
-                this.showText(HU.div(["id", id, "class", "ramadda-map-features"], html),true);
+                this.showText(HU.div([ATTR_ID, id, ATTR_CLASS, "ramadda-map-features"], html),true);
 		/****
                 $("#" + id + " .ramadda-map-feature").tooltip({
 		    content: function() {
@@ -2361,10 +2364,10 @@ RepositoryMap.prototype = {
                 options = {
                     year: 'numeric'
                 };
-            $("#" + this.mapDivId + "_footer").html(HtmlUtils.div(["class", "ramadda-map-animation", "id", this.mapDivId + "_animation"], ""));
+            $("#" + this.mapDivId + "_footer").html(HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation", ATTR_ID, this.mapDivId + "_animation"], ""));
             this.animation = $("#" + this.mapDivId + "_animation");
-            let ticksDiv = HtmlUtils.div(["class", "ramadda-map-animation-ticks", "id", this.mapDivId + "_animation_ticks"], "");
-            let infoDiv = HtmlUtils.div(["class", "ramadda-map-animation-info", "id", this.mapDivId + "_animation_info"], "");
+            let ticksDiv = HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation-ticks", ATTR_ID, this.mapDivId + "_animation_ticks"], "");
+            let infoDiv = HtmlUtils.div([ATTR_CLASS, "ramadda-map-animation-info", ATTR_ID, this.mapDivId + "_animation_info"], "");
             this.animation.html(ticksDiv + infoDiv);
             let startLabel = Utils.formatDate(this.minDate, options);
             let endLabel = Utils.formatDate(this.maxDate, options);
@@ -2372,7 +2375,7 @@ RepositoryMap.prototype = {
             this.animationInfo = $("#" + this.mapDivId + "_animation_info");
             let center = "";
             if (this.startDate && this.endDate) {
-                center = HtmlUtils.div(["id", this.mapDivId + "_ticks_reset", "class", "ramadda-map-animation-tick-reset"], "Reset");
+                center = HtmlUtils.div([ATTR_ID, this.mapDivId + "_ticks_reset", ATTR_CLASS, "ramadda-map-animation-tick-reset"], "Reset");
             }
             let info = "<table width=100%><tr valign=top><td width=40%>" + startLabel + "</td><td align=center width=20%>" + center + "</td><td align=right width=40%>" + endLabel + "</td></tr></table>";
             this.animationInfo.html(info);
@@ -2416,7 +2419,7 @@ RepositoryMap.prototype = {
 //		    tooltip=HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto')], tooltip);
                     tooltip += "<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
                     tooltip += "";
-                    html += HtmlUtils.div(["id", this.mapDivId + "_tick" + i, "feature-index", "" + i, "style", "left:" + percent + "%", "class", "ramadda-map-animation-tick", "title", tooltip], "");
+                    html += HtmlUtils.div([ATTR_ID, this.mapDivId + "_tick" + i, "feature-index", "" + i, ATTR_STYLE, "left:" + percent + "%", ATTR_CLASS, "ramadda-map-animation-tick", "title", tooltip], "");
                 }
             }
             this.animationTicks.html(html);
@@ -2703,7 +2706,7 @@ RepositoryMap.prototype = {
 	if(this.params["showLayerToggle"]) {
 	    let color = Utils.addAlphaToColor(opts.fillColor,0.4);
             let cbx = HU.span([], HtmlUtils.checkbox(this.mapDivId + "_layertoggle"+idx, ["title", "Toggle Layer"], visible,name)) +" ";
-	    cbx = HU.span([STYLE,HU.css('margin-right','5px','padding','5px','background',color)], cbx);
+	    cbx = HU.span([ATTR_STYLE,HU.css('margin-right','5px','padding','5px','background',color)], cbx);
 	    $("#" + this.mapDivId+"_header").append(" " +cbx);
 	    $("#" + this.mapDivId + "_layertoggle"+idx).change(function() {
 		if($(this).is(':checked')) {
@@ -3365,9 +3368,10 @@ RepositoryMap.prototype = {
     initLocationSearch:  function() {
         if (this.selectRegion) return;
         let _this = this;
-        let input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") +
+        let input = HtmlUtils.span([ATTR_STYLE, "padding-right:4px;",
+				    ATTR_ID, this.mapDivId + "_loc_search_wait"], "") +
             HtmlUtils.checkbox(this.mapDivId + "_loc_bounds", ["title", "Search in map bounds"], false) + HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
-            HtmlUtils.input("", "", ["class", "ramadda-map-loc-input", "title", "^string - matches beginning", "size", "30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+            HtmlUtils.input("", "", [ATTR_CLASS, "ramadda-map-loc-input", "title", "^string - matches beginning", "size", "30", "placeholder", "Search location", ATTR_ID, this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
         let searchInput = $("#" + this.mapDivId + "_loc_search");
         let bounds = $("#" + this.mapDivId + "_loc_bounds");
@@ -3403,7 +3407,7 @@ RepositoryMap.prototype = {
             }
             let jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
-                let result = HtmlUtils.openTag("div", ["style", "max-height:400px;overflow-y:auto;"]);
+                let result = HtmlUtils.openTag("div", [ATTR_STYLE, "max-height:400px;overflow-y:auto;"]);
                 if (data.result.length == 0) {
                     wait.html("Nothing found");
                     return;
@@ -3414,9 +3418,9 @@ RepositoryMap.prototype = {
                         let icon = data.result[i].icon;
                         if (!icon)
                             icon = ramaddaCdn + "/icons/green-dot.png";
-                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
+                        result += HtmlUtils.div([ATTR_CLASS, "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
                     }
-                    result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"], "Show all");
+                    result += HtmlUtils.div([ATTR_CLASS, "ramadda-map-loc", "name", "all"], "Show all");
                 }
                 let my = "left bottom";
                 let at = "left top";
@@ -5139,7 +5143,9 @@ RepositoryMap.prototype = {
 		}
 		slider.hide();
 		let width = HU.getDimension(this.params.popupWidth);
-		let contents = HU.div([STYLE,HU.css('width',width,"padding","5px")], HU.div([ID,this.mapDivId+"_sliderclose",CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
+		let contents = HU.div([ATTR_STYLE,HU.css('width',width,"padding","5px")],
+				      HU.div([ATTR_ID,this.mapDivId+"_sliderclose",
+					      ATTR_CLASS,"ramadda-clickable"], HU.getIconImage(icon_close)) + markerText);
 		slider.html(contents);
 		slider.slideDown(800);
 		$("#" +this.mapDivId+"_sliderclose").click(()=>{
@@ -5324,7 +5330,7 @@ RepositoryMap.prototype = {
 
 
 	let uid = HU.getUniqueId("div");
-	let div = HU.div(['style','width:100%;','id',uid]);
+	let div = HU.div([ATTR_STYLE,'width:100%;',ATTR_ID,uid]);
 	props.width = props.width??inputProps.minSizeX??this.params.popupWidth;
 	props.height = props.height??inputProps.minSizeY??this.params.popupHeight;	
         let popup = this.makePopup( projPoint,div,props);

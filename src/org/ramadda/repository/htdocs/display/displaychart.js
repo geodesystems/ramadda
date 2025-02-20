@@ -1423,7 +1423,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    if(addStyle) {
 			if(debug)
 			    console.log("\tadd style column");
-			dataTable.addColumn({ type: 'string', role: 'style' });
+			dataTable.addColumn({ type: 'string', role: ATTR_STYLE });
 		    }
 		    if(colIdx>0 && fixedValueS) {
 			break;

@@ -6098,7 +6098,7 @@ MapGlyph.prototype = {
 		     "showRecordSelection":true,
 		     "showInnerContents":false,
 		     "entryIcon":this.attrs.icon,
-		     "title":this.attrs.name,
+		     ATTR_TITLE:this.attrs.name,
 		     "max":"5000",
 		     "thisEntryType":this.attrs.entryType,
 		     "entryId":entryId,

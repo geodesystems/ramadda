@@ -348,7 +348,9 @@ function  WikiEditor(entryId, formId, id, hidden,argOptions) {
 
     });
 
-    this.getBlock().find("#" + this.id).append(HU.div([STYLE,HU.css("display","none"), CLASS,"wiki-editor-message",ID,this.domId(this.ID_WIKI_MESSAGE)]));
+    this.getBlock().find("#" + this.id).append(HU.div([ATTR_STYLE,HU.css("display","none"),
+						       ATTR_CLASS,"wiki-editor-message",
+						       ATTR_ID,this.domId(this.ID_WIKI_MESSAGE)]));
     this.wikiInitDisplaysButton();
     this.initTagSearch();
 
@@ -491,10 +493,14 @@ WikiEditor.prototype = {
 
 	html += HU.select("",[ATTR_ID, this.domId("addtype")],what,this.lastWhat);
 	html += "<p>";
-	html += HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addok")],"OK")+
+	html += HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+			ATTR_CLASS,"ramadda-button",
+			ATTR_ID,this.domId("addok")],"OK")+
 	    SPACE3 +
-	    HU.div([STYLE,HU.css("display","inline-block"), CLASS,"ramadda-button",ID,this.domId("addcancel")],"Cancel");
-	html = HU.div([STYLE,HU.css('padding','10px','width','400px')],html);
+	    HU.div([ATTR_STYLE,HU.css("display","inline-block"),
+		    ATTR_CLASS,"ramadda-button",
+		    ATTR_ID,this.domId("addcancel")],"Cancel");
+	html = HU.div([ATTR_STYLE,HU.css('padding','10px','width','400px')],html);
 	let dialog = this.addDialog = HU.makeDialog({content:html,anchor:this.getScroller(),title:"Select Entry",header:true,
 						     sticky:true,draggable:true,modal:true});
 	let menu = dialog.find("#"+this.domId("addtype"));
@@ -994,21 +1000,25 @@ WikiEditor.prototype = {
 	*/
 	let html= 
 	    HU.formTable() +
-	    HU.formEntry('Prompt:',HU.div(['id',promptMenuContainerId]))+
+	    HU.formEntry('Prompt:',HU.div([ATTR_ID,promptMenuContainerId]))+
 	    HU.formEntry('','Or enter prompt:') +
 	    HU.formEntry('Prompt prefix:',HU.textarea('',this.lastPromptPrefix??'',
-						      [ATTR_CLASS,'wiki-llm-input',ATTR_STYLE,'width:500px;','id',this.domId('llm-prompt-prefix'),'rows',5])) +
+						      [ATTR_CLASS,'wiki-llm-input',
+						       ATTR_STYLE,'width:500px;',
+						       ATTR_ID,this.domId('llm-prompt-prefix'),'rows',5])) +
 	    HU.formEntry('Prompt suffix:',
-			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input',ATTR_STYLE,'width:500px;','id',this.domId('llm-prompt-suffix')])) +
+			 HU.input('',this.lastPromptSuffix??'',[ATTR_CLASS,'wiki-llm-input',
+								ATTR_STYLE,'width:500px;',
+								ATTR_ID,this.domId('llm-prompt-suffix')])) +
 	    HU.formTableClose();
-	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor','id',this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
+	html+=HU.textarea('',llmText,[ATTR_PLACEHOLDER,'Enter input or select text in editor',ATTR_ID,this.domId(this.ID_LLM_INPUT), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;']);
 
 	html+='<br>';
-	html+=HU.span(['id',this.domId('llm-call')],'Evaluate');	    
+	html+=HU.span([ATTR_ID,this.domId('llm-call')],'Evaluate');	    
 	
 	html+=HU.div([ATTR_STYLE,'position:relative;'],
-		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results','id',this.domId('rewrite-results'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
-		     HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);','id',this.domId('llm-loading')],
+		     HU.textarea('','',[ATTR_PLACEHOLDER,'Results',ATTR_ID,this.domId('rewrite-results'), 'rows',6,'cols',80, ATTR_STYLE,'border:var(--basic-border);padding:4px;margin:4px;font-style:italic;'])+
+		     HU.div([ATTR_STYLE,'display:none;position:absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);',ATTR_ID,this.domId('llm-loading')],
 			    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:100px;'])));
 
 
@@ -1052,7 +1062,7 @@ WikiEditor.prototype = {
 		   });
 	}
 	let makePromptMenu = () =>{
-	    let promptMenu = HU.select("",['id', this.domId('llmprompts')],options);
+	    let promptMenu = HU.select("",[ATTR_ID, this.domId('llmprompts')],options);
 	    jqid(promptMenuContainerId).html(promptMenu);
 	    this.jq('llmprompts').change(function() {
 		let idx = $(this).val();
@@ -1105,11 +1115,11 @@ WikiEditor.prototype = {
     },    
 
     doColor: function (event) {
-	let html = HU.tag("input",[ATTR_STYLE,HU.css('width','100px','height','100px'), 'type','color','id',this.domId('color_picker')]);
+	let html = HU.tag("input",[ATTR_STYLE,HU.css('width','100px','height','100px'), 'type','color',ATTR_ID,this.domId('color_picker')]);
 	html+= HU.div([ATTR_CLASS,'ramadda-buttons'],
-		      HU.span([ID,this.domId("color_apply")],"Apply") + SPACE1 +
-		      HU.span([ID,this.domId("color_ok")],"Ok") + SPACE1 +
-		      HU.span([ID,this.domId("color_cancel")],"Cancel"));
+		      HU.span([ATTR_ID,this.domId("color_apply")],"Apply") + SPACE1 +
+		      HU.span([ATTR_ID,this.domId("color_ok")],"Ok") + SPACE1 +
+		      HU.span([ATTR_ID,this.domId("color_cancel")],"Cancel"));
 
 	html = HU.div([ATTR_CLASS,CLASS_DIALOG],html);
 	if(this.colorDialog) {
@@ -1159,7 +1169,7 @@ WikiEditor.prototype = {
 	    //the left is set to 100px
 	    let width =$(window).width()-200;
 	    $("#" + this.domId(this.ID_WIKI_PREVIEW)).remove();
-	    $(HU.div([ID, this.domId(this.ID_WIKI_PREVIEW), CLASS,"wiki-editor-preview"],"")).appendTo(this.getBlock());
+	    $(HU.div([ID, this.domId(this.ID_WIKI_PREVIEW), ATTR_CLASS,"wiki-editor-preview"],"")).appendTo(this.getBlock());
 	    let preview = $("#" + this.domId(this.ID_WIKI_PREVIEW));
 	    preview.css("width",width+"px");
 	    this.previewShown = true;
@@ -1170,7 +1180,8 @@ WikiEditor.prototype = {
 		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);
 	    } else {
 		let left = Utils.join([
-		    HU.span([CLASS, CLASS_CLICKABLE,ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',[ATTR_TITLE,'Preview Again'])),
+		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,
+			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',[ATTR_TITLE,'Preview Again'])),
 		    HU.checkbox('',[ATTR_TITLE,'Live Preview',
 				    ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
 		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,
@@ -1332,7 +1343,7 @@ WikiEditor.prototype = {
 	let edit =  HU.span([ATTR_ID,this.domId('edittag'),
 			     ATTR_CLASS,'wiki-popup-menu-header ramadda-clickable',
 			     ATTR_TITLE,'Edit tag'],HU.getIconImage('fas fa-edit'));
-	menu += HU.div([CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
+	menu += HU.div([ATTR_CLASS,'wiki-editor-popup-heading'], search+'' + edit +' '  +title);
 	let ids = this.extractEntryIds(tagInfo.chunk);
 	if(ids.length) {
 	    let id = Utils.getUniqueId('entrieslist');
@@ -2105,7 +2116,7 @@ WikiEditor.prototype = {
 		{p:'after'}
 
 	    ],		
-		this.groupAttributes),
+					      this.groupAttributes),
 	    links: Utils.mergeLists([
 		{label:'Links Properties'},
 		{p:'info',ex:'List children entries'},

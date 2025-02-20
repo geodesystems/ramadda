@@ -188,8 +188,8 @@ function DisplayAnimation(display, enabled,attrs) {
 			_this.sliderHandleLeft = $(".ui-slider-handle:eq(0)");
 			_this.sliderHandleRight = $(".ui-slider-handle:eq(1)");
 			if(_this.sliderHandleLeft.length &&_this.sliderHandleRight.length) {
-			    _this.sliderHandleLeft.attr('title','Shift-drag to move both');
-			    _this.sliderHandleRight.attr('title','Shift-drag to move both');
+			    _this.sliderHandleLeft.attr(ATTR_TITLE,'Shift-drag to move both');
+			    _this.sliderHandleRight.attr(ATTR_TITLE,'Shift-drag to move both');
 			}
 		    },
 		    slide: function( event, ui ) {

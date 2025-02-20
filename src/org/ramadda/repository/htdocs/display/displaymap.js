@@ -259,7 +259,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 		if(!groups[group]) groups[group] = "";
 		groups[group] +=item;});
 	    let html ='';
-	    html+= HU.center(HU.input('','',['placeholder','Find Region','id',this.domId('regionsearch'),'width','10']));
+	    html+= HU.center(HU.input('','',['placeholder','Find Region',ATTR_ID,this.domId('regionsearch'),'width','10']));
 	    html += "<table width=100%><tr valign=top>";
 	    let keys = Object.keys(groups);
 	    let width = (100/keys.length)+'%';
@@ -1566,7 +1566,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 
 		if(record && this.getProperty("shareSelected")) {
-		    let idField = this.getFieldById(null,"id");
+		    let idField = this.getFieldById(null,ATTR_ID);
 		    if(idField) {
 			ramaddaDisplaySetSelectedEntry(record.getValue(idField.getIndex()),this.getDisplayManager().getDisplays(),this);
 		    }
@@ -3028,7 +3028,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(this.getProperty('showTogglePath',false)) {
 		let cbx = HU.checkbox('',[ATTR_ID,this.domId('togglepath')],this.getIsPath(),
 				      'Show track');
-		this.jq(ID_HEADER2_PREPREFIX).append(HU.span(['style','padding-right:10px;'],cbx));
+		this.jq(ID_HEADER2_PREPREFIX).append(HU.span([ATTR_STYLE,'padding-right:10px;'],cbx));
 		this.jq('togglepath').click(function() {
 		    let on = $(this).is(':checked');
 		    _this.setProperty('isPath',on);
@@ -3842,7 +3842,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		$(vp).append(HU.div([ATTR_STYLE,'z-index:10',ATTR_CLASS,'display-map-htmllayer', ATTR_ID,this.htmlLayerId]));
 	    }
 	    if(this.htmlPopupLayerId) {
-//		jqid(this.htmlPopupLayerId).html(HU.div(['style','position:absolute;top:50px;left:100px'],'xxxx'));
+//		jqid(this.htmlPopupLayerId).html(HU.div([ATTR_STYLE,'position:absolute;top:50px;left:100px'],'xxxx'));
 		jqid(this.htmlPopupLayerId).html(this.htmlPopup);
 	    }
 	    $('#'+ this.htmlLayerId).html(HU.div([ATTR_STYLE,'position:relative;'],this.htmlLayer));

@@ -872,7 +872,7 @@ function RecordField(props, source) {
                 type="fa-list";
             }
             let tt = this.getType();
-            return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
+            return  HtmlUtils.span([ATTR_TITLE,tt,ATTR_CLASS,"fa " +type,ATTR_STYLE,"color:rgb(169, 169, 169);font-size:12pt;"]);
         },
         getUnitLabel: function() {
             return this.getLabel() + this.getUnitSuffix();
@@ -2117,7 +2117,7 @@ function CsvUtil() {
 	    let value = args["value"];
 	    let type = args["type"]||"double";
 	    if(type == "double") value = parseFloat(value);
-	    let id = args["id"];
+	    let id = args[ATTR_ID];
 	    let label = args["label"]||Utils.makeLabel(id);	    	    
 	    let newFields = [];
 	    fields.forEach((f,fieldIdx)=>{
@@ -3539,7 +3539,7 @@ RequestMacro.prototype = {
 	    label="";
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
-		let attrs = ['title',title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
+		let attrs = [ATTR_TITLE,title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -3573,28 +3573,28 @@ RequestMacro.prototype = {
 	    let maxId = this.display.getDomId(this.getId()+'_max');			    
 	    widget = HU.input('','',[ATTR_TITLE,title??'','data-min', this.dflt_min, STYLE, style, ID,minId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_min) +
 		' - ' +
-		HU.input('','',['title',title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
+		HU.input('','',[ATTR_TITLE,title??'','data-max', this.dflt_max, STYLE, style, ID,maxId,'size',4,CLASS,'display-filter-input display-filter-range'],this.dflt_max)
 	    label = label+' range';
 	} else if(this.type=='daterange') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    let toId = this.display.getDomId(this.getId()+'_to');
 	    dateIds.push(fromId);
 	    dateIds.push(toId);
-	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]) +
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]) +
 		' - ' +
-		HU.datePicker('',this.dflt_to,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
+		HU.datePicker('',this.dflt_to,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,toId])
 	    label = label+' range';
 	} else if(this.type=='date') {
 	    let fromId = this.display.getDomId(this.getId()+'_from');
 	    dateIds.push(fromId);
-	    widget = HU.datePicker('',this.dflt_from,['title',title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]);
+	    widget = HU.datePicker('',this.dflt_from,[ATTR_TITLE,title??'',CLASS,'display-filter-input',STYLE, style, 'name','',ID,fromId]);
 	} else {
 	    let size = '10';
 	    if(this.type=='number')
 		size = '4';
 	    size = this.getProperty("request." +this.name+".size",size),
 
-	    widget = HU.input('',this.dflt,['title',title??'',ATTR_STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
+	    widget = HU.input('',this.dflt,[ATTR_TITLE,title??'',ATTR_STYLE, style, ID,this.display.getDomId(this.getId()),'size',size,CLASS,'display-filter-input']);
 	}
 	if(!widget) return '';
 	return (visible?this.display.makeFilterWidget(this.name,label,widget):widget);

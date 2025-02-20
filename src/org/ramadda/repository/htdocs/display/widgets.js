@@ -337,7 +337,7 @@ function drawSparkline(display, dom,w,h,data, records,min,max,colorBy,params) {
 	svg.selectAll('.bar').data(data)
 	    .enter()
 	    .append('rect')
-	    .attr('class', 'bar')
+	    .attr(ATTR_CLASS, 'bar')
 	    .attr('x', (d, i) => getNum(x(i)))
 	    .attr('y', d => getNum(y(d)))
 	    .attr('width', BAR_WIDTH)

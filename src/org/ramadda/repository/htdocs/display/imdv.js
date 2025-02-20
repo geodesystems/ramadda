@@ -3044,7 +3044,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let current = this.getCurrentLevel();
 	    let perc = 100*(current-this.minLevel)/(this.maxLevel-this.minLevel);
 	    this.jq('level_range_tick').css('left',perc+'%');
-	    this.jq('level_range_tick').attr('title','Current level:' + current);
+	    this.jq('level_range_tick').attr(ATTR_TITLE,'Current level:' + current);
 	},
 	getLevelRangeWidget:function(level,showMarkerToo) {
 	    if(!level) level={};
@@ -6380,7 +6380,7 @@ window.olGetPatternId = function(ol,p,stroke,fill) {
     if(!window.olPatternBaseId) window.olPatternBaseId = 1;
     let svgId = 'pattern_'+(window.olPatternBaseId++);
     let patternNode = ol.nodeFactory(null, "pattern");
-    patternNode.setAttributeNS(null, "id",svgId);
+    patternNode.setAttributeNS(null, ATTR_ID,svgId);
     patternNode.setAttributeNS(null, "width",p.width);
     patternNode.setAttributeNS(null, "height",p.height);
     patternNode.setAttributeNS(null, "patternUnits","userSpaceOnUse");
@@ -6538,7 +6538,7 @@ function olCheckLabelBackground(renderer,   style,label,featureId,bbox) {
 	    }
 
 	}
-	bg.setAttribute("style", bgStyle);
+	bg.setAttribute(ATTR_STYLE, bgStyle);
 	renderer.vectorRoot.appendChild(bg);
     }
     return false;
