@@ -52,13 +52,10 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     private static int IDX_TIMEZONE = IDX++;
 
     private TTLCache<String, Weather> forecastCache = new TTLCache<String,
-	Weather>(5 * 60
-		 * 1000);
+	Weather>(Utils.minutesToMillis(5));
 
     private TTLCache<String, Weather> currentCache = new TTLCache<String,
-	Weather>(5 * 60
-		 * 1000);
-
+	Weather>(Utils.minutesToMillis(5));
 
 
     private static final String URL =
