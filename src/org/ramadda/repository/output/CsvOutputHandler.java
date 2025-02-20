@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.data.services.PointOutputHandler;
+import org.ramadda.data.services.PointTypeHandler;
 
 import org.ramadda.util.seesv.Seesv;
 import org.ramadda.util.HtmlUtils;
@@ -144,7 +145,8 @@ public class CsvOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_CSV));
             links.add(makeLink(request, state.getEntry(), OUTPUT_ENTRYCSV));
-	    if(state.getEntry().getTypeHandler().isType("type_point")) {
+	    if(state.getEntry().getTypeHandler().isType("type_point")||
+	       state.getEntry().getTypeHandler() instanceof PointTypeHandler) {
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_MATLAB));
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_R));
 		links.add(makeLink(request, state.getEntry(), OUTPUT_WRAPPER_PYTHON));
