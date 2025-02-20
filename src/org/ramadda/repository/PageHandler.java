@@ -1800,7 +1800,7 @@ public class PageHandler extends RepositoryManager {
 		sb.append(HU.div(getEntryIconImage(request,fav.getEntry()) + HU.SPACE + fav.getEntry().getName(),
 				 HU.cssClass("ramadda-user-link")+HU.onMouseClick("document.location=" + HU.squote(url))));
 	    }
-	    _links.add(new Link(null,"",HU.div(sb.toString(),HU.style("max-height:6em;overflow-y:auto;white-space:nowrap;"))));
+	    _links.add(new Link(null,"",HU.div(sb.toString(),HU.style("max-height:9em;overflow-y:auto;white-space:nowrap;"))));
 	}
         for (Link _link:_links) {
 	    if(_link.getUrl()==null) {
