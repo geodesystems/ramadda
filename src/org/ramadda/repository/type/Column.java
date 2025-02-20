@@ -389,7 +389,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         canSort    = getAttributeOrTag(element, ATTR_CANSORT, false);
         searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
-	enumerationSearchMultiples = getAttributeOrTag(element,"enumeration_search_multiples",false);
+	enumerationSearchMultiples = getAttributeOrTag(element,"enumeration_search_multiples",
+						       getAttributeOrTag(element,"enumeration_multiples",false));
+	enumerationSearchMultiples=true;
 	enumerationShowCheckboxes = getAttributeOrTag(element,"enumeration_show_checkboxes",false);	
 
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
