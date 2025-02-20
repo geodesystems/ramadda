@@ -3593,13 +3593,14 @@ var GuiUtils = {
     },
     getUrlArg: function(name, dflt) {
         name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-        var regexS = "[\\?&]" + name + "=([^&#]*)";
-        var regex = new RegExp(regexS);
-        var results = regex.exec(window.location.href);
+        let regexS = "[\\?&]" + name + "=([^&#]*)";
+        let regex = new RegExp(regexS);
+        let results = regex.exec(window.location.href);
         if (results == null || results == "")
             return dflt;
-        else
-            return results[1];
+        let value= results[1];
+	value = decodeURIComponent(value);
+	return value;
     },
     setCursor: function(c) {
         var cursor = document.cursor;
