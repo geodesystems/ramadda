@@ -8244,7 +8244,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
 
-        wikiMenuEtcButton = makeMenuButton("Etc", etc.toString());
+        wikiMenuEtcButton = makeMenuButton("Misc", etc.toString());
         wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,true);
         wikiMenuFormattingButton = makeMenuButton("Formatting",
 						  HU.span(HU.hbox(tags1, tags2,tags3,tags4),

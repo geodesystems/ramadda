@@ -170,7 +170,10 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ABSOPEN,null,"canEdit","true","imageEntry","","width","100%","#height","height"),
                             new WikiTag(WIKI_TAG_ABSCLOSE,null), 			    
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
-                            new WikiTag(WIKI_TAG_MULTI, null,"#_tag","","#_template",""), 
+                            new WikiTag(WIKI_TAG_MULTI, "Create multiple tags",
+					"_tag","some_tag",
+					"#_template","",
+					"#_columns","3"), 
                             new WikiTag(WIKI_TAG_APPLY, null, APPLY_PREFIX
 					+ "tag", WIKI_TAG_HTML, APPLY_PREFIX
 					+ "layout", "table", APPLY_PREFIX
