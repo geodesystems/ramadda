@@ -642,8 +642,8 @@ public class PageHandler extends RepositoryManager {
         }
 
         StringBuilder extra = new StringBuilder();
-        String userLinkTemplate =
-            "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
+	String userLinkTemplate =HU.div("${label}",HU.attrs("onClick","document.location=\'${url}\'",
+						    "class","ramadda-user-link"));
         List<String> allLinks = new ArrayList<String>();
         List<String> navLinks = null;
 
@@ -1807,8 +1807,7 @@ public class PageHandler extends RepositoryManager {
 		links.add(_link.getLabel());
 		continue;
 	    }
-            String link = template.replace("${label}",
-					   _link.getLabel());
+            String link = template.replace("${label}",  _link.getLabel());
             link = link.replace("${url}", _link.getUrl());
             link = link.replace("${tooltip}", Utils.getNonNull(_link.getTooltip(),"").toString());
             link = link.replace("${extra}", "");
@@ -1834,6 +1833,7 @@ public class PageHandler extends RepositoryManager {
                 continue;
             }
             String label = msg(apiMethod.getName());
+            String html = template;
             String icon  = apiMethod.getIcon();
             String url;
             if (apiMethod == homeApi) {
@@ -1845,10 +1845,11 @@ public class PageHandler extends RepositoryManager {
                 label = getIconImage(icon) + " " + label;
             }
 
-            String html = template.replace("${url}", url);
+
+            html = html.replace("${tooltip}", apiMethod.getName());
+            html = html.replace("${url}", url);
             html = html.replace("${label}", label);
-	    html = html.replace("${topgroup}",
-				    request.getRootEntry().getName());
+	    html = html.replace("${topgroup}", request.getRootEntry().getName());
 	    links.add(html);
         }
 

@@ -4566,9 +4566,9 @@ img.ramadda-user-menu-image:hover {
 
 
 .ramadda-user-link {
-    max-width:200px;
+    max-width:250px;
     white-space:nowrap;    
-    overflow-x:auto;
+    overflow-x:hidden;
     min-width: 100px;
     padding-top:4px;
     padding-bottom:2px;
