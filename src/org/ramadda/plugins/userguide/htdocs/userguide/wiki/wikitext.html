@@ -14,7 +14,7 @@
 <td width=50% align=center>
 <div class="ramadda-page-title"><a href="#">Section 5.1: Wiki Text</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="embeds.html"><table><tr valign=center><td>Wiki Embeds</td><td><span title="Next: Wiki Embeds"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -31,15 +31,20 @@ pre {
 
 
 
-
+:navtop
+:pagesearch selector=.item
+:br
 +callout-info
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc.
 -callout
+<div>
 
 
-<a name="basicmarkup"></a>
-:heading 5.1.0 <label>Basic Markup</label>
+</div><div class=item>
+<a name='basicmarkup'></a>
+:lheading Basic Markup
+
 
 The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 <pre>
@@ -158,9 +163,11 @@ For example, if you want to include javascript in your text do:
 </pre>
 
 
-<a name="macros"></a>
-<div class="ramadda-help-subsubheading"><a href="#macros">Macros</a>
-</div> 
+</div><div class=item>
+<a name='macros'></a>
+:lheading Macros
+
+
 Macro values can be defined and used later in the wiki page with the :macro and +macro/-macro tags.
 
 To define a macro do:
@@ -207,9 +214,11 @@ ramadda.wiki.macro.blockColor-olivine
 Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
 var that it references is used. The macro tags need to be inline before they are used.
 
-<a name="blocks"></a>
-<div class="ramadda-help-subsubheading"><a href="#blocks">Blocks</a>
-</div> 
+</div><div class=item>
+<a name='blocks'></a>
+:lheading Blocks
+
+
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
 
@@ -263,14 +272,16 @@ ${var_name}
 
 
 <a name="layout"></a>
-:heading 5.1.1 <label>Layout and Display Markup</label>
+:heading 5.1.0 <label>Layout and Display Markup</label>
 
 There are a number of layout tags that make it easy to do page layout and display.
 
 
-<a name="titles"></a>
-<div class="ramadda-help-subsubheading"><a href="#titles">Titles and headings</a>
-</div> 
+</div><div class=item>
+<a name='titles'></a>
+:lheading Titles and headings
+
+
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
 <pre>
@@ -298,9 +309,11 @@ Examples at <a href="https://ramadda.org/repository/alias/wikiexamples">https://
 <p>
 
 
-<a name="sections"></a>
-<div class="ramadda-help-subsubheading"><a href="#sections">Sections</a>
-</div> 
+</div><div class=item>
+<a name='sections'></a>
+:lheading Sections
+
+
 
 To make page sections use the +section/-section tags.
 <pre>
@@ -386,9 +399,11 @@ You can also add a CSS style descriptor
 </pre>
 
 
-<a name="inset"></a>
-<div class="ramadda-help-subsubheading"><a href="#inset">Inset</a>
-</div> 
+</div><div class=item>
+<a name='inset'></a>
+:lheading Inset
+
+
 The +inset tag supports margins.
 <pre>
 +inset
@@ -406,11 +421,13 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
-<a name="frames"></a>
-<div class="ramadda-help-subsubheading"><a href="#frames">Frames</a>
-</div> 
+</div><div class=item>
+<a name='frames'></a>
+:lheading Frames
+
+
 Frame your content like this:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/frame.png?version=864"><img  src="images/frame.png?version=864" border=0 alt="images/frame.png?version=864" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/frame.png?version=255"><img  src="images/frame.png?version=255" border=0 alt="images/frame.png?version=255" ></a></div></div>
 
 With the +frame/-frame tags:
 <pre>
@@ -440,9 +457,11 @@ content
 -frame
 </pre>
 
-<a name="embedding"></a>
-<div class="ramadda-help-subsubheading"><a href="#embedding">Embedding Media</a>
-</div> 
+</div><div class=item>
+<a name='embedding'></a>
+:lheading Embedding Media
+
+
 You can embed Twitter, YouTube, Vimeo and other media as:
 <pre>
 @(https://twitter.com/Interior/status/463440424141459456)
@@ -486,71 +505,16 @@ Embed  Github checkins with:
 
 
 
-<a name="codeembed"></a>
-<div class="ramadda-help-subsubheading"><a href="#codeembed">Embedding Code</a>
-</div> 
-To embed code do the following:
-<pre>
- ```&lt;option language&gt;
- code
- here
-```
-</pre>
-Currently only javascript is formatted.
-For example:
-<pre>
-```javascript
-let l = []; 
-for(let i=0;&lt;l.length;i++) {
-    console.log(l\[i\]);
-}
-var x = {}
-```
-</pre>
 
 
-<a name="vega"></a>
-<div class="ramadda-help-subsubheading"><a href="#vega">Embedding Vega Charts</a>
-</div> 
-You can embed charts defined in the vega-lite schema directly into a wiki page.
-More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
 
-The format is:
-<pre>
-```vega-lite
-You vega-lite schema here
-```
-</pre>
+</div><div class=item>
+<a name='gridboxes'></a>
+:lheading Grid Boxes
 
-e.g.:
-<pre>
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "description": "A simple bar chart with embedded data. An example vega-lite file.",
-  "width": 360,
-  "height":200,
-  "data": {
-    "values": \[
-      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
-      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
-      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
-    \]
-  },
-  "mark": "bar",
-  "encoding": {
-    "x": {"field": "a", "type": "ordinal"},
-    "y": {"field": "b", "type": "quantitative"}
-  }
-}
-```
-</pre>
 
-<a name="gridboxes"></a>
-<div class="ramadda-help-subsubheading"><a href="#gridboxes">Grid Boxes</a>
-</div> 
 To make a gridded box layout like this use  the +gridboxes/+gridbox tags.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridbox.png?version=864"><img  src="images/gridbox.png?version=864" border=0 alt="images/gridbox.png?version=864" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridbox.png?version=255"><img  src="images/gridbox.png?version=255" border=0 alt="images/gridbox.png?version=255" ></a></div></div>
 
 These take the form of:
 <pre>
@@ -592,9 +556,11 @@ Line 2
 
 
 
-<a name="tables"></a>
-<div class="ramadda-help-subsubheading"><a href="#tables">Scrollable Tables</a>
-</div> 
+</div><div class=item>
+<a name='tables'></a>
+:lheading Scrollable Tables
+
+
 Scrollable HTML tables are supported with the +table/-table  tags. The form is below. 
 Note: any open tr or td tags will be close with the -table tag.
 <pre>
@@ -647,9 +613,11 @@ There are shortcuts available
 
 
 
-<a name="gridlayout"></a>
-<div class="ramadda-help-subsubheading"><a href="#gridlayout">Grid Layout</a>
-</div> 
+</div><div class=item>
+<a name='gridlayout'></a>
+:lheading Grid Layout
+
+
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-[2,3,4,6,8,9,10,12].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
@@ -714,9 +682,11 @@ Right column contents
 
 
 
-<a name="tabs"></a>
-<div class="ramadda-help-subsubheading"><a href="#tabs">Tabs</a>
-</div> 
+</div><div class=item>
+<a name='tabs'></a>
+:lheading Tabs
+
+
 You can create a set of tabs with:
 <pre>
 +tabs
@@ -774,11 +744,13 @@ Center the tabs:
 -tabs
 </pre>
 
-
 <p>
-<a name="accordion"></a>
-<div class="ramadda-help-subsubheading"><a href="#accordion">Accordion</a>
-</div> 
+
+</div><div class=item>
+<a name='accordion'></a>
+:lheading Accordion
+
+
 
 You can create an accordion with the accordian tag. 
 The optional arguments allow you to set the properties of the accordion
@@ -797,7 +769,7 @@ Accordion 2 content
 
 
 If decorate=false then no border or background is shown for the headers.
-
+</div>
 
 
 
@@ -809,7 +781,7 @@ If decorate=false then no border or background is shown for the headers.
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wiki.html"><table><td valign=center><td><span title="Previous: Wikis"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wikis</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="embeds.html"><table><tr valign=center><td>Wiki Embeds</td><td><span title="Next: Wiki Embeds"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>

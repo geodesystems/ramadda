@@ -1,9 +1,10 @@
 [ht::head {Wiki Embeds} ]
 <%nochildlist%>
-
 :navtop
-
-:heading Markdown
+:pagesearch selector=.item
+:br
+<div>
+[ug::searchable {Markdown} markdown]
 You can embed Markdown with:
 [wiki::text {
 ```markdown
@@ -78,7 +79,7 @@ Ordered
 -row
 
 
-:heading Media
+[ug::searchable {Media} media]
 You can embed Twitter, YouTube, Vimeo and other media as:
 [wiki::text {
 @(https://twitter.com/Interior/status/463440424141459456)
@@ -111,7 +112,7 @@ Add a link to the embed:
 }]
 
 
-:heading Github Checkins
+[ug::searchable {Github Checkins} github]
 Embed  Github checkins with:
 [wiki::text {
 @(github user=some_user_name)  
@@ -127,8 +128,7 @@ Embed  Github checkins with:
 
 
 
-
-:heading Embedding Javascript
+[ug::searchable {Embedding Code} codeembed]
 To embed code do the following:
 [wiki::text {
  ```&lt;option language&gt;
@@ -138,8 +138,6 @@ To embed code do the following:
 }]
 Currently only javascript is formatted.
 For example:
-+row
-+col-6
 [wiki::text {
 ```javascript
 let l = []; 
@@ -149,21 +147,11 @@ for(let i=0;&lt;l.length;i++) {
 var x = {}
 ```
 }]
--col
-+col-6
-[wiki::raw {
-```javascript
-let l = []; 
-for(let i=0;&lt;l.length;i++) {
-    console.log(l[i]);
-}
-var x = {}
-```
-}]
--col
--row
 
-:heading LaTeX
+
+
+
+[ug::searchable {LaTeX} latex]
 To embed LaTeXd do:
 [wiki::text {
 ```latex
@@ -212,7 +200,7 @@ Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
 }]
 
 
-:heading Vega Charts
+[ug::searchable {Vega Charts} vega]
 You can embed charts defined in the vega-lite schema directly into a wiki page.
 More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
 
@@ -273,6 +261,7 @@ Gives:
 }]
 
 
+</div>
 
 
 [ht::foot]

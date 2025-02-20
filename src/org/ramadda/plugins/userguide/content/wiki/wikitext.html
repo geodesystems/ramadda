@@ -1,13 +1,16 @@
 [ht::head {Wiki Text} ]
 <%nochildlist%>
-
+:navtop
+:pagesearch selector=.item
+:br
 +callout-info
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc.
 -callout
+<div>
 
 
-[ug::subheading {Basic Markup} basicmarkup]
+[ug::searchable {Basic Markup} basicmarkup]
 The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 [wiki::text {
 ==Section Heading 1==
@@ -125,7 +128,7 @@ For example, if you want to include javascript in your text do:
 }]
 
 
-[ug::subsubheading {Macros} {macros}]
+[ug::searchable {Macros} {macros}]
 Macro values can be defined and used later in the wiki page with the :macro and +macro/-macro tags.
 
 To define a macro do:
@@ -172,7 +175,7 @@ ramadda.wiki.macro.blockColor-olivine
 Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
 var that it references is used. The macro tags need to be inline before they are used.
 
-[ug::subsubheading {Blocks} {blocks}]
+[ug::searchable {Blocks} {blocks}]
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
 
@@ -229,7 +232,7 @@ ${var_name}
 There are a number of layout tags that make it easy to do page layout and display.
 
 
-[ug::subsubheading {Titles and headings} titles]
+[ug::searchable {Titles and headings} titles]
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
 [wiki::text {
@@ -257,7 +260,7 @@ Examples at <a href="https://ramadda.org/repository/alias/wikiexamples">https://
 <p>
 
 
-[ug::subsubheading {Sections} sections]
+[ug::searchable {Sections} sections]
 
 To make page sections use the +section/-section tags.
 [wiki::text {
@@ -343,7 +346,7 @@ You can also add a CSS style descriptor
 }]
 
 
-[ug::subsubheading {Inset} inset]
+[ug::searchable {Inset} inset]
 The +inset tag supports margins.
 [wiki::text {
 +inset
@@ -361,7 +364,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
-[ug::subsubheading {Frames} frames]
+[ug::searchable {Frames} frames]
 Frame your content like this:
 [ht::cimg images/frame.png {} {border=0}]
 
@@ -393,7 +396,7 @@ content
 -frame
 }]
 
-[ug::subsubheading {Embedding Media} embedding]
+[ug::searchable {Embedding Media} embedding]
 You can embed Twitter, YouTube, Vimeo and other media as:
 [wiki::text {
 @(https://twitter.com/Interior/status/463440424141459456)
@@ -437,63 +440,10 @@ Embed  Github checkins with:
 
 
 
-[ug::subsubheading {Embedding Code} codeembed]
-To embed code do the following:
-[wiki::text {
- ```&lt;option language&gt;
- code
- here
-```
-}]
-Currently only javascript is formatted.
-For example:
-[wiki::text {
-```javascript
-let l = []; 
-for(let i=0;&lt;l.length;i++) {
-    console.log(l\[i\]);
-}
-var x = {}
-```
-}]
 
 
-[ug::subsubheading {Embedding Vega Charts} vega]
-You can embed charts defined in the vega-lite schema directly into a wiki page.
-More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
 
-The format is:
-[wiki::text {
-```vega-lite
-You vega-lite schema here
-```
-}]
-
-e.g.:
-[wiki::text {
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "description": "A simple bar chart with embedded data. An example vega-lite file.",
-  "width": 360,
-  "height":200,
-  "data": {
-    "values": \[
-      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
-      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
-      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
-    \]
-  },
-  "mark": "bar",
-  "encoding": {
-    "x": {"field": "a", "type": "ordinal"},
-    "y": {"field": "b", "type": "quantitative"}
-  }
-}
-```
-}]
-
-[ug::subsubheading {Grid Boxes} gridboxes]
+[ug::searchable {Grid Boxes} gridboxes]
 To make a gridded box layout like this use  the +gridboxes/+gridbox tags.
 [ht::cimg images/gridbox.png {} {border=0}]
 
@@ -537,7 +487,7 @@ Line 2
 
 
 
-[ug::subsubheading {Scrollable Tables} tables]
+[ug::searchable {Scrollable Tables} tables]
 Scrollable HTML tables are supported with the +table/-table  tags. The form is below. 
 Note: any open tr or td tags will be close with the -table tag.
 [wiki::text {
@@ -590,7 +540,7 @@ There are shortcuts available
 
 
 
-[ug::subsubheading {Grid Layout} gridlayout]
+[ug::searchable {Grid Layout} gridlayout]
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-\[2,3,4,6,8,9,10,12\].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
@@ -655,7 +605,7 @@ Right column contents
 
 
 
-[ug::subsubheading {Tabs} tabs]
+[ug::searchable {Tabs} tabs]
 You can create a set of tabs with:
 [wiki::text {
 +tabs
@@ -713,9 +663,9 @@ Center the tabs:
 -tabs
 }]
 
-
 <p>
-[ug::subsubheading {Accordion} accordion]
+
+[ug::searchable {Accordion} accordion]
 
 You can create an accordion with the accordian tag. 
 The optional arguments allow you to set the properties of the accordion
@@ -734,7 +684,7 @@ Accordion 2 content
 
 
 If decorate=false then no border or background is shown for the headers.
-
+</div>
 
 
 [ht::foot]

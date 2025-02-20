@@ -10,11 +10,11 @@
 <div class="ramadda-doc-header">
 <div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#wiki/embeds.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="../page_wikifacilities.html">Wiki Facilities</a> </div>
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="entrytags.html"><table><td valign=center><td><span title="Previous: Entry Tags"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Entry Tags</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 5.2: Wiki Embeds</a></div>
+<div class="ramadda-page-title"><a href="#">Section 5.4: Wiki Embeds</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Displaying Data</td><td><span title="Next: Displaying Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -31,10 +31,15 @@ pre {
 
 
 
-
 :navtop
+:pagesearch selector=.item
+:br
+<div>
+</div><div class=item>
+<a name='markdown'></a>
+:lheading Markdown
 
-:heading Markdown
+
 You can embed Markdown with:
 <pre>
 ```markdown
@@ -109,7 +114,11 @@ Ordered
 -row
 
 
-:heading Media
+</div><div class=item>
+<a name='media'></a>
+:lheading Media
+
+
 You can embed Twitter, YouTube, Vimeo and other media as:
 <pre>
 @(https://twitter.com/Interior/status/463440424141459456)
@@ -142,7 +151,11 @@ Add a link to the embed:
 </pre>
 
 
-:heading Github Checkins
+</div><div class=item>
+<a name='github'></a>
+:lheading Github Checkins
+
+
 Embed  Github checkins with:
 <pre>
 @(github user=some_user_name)  
@@ -158,8 +171,11 @@ Embed  Github checkins with:
 
 
 
+</div><div class=item>
+<a name='codeembed'></a>
+:lheading Embedding Code
 
-:heading Embedding Javascript
+
 To embed code do the following:
 <pre>
  ```&lt;option language&gt;
@@ -169,8 +185,6 @@ To embed code do the following:
 </pre>
 Currently only javascript is formatted.
 For example:
-+row
-+col-6
 <pre>
 ```javascript
 let l = []; 
@@ -180,21 +194,15 @@ for(let i=0;&lt;l.length;i++) {
 var x = {}
 ```
 </pre>
--col
-+col-6
 
-```javascript
-let l = []; 
-for(let i=0;&lt;l.length;i++) {
-    console.log(l[i]);
-}
-var x = {}
-```
 
--col
--row
 
-:heading LaTeX
+
+</div><div class=item>
+<a name='latex'></a>
+:lheading LaTeX
+
+
 To embed LaTeXd do:
 <pre>
 ```latex
@@ -243,7 +251,11 @@ Y_{t,i}-\rho_{\omega}\omega_{t-1,i}^{2}+\epsilon_{Y}
 
 
 
-:heading Vega Charts
+</div><div class=item>
+<a name='vega'></a>
+:lheading Vega Charts
+
+
 You can embed charts defined in the vega-lite schema directly into a wiki page.
 More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
 
@@ -304,6 +316,7 @@ Gives:
 
 
 
+</div>
 
 
 
@@ -314,8 +327,8 @@ Gives:
 
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikitext.html"><table><td valign=center><td><span title="Previous: Wiki Text"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Text</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><tr valign=center><td>Wiki Display of Entries</td><td><span title="Next: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="entrytags.html"><table><td valign=center><td><span title="Previous: Entry Tags"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Entry Tags</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidisplay.html"><table><tr valign=center><td>Displaying Data</td><td><span title="Next: Displaying Data"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>

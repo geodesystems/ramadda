@@ -1,6 +1,8 @@
 [ht::head {Charts and Plots}]
 <%nochildlist%>
 :navtop
+:pagesearch selector=.item
+:br
 
 [displayType { Line chart} linechart {
 Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
@@ -16,6 +18,8 @@ images/charts/linechart.png
 }]
 
 
+<div class=item>
+<b>Chart Colors</b>
 <a name="colors"></a>
 You can set various colors of the chart with the following properties:
 
@@ -30,11 +34,12 @@ chartArea.strokeWidth="width"
 
 hAxis.gridlines.color="color"
 vAxis.gridlines.color="color"
-
 }]
+</div>
 
 
-<a name="annotations"></a>
+
+<div class=item>
 <b>Annotating Charts</b><br>
 Annotations for a chart can be specified in two ways. 
 The first is to specify one or more data fields to create the annotation from:
@@ -60,7 +65,7 @@ Where &lt;index&gt; is either a date or a numeric index, e.g;
 2017-01-02,D,annotation 4
 "
 }]
-
+</div>
 
 [displayType {Bar chart} {barchart}  {
 } {
