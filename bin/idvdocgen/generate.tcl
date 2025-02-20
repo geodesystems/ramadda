@@ -341,7 +341,8 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
    }
 #   gen::addInpageToc "<a href='#$id'>$name</a>"
    set args [string trim $args]
-   set h [ug::wikiheading $name $id]
+   set h "<div class=item>"
+   append h [ug::wikiheading $name $id]
    append h $desc
    set wiki [wiki::tagdefBlock display_$id "$args"]
    append h $wiki
@@ -360,8 +361,18 @@ proc displayType {name id desc args {img ""} {url ""} {desc2 ""}} {
           }
              append h [ht::cimg $img $name $extra]
     }
-      append h $desc2
+    append h $desc2
+    append h "\n</div>"
     set h
+}
+
+
+
+proc ug::searchable {header  {id {}}  {contents {}}} {
+    if {$contents!=""} {
+	   return "<div class=item>\n[ug::wikiheading $header $id]\n$contents\n</div>"
+    }
+    return "</div><div class=item>\n[ug::wikiheading $header $id]\n"
 }
 
 
@@ -385,7 +396,7 @@ proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
        }
     set attrs ""
     if {$id!=""} {
-            set attrs [ht::attrs id $id]
+           set attrs [ht::attrs id $id]
     }
     return "<subhead intoc=\"$intoc\" [ht::attrs id $id] $attrs  $extra>$label</subhead>"
 }
