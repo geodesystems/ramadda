@@ -3686,12 +3686,12 @@ public class Utils extends IO {
 
     /** a set of regular expressions that go along with the below DATE_FORMATS */
     public static final String[] FIND_DATE_PATTERNS = {
-	"\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} (AM|PM)",
-	"MM/dd/yyyy hh:mm:ss a",
+	"\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}:\\d{2} (AM|PM)", "MM/dd/yyyy hh:mm:ss a",
 	"\\d{4}-\\d{2}'T'\\d{2}:\\d{2}:\\d{2}",	"yyyy-MM-dd'T'HH:mm:ss",
 	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm:ss",
 	"^\\d{4}-\\d{2}-\\d{2} +\\d{2}:\\d{2}$", "yyyy-MM-dd HH:mm",
-	"^\\d{4}-\\d{2}-\\d{2}$", "yyyy-MM-dd",	
+	"^\\d{4}-\\d{2}-\\d{2}$", "yyyy-MM-dd",
+	"^\\d{2}/\\d{2}/\\d{4}$", "MM/dd/yyyy",		
 	"^\\d{4}/\\d{2}/\\d{2}$","yyyy/MM/dd",
 	"^\\d{8}_\\d{4}$","yyyyMMdd_HHmm",
 	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
