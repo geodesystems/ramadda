@@ -522,7 +522,7 @@ RepositoryMap.prototype = {
 			    bounds = MapUtils.extendBounds(bounds,b);
 			})
 			if(debugBounds)
-			    console.log("centerOnMarkers using layer.getDataExtent: " + latLonBounds +" layer=" + layer.name +" " + layer.ramaddaId);
+			    console.log("centerOnMarkers using layer.getDataExtent: " + bounds +" layer=" + layer.name +" " + layer.ramaddaId);
                     }
                 }
             }
@@ -555,6 +555,7 @@ RepositoryMap.prototype = {
 	if(debugBounds)
 	    console.log("calling setViewToBounds: ",bounds);
 //	console.log("final: " + bounds);
+
         this.setViewToBounds(bounds);
     },
     initRegionSelector:function(selectId,div,forSelection) {
@@ -632,6 +633,36 @@ RepositoryMap.prototype = {
 
 
     setViewToBounds: function(bounds) {
+	if(this.params.maxBounds && typeof this.params.maxBounds=='string') {
+	    if(this.params.maxBounds=='conus') {
+		this.params.maxBounds =
+		    MapUtils.createBounds(-125,24.5,-66,49);
+	    } else {
+		//n,w,s,e
+		let l = Utils.split(this.params.maxBounds,",",true,true);
+		if(l.length==4) {
+		    //MapUtils.createBounds(west, south, east, north);
+		    this.params.maxBounds =
+			MapUtils.createBounds(l[1], l[2],l[3],l[0]);
+		} else {
+		    console.log('RamaddaMap:bad max bounds:' +this.params.maxBounds);
+		    this.params.maxBounds = null;
+		}
+	    }
+	}
+
+	if(this.params.maxBounds && bounds) {
+	    if(!this.params.maxBounds.containsBounds(bounds)) {
+		let b = this.params.maxBounds;
+		bounds.left = Math.max(bounds.left,b.left);
+		bounds.right = Math.min(bounds.right,b.right);		
+		bounds.top = Math.min(bounds.top,b.top);		
+		bounds.bottom = Math.max(bounds.bottom,b.bottom);
+	    }
+	}
+
+
+
 	let singlePoint = bounds.left==bounds.right;
         let projBounds = this.transformLLBounds(bounds);
         if (projBounds.getWidth() == 0) {
