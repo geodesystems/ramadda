@@ -395,14 +395,15 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		let width = col.width;
 		if(idx==0 && props.showForm) {
 		    html+=HU.td([ATTR_STYLE,'padding-left:3px;','width','10'],
-				HU.div([ATTR_STYLE,'width:15px',ATTR_ID,id+'_formarrow', 'title','Click to show entry form', ATTR_CLASS,'ramadda-clickable'], HU.getIconImage("fas fa-caret-right")));
+				HU.div([ATTR_STYLE,'width:15px',ATTR_ID,id+'_formarrow', ATTR_TITLE,'Click to show entry form', ATTR_CLASS,'ramadda-clickable'], HU.getIconImage("fas fa-caret-right")));
 		    width-=10;
 		}
 		if(Utils.isDefined(col.width)) {
 		    attrs = Utils.mergeLists(attrs,["width",col.width]);
 		}
 		attrs.push(ATTR_STYLE,HU.css('padding-left',col.paddingLeft??'0px'))
-		attrs = Utils.mergeLists(attrs,['orderby',col.id=='download'?'size':col.id,'title','Sort by '+ (col.id=='download'?'Size':col.label)]);
+		attrs = Utils.mergeLists(attrs,['orderby',col.id=='download'?'size':col.id,
+						ATTR_TITLE,'Sort by '+ (col.id=='download'?'Size':col.label)]);
 		let v = col.label;
 		v=HU.span([ATTR_STYLE,this.props.headerStyle??''], v);
 		if(col.id==props.orderby || (props.orderby=='size' && col.id=='download')) {
@@ -432,7 +433,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	if(props.showForm) {
 	    formId = HU.getUniqueId('form_');
 	    html+=HU.open('form',[ATTR_ID,formId,'method','post','action',RamaddaUtil.getUrl('/entry/getentries')]);
-	    let form = HU.checkbox("",[ATTR_STYLE,HU.css('margin-left','3px'), 'title','Toggle all',ATTR_ID,id+'_form_cbx'],false);
+	    let form = HU.checkbox("",[ATTR_STYLE,HU.css('margin-left','3px'), ATTR_TITLE,'Toggle all',ATTR_ID,id+'_form_cbx'],false);
 	    let actions = [["","Apply action"]];
 	    props.actions.forEach(action=>{
 		actions.push([action.id,action.label]);
@@ -445,9 +446,9 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    form+=HU.open('input',['name','getall','type','submit','value','All',ATTR_CLASS,'submit ui-button ui-corner-all ui-widget',ATTR_ID,'getall1337','role','button']);
 	    /*
 	      if(props.canDelete)
-	      form+=SPACE1+HU.span(['target-type','repository.delete','title','Shift-drag-and-drop entries to delete',ATTR_CLASS,'ramadda-entry-target ramadda-clickable ramadda-hoverable'], HU.getIconImage('fas fa-trash'));
+	      form+=SPACE1+HU.span(['target-type','repository.delete',ATTR_TITLE,'Shift-drag-and-drop entries to delete',ATTR_CLASS,'ramadda-entry-target ramadda-clickable ramadda-hoverable'], HU.getIconImage('fas fa-trash'));
 	      if(props.canExport)
-	      form+=SPACE1+HU.span(['target-type','zip.export','title','Shift-drag-and-drop entries to export',ATTR_CLASS,'ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-file-export'));
+	      form+=SPACE1+HU.span(['target-type','zip.export',ATTR_TITLE,'Shift-drag-and-drop entries to export',ATTR_CLASS,'ramadda-entry-target ramadda-clickable ramadda-hoverable',], HU.getIconImage('fas fa-file-export'));
 	    */
 	    html+=HU.div([ATTR_CLASS,classPrefix +'-row',ATTR_ID,id+'_form',ATTR_STYLE,'display:none;width:100%'],form);
 	}
@@ -469,6 +470,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	    });
 	}
 
+
 	main.find('.entry-list-header-column').click(function() {
 	    let orderby = $(this).attr('orderby');
 	    let url;
@@ -476,11 +478,12 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		//my orderby
 		if(Utils.isDefined(props.ascending)) {
 		    //if we have an ascending
-		    if(props.ascending) 
-			url = HU.addToDocumentUrl('ascending',false);
-		    else {
-			url = HU.addToDocumentUrl('ascending',null);
-			url = HU.addToDocumentUrl('orderby',null);
+		    if(props.ascending)  {
+			url = HU.addToDocumentUrl('ascending',!props.ascending);
+		    }    else {
+			url = HU.addToDocumentUrl('ascending',true);
+//			url = HU.addToDocumentUrl('ascending',null);
+//			url = HU.addToDocumentUrl('orderby',null);
 		    }
 		} else {
 		    //add ascending
@@ -491,6 +494,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		url = HU.addToDocumentUrl('ascending',true);	    		    
 		url = HU.addToDocumentUrl('orderby',orderby);
 	    }
+
             window.location = url;
 	});
 
@@ -804,11 +808,11 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 			tds.push(HU.hidden('allentry',entry.getId()) +
 				 HU.checkbox(cbxId,['rowid',rowId,'name','selentry','value', entry.getId(),ATTR_CLASS,'entry-form-select',ATTR_STYLE,HU.css('margin-right','2px','display','none')],false));
 
-		    tds.push(HU.div([ATTR_STYLE,HU.css('margin-right','2px','min-width','10px'),'innerid',innerId,'entryid',entry.getId(),'title','Click to show contents',ATTR_CLASS,'entry-arrow ramadda-clickable' ], this.getToggleIcon(false)));
+		    tds.push(HU.div([ATTR_STYLE,HU.css('margin-right','2px','min-width','10px'),'innerid',innerId,'entryid',entry.getId(),ATTR_TITLE,'Click to show contents',ATTR_CLASS,'entry-arrow ramadda-clickable' ], this.getToggleIcon(false)));
 
 		    if(props.showCrumbs && entry.breadcrumbs) {
 			let crumbId = Utils.getUniqueId();
-			v = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, 'title','Show breadcrumbs',ATTR_CLASS,'ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage('fas fa-plus-square')) +SPACE2
+			v = HU.span([ATTR_ID,'breadcrumbtoggle_' + crumbId, 'breadcrumbid',crumbId, ATTR_TITLE,'Show breadcrumbs',ATTR_CLASS,'ramadda-clickable ramadda-breadcrumb-toggle' ], HU.getIconImage('fas fa-plus-square')) +SPACE2
 			    + HU.span([ATTR_STYLE,HU.css('display','none'),ATTR_ID,crumbId], entry.breadcrumbs+'&nbsp;&raquo;&nbsp;') +v;
 		    }
 
@@ -849,7 +853,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					imgUrl = RamaddaUtil.getBaseUrl()+icon;
 				}
 				if(imgUrl) {
-				    v+=HU.href(mUrl,HU.image(imgUrl,[ATTR_CLASS,'ramadda-attachment ramadda-clickable','title',name,'width','75px',ATTR_STYLE,HU.css('margin','2px')]));
+				    v+=HU.href(mUrl,HU.image(imgUrl,[ATTR_CLASS,'ramadda-attachment ramadda-clickable',ATTR_TITLE,name,'width','75px',ATTR_STYLE,HU.css('margin','2px')]));
 				}
 			    }
 			});
@@ -857,7 +861,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 								HU.getDimension(col.width),'overflow-x','auto')], v);
 
 		    } else  if(col.id=='type') {
-			v = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),v,['title','Search for entries of type ' + _v]);
+			v = HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),v,[ATTR_TITLE,'Search for entries of type ' + _v]);
 		    }
 		    let maxWidth = col.width-20;
 		    maxWidth = col.width;		    
@@ -868,7 +872,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		    attrs.push('width',HU.getDimension(col.width));
 		}
 		if(title) {
-		    //		    attrs.push('title',title);
+		    //		    attrs.push(ATTR_TITLE,title);
 		}
 		//		v = HU.div([ATTR_CLASS,'entry-row-label'], v);
 		line+=HU.td(attrs,v);
@@ -934,7 +938,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 		position: { my: "right top", at: "right bottom" },
 		content: function () {
 		    if($(this).hasClass('ramadda-edit-input')) return null;
-		    let title = $(this).attr('title');
+		    let title = $(this).attr(ATTR_TITLE);
 		    let icon = $(this).attr('data-icon');		
 		    let thumb = $(this).attr('data-thumbnail');		
 		    if(icon) {
@@ -1026,10 +1030,10 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 					    ' ' + HU.href(url,HU.getIconImage('fas fa-download')));
 		    }
 		    
-		    table+=HU.formEntry('Kind:',HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),entry.typeName,['title','Search for entries of type ' + entry.typeName]));
+		    table+=HU.formEntry('Kind:',HU.href(RamaddaUtil.getUrl('/search/type/' + entry.getType().id),entry.typeName,[ATTR_TITLE,'Search for entries of type ' + entry.typeName]));
 		    let searchUrl = RamaddaUtil.getUrl('/search/type/' + entry.getType().id+'?user_id='+ entry.creator+'&search.submit=true');
 		    let created = HU.href(searchUrl,entry.creator,
-					  ['title','Search for entries of this type created by ' + entry.creator]);
+					  [ATTR_TITLE,'Search for entries of this type created by ' + entry.creator]);
 		    table+=HU.formEntry('Created by:',created);
 		    table+=HU.formEntry('Created:',entry.createDateFormat);
 		    if(entry.startDate && entry.startDate.getTime()!=entry.createDate.getTime())
@@ -1065,7 +1069,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 
 	container.find('.ramadda-attachment').tooltip({
 	    show: { effect: 'slideDown', delay: 500, duration: 1000 },
-	    content: function () {return $(this).prop('title');}});
+	    content: function () {return $(this).prop(ATTR_TITLE);}});
 
 	let rows = container.find('.entry-list-row');
 	rows.bind ('contextmenu', function(event) {
@@ -1242,7 +1246,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
 	});
 
 	let tags = $('#'+formId).find('.metadata-tag');
-	tags.attr('title','Click to remove');
+	tags.attr(ATTR_TITLE,'Click to remove');
 	tags.click(function() {
 	    let input = form.find("#" + $(this).attr('metadata-id'));
 	    if($(this).hasClass('metadata-tag-deleted')) {
