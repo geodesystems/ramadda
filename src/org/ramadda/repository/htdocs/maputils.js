@@ -211,6 +211,7 @@ var MapUtils =  {
 	})
 	return this.createBounds(left,bottom,right,top);
     },
+    //w,s,n,e
     createBounds:function (v1, v2, v3, v4,recurse) {
 	//Check for being passed in a bounds object
 	if(!Utils.isNumber(v1) && v1 && v1.left&& !recurse) {
@@ -1009,9 +1010,6 @@ function CollisionInfo(handler,numRecords, collisionPoint,args) {
 	labelTemplate:'${count}',
 	labelColor:"#fff",
 	labelFontSize:10,
-
-
-
 	dots: null,
 	collisionPoint:collisionPoint,
 	dot:null,
@@ -1066,6 +1064,7 @@ CollisionInfo.prototype = {
 	    style.fillColor='transparent';
 	    style.strokeColor=this.ringColor;
 	    style.strokeWidth=this.ringWidth;
+
 	    dot = this.handler.map.createPoint("dot2-" + idx, this.collisionPoint, style,null,this.myTextGetter);
 	    this.dots.push(dot);		
 	}
@@ -1106,7 +1105,8 @@ CollisionInfo.prototype = {
 	let style = {
 	    fillColor:dotColor,
 	    fillOpacity:this.dotOpacity,
-	    pointRadius:dotRadius
+	    pointRadius:dotRadius,
+	    strokeWidth:0
 	}
 	if(this.labelTemplate) {
 	    style =
