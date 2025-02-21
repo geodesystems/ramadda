@@ -3874,13 +3874,12 @@ public class Seesv implements SeesvCommands {
 		    if(a.equals("-endif")) break;
 		    ifArgs.add(a);
 		}
-		//		System.err.println("if args:" + ifArgs);
 		TextReader ifCtx = makeTextReader();
 		for(int j=0;j<ifArgs.size();j++) {
 		    String arg = ifArgs.get(j);
 		    CsvFunctionHolder func = getFunction(arg);
 		    if(func==null) {
-			throw new RuntimeException("Unknown function in -if:" + ifArgs);
+			throw new RuntimeException("Unknown function:'" + arg +"' in -if commands:" + ifArgs);
 		    }
 		    int idx=0;
 		    try {
@@ -3891,8 +3890,9 @@ public class Seesv implements SeesvCommands {
 		    if(idx==SKIP_INDEX) {
 			continue;
 		    }
-		    if(idx<0)
-			throw new RuntimeException("Unknown function in -if:" + ifArgs);
+		    if(idx<0) {
+			throw new RuntimeException("Unknown function in -if: function=" + arg+" return index=" + idx+" args="+ifArgs);
+		    }
 		    j=idx;
 		}
 		ctx.addProcessor(new Processor.If(ctx, this,predicate,ifCtx));
