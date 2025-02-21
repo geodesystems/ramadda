@@ -1057,6 +1057,7 @@ function DisplayThing(argId, argProperties) {
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
 	    if(!Utils.stringDefined(value)) return '';
+	    if(!value.startsWith('http')) value = 'https://' + value;
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");

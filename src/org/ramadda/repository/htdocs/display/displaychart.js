@@ -3440,6 +3440,7 @@ function TableDisplay(displayManager, id, properties) {
 			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
+			if(!v.startsWith('http')) v = 'https://' + v;
 			return {
 			    v:v,
 			    f:HU.href(v,v,['target','_link'])
