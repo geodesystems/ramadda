@@ -8,6 +8,7 @@
 ]]></process_description>
 <description><![CDATA[Makes an image from a PPT]]></description>
 <arg type="string" prefix="-slidenumber"  default="1"
+     required="true"
      size="6"
      label="Slide number" help="Which slide to capture. Can use range, e.g., 1-3 or &quot;all&quot; for all slides"/>
 <arg value="${outputdir}"/>
