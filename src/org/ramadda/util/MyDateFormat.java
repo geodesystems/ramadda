@@ -29,6 +29,11 @@ public class MyDateFormat {
     }
 
 
+    @Override
+    public String toString() {
+	return "dateformat:" +format;
+    }
+
     private static TimeZone makeTimeZone(String timezone) {
 	TimeZone tz;
 	if(Utils.stringDefined(timezone)) {
