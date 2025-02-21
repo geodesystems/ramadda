@@ -508,12 +508,15 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 
-	    let showPopupSelect = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple')) ||
-		this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
+	    let showPopupSelect = multi ||this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
+		if(!Utils.isDefined(multi)) multi=false;
 		HU.makeSelectTagPopup(jqid(widgetId),{
 		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-right:4px;margin-bottom:0px;'>${widget}</span>",
+		    single:!multi,
+		    makeButtons:multi,
 		    makeButton:false,
 		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
