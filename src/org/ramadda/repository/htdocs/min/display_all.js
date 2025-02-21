@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Feb 20 11:35:43 MST 2025";
+var build_date="RAMADDA build date: Fri Feb 21 10:12:21 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5084,6 +5084,7 @@ function DisplayThing(argId, argProperties) {
 	getRecordUrlHtml: function(attrs, field, record) {
 	    let value = record.getValue(field.getIndex());
 	    if(!Utils.stringDefined(value)) return '';
+	    if(!value.startsWith('http')) value = 'https://' + value;
 	    let linkLabel = value||"Link";
 	    linkLabel = linkLabel.replace(/^https?:\/\//,"");
 	    linkLabel = linkLabel.replace(/\?.*/,"");
@@ -18630,12 +18631,15 @@ function RecordFilter(display,filterFieldId, properties) {
 		}
 	    }
 
-	    let showPopupSelect = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple')) ||
-		this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
+	    let multi = this.getProperty(this.getId() +".filterMultiple",this.getProperty('filterMultiple',false));
+	    let showPopupSelect = multi ||this.getProperty(this.getId() +".filterShowPopup",this.getProperty('filterShowPopup'))
 	    if(this.isFieldEnumeration() && showPopupSelect) {
 		let widgetId = this.getFilterId(this.getId());
+		if(!Utils.isDefined(multi)) multi=false;
 		HU.makeSelectTagPopup(jqid(widgetId),{
 		    wrap:"<span class='ramadda-hoverable;' style='display:inline-block;margin-right:4px;margin-bottom:0px;'>${widget}</span>",
+		    single:!multi,
+		    makeButtons:multi,
 		    makeButton:false,
 		    hide:false,after:true,buttonLabel:HU.getIconImage('fas fa-list-check')});
 	    }
@@ -22873,6 +22877,7 @@ function TableDisplay(displayManager, id, properties) {
 			f = HU.div([STYLE,HU.css('height','100%','background', color,'color',fg+" !important")],f)
 		    }
 		    if(field.getType()=="url") {
+			if(!v.startsWith('http')) v = 'https://' + v;
 			return {
 			    v:v,
 			    f:HU.href(v,v,['target','_link'])
@@ -38350,6 +38355,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
     let myProps = [
 	{label:'Base Map Properties'},
 	{p:'bounds',ex:'north,west,south,east',tt:'initial bounds'},
+	{p:'maxBounds',ex:'n,w,s,e or conus',tt:'max bounds when applying filters'},
 	{p:'gridBounds',ex:'north,west,south,east'},	
 	{p:'mapCenter',ex:'lat,lon',tt:"initial position"},
 	{p:'zoomLevel',ex:4,tt:"initial zoom"},
@@ -38744,6 +38750,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
         },
 
         initMapParams: function(params) {
+	    params.maxBounds = this.getMaxBounds();
 	    if(this.getProperty('canMove',false)) {
 		params.canMove=true;
 	    }
@@ -39364,7 +39371,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'collisionDotColor',d:'#fff',tt:'Color of dot drawn at center'},
 	{p:'collisionDotOpacity',d:'0.9',tt:'Opacity of dot drawn at center'},	
 	{p:'collisionRingColor',d:'#000',tt:'Color of ring'},
-	{p:'collisionRingWidth',d:1,tt:'Width of ring'},	
+	{p:'collisionRingWidth',d:0.25,tt:'Width of ring'},	
 	{p:'collisionDotColorOn',d:'blue',tt:'color to use when the collision marker is selected'},
 	{p:'collisionDotRadius',d:12,tt:'Radius of dot drawn at center'},
 	{p:'collisionScaleDots',ex:true,d:false,tt:'Scale the group dots'},
@@ -41716,7 +41723,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				 ATTR_CLASS,'display-header-item'],
 				HU.checkbox('',[ATTR_ID,this.domId('collisiontoggle')],
 					    !this.getHandleCollisions(),
-					    'Show All'));
+					    'Show all points'));
 	    }
 
 
