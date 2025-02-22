@@ -3289,45 +3289,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     
-    public static String makeToggleBlock(String content,
-                                         StringBuilder contentSB,
-                                         boolean visible) {
-        String        id  = getUniqueId("block_");
-        StringBuilder sb  = contentSB;
-        String        img = "";
-        String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
-                        Utils.concatString(squote(id), ",",
-                                           squote(id + "img"), ",",
-                                           squote(""), ",", squote(""))));
-
-        open(sb, TAG_DIV, HtmlUtils.cssClass("hideshowblock"),
-             HtmlUtils.id(id),
-             HtmlUtils.style("display:block;visibility:visible"));
-        if ( !visible) {
-            HtmlUtils.script(sb,
-                             HtmlUtils.call("HtmlUtils.hide", HtmlUtils.squote(id)));
-        }
-        sb.append(content);
-        sb.append(close(TAG_DIV));
-
-        return js;
-    }
 
     public static void addFormChangeListener(Appendable sb,String formId)  throws Exception {
 	script(sb,call("HtmlUtils.checkInputChange", quote(formId)));
     }
 
-
-
-    /*
-     * _more_
-     *
-     * @param label _more_
-     * @param content _more_
-     * @param visible _more_
-     *
-     * @return _more_
-     */
     public static String makeToggleInline(String label, String content,
                                           boolean visible) {
 
@@ -3551,12 +3517,16 @@ public class HtmlUtils implements HtmlUtilsConstants {
     }
 
     
-    public static void makeAccordion(Appendable sb, List titles,
-                                     List contents)
+    public static void makeAccordion(Appendable sb, List titles, List contents)
             throws Exception {
         makeAccordion(sb, titles, contents, false, null, null);
     }
 
+    public static void makeAccordion(Appendable sb, Object[] titles, Object[]contents)
+            throws Exception {
+        makeAccordion(sb, Utils.arrayToList(titles), Utils.arrayToList(contents), false, null, null);
+    }
+    
     
     public static void makeAccordion(Appendable sb, List titles,
                                      List contents, boolean collapse)
