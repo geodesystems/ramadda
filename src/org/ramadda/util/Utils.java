@@ -2756,6 +2756,7 @@ public class Utils extends IO {
         label = label.trim().toLowerCase();
 	label = Utils.replaceAll(label,delimiter,"thedelimiter");
 	label = Utils.replaceAll(label,
+				 "!","",
 				 ":+", delimiter,
 				 "&+", delimiter,
 				 "\\s+", delimiter,
