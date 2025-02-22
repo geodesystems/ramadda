@@ -51,6 +51,8 @@
    --embed-link-background:#4E8696;
    --embed-link-color:#fff;   
    --embed-link-background-hover:#569098;
+   --heading-color:#000;
+   --heading-weight:400;
 }
 
 body {
@@ -220,6 +222,8 @@ h6 {
 
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
     font-size:140%;
+    color:var(--heading-color);
+    font-weight:var(--heading-weight);
 }
 
 .ramadda-heading2 {
@@ -256,7 +260,7 @@ ramadda-heading, .ramadda-page-heading {
 .ramadda-lheading  {
     padding: 0px;
     margin: 0px;
-    color: #000;
+    color:var(--heading-color);
 }
 
 .ramadda-heading-inner, .ramadda-lheading-inner {
@@ -377,6 +381,13 @@ h2 a,   h2 a:visited, h2 a:link  {color: #000;}
 
 .fancybox-image {
     background:#fff;
+}
+
+.ramadda-hero-image {
+    height: 100%;
+    max-width:100%;
+    object-fit: cover;
+    width: 100%;
 }
 
 .fancybox-caption__body {
