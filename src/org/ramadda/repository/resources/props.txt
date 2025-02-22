@@ -11,7 +11,6 @@ form.altitude.top.show=false
 form.ark.show=true
 form.basic.group=Some label
 form.createdate.label=
-form.datatype.show=false
 form.date.help=
 form.date.label=
 form.date.show.before=false
@@ -54,22 +53,39 @@ form.url.show=true
 form.wikieditor.height=300px
 
 cat:Display
-html.changedate.show=false
-html.createdate.show=false
-html.date.show=false
-html.numberofpoints.show=false
-html.owner.show=false
-html.resource.show=true
-html.tabs=true
-html.type.show=false
-html.url.label=
-icon.column=entry column for icon
-location.format=####0.00000000
-media.height=40
-name.raw=true
-name.template=Example - ${column} 
 date.format=yyyy
 date.nullok=true
+html.date.show=false
+html.changedate.show=false
+html.createdate.show=false
+html.owner.show=false
+html.resource.show=true
+
+#Show the entry property groups as tabs
+html.tabs=true
+
+#Don't show the entry type
+html.type.show=false
+
+#label to use when showing the URL
+html.url.label=
+
+#for point data
+html.numberofpoints.show=false
+
+#decimal format for lat/lon
+location.format=####0.00000000
+
+#use the column value for the entry icon
+icon.column=entry column for icon
+
+#template used when displaying date
+startdate.template=${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=" - " suffix=" years old when missing"}
+enddate.template=${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=" - " suffix=" years old when missing"}
+media.height=40
+#template to use when displaying the name
+name.template=Example - ${name} - ${some_column} 
+
 
 
 cat:Create
@@ -79,45 +95,62 @@ canbeindexed=true
 convertidsinfile=true
 upload.zip=true
 data.url.addlaton=true
+#mime type for file selection
 file.accept=image/*
 file.url=http://www.opendap.org
+#in the wiki edit use this when there are entry wiki tags
+wiki.edit.links.label=My Tags
+#Look for ancestor entry of the type and use its geo location
 inheritlocationfromtype=type_geo_site
 inline.includeinformation=true
 iscsvconvertible=true
-llm.prompt.extra=The text below is shell script.
+#main prompt to use when extracting info from a file
 llm.prompt=This is information about a missing person.
-wiki.edit.links.label=My Tags
+#Tack this on to the end of the prompt
+llm.prompt.extra=The text below is shell script.
+
 
 cat:Map
-map.chart.args=hodographWidth,150,skewtWidth,300,skewtHeight,300,windStride,100
+#For charts showing in map popup
+map.chart.type=bartable
 map.chart.field=discharge
 map.chart.fields=temperature,pm2_5
+#extra args, e.g. arg1,value1,arg2,value2
+map.chart.args=
 map.chart.minSizeX=750
 map.chart.minSizeY=500
-map.chart.type=bartable
+
 
 cat:Search
-search.date.show=false
-search.form.area.label=Last known location
+#What to show in the search form
+search.tabs=list,images,map,timeline
+#metadata type to add to search form
+search.metadatatypes=archive_subject,archive_keyword,archive_note
 search.form.area.show=false
-search.form.createdate.show=false
-search.form.date.show=false
+search.form.area.label=Last known location
+#what to show
 search.form.description.show=true
 search.form.name.show=true
-search.form.orderby=name,date,createdate
+search.form.createdate.show=false
+search.form.date.show=false
+#what order by to show
+search.form.orderby=relevant,name,createdate,date,size
 search.form.startdate.label=Date Missing
-search.initsearch=true
 search.label=
-search.metadatatypes=archive_subject,archive_keyword,archive_note
+
+#Do the search when  form is displayed
+search.initsearch=true
+
 search.searchopen=true
 search.synthetic.authors.fields=primary_author,other_authors
 search.synthetic.authors.label=All Authors
 search.synthetic.fields=authors
-search.tabs=list
 search.text.show=false
+#the wiki macro to use in the search form
 search.wikimacro=missing_header
 
 cat:Misc
+#what mime type to use when downloading the file
 mimetype=image/tiff; application=geotiff
 mobile.form.location.set=true
 point.default.max=10000
@@ -127,7 +160,6 @@ record.file.class=org.ramadda.data.point.text.CsvFile
 record.pattern.date.format=MM/dd/yy
 record.patterns=hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)
 record.processresource=false
-startdate.template=${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=" - " suffix=" years old when missing"}
 subset.area.show=false
 subset.date.show=true
 table.delimiter=tab

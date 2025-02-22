@@ -3268,7 +3268,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		props.get(props.size()-1).append("<div style='height:300px;max-height:300px;overflow-y:auto;'>");
 		continue;
 	    }
-	    props.get(props.size()-1).append(HU.div(line,HU.clazz("prop")));
+	    NamedBuffer buff= props.get(props.size()-1);
+	    if(line.startsWith("#")) {
+		buff.append("<div style='background:#eee;font-style:italic;);'>" + line.substring(1)+"</div>");
+		continue;
+	    }
+	    buff.append(HU.div(line,HU.clazz("prop")));
 	}
 
 	props.get(props.size()-1).append("</div>");
