@@ -1,0 +1,48 @@
+
+#Is this type just for admins
+adminonly="true"
+#Should this ever be created by a user
+foruser="false"
+
+#Treat this entry as a group
+isgroup="true"
+
+#general help
+help="A web page link"
+
+#help to show when editing
+edithelp="Provide a file ..."
+
+#where to show this entry type
+priority="1"
+
+#default list of entry type to show in the File menu
+childtypes="type_documentation"
+
+#when creating a new entry what fields to show
+newfields="name,instructions,_default"
+#when editing what fields to show
+editfields="name,entry_ids,_default"
+
+
+#reorder how the fields are shown
+displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,age_missing,_default"
+#Default metadata types to show in Add Property menu
+metadata="archive_subject,archive_keyword"
+includeInSearch="false"
+
+
+
+
+#for (not) matching on file names
+notpattern="(?i).*imdvmap\.json$"
+
+#How to pull out field values from the file name
+field_file_pattern=".*(frequency_type:inst|tavg|const)(frequency:1|3|6|M|U|0)_(dimensions:2d|3d)_(data_group:...)"
+
+
+nametemplate="${first_name} ${middle_name} ${last_name}"
+canCache="false"
+canlist="true"
+cansearch="true"
+search_showsummary="false"

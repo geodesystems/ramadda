@@ -49,6 +49,8 @@ import java.sql.Connection;
 import java.net.URL;
 
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -320,12 +322,29 @@ public class TypeHandler extends RepositoryManager {
 
 
     
+    private void printAttrs(Node node) {
+	if(node==null) return;
+	printAttrs(node.getParentNode());
+	NamedNodeMap attrs = node.getAttributes();
+	if(attrs!=null) {
+	    for (int i = 0; i < attrs.getLength(); i++) {
+		Attr attr = (Attr) attrs.item(i);
+		String name = attr.getNodeName();
+		String value =  attr.getNodeValue();
+		if(seenProps.contains(name)) continue;
+		seenProps.add(name);
+		System.out.println(name+"=\""+ value+"\"");
+	    }
+	}
+    }
+
     public void initTypeHandler(Element node) {
 
         try {
             displayTemplatePath = Utils.getAttributeOrTag(node,
 							  "displaytemplate", displayTemplatePath);
 	    
+	    //printAttrs(node);
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);
@@ -2391,7 +2410,7 @@ public class TypeHandler extends RepositoryManager {
         for (int propIdx = 0; propIdx < propertyNodes.size(); propIdx++) {
             Element propertyNode = (Element) propertyNodes.get(propIdx);
             if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
-                if (debug) {
+                if (false) {
 		    String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
 		    if(!seenProps.contains(name)) {
 			seenProps.add(name);

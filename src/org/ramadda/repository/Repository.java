@@ -3259,50 +3259,21 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         main.append(HU.formTableClose());
 
-	List<NamedBuffer>props = new ArrayList<NamedBuffer>();
-	for(String line: Utils.split(IOUtil.readContents("/org/ramadda/repository/resources/props.txt",getClass()),"\n",true,true)) {
-	    if(line.startsWith("cat:")) {
-		if(props.size()>0)
-		    props.get(props.size()-1).append("</div>");
-		props.add(new NamedBuffer(line.substring("cat:".length())));
-		props.get(props.size()-1).append("<div style='height:300px;max-height:300px;overflow-y:auto;'>");
-		continue;
-	    }
-	    NamedBuffer buff= props.get(props.size()-1);
-	    if(line.startsWith("#")) {
-		buff.append("<div style='background:#eee;font-style:italic;);'>" + line.substring(1)+"</div>");
-		continue;
-	    }
-	    buff.append(HU.div(line,HU.clazz("prop")));
-	}
-
-	props.get(props.size()-1).append("</div>");
-
-	StringBuilder dfltProps=new StringBuilder("<div class=props>");
-	HU.addPageSearch(dfltProps,".prop",null,"Search");
-
-	HU.makeTabs(dfltProps,props);
-	dfltProps.append("</div>");
-	StringBuilder propsSection=new StringBuilder();
-	propsSection.append(HU.hbox(
-				    HU.textArea("properties",request.getString("properties",""),16,50,
-						HU.attrs("id","properties")),
-				    dfltProps));
-
-	propsSection.append(HU.script("Utils.initCopyable('.props .prop',{addNL:true,textArea:'" +"properties"+"'});"));
-
+	StringBuilder propsSection = addTypeProps(request,"/org/ramadda/repository/resources/props.txt","properties",16);
 
 	StringBuilder extra = new StringBuilder();
 	extra.append(HU.formTable());
+	HU.formEntry(extra,"",HU.div("Must be valid XML attributes",
+				  HU.clazz("ramadda-form-help")));
+	StringBuilder attrs = addTypeProps(request,"/org/ramadda/repository/resources/attrs.txt","extraattributes",10);
+
+	HU.formEntry(extra,"Extra Attributes:",
+		     attrs.toString());
+	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
+
 	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Map Popup:",
 		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
-
-
-	HU.formEntry(extra,"",HU.div("Must be valid XML attributes",
-				  HU.clazz("ramadda-form-help")));
-	HU.formEntry(extra,"Extra Attributes:",
-		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
 
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
@@ -3339,7 +3310,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	
         cols.append("</table>\n");
         cols.append(HU.formTable());	
-
 
 
 
@@ -3381,8 +3351,48 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 
+    private StringBuilder addTypeProps(Request request, String resource, String arg,int rows) throws Exception {
+	List<NamedBuffer>props = new ArrayList<NamedBuffer>();
+	String style = HU.style("min-width:600px;width:600px;height:" + (rows*20)+"px;max-height:300px;overflow-y:auto;");
+	for(String line: Utils.split(IOUtil.readContents(resource,getClass()),"\n",true,true)) {
+	    if(line.startsWith("cat:")) {
+		if(props.size()>0)
+		    props.get(props.size()-1).append("</div>");
+		props.add(new NamedBuffer(line.substring("cat:".length())));
+		props.get(props.size()-1).append("<div " + style+">");
+		continue;
+	    }
+	    if(props.size()==0) {
+ 		props.add(new NamedBuffer(""));
+		props.get(props.size()-1).append("<div " + style+">");
+	    }
+	    NamedBuffer buff= props.get(props.size()-1);
+	    if(line.startsWith("#")) {
+		buff.append("<div class=searchprop style='background:#eee;font-style:italic;);'>" + line.substring(1)+"</div>");
+		continue;
+	    }
+	    buff.append(HU.div(line,HU.clazz("searchprop prop")));
+	}
 
+	props.get(props.size()-1).append("</div>");
+	String clazz = "props_" +arg;
+	StringBuilder dfltProps=new StringBuilder("<div class=" + clazz+">");
+	HU.addPageSearch(dfltProps,"." +clazz+" .searchprop",null,"Search");
 
+	if(props.size()==1) {
+	    dfltProps.append(props.get(0).getBuffer());
+	} else {
+	    HU.makeTabs(dfltProps,props);
+	}
+	dfltProps.append("</div>");
+	StringBuilder propsSection =new StringBuilder();
+	propsSection.append(HU.hbox(
+				    HU.textArea(arg,request.getString(arg,""),rows,50,
+						HU.attrs("id",arg)),
+				    dfltProps));
+	propsSection.append(HU.script("Utils.initCopyable('." + clazz+" .prop',{addNL:true,textArea:'" +arg+"'});"));
+	return propsSection;
+    }
 
 
     
