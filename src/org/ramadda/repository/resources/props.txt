@@ -1,0 +1,136 @@
+cat:Properties
+form.location.show=false
+form.area.show=false
+form.location.help=
+form.location.label=
+form.location.show.before=false
+form.altitude.bottom.show=true
+form.altitude.show.top=false
+form.altitude.show=false
+form.altitude.top.show=false
+form.ark.show=true
+form.basic.group=Some label
+form.createdate.label=
+form.datatype.show=false
+form.date.help=
+form.date.label=
+form.date.show.before=false
+form.date.show=false
+form.description.columns=80
+form.description.group=Description
+form.description.iswiki=true
+form.description.label=
+form.description.rows=5
+form.description.show=false
+form.description.showwiki=false
+form.dnd.show=false
+form.enddate.label=
+form.file.label=
+form.file.show=false
+form.filesonserver.show=false
+form.fromdate.label=
+form.fromdate.show=false
+form.metdata.add.default=true
+form.name.columns=80
+form.name.label=
+form.name.show=true
+form.name.showlabel=true
+form.order.show=false
+form.properties.show=false
+form.resource.download.show=false
+form.resource.extra.show=false
+form.resource.label=Link
+form.resource.show=false
+form.serverfile.show=false
+form.setbounds.show=false
+form.settimerange.show=false
+form.startdate.label=e.g. Date of Birth
+form.tabs=true
+form.tags.show=false
+form.time.show=false
+form.todate.show=false
+form.url.label=
+form.url.show=true
+form.wikieditor.height=300px
+
+cat:Display
+html.changedate.show=false
+html.createdate.show=false
+html.date.show=false
+html.numberofpoints.show=false
+html.owner.show=false
+html.resource.show=true
+html.tabs=true
+html.type.show=false
+html.url.label=
+icon.column=entry column for icon
+location.format=####0.00000000
+media.height=40
+name.raw=true
+name.template=Example - ${column} 
+date.format=yyyy
+date.nullok=true
+
+
+cat:Create
+addinitialmetadata=false
+form.bulkupload.show=false
+canbeindexed=true
+convertidsinfile=true
+upload.zip=true
+data.url.addlaton=true
+file.accept=image/*
+file.url=http://www.opendap.org
+inheritlocationfromtype=type_geo_site
+inline.includeinformation=true
+iscsvconvertible=true
+llm.prompt.extra=The text below is shell script.
+llm.prompt=This is information about a missing person.
+wiki.edit.links.label=My Tags
+
+cat:Map
+map.chart.args=hodographWidth,150,skewtWidth,300,skewtHeight,300,windStride,100
+map.chart.field=discharge
+map.chart.fields=temperature,pm2_5
+map.chart.minSizeX=750
+map.chart.minSizeY=500
+map.chart.type=bartable
+
+cat:Search
+search.date.show=false
+search.form.area.label=Last known location
+search.form.area.show=false
+search.form.createdate.show=false
+search.form.date.show=false
+search.form.description.show=true
+search.form.name.show=true
+search.form.orderby=name,date,createdate
+search.form.startdate.label=Date Missing
+search.initsearch=true
+search.label=
+search.metadatatypes=archive_subject,archive_keyword,archive_note
+search.searchopen=true
+search.synthetic.authors.fields=primary_author,other_authors
+search.synthetic.authors.label=All Authors
+search.synthetic.fields=authors
+search.tabs=list
+search.text.show=false
+search.wikimacro=missing_header
+
+cat:Misc
+mimetype=image/tiff; application=geotiff
+mobile.form.location.set=true
+point.default.max=10000
+point.initialize=false
+record.file.cacheok=true
+record.file.class=org.ramadda.data.point.text.CsvFile
+record.pattern.date.format=MM/dd/yy
+record.patterns=hole:HOLE:\s*([^\s]+),top:TOP:\s*([\d.]+),bottom:BOTTOM:\s*([\d.]+),date:YEAR\s*(\d\d\d\d)
+record.processresource=false
+startdate.template=${value dateFormat=yyyy-MM-dd} ${value showAge=true otherDate=date_of_birth prefix=" - " suffix=" years old when missing"}
+subset.area.show=false
+subset.date.show=true
+table.delimiter=tab
+template.contents.sms=${name.short}
+template.label.sms=${name.short} - ${value.content} ${unit.content}
+

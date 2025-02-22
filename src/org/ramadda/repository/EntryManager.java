@@ -2699,7 +2699,7 @@ public class EntryManager extends RepositoryManager {
 		    && typeHandlerToUse.okToSetNewNameDefault()) {
 		    noName =true;
                     String nameTemplate =
-                        typeHandlerToUse.getTypeProperty("nameTemplate",
+                        typeHandlerToUse.getTypeProperty("name.template",
 							 (String) null);
                     if (nameTemplate == null) {
                         name = IO.getFileTail(Utils.getDefined("",info.name,info.resource));
@@ -2722,7 +2722,7 @@ public class EntryManager extends RepositoryManager {
 
                 if (name.trim().length() == 0) {
                     String nameTemplate =
-                        typeHandlerToUse.getTypeProperty("nameTemplate",
+                        typeHandlerToUse.getTypeProperty("name.template",
 							 (String) null);
                     if (nameTemplate == null) {
                         name = typeHandlerToUse.getDefaultEntryName(info.name);
@@ -7770,7 +7770,7 @@ public class EntryManager extends RepositoryManager {
                 if (name.trim().length() == 0) {
                     String nameTemplate =
                         theNewEntry.getTypeHandler().getTypeProperty(
-								     "nameTemplate", (String) null);
+								     "name.template", (String) null);
                     if (nameTemplate != null) {
                         Object[] values =
                             theNewEntry.getTypeHandler().getEntryValues(

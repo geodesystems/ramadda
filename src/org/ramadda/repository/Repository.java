@@ -59,6 +59,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.service.Service;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.IO;
 import org.ramadda.util.S3File;
 import org.ramadda.util.JsonUtil;
@@ -3077,6 +3078,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		getMetadataManager().addMetadata(request,entry,jsonMetadata);
 	    }
 	    jsonMetadata.setAttr1(json);
+	    entry.setMetadataChanged(true);
 	    getEntryManager().updateEntry(null, entry);
 	}
 	
@@ -3153,6 +3155,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    String label = request.getString("column_label_"+i,"");
 	    if(!Utils.stringDefined(label)) label  = Utils.makeLabel(cname);
 	    String type = request.getString("column_type_"+i,"");
+	    if(!Utils.stringDefined(type)) type= "string";
 	    String size = request.getString("column_size_"+i,"");
 	    String attrs = XU.attrs("name",cname,
 				    "label",label,
@@ -3221,85 +3224,127 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, OUTPUT_CREATETYPE));
 	sb.append(HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
-        sb.append(HU.formTable());
-
-
-        sb.append(HU.formEntry(msgLabel("Type ID"),
+	sb.append("<br>");
+	StringBuilder main = new StringBuilder();
+        main.append(HU.formTable());
+        main.append(HU.hidden("json_contents",""));
+        main.append(HU.formEntry(msgLabel("Type ID"),
 			       HU.input("typeid",request.getString("typeid",""),HU.attrs("size","30")) +
 			       " Needs to be lower case, no spaces and start with type_, e.g., type_your_type"));
-        sb.append(HU.formEntry(msgLabel("Type Name"),
+        main.append(HU.formEntry(msgLabel("Type Name"),
   			       HU.input("typename",request.getString("typename",""),HU.attrs("size", "30")) +" e.g., My Type"));
 
 	String typeList=HU.href(getUrlBase()+"/entry/types.html","View All Types","target=_types");
-        sb.append(HU.formEntry(msgLabel("Super Type"),
+        main.append(HU.formEntry(msgLabel("Super Type"),
 			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
 			       " e.g., type_point. "+typeList));
-        sb.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
+        main.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
 			       HU.input("handler",request.getString("handler",""),HU.attrs("size","50"))+"<br>"+
-			       "e.g.,<pre>org.ramadda.data.services.PointTypeHandler\norg.ramadda.repository.type.TypeHandler\norg.ramadda.repository.type.GenericTypeHandler</pre>"}));
+			       "e.g.,<pre>use org.ramadda.repository.type.GenericTypeHandler if there are columns\nuse org.ramadda.data.services.PointTypeHandler if this is data</pre>"}));
 
-        sb.append(HU.formEntryTop(msgLabel("Super Category"),
-				  HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","50"))));
-        sb.append(HU.formEntryTop(msgLabel("Category"),
-				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","50"))));
-        sb.append(HU.formEntryTop(msgLabel("Pattern"),
+        main.append(HU.formEntryTop(msgLabel("Super Category"),
+				  HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","30"))));
+        main.append(HU.formEntryTop(msgLabel("Category"),
+				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","30"))));
+        main.append(HU.formEntryTop(msgLabel("Pattern"),
 				  HU.input("pattern",
 					   request.getString("pattern",""),
-					   HU.attrs("placeholder",".e.g. .*_data.csv","size","30"))));	
+					   HU.attrs("placeholder",".e.g. .*_data.csv","size","30")) +
+				  " For matching on files"));
 
 
-        sb.append(HU.formEntryTop(msgLabel("Icon"),
+        main.append(HU.formEntryTop(msgLabel("Icon"),
 				  HU.input("icon",request.getString("icon",""),
 					   HU.attrs("placeholder","/icons/chart.png","size","40"))));	
 
+        main.append(HU.formTableClose());
 
-	String dfltProps="#form.resource.show=false\n#form.date.show=false\nform.area.show=false\n";
-	dfltProps+= "form.location.show=true\n";
-	dfltProps+="form.properties.show=false\n";
-	dfltProps+="#record.file.class=org.ramadda.data.point.text.CsvFile\n";
-        sb.append(HU.formEntryTop(msgLabel("Properties"),
-				  HU.textArea("properties",request.getString("properties",dfltProps),8,50)));
+	List<NamedBuffer>props = new ArrayList<NamedBuffer>();
+	for(String line: Utils.split(IOUtil.readContents("/org/ramadda/repository/resources/props.txt",getClass()),"\n",true,true)) {
+	    if(line.startsWith("cat:")) {
+		if(props.size()>0)
+		    props.get(props.size()-1).append("</div>");
+		props.add(new NamedBuffer(line.substring("cat:".length())));
+		props.get(props.size()-1).append("<div style='height:300px;max-height:300px;overflow-y:auto;'>");
+		continue;
+	    }
+	    props.get(props.size()-1).append(HU.div(line,HU.clazz("prop")));
+	}
 
-	HU.formEntry(sb,"","Wiki text for map popup");
-	HU.formEntry(sb,"Map Popup:",
+	props.get(props.size()-1).append("</div>");
+
+	StringBuilder dfltProps=new StringBuilder("<div class=props>");
+	HU.addPageSearch(dfltProps,".prop",null,"Search");
+
+	HU.makeTabs(dfltProps,props);
+	dfltProps.append("</div>");
+	StringBuilder propsSection=new StringBuilder();
+	propsSection.append(HU.hbox(
+				    HU.textArea("properties",request.getString("properties",""),16,50,
+						HU.attrs("id","properties")),
+				    dfltProps));
+
+	propsSection.append(HU.script("Utils.initCopyable('.props .prop',{addNL:true,textArea:'" +"properties"+"'});"));
+
+
+	StringBuilder extra = new StringBuilder();
+	extra.append(HU.formTable());
+	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
+	HU.formEntry(extra,"Map Popup:",
 		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
 
 
-	HU.formEntry(sb,"","Must be valid XML attributes");
-	HU.formEntry(sb,"Extra Attributes:",
+	HU.formEntry(extra,"",HU.div("Must be valid XML attributes",
+				  HU.clazz("ramadda-form-help")));
+	HU.formEntry(extra,"Extra Attributes:",
 		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
 
-	HU.formEntry(sb,"","Must be valid XML");
-	HU.formEntry(sb,"Extra XML:",
+	HU.formEntry(extra,"",HU.div("Must be valid XML",
+				  HU.clazz("ramadda-form-help")));
+	HU.formEntry(extra,"Extra XML:",
 		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
 
-        sb.append(HU.formTableClose());	
-	sb.append(HU.b("Columns:<br>"));
-	sb.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
-        sb.append("<table width=100%>\n\n");
-	sb.append(HU.tr(HU.td("Name")+HU.td("Label")+HU.td("Type")+HU.td("Size")+HU.td("Enum Values")+HU.td("Extra")));
+        extra.append(HU.formTableClose());	
+	
+
+
+	StringBuilder cols = new StringBuilder();
+	cols.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
+        cols.append("<table width=100%>\n\n");
+	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")+HU.td("<b>Size</b>")+HU.td("<b>Enum Values</b>")+HU.td("<b>Extra</b>")));
 	String w  =HU.attr("width","12%");
 	String w2  =HU.attr("width","24%");
-	String isize  =HU.attr("size","12");
+	String isize  =HU.style("width:98%;");
+	//	String isize  =HU.attr("size","12");
 	String isize2  =HU.attr("size","32");	
 	
 	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
+	types.add(0,"");
 	for(int i=0;i<50;i++) {
-	    sb.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
+	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
 			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
 			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
-			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.attr("size","4")),"width=1%")+
+			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
 			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
 			    HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),isize2),w2)));
 		//HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));		
 
 	}
 	
-        sb.append("</table>\n");
-        sb.append(HU.formTable());	
-	HU.formEntry(sb,"", HU.submit("Create Type","create"));
-        sb.append(HU.formTableClose());	
+        cols.append("</table>\n");
+        cols.append(HU.formTable());	
+
+
+
+
+
+	HU.makeAccordion(sb,new Object[]{"Basic Configuration", "Properties",
+					 "Advanced Configuration","Columns"},
+			 new Object[]{main,propsSection,extra,cols});
+
+
+	sb.append(HU.div(HU.submit("Create Type","create")));
 	sb.append(HtmlUtils.formClose());
 	
 

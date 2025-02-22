@@ -11,24 +11,22 @@ var CreateType  ={
 //	    })
 	    for(let i=0;i<formData.length;i++) {
 		let item = formData[i];
-		if(item.name=='entryid') continue;
-		let input = form.find('input[name="' + item.name+'"]');
+		if(item.name) item.n = item.name;
+		if(item.value) item.v = item.value;
+		if(item.n=='entryid') continue;
+		let input = form.find('input[name="' + item.n+'"]');
 		if(input.length==0)
-		    input = form.find('textarea[name="' + item.name+'"]');
+		    input = form.find('textarea[name="' + item.n+'"]');
 		if(input.length==0)
-		    input = form.find('select[name="' + item.name+'"]');		
+		    input = form.find('select[name="' + item.n+'"]');		
 		if(input.length==0) {
-		    console.log('could not find input:' + item.name);
+		    console.log('could not find input:' + item.n);
 		} else {
-		    input.val(item.value);
+		    input.val(item.v);
 		}
 	    };
 	}
 	form.submit(function(event){
-            let formData = $(this).serializeArray().filter(field=>{
-		return field.name !== 'json_contents' && field.name!=='entryid';
-	    });
-	    let json =   JSON.stringify(formData);
 	    let jsonContents = form.find('[name="json_contents"]');
 	    if(jsonContents.length==0) {
 		$('<input>').attr({
@@ -37,7 +35,21 @@ var CreateType  ={
 		}).appendTo($(this));
 		jsonContents = form.find('[name="json_contents"]');
 	    }
+            let formData = $(this).serializeArray().filter(field=>{
+		return field.name !== 'json_contents' && field.name!=='entryid' && field.value!='';
+	    }).map(field=>{
+		field.n = field.name;
+		field.v = field.value;
+		delete field.name;
+		delete field.value;
+		return field;
+	    });
+
+	    let json =   JSON.stringify(formData);
 	    jsonContents.val(json);
+//	    console.log(jsonContents.length);
+//            event.stopPropagation();
+//	    return false;
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 

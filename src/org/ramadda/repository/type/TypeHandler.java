@@ -2377,6 +2377,7 @@ public class TypeHandler extends RepositoryManager {
 	return  null;
     }
 
+    private static HashSet seenProps = new HashSet();
     
     protected void setProperties(Element entryNode) {
         //        boolean debug = type.equals("type_fred_series");
@@ -2391,10 +2392,12 @@ public class TypeHandler extends RepositoryManager {
             Element propertyNode = (Element) propertyNodes.get(propIdx);
             if (XmlUtil.hasAttribute(propertyNode, ATTR_VALUE)) {
                 if (debug) {
-                    System.err.println(
-				       "\t" + XmlUtil.getAttribute(propertyNode, ATTR_NAME)
-				       + "="
-				       + XmlUtil.getAttribute(propertyNode, ATTR_NAME));
+		    String name =  XmlUtil.getAttribute(propertyNode, ATTR_NAME);
+		    if(!seenProps.contains(name)) {
+			seenProps.add(name);
+			System.out.println(name+"="+
+					   XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
+		    }
                 }
                 putProperty(XmlUtil.getAttribute(propertyNode, ATTR_NAME),
                             XmlUtil.getAttribute(propertyNode, ATTR_VALUE));
