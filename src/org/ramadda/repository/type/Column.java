@@ -221,7 +221,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private double databaseDfltNum = Double.NaN;
     private String databaseDefaultPropertyName;
     private double dfltDouble = Double.NaN;
-    private int size = 200;
+    private int size = 400;
     private String entryType;
     private double min = Double.NaN;
     private double max = Double.NaN;
