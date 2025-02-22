@@ -133,7 +133,7 @@ record.type.default=double
      <property name="record.file.cacheok" value="true"/>
      <property name="record.patterns" value="latitude:latitude: *(-?[\d\.]+),longitude:longitude: *(-?[\d\.]+),elevation:elevation: *([\d\.]+),station_id:identifier: *(.*),station_number:number: *(.*),date:time: *(.*),variables:(?s)(?m)(\s+Showalter.*)&lt;/PRE&gt;"/>
      <property name="record.pattern.date.format" value="yyMMdd/HHmm"/>
-     <property name="nameTemplate" value="Sounding - ${station_id} ${date}"/>
+     <property name="name.template" value="Sounding - ${station_id} ${date}"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
  <property name="record.properties">
@@ -179,7 +179,7 @@ Data courtesy of
      <property name="record.patterns" value="latitude:Latitude: *(-?[\d\.]+),longitude:Longitude: *(-?[\d\.]+),elevation:Elevation: *([\d\.]+),station_id:Station: *(.*),date:Date: *(.*),variables:(?s)(?m)indices(.*)Wind level data"/>
      <property name="record.pattern.date.format" value="HHmm'Z' dd MMM yy"/>
      <property name="record.file.cacheok" value="true"/>
-     <property name="nameTemplate" value="Sounding - ${station_id} ${date}"/>
+     <property name="name.template" value="Sounding - ${station_id} ${date}"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
  <property name="record.properties">
