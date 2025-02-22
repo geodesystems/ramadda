@@ -3141,14 +3141,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	int cnt=0;
 	
-	for(int i=0;i<10;i++) {
+	for(int i=0;i<50;i++) {
 	    String cname = request.getString("column_name_"+i,"").trim();
 	    if(!Utils.stringDefined(cname)) continue;
 	    cname= Utils.makeID(cname);
 	    if(cnt++==0) {
 		sb.append("\n");
 		sb.append(XU.comment("Columns"));
-
 	    }
 	    
 	    String label = request.getString("column_label_"+i,"");
@@ -3165,9 +3164,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		attrs+=XU.attr("size",size);
 	    if(type.startsWith("enum"))
 		attrs+=XU.attr("values",request.getString("column_values_"+i,""));
-	    String group = request.getString("column_group_"+i,"");
-	    if(Utils.stringDefined(group)) 
-		attrs+=XU.attr("group",group);
+	    //	    String group = request.getString("column_group_"+i,"");
+	    String cextra = request.getString("column_extra_"+i,"");
+	    if(Utils.stringDefined(cextra)) 
+		attrs+=" " + cextra+" ";
 	    sb.append(XU.tag("column",attrs));
 	    sb.append("\n");
 	}
@@ -3278,19 +3278,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.b("Columns:<br>"));
 	sb.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
         sb.append("<table width=100%>\n\n");
-	sb.append(HU.tr(HU.td("Name")+HU.td("Label")+HU.td("Type")+HU.td("Size")+HU.td("Enum Values")+HU.td("Group")+HU.td("Help")));
+	sb.append(HU.tr(HU.td("Name")+HU.td("Label")+HU.td("Type")+HU.td("Size")+HU.td("Enum Values")+HU.td("Extra")));
 	String w  =HU.attr("width","12%");
+	String w2  =HU.attr("width","24%");
 	String isize  =HU.attr("size","12");
+	String isize2  =HU.attr("size","32");	
 	
 	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
-	for(int i=0;i<8;i++) {
+	for(int i=0;i<50;i++) {
 	    sb.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
 			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
 			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
 			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.attr("size","4")),"width=1%")+
 			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
-			    HU.td(HU.input("column_group_" +i,request.getString("column_group_"+i,""),isize),w)+
-			    HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));
+			    HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),isize2),w2)));
+		//HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));		
+
 	}
 	
         sb.append("</table>\n");
