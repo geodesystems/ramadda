@@ -1055,6 +1055,9 @@ public class WikiManager extends RepositoryManager
             alt = getProperty(wikiUtil, props, HU.ATTR_TITLE, "");
         }
 
+	String clazz = getProperty(wikiUtil,props,"class",null);
+	if(clazz!=null)
+	    HU.cssClass(extra, clazz);
         if (wikiUtil != null) {
             String imageClass = (String) wikiUtil.getProperty("image.class");
             if (imageClass != null) {
@@ -1155,7 +1158,7 @@ public class WikiManager extends RepositoryManager
         } else {
             HU.open(sb, HU.TAG_DIV, "style", ((align != null)
 					      ? "float:" + align + ";"
-					      : "") + " display:inline-block;text-align:center");
+					      : "") + "height:100%; display:inline-block;text-align:center");
         }
         if (caption != null && captionPosition.equals("top")) {
             HU.div(sb, caption, HU.cssClass("wiki-image-caption"));
