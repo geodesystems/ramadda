@@ -287,13 +287,22 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 </type>
 
 
-<type name="type_usgs_ngwm"  description="USGS Groundwater Site"
+<type name="type_usgs_ngwm"
+      description="USGS Groundwater Site"
       super="type_point_hydro"
       newfields="site,downloadfile,tags,resource,quit"
       handler="org.ramadda.geodata.point.NgwmTypeHandler">
   <property name="search.tabs" value="map,list"/>
   <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property name="map.popup">
+  <property name="icon" value="/point/ngwm.png"/>
+  <property name="record.file.cacheok" value="true"/>
+  <property name="form.properties.show" value="false"/>
+  <property name="form.area.show" value="false"/>
+  <property name="form.location.show" value="true"/>
+  <property name="form.altitude.show" value="true"/>
+  <property name="form.date.show" value="false"/>
+  <property name="form.time.show" value="false"/>     
+  <property name="map.popup">
 <![CDATA[
 +center
 :b {{name link=true}}
@@ -301,43 +310,35 @@ Data courtesy of [https://waterdata.usgs.gov USGS]
 {{group}}
 {{display_linechart fields="original_value" fields="original_value" vAxisReverse=true}}
  ]]>
-</property>
-     <property name="form.header.new">
-       <![CDATA[+callout-info
-You just need to specify the Agency/Site. The name and other metadata will be looked up from the USGS site.
+  </property>
+  <property name="form.header.new">
+    <![CDATA[+callout-info
+You just need to specify the Agency/Site. The name and other metadata will be looked up
+from the USGS site.
 -callout]]>
-     </property>    
-     <property name="icon" value="/point/ngwm.png"/>
-     <property name="record.file.cacheok" value="true"/>
-     <property name="form.properties.show" value="false"/>
-     <property name="form.area.show" value="false"/>
-     <property name="form.location.show" value="true"/>
-     <property name="form.altitude.show" value="true"/>
-     <property name="form.date.show" value="false"/>
-     <property name="form.time.show" value="false"/>     
-     <property name="form.resource.show" value="false"/>
- <property name="record.properties">
-   csvcommands1=-xml,samples.sample
-   csvcommands2=-change,6-9,(?i)unknown,NaN
-   #csvcommands3=-scale,original_value\,from_landsurface_value\,from_datum_value,0,1,0
-   csvcommands3=-addheader, time.type date site.type enumeration
-</property>
-     <column  name="site"  label="Agency:Site" type="string" cansearch="false"
-	      columns="30"
-	      bulkuploadhelp="Or upload a file of site ids. One per line. See &lt;a href=/point/usgs.html target=_help&gt;here&lt;/a&gt; for information"
-	      addbulkupload="true">
-       <suffix><![CDATA[Find a site at the <a href=https://cida.usgs.gov/ngwmn/index.jsp target=_map>USGS</a>. The Site ID has to be of the form &lt;agency&gt;:&lt;site #&gt;, e.g. <i>UNLCSD:241551</i>.
+  </property>    
+  <property name="form.resource.show" value="false"/>
+  <property name="record.properties">
+    csvcommands1=-xml,samples.sample
+    csvcommands2=-change,6-9,(?i)unknown,NaN
+    csvcommands3=-addheader, time.type date site.type enumeration
+  </property>
+  <column  name="site"  label="Agency:Site" type="string" cansearch="false"
+	   columns="30"
+	   bulkuploadhelp="Or upload a file of site ids. One per line. See &lt;a href=/point/usgs.html target=_help&gt;here&lt;/a&gt; for information"
+	   addbulkupload="true">
+    <suffix><![CDATA[Find a site at the <a href=https://cida.usgs.gov/ngwmn/index.jsp target=_map>USGS</a>. The Site ID has to be of the form &lt;agency&gt;:&lt;site #&gt;, e.g. <i>UNLCSD:241551</i>.
        <br>There are also state site lists available the  <a target=_other href=https://github.com/geodesystems/ramadda/tree/master/data/ngwmn_sites>RAMADDA Github site</a>
 ]]></suffix>       
-     </column>
-     <column  name="agency"  label="Agency" type="enumerationplus"  cansearch="true"/>
-     <column  name="site_type"  label="Site Type" type="enumerationplus"  cansearch="true"/>     
-     <column  name="well_depth"  label="Well Depth" type="double"  default="0" />
-     <column  name="local_aquifer"  label="Local Aquifer" type="enumerationplus"  cansearch="true"/>
-     <column  name="national_aquifer"  label="National Aquifer" type="enumerationplus"  cansearch="true"/>
-     <column  name="aquifer_type"  label="Aquifer Type" type="enumerationplus"  cansearch="true"/>
-     <column  name="well_type"  label="Well Type" type="enumerationplus"  cansearch="true"/>     
-     <column  name="link"  label="Additonal Info" type="url" canlist="true"/>
+  </column>
+  <column  name="agency"  label="Agency" type="enumerationplus"  cansearch="true"/>
+  <column  name="site_type"  label="Site Type" type="enumerationplus"  cansearch="true"/>     
+  <column  name="well_depth"  label="Well Depth" type="double"  default="0" />
+  <column  name="local_aquifer"  label="Local Aquifer" type="enumerationplus"  cansearch="true"/>
+  <column  name="national_aquifer"  label="National Aquifer" type="enumerationplus"  cansearch="true"/>
+  <column  name="aquifer_type"  label="Aquifer Type" type="enumerationplus"  cansearch="true"/>
+  <column  name="well_type"  label="Well Type" type="enumerationplus"  cansearch="true"/>     
+  <column  name="link"  label="Additonal Info" type="url" canlist="true"/>
 <wiki>
 <![CDATA[
 +section title={{name}}

@@ -22,16 +22,14 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
-This class supports accessing data in real-time from the
-USGS National Ground-Water Monitoring Network
-https://cida.usgs.gov/ngwmn/index.jsp
+This class supports accessing data in real-time from the USGS National
+Ground-Water Monitoring Network https://cida.usgs.gov/ngwmn/index.jsp
 */
 public class NgwmTypeHandler extends PointTypeHandler {
     public NgwmTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
     }
-
 
     /**
        check for bulk upload of site ids
@@ -53,15 +51,12 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
     }
 
-
     private void initializeNewEntryInner(Request request, Entry entry)
 	throws Exception {
 	String id = (String)  entry.getValue(request,"site");
 	if(!stringDefined(id)) return;
-
 	String url = getUrl("https://cida.usgs.gov/ngwmn/provider/${agency}/site/${site}/",id);
 	try {
-	    //	    System.err.println(url);
 	    String html = IO.readUrl(new URL(url));
 	    String title = StringUtil.findPattern(html,"(?s)(?i)<title>([^<]+)</title>");
 	    String name = null;
