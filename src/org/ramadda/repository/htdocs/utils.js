@@ -304,8 +304,16 @@ var Utils =  {
 	    let focusedInput;
 	    if(opts.input) {
 		inputs = $(opts.input);
+		if(inputs.length==0) {
+		    console.log('InitCopyable: no inputs found with selector:' + opts.input);
+		}
+
 		inputs.on('focus', function() {
 		    focusedInput=$(this);
+		    inputs.each(function() {
+			$(this).css('background','#fff');
+		    });
+		    $(this).css('background','var(--color-mellow-yellow)');
 		});
 	    }
 
@@ -320,11 +328,10 @@ var Utils =  {
 		}
 		if(opts.addNL) text = text+'\n';
 		if(opts.input) {
-		    if(inputs.length==0) {
-			console.log('InitCopyable: no inputs found with selector:' + opts.input);
-		    }
 		    if(!focusedInput) focusedInput = inputs.first();
-		    focusedInput.val(focusedInput.val() +' ' + text);
+		    if(focusedInput.length>0) {
+			focusedInput.val(focusedInput.val() +' ' + text);
+		    }
 		    return;
 		}
 
