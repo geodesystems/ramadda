@@ -282,7 +282,8 @@ var Utils =  {
 	    removeNL:false,
 	    downloadFileName:null,
 	    extraStyle:null,
-	    textArea:null
+	    textArea:null,
+	    input:null
 	}
 	if(args) $.extend(opts,args);
 	$(selector).each(function(){
@@ -299,6 +300,15 @@ var Utils =  {
 	    } else {
 		$(this).addClass('ramadda-clickable');
 	    }
+	    let inputs;
+	    let focusedInput;
+	    if(opts.input) {
+		inputs = $(opts.input);
+		inputs.on('focus', function() {
+		    focusedInput=$(this);
+		});
+	    }
+
 	    link.click(()=>{
 		let text = $(this).attr('data-copy')??$(this).html();
 		if(opts.removeTags) {
@@ -309,6 +319,15 @@ var Utils =  {
 		    text = text.replace(/\n/g,' ');
 		}
 		if(opts.addNL) text = text+'\n';
+		if(opts.input) {
+		    if(inputs.length==0) {
+			console.log('InitCopyable: no inputs found with selector:' + opts.input);
+		    }
+		    if(!focusedInput) focusedInput = inputs.first();
+		    focusedInput.val(focusedInput.val() +' ' + text);
+		    return;
+		}
+
 		if(opts.textArea) {
 		    HU.insertIntoTextarea(opts.textArea,text);
 		    return;
