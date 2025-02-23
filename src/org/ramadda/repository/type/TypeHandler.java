@@ -322,9 +322,10 @@ public class TypeHandler extends RepositoryManager {
 
 
     
-    private void printAttrs(Node node) {
+    public static void printAttrs(Node node,boolean doParent) {
 	if(node==null) return;
-	printAttrs(node.getParentNode());
+	if(doParent)
+	    printAttrs(node.getParentNode(),doParent);
 	NamedNodeMap attrs = node.getAttributes();
 	if(attrs!=null) {
 	    for (int i = 0; i < attrs.getLength(); i++) {
@@ -344,7 +345,7 @@ public class TypeHandler extends RepositoryManager {
             displayTemplatePath = Utils.getAttributeOrTag(node,
 							  "displaytemplate", displayTemplatePath);
 	    
-	    //printAttrs(node);
+	    //printAttrs(node,true);
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
             description = Utils.getAttributeOrTag(node, "description", description);

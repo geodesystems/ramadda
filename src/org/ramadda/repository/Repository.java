@@ -3082,9 +3082,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    getEntryManager().updateEntry(null, entry);
 	}
 	
-	sb.append("<types>\n");
-	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
 	sb.append("<type ");
+	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
 	sb.append(XU.attrs("name",id,"description",name,"handler",handler));
 
 	if(request.defined("supertype")) {
@@ -3159,14 +3158,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    String size = request.getString("column_size_"+i,"");
 	    String attrs = XU.attrs("name",cname,
 				    "label",label,
-				    "type",type,
-				    "help",request.getString("column_help_"+i,""));
+				    "type",type);
+	    if(request.defined("column_help_"+i)) {
+		attrs+=XU.attrs("help",request.getString("column_help_"+i,""));
+	    }
+
 	    
 
 	    if(Utils.stringDefined(size)) 
 		attrs+=XU.attr("size",size);
-	    if(type.startsWith("enum"))
+	    if(type.startsWith("enum") && request.defined("column_values_"+i)) {
 		attrs+=XU.attr("values",request.getString("column_values_"+i,""));
+	    }
 	    //	    String group = request.getString("column_group_"+i,"");
 	    String cextra = request.getString("column_extra_"+i,"");
 	    if(Utils.stringDefined(cextra)) 
@@ -3202,7 +3205,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	request.setReturnFilename(id+"types.xml", false);	    
 	
 	sb.append("</type>\n");
-	sb.append("</types>\n");	
 	return new Result("", sb, MIME_XML);
     }
     
@@ -3240,7 +3242,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			       " e.g., type_point. "+typeList));
         main.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
 			       HU.input("handler",request.getString("handler",""),HU.attrs("size","50"))+"<br>"+
-			       "e.g.,<pre>use org.ramadda.repository.type.GenericTypeHandler if there are columns\nuse org.ramadda.data.services.PointTypeHandler if this is data</pre>"}));
+			       "use org.ramadda.repository.type.GenericTypeHandler if there are columns<br>use org.ramadda.data.services.PointTypeHandler if this is data"}));
 
         main.append(HU.formEntryTop(msgLabel("Super Category"),
 				  HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","30"))));
@@ -3271,29 +3273,33 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		     attrs.toString());
 	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
-	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
-	HU.formEntry(extra,"Map Popup:",
-		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
-
-
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
 				  HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Extra XML:",
 		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
 
+
+	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
+	HU.formEntry(extra,"Map Popup:",
+		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
+
+
+
         extra.append(HU.formTableClose());	
 	
 
-
 	StringBuilder cols = new StringBuilder();
-	cols.append("Note: the name needs to be a valid database table ID so all lower case, no spaces or special characters<br>");
+	cols.append(HU.div("The name needs to be a valid database table ID so all lower case, no spaces or special characters",HU.clazz("ramadda-form-help")));
         cols.append("<table width=100%>\n\n");
-	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")+HU.td("<b>Size</b>")+HU.td("<b>Enum Values</b>")+HU.td("<b>Extra</b>")));
+	String ex = "e.g. -  size=\"500\" values=\"v1,v2,v3\" ";
+	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
+			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
+			  +HU.td("<b>Extra</b> " + ex)));
 	String w  =HU.attr("width","12%");
-	String w2  =HU.attr("width","24%");
+	String w2  =HU.attr("width","50%");
 	String isize  =HU.style("width:98%;");
 	//	String isize  =HU.attr("size","12");
-	String isize2  =HU.attr("size","32");	
+	String isize2  =HU.attr("size","64");	
 	
 	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
 	types.add(0,"");
@@ -3301,8 +3307,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
 			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
 			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
-			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
-			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
+			      //			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
+			      //			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
 			    HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),isize2),w2)));
 		//HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));		
 

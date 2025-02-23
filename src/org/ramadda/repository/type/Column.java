@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -167,7 +168,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String displayPatternFrom;
     private String displayPatternTo;
     private String type;
-    private String unit;
     private String delimiter;
     private boolean addRawInput;
     private boolean changeType = false;
@@ -251,6 +251,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.offset      = offset;
     }
 
+
     public Column(TypeHandler typeHandler, Element element, int offset)
 	throws Exception {
 
@@ -258,10 +259,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.typeHandler = typeHandler;
         this.offset      = offset;
 
+	//	TypeHandler.printAttrs(element,false);
+
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
 	delimiter= XmlUtil.getAttribute(element, "delimiter",",");
 	addRawInput= XmlUtil.getAttribute(element, "addrawinput",false);
-        unit = XmlUtil.getAttribute(element, ATTR_UNIT, (String) null);
         String sinitPattern = XmlUtil.getAttribute(element, "initpattern",(String)null);
 	if(sinitPattern!=null) {
 	    initPattern  = Pattern.compile(sinitPattern);
@@ -1845,10 +1847,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return typeHandler.getTableName();
     }
 
-    
-    public String getUnit() {
-        return unit;
-    }
+
 
     
 

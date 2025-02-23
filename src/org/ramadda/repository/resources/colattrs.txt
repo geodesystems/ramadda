@@ -1,0 +1,111 @@
+#size of column for strings
+size="10000"
+
+#default value
+default="some default value"
+
+#Is a value required
+required="true"
+
+
+#Enumeration values
+values="New,Like New,Good,Fair,Poor,Damaged"
+values="value:label,value:label,..."
+#file with values or value:Label, 1 per line
+values="file:/org/ramadda/plugins/archive/resources/habitats.txt"
+
+#row and column for text area
+rows="5"
+columns="80"
+#Is this wiki text
+iswiki="true"
+
+suffix="message for edit"
+help="help message for edit"
+
+cat:Display
+showinhtml="false"
+displaysuffix="suffix"
+numberformat="#0.0"
+#If not value is set should this be displayed
+showempty="false"
+
+#column group
+group="Column group"
+
+
+#is column editable
+showinform="false"
+editable="false"
+
+#show in table
+canlist="false"
+#show in html
+candisplay="false"
+#can search
+cansearch="false"
+
+#flag to not export the column
+canexport="false"
+
+cat:Misc
+#Change the type of the column
+changetype="true"
+adminonly="true"
+#Should the geo access apply to this column
+isgeoaccess="true"
+
+
+#For search
+enumeration_show_checkboxes="true"
+addblanktoenumerationmenu="false"
+enumeration_search_multiples="true"
+numberOfSearchWidgets="4"
+
+
+#Should an index be added to the database
+isindex="true"
+iscategory="true"
+showlabel="false"
+
+#regexp to match on the filename to extract a value
+initpattern="hole_?([^_]+)_"
+
+
+doinlineedit="true"
+cansearchtext="false"
+databaseDefault="-1"
+ismediaurl="true"
+cansort="true"
+htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"
+searchlabel="Label to show"
+orange="apple"
+addbulkupload="true"
+bulkuploadhelp="Or upload a file of site ids. One per line. See <a href=/point/usgs.html target=_help>here</a> for information"
+showenumerationmenu="false"
+bgroup="Convert"
+searchtype="select"
+properties="/org/ramadda/geodata/cdmdata/resources/level3radar.station.properties"
+displayPatternFrom="ens(\d{2,3})"
+displayPatternTo="Member $1"
+dostats="true"
+format="yyyy-MM-dd hh:mm:ss"
+addnot="true"
+numberFormat="##0.00"
+addfiletosearch="true"
+enumeration_multiples="false"
+dopolygonsearch="true"
+lookupdb="precincts:precinct"
+placeholder="One or more precinct ids. Use full id, e.g. 2181207212"
+groupedcolumns="voted_in_2023,voted_in_2022,voted_in_2021,voted_in_2020,voted_in_2019,voted_in_2018"
+searchhelp="Select one or more voting histories"
+ascending="false"
+displayProperty="true"
+
+
+displayFormat="yyyy"
+defaultsort="true"
+addrawinput="true"
+
+#map column value to icon
+iconmap="active,/icons/mdots/green.png,inactive,/icons/mdots/purple.png,broken,/icons/mdots/red.png"
