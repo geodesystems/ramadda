@@ -1762,6 +1762,11 @@ public class ExtEditor extends RepositoryManager {
 	}	
     }
 
+
+    public static final String ARG_TYPEID = "typeid";
+    public static final String ARG_TYPENAME = "typename";    
+    public static final String ARG_JSON_CONTENTS= "json_contents";
+
     public boolean createTypeOK(Request request) {
 	return !request.getUser().getAnonymous();
     }
@@ -1787,12 +1792,12 @@ public class ExtEditor extends RepositoryManager {
 	sb.append("<br>");
 	StringBuilder main = new StringBuilder();
         main.append(HU.formTable());
-        main.append(HU.hidden("json_contents",""));
+        main.append(HU.hidden(ARG_JSON_CONTENTS,""));
         main.append(HU.formEntry(msgLabel("Type ID"),
-			       HU.input("typeid",request.getString("typeid",""),HU.attrs("size","30")) +
+			       HU.input(ARG_TYPEID,request.getString(ARG_TYPEID,""),HU.attrs("size","30")) +
 			       " Needs to be lower case, no spaces and start with type_, e.g., type_your_type"));
         main.append(HU.formEntry(msgLabel("Type Name"),
-  			       HU.input("typename",request.getString("typename",""),HU.attrs("size", "30")) +" e.g., My Type"));
+  			       HU.input(ARG_TYPENAME,request.getString(ARG_TYPENAME,""),HU.attrs("size", "30")) +" e.g., My Type"));
 
 	String typeList=HU.href(getRepository().getUrlBase()+"/entry/types.html","View All Types","target=_types");
         main.append(HU.formEntry(msgLabel("Super Type"),
@@ -1827,6 +1832,7 @@ public class ExtEditor extends RepositoryManager {
 				  HU.clazz("ramadda-form-help")));
 	StringBuilder attrs = addTypeProps(request,"/org/ramadda/repository/resources/attrs.txt","extraattributes",10);
 
+
 	HU.formEntry(extra,"Extra Attributes:",
 		     attrs.toString());
 	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
@@ -1849,10 +1855,25 @@ public class ExtEditor extends RepositoryManager {
 	StringBuilder cols = new StringBuilder();
 	cols.append(HU.div("The name needs to be a valid database table ID so all lower case, no spaces or special characters",HU.clazz("ramadda-form-help")));
         cols.append("<table width=100%>\n\n");
+	StringBuilder props = processTypeProps(request,
+					       "/org/ramadda/repository/resources/colattrs.txt","colattributes",10);					       
+
+	cols.append(HU.div(HU.div(props.toString(),HU.clazz("ramadda-dialog")),
+			   HU.attrs("id","colattrs","style",HU.css("display","none"))));
+
+	StringBuilder js = new StringBuilder();
+	js.append("\nfunction showColumnAttrs(){\n");
+	js.append("let dialog = HU.makeDialog({contentId:'colattrs',anchor:jqid('colattrsheader'),title:'Column Attributes',	draggable:true,header:true});\n");
+	js.append("Utils.initCopyable('.props_colattributes .prop',{input:'.typecreate-column-extra'});");
+	js.append("}\n");
+	cols.append(HU.script(js.toString()));
+	
+
+
 	String ex = "e.g. -  size=\"500\" values=\"v1,v2,v3\" ";
 	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
 			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
-			  +HU.td("<b>Extra</b> " + ex)));
+			  +HU.td("<b id=colattrsheader>Extra</b> " + ex+" " + HU.href("javascript:showColumnAttrs()","Show properties"))));
 	String w  =HU.attr("width","12%");
 	String w2  =HU.attr("width","50%");
 	String isize  =HU.style("width:98%;");
@@ -1867,7 +1888,7 @@ public class ExtEditor extends RepositoryManager {
 			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
 			      //			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
 			      //			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
-			    HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),isize2),w2)));
+			      HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),HU.clazz("typecreate-column-extra") + isize2),w2)));
 		//HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));		
 
 	}
@@ -1916,6 +1937,20 @@ public class ExtEditor extends RepositoryManager {
 
 
     private StringBuilder addTypeProps(Request request, String resource, String arg,int rows) throws Exception {
+	StringBuilder dfltProps = processTypeProps(request, resource,arg,rows);
+	String clazz = "props_" +arg;
+	StringBuilder propsSection =new StringBuilder();
+	propsSection.append(HU.hbox(
+				    HU.textArea(arg,request.getString(arg,""),rows,50,
+						HU.attrs("id",arg)),
+				    dfltProps));
+	propsSection.append(HU.script("Utils.initCopyable('." + clazz+" .prop',{addNL:true,textArea:'" +arg+"'});"));
+	return propsSection;
+    }
+
+
+    private StringBuilder processTypeProps(Request request, String resource,String arg,int rows)
+	throws Exception {
 	List<NamedBuffer>props = new ArrayList<NamedBuffer>();
 	String style = HU.style("min-width:600px;width:600px;height:" + (rows*20)+"px;max-height:300px;overflow-y:auto;");
 	for(String line: Utils.split(IOUtil.readContents(resource,getClass()),"\n",true,true)) {
@@ -1949,20 +1984,13 @@ public class ExtEditor extends RepositoryManager {
 	    HU.makeTabs(dfltProps,props);
 	}
 	dfltProps.append("</div>");
-	StringBuilder propsSection =new StringBuilder();
-	propsSection.append(HU.hbox(
-				    HU.textArea(arg,request.getString(arg,""),rows,50,
-						HU.attrs("id",arg)),
-				    dfltProps));
-	propsSection.append(HU.script("Utils.initCopyable('." + clazz+" .prop',{addNL:true,textArea:'" +arg+"'});"));
-	return propsSection;
+	return dfltProps;
     }
-
 
     public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb)
 	throws Exception {
 
-	String id = request.getString("typeid","").trim();
+	String id = request.getString(ARG_TYPEID,"").trim();
 	if(!Utils.stringDefined(id)) {
 	    sb.append(getPageHandler().showDialogError("No ID specified"));
 	    return null;
@@ -1974,7 +2002,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 	sb = new StringBuilder();
 	
-	String name = request.getString("typename","");
+	String name = request.getString(ARG_TYPENAME,"");
 	if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
 	String handler = request.getString("handler","");
 	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.GenericTypeHandler";
@@ -1991,7 +2019,8 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-	String json = request.getString("json_contents",null);
+
+	String json = request.getString(ARG_JSON_CONTENTS,null);
 	if(json!=null) {
 	    if(jsonMetadata==null) {
 		jsonMetadata = new Metadata(getRepository().getGUID(), entry.getId(),
