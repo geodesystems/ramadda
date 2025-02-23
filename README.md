@@ -1,8 +1,3 @@
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=jeffmcwhirter&repo=ramadda&layout=compact)
-
-
-
 RAMADDA is a freely available content and data management platform that is simple to install and use - in the cloud or even on your laptop. With its open and extensible framework, RAMADDA provides a place for all of your documents, data and digital stuff.
 
 * See the main site [here](https://ramadda.org).
