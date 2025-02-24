@@ -37,7 +37,29 @@ import javax.xml.parsers.*;
  *
  */
 
+@SuppressWarnings("unchecked")
 public abstract class XmlUtils {
+
+
+    public static List findChildren(Node parent, String... tagList) {
+	ArrayList found    = new ArrayList();
+        NodeList  children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            Node child = children.item(i);
+	    if(tagList.length==0) {
+		found.add(child);
+		continue;
+	    }
+	    for(String tag: tagList) {
+		if (XmlUtil.isTag(child, tag)) {
+		    found.add(child);
+		    break;
+		}
+            }
+        }
+        return found;
+    }
+
 
 
     /**
