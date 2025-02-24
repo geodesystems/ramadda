@@ -22,7 +22,15 @@ var CreateType  ={
 		if(input.length==0) {
 		    console.log('could not find input:' + item.n);
 		} else {
-		    input.val(item.v);
+		    if(input.attr("type") === "checkbox") {
+			if(String(item.v)==="true") {
+			    input.prop('checked',true);
+			} else {
+			    input.prop('checked',false);
+			}
+		    } else {
+			input.val(item.v);
+		    }
 		}
 	    };
 	}

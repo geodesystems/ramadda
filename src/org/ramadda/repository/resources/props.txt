@@ -1,4 +1,23 @@
 cat:Properties
+#what to show in the entry form
+
+#entry name
+form.name.columns=80
+form.name.label=
+form.name.show=true
+form.name.showlabel=true
+
+#entry description
+form.description.columns=80
+form.description.group=Description
+form.description.iswiki=true
+form.description.label=
+form.description.rows=5
+form.description.show=false
+form.description.showwiki=false
+form.wikieditor.height=300px
+
+#geolocation
 form.location.show=false
 form.area.show=false
 form.location.help=
@@ -8,49 +27,46 @@ form.altitude.bottom.show=true
 form.altitude.show.top=false
 form.altitude.show=false
 form.altitude.top.show=false
-form.ark.show=true
-form.basic.group=Some label
+
+#date settings
 form.createdate.label=
 form.date.help=
 form.date.label=
 form.date.show.before=false
 form.date.show=false
-form.description.columns=80
-form.description.group=Description
-form.description.iswiki=true
-form.description.label=
-form.description.rows=5
-form.description.show=false
-form.description.showwiki=false
-form.dnd.show=false
 form.enddate.label=
+form.fromdate.label=
+form.fromdate.show=false
+form.time.show=false
+form.startdate.label=e.g. Date of Birth
+form.todate.show=false
+form.settimerange.show=false
+
+#don't show the  drag-and-drop target
+form.dnd.show=false
+
+#entry resource
 form.file.label=
 form.file.show=false
 form.filesonserver.show=false
-form.fromdate.label=
-form.fromdate.show=false
-form.metdata.add.default=true
-form.name.columns=80
-form.name.label=
-form.name.show=true
-form.name.showlabel=true
-form.order.show=false
-form.properties.show=false
+form.serverfile.show=false
 form.resource.download.show=false
 form.resource.extra.show=false
 form.resource.label=Link
 form.resource.show=false
-form.serverfile.show=false
-form.setbounds.show=false
-form.settimerange.show=false
-form.startdate.label=e.g. Date of Birth
-form.tabs=true
-form.tags.show=false
-form.time.show=false
-form.todate.show=false
 form.url.label=
 form.url.show=true
-form.wikieditor.height=300px
+
+
+#misc
+form.tabs=true
+form.basic.group=Some label
+form.order.show=false
+form.properties.show=false
+form.setbounds.show=false
+form.tags.show=false
+form.ark.show=true
+
 
 cat:Display
 date.format=yyyy
@@ -89,25 +105,35 @@ name.template=Example - ${name} - ${some_column}
 
 
 cat:Create
-addinitialmetadata=false
-form.bulkupload.show=false
-canbeindexed=true
-convertidsinfile=true
-upload.zip=true
-data.url.addlaton=true
 #mime type for file selection
 file.accept=image/*
-file.url=http://www.opendap.org
+
+#should the entry be added to the search index
+canbeindexed=false
+
+#when this entry is copied or imported should the file be checked for other entry ids
+convertidsinfile=true
+
+#If the file is a .zip file should it be uploaded as a file<br>Normally a .zip is opened up and each file is added separately
+upload.zip=true
+
 #in the wiki edit use this when there are entry wiki tags
 wiki.edit.links.label=My Tags
-#Look for ancestor entry of the type and use its geo location
-inheritlocationfromtype=type_geo_site
-inline.includeinformation=true
-iscsvconvertible=true
+
+#Some entry types can take a list of data,
+form.bulkupload.show=true
+
+#for point data should the new file be processed to extract metadata
+addinitialmetadata=false
+
 #main prompt to use when extracting info from a file
 llm.prompt=This is information about a missing person.
 #Tack this on to the end of the prompt
 llm.prompt.extra=The text below is shell script.
+
+#Look for ancestor entry of the type and use its geo location
+inheritlocationfromtype=type_geo_site
+
 
 
 cat:Map
@@ -122,37 +148,42 @@ map.chart.minSizeY=500
 
 
 cat:Search
+
 #What to show in the search form
 search.tabs=list,images,map,timeline
+search.label=
+
 #metadata type to add to search form
 search.metadatatypes=archive_subject,archive_keyword,archive_note
+
+#what to show
 search.form.area.show=false
 search.form.area.label=Last known location
-#what to show
 search.form.description.show=true
 search.form.name.show=true
 search.form.createdate.show=false
 search.form.date.show=false
+
 #what order by to show
 search.form.orderby=relevant,name,createdate,date,size
 search.form.startdate.label=Date Missing
-search.label=
 
 #Do the search when  form is displayed
 search.initsearch=true
-
 search.searchopen=true
 search.synthetic.authors.fields=primary_author,other_authors
 search.synthetic.authors.label=All Authors
 search.synthetic.fields=authors
 search.text.show=false
-#the wiki macro to use in the search form
+
+#the wiki macro to use when displaying entries in the search form
 search.wikimacro=missing_header
 
 cat:Misc
 #what mime type to use when downloading the file
 mimetype=image/tiff; application=geotiff
 mobile.form.location.set=true
+#for point data how many to show in charts, etc
 point.default.max=10000
 point.initialize=false
 record.file.cacheok=true
@@ -163,6 +194,5 @@ record.processresource=false
 subset.area.show=false
 subset.date.show=true
 table.delimiter=tab
-template.contents.sms=${name.short}
-template.label.sms=${name.short} - ${value.content} ${unit.content}
+
 

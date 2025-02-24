@@ -53,6 +53,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -1765,7 +1767,11 @@ public class ExtEditor extends RepositoryManager {
 
     public static final String ARG_TYPEID = "typeid";
     public static final String ARG_TYPENAME = "typename";    
+    public static final String ARG_HANDLER = "handler";
     public static final String ARG_JSON_CONTENTS= "json_contents";
+    public static final String ARG_FORIMPORT = "forimport";
+    public static final String ARG_INSTALL = "install";
+
 
     public boolean createTypeOK(Request request) {
 	return !request.getUser().getAnonymous();
@@ -1773,29 +1779,56 @@ public class ExtEditor extends RepositoryManager {
 
 
     public Result outputCreateType(Request request, Entry entry) throws Exception {
-	if ( !createTypeOK(request)) {
-	    throw new AccessException("Create type not enabled", request);
-	}
-	StringBuilder sb = new StringBuilder();
-	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	if(request.exists("create")) {
+	    StringBuilder sb = new StringBuilder();
 	    Result result= doOutputCreateType(request,  entry,sb);
 	    if(result!=null) return result;
 	}
-	sb.append(HU.center(HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help")));
+
+	return outputCreateType(request, entry, null);
+    }
+
+    private Result outputCreateType(Request request, Entry entry,String msg) throws Exception {
+	if ( !createTypeOK(request)) {
+	    throw new AccessException("Create type not enabled", request);
+	}
+
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
+	String callout = "";
+	if(request.isAdmin()) {
+	    callout+="Note: If loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing.<br>";
+	}
+	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
+	getWikiManager().makeCallout(sb,request,callout);
+
+
+
+
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
+	if(msg!=null) sb.append(msg);
+
 	String formId = HU.getUniqueId("form_");
 	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, getRepository().OUTPUT_CREATETYPE));
 	sb.append(HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
+	sb.append(HU.space(2) +	 HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"));
+	if(request.isAdmin()) {
+	    sb.append(HU.space(2) +
+		      HU.span(HU.labeledCheckbox(ARG_INSTALL,"true",request.get(ARG_INSTALL,false),"Load the entry type"),
+			      HU.attrs("title","Make sure you know what you are doing")));
+	}
+	
+
 	sb.append("<br>");
 	StringBuilder main = new StringBuilder();
         main.append(HU.formTable());
         main.append(HU.hidden(ARG_JSON_CONTENTS,""));
+	HU.formEntry(main,"",HU.div("Type ID needs to be lower case, no spaces and start with type_, e.g., type_your_type",
+				  HU.clazz("ramadda-form-help")));
         main.append(HU.formEntry(msgLabel("Type ID"),
-			       HU.input(ARG_TYPEID,request.getString(ARG_TYPEID,""),HU.attrs("size","30")) +
-			       " Needs to be lower case, no spaces and start with type_, e.g., type_your_type"));
+				 HU.input(ARG_TYPEID,request.getString(ARG_TYPEID,""),HU.attrs("size","30"))));
         main.append(HU.formEntry(msgLabel("Type Name"),
   			       HU.input(ARG_TYPENAME,request.getString(ARG_TYPENAME,""),HU.attrs("size", "30")) +" e.g., My Type"));
 
@@ -1804,7 +1837,7 @@ public class ExtEditor extends RepositoryManager {
 			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
 			       " e.g., type_point. "+typeList));
         main.append(HU.formEntryTop(msgLabel("Handler"),new String[]{
-			       HU.input("handler",request.getString("handler",""),HU.attrs("size","50"))+"<br>"+
+			       HU.input(ARG_HANDLER,request.getString(ARG_HANDLER,""),HU.attrs("size","50"))+"<br>"+
 			       "use org.ramadda.repository.type.GenericTypeHandler if there are columns<br>use org.ramadda.data.services.PointTypeHandler if this is data"}));
 
         main.append(HU.formEntryTop(msgLabel("Super Category"),
@@ -1862,12 +1895,10 @@ public class ExtEditor extends RepositoryManager {
 			   HU.attrs("id","colattrs","style",HU.css("display","none"))));
 
 	StringBuilder js = new StringBuilder();
-	js.append("\nfunction showColumnAttrs(){\n");
+	js.append("function showColumnAttrs(){\n");
 	js.append("let dialog = HU.makeDialog({contentId:'colattrs',anchor:jqid('colattrsheader'),title:'Column Attributes',	draggable:true,header:true});\n");
-	js.append("Utils.initCopyable('.props_colattributes .prop',{input:'.typecreate-column-extra'});");
 	js.append("}\n");
-	cols.append(HU.script(js.toString()));
-	
+	js.append("Utils.initCopyable('.props_colattributes .prop',{input:'.typecreate-column-extra'});");
 
 
 	String ex = "e.g. -  size=\"500\" values=\"v1,v2,v3\" ";
@@ -1880,7 +1911,9 @@ public class ExtEditor extends RepositoryManager {
 	//	String isize  =HU.attr("size","12");
 	String isize2  =HU.attr("size","64");	
 	
-	List<String> types = Utils.arrayToList(DataTypes.BASE_TYPES);
+	List<String> types =
+	    Utils.split("string,enumeration,enumerationplus,multienumeration,double,int,boolean,datetime,date,list,password,clob,url,latlon,email",",");
+					 
 	types.add(0,"");
 	for(int i=0;i<50;i++) {
 	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),isize),w)+
@@ -1895,6 +1928,8 @@ public class ExtEditor extends RepositoryManager {
 	
         cols.append("</table>\n");
         cols.append(HU.formTable());	
+
+	cols.append(HU.script(js.toString()));
 
 
 
@@ -1997,14 +2032,13 @@ public class ExtEditor extends RepositoryManager {
 	}
 	id = Utils.makeID(id);
 	if(!id.startsWith("type_")) {
-	    sb.append(getPageHandler().showDialogError("Bad format for type ID"));
-	    return null;
+	    return outputCreateType(request,  entry,getPageHandler().showDialogError("Bad format for type ID"));
 	}
 	sb = new StringBuilder();
 	
 	String name = request.getString(ARG_TYPENAME,"");
 	if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
-	String handler = request.getString("handler","");
+	String handler = request.getString(ARG_HANDLER,"");
 	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.GenericTypeHandler";
 	
 
@@ -2033,10 +2067,29 @@ public class ExtEditor extends RepositoryManager {
 	    getEntryManager().updateEntry(null, entry);
 	}
 	
-	sb.append("<type ");
-	sb.append(XmlUtil.comment("Copy this into your ramadda home/plugins directory and restart RAMADDA"));
-	sb.append(XU.attrs("name",id,"description",name,"handler",handler));
+	String filename;
+	if(request.get(ARG_FORIMPORT,false)) {
+	    filename = id+".xml";
+	} else {
+	    filename = id+"_types.xml";
+	}
+	String comment;
+	
 
+	if(request.get(ARG_FORIMPORT,false)) {
+	    comment ="\nSince this is for import add a:\n<import resource=\"" + filename+"\"/>\ninto some types.xml file\n"; 
+	} else {
+	    comment = "\nCopy this into your ramadda home/plugins directory and restart RAMADDA\n";
+	}
+
+	sb.append(XmlUtil.comment(comment));
+	sb.append("<type ");
+	sb.append(XU.attrs("name",id));
+	sb.append("\n");
+	sb.append(XU.attrs("description",name));
+	sb.append("\n");
+	sb.append(XU.attrs("handler",handler));	
+	sb.append("\n");
 	if(request.defined("supertype")) {
 	    sb.append(XU.attr("super",request.getString("supertype","").trim()));
 	    sb.append("\n");
@@ -2152,10 +2205,37 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append(XU.tag("wiki","",XU.getCdata(desc)));
 	    
 	}
-	
-	request.setReturnFilename(id+"types.xml", false);	    
-	
+
 	sb.append("</type>\n");
+
+	Element root =null;
+	try {
+	    //check for syntax validity
+            root = XU.getRoot(sb.toString());
+	    if(request.isAdmin() && request.get(ARG_INSTALL,false)) {
+		getRepository().loadTypeHandler(root,true);
+	    }
+	}  catch(Exception exc) {
+	    return  outputCreateType(request, entry,
+				     getPageHandler().showDialogError("There was an error in the XML:" + exc));
+	}
+
+	if(root!=null && request.isAdmin() && request.get(ARG_INSTALL,false)) {
+	    try {
+		getRepository().loadTypeHandler(root,true);
+	return  outputCreateType(request, entry,
+					 getPageHandler().showDialogNote("Entry type has been loaded"));
+	    }  catch(Exception exc) {
+		return  outputCreateType(request, entry,
+					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
+	    }		
+	}
+
+
+
+	request.setReturnFilename(filename, false);	    
+
+
 	return new Result("", sb, MIME_XML);
     }
     
