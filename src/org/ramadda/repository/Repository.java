@@ -57,6 +57,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.service.Service;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.XmlUtils;
 import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.IO;
 import org.ramadda.util.S3File;
@@ -1608,17 +1609,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             for (String file : getPluginManager().getTypeDefFiles()) {
                 try {
 		    long t1 = System.currentTimeMillis();
-                    file    = getStorageManager().localizePath(file);
-                    theFile = file;
-                    if (getPluginManager().haveSeen("types:" + file, false)) {
-                        continue;
-                    }
-                    Element root = XU.getRoot(file, getClass());
-                    if (root == null) {
-                        continue;
-                    }
-                    loadTypeHandlers(root, false,file.indexOf("geodata/model")>=0);
-                    getPluginManager().markSeen("types:" + file);
+		    theFile = file;
+		    if(!loadTypeHandlers(file)) continue;
 		    long t2 = System.currentTimeMillis();
 		    //		    System.err.println("\t" + file +" time:" + (t2-t1));
                 } catch (java.lang.NoClassDefFoundError ncdfe) {
@@ -1637,7 +1629,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if (root == null) {
                         continue;
                     }
-                    loadTypeHandlers(root, false,false);
+                    loadTypeHandlers(root, file, false,false);
                     getPluginManager().markSeen("types:" + file);
                 } catch (Exception exc) {
                     System.err.println("RAMADDA: Error loading type handler:"
@@ -1657,25 +1649,49 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     }
 
-    public List<TypeHandler> loadTypeHandlers(Element root, boolean overwrite, boolean debug)
+    private boolean loadTypeHandlers(String file) throws Exception     {
+	file    = getStorageManager().localizePath(file);
+	if (getPluginManager().haveSeen("types:" + file, false)) {
+	    return false;
+	}
+	Element root = XU.getRoot(file, getClass());
+	if (root == null) {
+	    return false;
+	    
+	}
+	loadTypeHandlers(root, file,false,false);
+	getPluginManager().markSeen("types:" + file);
+	return true;
+	
+    }
+    
+
+    public List<TypeHandler> loadTypeHandlers(Element root, String file, boolean overwrite, boolean debug)
 	throws Exception {
-        List children = XU.findChildren(root, TypeHandler.TAG_TYPE);
+        List children = XmlUtils.findChildren(root, TypeHandler.TAG_TYPE,"import");
         List<TypeHandler> typeHandlers = new ArrayList<TypeHandler>();
         if ((children.size() == 0)
 	    && root.getTagName().equals(TypeHandler.TAG_TYPE)) {
             typeHandlers.add(loadTypeHandler(root, overwrite));
         } else {
             for (int i = 0; i < children.size(); i++) {
-                Element entryNode = (Element) children.get(i);
-                typeHandlers.add(loadTypeHandler(entryNode, overwrite));
-		//		if(debug)   System.err.println((t2-t1) +" " + XU.toString(entryNode));
+                Element node = (Element) children.get(i);
+		if (XmlUtil.isTag(node,"import")) {
+		    String resource = XU.getAttribute(node,"resource");
+		    if(!resource.startsWith("/")) {
+			resource  = new File(file).getParentFile().toString()+"/"+ resource;
+		    }
+		    loadTypeHandlers(resource);
+		} else {
+		    typeHandlers.add(loadTypeHandler(node, overwrite));
+		}
             }
         }
 
         return typeHandlers;
     }
 
-    private TypeHandler loadTypeHandler(Element entryNode, boolean overwrite)
+    public TypeHandler loadTypeHandler(Element entryNode, boolean overwrite)
 	throws Exception {
         String classPath = XU.getAttribute(entryNode,
 						TypeHandler.ATTR_HANDLER, (String) null);
