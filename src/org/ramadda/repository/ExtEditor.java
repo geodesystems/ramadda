@@ -2001,8 +2001,11 @@ public class ExtEditor extends RepositoryManager {
 		props.get(props.size()-1).append("<div " + style+">");
 	    }
 	    NamedBuffer buff= props.get(props.size()-1);
-	    if(line.startsWith("#")) {
-		buff.append("<div class=searchprop style='background:#eee;font-style:italic;);'>" + line.substring(1)+"</div>");
+	    if(line.startsWith("##")) {
+		buff.append("<div class=searchprop style='font-weight:bold;);'>" + line.substring(2)+"</div>");
+		continue;
+	    } else    if(line.startsWith("#")) {
+		buff.append("<div class=searchprop style='padding:4px;background:#eee;font-style:italic;);'>" + line.substring(1)+"</div>");
 		continue;
 	    }
 	    buff.append(HU.div(line,HU.clazz("searchprop prop")));

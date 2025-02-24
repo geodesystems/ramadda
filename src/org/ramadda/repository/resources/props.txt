@@ -1,5 +1,5 @@
 cat:Properties
-#what to show in the entry form
+##what to show in the entry form
 
 #entry name
 form.name.columns=80

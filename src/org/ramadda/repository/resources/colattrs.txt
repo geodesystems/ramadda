@@ -11,15 +11,18 @@ required="true"
 #Enumeration values
 values="New,Like New,Good,Fair,Poor,Damaged"
 values="value:label,value:label,..."
+
 #file with values or value:Label, 1 per line
 values="file:/org/ramadda/plugins/archive/resources/habitats.txt"
 
 #row and column for text area
 rows="5"
 columns="80"
+
 #Is this wiki text
 iswiki="true"
 
+#help
 suffix="message for edit"
 help="help message for edit"
 
