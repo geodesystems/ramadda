@@ -219,9 +219,31 @@ h6 {
     outline:none;
 }
 
+.ramadda-page-title  {
+    font-size:200%;
+    text-align:center;
+}
+
+.ramadda-page-title  a:hover {
+    text-decoration:underline;
+}
+
+.ramadda-page-ltitle  {
+    font-size:200%;
+    text-align:left;
+}
+
+.ramadda-page-subtitle  {
+    font-size:var(--font-size);
+    text-align:center;
+}
+
+.ramadda-heading-outer  {
+    text-align:center;
+}
 
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
-    font-size:140%;
+    font-size:150%;
     color:var(--heading-color);
     font-weight:var(--heading-weight);
 }
@@ -229,7 +251,6 @@ ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-headi
 .ramadda-heading2 {
     font-size:120%;
 }
-
 
 ramadda-heading, .ramadda-page-heading, .ramadda-heading  {
     padding: 0px;
@@ -1068,24 +1089,6 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-page-title  {
-    font-size:175%;
-    text-align:center;
-}
-
-.ramadda-page-title  a:hover {
-    text-decoration:underline;
-}
-
-.ramadda-page-ltitle  {
-    font-size:175%;
-    text-align:left;
-}
-
-.ramadda-page-subtitle  {
-    font-size:var(--font-size);
-    text-align:center;
-}
 
 
 .ramadda-help-heading {
@@ -1126,10 +1129,6 @@ a.ramadda-menubar-button:hover {
 }
 
 
-.ramadda-heading-outer  {
-    text-align:center;
-    margin-top:5px;
-}
 
 
 .ramadda-heading.ramadda-linkable, .ramadda-lheading.ramadda-linkable {
@@ -1672,7 +1671,6 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-draft {
     background: URL(images/draft.png);
-    xmin-height:400px;
 }
 
 .ramadda-splash-container {
@@ -2482,11 +2480,9 @@ thin_hr,.ramadda-thin-hr {
 
 .ramadda-navbar-popup-link {
     background:#fff;
-    xmargin-top:calc(var(--header-height) + 5px);
     margin-top:5px;
     position:absolute;
     top:0px;
-    xz-index:1000;
 }
 
 .ramadda-navbar-popup-link i {
@@ -5751,7 +5747,6 @@ a.toggleblocklabellink:visited {
     width:1px;
     overflow: hidden; 
     text-overflow: ellipsis;
-    //word-wrap: break-word;
     white-space: nowrap;
     font-weight: bold;
     text-align:right;
@@ -6407,7 +6402,6 @@ a.wiki-link-noexist {
 
 
 .ace_wiki-editor-comment {
-    //border-bottom: 1px solid #ccc;
     background: var(--color-mellow-yellow);
     border-radius: 2px;
     padding-right:4px;
@@ -6600,7 +6594,6 @@ a.wiki-link-noexist {
 
 
 .ramadda-file-dnd-label .fas {
-    xfont-size:24pt;
     color:#ccc;    
     margin-left:5px;
     margin-right:5px;
