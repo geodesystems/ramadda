@@ -1050,11 +1050,13 @@ public class EntryManager extends RepositoryManager {
 	    StringBuilder sb = new StringBuilder();
 	    getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
-	    sb.append("<table><tr><td class=ramadda-table-heading>Type name</td><td class=ramadda-table-heading>Type ID</td></tr>");
+	    sb.append("<table width=100%><tr><td width=25%  class=ramadda-table-heading>Type name</td><td width=25% class=ramadda-table-heading>Type ID</td><td width=25% class=ramadda-table-heading>Super Category</td><td width=25% class=ramadda-table-heading>Category</td></tr>");
 	    for (TypeHandler typeHandler : typeHandlers) {
 		String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
 		sb.append(HU.tr(HU.td(icon+" "+  typeHandler.getDescription())+
-				HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id"))),
+				HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
+				HU.td(typeHandler.getSuperCategory()) +
+				HU.td(typeHandler.getCategory()),
 				HU.attr("class","ramadda-type")));
 	    }
 	    sb.append("</table>");
