@@ -515,7 +515,8 @@ RepositoryMap.prototype = {
 		    //bounds = MapUtils.extendBounds(bounds,latLonBounds);
 		    if(layer.features) {
 			layer.features.forEach((f,idx)=>{
-			    if(f?.style.display=='none') return;
+			    if(f.style && f.style.display=='none') return;
+			    if(!f.geometry) return;
 			    let b = f?.geometry.bounds;
 			    if(!b) return;
 			    b = this.transformProjBounds(b);
