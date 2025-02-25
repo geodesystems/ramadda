@@ -4446,6 +4446,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
 	await HtmlUtils.loadSlides();
         let opts = {
+	    arrows:true,
+	    speed:0,
             dots:true,
 	    slidesToShow:1,
 	    variableWidth:true
@@ -4455,13 +4457,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HU.swapHtml("#" + id +"_headercontents", "#" + id +"_header");
         //Do this later because of the swapHtml
         setTimeout(()=>{
-            let header = $("#" + id +"_header");
+            let header = jqid(id +"_header");
             let items = header.find(".ramadda-slides-header-item");
             items.click(function() {
                 let index = +$(this).attr("slideindex");
                 $("#" + id).slick('slickGoTo', index);
             });
-            $("#" + id).on('afterChange', function(event, slick, currentSlide){
+            jqid(id).on('afterChange', function(event, slick, currentSlide){
                 items.removeClass("ramadda-slides-header-item-selected");
                 header.find(HtmlUtils.attrSelect("slideindex",currentSlide)).addClass("ramadda-slides-header-item-selected");
             });
