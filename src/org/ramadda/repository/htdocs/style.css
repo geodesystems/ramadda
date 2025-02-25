@@ -2712,6 +2712,27 @@ ul {
     text-align:center;
 }
 
+.ramadda-slides-header-left {
+    padding:0px;
+    vertical-align:top;
+    display:inline-block;
+    max-width:300px;
+    xmargin-right:30px;
+    overflow-x:hidden;
+    white-space:nowrap;
+    max-height:800px;
+    overflow-y:auto;
+}
+
+.ramadda-slides-header-left .ramadda-slides-header-item {
+    display:block;
+    border-bottom:var(--basic-border);
+    padding:4px;
+    padding-right:0px;    
+}
+
+
+
 .ramadda-slides-header-item {
     display:inline-block;
     margin-left: 5px;
@@ -2723,7 +2744,7 @@ ul {
 
 
 .ramadda-slides-header-item-selected {
-    font-weight:500;
+    font-weight:400;
     background:var(--header-background);
 }
 
