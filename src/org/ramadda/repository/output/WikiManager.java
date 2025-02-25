@@ -1075,8 +1075,8 @@ public class WikiManager extends RepositoryManager
         String    border = getProperty(wikiUtil, props, ATTR_BORDER, null);
         String bordercolor = getProperty(wikiUtil, props, ATTR_BORDERCOLOR,null);
 
-        if (border!=null || bordercolor!=null) {
-	    if(border==null) border="1px solid ";
+        if (stringDefined(border) || stringDefined(bordercolor)) {
+	    if(!stringDefined(border)) border="1px solid ";
             style += HU.css("border", border + " "  + bordercolor);
         }
         String left = getProperty(wikiUtil, props, "left", null);
@@ -4146,11 +4146,11 @@ public class WikiManager extends RepositoryManager
                                            "");
 
             String width  = getProperty(wikiUtil, props, ATTR_WIDTH, "400");
-            int    height = getProperty(wikiUtil, props, ATTR_HEIGHT, 270);
+            String    height = HU.makeDim(getProperty(wikiUtil, props, ATTR_HEIGHT, "270"),"px");
 
             if (doingSlideshow) {
                 props.put(ATTR_WIDTH, width);
-                props.put(ATTR_HEIGHT, "" + height);
+                props.put(ATTR_HEIGHT, height);
                 props.put(ATTR_CONSTRAINSIZE, "true");
             }
 
@@ -4216,6 +4216,7 @@ public class WikiManager extends RepositoryManager
                 urls.add(getEntryManager().getEntryUrl(request, child));
                 tmpProps.put("defaultToCard", "true");
 
+
 		String inner = my_getWikiInclude(wikiUtil, newRequest,
 						 originalEntry, child, tag, tmpProps, "", true);
                 StringBuilder content =   new StringBuilder();
@@ -4270,7 +4271,7 @@ public class WikiManager extends RepositoryManager
 			front = back;
 		    }
 		    String flipAttrs = 
-			HU.style("width",HU.makeDim(width,"px"),"height",height+"px");
+			HU.style("width",HU.makeDim(width,"px"),"height",height);
 		    theContent= HU.makeFlipCard(front,back,
 						flipAttrs,
 						HU.attrs("style",myFrontStyle),
@@ -4416,14 +4417,17 @@ public class WikiManager extends RepositoryManager
 		HU.close(sb,HU.TAG_DIV);
                 return sb.toString();
             } else if (doingSlideshow) {
+		/******* old slides code
                 boolean shownav = getProperty(wikiUtil, props, "shownav", false);
                 boolean autoplay = getProperty(wikiUtil, props, "autoplay", false);
                 int    playSpeed = getProperty(wikiUtil, props, "speed", 5);
                 String slideId   = HU.getUniqueId("slides_");
+		sb.append("\n");
                 HU.open(sb, "style", HU.attr("type", "text/css"));
+		sb.append("\n");
                 // need to set the height of the div to include the nav bar
                 Utils.concatBuff(sb, "#", slideId, " { width: ",
-                                 width + "; height: " + (height + 30), "}\n");
+                                 width + "; height:calc(" + height + "+30px);\n", "}\n");
 
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
                 String borderColor = getProperty(wikiUtil, props,
@@ -4432,7 +4436,7 @@ public class WikiManager extends RepositoryManager
 			  "#" + slideId + " .slides_container {border: " + border
 			  + "px solid " + borderColor + "; width:" + width
 			  + ";overflow:hidden;position:relative;display:none;}\n.slides_container div.slide {width:"
-			  + width + ";height:" + height + "px;display:block;}\n");
+			  + width + ";height:" + height + ";display:block;}\n");
                 sb.append("</style>\n\n");
                 sb.append("<link rel=\"stylesheet\" href=\"");
                 sb.append(
@@ -4455,15 +4459,15 @@ public class WikiManager extends RepositoryManager
 		    + ", generatePagination: " + shownav + "\n";
                 StringBuilder js =
                     new StringBuilder("$(document).ready(function(){\n");
+                js.append("$(function(){\n" +
+			  HU.call("HtmlUtils.initSlides",HU.squote(slideId)) +
+			  "\n});\n");
                 js.append(
 			  "$(function(){\n$(" + HU.squote("#" + slideId)
 			  + ").slides({" + slideParams
 			  + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
-                js.append("\n});");
+                js.append("\n});\n");
                 HU.open(sb, HU.TAG_DIV, HU.id(slideId));
-
-
-
                 String prevImage =
                     HU.href("#", "<i style='font-size:32pt;'  class=\"ramadda-clickable  fas fa-angle-left prev\"/>");
 
@@ -4472,39 +4476,90 @@ public class WikiManager extends RepositoryManager
                 String arrowTDWidth = "20px";
 
                 sb.append(
-			  "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n");
+			  "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr valign=top>\n");
+		
+		if(getProperty(wikiUtil,props,"showToc",false)) {
+		    String tocWidth = getProperty(wikiUtil,props,"tocWidth","300px");
+		    HU.open(sb,"td",HU.attrs("width",tocWidth));
+		    String tocId = slideId +"_toc";
+		    HU.open(sb,"div",HU.attrs("id",tocId,
+					      "style",
+					      HU.css("margin-right","10px",
+						     "overflow-x","hidden",
+						     "overflow-y","auto",
+						     "white-space","nowrap",
+						     "max-width",tocWidth,
+						     "max-height",height)));
+		    String tocStyle = HU.attrs("style",HU.css("border-bottom","var(--basic-border)"));
+		    for (int i = 0; i < titles.size(); i++) {
+			sb.append(HU.div(titles.get(i),
+					 HU.attrs("title",titles.get(i),
+						  "class","ramadda-hoverable ramadda-clickable","data-index",(i+1)+"") + tocStyle));
+		    }
+		    sb.append("</div></td>");
+		    //		    js.append("let index  = +$(this).attr('data-index');\n");
+		    //		    js.append("console.dir(jqid(" + HU.squote(slideId) +"));\n");
+		    //		    js.append("jqid(" + HU.squote(slideId) +").goto(index);\n");
+		    js.append("});\n");
+		}
+
                 HU.col(sb, prevImage,
-                       "width=\"" + arrowTDWidth
-                       + "\" style=\"font-size: 30px\"");
+		       HU.attrs("width",arrowTDWidth,
+				"style","vertical-align: middle;font-size: 30px;"));
                 HU.open(sb, HU.TAG_TD, HU.attr(HU.ATTR_WIDTH, width));
                 HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-slides-container slides_container"));
+		*/
+		String slidesProps = "";
+		slidesProps+=HU.attr("width",width);
+		slidesProps+=HU.attr("center","true");
+		for(String attr:new String[]{"slidesStyle","headerLeft","showHeader","arrows","dots"}) {
+		    String value = getProperty(wikiUtil,props,attr,null);
+		    if(value!=null) 
+			slidesProps+=HU.attr(attr,value);
+		}
+		sb.append("+slides ");
+		sb.append(slidesProps);
+		sb.append("\n");
+
                 for (int i = 0; i < titles.size(); i++) {
                     String title   = titles.get(i);
                     String content = contents.get(i);
+		    sb.append("+slide ");
+		    sb.append(title);
+		    sb.append("\n");
+		    sb.append(HU.div(content,HU.style(HU.css("width","calc( " + width+" - 22px)"))));
+		    sb.append("\n-slide\n ");
+		    /*
                     sb.append("\n");
                     HU.open(sb, HU.TAG_DIV, HU.cssClass("slide"));
                     sb.append(content);
                     //                    sb.append(HU.br());
                     //                    sb.append(title);
                     HU.close(sb, HU.TAG_DIV);  // slide
+		    */
                 }
+		sb.append("-slides\n");
+		return wikify(request, sb.toString());
+
+		/********
+
                 HU.close(sb, HU.TAG_DIV);      // slides_container
                 HU.close(sb, HU.TAG_TD);
+
                 HU.col(sb, nextImage,
-                       "align=\"right\" width=\"" + arrowTDWidth
-                       + "\" style=\"font-size: 30px\"");
+		       HU.attrs("width",arrowTDWidth,
+				"style","vertical-align: middle;font-size: 30px;"));
+
                 sb.append("</tr></table>");
-                HU.close(sb, HU.TAG_DIV);  // slideId
-
-                sb.append(
-			  HU.importJS(
-				      getRepository().getHtdocsUrl(
-								   "/lib/slides/slides.min.jquery.js")));
-
+                HU.close(sb, HU.TAG_DIV);  
+                sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/jquery.slides.js")));
+		//                sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/slides/slides.min.jquery.js")));
+                sb.append(HU.importJS(getRepository().getHtdocsUrl("/slides.js")));
                 wikiUtil.appendJavascript(js.toString());
                 //                HU.script(sb, js.toString());
 
                 return sb.toString();
+		*******/
             } else {
                 //TABS
                 int innerHeight = getProperty(wikiUtil, props, "inner-height", getProperty(wikiUtil,props,"innerHeight",-1));
@@ -8042,7 +8097,7 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Left-middle-right", "3 column table aligned left,center and right","+leftmiddleright_nl_+left_nl_-left_nl_+middle_nl_-middle_nl_+right_nl_-right_nl_", "-leftmiddleright"),
 			l2.call( "Tabs", "Make tabs\nimg:tabs.png","+tabs center=false minarrow=false tight=false noBorder=false #minheight=\"\" _newline_+tab tab title_newline_", "-tab_newline_-tabs_newline_"),
 			l2.call( "Accordion", "Accordion layout\nimg:accordion.png","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
-			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides dots=true slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
+			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
 			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
 			
