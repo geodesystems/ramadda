@@ -1436,8 +1436,26 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    buff.append(HU.script("HtmlUtils.loadSlides();"));
 		    slidesProps.remove("bigArrow");
 		    boolean bigArrow  = Utils.getProperty(slidesProps,"bigArrow",true);
-		    HU.div(buff,"",HU.attrs("id",slidesId+"_header",ATTR_CLASS,"ramadda-slides-header"));
-		    HU.open(buff,TAG_DIV,HU.attrs("id",slidesId,ATTR_CLASS," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
+		    String style = Utils.getProperty(slidesProps,"slidesStyle","");
+		    String width = Utils.getProperty(slidesProps,"width",null);
+		    if(width!=null) style+=HU.css("width",width);
+		    if(Utils.getProperty(slidesProps,"center",false)) {
+			style+=HU.css("margin","0 auto");
+		    }
+		    String headerStyle="";
+		    if(!Utils.getProperty(slidesProps,"showHeader",false)) {
+			headerStyle+=HU.css("display","none");
+		    }
+		    boolean headerLeft = Utils.getProperty(slidesProps,"headerLeft",false);
+		    if(headerLeft) {
+			style+=HU.css("display","inline-block");
+		    }
+		    HU.div(buff,"",HU.attrs(ATTR_ID,slidesId+"_header",
+					    ATTR_CLASS,headerLeft?"ramadda-slides-header-left":"ramadda-slides-header",
+					    ATTR_STYLE,headerStyle));
+		    HU.open(buff,TAG_DIV,HU.attrs(ATTR_STYLE,style,ATTR_ID,slidesId,
+						  ATTR_CLASS," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
+
 		    continue;
 		}
 
@@ -1457,7 +1475,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
                 if (tline.equals("-slides")) {
-		    //slidesId+"_header",ATTR_CLASS,"ramadda-slides-header"));
 		    HU.close(buff,TAG_DIV);
 		    if(slidesId==null) {
 			buff.append("No open slides tag");
@@ -1481,7 +1498,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 				HU.div(header,title,HU.attrs(ATTR_CLASS,clazz,"slideindex",i+""));
 			    }
 			}
-			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents",ATTR_STYLE,"xxdisplay:none;"));
+			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents",ATTR_STYLE,""));
 		    }
 		    buff.append(HU.script(JQuery.ready("HtmlUtils.makeSlides('" + slidesId+"'," + slidesArgs+");")));
 		    continue;
