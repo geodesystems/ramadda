@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Feb 24 12:56:02 MST 2025";
+var build_date="RAMADDA build date: Tue Feb 25 20:06:28 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -34004,7 +34004,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	{p:'dateToggleClose',ex:true},		
 	{p:'areaToggleClose',ex:true},
 	{p:'columnsToggleClose',ex:true},		
-	{p:'orderByTypes',d:'relevant,name,createdate,date,size'},
+	{p:'orderByTypes',d:'relevant,name,createdate,date,size,entryorder'},
 	{p:'showOutputs',ex:'false',d:true},
 	{p:'outputs',ex:'csv,json,zip,export,extedit,copyurl'},
 	{p:'doWorkbench',d:false,ex:'true', tt:'Show the new, charts, etc links'},
@@ -34088,6 +34088,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    return  dflt;
 		}
 
+
+		console.log(this.getOrderByTypes())
 		Utils.split(this.getOrderByTypes(),',',true,true).forEach(type=>{
 		    if(type=='relevant')
 			byList.push([getLabel(type,null),type]);
@@ -34103,6 +34105,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		    else if(type=='size')
 			byList.push(["Size - largest first","size_descending"],
 				    ["Size - smallest first","size_ascending"]);
+		    else if(type=='entryorder')
+			byList.push(["Entry order - increasing","entryorder_ascending"],
+				    ["Entry order - decreasing","entryorder_descending"]);		    
 		    else {
 			byList.push(
 			    [getLabel(type,'descending'),'field:'+type+'_descending'],
@@ -34846,8 +34851,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
             entryList.doSearch(null,success,fail);
 	},
         makeSearchForm: function() {
-	    let toggleClose = this.getProperty('toggleClose',false);
-
+	    let toggleClose = this.getProperty('toggleClose',!this.getSearchOpen(true));
             let form = HU.openTag("form", [ATTR_ID, this.getDomId(ID_FORM), "action", "#"]);
             let buttonLabel = HU.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             let topItems = [];
@@ -35098,9 +35102,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			let countId = this.getMetadataFieldId(type)+"_count";
 			let wrapperId = this.getMetadataFieldId(type)+"_wrapper";			
 			let label = type.getLabel();
-			metadataBlock += this.addWidget(label, block,{toggleClose:true});
+			metadataBlock += this.addWidget(label, block,{toggleClose:toggleClose});
 		    } else {
-			metadataBlock += this.addWidget(type.getLabel(), metadataSelect,{toggleClose:true});
+			metadataBlock += this.addWidget(type.getLabel(), metadataSelect,{toggleClose:toggleClose});
 		    }
                 }
 		extra += HU.div([ATTR_ID,this.domId(ID_SEARCH_TAGS)], metadataBlock);
@@ -35544,7 +35548,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
         addExtraForm: function() {
 	    let popupLimit = this.getTagPopupLimit();
-	    let toggleClose = this.getColumnsToggleClose(this.getToggleClose(true));
+	    let toggleClose = this.getColumnsToggleClose(this.getProperty('toggleClose',!this.getSearchOpen(true)));
             if (this.savedValues == null) this.savedValues = {};
             let extra = "";
             let cols = this.getSearchableColumns();
@@ -35666,6 +35670,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		if(Utils.isDefined(toggleCloseProperty)) {
 		    close = String(toggleCloseProperty)=='true';
 		}
+		if(!toggleClose) close = false;
 
 		extra+=this.addWidget(label,widget,{
 		    addToggle:!inGroup,
