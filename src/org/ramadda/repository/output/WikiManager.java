@@ -4145,7 +4145,7 @@ public class WikiManager extends RepositoryManager
             String linklabel = getProperty(wikiUtil, props, ATTR_LINKLABEL,
                                            "");
 
-            String width  = getProperty(wikiUtil, props, ATTR_WIDTH, "400");
+            String width  = HU.makeDim(getProperty(wikiUtil, props, ATTR_WIDTH, "400"),"px");
             String    height = HU.makeDim(getProperty(wikiUtil, props, ATTR_HEIGHT, "270"),"px");
 
             if (doingSlideshow) {
