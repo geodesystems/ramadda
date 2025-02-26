@@ -163,6 +163,9 @@ search.form.description.show=true
 search.form.name.show=true
 search.form.createdate.show=false
 search.form.date.show=false
+search.form.ancestor.show=false
+search.form.providers.show=false
+
 
 #what order by to show
 search.form.orderby=relevant,name,createdate,date,size
