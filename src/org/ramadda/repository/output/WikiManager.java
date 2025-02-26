@@ -4539,7 +4539,7 @@ public class WikiManager extends RepositoryManager
 		    */
                 }
 		sb.append("-slides\n");
-		return wikify(request, sb.toString());
+		return wikifyEntry(request,entry, sb.toString(),false);
 
 		/********
 
