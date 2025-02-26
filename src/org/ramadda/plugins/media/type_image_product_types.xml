@@ -1,0 +1,39 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<type  name="type_image_product" 
+ description="Image product" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_image" 
+ supercategory="Geoscience" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="search.searchopen"  value="true" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.area.show"  value="false" />
+<property  name="search.form.area.show"  value="false" />
+<property  name="search.form.description.show"  value="false" />
+<property  name="search.form.name.show"  value="false" />
+<property  name="search.form.providers.show"  value="false" />
+<property  name="search.form.text.show"  value="false" />
+<property  name="search.form.date.show"  value="false" />
+<property  name="search.form.createdate.show"  value="false" />
+<property  name="search.form.providers.show"  value="false" />
+<property  name="search.form.ancestor.show"  value="false" />
+
+<!-- Columns-->
+<column  name="product"  label="Product"  type="enumerationplus"   cansearch="true" />
+<column  name="date_specifier"  label="Date Specifier"  type="enumerationplus"   cansearch="true" />
+<column  name="region"  label="Region"  type="enumerationplus"   cansearch="true" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+{{description wikify=true}}
+{{image width=90%}}
+----
+:heading Information
+{{information  details=true showResource=false}}
+-section]]></wiki>
+</type>
