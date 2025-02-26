@@ -376,6 +376,8 @@ public class SessionManager extends RepositoryManager {
 
     public void addSessionMessage(Request request, String message,Object key,boolean error)  {
 	try {
+	    message = HU.strictSanitizeString(message);
+
 	    List<SessionMessage> messages=(List<SessionMessage>)
 		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
 	    if(messages==null) {
