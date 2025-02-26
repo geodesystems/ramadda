@@ -20,6 +20,7 @@ proc col {name s {clean 1}} {
 	return ""
     }
     if {$clean} {set s [clean $s]}
+    regsub -all {\\n} $s "\n" s
     return "<$name>[cdata  $s]</$name>\n"
 }    
 
@@ -58,6 +59,7 @@ proc openEntry {type id parent name args} {
     for {set i 0} {$i<[llength $args]} {incr i 2} {
 	append e [attr [lindex $args $i] [lindex $args [expr $i+1]]]
     }
+
 
 
     append e ">\n";
