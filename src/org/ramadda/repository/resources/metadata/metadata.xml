@@ -150,6 +150,7 @@
     <type id="metadata_source" name="Source" searchable="true" priority="20"  displaygroup="Source">
       <element id="url" datatype="url" name="URL"/>
       <element id="via" name="VIA"/>
+      <template type="html"><![CDATA[<a href="${attr1}">${attr2}</a>]]></template>
     </type>
 
 
