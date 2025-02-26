@@ -64,11 +64,12 @@ proc img {region rname t tname p pname} {
     set parent [getGroupId $region $tname]
 
 
+
     append ::xml [openEntry type_image_product "" "$parent" "$rname - $pname - $tname"  url $url entryorder [incr ::entryOrder]]
 
     append ::xml [col product $pname]
     append ::xml [col date_specifier $tname]    
-    append ::xml [col region $region]
+    append ::xml [col region $rname]
     append ::xml [mtd2 metadata_source {https://hprcc.unl.edu/maps.php?map=ACISClimateMaps} {ACIS Climate Maps}]
     append ::xml [closeEntry]
 }
