@@ -1437,8 +1437,12 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    slidesProps.remove("bigArrow");
 		    boolean bigArrow  = Utils.getProperty(slidesProps,"bigArrow",true);
 		    String style = Utils.getProperty(slidesProps,"slidesStyle","");
+		    String contStyle = "";
 		    String width = Utils.getProperty(slidesProps,"width",null);
-		    if(width!=null) style+=HU.css("width",width);
+		    if(width!=null) {
+			style+=HU.css("width",width);
+			contStyle+=HU.css("grid-template-columns","minmax(200px, 300px) " + width);
+		    }
 		    if(Utils.getProperty(slidesProps,"center",false)) {
 			style+=HU.css("margin","0 auto");
 		    }
@@ -1448,13 +1452,19 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    }
 		    boolean headerLeft = Utils.getProperty(slidesProps,"headerLeft",false);
 		    if(headerLeft) {
-			style+=HU.css("display","inline-block");
+			//			style+=HU.css("display","inline-block");
 		    }
+
+		    HU.open(buff,"div",
+			    
+			    HU.attrs(ATTR_STYLE, contStyle,
+				     ATTR_CLASS,"ramadda-slides-container " + (headerLeft?"ramadda-slides-container-left":"")));
+
 		    HU.div(buff,"",HU.attrs(ATTR_ID,slidesId+"_header",
-					    ATTR_CLASS,headerLeft?"ramadda-slides-header-left":"ramadda-slides-header",
+					    ATTR_CLASS,"ramadda-slides-child "+(headerLeft?"ramadda-slides-header-left":"ramadda-slides-header"),
 					    ATTR_STYLE,headerStyle));
 		    HU.open(buff,TAG_DIV,HU.attrs(ATTR_STYLE,style,ATTR_ID,slidesId,
-						  ATTR_CLASS," ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
+						  ATTR_CLASS,"ramadda-slides-child ramadda-slides " +(bigArrow?"ramadda-slides-bigarrow":"")));
 
 		    continue;
 		}
@@ -1475,7 +1485,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
                 if (tline.equals("-slides")) {
-		    HU.close(buff,TAG_DIV);
+		    HU.close(buff,TAG_DIV,TAG_DIV);
 		    if(slidesId==null) {
 			buff.append("No open slides tag");
 			continue;
@@ -1495,7 +1505,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 				String clazz = " ramadda-slides-header-item ";
 				if(cnt++==0) 
 				    clazz += " ramadda-slides-header-item-selected ";
-				HU.div(header,title,HU.attrs(ATTR_CLASS,clazz,"slideindex",i+""));
+				HU.div(header,title,HU.attrs(ATTR_TITLE, title,ATTR_CLASS,clazz,"slideindex",i+""));
 			    }
 			}
 			HU.div(buff,header.toString(),HU.attrs("id",slidesId+"_headercontents",ATTR_STYLE,""));

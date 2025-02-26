@@ -2712,28 +2712,29 @@ ul {
     text-align:center;
 }
 
+.ramadda-slides-container-left {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(200px, 1fr);
+    grid-template-columns: minmax(200px, 300px) minmax(500px 1fr);
+    gap: 0px;
+}
+
 .ramadda-slides-header-left {
+    min-width:150px;
     padding:0px;
     vertical-align:top;
-    display:inline-block;
-    max-width:300px;
-    xmargin-right:30px;
+    width:100%;
+    xmax-width:300px;
     overflow-x:hidden;
     white-space:nowrap;
     max-height:800px;
     overflow-y:auto;
 }
 
-.ramadda-slides-header-left .ramadda-slides-header-item {
-    display:block;
-    border-bottom:var(--basic-border);
-    padding:4px;
-    padding-right:0px;    
-}
-
-
-
 .ramadda-slides-header-item {
+    margin-bottom:0.25em;
+    padding:0px;
+    border:1px solid #ccc;
     display:inline-block;
     margin-left: 5px;
     margin-right: 5px;
@@ -2741,6 +2742,24 @@ ul {
     padding-right:6px;
     cursor:pointer;
 }
+
+
+.ramadda-slides-header-left {
+    border-top:var(--basic-border);
+}
+.ramadda-slides-header-left .ramadda-slides-header-item {
+    margin:0px;
+    padding:0px;
+    display:block;
+    border:0px;
+    border-left:var(--basic-border);
+    border-bottom:var(--basic-border);
+    padding:4px;
+    padding-right:0px;    
+}
+
+
+
 
 
 .ramadda-slides-header-item-selected {
