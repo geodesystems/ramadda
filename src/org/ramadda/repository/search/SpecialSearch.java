@@ -102,7 +102,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     /** _more_ */
     private boolean showText = true;
-    private boolean showAncestor = true;    
+    private boolean showAncestor = true;
+    private boolean showProviders = true;
 
     /** _more_ */
     private boolean showName = true;
@@ -200,8 +201,10 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 "true").equals("true");
         doSearchInitially = typeHandler.getTypeProperty("search.initsearch",
                 "false").equals("true");
-        showAncestor = typeHandler.getTypeProperty("search.form.showAncestor",
-                "true").equals("true");
+        showAncestor = typeHandler.getTypeProperty("search.form.ancestor.show",
+						   "true").equals("true");
+        showProviders= typeHandler.getTypeProperty("search.form.providers.show",
+						   "true").equals("true");	
         showText = typeHandler.getTypeProperty("search.form.text.show",
                 "true").equals("true");
         showName = typeHandler.getTypeProperty("search.form.name.show",
@@ -582,6 +585,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    }	    
 
 	    addAttr(sb, "searchDirect","false");
+
 	    String providers=Utils.getProperty(props,"providers","this,type:ramadda");
 	    if(stringDefined(providers)) {
 		addAttr(sb, "providers",providers);
@@ -602,7 +606,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 					 "providersMultiple",
 					 "providersMultipleSize",
 					 "ancestor",
-					 "showProviders",
 					 "showEntryImage",
 					 "includeNonImages",
 					 "showOutputs",
@@ -616,10 +619,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
 	    addAttr(sb,"entryTypes",typeHandler.getType());
 	    addAttr(sb, "showAncestor",  Utils.getProperty(props,"showAncestor",""+showAncestor));
+	    addAttr(sb, "showProviders",  Utils.getProperty(props,"showProviders",""+showProviders));
 	    addAttr(sb, "displayTypes",Utils.join(tabs,","));
 	    addAttr(sb, "orderByTypes",Utils.getProperty(props,"orderByTypes",orderByTypes));
 	    addAttr(sb, "showDate",Utils.getProperty(props,"showDate",showDate));
 	    addAttr(sb, "showArea",Utils.getProperty(props,"showArea",showArea));
+	    addAttr(sb, "searchOpen",Utils.getProperty(props,"searchOpen",searchOpen));
 	    addAttr(sb, "showText",Utils.getProperty(props,"showText",showText));
 	    addAttr(sb, "showName",Utils.getProperty(props,"showName",showName));
 	    addAttr(sb, "showDescription",Utils.getProperty(props,"showDescription",showDescription));
