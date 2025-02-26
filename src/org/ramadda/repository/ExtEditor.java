@@ -2201,6 +2201,7 @@ public class ExtEditor extends RepositoryManager {
 
 	String desc = entry.getDescription();
 	if (Utils.stringDefined(desc) && entry.getTypeHandler().isWikiText(desc)) {
+	    desc = desc.replace("{skip{","{{");
 	    sb.append("\n");
 	    sb.append(XU.comment("Wiki text"));
 	    desc=desc.replaceAll("^<wiki>","");
