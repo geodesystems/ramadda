@@ -3324,6 +3324,8 @@ public class EntryManager extends RepositoryManager {
 
         String url = HU.url(getFullEntryShowUrl(null), ARG_ENTRYID,
 			    entry.getId());
+	List<Utils.Macro> xmacros = Utils.splitMacros(template);
+
         //j-
         String[] macros = {
             "entryid", entry.getId(), "parentid", entry.getParentEntryId(),
