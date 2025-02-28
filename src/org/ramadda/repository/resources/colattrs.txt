@@ -35,6 +35,7 @@ showempty="false"
 
 #column group
 group="Column group"
+subgroup="Sub group"
 
 
 #is column editable

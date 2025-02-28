@@ -4199,6 +4199,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         }
         return true;
     },
+    jqname:function(value) {
+	return this.jqattr('name',value);
+    },
+    jqattr:function(name,value) {
+	let sel =  '[' + name+'="'+ value+'"]';
+	return $(sel);
+    },
     jqid:function(id) {
         return $("#"+id);
     },
@@ -6861,6 +6868,7 @@ dateFormat.i18n = {
 function jqid(id) {
     return HtmlUtils.jqid(id);
 }
+
 
 
 // For convenience...

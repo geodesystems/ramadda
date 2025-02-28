@@ -1091,6 +1091,7 @@ a.ramadda-menubar-button:hover {
 
 
 
+
 .ramadda-help-heading {
     font-size:120%;
     font-weight: bold;
@@ -4051,11 +4052,17 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
+
+div.ramadda-menu-item {
+    border-bottom  :var(--basic-border);
+    padding:4px;
+}
+
 .ramadda-menu-item a {
     padding:0px;
 }
 
-.ramadda-menu-item:hover a, .ramadda-menu-item a:hover {
+div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:hover {
     color: var(--hover-color) !important;    
 }
 
@@ -5614,14 +5621,24 @@ wiki {
 
 
 .ramadda-user-form-header, .formgroupheader {
+    background:var(--highlight-background);
+    border-top-left-radius: var(--default-radius);
+    border-top-right-radius: var(--default-radius);
     margin-top:4px;
     margin-bottom:0px;
     padding-top:6px;
-    padding-left: 0px;
+    padding-left: 5px;
     padding-bottom: 0px;
     color: #000;
     border-bottom: var(--basic-border);
     font-weight: bold;
+}
+
+
+.ramadda-entry-subgroup {
+    border-bottom: var(--basic-border);
+    padding-left:5px;
+    font-weight:bold;
 }
 
 

@@ -34,7 +34,10 @@ includeInSearch="false"
 
 
 
-#for (not) matching on file names
+#regexp pattern for matching on files
+pattern=".*data.csv"
+
+#regexp pattern for (not) matching on file names
 notpattern="(?i).*imdvmap\.json$"
 
 #How to pull out field values from the file name
