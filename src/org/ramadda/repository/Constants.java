@@ -310,7 +310,7 @@ public interface Constants {
     public static final String ICON_DIALOG_QUESTION = "fas fa-question";
 
     /**  */
-    public static final String ICON_DIALOG_INFO = "fas fa-info";
+    public static final String ICON_DIALOG_INFO = "fas fa-info-circle";
 
     /** _more_ */
     public static final String ICON_DIALOG_ERROR =
