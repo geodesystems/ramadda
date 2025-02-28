@@ -1335,6 +1335,7 @@ public class SqlUtil {
                 errors.add(new SqlError(command, exc));
                 String msg = exc.toString().toLowerCase() + " "
                              + command.toLowerCase();
+		//System.out.println(msg);
                 if ((msg.indexOf("duplicate") < 0)
                         && (msg.indexOf("already exists") < 0)
                         && (msg.indexOf("can't drop") < 0)
@@ -1342,12 +1343,8 @@ public class SqlUtil {
                         && (msg.indexOf("drop table") < 0)
                         && (msg.indexOf("drop index") < 0)
                         && (msg.indexOf("is not a column in table") < 0)) {
-                    System.err.println(
-                        "\n*********************************************");
-                    System.err.println("Bad sql:" + command);
-                    System.err.println(exc);
-                    System.err.println(
-                        "********************************************\n");
+                    System.err.println("** Bad sql:" + command);
+                    System.err.println("** "+exc);
                 }
                 if ( !ignoreErrors) {
                     throw exc;
