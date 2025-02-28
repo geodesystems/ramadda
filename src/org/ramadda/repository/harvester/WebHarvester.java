@@ -211,8 +211,13 @@ public class WebHarvester extends Harvester {
 
             System.err.println("cnt:" + cnt);
             System.err.println(groupName + " " + baseGroupId);
-            lastEntry = new HarvesterEntry(request.getUnsafeString(urlArg,
-                    ""), request.getUnsafeString(ATTR_NAME + cnt, ""),
+	    String url = request.getUnsafeString(urlArg,"");
+	    String name = request.getUnsafeString(ATTR_NAME + cnt, "");
+	    if(!stringDefined(name)) {
+		String path = new URL(url).getPath();
+		name = path.substring(path.lastIndexOf('/') + 1);
+	    }
+            lastEntry = new HarvesterEntry(url, name,
                          request.getUnsafeString(ATTR_DESCRIPTION + cnt, ""),
                          groupName, baseGroupId);
             urlEntries.add(lastEntry);
@@ -611,7 +616,7 @@ public class WebHarvester extends Harvester {
 
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
                                 fileName);
-        name = applyMacros(name, createDate, fromDate, toDate, fileName);
+        name = applyMacros(name, createDate, fromDate, toDate, tail);
         desc = applyMacros(desc, createDate, fromDate, toDate, fileName);
 
 
