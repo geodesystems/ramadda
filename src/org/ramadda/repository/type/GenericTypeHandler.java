@@ -20,8 +20,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
-
-
 import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
@@ -107,7 +105,8 @@ public class GenericTypeHandler extends TypeHandler {
         if (columnNodes.size() == 0) {
             return;
         }
-        initColumns((List<Element>) columnNodes);
+	boolean ignoreErrors = XmlUtil.getAttribute(entryNode,"ignoreerrors",true);
+        initColumns((List<Element>) columnNodes,ignoreErrors);
     }
 
 
@@ -127,6 +126,11 @@ public class GenericTypeHandler extends TypeHandler {
 
     
     public void initColumns(List<Element> columnNodes) throws Exception {
+	initColumns(columnNodes,true);
+    }
+
+
+    private void initColumns(List<Element> columnNodes, boolean ignoreErrors) throws Exception {
         Statement statement = getDatabaseManager().createStatement();
         colNames.add(COL_ID);
         StringBuilder tableDef = new StringBuilder("CREATE TABLE "
@@ -179,7 +183,7 @@ public class GenericTypeHandler extends TypeHandler {
                 categoryColumn = column;
             }
             colNames.addAll(column.getColumnNames());
-            column.createTable(statement);
+            column.createTable(statement,ignoreErrors);
             if (showColumns) {
                 String NAME = column.getName().toUpperCase();
                 System.out.println("public static final int IDX_" + NAME
@@ -666,8 +670,12 @@ public class GenericTypeHandler extends TypeHandler {
                 //We start at 2, skipping 1, because the first one is the id
                 int valueIdx = 2;
                 for (Column column : getMyColumns()) {
-                    valueIdx = column.readValues(entry, results2, values,
-                            valueIdx);
+		    try {
+			valueIdx = column.readValues(entry, results2, values, valueIdx);
+		    } catch(Exception exc) {
+			String msg = "Error reading column value:" + column +" for entry: " + entry.getName()+" error:" + exc.getMessage();
+			throw new IllegalStateException(msg);
+		    }
                 }
             } else {
                 //If we didn't get anything and we have  a db table that means that the entry was created
@@ -879,6 +887,12 @@ public class GenericTypeHandler extends TypeHandler {
 	if ( !column.getShowEmpty() && (tmpSb.length() == 0)) {
 	    return;
 	}
+
+	String subGroup = column.getSubGroup();
+	if(subGroup!=null) {
+	    HU.formEntry(sb,"", HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	}
+
 
 	if (column.getShowLabel()) {
 	    String label = tmpSb.toString();
