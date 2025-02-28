@@ -4069,6 +4069,11 @@ public class TypeHandler extends RepositoryManager {
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
 	throws Exception {
+	String subGroup = column.getSubGroup();
+	if(subGroup!=null) {
+	    HU.formEntry(formBuffer,"", HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	}
+
         column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,
                               formInfo, sourceTypeHandler);
     }
