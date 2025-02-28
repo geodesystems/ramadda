@@ -100,6 +100,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final String ATTR_CHANGETYPE = "changetype";
     public static final String ATTR_SHOWINFORM = "showinform";
     public static final String ATTR_GROUP = "group";
+    public static final String ATTR_SUBGROUP = "subgroup";    
     public static final String ATTR_UNIT = "unit";
     public static final String ATTR_OLDNAMES = "oldnames";
     public static final String ATTR_SUFFIX = "suffix";
@@ -156,6 +157,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String name;
     private String fullName;
     private String displayGroup;
+    private String subGroup;    
     private String editGroup;    
     private List oldNames;
     private String label;
@@ -271,6 +273,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         String group  = XmlUtil.getAttribute(element, "group",(String)null);
         displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
         editGroup = XmlUtil.getAttribute(element, "editgroup", group);
+        subGroup  = XmlUtil.getAttribute(element, "subgroup",(String)null);
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
 						    ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
@@ -1709,28 +1712,18 @@ public class Column implements DataTypes, Constants, Cloneable {
         return valueIdx;
     }
 
-
-    
     private void defineColumn(Statement statement, String name, String type,
                               boolean ignoreErrors)
 	throws Exception {
-
-        String sql = "alter table " + getTableName() + " add column " + name
-	    + " " + type;
-        SqlUtil.loadSql(sql, statement, ignoreErrors, null);
+        String sql = "alter table " + getTableName() + " add column " + name + " " + type;
+	//Always ignore errors here
+        SqlUtil.loadSql(sql, statement, true/*ignoreErrors*/, null);
 
         if (changeType) {
-            sql = getDatabaseManager().getAlterTableSql(getTableName(), name,
-							type);
-            //            System.err.println("altering table: " + sql);
+            sql = getDatabaseManager().getAlterTableSql(getTableName(), name,type);
+	    //	    System.out.println("altering table: " + sql);
             SqlUtil.loadSql(sql, statement, ignoreErrors, null);
         }
-    }
-
-
-    
-    public void createTable(Statement statement) throws Exception {
-        createTable(statement, true);
     }
 
     
@@ -3475,6 +3468,8 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
+
+
     public String getDisplayGroup(){
         return displayGroup;
     }
@@ -3484,6 +3479,9 @@ public class Column implements DataTypes, Constants, Cloneable {
     }    
 
 
+    public String getSubGroup(){
+	return subGroup;
+    }
     
     public String getPropertiesFile() {
         return propertiesFile;
