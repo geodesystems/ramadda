@@ -292,9 +292,9 @@ public class WebHarvester extends Harvester {
             entrySB.append(HU.formTable());
             String link = "";
             if ((urlEntry.url != null) && (urlEntry.url.length() > 0)) {
-                link = HU.href(
+                link = HU.space(1) + HU.href(
                     urlEntry.url,
-                    HU.img(getRepository().getIconUrl(ICON_LINK)),
+                    HU.img(getRepository().getIconUrl(ICON_LINK),"",HU.attrs("width","16px")),
                     HU.attr("target", "_linkpage"));
             }
             String urlInput = HU.input(ATTR_URL + cnt, urlEntry.url,
@@ -379,7 +379,8 @@ public class WebHarvester extends Harvester {
                 msgLabel("Name"),
                 HU.input(
                     ATTR_NAME + cnt, urlEntry.name,
-                    HU.SIZE_80 + HU.title(templateHelp))));
+                    HU.SIZE_80) + HU.space(1) +
+		templateHelp));
         entrySB.append(
             HU.formEntry(
                 msgLabel("Description"),
@@ -616,8 +617,6 @@ public class WebHarvester extends Harvester {
 
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
                                 fileName);
-        name = applyMacros(name, createDate, fromDate, toDate, tail);
-        desc = applyMacros(desc, createDate, fromDate, toDate, fileName);
 
 
         Entry group = ((baseGroup != null)
@@ -630,12 +629,14 @@ public class WebHarvester extends Harvester {
         Resource resource = new Resource(newFile.toString(),
                                          Resource.TYPE_STOREDFILE);
 
-
         //        System.err.println ("WebHarvester: " + getName() +" adding entry: " + name);
         entry.initEntry(name, desc, group, getUser(), resource, "",
                         Entry.DEFAULT_ORDER, createDate.getTime(),
                         createDate.getTime(), fromDate.getTime(),
                         toDate.getTime(), null);
+	entry.setName(getEntryManager().replaceMacros(entry,name));
+	entry.setDescription(getEntryManager().replaceMacros(entry,desc));	
+
         if (tag.length() > 0) {
             List tags = Utils.split(tag, ",", true, true);
             for (int i = 0; i < tags.size(); i++) {
@@ -647,13 +648,10 @@ public class WebHarvester extends Harvester {
                                      Metadata.DFLT_ATTR,
                                      Metadata.DFLT_EXTRA));
             }
-
         }
-        getTypeHandler().initializeEntryFromHarvester(getRequest(), entry,
-                true);
-
+        getTypeHandler().initializeEntryFromHarvester(getRequest(), entry, true);
+	getEntryManager().parentageChanged(group,true);
         return entry;
-
     }
 
 
