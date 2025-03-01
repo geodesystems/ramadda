@@ -3324,33 +3324,49 @@ public class EntryManager extends RepositoryManager {
 
         String url = HU.url(getFullEntryShowUrl(null), ARG_ENTRYID,
 			    entry.getId());
-	List<Utils.Macro> xmacros = Utils.splitMacros(template);
+	List<Utils.Macro> macros = Utils.splitMacros(template);
 
         //j-
-        String[] macros = {
-            "entryid", entry.getId(), "parentid", entry.getParentEntryId(),
-            "resourcepath", entry.getResource().getPath(), "resourcename",
-            getStorageManager().getFileTail(entry.getResource().getPath()),
-            "filename",
-            getStorageManager().getFileTail(entry.getResource().getPath()),
-            "fileextension",
-            IO.getFileExtension(entry.getResource().getPath()), "name",
-            getEntryDisplayName(entry), "fullname", entry.getFullName(),
-            "user", entry.getUser().getLabel(), "url", url
-        };
+        Hashtable values = Utils.makeHashtable(new Object[]{
+		"entryid", entry.getId(), "parentid", entry.getParentEntryId(),
+		"resourcepath", entry.getResource().getPath(), "resourcename",
+		getStorageManager().getFileTail(entry.getResource().getPath()),
+		"filename",
+		getStorageManager().getFileTail(entry.getResource().getPath()),
+		"fileextension",
+		IO.getFileExtension(entry.getResource().getPath()), "name",
+		getEntryDisplayName(entry), "fullname", entry.getFullName(),
+		"user", entry.getUser().getLabel(), "url", url,
+		"createdate",createDate,"fromdate",fromDate,"todate",toDate
+	    });
 
-        //j+
-        String result = template;
-
-        for (int i = 0; i < macros.length; i += 2) {
-            String macro = "${" + macros[i] + "}";
-            String value = macros[i + 1];
-            result = result.replace(macro, value);
-        }
-
-        return replaceMacros(result, createDate, fromDate, toDate);
+	StringBuilder sb = new StringBuilder();
+	for(Utils.Macro macro:macros) {
+	    if(macro.isText()) {
+		sb.append(macro.getText());
+	    } else {
+		String id = macro.getId();
+		Object value = values.get(id);
+		if(value==null) {
+		    sb.append("Unknown macro:" + id);
+		    continue;
+		}
+		if(value instanceof Date) {
+		    String fmt = (String) macro.getProperty("format");
+		    if(fmt==null) {
+			sb.append(getDateHandler().formatDate((Date) value));
+		    } else {
+			SimpleDateFormat sdf =
+			    RepositoryUtil.makeDateFormat(fmt);
+			sb.append(sdf.format((Date) value));
+		    }
+		    continue;
+		}
+		sb.append(value);
+	    }
+	}
+        return replaceMacros(sb.toString(), createDate, fromDate, toDate);
     }
-
 
 
     public String replaceMacros(String template, Date createDate,
@@ -3388,7 +3404,6 @@ public class EntryManager extends RepositoryManager {
         int createYear       = createCal.get(GregorianCalendar.YEAR);
         int fromYear         = fromCal.get(GregorianCalendar.YEAR);
         int toYear           = toCal.get(GregorianCalendar.YEAR);
-
 
 
         //j-
