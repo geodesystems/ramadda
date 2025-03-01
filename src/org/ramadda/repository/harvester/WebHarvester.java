@@ -189,17 +189,12 @@ public class WebHarvester extends Harvester {
         urlEntries = new ArrayList<HarvesterEntry>();
         HarvesterEntry lastEntry = null;
         while (true) {
-            System.err.println("loop:" + cnt);
             String urlArg = ATTR_URL + cnt;
             if ( !request.exists(urlArg)) {
-                System.err.println("done cnt:" + cnt);
-
                 break;
             }
             if ( !request.defined(urlArg)) {
-                System.err.println(urlArg + " not defined cnt = " + cnt);
                 cnt++;
-
                 continue;
             }
             String baseGroupId = request.getUnsafeString(ATTR_BASEGROUP + cnt
@@ -208,9 +203,6 @@ public class WebHarvester extends Harvester {
             String groupName = request.getUnsafeString(ATTR_GROUP + cnt, "");
             groupName = groupName.replace(" > ", "/");
             groupName = groupName.replace(">", "/");
-
-            System.err.println("cnt:" + cnt);
-            System.err.println(groupName + " " + baseGroupId);
 	    String url = request.getUnsafeString(urlArg,"");
 	    String name = request.getUnsafeString(ATTR_NAME + cnt, "");
 	    if(!stringDefined(name)) {
