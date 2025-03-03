@@ -29,17 +29,18 @@ form.altitude.show=false
 form.altitude.top.show=false
 
 #date settings
-form.createdate.label=
+form.todate.show=false
+form.time.show=false
 form.date.help=
 form.date.label=
-form.date.show.before=false
 form.date.show=false
+form.date.show.before=false
+form.createdate.label=
 form.enddate.label=
 form.fromdate.label=
 form.fromdate.show=false
-form.time.show=false
-form.startdate.label=e.g. Date of Birth
-form.todate.show=false
+
+form.startdate.label=
 form.settimerange.show=false
 
 #don't show the  drag-and-drop target

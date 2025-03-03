@@ -32,29 +32,33 @@ var CreateType  = {
 		});
 		$(this).css('background','var(--color-mellow-yellow)');
 	    });
-
 	});
+
+	let  popup =function(event,widget,c) {
+	    event.preventDefault();
+	    let html = '';
+	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-above'],'Insert rows above');
+	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-below'],'Insert rows below');
+	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','clear'],'Clear row');		
+	    html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','delete'],'Delete rows');		
+	    let dialog =  HU.makeDialog({anchor:widget,
+					 at:'left bottom',
+					 my:'left top',
+					 content:html});
+	    dialog.find('.ramadda-menu-item').click(function() {
+		let action = $(this).attr('data-action');
+		_this.handleRowAction(c,action);
+		dialog.remove();
+	    });
+	};
+
 	this.columns.forEach(c=>{
-	    c.name.on("contextmenu", function(event) {
-		event.preventDefault();
-		let html = '';
-		html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-above'],'Insert rows above');
-		html+=HU.div([ATTR_CLASS,'ramadda-menu-item ramadda-clickable','data-action','insert-below'],'Insert rows below');
-		html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','clear'],'Clear row');		
-		html+=HU.div([ATTR_CLASS,'ramadda-menu-item','data-action','delete'],'Delete rows');		
-		let dialog =  HU.makeDialog({anchor:$(this),
-					     at:'left bottom',
-					     my:'left top',
-					     content:html});
-		dialog.find('.ramadda-menu-item').click(function() {
-		    let action = $(this).attr('data-action');
-		    _this.handleRowAction(c,action);
-		    dialog.remove();
+	    [c.name,c.label,c.extra].forEach(widget=>{
+		widget.on("contextmenu", function(event) {
+		    popup(event,$(this),c);
 		});
 	    });
 	});
-
-
 	jqid("clearcols").button().click(function(){
 	    if (!confirm("Are you sure you want to clear the columns?")) {
 		return;
@@ -80,9 +84,10 @@ var CreateType  = {
 			      HU.div(['action','cancel',ATTR_CLASS,'ramadda-button ' + CLASS_CLICKABLE],"Cancel")]
 
 	    let buttons = HU.buttons(buttonList);
-	    html+=HU.textarea('bulktext','#name,label,type\n',[ATTR_ID,'bulktext','rows',10,'cols',40]);
+	    html+=HU.textarea('bulktext','#name,label,type,extra\n',[ATTR_ID,'bulktext','rows',10,'cols',60]);
 	    html+=buttons;
-	    html = HU.div([ATTR_CLASS,'ramadda-license-dialog'], html);
+	    html = HU.div([ATTR_STYLE,HU.css('min-width','600px'),
+			   ATTR_CLASS,'ramadda-license-dialog'], html);
 	    let dialog =  HU.makeDialog({anchor:$(this),
 					 at:'left+100 top+100',
 					 my:'left top',
@@ -99,15 +104,12 @@ var CreateType  = {
 	    });
 	});
 	if(formData) {
-//	    jqid(formId+'_button').html(HU.span([ATTR_CLASS,'ramadda-clickable',ATTR_ID,'clearform'],'Clear Saved State'));
-//	    jqid('clearform').button().click(()=>{
-//		Utils.setLocalStorage(storageKey, null);
-//	    })
+//	    Utils.makeDownloadFile('data.json',JSON.stringify(formData));
 	    for(let i=0;i<formData.length;i++) {
 		let item = formData[i];
 		if(item.name) item.n = item.name;
 		if(item.value) item.v = item.value;
-		if(item.n=='entryid') continue;
+		if(!this.canSaveInput(item.n)) continue;
 		let input = form.find('input[name="' + item.n+'"]');
 		if(input.length==0)
 		    input = form.find('textarea[name="' + item.n+'"]');
@@ -116,6 +118,7 @@ var CreateType  = {
 		if(input.length==0) {
 		    console.log('could not find input:' + item.n);
 		} else {
+//		    console.log(item.n,input.attr('name'),item.v);
 		    if(input.attr("type") === "checkbox") {
 			if(String(item.v)==="true") {
 			    input.prop('checked',true);
@@ -138,7 +141,7 @@ var CreateType  = {
 		jsonContents = form.find('[name="json_contents"]');
 	    }
             let formData = $(this).serializeArray().filter(field=>{
-		return field.name !== 'json_contents' && field.name!=='entryid' && field.value!='';
+		return _this.canSaveInput(field.name) && field.value!='';
 	    }).map(field=>{
 		field.n = field.name;
 		field.v = field.value;
@@ -155,6 +158,13 @@ var CreateType  = {
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
+    },
+    canSaveInput:function(name) {
+	return name!='droptable' &&
+	    name!='install' &&
+	    name!='extrapassword' &&
+	    name != 'json_contents' &&
+	    name!='entryid';
     },
     handleRowAction(c,action) {
 	if(action=='clear') {
@@ -180,7 +190,7 @@ var CreateType  = {
 	    this.insertRows(c,rows);
 	    return;
 	}
-	if(action=='insert-below') {
+	if(action=='insert-above') {
 	    let rows = prompt("# rows to insert above:",'1');
 	    if(!rows) return;
 	    this.insertRows(c,rows);
@@ -214,7 +224,6 @@ var CreateType  = {
 
     handleBulkUpload:function(v) {
 	if(!v) return;
-
 	let above = jqid('insertabove').is(':checked');
 	let idx=0;
 	let theIdx=0;
@@ -233,12 +242,17 @@ var CreateType  = {
 	    theIdx = this.currentColumn.index;
 	}
 
+
 	lines.forEach(line=>{
+	    line = line.replace(/\\,/g,'_nl_');
 	    let toks = Utils.split(line,',',true);
 	    let id = Utils.makeID(toks[0]);
 	    let label = toks[1];
 	    let type = toks[2];	    
 	    let extra = toks[3];
+	    if(extra)
+		extra = extra.replace(/_nl_/g,',');
+
 	    if(!Utils.stringDefined(id)) id = label;
 	    if(!Utils.stringDefined(label)) label = Utils.makeLabel(id);
 	    id = Utils.makeID(label);

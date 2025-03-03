@@ -984,9 +984,9 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
     
+    @Override
     public String getTableName() {
         String typeName = getType();
-
         //TODO  - clean up the table name
         //        typeName = typeName.replaceAll("\\.","_");
         return typeName;

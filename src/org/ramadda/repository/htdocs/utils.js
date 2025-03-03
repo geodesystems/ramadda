@@ -6047,8 +6047,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook,args);
     },
     makeSelectTagPopup:function(select,args) {
+	args = args??{};
 	let opts ={
 	    label:'Select',
+	    icon:false,
 	    single:false,
 	    buttonLabel:'Select',
 	    hide: false,
@@ -6060,14 +6062,17 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    makeButtons:true
 	}
 	if(typeof select =='string') select=$(select);
-	if(args) $.extend(opts,args);
+	if(args.icon && !args.buttonLabel)
+	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
+	$.extend(opts,args);
+
 	let label = opts.label??'Select';
 	if(opts.hide)
 	    select.hide();
 
 	let guid = HU.getUniqueId('btn');
 	let btn =HU.span([ATTR_CLASS,'ramadda-clickable',
-			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid,ATTR_ID,guid],
+			  ATTR_TITLE,opts.tooltip,ATTR_ID,guid],
 			 opts.buttonLabel)+(opts.addBreak?'<br>':'');
 	btn = opts.wrap.replace('${widget}',btn);
 	if(opts.after)
@@ -6187,7 +6192,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		});
 	    });
 	}
-	if(opts.makeButton)
+	if(opts.makeButton &&!opts.icon)
 	    jqid(guid).button();
 	jqid(guid).click(function() {
 	    makeDialog($(this));

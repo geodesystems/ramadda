@@ -313,8 +313,7 @@ public interface Constants {
     public static final String ICON_DIALOG_INFO = "fas fa-info-circle";
 
     /** _more_ */
-    public static final String ICON_DIALOG_ERROR =
-        "fas fa-exclamation-triangle";
+    public static final String ICON_DIALOG_ERROR = "fas fa-exclamation-triangle";
 
     /** _more_ */
     public static final String ICON_DIALOG_WARNING = "fas fa-triangle-exclamation";

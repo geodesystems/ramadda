@@ -173,6 +173,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String delimiter;
     private boolean addRawInput;
     private boolean changeType = false;
+    private String dropColumnVersion;
     private boolean showEmpty = true;
     private boolean showInFormFirst = false;
     private boolean addNot = false;
@@ -201,6 +202,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean canSearch;
     private boolean canSort;
     private boolean showEnumerationMenu = true;
+    private boolean showEnumerationPopup = false;
     private boolean addBlankToEnumerationMenu = true;
     private boolean enumerationSearchMultiples = false;
     private boolean enumerationShowCheckboxes= false;
@@ -362,6 +364,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
+	dropColumnVersion = XmlUtil.getAttribute(element,"dropcolumnversion",(String)null);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
 	showInFormFirst  = getAttributeOrTag(element, "showinformfirst", showInFormFirst);
@@ -386,6 +389,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
 	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
+	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", false);
 	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
@@ -1715,14 +1719,24 @@ public class Column implements DataTypes, Constants, Cloneable {
     private void defineColumn(Statement statement, String name, String type,
                               boolean ignoreErrors)
 	throws Exception {
+	if(dropColumnVersion!=null) {
+	    String key = getTableName()+"." + name +".dropcolumn." +dropColumnVersion;
+	    if(!getRepository().getProperty(key,false)) {
+		String sql = "alter table " + getTableName() + " drop column " + name;
+		getRepository().getLogManager().logInfoAndPrint("Dropping column:" + getTableName() + "." + name + " with version:" + dropColumnVersion);
+		SqlUtil.loadSql(sql, statement, true/*ignoreErrors*/, null);
+		getRepository().writeGlobal(key,true);
+	    }
+	}
+	//	System.out.println("altering table: " + sql);
         String sql = "alter table " + getTableName() + " add column " + name + " " + type;
 	//Always ignore errors here
         SqlUtil.loadSql(sql, statement, true/*ignoreErrors*/, null);
 
         if (changeType) {
             sql = getDatabaseManager().getAlterTableSql(getTableName(), name,type);
-	    //	    System.out.println("altering table: " + sql);
-            SqlUtil.loadSql(sql, statement, ignoreErrors, null);
+	    SqlUtil.loadSql(sql, statement, ignoreErrors, null);
+	    //	    System.out.println("OK altering table: " + sql);
         }
     }
 
@@ -2510,8 +2524,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 
+	    String widgetId = HU.getUniqueId("widget_");
             widget = HU.select(urlArg, enumValues, value,
-			       HU.cssClass("ramadda-pulldown-with-icons"));
+			       HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons"));
+
+	    if(showEnumerationPopup) {
+		widget+=getEnumerationPopup(widgetId);
+	    }
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
@@ -2528,12 +2547,21 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    if(!HtmlUtils.Selector.contains(enums,""))
 			enums.add(0,new HtmlUtils.Selector("&lt;blank&gt;",""));
 		}
-		widget = HU.select(urlArg, enums, value, HU.cssClass("ramadda-pulldown-with-icons")) +
+		String widgetId = HU.getUniqueId("widget_");
+		widget = HU.select(urlArg, enums, value, HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons")) +
 		    "  or:  "  +
 		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
+		if(showEnumerationPopup) {
+		    widget+=getEnumerationPopup(widgetId);
+		}
+
 	    } else {
 		widget = HU.input(urlArg, value,HU.attr("size",""+ columns));
 	    }
+
+
+
+
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
                             ? dflt
@@ -2709,6 +2737,12 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
+    private String getEnumerationPopup(String widgetId) {
+	String popupArgs = "{icon:true,makeButtons:false,after:true,single:true}";
+	return HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
+				 HU.quote("#"+widgetId),
+				 popupArgs));
+    }
     
     public void setValue(Request request, Entry entry, Object[] values)
 	throws Exception {
@@ -3183,8 +3217,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    if(!enumerationSearchMultiples) break;
 		}
             }
+	    if(showEnumerationPopup) {
+		tmpb.append(getEnumerationPopup(widgetId));
+	    }
 	    widget = tmpb.toString();
-
 	    if(enumerationSearchMultiples) {
 		widget = HU.div(widget, HU.cssClass("ramadda-widgets-enumeration"));
 	    }

@@ -565,6 +565,7 @@ public class StorageManager extends RepositoryManager implements PointFile
         path = path.replace("%resourcedir%",
                             "/org/ramadda/repository/resources");
 
+	if(path.startsWith("/resources")) path = "/org/ramadda/repository" + path;
         return path;
     }
 

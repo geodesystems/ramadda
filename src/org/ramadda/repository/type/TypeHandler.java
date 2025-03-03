@@ -1058,7 +1058,7 @@ public class TypeHandler extends RepositoryManager {
     
     public void getTableNames(List<String> tableNames) {
         String tableName = getTableName();
-        if ( !tableNames.contains(tableName)) {
+        if (stringDefined(tableName) &&  !tableNames.contains(tableName)) {
             tableNames.add(tableName);
         }
         //        for(TypeHandler child: childrenTypes) {
@@ -3764,9 +3764,14 @@ public class TypeHandler extends RepositoryManager {
                                             + what));
     }
 
-    
-    public String getTableName() {
+
+    public String getEntriesTableName() {
         return Tables.ENTRIES.NAME;
+    }
+
+
+    public String getTableName() {
+        return "";
     }
 
 
@@ -3805,6 +3810,7 @@ public class TypeHandler extends RepositoryManager {
         String       extraString  = cleanQueryString(extra);
 
         List<String> myTableNames = new ArrayList<String>();
+	myTableNames.add(getEntriesTableName());
         getTableNames(myTableNames);
 
         List<String> tableNames = (List<String>) Misc.toList(new String[] {

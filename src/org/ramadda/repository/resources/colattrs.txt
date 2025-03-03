@@ -12,6 +12,8 @@ required="true"
 values="New,Like New,Good,Fair,Poor,Damaged"
 values="value:label,value:label,..."
 
+showenumerationpopup="true"
+
 #file with values or value:Label, 1 per line
 values="file:/org/ramadda/plugins/archive/resources/habitats.txt"
 

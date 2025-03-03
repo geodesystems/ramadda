@@ -1773,19 +1773,27 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_HANDLER_EXTRA = "handler_extra";    
     public static final String ARG_JSON_CONTENTS= "json_contents";
     public static final String ARG_FORIMPORT = "forimport";
+    public static final String ARG_DROPTABLE = "droptable";
     public static final String ARG_INSTALL = "install";
+    public static final String ARG_CREATE = "create";
+    public static final String ARG_SAVE = "save";        
 
 
     public boolean createTypeOK(Request request) {
-	return !request.getUser().getAnonymous();
+	return request.isAdmin();
     }
 
 
     public Result outputCreateType(Request request, Entry entry) throws Exception {
-	if(request.exists("create")|| request.exists("save")) {
+	if ( !createTypeOK(request)) {
+	    throw new AccessException("Create type not enabled", request);
+	}
+
+
+	if(request.exists(ARG_CREATE)|| request.exists(ARG_SAVE) || request.exists(ARG_INSTALL)) {
 	    StringBuilder sb = new StringBuilder();
 	    try {
-		Result result= doOutputCreateType(request,  entry,sb,request.exists("create"));
+		Result result= doOutputCreateType(request,  entry,sb,request.exists(ARG_CREATE));
 		if(result!=null) return result;
 	    } catch(Exception exc) {
 		return outputCreateType(request, entry,
@@ -1805,7 +1813,7 @@ public class ExtEditor extends RepositoryManager {
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	String callout = "";
 	if(request.isAdmin()) {
-	    callout+="Note: If loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing.<br>";
+	    callout+="Note: If loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
 	}
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
 	getWikiManager().makeCallout(sb,request,callout);
@@ -1820,36 +1828,25 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(request.formPost(getRepository().URL_ENTRY_SHOW,HU.attrs("id",formId)));
 	sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
 	sb.append(HU.hidden(ARG_OUTPUT, getRepository().OUTPUT_CREATETYPE));
-	sb.append(HU.submit("Create Type","create")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));
-	sb.append(HU.submit("Save","save")+HU.space(2)+HU.span("",HU.attrs("id",formId+"_button")));	
-	sb.append(HU.space(2) +	 HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"));
-	if(request.isAdmin()) {
-	    sb.append(HU.space(2) +
-		      HU.span(HU.labeledCheckbox(ARG_INSTALL,"true",request.get(ARG_INSTALL,false),"Load the entry type"),
-			      HU.attrs("title","Make sure you know what you are doing")));
-	}
-	
-
-	sb.append("<br>");
-        sb.append(HU.formTable());
-	HU.formEntry(sb,"",HU.div("Type ID needs to be lower case, no spaces and start with type_, e.g., type_your_type",
-				  HU.clazz("ramadda-form-help")));
-
-        sb.append(HU.formEntry(msgLabel("Type ID"),
-			       HU.input(ARG_TYPEID,request.getString(ARG_TYPEID,""),HU.attrs("size","30")) +HU.space(1) +
-			       HU.b(msgLabel("Name")) +
-			       HU.space(1) +
-  			       HU.input(ARG_TYPENAME,request.getString(ARG_TYPENAME,""),HU.attrs("size", "30")) +" e.g., My Type"));
-
-        sb.append(HU.formTableClose());
-
+        sb.append(HU.hidden(ARG_JSON_CONTENTS,""));
+	sb.append(HU.buttons(
+			     HU.submit("Create Type",ARG_CREATE,HU.title("Create and download the plugin file")),
+			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and install the type")),
+			     HU.submit("Save",ARG_SAVE)));
+	sb.append(HU.vspace());
 	StringBuilder main = new StringBuilder();
         main.append(HU.formTable());
-        main.append(HU.hidden(ARG_JSON_CONTENTS,""));
+        main.append(HU.formEntry(msgLabel("Type ID"),
+				 HU.input(ARG_TYPEID,request.getString(ARG_TYPEID,""),HU.attrs("size","30")) +
+				 " Lower case, no spaces and start with type_, e.g., type_your_type"));
+
+        main.append(HU.formEntry(msgLabel("Name"),
+				 HU.input(ARG_TYPENAME,request.getString(ARG_TYPENAME,""),HU.attrs("size", "30")) +" e.g., My Type"));
+
 	String typeHelp=HU.href(getRepository().getUrlBase()+"/entry/types.html","View all types","target=_types");
         main.append(HU.formEntry(msgLabel("Super Type"),
 			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
-			       " e.g., type_point. "+typeHelp));
+			       " Optional. e.g., type_point. "+typeHelp));
 	List<String> typesSel = Utils.split("---,TypeHandler,GenericTypeHandler,ExtensibleGroupTypeHandler,PointTypeHandler",",");
 	
 	String extraType = request.getString(ARG_HANDLER_EXTRA,"");
@@ -1876,17 +1873,18 @@ public class ExtEditor extends RepositoryManager {
 
         main.append(HU.formTableClose());
 
+	StringBuilder properties =  new StringBuilder();
+	HU.div(properties,"Must be valid XML attributes, e.g. name=\"value\"",  HU.clazz("ramadda-form-help"));
+	properties.append("<br>");
+	StringBuilder attrs = addTypeProps(request,"/org/ramadda/repository/resources/attrs.txt","extraattributes",8);
+	properties.append(attrs);
 	StringBuilder propsSection = addTypeProps(request,"/org/ramadda/repository/resources/props.txt","properties",16);
+	HU.div(properties,"Properties, e.g. name=value",  HU.clazz("ramadda-form-help"));
+	properties.append("<br>");
+	properties.append(propsSection);
 
 	StringBuilder extra = new StringBuilder();
 	extra.append(HU.formTable());
-	HU.formEntry(extra,"",HU.div("Must be valid XML attributes",
-				  HU.clazz("ramadda-form-help")));
-	StringBuilder attrs = addTypeProps(request,"/org/ramadda/repository/resources/attrs.txt","extraattributes",10);
-
-
-	HU.formEntry(extra,"Extra Attributes:",
-		     attrs.toString());
 	//		     HU.textArea("extraattributes",request.getString("extraattributes",""),4,50));
 
 	HU.formEntry(extra,"",HU.div("Must be valid XML",
@@ -1926,8 +1924,8 @@ public class ExtEditor extends RepositoryManager {
 	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
 			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
 			  +HU.td("<b id=colattrsheader>Extra</b> " + ex+" " + HU.href("javascript:showColumnAttrs()","Show properties"))));
-	String w  =HU.attr("width","12%");
-	String w2  =HU.attr("width","50%");
+	String w  =HU.attr("width","20%");
+	String w2  =HU.attr("width","40%");
 	String isize  =HU.style("width:98%;");
 	//	String isize  =HU.attr("size","12");
 	String isize2  =HU.attr("size","64");	
@@ -1940,7 +1938,7 @@ public class ExtEditor extends RepositoryManager {
 	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),HU.attrs("column-index",""+i,
 													       "class", "ramadda-entry-column")+isize),w)+
 			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
-			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),w)+
+			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),"")+
 			      //			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
 			      //			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
 			      HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),HU.clazz("typecreate-column-extra") + isize2),w2)));
@@ -1956,12 +1954,24 @@ public class ExtEditor extends RepositoryManager {
 
 
 
-	HU.makeAccordion(sb,new Object[]{"Basic Configuration", "Properties",
+	StringBuilder admin = new StringBuilder();
+	HU.div(admin, "If For Import is checked then the generated file will not end in \"types.xml\" so it can be included in a plugin and be imported by some other types.xml",HU.clazz("ramadda-form-help"));
+	admin.append(HU.insetDiv(HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"),
+				 0,30,0,0));
+	HU.div(admin,"<b>Be careful!</b>. If this entry has database columns and you have changed the types, etc., you may need to drop the database table when installing a new version of this entry type. If you do this then any entries you have created of this type will be removed..",HU.clazz("ramadda-form-help"));
+	admin.append(HU.insetDiv(
+			      HU.labeledCheckbox(ARG_DROPTABLE,"true",false,"Yes, drop the database table")+
+			      HU.div(getAuthManager().getVerification(request,
+								      "To ensure the drop table is OK please enter your password",true,false)),0,30,0,0));
+
+	String basicLabel = "Basic Configuration";
+	String type = request.getString(ARG_TYPEID,null);
+	String name = request.getString(ARG_TYPENAME,"");
+	if(stringDefined(name)) basicLabel +=" - " + name;	
+	else if(stringDefined(type)) basicLabel +=" - " + type;
+	HU.makeAccordion(sb,new Object[]{basicLabel, "Admin","Properties",
 					 "Advanced Configuration","Columns"},
-			 new Object[]{main,propsSection,extra,cols});
-
-
-	sb.append(HU.div(HU.submit("Create Type","create")));
+	    new Object[]{main,admin,properties,extra,cols});
 	sb.append(HtmlUtils.formClose());
 	
 
@@ -2059,6 +2069,8 @@ public class ExtEditor extends RepositoryManager {
 	if(!id.startsWith("type_")) {
 	    return outputCreateType(request,  entry,getPageHandler().showDialogError("Bad format for type ID"));
 	}
+
+
 	sb = new StringBuilder();
 	
 	String name = request.getString(ARG_TYPENAME,"");
@@ -2112,6 +2124,49 @@ public class ExtEditor extends RepositoryManager {
 	    comment = "\nCopy this into your ramadda home/plugins directory and restart RAMADDA\n";
 	}
 
+	int columnCnt=0;
+	StringBuilder colSB = new StringBuilder();
+	for(int i=0;i<50;i++) {
+	    String cname = request.getString("column_name_"+i,"").trim();
+	    if(!Utils.stringDefined(cname)) continue;
+	    cname= Utils.makeID(cname);
+	    if(columnCnt++==0) {
+		colSB.append("\n");
+		colSB.append(XU.comment("Columns"));
+	    }
+	    
+	    String label = request.getString("column_label_"+i,"");
+	    if(!Utils.stringDefined(label)) label  = Utils.makeLabel(cname);
+	    String type = request.getString("column_type_"+i,"");
+	    if(!Utils.stringDefined(type)) type= "string";
+	    String size = request.getString("column_size_"+i,"");
+	    String attrs = XU.attrs("name",cname,
+				    "label",label,
+				    "type",type);
+	    if(request.defined("column_help_"+i)) {
+		attrs+=XU.attrs("help",request.getString("column_help_"+i,""));
+	    }
+
+	    
+
+	    if(Utils.stringDefined(size)) 
+		attrs+=XU.attr("size",size);
+	    if(type.startsWith("enum") && request.defined("column_values_"+i)) {
+		attrs+=XU.attr("values",request.getString("column_values_"+i,""));
+	    }
+	    //	    String group = request.getString("column_group_"+i,"");
+	    String cextra = request.getString("column_extra_"+i,"");
+	    if(Utils.stringDefined(cextra)) 
+		attrs+=" " + cextra+" ";
+	    colSB.append(XU.tag("column",attrs));
+	    colSB.append("\n");
+	}
+
+	if(columnCnt>0 && handler.equals("org.ramadda.repository.type.TypeHandler")) {
+	    handler = "org.ramadda.repository.type.GenericTypeHandler";
+	}
+
+
 	sb.append(XmlUtil.comment(comment));
 	sb.append("<type ");
 	sb.append(XU.attrs("name",id));
@@ -2147,6 +2202,9 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 	sb.append(">\n");	
+	sb.append(colSB);
+
+
 	String mappopup = request.getString("mappopup","");
 	if(Utils.stringDefined(mappopup)) {
 	    sb.append("<property name=\"map.popup\">\n<![CDATA[");
@@ -2176,44 +2234,9 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append(XU.tag("property",XU.attrs("name",toks.get(0).trim(),"value",toks.get(1).trim())));
 	    sb.append("\n");
 	}
-	int cnt=0;
+
 	
-	for(int i=0;i<50;i++) {
-	    String cname = request.getString("column_name_"+i,"").trim();
-	    if(!Utils.stringDefined(cname)) continue;
-	    cname= Utils.makeID(cname);
-	    if(cnt++==0) {
-		sb.append("\n");
-		sb.append(XU.comment("Columns"));
-	    }
-	    
-	    String label = request.getString("column_label_"+i,"");
-	    if(!Utils.stringDefined(label)) label  = Utils.makeLabel(cname);
-	    String type = request.getString("column_type_"+i,"");
-	    if(!Utils.stringDefined(type)) type= "string";
-	    String size = request.getString("column_size_"+i,"");
-	    String attrs = XU.attrs("name",cname,
-				    "label",label,
-				    "type",type);
-	    if(request.defined("column_help_"+i)) {
-		attrs+=XU.attrs("help",request.getString("column_help_"+i,""));
-	    }
-
-	    
-
-	    if(Utils.stringDefined(size)) 
-		attrs+=XU.attr("size",size);
-	    if(type.startsWith("enum") && request.defined("column_values_"+i)) {
-		attrs+=XU.attr("values",request.getString("column_values_"+i,""));
-	    }
-	    //	    String group = request.getString("column_group_"+i,"");
-	    String cextra = request.getString("column_extra_"+i,"");
-	    if(Utils.stringDefined(cextra)) 
-		attrs+=" " + cextra+" ";
-	    sb.append(XU.tag("column",attrs));
-	    sb.append("\n");
-	}
-
+	
 	String seesv = (String)entry.getValue(request, "convert_commands");
 	if(Utils.stringDefined(seesv)) {
 	    seesv+="\n-args";
@@ -2241,14 +2264,26 @@ public class ExtEditor extends RepositoryManager {
 
 	sb.append("</type>\n");
 
+
 	Element root =null;
 	String xml = sb.toString();
 	try {
 	    //check for syntax validity
             root = XU.getRoot(xml);
-	    if(request.isAdmin() && request.get(ARG_INSTALL,false)) {
+	    if(request.exists(ARG_INSTALL)) {
 		root.setAttribute("ignoreerrors","false");
-		getRepository().loadTypeHandler(root,true);
+		try {
+		    getRepository().loadTypeHandler(root,true);
+		} catch(Exception exc) {
+		    Throwable thr = LogUtil.getInnerException(exc);
+		    String msg = thr.toString();
+		    if(msg.indexOf("type of a column may not be changed")>=0 ||
+		       msg.indexOf("cannot be cast automatically")>=0) {
+			msg+="<br>It appears that the type of a column was changed";
+		    }
+		    return  outputCreateType(request, entry,
+					     getPageHandler().showDialogError("There was an error loading the entry type: " + msg,false));
+		}
 	    }
 	}  catch(Exception exc) {
             Throwable thr = LogUtil.getInnerException(exc);
@@ -2270,17 +2305,59 @@ public class ExtEditor extends RepositoryManager {
 				     getPageHandler().showDialogError("There was an error in the XML:" + msg));
 	}
 
-	if(root!=null && request.isAdmin() && request.get(ARG_INSTALL,false)) {
+	String theMessage ="";
+	if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
 	    try {
 		getRepository().loadTypeHandler(root,true);
-	return  outputCreateType(request, entry,
-					 getPageHandler().showDialogNote("Entry type has been loaded. Note: the plugin file still needs to be generated and installed in your RAMADDA plugins directory."));
+		theMessage = HU.div("The Entry type has been installed. Note: the plugin file still needs to be generated and installed in your RAMADDA plugins directory.");
 	    }  catch(Exception exc) {
 		return  outputCreateType(request, entry,
 					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
 	    }		
 	}
 
+	TypeHandler typeHandler =getRepository().getTypeHandler(id);
+	if(typeHandler!=null && columnCnt>0) {
+	    String tableName = typeHandler.getTableName();
+	    if(!stringDefined(tableName)) {
+		String msg = "You have defined columns but there is no database table defined. Perhaps you did not set the Java Handler to GenericTypeHandler?";
+		return  outputCreateType(request, entry,
+					 getPageHandler().showDialogError(msg,false));
+	    }
+	}
+
+
+	if(request.get(ARG_DROPTABLE,false)) {
+	    StringBuilder buff = new StringBuilder();
+	    if(!getAuthManager().verify(request,buff, true)) {
+		return  outputCreateType(request, entry,buff.toString());
+	    }
+	    if(typeHandler==null) {
+		String msg = getPageHandler().showDialogError("The Entry Type has not been installed: "  + id);
+		return  outputCreateType(request, entry,msg);
+	    }
+
+	    String tableName = typeHandler.getTableName();
+	    if(!stringDefined(tableName)) {
+		String msg = getPageHandler().showDialogError("No table name defined for type handler: "  + typeHandler);
+		return  outputCreateType(request, entry,msg);
+	    }
+
+	    String sql = "drop table " +tableName;
+	    try {
+		getDatabaseManager().loadSql(sql, false,false);
+		theMessage = HU.div("The database table has been dropped.") +
+		    theMessage;
+	    } catch(Exception exc) {
+		String msg = getPageHandler().showDialogError("There was an error dropping the table: " + id +"<br>Error:" + exc,false);
+		return  outputCreateType(request, entry,msg);
+	    }
+	}
+
+	if(stringDefined(theMessage)) {
+	    theMessage  = getPageHandler().showDialogNote(theMessage);
+	    return  outputCreateType(request, entry,theMessage);
+	}
 
 
 	if(!create) {
