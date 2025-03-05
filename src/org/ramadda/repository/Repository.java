@@ -5077,7 +5077,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return;
             }
             TypeHandler oldTypeHandler = typeHandlersMap.get(typeName);
+	    oldTypeHandler.setFlushedFromCache(true);
             typeHandlersMap.remove(typeName);
+	    
             allTypeHandlers.remove(oldTypeHandler);
         }
 
@@ -5095,6 +5097,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     
+    public TypeHandler getTypeHandler(TypeHandler typeHandler)  {
+	try {
+	    if(typeHandler.getFlushedFromCache()) {
+		typeHandler = getTypeHandler(typeHandler.getType());
+	    }
+	    return typeHandler;
+	} catch(Exception exc) {
+	    throw new IllegalArgumentException(exc);
+	}
+    }
+
     public List<TypeHandler> getTypeHandlers() throws Exception {
         return new ArrayList<TypeHandler>(allTypeHandlers);
     }
