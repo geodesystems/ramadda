@@ -4108,7 +4108,7 @@ public class TypeHandler extends RepositoryManager {
 
 	String subGroup = column.getSubGroup();
 	if(subGroup!=null) {
-	    HU.formEntry(formBuffer,"", HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	    HU.formEntry(formBuffer, HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
 	}
 
         column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,

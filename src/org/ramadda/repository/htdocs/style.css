@@ -5636,6 +5636,7 @@ wiki {
 
 
 .ramadda-entry-subgroup {
+    display:inline-block;
     border-bottom: var(--basic-border);
     padding-left:5px;
     font-weight:bold;

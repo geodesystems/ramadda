@@ -890,7 +890,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 	String subGroup = column.getSubGroup();
 	if(subGroup!=null) {
-	    HU.formEntry(sb,"", HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
+	    HU.formEntry(sb,HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
 	}
 
 
