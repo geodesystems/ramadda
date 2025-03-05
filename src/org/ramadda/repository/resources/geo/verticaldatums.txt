@@ -1,8 +1,8 @@
 :Undefined
+NAVD88:North American Vertical Datum of 1988  
 EGM96:Earth Gravitational Model 1996  
 EGM2008:Earth Gravitational Model 2008  
 WGS84:WGS 84 Ellipsoid  
-NAVD88:North American Vertical Datum of 1988  
 NGVD29:National Geodetic Vertical Datum of 1929  
 IGLD1985:International Great Lakes Datum of 1985  
 IGLD1955:International Great Lakes Datum of 1955  
