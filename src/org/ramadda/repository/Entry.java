@@ -880,7 +880,8 @@ public class Entry implements Cloneable {
      * @return The Type
      */
     public TypeHandler getTypeHandler() {
-        return typeHandler;
+	if(typeHandler!=null) return typeHandler.getRepository().getTypeHandler(typeHandler);
+        return null;
     }
 
 
