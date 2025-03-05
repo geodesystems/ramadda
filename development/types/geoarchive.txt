@@ -34,19 +34,21 @@ Deposit Environment,,enumerationplus,subgroup="Environment"
 
 
 #Geology
-test Dimensions/Weight,,double,group="Specimen Information"
-Collector,,enumerationplus
+width,,double,group="Specimen Information" subgroup="Dimensions"
+height,,double
+weight,,double
+Collector,,enumerationplus,subgroup="Collection Information"
 Collection Number,,string
 #Collection Date,,date
 Study Number,,enumerationplus
-Condition,,enumerationplus,values="Good,Fair,Poor"
-Maintenance Cycle,,enumerationplus, values="What values,Here"
+Condition,,enumerationplus,values="Good\,Fair\,Poor"
+Maintenance Cycle,,enumerationplus, values="Cycle1\,Cycle2\,etc"
 Condition Description,,string 
-Prep Material 
+Prep Material,,enumerationplus
 Other Numbers
-Eminent Figure
-Rct. Conservation
-Cataloger
+Eminent Figure,,enumerationplus
+Rct. Conservation,,enumerationplus
+Cataloger,,enumerationplus
 Exhibit Label
 Litho/Pedotype,,enumerationplus
 Period/System,,enumerationplus
