@@ -492,6 +492,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String buttons(String... args) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.length; i++) {
+	    if(args[i]==null) continue;
             if (i > 0) {
                 sb.append(buttonSpace());
             }
@@ -505,10 +506,12 @@ public class HtmlUtils implements HtmlUtilsConstants {
     public static String buttons(List<String> args) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < args.size(); i++) {
+	    Object o =args.get(i); 
+	    if(o==null) continue;
             if (i > 0) {
                 sb.append(buttonSpace());
             }
-            sb.append(args.get(i));
+            sb.append(o);
         }
 
         return sb.toString();
@@ -2032,6 +2035,11 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
         
         private String tooltip;
+
+        public Selector(String labelId) {
+	    this(Utils.split(labelId,":").get(0),
+		 Utils.split(labelId,":").get(1));
+	}
 
         public Selector(String label, String id) {
             this(label, id, null, 0, false);
