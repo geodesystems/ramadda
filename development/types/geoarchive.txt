@@ -27,8 +27,8 @@ Section,,enumerationplus,showenumerationpopup="true"
 UTM Zone,,enumeration,subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt" showenumerationpopup="true"
 UTM Easting,,double
 UTM Northing,,double
-Vertical Datum,,enumerationplus,subgroup="Datum"
-Datum,,enumerationplus
+Vertical Datum,,enumerationplus,subgroup="Datum"  values="file:/org/ramadda/repository/resources/geo/verticaldatums.txt"  showenumerationpopup="true"
+Datum,,enumerationplus, values="file:/org/ramadda/repository/resources/geo/datums.txt"  showenumerationpopup="true"
 Deposit Environment,,enumerationplus,subgroup="Environment"
 
 
