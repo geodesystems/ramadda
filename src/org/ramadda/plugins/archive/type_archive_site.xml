@@ -58,7 +58,7 @@ inherited="false"  }}
 +col-4
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
-{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+{{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
