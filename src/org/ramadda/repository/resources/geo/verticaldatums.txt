@@ -1,0 +1,17 @@
+:Undefined
+EGM96:Earth Gravitational Model 1996  
+EGM2008:Earth Gravitational Model 2008  
+WGS84:WGS 84 Ellipsoid  
+NAVD88:North American Vertical Datum of 1988  
+NGVD29:National Geodetic Vertical Datum of 1929  
+IGLD1985:International Great Lakes Datum of 1985  
+IGLD1955:International Great Lakes Datum of 1955  
+NAP:Normaal Amsterdams Peil  
+DHHN92:Deutsches Haupthöhennetz 1992  
+DHHN2016:Deutsches Haupthöhennetz 2016  
+ODN:Ordnance Datum Newlyn  
+AHD1971:Australian Height Datum 1971  
+MSL:Mean Sea Level  
+LAT:Lowest Astronomical Tide  
+HAT:Highest Astronomical Tide  
+CHVD2013:Canadian Height Reference System 2013  
