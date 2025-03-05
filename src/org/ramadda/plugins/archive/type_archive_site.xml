@@ -23,7 +23,7 @@ This is a base entry that provides site information. It is used as a super type 
 <column  name="utm_zone"  label="Utm Zone"  type="enumeration"  subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt" showenumerationpopup="true" />
 <column  name="utm_easting"  label="Utm Easting"  type="double" />
 <column  name="utm_northing"  label="Utm Northing"  type="double" />
-<column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum" />
+<column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum" values="file:/org/ramadda/repository/resources/geo/verticaldatums.txt"  showenumerationpopup="true" />
 <column  name="datum"  label="Datum"  type="enumerationplus" />
 <column  name="deposit_environment"  label="Deposit Environment"  type="enumerationplus"  subgroup="Environment" />
 <!-- Properties-->
