@@ -1777,16 +1777,23 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_INSTALL = "install";
     public static final String ARG_CREATE = "create";
     public static final String ARG_SAVE = "save";        
+    public static final String ARG_COMMENT = "comment";
 
 
     public boolean createTypeOK(Request request) {
-	return request.isAdmin();
+	return !request.isAnonymous();
     }
 
 
+    /**
+       this is the main entry point
+     */
     public Result outputCreateType(Request request, Entry entry) throws Exception {
 	if ( !createTypeOK(request)) {
 	    throw new AccessException("Create type not enabled", request);
+	}
+	if(!getAccessManager().canDoEdit(request, entry)) {
+	    throw new AccessException("You do not have access to Create Type for this entry", request);
 	}
 
 
@@ -1831,7 +1838,8 @@ public class ExtEditor extends RepositoryManager {
         sb.append(HU.hidden(ARG_JSON_CONTENTS,""));
 	sb.append(HU.buttons(
 			     HU.submit("Create Type",ARG_CREATE,HU.title("Create and download the plugin file")),
-			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and install the type")),
+			     request.isAdmin()?
+			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and install the type")):null,
 			     HU.submit("Save",ARG_SAVE)));
 	sb.append(HU.vspace());
 	StringBuilder main = new StringBuilder();
@@ -1847,17 +1855,24 @@ public class ExtEditor extends RepositoryManager {
         main.append(HU.formEntry(msgLabel("Super Type"),
 			       HU.input("supertype",request.getString("supertype",""),HU.attrs("size","30")) +
 			       " Optional. e.g., type_point. "+typeHelp));
-	List<String> typesSel = Utils.split("---,TypeHandler,GenericTypeHandler,ExtensibleGroupTypeHandler,PointTypeHandler",",");
+	List typesSel = new ArrayList();
+	for(String tuple:Utils.split("Default:---,TypeHandler - for basic types:TypeHandler,GenericTypeHandler - For columns:GenericTypeHandler,ExtensibleGroupTypeHandler - for columns with groups:ExtensibleGroupTypeHandler,PointTypeHandler - for point data:PointTypeHandler",",")) {
+	    typesSel.add(new HtmlUtils.Selector(tuple));
+	}
+
+
 	
 	String extraType = request.getString(ARG_HANDLER_EXTRA,"");
         main.append(HU.formEntry(msgLabel("Java Handler"),
 				 HU.select(ARG_HANDLER,typesSel,
-					   stringDefined(extraType)?"---":request.getString(ARG_HANDLER,"TypeHandler")) +HU.space(1)+
+					   stringDefined(extraType)?"---":request.getString(ARG_HANDLER,"TypeHandler"),HU.attrs("width","450px")) +HU.space(1)+
 				 HU.input(ARG_HANDLER_EXTRA,extraType,
 					  HU.attrs("size","40","placeholder","Or enter custom, e.g. org.ramadda.YourType"))));
 
+	/*
 	main.append(HU.formEntry(msgLabel("Use"),
 				 "GenericTypeHandler if there are columns<br>ExtensibleGroupTypeHandler for columns that can also be a group<br>PointTypeHandler if this is CSV data"));
+	*/
 
 	String catHelp=HU.href(getRepository().getUrlBase()+"/search/type",
 			       "View all Categories","target=_cats");
@@ -1955,21 +1970,23 @@ public class ExtEditor extends RepositoryManager {
 
 
 	StringBuilder admin = new StringBuilder();
+	Utils.append(admin,HU.div(HU.b("Comment:")),
+		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
+
+
 	HU.div(admin, "If For Import is checked then the generated file will not end in \"types.xml\" so it can be included in a plugin and be imported by some other types.xml",HU.clazz("ramadda-form-help"));
 	admin.append(HU.insetDiv(HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"),
 				 0,30,0,0));
-	HU.div(admin,"<b>Be careful!</b>. If this entry has database columns and you have changed the types, etc., you may need to drop the database table when installing a new version of this entry type. If you do this then any entries you have created of this type will be removed..",HU.clazz("ramadda-form-help"));
-	admin.append(HU.insetDiv(
-			      HU.labeledCheckbox(ARG_DROPTABLE,"true",false,"Yes, drop the database table")+
-			      HU.div(getAuthManager().getVerification(request,
-								      "To ensure the drop table is OK please enter your password",true,false)),0,30,0,0));
+	if(request.isAdmin()) {
+	    HU.div(admin,"<b>Be careful!</b>. If this entry has database columns and you have changed the types, etc., you may need to drop the database table when installing a new version of this entry type. If you do this then any entries you have created of this type will be removed..",HU.clazz("ramadda-form-help"));
+	    admin.append(HU.insetDiv(
+				     HU.labeledCheckbox(ARG_DROPTABLE,"true",false,"Yes, drop the database table")+
+				     HU.div(getAuthManager().getVerification(request,
+									     "To ensure the drop table is OK please enter your password",true,false)),0,30,0,0));
+	}
 
 	String basicLabel = "Basic Configuration";
-	String type = request.getString(ARG_TYPEID,null);
-	String name = request.getString(ARG_TYPENAME,"");
-	if(stringDefined(name)) basicLabel +=" - " + name;	
-	else if(stringDefined(type)) basicLabel +=" - " + type;
-	HU.makeAccordion(sb,new Object[]{basicLabel, "Admin","Properties",
+	HU.makeAccordion(sb,new Object[]{HU.span(basicLabel, HU.attrs("id","basic_tab_label")),"Admin","Properties",
 					 "Advanced Configuration","Columns"},
 	    new Object[]{main,admin,properties,extra,cols});
 	sb.append(HtmlUtils.formClose());
@@ -2124,6 +2141,11 @@ public class ExtEditor extends RepositoryManager {
 	    comment = "\nCopy this into your ramadda home/plugins directory and restart RAMADDA\n";
 	}
 
+	if(stringDefined(request.getString(ARG_COMMENT,null))) {
+	    comment += request.getString(ARG_COMMENT,null);
+	    comment+="\n";
+	}
+
 	int columnCnt=0;
 	StringBuilder colSB = new StringBuilder();
 	for(int i=0;i<50;i++) {
@@ -2270,7 +2292,7 @@ public class ExtEditor extends RepositoryManager {
 	try {
 	    //check for syntax validity
             root = XU.getRoot(xml);
-	    if(request.exists(ARG_INSTALL)) {
+	    if(request.isAdmin() && request.exists(ARG_INSTALL)) {
 		root.setAttribute("ignoreerrors","false");
 		try {
 		    getRepository().loadTypeHandler(root,true);
@@ -2327,7 +2349,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
-	if(request.get(ARG_DROPTABLE,false)) {
+	if(request.isAdmin() && request.get(ARG_DROPTABLE,false)) {
 	    StringBuilder buff = new StringBuilder();
 	    if(!getAuthManager().verify(request,buff, true)) {
 		return  outputCreateType(request, entry,buff.toString());
@@ -2365,7 +2387,6 @@ public class ExtEditor extends RepositoryManager {
 	}
 	
 	request.setReturnFilename(filename, false);	    
-
 
 	return new Result("", sb, MIME_XML);
     }

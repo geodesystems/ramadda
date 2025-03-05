@@ -23,6 +23,9 @@ form.area.show=false
 form.location.help=
 form.location.label=
 form.location.show.before=false
+#Add the map selector to the group or before the column
+form.geoposition=group:Some group
+form.geoposition=column_name
 form.altitude.bottom.show=true
 form.altitude.show.top=false
 form.altitude.show=false
