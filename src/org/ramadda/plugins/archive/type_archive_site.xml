@@ -1,0 +1,76 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_site.xml"/>
+into some types.xml file
+This is a base entry that provides site information. It is used as a super type for the Geology and Paleontonlogy types
+-->
+<type  name="type_archive_site" 
+ description="Archive Site" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ supercategory="General" 
+ category="Archive" 
+>
+
+<!-- Columns-->
+<column  name="locality"  label="Locality"  type="enumerationplus"  group="Collection Site" showenumerationpopup="true" />
+<column  name="country"  label="Country"  type="enumerationplus"  default="USA" values="file:/resources/geo/countrylist.txt"  showenumerationpopup="true" />
+<column  name="county"  label="County"  type="enumerationplus"  values="file:/resources/geo/countylist.txt" showenumerationpopup="true"   />
+<column  name="state"  label="State"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/states.txt"  showenumerationpopup="true" />
+<column  name="waterbody_drain"  label="Waterbody Drain"  type="enumerationplus"  showenumerationpopup="true" />
+<column  name="township"  label="Township"  type="enumerationplus"  showenumerationpopup="true" subgroup="Legal Land Description" />
+<column  name="range"  label="Range"  type="enumerationplus"  showenumerationpopup="true" />
+<column  name="section"  label="Section"  type="enumerationplus"  showenumerationpopup="true" />
+<column  name="utm_zone"  label="Utm Zone"  type="enumerationplus"  subgroup="UTM Coordinates" />
+<column  name="utm_easting"  label="Utm Easting"  type="double" />
+<column  name="utm_northing"  label="Utm Northing"  type="double" />
+<column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum" />
+<column  name="datum"  label="Datum"  type="enumerationplus" />
+<column  name="deposit_environment"  label="Deposit Environment"  type="enumerationplus"  subgroup="Environment" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/geo/site.png" />
+<property  name="form.tags.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.time.show"  value="false" />
+<property  name="form.geoposition"  value="locality" />
+<property  name="form.todate.show"  value="false" />
+<property  name="form.date.label"  value="Collection Date" />
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section  title="{{typename}}: {{name}}"
+{{description wikify=true}}
++row
++col-8
+:vspace 1em
+{{information  showDetails=true  showTitle="false"  showBase=false }} 
+<div class=metadata-full>
+{{properties  propertyToggleLimit=100 message=""  
+metadata.types="!tag:archiveinternal,!tag:archivecultural,!tag:internal"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }} 
+</div>
+:vspace 1em
+-col
++col-4
+{{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
++center
+{{image  message="" width="150px" style="margin-bottom:10px;"  useThumbnail="true"}}
+-center
+{{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
+:vspace 1em
+{{mapentry hideIfNoLocations=true width="100%" height="200px"}}
++if anonymous=false
+{{properties  message=""  propertyToggleLimit=0 metadata.types="archive_research_activity"
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
+inherited="false"  }}
+-if
+:vspace 1em
+{{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
+xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+-section]]></wiki>
+</type>

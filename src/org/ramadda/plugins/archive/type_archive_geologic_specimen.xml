@@ -1,0 +1,39 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_geologic_specimen.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_geologic_specimen" 
+ description="Geologic Specimen" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_archive_site" 
+ supercategory="Geoscience" 
+>
+
+<!-- Columns-->
+<column  name="test_dimensions_weight"  label="Test Dimensions Weight"  type="double"  group="Specimen Information" />
+<column  name="collector"  label="Collector"  type="enumerationplus" />
+<column  name="collection_number"  label="Collection Number"  type="string" />
+<column  name="study_number"  label="Study Number"  type="enumerationplus" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="Good,Fair,Poor" />
+<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="What values,Here" />
+<column  name="condition_description"  label="Condition Description"  type="string" />
+<column  name="prep_material"  label="Prep Material"  type="string" />
+<column  name="other_numbers"  label="Other Numbers"  type="string" />
+<column  name="eminent_figure"  label="Eminent Figure"  type="string" />
+<column  name="rct_conservation"  label="Rct Conservation"  type="string" />
+<column  name="cataloger"  label="Cataloger"  type="string" />
+<column  name="exhibit_label"  label="Exhibit Label"  type="string" />
+<column  name="litho_pedotype"  label="Litho Pedotype"  type="enumerationplus" />
+<column  name="period_system"  label="Period System"  type="enumerationplus" />
+<column  name="age_stage"  label="Age Stage"  type="enumerationplus" />
+<column  name="epoch_series"  label="Epoch Series"  type="enumerationplus" />
+<column  name="formation"  label="Formation"  type="enumerationplus" />
+<column  name="member"  label="Member"  type="enumerationplus" />
+<column  name="unit"  label="Unit"  type="enumerationplus" />
+<column  name="thin_section"  label="Thin Section"  type="enumerationplus" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/archive/rocks.png" />
+<property  name="html.tabs"  value="true" />
+</type>
