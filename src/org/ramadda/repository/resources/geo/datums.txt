@@ -1,0 +1,17 @@
+:Undefined
+WGS84:World Geodetic System 1984  
+NAD83:North American Datum 1983  
+NAD27:North American Datum 1927  
+ITRF:International Terrestrial Reference Frame
+ETRS89:European Terrestrial Reference System 1989  
+ED50:European Datum 1950  
+Potsdam Datum:German geodetic reference  
+Tokyo Datum:Japanese geodetic reference  
+GDA94:Geocentric Datum of Australia 1994  
+GDA2020:Geocentric Datum of Australia 2020  
+SIRGAS:Sistema de Referencia Geocéntrico para las Américas  
+SAD69:South American Datum 1969  
+RD (Amersfoort):Rijksdriehoeksmeting (Netherlands)  
+MGI:Militar-Geographische Institut (Austria)  
+CH1903+:Swiss Terrestrial Reference System  
+
