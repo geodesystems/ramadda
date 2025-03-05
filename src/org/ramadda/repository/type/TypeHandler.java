@@ -247,6 +247,7 @@ public class TypeHandler extends RepositoryManager {
     private String defaultCategory;
     private String displayTemplatePath;
 
+    private boolean flushedFromCache = false;
     /** Should users be shown this type when doing a New Entry... */
     private boolean forUser = true;
     private boolean canCreate = true;
@@ -1603,6 +1604,26 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
+    /**
+       Set the FlushedFromCache property.
+
+       @param value The new value for FlushedFromCache
+    **/
+    public void setFlushedFromCache (boolean value) {
+	flushedFromCache = value;
+    }
+
+    /**
+       Get the FlushedFromCache property.
+
+       @return The FlushedFromCache
+    **/
+    public boolean getFlushedFromCache () {
+	return flushedFromCache;
+    }
+
+
+
     public boolean getTypeProperty(String name, boolean dflt) {
         return getProperty((Entry) null, name, dflt);
     }
@@ -2332,7 +2353,11 @@ public class TypeHandler extends RepositoryManager {
     public void applyContents(Request request, Appendable buff, List<NamedBuffer> contents)
 	throws Exception {
 	if(getTypeProperty("html.tabs",false) && contents.size()>1) {
+	    List<NamedBuffer> nonEmptyContents = new ArrayList<NamedBuffer>();
 	    for(NamedBuffer namedBuffer:contents) {
+		if(namedBuffer.getBuffer().length()!=0)
+		    nonEmptyContents.add(namedBuffer);
+		else continue;
 		if(!stringDefined(namedBuffer.getName())) {
 		    namedBuffer.setName("Information");
 		}
@@ -2342,7 +2367,7 @@ public class TypeHandler extends RepositoryManager {
 		sb.append(HU.formTableClose());
 		namedBuffer.setBuffer(sb);
 	    }		      
-	    HU.makeTabs(buff, contents);
+	    HU.makeTabs(buff, nonEmptyContents);
 	    return;
 	}
 
@@ -4075,6 +4100,12 @@ public class TypeHandler extends RepositoryManager {
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
 	throws Exception {
+
+	if(geoPosition!=null && Utils.equals(column.getName(), geoPosition)) {
+	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
+	}	
+
+
 	String subGroup = column.getSubGroup();
 	if(subGroup!=null) {
 	    HU.formEntry(formBuffer,"", HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
