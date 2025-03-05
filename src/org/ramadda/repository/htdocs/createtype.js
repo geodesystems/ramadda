@@ -255,14 +255,14 @@ var CreateType  = {
 
 
 	lines.forEach(line=>{
-	    line = line.replace(/\\,/g,'_nl_');
+	    line = line.replace(/\\,/g,'_comma_');
 	    let toks = Utils.split(line,',',true);
 	    let id = Utils.makeID(toks[0]);
 	    let label = toks[1];
 	    let type = toks[2];	    
 	    let extra = toks[3];
 	    if(extra)
-		extra = extra.replace(/_nl_/g,',');
+		extra = extra.replace(/_comma_/g,',');
 
 	    if(!Utils.stringDefined(id)) id = label;
 	    if(!Utils.stringDefined(label)) label = Utils.makeLabel(id);
