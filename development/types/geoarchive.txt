@@ -24,7 +24,7 @@ Waterbody/Drain,,enumerationplus,showenumerationpopup="true"
 Township,,enumerationplus,showenumerationpopup="true" subgroup="Legal Land Description"
 Range,,enumerationplus,showenumerationpopup="true"
 Section,,enumerationplus,showenumerationpopup="true"
-UTM Zone,,enumerationplus,subgroup="UTM Coordinates"
+UTM Zone,,enumeration,subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt" showenumerationpopup="true"
 UTM Easting,,double
 UTM Northing,,double
 Vertical Datum,,enumerationplus,subgroup="Datum"
