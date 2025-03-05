@@ -2984,8 +2984,12 @@ var Utils =  {
         */
         /* for select menus with icons */
 	//iconmenu
-	let menu =      $(parent + ".ramadda-pulldown-with-icons").iconselectmenu({xxxwidth:300});
-	menu.addClass("ui-menu-icons ramadda-select-icon");	
+	let menus = $(parent + ".ramadda-pulldown-with-icons");
+	menus.each(function() {
+	    let width = $(this).attr('width');
+	    $(this).iconselectmenu({width:width});
+	    $(this).addClass("ui-menu-icons ramadda-select-icon");
+	});
     },
     searchLastInput:"",
     searchAscending:false,
