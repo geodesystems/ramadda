@@ -20,7 +20,7 @@ This is a base entry that provides site information. It is used as a super type 
 <column  name="township"  label="Township"  type="enumerationplus"  showenumerationpopup="true" subgroup="Legal Land Description" />
 <column  name="range"  label="Range"  type="enumerationplus"  showenumerationpopup="true" />
 <column  name="section"  label="Section"  type="enumerationplus"  showenumerationpopup="true" />
-<column  name="utm_zone"  label="Utm Zone"  type="enumerationplus"  subgroup="UTM Coordinates" />
+<column  name="utm_zone"  label="Utm Zone"  type="enumeration"  subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt" showenumerationpopup="true" />
 <column  name="utm_easting"  label="Utm Easting"  type="double" />
 <column  name="utm_northing"  label="Utm Northing"  type="double" />
 <column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum" />
@@ -37,6 +37,7 @@ This is a base entry that provides site information. It is used as a super type 
 <property  name="form.geoposition"  value="locality" />
 <property  name="form.todate.show"  value="false" />
 <property  name="form.date.label"  value="Collection Date" />
+<property  name="html.tabs"  value="true" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[
