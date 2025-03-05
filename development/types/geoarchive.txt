@@ -1,0 +1,122 @@
+Geology categories
+
+GENERAL information
+Common name
+Description
+Location
+
+Object/science
+Catalog number
+Handling
+Object status
+Item count 
+Quantity 
+Storage unit
+
+
+#COLLECTION SITE
+
+Locality,,enumerationplus,group="Collection Site" showenumerationpopup="true"
+Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  showenumerationpopup="true"
+County,,enumerationplus,values="file:/resources/geo/countylist.txt" showenumerationpopup="true"
+State,,enumerationplus, values="file:/org/ramadda/plugins/archive/resources/states.txt"  showenumerationpopup="true"
+Waterbody/Drain,,enumerationplus,showenumerationpopup="true"
+Township,,enumerationplus,showenumerationpopup="true" subgroup="Legal Land Description"
+Range,,enumerationplus,showenumerationpopup="true"
+Section,,enumerationplus,showenumerationpopup="true"
+UTM Zone,,enumerationplus,subgroup="UTM Coordinates"
+UTM Easting,,double
+UTM Northing,,double
+Vertical Datum,,enumerationplus,subgroup="Datum"
+Datum,,enumerationplus
+Deposit Environment,,enumerationplus,subgroup="Environment"
+
+
+
+#Geology
+test Dimensions/Weight,,double,group="Specimen Information"
+Collector,,enumerationplus
+Collection Number,,string
+#Collection Date,,date
+Study Number,,enumerationplus
+Condition,,enumerationplus,values="Good,Fair,Poor"
+Maintenance Cycle,,enumerationplus, values="What values,Here"
+Condition Description,,string 
+Prep Material 
+Other Numbers
+Eminent Figure
+Rct. Conservation
+Cataloger
+Exhibit Label
+Litho/Pedotype,,enumerationplus
+Period/System,,enumerationplus
+Age/Stage,,enumerationplus
+Epoch/Series,,enumerationplus
+Formation,,enumerationplus
+Member,,enumerationplus
+Unit,,enumerationplus
+Thin section,,enumerationplus
+
+
+
+###Paleontology
+General information (same as Geology)
+Collection site (same as Geology)
+
+
+Specific section
+Lithology 
+Vertical Datum
+Datum
+In situ/Float
+Horizon
+Taphonomy 
+Period/System
+Epoch/Series
+Age/Stage
+Formation
+Member
+Unit 
+Type Specimen
+
+#Entomology 
+Object category
+Object name 
+Notes
+Description
+Type
+Life stage
+Sex
+Storage Location
+Host animal/association
+Habitat
+Collector
+Measurement
+
+
+At the minimum level, digitization must include the following information for each specimen:
+•	unique ID
+•	taxonomy
+•	location in the collection
+•	a transcription of the physical label
+Enhanced levels of digitization may include:
+•	verbatim and interpreted locality
+•	georeferencing information
+•	associated data
+•	images
+
+
+Standardized 4- and 6-letter Bird Species (“Alpha“) Codes
+
+Sections 
+Botany
+Geology/mineral science
+Paleontology
+Entomology
+Anthropology 
+Herpetology
+Ornithology
+Mammalogy
+Ichthyology
+
+Possible vertebrate zoology  and invertebrate zoology 
