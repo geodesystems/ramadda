@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Feb 25 20:06:28 MST 2025";
+var build_date="RAMADDA build date: Wed Mar  5 05:21:00 MST 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -18157,7 +18157,7 @@ function BoundsFilter(display, properties) {
 	enabled:true,
 	getWidget: function() {
 	    let id = this.display.getDomId("boundsfilter");
-	    return HtmlUtils.span([STYLE,HU.css("margin-left","4px","margin-right","4px"), ID,id,CLASS,"ramadda-clickable", TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
+	    return HtmlUtils.span([ATTR_STYLE,HU.css("margin-left","4px","margin-right","4px"), ID,id,CLASS,"ramadda-clickable", TITLE,"Filter records on map view. Shift-click to clear"], HtmlUtils.getIconImage("fas fa-globe-americas"));
 	},
 	initWidget: function(inputFunc) {
 	    this.inputFunc = inputFunc;
@@ -18588,10 +18588,11 @@ function RecordFilter(display,filterFieldId, properties) {
 			bar= $("#"+this.display.getProperty("tagDiv"));
 		    else
 			bar= this.display.jq(ID_TAGBAR);
-		    tagGroup = $(HU.div([STYLE,HU.css("display","inline-block"), CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
+		    tagGroup = $(HU.div([ATTR_STYLE,HU.css("display","inline-block"), ATTR_CLASS,"tag-group","tag-type",this.getFilterId()])).appendTo(bar);
 		}
 		
-		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,TITLE,value, STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
+		let tag = $(HU.div(["metadata-type",type,"metadata-value",value,ATTR_TITLE,value,
+				    ATTR_STYLE, HU.css("background", Utils.getEnumColor(this.getFieldId())),CLASS,"display-search-tag", ID,tagId],value+SPACE +HU.getIconImage("fas fa-times"))).appendTo(tagGroup);
 		tag.click(function(){
 		    _this.selectedTags = Utils.removeElement(_this.selectedTags,value);
 		    if(cbx)
