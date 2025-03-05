@@ -11,12 +11,14 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="test_dimensions_weight"  label="Test Dimensions Weight"  type="double"  group="Specimen Information" />
-<column  name="collector"  label="Collector"  type="enumerationplus" />
+<column  name="width"  label="Width"  type="double"  group="Specimen Information" subgroup="Dimensions" />
+<column  name="height"  label="Height"  type="double" />
+<column  name="weight"  label="Weight"  type="double" />
+<column  name="collector"  label="Collector"  type="enumerationplus"  subgroup="Collection Information" />
 <column  name="collection_number"  label="Collection Number"  type="string" />
 <column  name="study_number"  label="Study Number"  type="enumerationplus" />
 <column  name="condition"  label="Condition"  type="enumerationplus"  values="Good,Fair,Poor" />
-<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="What values,Here" />
+<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="" />
 <column  name="condition_description"  label="Condition Description"  type="string" />
 <column  name="prep_material"  label="Prep Material"  type="string" />
 <column  name="other_numbers"  label="Other Numbers"  type="string" />
