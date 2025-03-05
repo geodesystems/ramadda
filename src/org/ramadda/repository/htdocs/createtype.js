@@ -130,8 +130,10 @@ var CreateType  = {
 		    }
 		}
 	    };
+	    this.initLabel();
 	}
 	form.submit(function(event){
+	    _this.initLabel();
 	    let jsonContents = form.find('[name="json_contents"]');
 	    if(jsonContents.length==0) {
 		$('<input>').attr({
@@ -158,6 +160,15 @@ var CreateType  = {
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
+    },
+    initLabel:function() {
+	let label = jqid('basic_tab_label');
+	let  type = HU.jqname('typeid').val();
+	let  name = HU.jqname('typename').val();	
+	let basicLabel = 'Basic Configuration'
+	if(Utils.stringDefined(name)) basicLabel +=" - " + name;	
+	else if(Utils.stringDefined(type)) basicLabel +=" - " + type;
+	label.html(basicLabel);
     },
     canSaveInput:function(name) {
 	return name!='droptable' &&
