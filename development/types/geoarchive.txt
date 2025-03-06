@@ -38,11 +38,11 @@ width,,double,group="Specimen Information" subgroup="Dimensions"
 height,,double
 weight,,double
 Collector,,enumerationplus,subgroup="Collection Information"
-Collection Number,,string
+Collection Number,,enumerationplus
 #Collection Date,,date
 Study Number,,enumerationplus
 Condition,,enumerationplus,values="Good\,Fair\,Poor"
-Maintenance Cycle,,enumerationplus, values="Cycle1\,Cycle2\,etc"
+Maintenance Cycle,,enumerationplus, values="Cycle1\,Cycle2\,Cycle 3"
 Condition Description,,string 
 Prep Material,,enumerationplus
 Other Numbers
@@ -50,8 +50,9 @@ Eminent Figure,,enumerationplus
 Rct. Conservation,,enumerationplus
 Cataloger,,enumerationplus
 Exhibit Label
-Litho/Pedotype,,enumerationplus
-Period/System,,enumerationplus
+Lithology,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology"
+Pedotype,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/pedotypes.txt"  
+Period/System,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/periods.txt" 
 Age/Stage,,enumerationplus
 Epoch/Series,,enumerationplus
 Formation,,enumerationplus
