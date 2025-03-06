@@ -1,0 +1,32 @@
+Unknown
+Lower Cambrian
+Middle Cambrian
+Upper Cambrian
+Lower Ordovician
+Middle Ordovician
+Upper Ordovician
+Lower Silurian
+Middle Silurian
+Upper Silurian
+Lower Devonian
+Middle Devonian
+Upper Devonian
+Mississippian
+Pennsylvanian
+Lower Permian
+Upper Permian
+Lower Triassic
+Middle Triassic
+Upper Triassic
+Lower Jurassic
+Middle Jurassic
+Upper Jurassic
+Lower Cretaceous
+Upper Cretaceous
+Paleocene
+Eocene
+Oligocene
+Miocene
+Pliocene
+Pleistocene
+Holocene

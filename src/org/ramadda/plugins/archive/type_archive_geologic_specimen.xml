@@ -15,10 +15,10 @@ into some types.xml file
 <column  name="height"  label="Height"  type="double" />
 <column  name="weight"  label="Weight"  type="double" />
 <column  name="collector"  label="Collector"  type="enumerationplus"  subgroup="Collection Information" />
-<column  name="collection_number"  label="Collection Number"  type="string" />
+<column  name="collection_number"  label="Collection Number"  type="enumerationplus" />
 <column  name="study_number"  label="Study Number"  type="enumerationplus" />
 <column  name="condition"  label="Condition"  type="enumerationplus"  values="Good,Fair,Poor" />
-<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="Cycle1,Cycle2,etc" />
+<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="Cycle1,Cycle2,Cycle 3" />
 <column  name="condition_description"  label="Condition Description"  type="string" />
 <column  name="prep_material"  label="Prep Material"  type="enumerationplus" />
 <column  name="other_numbers"  label="Other Numbers"  type="string" />
@@ -26,8 +26,9 @@ into some types.xml file
 <column  name="rct_conservation"  label="Rct Conservation"  type="enumerationplus" />
 <column  name="cataloger"  label="Cataloger"  type="enumerationplus" />
 <column  name="exhibit_label"  label="Exhibit Label"  type="string" />
-<column  name="litho_pedotype"  label="Litho Pedotype"  type="enumerationplus" />
-<column  name="period_system"  label="Period System"  type="enumerationplus" />
+<column  name="lithology"  label="Lithology"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology" />
+<column  name="pedotype"  label="Pedotype"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/pedotypes.txt" />
+<column  name="period_system"  label="Period System"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/periods.txt" />
 <column  name="age_stage"  label="Age Stage"  type="enumerationplus" />
 <column  name="epoch_series"  label="Epoch Series"  type="enumerationplus" />
 <column  name="formation"  label="Formation"  type="enumerationplus" />
@@ -38,4 +39,5 @@ into some types.xml file
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/rocks.png" />
 <property  name="html.tabs"  value="true" />
+<property  name="column.showenumerationpopup"  value="true" />
 </type>

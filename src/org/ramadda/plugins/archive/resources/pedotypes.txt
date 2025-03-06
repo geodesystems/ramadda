@@ -1,0 +1,25 @@
+Unknown
+Udic Alfisol
+Xeric Alfisol
+Melanic Andisol
+Vitric Andisol
+Salic Aridisol
+Calcic Aridisol
+Aquic Entisol
+Psamment Entisol
+Glacic Gelisol
+Turbic Gelisol
+Fibric Histosol
+Humic Histosol
+Umbrept Inceptisol
+Eutrochrept Inceptisol
+Calcic Mollisol
+Ustic Mollisol
+Typic Oxisol
+Plinthic Oxisol
+Albic Spodosol
+Hemic Spodosol
+Aquult Ultisol
+Hapludult Ultisol
+Chromic Vertisol
+Pellustert Vertisol
