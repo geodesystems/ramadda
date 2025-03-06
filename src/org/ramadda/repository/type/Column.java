@@ -3643,9 +3643,12 @@ public class Column implements DataTypes, Constants, Cloneable {
             attrValue = XmlUtil.getAttributeFromTree(node, attrOrTag);
         }
 
+	if(attrValue==null && typeHandler!=null) {
+	    attrValue = typeHandler.getTypeProperty("column." + attrOrTag,(String)null);
+	}
+
         if (attrValue != null) {
             properties.put(attrOrTag, attrValue);
-
             return attrValue;
         }
 
