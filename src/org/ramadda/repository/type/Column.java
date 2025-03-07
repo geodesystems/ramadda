@@ -1054,11 +1054,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         formatValue(request, entry, sb, output, values, null, raw);
     }
     
-    public boolean
-	formatValue(Request request, Entry entry,
-		    Appendable result,
-		    String output, Object[] values,
-		    SimpleDateFormat sdf, boolean raw)
+    /**
+       get display value for html
+     */
+    public boolean formatValue(Request request, Entry entry,
+			       Appendable result,
+			       String output, Object[] values,
+			       SimpleDateFormat sdf, boolean raw)
 	throws Exception {
 	if(!accessOk(request, entry)) return false;
 	boolean addSuffix = true;
