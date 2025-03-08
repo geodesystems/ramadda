@@ -66,12 +66,12 @@
     <column name="age_missing" type="int" label="Age when missing" cansearch="true" cansort="true" group="Details"/>
     <column name="date_of_birth" type="date" default="none" label="Date of Birth" cansearch="true" cansort="true"/>
     <column name="date_found" type="date" default="none" label="Date Found" cansearch="true"
-	    htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
+	    htmltemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=&quot; - &quot; suffix=&quot; years old when found&quot;}"/>    
     <column name="biological_sex" type="enumeration"  label="Biological Sex"
 	    values="male:Male,female:Female,other:Other,unsure:Unsure,notprovided:Not Provided"  cansearch="true"	    cansort="true"/>
-    <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmlTemplate="${value inchesToFeet=true}" cansort="true"/>
+    <column name="height" type="int"  searchlabel="Height (inches)"  label="Height" suffix="Inches"  cansearch="true" htmltemplate="${value inchesToFeet=true}" cansort="true"/>
     <column name="weight" type="int"  searchlabel="Weight (pounds)" label="Weight" suffix="Pounds"  cansearch="true"
-	    htmlTemplate="${value} lbs" cansort="true"/>
+	    htmltemplate="${value} lbs" cansort="true"/>
     <column name="race_ethnicity" type="enumerationplus"
 	    addblanktoenumerationmenu="false" label="Primary Ethnicity"   cansearch="true" cansort="true"
 	    values="file:/org/ramadda/projects/missing/ethnicity.txt"/>
