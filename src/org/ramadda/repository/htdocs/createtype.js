@@ -10,6 +10,14 @@ var CreateType  = {
 	jqid('colbuttons').append(HU.span([],SPACE1));
 	jqid('colbuttons').append(HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'));
 
+	let extras = $('.typecreate-column-extra');
+	extras.each(function() {
+	    _this.checkColumnExtra($(this));
+	});
+	extras.on('input',function() {
+	    _this.checkColumnExtra($(this));
+	});
+
 
 	_this.currentColumn = null;
 	this.columns = [];
@@ -160,6 +168,16 @@ var CreateType  = {
 //	    Utils.setLocalStorage(storageKey, formData,true);
 	});
 
+    },
+    checkColumnExtra:function(widget) {
+	let v = widget.val();
+	if(!v) return;
+	let lines = Utils.split(v,'\n');
+	if(lines.length>1) {
+	    widget.attr('rows',lines.length);
+	} else {
+	    widget.attr('rows',1);
+	}
     },
     initLabel:function() {
 	let label = jqid('basic_tab_label');

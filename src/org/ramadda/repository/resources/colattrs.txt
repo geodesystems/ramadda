@@ -40,19 +40,23 @@ group="Column group"
 subgroup="Sub group"
 
 
+
 #is column editable
 showinform="false"
 editable="false"
 
 #show in table
 canlist="false"
+
 #show in html
 candisplay="false"
+
 #can search
 cansearch="false"
 
-#flag to not export the column
-canexport="false"
+displaylabel=
+htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"
+
 
 cat:Misc
 #Change the type of the column
@@ -60,6 +64,9 @@ changetype="true"
 adminonly="true"
 #Should the geo access apply to this column
 isgeoaccess="true"
+
+#flag to not export the column
+canexport="false"
 
 
 #For search
@@ -83,7 +90,6 @@ cansearchtext="false"
 databaseDefault="-1"
 ismediaurl="true"
 cansort="true"
-htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"
 searchlabel="Label to show"
 orange="apple"
 addbulkupload="true"
