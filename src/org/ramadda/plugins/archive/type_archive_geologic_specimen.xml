@@ -11,9 +11,10 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="width"  label="Width"  type="double"  group="Specimen Information" subgroup="Dimensions" />
-<column  name="height"  label="Height"  type="double" />
-<column  name="weight"  label="Weight"  type="double" />
+<column  name="width"  label="Width"  type="double"  displaylabel="Dimensions" htmltemplate="${width} X ${height}" 
+group="Specimen Information" subgroup="Dimensions" suffix="cm"  displaysuffix="cm" />
+<column  name="height"  label="Height"  type="double"  suffix="cm"  displaysuffix="cm"  showinhtml="false" />
+<column  name="weight"  label="Weight"  type="double"  suffix="Kg" displaysuffix="Kg"  />
 <column  name="collector"  label="Collector"  type="enumerationplus"  subgroup="Collection Information" />
 <column  name="collection_number"  label="Collection Number"  type="enumerationplus" />
 <column  name="study_number"  label="Study Number"  type="enumerationplus" />
@@ -40,4 +41,5 @@ into some types.xml file
 <property  name="icon"  value="/archive/rocks.png" />
 <property  name="html.tabs"  value="true" />
 <property  name="column.showenumerationpopup"  value="true" />
+<property  name="column.numberformat"  value="#0.0" />
 </type>
