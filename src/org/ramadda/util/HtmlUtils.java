@@ -1865,7 +1865,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         value = value.replaceAll("&", "&amp;");
 
         return tag(TAG_TEXTAREA,
-                   attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_TEXTAREA)
+                   attrs(ATTR_NAME, name/*, ATTR_CLASS, CLASS_TEXTAREA*/)
                    + attrs(ATTR_ROWS, "" + rows) + width + extra, value);
     }
 
