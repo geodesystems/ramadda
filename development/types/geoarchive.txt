@@ -34,9 +34,9 @@ Deposit Environment,,enumerationplus,subgroup="Environment"
 
 
 #Geology
-width,,double,group="Specimen Information" subgroup="Dimensions"
-height,,double
-weight,,double
+width,,double,displaylabel="Dimensions" htmltemplate="${width} X ${height}" group="Specimen Information" subgroup="Dimensions" suffix="cm"  displaysuffix="cm"
+height,,double, suffix="cm"  displaysuffix="cm"  showinhtml="false"
+weight,,double,suffix="Kg"  displaysuffix="Kg" 
 Collector,,enumerationplus,subgroup="Collection Information"
 Collection Number,,enumerationplus
 #Collection Date,,date
@@ -68,13 +68,11 @@ Collection site (same as Geology)
 
 
 Specific section
-Lithology 
-Vertical Datum
-Datum
+Lithology,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology"
 In situ/Float
 Horizon
 Taphonomy 
-Period/System
+Period/System,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/periods.txt" 
 Epoch/Series
 Age/Stage
 Formation
