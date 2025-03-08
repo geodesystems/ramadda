@@ -4987,6 +4987,7 @@ public class EntryManager extends RepositoryManager {
                 //Do this instead of addNewEntry so the doFinalEntryInit does *not* get called
 		newEntry.setCreateDate(now.getTime());
 		newEntry.setChangeDate(now.getTime());		
+		newEntry.setMetadataChanged(true);
                 List<Entry> tmp = new ArrayList<Entry>();
                 tmp.add(newEntry);
                 insertEntries(request, tmp, true, TypeHandler.NewType.COPY);
