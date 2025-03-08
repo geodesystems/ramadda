@@ -144,7 +144,7 @@ point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="station_number"  label="Station Number" type="string" />
-     <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
+     <column  name="variables"  rows="10" htmltemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
 <wiki>
 <![CDATA[
 +section title={{name}}
@@ -191,7 +191,7 @@ csvcommands3=-print
 
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
-     <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
+     <column  name="variables"  rows="10" htmltemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
 <wiki>
 <![CDATA[
 +section title={{name}}
