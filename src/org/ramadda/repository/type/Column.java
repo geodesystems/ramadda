@@ -165,6 +165,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String searchLabel;    
     private String description;
     private String htmlTemplate;
+    private String displayLabel;    
     private List<Utils.Macro> macros;
     private String displayTemplate;
     private String displayPatternFrom;
@@ -353,7 +354,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         displayTemplate = Utils.getAttributeOrTag(element, "displayTemplate",
 						  (String) null);
 
-        htmlTemplate = Utils.getAttributeOrTag(element, "htmlTemplate",
+        displayLabel = Utils.getAttributeOrTag(element, "displaylabel",
+					       (String) null);
+
+        htmlTemplate = Utils.getAttributeOrTag(element, "htmltemplate",
 					       (String) null);
 
 	if(htmlTemplate!=null) {
@@ -1040,18 +1044,18 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
 
-    public String formatValue(Request request, Entry entry,  Object[] values)
+    public String formatValue(Request request, Entry entry,  Object[] values,boolean...notMacros)
 	throws Exception {
 	StringBuilder sb = new StringBuilder();
-        formatValue(request, entry, sb, null, values, null, false);
+        formatValue(request, entry, sb, null, values, null, false,notMacros);
 	return sb.toString();
     }
 
     
     public void formatValue(Request request, Entry entry, Appendable sb,
-                            String output, Object[] values, boolean raw)
+                            String output, Object[] values, boolean raw,boolean...notMacros)
 	throws Exception {
-        formatValue(request, entry, sb, output, values, null, raw);
+        formatValue(request, entry, sb, output, values, null, raw,notMacros);
     }
     
     /**
@@ -1060,7 +1064,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean formatValue(Request request, Entry entry,
 			       Appendable result,
 			       String output, Object[] values,
-			       SimpleDateFormat sdf, boolean raw)
+			       SimpleDateFormat sdf, boolean raw,boolean...notMacros)
 	throws Exception {
 	if(!accessOk(request, entry)) return false;
 	boolean addSuffix = true;
@@ -1336,7 +1340,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    sb.append(displaySuffix);
 	}
         String s = sb.toString();
-	s = typeHandler.applyMacros(request,entry,macros,values[offset],s);
+	if(macros!=null && (notMacros.length==0 || !notMacros[0])) {
+	    s = typeHandler.applyMacros(request,entry,macros,values,values[offset],s);
+	}
         s = typeHandler.decorateValue(null, entry, this, s);
 	result.append(s);
 	return true;
@@ -3531,6 +3537,13 @@ public class Column implements DataTypes, Constants, Cloneable {
     }
 
     
+    public String getDisplayLabel() {
+	if(displayLabel!=null) return displayLabel;
+	return getLabel();
+    }
+
+
+
     public String getLabel() {
         return label;
     }

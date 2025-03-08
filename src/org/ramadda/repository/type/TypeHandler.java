@@ -1354,7 +1354,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    public String applyMacros(Request request, Entry entry, List<Utils.Macro> macros,Object value,String s) {
+    public String applyMacros(Request request, Entry entry, List<Utils.Macro> macros,Object[]values,
+			      Object value,String s) throws Exception {
 	if(macros==null) return s;
 	StringBuilder tmp = new StringBuilder();
 	for(Utils.Macro macro: macros) {
@@ -1413,6 +1414,12 @@ public class TypeHandler extends RepositoryManager {
 		    tmp.append(s);
 		}
 	    } else {
+		Column otherColumn = findColumn(macro.getId());
+		if(otherColumn!=null && values!=null) {
+		    //the true=> don't apply macros
+		    tmp.append(otherColumn.formatValue(request,entry,values,true));
+		    continue;
+		}
 		System.err.println("unknown macro:" + macro.getId());
 	    }
 	}
@@ -4082,7 +4089,7 @@ public class TypeHandler extends RepositoryManager {
                 StringBuilder tmpSb = new StringBuilder();
                 column.formatValue(request, entry, tmpSb, Column.OUTPUT_HTML,
                                    values, false);
-                formBuffer.append(HU.formEntry(column.getLabel()
+                formBuffer.append(HU.formEntry(column.getDisplayLabel()
 					       + ":", tmpSb.toString()));
             }
         } else if (canEdit) {
@@ -5124,7 +5131,7 @@ public class TypeHandler extends RepositoryManager {
 	else if(field.equals(FIELD_TODATE)) return  "To Date";
 	else {
 	    Column column = getColumn(field);
-	    if(column!=null) return column.getLabel();
+	    if(column!=null) return column.getDisplayLabel();
 	}
 	return Utils.makeLabel(field);
     }
@@ -6743,7 +6750,7 @@ public class TypeHandler extends RepositoryManager {
 								 props.get("timezone"), "UTC")).format(dttm);
 	    }
 	    if(startDateMacros!=null) {
-		s = applyMacros(request,entry, startDateMacros,dttm,s);
+		s = applyMacros(request,entry, startDateMacros,null, dttm,s);
 	    }
 	    return s;
         }
@@ -6758,7 +6765,7 @@ public class TypeHandler extends RepositoryManager {
 				       (String) Utils.getNonNull(props.get("timezone"), "UTC")).format(dttm);
 	    }
 	    if(endDateMacros!=null) {
-		s = applyMacros(request,entry, endDateMacros,dttm,s);
+		s = applyMacros(request,entry, endDateMacros,null,dttm,s);
 	    }
 	    return s;
         }
