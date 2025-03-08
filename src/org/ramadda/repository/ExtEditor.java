@@ -1820,10 +1820,12 @@ public class ExtEditor extends RepositoryManager {
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	String callout = "";
 	if(request.isAdmin()) {
-	    callout+="Note: If loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
+	    callout+="+note\nIf loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
 	}
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
-	getWikiManager().makeCallout(sb,request,callout);
+	callout+="\n-note";
+	sb.append(getWikiManager().wikify(request,callout));
+		  //	getWikiManager().makeCallout(sb,request,callout);
 
 
 
@@ -1837,9 +1839,9 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(HU.hidden(ARG_OUTPUT, getRepository().OUTPUT_CREATETYPE));
         sb.append(HU.hidden(ARG_JSON_CONTENTS,""));
 	sb.append(HU.buttons(
-			     HU.submit("Create Type",ARG_CREATE,HU.title("Create and download the plugin file")),
+			     HU.submit("Download Type",ARG_CREATE,HU.title("Create and download the entry type plugin file")),
 			     request.isAdmin()?
-			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and install the type")):null,
+			     HU.submit("Install Type",ARG_INSTALL,HU.title("Create and temporarily install the type")):null,
 			     HU.submit("Save",ARG_SAVE)));
 	sb.append(HU.vspace());
 	StringBuilder main = new StringBuilder();
@@ -1939,26 +1941,21 @@ public class ExtEditor extends RepositoryManager {
 	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
 			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
 			  +HU.td("<b id=colattrsheader>Extra</b> " + ex+" " + HU.href("javascript:showColumnAttrs()","Show properties"))));
-	String w  =HU.attr("width","20%");
-	String w2  =HU.attr("width","40%");
-	String isize  =HU.style("width:98%;");
-	//	String isize  =HU.attr("size","12");
-	String isize2  =HU.attr("size","64");	
+	String w1  =HU.attr("width","20%");
+	String w2  =HU.attr("width","50%");
+	String inputSize  =HU.style("width:98%;");
 	
 	List<String> types =
 	    Utils.split("string,enumeration,enumerationplus,multienumeration,double,int,boolean,datetime,date,list,password,clob,url,latlon,email",",");
 					 
 	types.add(0,"");
 	for(int i=0;i<50;i++) {
-	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),HU.attrs("column-index",""+i,
-													       "class", "ramadda-entry-column")+isize),w)+
-			    HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),isize),w)+			    
-			    HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),"")+
-			      //			    HU.td(HU.input("column_size_" +i,request.getString("column_size_"+i,""),HU.style("width:98%;")),"width=6%")+
-			      //			    HU.td(HU.input("column_values_" +i,request.getString("column_values_"+i,""),HU.attr("placeholder","v1,v2,v3")+isize),w)+
-			      HU.td(HU.input("column_extra_" +i,request.getString("column_extra_"+i,""),HU.clazz("typecreate-column-extra") + isize2),w2)));
-		//HU.td(HU.input("column_help_" +i,request.getString("column_help_"+i,""),isize),w)));		
-
+	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),
+					     HU.attrs("column-index",""+i, "class", "ramadda-entry-column")+inputSize),w1)+
+			      HU.td(HU.input("column_label_" +i,request.getString("column_label_"+i,""),inputSize),w1)+			    
+			      HU.td(HU.select("column_type_" +i,types,request.getString("column_type_"+i,"")),"")+
+			      HU.td(HU.textArea("column_extra_" +i,request.getString("column_extra_"+i,""),1,50,
+						inputSize+HU.clazz("typecreate-column-extra")),w2),"valign=top"));
 	}
 	
         cols.append("</table>\n");
@@ -2331,7 +2328,7 @@ public class ExtEditor extends RepositoryManager {
 	if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
 	    try {
 		getRepository().loadTypeHandler(root,true);
-		theMessage = HU.div("The Entry type has been installed. Note: the plugin file still needs to be generated and installed in your RAMADDA plugins directory.");
+		theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be generated and installed in the RAMADDA plugins directory.");
 	    }  catch(Exception exc) {
 		return  outputCreateType(request, entry,
 					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
