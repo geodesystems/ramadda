@@ -490,7 +490,7 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
 
 <import resource="type_archive_site.xml"/>
 <import resource="type_archive_geologic_specimen.xml"/>
-
+<import resource="type_archive_paleontology_specimen.xml"/>
 
 
 

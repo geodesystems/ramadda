@@ -1,0 +1,45 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_paleontology_specimen.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_paleontology_specimen" 
+ description="Paleontology Specimen" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_archive_site" 
+ supercategory="Geoscience" 
+>
+
+<!-- Columns-->
+<column  name="width"  label="Width"  type="double"  displaylabel="Dimensions" htmltemplate="${width} X ${height}" 
+group="Specimen Information" subgroup="Dimensions" suffix="cm"  displaysuffix="cm" />
+<column  name="height"  label="Height"  type="double"  suffix="cm"  displaysuffix="cm"  showinhtml="false" />
+<column  name="weight"  label="Weight"  type="double"  suffix="Kg" displaysuffix="Kg"  />
+<column  name="collector"  label="Collector"  type="enumerationplus"  subgroup="Collection Information" />
+<column  name="collection_number"  label="Collection Number"  type="enumerationplus" />
+<column  name="study_number"  label="Study Number"  type="enumerationplus" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="Good,Fair,Poor" />
+<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="Cycle1,Cycle2,Cycle 3" />
+<column  name="condition_description"  label="Condition Description"  type="string" />
+<column  name="prep_material"  label="Prep Material"  type="enumerationplus" />
+<column  name="other_numbers"  label="Other Numbers"  type="string" />
+<column  name="eminent_figure"  label="Eminent Figure"  type="enumerationplus" />
+<column  name="rct_conservation"  label="Rct Conservation"  type="enumerationplus" />
+<column  name="cataloger"  label="Cataloger"  type="enumerationplus" />
+<column  name="exhibit_label"  label="Exhibit Label"  type="string" />
+<column  name="lithology"  label="Lithology"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology" />
+<column  name="pedotype"  label="Pedotype"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/pedotypes.txt" />
+<column  name="period_system"  label="Period System"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/periods.txt" />
+<column  name="age_stage"  label="Age Stage"  type="enumerationplus" />
+<column  name="epoch_series"  label="Epoch Series"  type="enumerationplus" />
+<column  name="formation"  label="Formation"  type="enumerationplus" />
+<column  name="member"  label="Member"  type="enumerationplus" />
+<column  name="unit"  label="Unit"  type="enumerationplus" />
+<column  name="thin_section"  label="Thin Section"  type="enumerationplus" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/archive/bone.png" />
+<property  name="html.tabs"  value="true" />
+<property  name="column.showenumerationpopup"  value="true" />
+<property  name="column.numberformat"  value="#0.0" />
+</type>
