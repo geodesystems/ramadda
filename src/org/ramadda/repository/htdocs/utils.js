@@ -287,7 +287,9 @@ var Utils =  {
 	}
 	if(args) $.extend(opts,args);
 	$(selector).each(function(){
-	    $(this).attr(ATTR_TITLE,opts.title??'Click to copy');
+	    let title = $(this).attr(ATTR_TITLE);
+	    if(!title)
+		$(this).attr(ATTR_TITLE,opts.title??'Click to copy');
 	    let link = $(this);
 	    if(opts.addLink) {
 		let parent = $(this).parent();
