@@ -27,7 +27,7 @@ editfields="name,entry_ids,_default"
 
 #reorder how the fields are shown
 displayfields="!createdate,!owner,case_number,first_name,middle_name,last_name,nickname,date,age_missing,_default"
-#Default metadata types to show in Add Property menu
+#Default metadata types to show in Add Property menu - <a target=_metadata href=/repository/metadata/types.html>View List</a>
 metadata="archive_subject,archive_keyword"
 includeInSearch="false"
 

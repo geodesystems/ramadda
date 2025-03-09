@@ -157,7 +157,7 @@ cat:Search
 search.tabs=list,images,map,timeline
 search.label=
 
-#metadata type to add to search form
+#metadata type to add to search form - <a target=_metadata href=/repository/metadata/types.html>View List</a>
 search.metadatatypes=archive_subject,archive_keyword,archive_note
 
 #what to show

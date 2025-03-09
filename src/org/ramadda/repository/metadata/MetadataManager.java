@@ -1903,6 +1903,7 @@ public class MetadataManager extends RepositoryManager {
     public Result processMetadataTypes(Request request) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request, sb,"Metadata Types",false);
+	sb.append(HU.center("Click on a button to copy the metadata ID"));
 	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
 	Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
