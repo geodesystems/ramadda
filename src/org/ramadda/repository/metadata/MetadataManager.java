@@ -19,6 +19,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
+import org.ramadda.util.NamedBuffer;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -1897,6 +1898,33 @@ public class MetadataManager extends RepositoryManager {
         //        HU.makeAccordion(sb, titles, contents);
 
         return sb;
+    }
+
+    public Result processMetadataTypes(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().sectionOpen(request, sb,"Metadata Types",false);
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
+	Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
+	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
+        for (MetadataType type : metadataTypes) {
+            String        cat    = type.getCategory();
+	    NamedBuffer buffer = map.get(cat);
+	    if(buffer==null) {
+		contents.add(buffer = new NamedBuffer(cat));
+		map.put(cat,buffer);
+	    }
+	    String corpus = cat +" " + type.getId() + " " + type.getName();
+	    buffer.append(HU.span(type.getName(),HU.attrs("title","Click to copy: " + type.getId(),
+							  "data-corpus",corpus,"data-copy",type.getId(),
+							  "style","margin:4px;","class","ramadda-button ramadda-type-id ramadda-type")));
+	}
+	for(NamedBuffer buffer: contents) {
+	    HU.div(sb,buffer.getName(),HU.clazz("ramadda-form-header"));
+	    sb.append(buffer.getBuffer().toString());
+	}
+	HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
+	getPageHandler().sectionClose(request, sb);
+	return new Result("Metadata Types",sb);
     }
 
     public void processMetadataXml(Request request,Entry entry, Element entryChild,
