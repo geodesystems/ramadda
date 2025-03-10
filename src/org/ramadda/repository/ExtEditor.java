@@ -2175,8 +2175,11 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	    //	    String group = request.getString("column_group_"+i,"");
 	    String cextra = request.getString("column_extra_"+i,"");
-	    if(Utils.stringDefined(cextra)) 
+	    if(Utils.stringDefined(cextra))  {
+		cextra = cextra.replace("\r"," ");
+		cextra = cextra.replace("\n"," ");		
 		attrs+=" " + cextra+" ";
+	    }
 	    colSB.append(XU.tag("column",attrs));
 	    colSB.append("\n");
 	}
