@@ -6,9 +6,10 @@ var CreateType  = {
 //	let formData = json ?? Utils.getLocalStorage(storageKey,true);
 	let formData = json ?? null;
 	let form = jqid(formId);
-	jqid('colbuttons').append(HU.span([ATTR_ID,'clearcols'],'Clear'));
-	jqid('colbuttons').append(HU.span([],SPACE1));
-	jqid('colbuttons').append(HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'));
+	jqid('colbuttons').append(HU.buttons([
+	    HU.span([ATTR_ID,'clearcols'],'Clear'),
+	    HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'),
+	    HU.span([ATTR_ID,'textdownload'],'Download Text')]));
 
 	let extras = $('.typecreate-column-extra');
 	extras.each(function() {
@@ -79,6 +80,22 @@ var CreateType  = {
 		HU.jqname('column_type_' + i).val('');
 		HU.jqname('column_extra_' + i).val('');						
 	    }
+	});
+	jqid("textdownload").button().click(function(){
+	    let text = '#name,label,type,extra\n'
+	    for(let i=0;i<50;i++) {
+		let name = HU.jqname('column_name_' + i).val();
+		let label = HU.jqname('column_label_' + i).val();		
+		let type = HU.jqname('column_type_' + i).val();
+		let extra = HU.jqname('column_extra_' + i).val();
+		if(Utils.stringDefined(name) ||Utils.stringDefined(label)) {
+		    extra = extra.replace(/,/g,'\\,');
+		    extra = extra.replace(/\n/g,'\\n');		    
+		    text+=Utils.join([name,label,type,extra],',');
+		    text+='\n';
+		}
+	    }
+	    Utils.makeDownloadFile('columns.txt',text);
 	});
 	jqid("bulkupload").button().click(function(){
 	    let html = 'Enter columns, one per line.';
@@ -274,6 +291,7 @@ var CreateType  = {
 
 	lines.forEach(line=>{
 	    line = line.replace(/\\,/g,'_comma_');
+	    line = line.replace(/\\n/g,'\n');	    
 	    let toks = Utils.split(line,',',true);
 	    let id = Utils.makeID(toks[0]);
 	    let label = toks[1];
