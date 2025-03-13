@@ -10117,11 +10117,11 @@ public class EntryManager extends RepositoryManager {
 					     3, 50,HU.id(textid));
 	String help =HU.href(getRepository().getUrlPath("/entry/types.html"),"List Types",HU.attrs("target","_other"));
 	    
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Type Patterns"),
-					 HU.hbox(
-						 textArea,
-						 select+ HU.space(1) + help +
-						 "<br>" + msgLabel("Form")+"&nbsp;<i>entry type:pattern</i>")));
+	TypeHandler.addExtra(sb,"Type Patterns:",
+			     HU.hbox(
+				     textArea,
+				     select+ HU.space(1) + help +
+				     "<br>" + msgLabel("Form")+"&nbsp;<i>entry type:pattern</i>"));
         HU.script(sb, "HtmlUtils.initTypeMenu(" +HU.comma(HU.squote(uid),HU.squote(textid))+");\n");
     }
 
