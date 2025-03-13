@@ -30,42 +30,27 @@ import java.util.List;
 import java.util.Properties;
 
 
-/**
- * Class TypeHandler _more_
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 public class ActionManager extends RepositoryManager {
 
 
-    /** _more_ */
+    
     public RequestUrl URL_STATUS = new RequestUrl(this, "/status");
 
 
-    /** _more_ */
+    
     private Hashtable<Object, ActionInfo> actions = new Hashtable<Object,
                                                         ActionInfo>();
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+    
     public ActionManager(Repository repository) {
         super(repository);
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param actionId _more_
-     * @param html _more_
-     */
+    
     public void setContinueHtml(Object actionId, String html) {
         if (actionId == null) {
             return;
@@ -77,18 +62,7 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param title _more_
-     * @param status _more_
-     * @param sb _more_
-     * @param json _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result makeResult(Request request, String title, String status,
                              StringBuffer sb, boolean json)
             throws Exception {
@@ -103,15 +77,7 @@ public class ActionManager extends RepositoryManager {
         return new Result(title, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Result processStatus(Request request) throws Exception {
         boolean      json   = request.getString("output", "").equals("json");
         String       status = "";
@@ -140,6 +106,8 @@ public class ActionManager extends RepositoryManager {
             sb.append("Action canceled");
             status = "canceled";
             JobManager.getManager().stopLoad(id);
+	    String url = action.getRedirectUrl();
+	    if(url!=null) return new Result(url);
         } else {
             if (action.getError() != null) {
                 if ( !json) {
@@ -216,13 +184,7 @@ public class ActionManager extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
+    
     protected ActionInfo getAction(Object id) {
         if (id == null) {
             return null;
@@ -232,13 +194,7 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getActionOk(Object id) {
         if (id == null) {
             return true;
@@ -252,12 +208,7 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param msg _more_
-     */
+    
     public void setActionMessage(Object id, String msg) {
         ActionInfo action = getAction(id);
         if (action == null) {
@@ -267,11 +218,7 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
+    
     public void actionComplete(Object id) {
         ActionInfo action = getAction(id);
         if (action == null) {
@@ -280,12 +227,7 @@ public class ActionManager extends RepositoryManager {
         action.setRunning(false);
     }
 
-    /**
-     * _more_
-     *
-     * @param actionId _more_
-     * @param exc _more_
-     */
+    
     public void handleError(Object actionId, Exception exc) {
         ActionInfo action = getAction(actionId);
         if (action == null) {
@@ -294,49 +236,21 @@ public class ActionManager extends RepositoryManager {
         action.setError("An error has occurred:" + exc);
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     * @param continueHtml _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    private Object addAction(String msg, String continueHtml, Entry entry) {
-        String id = getRepository().getGUID();
-        actions.put(id, new ActionInfo(msg, continueHtml, entry));
+    public void removeAction(Object actionId) {
+	actions.remove(actionId);
+    }
 
+    public Object addAction(String msg, String continueHtml, Entry entry,Action action) {
+        String id = getRepository().getGUID();
+        actions.put(id, new ActionInfo(msg, continueHtml, entry,action));
         return id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param runnable _more_
-     * @param name _more_
-     * @param continueHtml _more_
-     *
-     * @return _more_
-     */
     public Result doAction(Request request, final Action runnable,
                            String name, String continueHtml) {
         return doAction(request, runnable, name, continueHtml, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param runnable _more_
-     * @param name _more_
-     * @param continueHtml _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public Result doAction(Request request, final Action runnable,
                            String name, String continueHtml, Entry entry) {
         Object actionId = runAction(runnable, name, continueHtml, entry);
@@ -346,15 +260,7 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param runnable _more_
-     * @param name _more_
-     * @param continueHtml _more_
-     * @param entry _more_
-     *  @return _more_
-     */
+    
     public Result doJsonAction(Request request, final Action runnable,
                                String name, String continueHtml,
                                Entry entry) {
@@ -366,33 +272,16 @@ public class ActionManager extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param runnable _more_
-     * @param name _more_
-     * @param continueHtml _more_
-     *
-     * @return the action id
-     */
+    
     public Object runAction(final Action runnable, String name,
                             String continueHtml) {
         return runAction(runnable, name, continueHtml, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param runnable _more_
-     * @param name _more_
-     * @param continueHtml _more_
-     * @param entry _more_
-     *
-     * @return the action id
-     */
+    
     public Object runAction(final Action runnable, String name,
                             String continueHtml, Entry entry) {
-        final Object actionId = addAction(name, continueHtml, entry);
+        final Object actionId = addAction(name, continueHtml, entry,runnable);
         Misc.run(new Runnable() {
             public void run() {
                 try {
@@ -411,233 +300,150 @@ public class ActionManager extends RepositoryManager {
         return actionId;
     }
 
-
-    /**
-     * Action _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
     public abstract static class Action {
-
-        /**  */
         boolean returnJson = false;
-
-
-        /**
-         *
-         */
         public Action() {}
 
-        /**
-         *
-         *
-         * @param returnJson _more_
-         */
         public Action(boolean returnJson) {
             this.returnJson = returnJson;
         }
 
 
-        /**
-         * _more_
-         *
-         * @param actionId _more_
-         *
-         * @throws Exception _more_
-         */
         public abstract void run(Object actionId) throws Exception;
+
+	public void setRunning(boolean value) {}
+	public String getRedirectUrl() {return null;}
     }
 
 
-    /**
-     * Class ActionInfo _more_
-     *
-     *
-     * @author RAMADDA Development Team
-     * @version $Revision: 1.3 $
-     */
     public class ActionInfo {
 
-        /** _more_ */
+	private Action action;
+
+        
         private String id;
 
-        /** _more_ */
+        
         private String name;
 
-        /** _more_ */
+        
         private boolean running = true;
 
-        /** _more_ */
+        
         private String message = "";
 
-        /** _more_ */
+        
         private String continueHtml;
 
-        /** _more_ */
+        
         private String error = null;
 
 
-        /** _more_ */
+        
         private String extraHtml;
 
-        /** _more_ */
+        
         private Entry entry;
 
 
-        /**
-         * _more_
-         *
-         * @param name _more_
-         * @param continueHtml _more_
-         * @param entry _more_
-         */
-        public ActionInfo(String name, String continueHtml, Entry entry) {
+        
+        public ActionInfo(String name, String continueHtml, Entry entry,Action action) {
             this.name         = name;
             this.continueHtml = continueHtml;
             this.id           = getRepository().getGUID();
             this.entry        = entry;
+	    this.action = action;
         }
 
 
-        /**
-         *  Set the Id property.
-         *
-         *  @param value The new value for Id
-         */
+        public ActionInfo(String name, String continueHtml, Entry entry) {
+	    this(name, continueHtml, entry,null);
+	}
+        
         public void setId(String value) {
             id = value;
         }
 
-        /**
-         *  Get the Id property.
-         *
-         *  @return The Id
-         */
+        
         public String getId() {
             return id;
         }
 
 
 
-        /**
-         *  Set the Name property.
-         *
-         *  @param value The new value for Name
-         */
+        
         public void setName(String value) {
             name = value;
         }
 
-        /**
-         *  Get the Name property.
-         *
-         *  @return The Name
-         */
+        
         public String getName() {
             return name;
         }
 
-        /**
-         *  Set the Running property.
-         *
-         *  @param value The new value for Running
-         */
+        
+	public String getRedirectUrl() {
+	    if(action!=null) return action.getRedirectUrl();
+	    return null;
+	}
+	
         public void setRunning(boolean value) {
             running = value;
+	    if(action!=null) {
+		action.setRunning(value);
+	    }
         }
 
-        /**
-         *  Get the Running property.
-         *
-         *  @return The Running
-         */
+        
         public boolean getRunning() {
             return running;
         }
 
 
 
-        /**
-         * Set the Message property.
-         *
-         * @param value The new value for Message
-         */
+        
         public void setMessage(String value) {
             message = value;
         }
 
-        /**
-         * Get the Message property.
-         *
-         * @return The Message
-         */
+        
         public String getMessage() {
             return message;
         }
 
 
-        /**
-         *  Set the ExtraHtml property.
-         *
-         *  @param value The new value for ExtraHtml
-         */
+        
         public void setExtraHtml(String value) {
             extraHtml = value;
         }
 
-        /**
-         *  Get the ExtraHtml property.
-         *
-         *  @return The ExtraHtml
-         */
+        
         public String getExtraHtml() {
             return extraHtml;
         }
 
 
-        /**
-         * Set the ContinueHtml property.
-         *
-         * @param value The new value for ContinueHtml
-         */
+        
         public void setContinueHtml(String value) {
             continueHtml = value;
         }
 
-        /**
-         * Get the ContinueHtml property.
-         *
-         * @return The ContinueHtml
-         */
+        
         public String getContinueHtml() {
             return continueHtml;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
+        
         public Entry getEntry() {
             return entry;
         }
 
-        /**
-         * Set the Error property.
-         *
-         * @param value The new value for Error
-         */
+        
         public void setError(String value) {
             error = value;
         }
 
-        /**
-         * Get the Error property.
-         *
-         * @return The Error
-         */
+        
         public String getError() {
             return error;
         }
