@@ -252,6 +252,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	if(!isLLMEnabled()) return "";
 	String space = HU.space(3);
 	StringBuilder sb = new StringBuilder();
+	sb.append(HU.formHelp("Note: When applying an LLM the file text is sent to the selected LLM for processing"));
+	sb.append(HU.vspace("0.5em"));
 	List<HtmlUtils.Selector> models = getAvailableModels();
 	if(models.size()==0) return "";
 	if(models.size()==1) {
@@ -275,10 +277,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	sb.append("<br>");
 	HU.labeledCheckbox(sb, ARG_EXTRACT_LOCATIONS, "true", request.get(ARG_EXTRACT_LOCATIONS,false),"","Extract named geographic locations");
 	sb.append(space);
-	HU.labeledCheckbox(sb, ARG_EXTRACT_LATLON, "true", request.get(ARG_EXTRACT_LATLON,false),"","Extract latitude/longitude");		
-	sb.append("<br>");
+	HU.labeledCheckbox(sb, ARG_EXTRACT_LATLON, "true", request.get(ARG_EXTRACT_LATLON,false),"","Extract latitude/longitude");	
 
-	getWikiManager().makeCallout(sb,request,"When extracting title, summary, etc., the file text is sent to the selected LLM for processing");
 	return sb.toString();
     }
 
