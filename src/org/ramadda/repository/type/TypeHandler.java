@@ -4879,6 +4879,22 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    public static void addExtra(Appendable extras, String label, String contents) {
+	if(contents.length()==0) return;
+	try {
+	    extras.append("<tr valign=top><td width=1% style='white-space:nowrap;' align=right>");
+	    extras.append(HU.b(label));
+	    extras.append("</td><td>");
+	    //		extras.append(HU.openInset(0, 30, 0, 0));
+	    extras.append(contents);
+	    extras.append("</td></tr>");
+	    //		extras.append(HU.closeInset());
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
+    }				
+
+
     public void getFileExtras(Request request, Entry entry, Appendable extras)
 	throws Exception {
 	String space = HU.space(3);
@@ -4912,14 +4928,6 @@ public class TypeHandler extends RepositoryManager {
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
 			       "Just spatial/temporal properties");
 
-	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
-					       request.get(ARG_STRIPEXIF,false),
-					       "Strip metadata from images");
-
-
-	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
-	    images +=space+HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
-	}	    
 
 	String extract = getLLMManager().getNewEntryExtract(request);
 
@@ -4950,43 +4958,47 @@ public class TypeHandler extends RepositoryManager {
 
 
 	extras.append("<table>");
-	BiConsumer<String,String> extra = (label,contents)->{
-	    if(contents.length()==0) return;
-	    try {
-		extras.append("<tr valign=top><td width=1% style='white-space:nowrap;' align=right>");
-		extras.append(HU.b(label));
-		extras.append("</td><td>");
-		//		extras.append(HU.openInset(0, 30, 0, 0));
-		extras.append(contents);
-		extras.append("</td></tr>");
-		//		extras.append(HU.closeInset());
-	    } catch(Exception exc) {
-		throw new RuntimeException(exc);
-	    }
-	};
-
 	if(entry != null && entry.isFile()) {
 	    String file = getStorageManager().getOriginalFilename(entry.getResource().getTheFile().getName());
-	    extra.accept("",HU.span(HU.labeledCheckbox(ARG_DELETEFILE,"true", false, "Delete existing file"),HU.clazz("ramadda-important"))
-			 +" --- " + file);
+	    addExtra(extras,
+		     "",HU.span(HU.labeledCheckbox(ARG_DELETEFILE,"true", false, "Delete existing file"),HU.clazz("ramadda-important"))
+		     +" --- " + file);
 	}
 
 
-	extra.accept("Entry type:",extraMore);
-	extra.accept("Zip files:",unzipWidget);	
-	extra.accept("Images:",images);
-	if(stringDefined(extract)) 
-	    extra.accept("Use LLM:",extract);
+	addExtra(extras,"Entry type:",extraMore);
+	addExtra(extras,"Zip files:",unzipWidget);	
 
-	extra.accept("Metadata:",addMetadata);
-	extra.accept("Entry name:",makeNameWidget);
+	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
+					       request.get(ARG_STRIPEXIF,false),
+					       "Strip metadata from images");
+
+
+
+	addExtra(extras,"Images:",images);
+	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
+	    String ocr = "";
+	    ocr += HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
+	    ocr+= space + HU.labeledCheckbox(ARG_INDEX_IMAGE_CONDITIONAL, "true", false,"Don't do OCR if there is any text in the docmument");	    
+	    addExtra(extras,"OCR:",ocr);
+	} 
+
+
+
+
+
+	if(stringDefined(extract)) 
+	    addExtra(extras,"Use LLM:",extract);
+
+	addExtra(extras,"Metadata:",addMetadata);
+	addExtra(extras,"Entry name:",makeNameWidget);
 	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
 
-	extra.accept("Date Format:",dateFormatWidget);	
+	addExtra(extras,"Date Format:",dateFormatWidget);	
 	if(entry==null)
-	    extra.accept("",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
+	    addExtra(extras,"",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 
 
 
