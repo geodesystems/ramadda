@@ -37,6 +37,9 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.SelectionRectangle;
 import java.util.function.Function;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 
 
 import org.w3c.dom.*;
@@ -816,8 +819,10 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    return null;
 	}
 
-	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
-	if(corpus!=null) return corpus;
+	//	System.err.println("Calling TypeHandler.getCorpus");
+	//	String corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.SEARCH);
+	//	if(corpus!=null) return corpus;
+	String corpus = null;
 	corpus=	    extractCorpus(request, entry,f.toString(),metadataList);
 	return corpus;
     }	
@@ -826,7 +831,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public String extractCorpus(Request request, Entry entry,
 				String path,
 				List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
-	boolean reIndexing =   request.getExtraProperty("reindexing")!=null;
 	File f = new File(path);
 
 	String corpusFileName = "corpus_" + f.length()+"_"+f.getName()+".txt";
@@ -850,15 +854,72 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	if(!f.exists()) {
 	    return null;
 	}
+	boolean reIndexing =   request.getExtraProperty("reindexing")!=null;
+	String sessionMessage = "Extracting text from: " + entry.getName();
+	try {
+	    if(!reIndexing) {
+		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
+	    }
 
+	    long t1 = System.currentTimeMillis();
+	    boolean doImage = request.get(ARG_INDEX_IMAGE,false);
+	    boolean doImageConditional = request.get(ARG_INDEX_IMAGE_CONDITIONAL,false);	    
+	    String corpus=null;
+	    List<org.apache.tika.metadata.Metadata> tmpList = new  ArrayList<org.apache.tika.metadata.Metadata>();
+	    /*
+	      if conditional then try to read the corpus without OCR. If we don't get anything then try it with OCR
+	     */
+	    if(doImageConditional) {
+		if(debugCorpus)
+		    System.err.println("SearchManager.readContents: Reading corpus without OCR");
 
+		corpus = readCorpus(request, entry,f,tmpList,false);
+		if(corpus==null) corpus="";
+		corpus  = corpus.trim();
+		if(corpus.length()==0) {
+		    if(debugCorpus)
+			System.err.println("SearchManager.readContents: Could not read corpus without OCR");
+		    corpus=null;
+		    tmpList = new  ArrayList<org.apache.tika.metadata.Metadata>();
+		} else {
+		    doImage = false;
+		}
+	    }
+	    if(corpus==null) {
+		corpus = readCorpus(request, entry,f,tmpList,doImage);
+	    }
+	    if(metadataList!=null) metadataList.addAll(tmpList);
+	    long t2= System.currentTimeMillis();
+	    if(corpus==null) corpus="";
+	    corpus  = corpus.trim();
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" +
+				   corpus.length() +" corpus:" + Utils.clip(corpus,50,"...").replace("\n"," "));
+	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
+	    return  corpus;
+	} catch(java.util.concurrent.CancellationException cancel) {
+	    getSessionManager().addSessionMessage(request,"Text extraction has been cancelled");
+	    return null;
+	}  catch(Throwable exc) {
+	    getLogManager().logError("Error extracting text corpus for entry:" + entry +" file:" + f.getName() +" error:" + exc,exc);
+	    getSessionManager().addSessionMessage(request,"There was an error extracting text from the document: " + exc.getMessage());
+	    return null;
+	} finally {
+	    if(!reIndexing) {
+		getSessionManager().clearSessionMessage(request,entry.getId(),null);
+	    }
+	}	
+    }
+    
+    
+    private String readCorpusInner(final Request request, final Entry entry,final File f,
+				   final List<org.apache.tika.metadata.Metadata> metadataList,
+				   final boolean doImage) throws Exception {
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
-            org.apache.tika.metadata.Metadata metadata =
-                new org.apache.tika.metadata.Metadata();
+            org.apache.tika.metadata.Metadata metadata =   new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    boolean doImage = request.get(ARG_INDEX_IMAGE,false);
 	    TikaConfig config = getTikaConfig(doImage);
 	    Parser parser;
 	    if(f.getName().toLowerCase().endsWith("pdf")) {
@@ -872,37 +933,61 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 	    ParseContext parseContext = new ParseContext();
             parseContext.set(TikaConfig.class, config);
-	    //            BodyContentHandler handler =  new BodyContentHandler(1000000);	
 	    BodyContentHandler handler =  new BodyContentHandler(LUCENE_MAX_LENGTH);	
-	    String sessionMessage = "Extracting text from: " + entry.getName();
-	    long t1 = System.currentTimeMillis();
-	    if(!reIndexing) {
-		getSessionManager().addSessionMessage(request,sessionMessage,entry.getId(),false);
-	    }
 	    try {
 		parser.parse(bis, handler, metadata, parseContext);
-		//		parser.parse(bis, handler, metadata,new org.apache.tika.parser.ParseContext());
 	    } catch(org.apache.tika.exception.WriteLimitReachedException ignore) {
-	    }	finally {
-		if(!reIndexing) {
-		    getSessionManager().clearSessionMessage(request,entry.getId(),sessionMessage);
-		}
-	    }
-	    long t2= System.currentTimeMillis();
-	    String corpus = handler.toString();
-	    if(corpus==null) corpus="";
-	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" + corpus.length());
-	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
-	    return  corpus;
-	}  catch(Throwable exc) {
-	    getLogManager().logError("Error extracting text corpus for entry:" + entry +" file:" + f.getName() +" error:" + exc,exc);
-	    getSessionManager().addSessionMessage(request,"There was an error extracting text from the document: " + exc.getMessage());
-	    return null;
+	    } 
+	    return  handler.toString();
+	} catch(Exception exc) {
+	    throw exc;
 	}
     }
-    
-    
+	
+
+
+    private String readCorpus(final Request request, final Entry entry,final File f,
+			      final List<org.apache.tika.metadata.Metadata> metadataList,
+			      final boolean doImage) throws Exception {
+	if(!doImage) {
+	    return readCorpusInner(request,entry,f,metadataList,doImage);
+	}
+	final ExecutorService executor = Executors.newSingleThreadExecutor();
+	final Future<String> future = executor.submit(() -> {
+		return readCorpusInner(request,entry,f,metadataList,doImage);
+	    });
+	
+	final boolean[] running = {true};
+	ActionManager.Action action = new ActionManager.Action() {
+		public void run(final Object actionId) throws Exception {
+		}
+		@Override
+		public String getRedirectUrl() {
+		    return getEntryManager().getEntryUrl(request, entry);
+		}
+
+		@Override
+		public void setRunning(boolean state) {
+		    if(!state && running[0]) {
+			future.cancel(true);
+		    }
+		}
+	    };
+	
+	Object actionId = getActionManager().addAction("","",null,action);
+	String cancelUrl = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&" + ARG_CANCEL+"=true";
+	getSessionManager().addRawSessionMessage(request,HU.href(cancelUrl,"Cancel"),entry.getId());
+	try {
+	    String contents =  future.get();
+	    return contents;
+	} finally {
+	    running[0] = false;
+	    getActionManager().removeAction(actionId);
+	}
+	
+	 
+    }
+
     private void addContentField(Request request, Entry entry,
                                  org.apache.lucene.document.Document doc,
 				 String field,
@@ -914,6 +999,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(!mainEntryFile && Utils.isImage(f.toString())) return;
 
 	    List<org.apache.tika.metadata.Metadata> metadata = new ArrayList<org.apache.tika.metadata.Metadata>();
+
+
+
 	    long t1 = System.currentTimeMillis();
 	    String contents = readContents(request, entry, f,metadata);
 	    long t2= System.currentTimeMillis();
