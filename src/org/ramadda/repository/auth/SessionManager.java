@@ -327,6 +327,7 @@ public class SessionManager extends RepositoryManager {
 		    continue;
 		}
 		if(message.match(key)) {
+		    if(msg==null) continue;
 		    if(Misc.equals(msg,message.message)) continue;
 		}
 		tmp.add(message);
@@ -370,13 +371,20 @@ public class SessionManager extends RepositoryManager {
 	}
     }
 
+
+    public void addRawSessionMessage(Request request, String message,Object key) {
+	addSessionMessage(request, message, key,false,true);
+    }
+
     public void addSessionMessage(Request request, String message) {
 	addSessionMessage(request, message, null,true);
     }
 
-    public void addSessionMessage(Request request, String message,Object key,boolean error)  {
+    public synchronized void addSessionMessage(Request request, String message,Object key,boolean error,boolean...raw)  {
 	try {
-	    message = HU.strictSanitizeString(message);
+	    if(raw.length==0 || !raw[0]) {
+		message = HU.strictSanitizeString(message);
+	    }
 
 	    List<SessionMessage> messages=(List<SessionMessage>)
 		getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
