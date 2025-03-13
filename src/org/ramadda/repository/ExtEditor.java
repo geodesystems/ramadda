@@ -1820,7 +1820,7 @@ public class ExtEditor extends RepositoryManager {
 	getPageHandler().entrySectionOpen(request, entry, sb, "Create Entry Type");
 	String callout = "";
 	if(request.isAdmin()) {
-	    callout+="+note\nIf loading the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
+	    callout+="+note\nIf you are installing the entry type it is best to do this on a development server as the database schema is changed, etc. Otherwise, make sure you know what you are doing. ";
 	}
 	callout+=HU.href(getRepository().getUrlBase()+"/userguide/entrytypes.html#create_entry_type_form","View Help", "target=_help");
 	callout+="\n-note";
@@ -2331,7 +2331,7 @@ public class ExtEditor extends RepositoryManager {
 	if(root!=null && request.isAdmin() && request.exists(ARG_INSTALL)) {
 	    try {
 		getRepository().loadTypeHandler(root,true);
-		theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be generated and installed in the RAMADDA plugins directory.");
+		theMessage = HU.div("The Entry type has been temporarily installed. The plugin file still needs to be downloaded and installed in the RAMADDA plugins directory.");
 	    }  catch(Exception exc) {
 		return  outputCreateType(request, entry,
 					 getPageHandler().showDialogError("There was an error loading the entry type:" + exc));
