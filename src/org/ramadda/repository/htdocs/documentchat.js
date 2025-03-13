@@ -52,7 +52,7 @@ function DocumentChat(id,entryId,action,models,args) {
 			  ATTR_ID, this.domId(ID_LLM_SUBMIT)],HU.getIconImage('fa-regular fa-share-from-square'));
     text += submit;
     text += HU.input('','',[ATTR_PLACEHOLDER,this.opts.placeholder,
-			    ATTR_STYLE,HU.css('width','100%','min-width,','100%'),
+			    ATTR_STYLE,HU.css('width','100%','min-width,','100%','font-size','18px'),
 			    ATTR_ID,this.domId(ID_LLM_INPUT_FIELD),
 			    ATTR_CLASS,'ramadda-documentchat-input']);    
 
@@ -90,7 +90,7 @@ function DocumentChat(id,entryId,action,models,args) {
 
     chat +=HU.div([ATTR_STYLE,HU.css('position','relative')],
 		  text+
-		  makeProgress(ID_LLM_PROGRESS1,'16px','0px')+
+		  makeProgress(ID_LLM_PROGRESS1,'24px','0px')+
 		  makeProgress(ID_LLM_PROGRESS2,'40px','10px')		  
 		 );
 		  
