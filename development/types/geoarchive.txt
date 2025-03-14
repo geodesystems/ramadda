@@ -16,19 +16,19 @@ Storage unit
 
 #COLLECTION SITE
 
-Locality,,enumerationplus,group="Collection Site" showenumerationpopup="true"
-Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  showenumerationpopup="true"
-County,,enumerationplus,values="file:/resources/geo/countylist.txt" showenumerationpopup="true"
-State,,enumerationplus, values="file:/org/ramadda/plugins/archive/resources/states.txt"  showenumerationpopup="true"
-Waterbody/Drain,,enumerationplus,showenumerationpopup="true"
-Township,,enumerationplus,showenumerationpopup="true" subgroup="Legal Land Description"
-Range,,enumerationplus,showenumerationpopup="true"
-Section,,enumerationplus,showenumerationpopup="true"
-UTM Zone,,enumeration,subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt" showenumerationpopup="true"
+Locality,,enumerationplus,group="Collection Site" 
+Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  
+County,,enumerationplus,values="file:/resources/geo/countylist.txt" 
+State,,enumerationplus, values="file:/resources/geo/statelist.txt" 
+Waterbody/Drain,,enumerationplus,
+Township,,enumerationplus,subgroup="Legal Land Description"
+Range,,enumerationplus,
+Section,,enumerationplus,
+UTM Zone,,enumeration,subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt"
 UTM Easting,,double
 UTM Northing,,double
-Vertical Datum,,enumerationplus,subgroup="Datum"  values="file:/org/ramadda/repository/resources/geo/verticaldatums.txt"  showenumerationpopup="true"
-Datum,,enumerationplus, values="file:/org/ramadda/repository/resources/geo/datums.txt"  showenumerationpopup="true"
+Vertical Datum,,enumerationplus,subgroup="Datum"  values="file:/resources/geo/verticaldatums.txt"  
+Datum,,enumerationplus, values="file:/resources/geo/datums.txt"  
 Deposit Environment,,enumerationplus,subgroup="Environment"
 
 
@@ -42,14 +42,15 @@ Collection Number,,enumerationplus
 #Collection Date,,date
 Study Number,,enumerationplus
 Condition,,enumerationplus,values="Good\,Fair\,Poor"
-Maintenance Cycle,,enumerationplus, values="Cycle1\,Cycle2\,Cycle 3"
-Condition Description,,string 
-Prep Material,,enumerationplus
-Other Numbers
+#Maintenance Cycle,,enumerationplus, values="Cycle1\,Cycle2\,Cycle 3"
+Data of last maintenance,,date,
+Condition Description,,string,size="2000" rows="5" 
+Prep Material,,string,
+#Other Numbers
 Eminent Figure,,enumerationplus
-Rct. Conservation,,enumerationplus
+Recommended Conservation,,string,size="1000"
 Cataloger,,enumerationplus
-Exhibit Label
+Exhibit Label,,string,size="2000" rows="5"
 Lithology,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology"
 Pedotype,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/pedotypes.txt"  
 Period/System,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/periods.txt" 
@@ -59,6 +60,7 @@ Formation,,enumerationplus
 Member,,enumerationplus
 Unit,,enumerationplus
 Thin section,,enumerationplus
+Notes,,string,size="2000" rows="5"
 
 
 
@@ -67,22 +69,15 @@ General information (same as Geology)
 Collection site (same as Geology)
 
 
-Specific section
-Lithology,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology"
-In situ/Float
-Horizon
-Taphonomy 
-Period/System,,enumerationplus,  values="file:/org/ramadda/plugins/archive/resources/periods.txt" 
-Epoch/Series
-Age/Stage
-Formation
-Member
-Unit 
-Type Specimen
+Specific section,,enumerationplus
+In situ/Float,,
+Horizon,,
+Taphonomy,, 
+Type Specimen,,
+
 
 #Entomology 
 Object category
-Object name 
 Notes
 Description
 Type
@@ -96,25 +91,21 @@ Measurement
 
 
 At the minimum level, digitization must include the following information for each specimen:
-•	unique ID
 •	taxonomy
 •	location in the collection
 •	a transcription of the physical label
 Enhanced levels of digitization may include:
-•	verbatim and interpreted locality
-•	georeferencing information
-•	associated data
-•	images
 
 
 Standardized 4- and 6-letter Bird Species (“Alpha“) Codes
 
 Sections 
-Botany
 Geology/mineral science
 Paleontology
+Botany
 Entomology
-Anthropology 
+
+
 Herpetology
 Ornithology
 Mammalogy
