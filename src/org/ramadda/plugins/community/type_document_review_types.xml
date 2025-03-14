@@ -3,7 +3,7 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
 -->
 <type  name="type_document_review" 
  description="Environmental Review" 
- handler="org.ramadda.repository.type.GenericTypeHandler" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  super="type_document_collection" 
  supercategory="General" 
  category="Documents" 
