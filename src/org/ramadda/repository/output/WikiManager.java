@@ -9904,7 +9904,10 @@ public class WikiManager extends RepositoryManager
         }
         if (_path.indexOf("youtube.com") >= 0) {
             return MEDIA_YOUTUBE;
-        }	
+        }
+        if (_path.indexOf("youtu.be") >= 0) {
+            return MEDIA_YOUTUBE;
+        }		
         if (_path.indexOf("tiktok.com") >= 0) {
             return MEDIA_TIKTOK;
         }	
