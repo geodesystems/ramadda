@@ -585,7 +585,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		}
 
 
-		console.log(this.getOrderByTypes())
 		Utils.split(this.getOrderByTypes(),',',true,true).forEach(type=>{
 		    if(type=='relevant')
 			byList.push([getLabel(type,null),type]);

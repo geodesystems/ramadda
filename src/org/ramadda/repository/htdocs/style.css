@@ -345,7 +345,7 @@ ramadda-heading, .ramadda-page-heading {
     max-height:200px;
     overflow-y:auto;
     max-width:800px;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 .seesv-table-cell {
@@ -819,7 +819,7 @@ i.fa, i.fas,i.fab {
     margin-left:5px;
     overflow-y:auto;
     line-height:1.5em;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-width:100%;
     white-space: nowrap;
     color: var(--nav-color);
@@ -1595,7 +1595,7 @@ a.ramadda-menubar-button:hover {
     
 .ramadda-gridbox .ramadda-subheading {
     max-width:100%;
-    overflow-x:auto;
+    overflow-x:overlay;
     white-space:nowrap;
 }
 
@@ -1811,7 +1811,7 @@ mapheader {
     padding:5px;
     margin-right:5px;
     max-width:200px;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-height:500px;
     overflow-y:auto;
     white-space:nowrap;
@@ -3208,7 +3208,7 @@ table.dataTable tbody td {
     white-space:nowrap;
     padding-left:5px;
     max-width:100%;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 
@@ -3412,7 +3412,7 @@ td.entry-table-block {
 .ramadda-search-bytype .ramadda-search-provider {
     white-space:nowrap;
     max-width:200px;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 
@@ -4103,7 +4103,7 @@ div.ramadda-menu-item:hover, .ramadda-menu-item:hover a, .ramadda-menu-item a:ho
     max-height:150px;
     overflow-y:auto;
     max-width:500px;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 .ramadda-select-inner {
@@ -4243,7 +4243,7 @@ label {
 
 .ramadda-earth-entries {
     white-space:nowrap; 
-    overflow-x:auto;
+    overflow-x:overlay;
     padding-right:6px;
     margin-right:2px;
 }
@@ -4481,7 +4481,7 @@ label {
     display:inline-block;
     display:inline;
     max-width:90%;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-height:100px;    
     overflow-y:auto;    
     margin-left:10px;
@@ -4489,7 +4489,7 @@ label {
 .ramadda-license-description {
     font-style:italic;
     max-width:600px;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-height:100px;    
     overflow-y:auto;    
     margin-left:10px;
@@ -4831,7 +4831,7 @@ a.ramadda-heading-2-link:visited {
     padding: 4px;
     border-radius: var(--default-radius);
     max-width: 300px;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 .entry-tools-box {
@@ -5349,7 +5349,7 @@ wiki {
     max-height:300px;
     overflow-y: auto;
     max-width: 300px;
-    overflow-x:auto;
+    overflow-x:overlay;
     display:none;
     padding-left:5px;
 }
@@ -6076,7 +6076,7 @@ a.wiki-link-noexist {
     width:100%;
     max-width:100%;
     overflow-y:auto;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 
@@ -6480,7 +6480,7 @@ a.wiki-link-noexist {
     left:100px;
     top:40px;
     z-index:var(--wikieditor-preview-z-index);
-    overflow-x:auto
+    overflow-x:overlay
 }
 
 .wiki-editor-preview .ramadda-menubar {
@@ -6573,7 +6573,7 @@ a.wiki-link-noexist {
 .wiki-editor-popup-items {
     margin-left:10px;
     max-width:400px;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-height:200px;
     overflow-y:auto;
 }
@@ -6616,7 +6616,7 @@ a.wiki-link-noexist {
 .ace_editor  { 
     border-radius:0px;
     margin-top:0px;
-    overflow-x:auto;
+    overflow-x:overlay;
     width:100%;
     border: 1px #ccc solid;
     height:500px;
@@ -6671,7 +6671,7 @@ a.wiki-link-noexist {
     margin-bottom:4px;    
     display:inline-block;
     overflow-y:auto;
-    overflow-x:auto;
+    overflow-x:overlay;
     max-width:300px;
     font-size:80%;
 }
@@ -6723,7 +6723,7 @@ a.wiki-link-noexist {
 .cal-day {
     display:inline-block;
     max-width:100%;
-    overflow-x:auto;
+    overflow-x:overlay;
 }
 
 .calcontents {
