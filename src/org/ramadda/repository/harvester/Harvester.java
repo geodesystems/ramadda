@@ -24,6 +24,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+
 import ucar.unidata.util.DateUtil;
 
 import ucar.unidata.util.IOUtil;
@@ -61,288 +62,128 @@ import java.util.Properties;
 
 import java.util.regex.*;
 
-
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+@SuppressWarnings("unchecked")
 public abstract class Harvester extends RepositoryManager {
-
     public static boolean debug = false;
-
-    /** _more_ */
     public static final String FILE_PLACEHOLDER = ".placeholder";
-
-
-    /** _more_ */
     private static final boolean PRINT_DEBUG = false;
-
-    /** _more_ */
     private static final LogManager.LogId LOGID =
         new LogManager.LogId("org.ramadda.repository.harvester.Harvester");
 
-
-    /** _more_ */
-
     public static final String TAG_HARVESTER = "harvester";
-
-    /** _more_ */
     public static final String TAG_HARVESTERS = "harvesters";
-
-    /** _more_ */
+    public static final String ATTR_EXTRA = "extra";
     public static final String ATTR_SLEEPUNIT = "sleepunit";
-
     public static final String ATTR_ALIASES = "aliases";
     public static final String ATTR_CLEANNAME = "cleanname";
-
     public static final String ATTR_TYPEPATTERNS = "typepatterns";
-
-    /** _more_ */
     public static final String UNIT_ABSOLUTE = "absolute";
-
-    /** _more_ */
     public static final String UNIT_MINUTE = "minute";
-
-    /** _more_ */
     public static final String UNIT_HOUR = "hour";
-
-    /** _more_ */
     public static final String UNIT_DAY = "day";
-
-
-    /** _more_ */
     public static final String ATTR_GENERATEMD5 = "generatemd5";
-
-    /** _more_ */
     public static final String ATTR_CLASS = "class";
-
-    /** _more_ */
     public static final String ATTR_ROOTDIR = "rootdir";
-
-    /** _more_ */
     public static final String ROOTDIR_DELIM = ";";
-
-    /** _more_ */
     public static final String ATTR_USER = "user";
-
-    /** _more_ */
     public static final String ATTR_MONITOR = "monitor";
-
-    /** _more_ */
     public static final String ATTR_ADDMETADATA = "addmetadata";
-
-    /** _more_ */
     public static final String ATTR_ADDSHORTMETADATA = "addshortmetadata";
-
-    /** _more_ */
     public static final String ATTR_NAME = "name";
-
-    /** _more_ */
     public static final String ATTR_ACTIVEONSTART = "activeonstart";
-
-    /** _more_ */
     public static final String ATTR_TESTCOUNT = "testcount";
-
-    /** _more_ */
     public static final String ATTR_TESTMODE = "testmode";
-
-    /** _more_ */
     public static final String ATTR_SLEEP = "sleep";
-
-
-    /** _more_ */
     public static final String ATTR_NAMETEMPLATE = "nametemplate";
-
-    /** _more_ */
     public static final String ATTR_GROUPTEMPLATE = "grouptemplate";
-
-    /** _more_ */
     public static final String ATTR_TAGTEMPLATE = "tagtemplate";
-
-    /** _more_ */
     public static final String ATTR_DESCTEMPLATE = "desctemplate";
-
-    /** _more_ */
     public static final String ATTR_BASEGROUP = "basegroup";
 
-
-
-    /** _more_ */
     protected long startTime;
-
-    /** _more_ */
     protected long endTime;
-
-
-
-    /** _more_ */
     protected String baseGroupId = "";
-
-    /** _more_ */
     protected String groupTemplate = "";
-
-    /** _more_ */
     protected String nameTemplate = "${filename}";
-
-    /** _more_ */
     protected String descTemplate = "";
-
-    /** _more_ */
     protected String tagTemplate = "";
-
-
-
-    /** _more_ */
     protected Harvester parent;
-
-    /** _more_ */
     protected List<Harvester> children;
-
-    /** _more_ */
     private List<FileWrapper> rootDirs = new ArrayList<FileWrapper>();
-
-    /** _more_ */
     private String name = "";
-
-    /** _more_ */
     private Element element;
-
-    /** _more_ */
     private boolean monitor = false;
-
-    /** _more_ */
     private boolean active = false;
-
-    /** _more_ */
     private boolean generateMd5 = false;
-
-    /** _more_ */
     private boolean activeOnStart = false;
-
-    /** _more_ */
     private double sleepMinutes = 5;
-
-    /** _more_ */
     private String sleepUnit = UNIT_ABSOLUTE;
-
-    /** _more_ */
     private int timestamp = 0;
-
-    /** _more_ */
+    private Hashtable extra;
     private boolean addMetadata = false;
-
-
-    /** _more_ */
     private boolean addShortMetadata = false;
-
-    /** _more_ */
     private String id;
-
-    /** _more_ */
     private boolean isEditable = false;
-
-    /** _more_ */
     private TypeHandler typeHandler;
-
     protected String typePatterns="";
-
     private String aliases = "";    
-
     private boolean cleanName = false;    
-
     private Hashtable<String,String> aliasMap;
-
-
-
-
-    /** _more_ */
     private StringBuffer error;
-
-    /** _more_ */
     protected StringBuffer status = new StringBuffer();
-
     protected List<String> otherMsgs = new ArrayList<String>();
-
-    /** _more_ */
     protected String currentStatus = "";
-
-    /** _more_ */
     private String userName;
-
-    /** _more_ */
     private User user;
-
-    /** _more_ */
     private boolean testMode = false;
-
-    /** _more_ */
     private int testCount = 100;
-
-
-    /** _more_ */
     protected String printTab = "";
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
+    
     public Harvester(Repository repository) {
         super(repository);
         this.id = repository.getGUID();
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     *
-     * @throws Exception _more_
-     */
     public Harvester(Repository repository, String id) throws Exception {
         super(repository);
         this.id         = id;
         this.isEditable = true;
     }
 
+    public Object getExtraAttribute(String key) {
+	if(extra==null) return null;
+	return extra.get(key);
+    }
+
+    public void putExtraAttribute(String key,Object value) {
+	if(extra==null) extra = new Hashtable();
+	extra.put(key,value);
+    }
+
+    public boolean getExtraAttribute(String key, boolean dflt) {
+	return Utils.getProperty(extra,key,dflt);
+    }
+    public String getExtraAttribute(String key, String dflt) {
+	return Utils.getProperty(extra,key,dflt);
+    }    
+
+
     public String getDefaultTypeHandler() throws Exception {
 	return TypeHandler.TYPE_FILE;
     }
 
-
     public TypeHandler getTypeHandler() throws Exception {
 	return  getTypeHandler(getDefaultTypeHandler());
     }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public TypeHandler getTypeHandler(String dflt) throws Exception {
         if (typeHandler == null) {
             this.typeHandler =
                 repository.getTypeHandler(dflt);
         }
-
         return typeHandler;
     }
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Harvester(Repository repository, Element element)
             throws Exception {
         this(repository);
@@ -352,25 +193,8 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public abstract String getDescription();
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param createDate _more_
-     * @param fromDate _more_
-     * @param toDate _more_
-     * @param filename _more_
-     *
-     * @return _more_
-     */
+    
     public String applyMacros(String s, Date createDate, Date fromDate,
                               Date toDate, String filename) {
         if (fromDate == null) {
@@ -392,14 +216,7 @@ public abstract class Harvester extends RepositoryManager {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected User getUser() throws Exception {
         if (user != null) {
             return user;
@@ -418,17 +235,11 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /** _more_ */
+    
     private Request request;
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected Request getRequest() throws Exception {
         if (request == null) {
             request = new Request(getRepository(), getUser());
@@ -439,13 +250,7 @@ public abstract class Harvester extends RepositoryManager {
         return request;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry getBaseGroup() throws Exception {
         if (!Utils.stringDefined(baseGroupId)) {
             return null;
@@ -461,14 +266,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param selectId _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void addBaseGroupSelect(String selectId, StringBuffer sb)
             throws Exception {
         Entry  baseGroup = getBaseGroup();
@@ -485,13 +283,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
@@ -524,6 +316,12 @@ public abstract class Harvester extends RepositoryManager {
 
         nameTemplate = MyXmlUtil.getAttribute(element, ATTR_NAMETEMPLATE,
                                             nameTemplate);
+	String extraXml =MyXmlUtil.getGrandChildText(element,ATTR_EXTRA,null);
+	if(extraXml!=null) {
+	    extraXml = new String(Utils.decodeBase64(extraXml));
+	    extra = (Hashtable) getRepository().decodeObject(extraXml);
+	}
+
         descTemplate = MyXmlUtil.getAttribute(element, ATTR_DESCTEMPLATE, "");
         tagTemplate = MyXmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
                                            tagTemplate);
@@ -555,23 +353,12 @@ public abstract class Harvester extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public boolean getDefaultActiveOnStart() {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param redirectToEdit _more_
-     *
-     * @return _more_
-     */
+    
     public String getRunLink(Request request, boolean redirectToEdit) {
         if (getActive()) {
             return HtmlUtils
@@ -638,13 +425,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void applyEditForm(Request request) throws Exception {
         this.request = null;
         getEntryManager().clearSeenResources();
@@ -695,14 +476,7 @@ public abstract class Harvester extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
@@ -717,12 +491,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     */
+    
     public void makeRunSettings(Request request, StringBuffer sb) {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject(msg("Absolute (minutes)"),
@@ -801,24 +570,12 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     *
-     * @return _more_
-     */
+    
     public boolean showWidget(String arg) {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
+    
     public boolean equals(Object o) {
         if ( !getClass().equals(o.getClass())) {
             return false;
@@ -829,13 +586,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void applyState(Element element) throws Exception {
         element.setAttribute(ATTR_CLASS, getClass().getName());
         element.setAttribute(ATTR_NAME, name);
@@ -864,15 +615,21 @@ public abstract class Harvester extends RepositoryManager {
             element.setAttribute(ATTR_ROOTDIR,
                                  StringUtil.join(ROOTDIR_DELIM, rootDirs));
         }
+
+	if(extra!=null) {
+	    String xml = getRepository().encodeObject(extra);
+	    xml = Utils.encodeBase64(xml);
+	    Element extraNode = MyXmlUtil.create(element.getOwnerDocument(), ATTR_EXTRA, element);
+	    extraNode.appendChild(MyXmlUtil.makeCDataNode(element.getOwnerDocument(),
+							  xml,
+							  false));
+
+	}
+
+
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getContent() throws Exception {
         Document doc  = MyXmlUtil.makeDocument();
         Element  root = doc.createElement(TAG_HARVESTER);
@@ -881,13 +638,7 @@ public abstract class Harvester extends RepositoryManager {
 	return xml;
     }
 
-    /**
-     * _more_
-     *
-     * @param content _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public void initFromContent(String content) throws Exception {
         if ((content == null) || (content.trim().length() == 0)) {
             return;
@@ -903,51 +654,25 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param filepath _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public Entry processFile(TypeHandler type, String filepath)
             throws Exception {
         return null;
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String getId() {
         return id;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
+    
     public void setId(String id) {
         this.id = id;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param root _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public static List<Harvester> createHarvesters(Repository repository,
             Element root)
             throws Exception {
@@ -972,53 +697,31 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public List<FileWrapper> getRootDirs() {
         return rootDirs;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param timestamp _more_
-     *
-     * @return _more_
-     */
+    
     public boolean canContinueRunning(int timestamp) {
         return getRepository().getActive() && getActive()
                && (timestamp == getCurrentTimestamp());
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public int getCurrentTimestamp() {
         return timestamp;
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
+    
     public void logStatus(String msg) {
         status.append("[<i>" + getDateHandler().formatDate(new Date())
                       + "</i>]: " + msg + "<br>");
     }
 
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public final void run() throws Exception {
         try {
             if (active) {
@@ -1047,12 +750,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
+    
     public void logHarvesterError(String message, Throwable exc) {
         System.err.println("ERROR:" + getName() + " " + message);
         exc.printStackTrace();
@@ -1062,11 +760,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param message _more_
-     */
+    
     public void logHarvesterInfo(String message) {
         if (PRINT_DEBUG) {
             System.err.println(printTab + message);
@@ -1077,26 +771,16 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     */
+    
     public void clearCache() {}
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public StringBuffer getError() {
         return error;
     }
 
-    /**
-     * _more_
-     *
-     * @param e _more_
-     */
+    
     public void appendError(String e) {
         if (this.error == null) {
             this.error = new StringBuffer();
@@ -1106,20 +790,12 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
+    
     public String getExtraInfo() throws Exception {
         return currentStatus + "<br>" + status;
     }
 
-    /**
-     * _more_
-     */
+    
     public void resetStatus() {
         status        = new StringBuffer();
 	otherMsgs = new ArrayList<String>();
@@ -1127,13 +803,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param timestamp _more_
-     * @throws Exception _more_
-     */
+    
     protected void runInner(int timestamp) throws Exception {
         while (canContinueRunning(timestamp)) {
             try {
@@ -1163,20 +833,14 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
+    
     protected void runHarvester() throws Exception {
         //noop
     }
 
 
 
-    /**
-     * _more_
-     */
+    
     protected void doPause() {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
@@ -1187,87 +851,51 @@ public abstract class Harvester extends RepositoryManager {
         Utils.pauseEvery((int) minutes,status);
     }
 
-    /**
-     * Set the Active property.
-     *
-     * @param value The new value for Active
-     */
+    
     public void setActive(boolean value) {
         active = value;
     }
 
-    /**
-     * Get the Active property.
-     *
-     * @return The Active
-     */
+    
     public boolean getActive() {
         return active;
     }
 
 
 
-    /**
-     * Set the Monitor property.
-     *
-     * @param value The new value for Monitor
-     */
+    
     public void setMonitor(boolean value) {
         monitor = value;
     }
 
-    /**
-     * Get the Monitor property.
-     *
-     * @return The Monitor
-     */
+    
     public boolean getMonitor() {
         return monitor;
     }
 
-    /**
-     *  Set the AddMetadata property.
-     *
-     *  @param value The new value for AddMetadata
-     */
+    
     public void setAddMetadata(boolean value) {
         addMetadata = value;
     }
 
-    /**
-     *  Get the AddMetadata property.
-     *
-     *  @return The AddMetadata
-     */
+    
     public boolean getAddMetadata() {
         return addMetadata;
     }
 
 
-    /**
-     *  Set the AddMetadata property.
-     *
-     *  @param value The new value for AddMetadata
-     */
+    
     public void setAddShortMetadata(boolean value) {
         addShortMetadata = value;
     }
 
-    /**
-     *  Get the AddMetadata property.
-     *
-     *  @return The AddMetadata
-     */
+    
     public boolean getAddShortMetadata() {
         return addShortMetadata;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param user _more_
-     */
+    
     public void setUser(User user) {
         if (user != null) {
             userName = user.getId();
@@ -1276,20 +904,12 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-    /**
-     *  Set the User property.
-     *
-     *  @param value The new value for User
-     */
+    
     public void setUserName(String value) {
         this.userName = value;
     }
 
-    /**
-     *  Get the User property.
-     *
-     *  @return The User
-     */
+    
     public String getUserName() {
         return this.userName;
     }
@@ -1297,69 +917,38 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * Set the SleepMinutes property.
-     *
-     * @param value The new value for SleepMinutes
-     */
+    
     public void setSleepMinutes(double value) {
         sleepMinutes = value;
     }
 
-    /**
-     * Get the SleepMinutes property.
-     *
-     * @return The SleepMinutes
-     */
+    
     public double getSleepMinutes() {
         return sleepMinutes;
     }
 
-    /**
-     * Set the Name property.
-     *
-     * @param value The new value for Name
-     */
+    
     public void setName(String value) {
         name = value;
     }
 
-    /**
-     * Get the Name property.
-     *
-     * @return The Name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * Set the IsEditable property.
-     *
-     * @param value The new value for IsEditable
-     */
+    
     public void setIsEditable(boolean value) {
         isEditable = value;
     }
 
-    /**
-     * Get the IsEditable property.
-     *
-     * @return The IsEditable
-     */
+    
     public boolean getIsEditable() {
         return isEditable;
     }
 
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
+    
     public List<String> split(Element element, String attr) {
         if ( !MyXmlUtil.hasAttribute(element, attr)) {
             return new ArrayList<String>();
@@ -1371,39 +960,23 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * Set the ActiveOnStart property.
-     *
-     * @param value The new value for ActiveOnStart
-     */
+    
     public void setActiveOnStart(boolean value) {
         activeOnStart = value;
     }
 
-    /**
-     * Get the ActiveOnStart property.
-     *
-     * @return The ActiveOnStart
-     */
+    
     public boolean getActiveOnStart() {
         return activeOnStart;
     }
 
 
-    /**
-     * Set the GenerateMd5 property.
-     *
-     * @param value The new value for GenerateMd5
-     */
+    
     public void setGenerateMd5(boolean value) {
         generateMd5 = value;
     }
 
-    /**
-     * Get the GenerateMd5 property.
-     *
-     * @return The GenerateMd5
-     */
+    
     public boolean getGenerateMd5() {
         return generateMd5;
     }
@@ -1411,11 +984,7 @@ public abstract class Harvester extends RepositoryManager {
 
 
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
+    
     public void debug(String msg) {
         if (debug || getTestMode()) {
 	    if(debug) System.err.println(msg);
@@ -1428,50 +997,28 @@ public abstract class Harvester extends RepositoryManager {
     }
 
 
-    /**
-     * Set the TestMode property.
-     *
-     * @param value The new value for TestMode
-     */
+    
     public void setTestMode(boolean value) {
         testMode = value;
     }
 
-    /**
-     * Get the TestMode property.
-     *
-     * @return The TestMode
-     */
+    
     public boolean getTestMode() {
         return testMode;
     }
 
 
-    /**
-     * Set the TestCount property.
-     *
-     * @param value The new value for TestCount
-     */
+    
     public void setTestCount(int value) {
         testCount = value;
     }
 
-    /**
-     * Get the TestCount property.
-     *
-     * @return The TestCount
-     */
+    
     public int getTestCount() {
         return testCount;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
+    
     public boolean defined(String s) {
         if ((s != null) && (s.length() > 0)) {
             return true;
@@ -1480,11 +1027,7 @@ public abstract class Harvester extends RepositoryManager {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
+    
     public String toString() {
         return "harvester:" + getName();
     }

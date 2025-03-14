@@ -57,7 +57,7 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	sb.append("<br>");
 	/*
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
-	    sb.append(HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from image"));
+	    sb.append(HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from image"));
 	}
 	*/
 	sb.append("</div>");

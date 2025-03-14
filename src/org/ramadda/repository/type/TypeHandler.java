@@ -4978,8 +4978,8 @@ public class TypeHandler extends RepositoryManager {
 	addExtra(extras,"Images:",images);
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    String ocr = "";
-	    ocr += HU.labeledCheckbox(ARG_INDEX_IMAGE, "true", false,"Extract text from images");
-	    ocr+= space + HU.labeledCheckbox(ARG_INDEX_IMAGE_CONDITIONAL, "true", false,"Don't do OCR if there is any text in the docmument");	    
+	    ocr += HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from images");
+	    ocr += space + HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true", false,"Don't do OCR if there is any text in the document");
 	    addExtra(extras,"OCR:",ocr);
 	} 
 

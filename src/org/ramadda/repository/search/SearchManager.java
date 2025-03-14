@@ -763,7 +763,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 				File f,List<org.apache.tika.metadata.Metadata> metadataList) throws Exception {
 	boolean isImage = Utils.isImage(f.getName());
 	if(isImage) {
-	    if(!request.get(ARG_INDEX_IMAGE,false) || tesseractPath==null) {
+	    if(!request.get(ARG_DOOCR,false) || tesseractPath==null) {
 		if(debugCorpus)
 		    System.err.println("SearchManager.readContents: Not indexing images:" + f.getName());
 		return null;
@@ -862,38 +862,41 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    }
 
 	    long t1 = System.currentTimeMillis();
-	    boolean doImage = request.get(ARG_INDEX_IMAGE,false);
-	    boolean doImageConditional = request.get(ARG_INDEX_IMAGE_CONDITIONAL,false);	    
+	    boolean doOcr = request.get(ARG_DOOCR,false);
+	    boolean doOcrConditional = request.get(ARG_DOOCR_CONDITIONAL,false);	    
 	    String corpus=null;
 	    List<org.apache.tika.metadata.Metadata> tmpList = new  ArrayList<org.apache.tika.metadata.Metadata>();
 	    /*
 	      if conditional then try to read the corpus without OCR. If we don't get anything then try it with OCR
 	     */
-	    if(doImageConditional) {
-		if(debugCorpus)
-		    System.err.println("SearchManager.readContents: Reading corpus without OCR");
-
+	    if(debugCorpus)
+		System.err.println("SearchManager.readContents: " + entry.getName());
+	    if(doOcrConditional) {
 		corpus = readCorpus(request, entry,f,tmpList,false);
 		if(corpus==null) corpus="";
 		corpus  = corpus.trim();
 		if(corpus.length()==0) {
 		    if(debugCorpus)
-			System.err.println("SearchManager.readContents: Could not read corpus without OCR");
+			System.err.println("\tCould not read corpus without OCR");
 		    corpus=null;
 		    tmpList = new  ArrayList<org.apache.tika.metadata.Metadata>();
 		} else {
-		    doImage = false;
+		    if(debugCorpus)
+			System.err.println("\tDid read without OCR");
+		    doOcr = false;
 		}
 	    }
 	    if(corpus==null) {
-		corpus = readCorpus(request, entry,f,tmpList,doImage);
+		if(debugCorpus && doOcr)
+		    System.err.println("\tdoing OCR");		
+		corpus = readCorpus(request, entry,f,tmpList,doOcr);
 	    }
 	    if(metadataList!=null) metadataList.addAll(tmpList);
 	    long t2= System.currentTimeMillis();
 	    if(corpus==null) corpus="";
 	    corpus  = corpus.trim();
 	    if(debugCorpus)
-		System.err.println("SearchManager.readContents: corpus:" + f.getName() +" time:" + (t2-t1)+" length:" +
+		System.err.println("\tcorpus:" + " time:" + (t2-t1)+" length:" +
 				   corpus.length() +" corpus:" + Utils.clip(corpus,50,"...").replace("\n"," "));
 	    IOUtil.writeBytes(corpusFile, corpus.getBytes());
 	    return  corpus;
@@ -914,17 +917,17 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     
     private String readCorpusInner(final Request request, final Entry entry,final File f,
 				   final List<org.apache.tika.metadata.Metadata> metadataList,
-				   final boolean doImage) throws Exception {
+				   final boolean doOcr) throws Exception {
 	try(InputStream stream = getStorageManager().getFileInputStream(f)) {
 	    BufferedInputStream bis = new BufferedInputStream(stream);
             org.apache.tika.metadata.Metadata metadata =   new org.apache.tika.metadata.Metadata();
 	    if(metadataList!=null)
 		metadataList.add(metadata);
-	    TikaConfig config = getTikaConfig(doImage);
+	    TikaConfig config = getTikaConfig(doOcr);
 	    Parser parser;
 	    if(f.getName().toLowerCase().endsWith("pdf")) {
 		PDFParser pdfParser = new PDFParser();
-		if(doImage) {
+		if(doOcr) {
 		    pdfParser.setOcrStrategy("OCR_AND_TEXT_EXTRACTION");
 		}
 		parser = pdfParser;
@@ -948,13 +951,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     private String readCorpus(final Request request, final Entry entry,final File f,
 			      final List<org.apache.tika.metadata.Metadata> metadataList,
-			      final boolean doImage) throws Exception {
-	if(!doImage) {
-	    return readCorpusInner(request,entry,f,metadataList,doImage);
+			      final boolean doOcr) throws Exception {
+	if(!doOcr) {
+	    return readCorpusInner(request,entry,f,metadataList,doOcr);
 	}
 	final ExecutorService executor = Executors.newSingleThreadExecutor();
 	final Future<String> future = executor.submit(() -> {
-		return readCorpusInner(request,entry,f,metadataList,doImage);
+		return readCorpusInner(request,entry,f,metadataList,doOcr);
 	    });
 	
 	final boolean[] running = {true};
@@ -1007,8 +1010,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    long t2= System.currentTimeMillis();
             if ((contents != null) && (contents.length() > 0)) {
                 doc.add(new TextField(field, contents, Field.Store.NO));
-		if(debugCorpus)
-		    System.err.println("SearchManager.addContentField corpus:" + contents.length());
 		corpus.append(contents);
 		corpus.append(" ");
             }

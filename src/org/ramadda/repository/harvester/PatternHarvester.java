@@ -352,6 +352,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
 
+	putExtraAttribute(ARG_DOOCR,request.get(ARG_DOOCR,false));
+	putExtraAttribute(ARG_DOOCR_CONDITIONAL,request.get(ARG_DOOCR_CONDITIONAL,false));	
+
         //Reset the seen files
         seenFiles   = new HashSet();
 
@@ -570,8 +573,17 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	mtds.add(HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full"));
 	mtds.add(HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just spatial/temporal"));
 	mtds.add(HU.labeledCheckbox(ATTR_MAKETHUMBNAILS, "true", makeThumbnails, "Make thumbnails"));
-	mtds.add(HU.labeledCheckbox(ATTR_PUSHGEO, "true", pushGeo, "Set geo from parent"));	
+	mtds.add(HU.labeledCheckbox(ATTR_PUSHGEO, "true", pushGeo, "Set geo from parent"));
+
+	List<String> images = new ArrayList<String>();
+	images.add(HU.labeledCheckbox(ARG_DOOCR, "true",
+				      getExtraAttribute(ARG_DOOCR,false),"Extract text from images"));
+	images.add(HU.labeledCheckbox(ARG_DOOCR_CONDITIONAL, "true",
+				      getExtraAttribute(ARG_DOOCR_CONDITIONAL,false),
+				      "Don't do OCR if there is any text in the document"));	    
+
 	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
+	HU.formEntry(sb, msgLabel("Images"),  Utils.join(images, HU.space(4)));	
 
 
 	addAliasesEditForm(request, sb);
@@ -973,6 +985,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         return HarvesterFile.okToRecurse(f, this);
+    }
+
+
+    @Override
+    protected Request getRequest() throws Exception {
+	Request request = super.getRequest();
+	request.put(ARG_DOOCR, getExtraAttribute(ARG_DOOCR,false));
+	request.put(ARG_DOOCR_CONDITIONAL, getExtraAttribute(ARG_DOOCR_CONDITIONAL,false));	
+	return request;
     }
 
 

@@ -1615,7 +1615,7 @@ public class ExtEditor extends RepositoryManager {
 
 	public void indexEntry() {
 	    changed=true;
-	    request.put(ARG_INDEX_IMAGE,true);
+	    request.put(ARG_DOOCR,true);
 	}
 
 
