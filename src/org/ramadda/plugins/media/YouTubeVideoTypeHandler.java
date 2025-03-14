@@ -182,8 +182,12 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
             entry.setValue(IDX_ID, id);
         }
 
+	System.err.println("url:" + url);
+
         String html  = IOUtil.readContents(url, "");
+	System.err.println("html:" + Utils.clip(html,2000,"..."));
         String title = StringUtil.findPattern(html, "<title>(.*)</title>");
+	System.err.println("title:" + title);
         if (title == null) {
             title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
         }
