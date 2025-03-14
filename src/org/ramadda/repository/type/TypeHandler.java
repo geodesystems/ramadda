@@ -198,6 +198,8 @@ public class TypeHandler extends RepositoryManager {
     static int cnt = 0;
     int mycnt = cnt++;
     private String type;
+    private boolean needsToInitialize = false;
+    private Element typeNode;
     private TypeHandler parent;
     private List<TypeHandler> childrenTypes = new ArrayList<TypeHandler>();
     private String description="";
@@ -340,9 +342,44 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-    public void initTypeHandler(Element node) {
+    public boolean getNeedsToInitialize() {
+	return needsToInitialize;
+    }
 
+    public void initTypeHandler() {
+	if(typeNode ==null) {
+	    throw new IllegalArgumentException("Cannot initialize. No typehandler XML node");
+	}
+	initTypeHandler(typeNode);
+    }
+
+    public void initTypeHandler(Element node) {
         try {
+            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
+					    ? ""
+					    : type));
+
+	    /*
+	      If there is supposed to be a parent type and we can't  find it then mark this TypeHandler
+	      as in need of initialization. The Repository checks all of the type handlers after the initial load
+	      and reinitializes the ones in need of initialization
+	     */
+
+	    needsToInitialize = false;
+	    typeNode = null;
+	    String superType = Utils.getAttributeOrTag(node, ATTR_SUPER,  (String) null);
+            if (superType != null) {
+                parent = getRepository().getTypeHandler(superType);
+                if (parent == null) {
+		    needsToInitialize = true;
+		    typeNode = node;
+		    return;
+		    //                    throw new IllegalArgumentException("Cannot find parent type:" + superType);
+                }
+            }
+
+
+
             displayTemplatePath = Utils.getAttributeOrTag(node,
 							  "displaytemplate", displayTemplatePath);
 	    
@@ -454,12 +491,6 @@ public class TypeHandler extends RepositoryManager {
 	    }
             childTypes = Utils.split(Utils.getAttributeOrTag(node,
 							     ATTR_CHILDTYPES, ""),",",true,true);
-            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
-					    ? ""
-					    : type));
-            if (getType().indexOf(".") > 0) {
-            }
-
 
             nameTemplate = Utils.getAttributeOrTag(node, "nametemplate",null);
             wikiTemplate = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI,wikiTemplate,true));
@@ -531,17 +562,6 @@ public class TypeHandler extends RepositoryManager {
 						       ATTR_DB_DESCRIPTION, getType()));
             }
 
-            String superType = Utils.getAttributeOrTag(node, ATTR_SUPER,
-						       (String) null);
-            if (superType != null) {
-                parent = getRepository().getTypeHandler(superType);
-                if (parent == null) {
-                    throw new IllegalArgumentException(
-						       "Cannot find parent type:" + superType);
-                }
-                parent.checkAncestorTypes(getType());
-                parent.addChildTypeHandler(this);
-            }
 
             String llf = getTypeProperty("location.format", (String) null);
             if (llf != null) {
@@ -587,6 +607,12 @@ public class TypeHandler extends RepositoryManager {
 	    }	    
 
 	    geoPosition = getTypeProperty("form.geoposition",null);
+
+	    if(parent!=null) {
+                parent.checkAncestorTypes(getType());
+                parent.addChildTypeHandler(this);
+	    }
+
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);

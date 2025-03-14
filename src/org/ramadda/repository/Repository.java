@@ -1646,6 +1646,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw exc;
         }
 
+	/*
+	  run through the TypeHandlers to check if any need initialization
+	  this occurs when we load a type handler which has a super type that has not
+	  been loaded yet. This brute forces (thus the 10 iterations of the loop)
+	*/
+	for(int tries=0;tries<10;tries++) {
+	    for(TypeHandler typeHandler: allTypeHandlers) {
+		if(typeHandler.getNeedsToInitialize()) {
+		    typeHandler.initTypeHandler();
+		}
+	    }
+	}
+
+	List<TypeHandler> goodOnes = new ArrayList<TypeHandler>();
+
+	for(TypeHandler typeHandler: allTypeHandlers) {
+	    if(typeHandler.getNeedsToInitialize()) {
+		getLogManager().logError("TypeHandler could not be initialized:" + typeHandler);
+	    } else {
+		goodOnes.add(typeHandler);
+	    }
+	}
+	allTypeHandlers = goodOnes;
+
 
     }
 
