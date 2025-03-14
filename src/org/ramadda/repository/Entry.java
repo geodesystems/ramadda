@@ -1082,6 +1082,10 @@ public class Entry implements Cloneable {
 
     public boolean setValue(String col, Object v) throws Exception {
 	Column column = getTypeHandler().findColumn(col);
+	return setValue(column, v);
+    }
+
+    public boolean setValue(Column column, Object v) throws Exception {
 	if(column == null) {
 	    return false;
 	}
