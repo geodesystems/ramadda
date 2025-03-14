@@ -381,8 +381,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHOWNEXT = "showNext";
 
-    public static final String ARG_INDEX_IMAGE = "indeximage";
-    public static final String ARG_INDEX_IMAGE_CONDITIONAL = "indeximage_conditional";    
+    public static final String ARG_DOOCR = "doocr";
+    public static final String ARG_DOOCR_CONDITIONAL = "doocr_conditional";    
 
     /** _more_ */
     public static final String ARG_RETURNFILENAME = "returnfilename";
