@@ -3134,7 +3134,8 @@ table.dataTable tbody td {
     display:inline-block;
     border:var(--basic-border);
     border-radius: var(--default-radius);
-    /*margin-top:10px;*/
+    margin-top:0.5em;
+    margin-bottom:0.5em;    
 }    
 
 .ramadda-form-header {
