@@ -1,0 +1,31 @@
+NEPA: National Environmental Policy Act Review
+EIS: Environmental Impact Statement
+EA: Environmental Assessment
+FONSI: Finding of No Significant Impact
+CATEX: Categorical Exclusion
+
+ESA: Endangered Species Act Section 7 Consultation
+NHPA: National Historic Preservation Act Section 106 Review
+CWA: Clean Water Act Section 404 Permit Review
+CAA: Clean Air Act Conformity Review
+CZMA: Coastal Zone Management Act Consistency Review
+MSA: Magnuson-Stevens Fishery Conservation and Management Act Essential Fish Habitat Review
+
+FLP: Forest and Land Use Plan Consistency Review
+WSRA: Wild and Scenic Rivers Act Review
+WA: Wilderness Act Review
+
+TC: Tribal Consultation Review (Executive Order 13175)
+EJ: Environmental Justice Review (Executive Order 12898)
+SIR: Socioeconomic Impact Review
+
+RCRA: Resource Conservation and Recovery Act Review
+CERCLA: Comprehensive Environmental Response, Compensation, and Liability Act Review
+
+FERC: Federal Energy Regulatory Commission Licensing Review
+FAA: Federal Aviation Administration Airspace and Noise Review
+FHWA: Federal Highway Administration Transportation Conformity Review
+NRC: Nuclear Regulatory Commission Safety and Environmental Review
+
+PCP: Public Comment Periods and Hearings
+IAR: Interagency and Cooperating Agency Review

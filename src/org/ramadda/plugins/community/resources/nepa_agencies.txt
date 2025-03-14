@@ -1,0 +1,20 @@
+USFS: U.S. Forest Service  
+BLM: Bureau of Land Management  
+NPS: National Park Service  
+USFWS: U.S. Fish and Wildlife Service  
+USBR: Bureau of Reclamation  
+BIA: Bureau of Indian Affairs  
+USACE: U.S. Army Corps of Engineers  
+DOE: Department of Energy  
+FERC: Federal Energy Regulatory Commission  
+FHWA: Federal Highway Administration  
+FAA: Federal Aviation Administration  
+FRA: Federal Railroad Administration  
+FTA: Federal Transit Administration  
+EPA: Environmental Protection Agency  
+NRC: Nuclear Regulatory Commission  
+NOAA: National Oceanic and Atmospheric Administration  
+FEMA: Federal Emergency Management Agency  
+GSA: General Services Administration  
+NASA: National Aeronautics and Space Administration  
+TVA: Tennessee Valley Authority  

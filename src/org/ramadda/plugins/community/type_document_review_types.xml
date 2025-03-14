@@ -1,0 +1,18 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<type  name="type_document_review" 
+ description="Environmental Review" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_document_collection" 
+ supercategory="General" 
+ category="Documents" 
+>
+
+<!-- Columns-->
+<column  name="review_type"  label="Review Type"  type="enumerationplus"  group="Review Information"    values="file:/org/ramadda/plugins/community/resources/federal_reviews_list.txt "  menuwidth="25em"   cansearch="true" showenumerationpopup="true" />
+<column  name="agency"  label="Agency"  type="enumerationplus"  values="file:/org/ramadda/plugins/community/resources/nepa_agencies.txt"  menuwidth="25em"  cansearch="true"  showenumerationpopup="true"   />
+<column  name="subagency"  label="Sub-Agency"  type="enumerationplus"  menuwidth="25em"  cansearch="true"   showenumerationpopup="true"   />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+</type>
