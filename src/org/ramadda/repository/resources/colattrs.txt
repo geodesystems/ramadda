@@ -13,6 +13,8 @@ values="New,Like New,Good,Fair,Poor,Damaged"
 values="value:label,value:label,..."
 
 showenumerationpopup="true"
+menuwidth="20em"
+
 
 #file with values or value:Label, 1 per line
 values="file:/org/ramadda/plugins/archive/resources/habitats.txt"
@@ -52,7 +54,7 @@ canlist="false"
 candisplay="false"
 
 #can search
-cansearch="false"
+cansearch="true"
 
 displaylabel=
 htmlTemplate="${value dateFormat=yyyy-MM-dd} ${value otherDate=date_of_birth showAge=true prefix=" - " suffix=" years old when found"}"

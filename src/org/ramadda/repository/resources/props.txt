@@ -50,16 +50,17 @@ form.settimerange.show=false
 form.dnd.show=false
 
 #entry resource
-form.file.label=
-form.file.show=false
-form.filesonserver.show=false
-form.serverfile.show=false
+form.resource.show=false
 form.resource.download.show=false
 form.resource.extra.show=false
 form.resource.label=Link
-form.resource.show=false
-form.url.label=
+form.file.show=false
+form.file.label=
+form.filesonserver.show=false
+form.serverfile.show=false
 form.url.show=true
+form.url.label=
+
 
 
 #misc
