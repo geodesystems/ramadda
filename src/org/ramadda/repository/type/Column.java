@@ -176,7 +176,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean changeType = false;
     private String dropColumnVersion;
     private boolean showEmpty = true;
-    private boolean showInFormFirst = false;
+
     private boolean addNot = false;
     private boolean doPolygonSearch  = false;
     private boolean addFileToSearch = false;
@@ -207,6 +207,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean addBlankToEnumerationMenu = true;
     private boolean enumerationSearchMultiples = false;
     private boolean enumerationShowCheckboxes= false;
+    private String menuWidth;
     private int searchRows;
     private boolean canSearchText;
     private boolean advancedSearch;
@@ -371,7 +372,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	dropColumnVersion = XmlUtil.getAttribute(element,"dropcolumnversion",(String)null);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
-	showInFormFirst  = getAttributeOrTag(element, "showinformfirst", showInFormFirst);
+
 
         doPolygonSearch     = getAttributeOrTag(element, "dopolygonsearch", false);
 	//If it is a latlon then always do the negation
@@ -392,6 +393,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         doInlineEdit    = getAttributeOrTag(element, "doinlineedit", false);
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
+	menuWidth= getAttributeOrTag(element, "menuwidth",null);
 	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
 	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", false);
 	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
@@ -670,9 +672,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return doInlineEdit;
     }
 
-    public boolean getShowInFormFirst() {
-	return showInFormFirst;
-    }
 
     public String getProperty(String key) {
         return getProperty(key, null);
@@ -2533,8 +2532,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
 
 	    String widgetId = HU.getUniqueId("widget_");
+	    String width = (String) Utils.getNonNull(menuWidth,"14em");
             widget = HU.select(urlArg, enumValues, value,
-			       HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons"));
+			       HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons","width",width));
 
 	    if(showEnumerationPopup) {
 		widget+=getEnumerationPopup(widgetId);
@@ -2556,7 +2556,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 			enums.add(0,new HtmlUtils.Selector("&lt;blank&gt;",""));
 		}
 		String widgetId = HU.getUniqueId("widget_");
-		widget = HU.select(urlArg, enums, value, HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons")) +
+		String width = (String) Utils.getNonNull(menuWidth,"14em");
+		widget = HU.select(urlArg, enums, value, HU.attrs("id",widgetId,"width",width,
+								  "class","ramadda-pulldown-with-icons")) +
 		    "  or:  "  +
 		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
 		if(showEnumerationPopup) {
