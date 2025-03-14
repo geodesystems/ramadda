@@ -1505,7 +1505,8 @@ public class ExtEditor extends RepositoryManager {
 	
 	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
-		if(check.length==0 || check[0]) {
+		Column column = entry.getTypeHandler().getColumn(type);
+		if(column == null && (check.length==0 || check[0])) {
 		    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
 
 		    if(list!=null && list.size()>0) {
@@ -1518,6 +1519,12 @@ public class ExtEditor extends RepositoryManager {
 									    entry,
 									    true,
 									    prompt,null);
+
+
+		if(r!=null && column!=null) {
+		    entry.setValue(column,r);
+		    changed=true;
+		}
 		if(!Utils.stringDefined(r)) {
 		    ctx.warning("No results for entry:" + entry.getName());
 		} else {
