@@ -182,20 +182,21 @@ public class YouTubeVideoTypeHandler extends MediaTypeHandler {
             entry.setValue(IDX_ID, id);
         }
 
-	System.err.println("url:" + url);
-
         String html  = IOUtil.readContents(url, "");
         String title = StringUtil.findPattern(html, "<title>(.*)</title>");
-	System.out.println("title:" + title);
-	System.out.println("html:" + html);
         if (title == null) {
             title = StringUtil.findPattern(html, "<TITLE>(.*)</TITLE>");
         }
         if (title != null) {
-            title = title.replace("- YouTube", "");
-            entry.setName(title);
+            title = title.replace("- YouTube", "").trim();
         }
-
+	    
+	if(!stringDefined(entry.getName())) {
+	    if(!stringDefined(title)) {
+		title = "Youtube Video";
+	    } 
+            entry.setName(title);
+	}
 
         if (id != null) {
             addThumbnail(getRepository(), request, entry, id);
