@@ -1,0 +1,2342 @@
+unknown:Unknown
+NOTBON:Highland Tinamou - Nothocercus bonapartei
+TINMAJ:Great Tinamou - Tinamus major
+CRYSOU:Little Tinamou - Crypturellus soui
+CRYCIN:Thicket Tinamou - Crypturellus cinnamomeus
+CRYBOU:Slaty-breasted Tinamou - Crypturellus boucardi
+CRYKER:Choco Tinamou - Crypturellus kerriae
+DENVID:White-faced Whistling-Duck - Dendrocygna viduata
+DENAUT:Black-bellied Whistling-Duck - Dendrocygna autumnalis
+DENARB:West Indian Whistling-Duck - Dendrocygna arborea
+DENBIC:Fulvous Whistling-Duck - Dendrocygna bicolor
+ANSCAN:Emperor Goose - Anser canagicus
+ANSCAE:Snow Goose - Anser caerulescens
+ANSCCA:Lesser Snow Goose White-morph - Anser caerulescens caerulescens
+ANSCCA:Lesser Snow Goose Intermediate-morph - Anser caerulescens caerulescens
+ANSCCA:Lesser Snow Goose Blue-morph - Anser caerulescens caerulescens
+ANSCAT:Greater Snow Goose White-morph - Anser caerulescens atlantica
+ANSCAT:Greater Snow Goose Intermediate-morph - Anser caerulescens atlantica
+ANSCAT:Greater Snow Goose Blue-morph - Anser caerulescens atlantica
+ANSCAR:Snow X Ross's Goose Hybrid - Anser caerulescens x rossii
+ANSCRO:Snow/Ross's Goose - Anser caerulescens/rossii
+ANSROS:Ross's Goose - Anser rossii
+ANSANS:Graylag Goose - Anser anser
+ANSALB:Greater White-fronted Goose - Anser albifrons
+ANSALE:Tule Greater White-fronted Goose - Anser albifrons elgasi
+ANSERY:Lesser White-fronted Goose - Anser erythropus
+ANSFAB:Taiga Bean-Goose - Anser fabalis
+ANSSER:Tundra Bean-Goose - Anser serrirostris
+ANSBRA:Pink-footed Goose - Anser brachyrhynchus
+BRABER:Brant - Branta bernicla
+BRABBE:Atlantic Brant - Branta bernicula bernicula
+BRABBN:Black X Atlantic Brant Intergrade - Branta bernicula bernicula x nigrican
+BRABNI:Black Brant - Branta bernicula nigricans
+BRALEU:Barnacle Goose - Branta leucopsis
+BRAHUT:Cackling Goose - Branta hutchinsii
+BRAHLE:Aleutian Cackling Goose - Branta hutchinsii leucopareia
+BRAHMI:Minima Cackling Goose - Branta hutchinsii minima
+BRAHUC:Cackling/Canada Goose - Branta hutchinsii/canadensis
+BRACAN:Canada Goose - Branta canadensis
+BRACMO:Large Canada Goose - Branta canadensis moffitti
+BRACPA:Small Canada Goose - Branta canadensis parvipes
+BRASAN:Hawaiian Goose - Branta sandvicensis
+ANSGSP:Unidentified Goose - Anserinae (gen. sp.)
+CYGOLO:Mute Swan - Cygnus olor
+CYGBUC:Trumpeter Swan - Cygnus buccinator
+CYGCOL:Tundra Swan - Cygnus columbianus
+CYGCCO:Whistling Swan - Cygnus columbianus columbianus
+CYGCBE:Bewick's Swan - Cygnus columbianus bewickii
+CYGCYG:Whooper Swan - Cygnus cygnus
+SARSYL:Comb Duck - Sarkidiornis sylvicola
+NEOJUB:Orinoco Goose - Neochen jubata
+ALOAEG:Egyptian Goose - Alopochen aegyptiaca
+TADTAD:Common Shelduck - Tadorna tadorna
+TADFER:Ruddy Shelduck - Tadorna ferruginea
+CAIMOS:Muscovy Duck - Cairina moschata
+AIXSPO:Wood Duck - Aix sponsa
+SIBFOR:Baikal Teal - Sibirionetta formosa
+SPAQUE:Garganey - Spatula querquedula
+SPADIS:Blue-winged Teal - Spatula discors
+SPADIC:Blue-winged/Cinnamon Teal - Spatula discors/cyanoptera
+SPACYA:Cinnamon Teal - Spatula cyanoptera
+SPACLY:Northern Shoveler - Spatula clypeata
+MARSTR:Gadwall - Mareca strepera
+MARFAL:Falcated Duck - Mareca falcata
+MARPEN:Eurasian Wigeon - Mareca penelope
+MARAME:American Wigeon - Mareca americana
+ANALAY:Laysan Duck - Anas laysanensis
+ANAWYV:Hawaiian Duck - Anas wyvilliana
+ANAPLW:Mallard X Hawaiian Duck Hybrid - Anas platyrhynchos x wyvilliana
+ANAZON:Eastern Spot-billed Duck - Anas zonorhyncha
+ANAPLA:Mallard - Anas platyrhynchos
+ANADIA:Mexican Duck - Anas diazi
+ANAPLR:Mallard X American Black Duck Hybrid - Anas platyrhynchos x rubripes
+ANARUB:American Black Duck - Anas rubripes
+ANAFUL:Mottled Duck - Anas fulvigula
+ANABAH:White-cheeked Pintail - Anas bahamensis
+ANAACU:Northern Pintail - Anas acuta
+ANACRE:Green-winged Teal - Anas crecca
+ANACCA:American Green-winged Teal - Anas crecca carolinensis
+ANACCR:Eurasian Green-winged Teal - Anas crecca crecca
+AYTVAL:Canvasback - Aythya valisineria
+AYTAME:Redhead - Aythya americana
+AYTFER:Common Pochard - Aythya ferina
+AYTCOL:Ring-necked Duck - Aythya collaris
+AYTFUL:Tufted Duck - Aythya fuligula
+AYTMAR:Greater Scaup - Aythya marila
+AYTAFF:Lesser Scaup - Aythya affinis
+POLSTE:Steller's Eider - Polysticta stelleri
+CAMLAB:Labrador Duck - Camptorhynchus labradorius
+SOMFIS:Spectacled Eider - Somateria fischeri
+SOMSPE:King Eider - Somateria spectabilis
+SOMMOL:Common Eider - Somateria mollissima
+HISHIS:Harlequin Duck - Histrionicus histrionicus
+MELPER:Surf Scoter - Melanitta perspicillata
+MENFUS:Velvet Scoter - Melanitta fusca
+MELDEG:White-winged Scoter - Melanitta deglandi
+MELSTE:Stejneger's Scoter - Melanitta stejnegeri
+MENNIG:Common Scoter - Melanitta nigra
+MELAME:Black Scoter - Melanitta americana
+CLAHYE:Long-tailed Duck - Clangula hyemalis
+BUCALB:Bufflehead - Bucephala albeola
+BUCCLA:Common Goldeneye - Bucephala clangula
+BUCISL:Barrow's Goldeneye - Bucephala islandica
+MERALB:Smew - Mergellus albellus
+LOPCUC:Hooded Merganser - Lophodytes cucullatus
+MERMER:Common Merganser - Mergus merganser
+MERSER:Red-breasted Merganser - Mergus serrator
+NOMDOM:Masked Duck - Nomonyx dominicus
+OXYJAM:Ruddy Duck - Oxyura jamaicensis
+ANAGSP:Unidentified Duck - Anatinae (gen, sp)
+ORTVET:Plain Chachalaca - Ortalis vetula
+ORTCIN:Gray-headed Chachalaca - Ortalis cinereiceps
+ORTRUF:Rufous-vented Chachalaca - Ortalis ruficauda
+ORTWAG:Rufous-bellied Chachalaca - Ortalis wagleri
+ORTPOL:West Mexican Chachalaca - Ortalis poliocephala
+ORTLEU:White-bellied Chachalaca - Ortalis leucogastra
+PENPUR:Crested Guan - Penelope purpurascens
+CHAUNI:Black Guan - Chamaepetes unicolor
+PENNIG:Highland Guan - Penelopina nigra
+OREDER:Horned Guan - Oreophasis derbianus
+CRARUB:Great Curassow - Crax rubra
+NUMMEL:Helmeted Guineafowl - Numida meleagris
+RHYCIN:Tawny-faced Quail - Rhynchortyx cinctus
+OREPIC:Mountain Quail - Oreortyx pictus
+DENLEU:Buffy-crowned Wood-Partridge - Dendrortyx leucophrys
+DENMAC:Long-tailed Wood-Partridge - Dendrortyx macroura
+DENBAR:Bearded Wood-Partridge - Dendrortyx barbatus
+PHIFAS:Banded Quail - Philortyx fasciatus
+COLVIR:Northern Bobwhite - Colinus virginianus
+COLNIG:Black-throated Bobwhite - Colinus nigrogularis
+COLCRI:Crested Bobwhite - Colinus cristatus
+COLLEU:Spot-bellied Bobwhite - Colinus leucopogon
+CALSQU:Scaled Quail - Callipepla squamata
+CALDOU:Elegant Quail - Callipepla douglasii
+CALCAF:California Quail - Callipepla californica
+CALGAM:Gambel's Quail - Callipepla gambelii
+CYRMON:Montezuma Quail - Cyrtonyx montezumae
+CYROCE:Ocellated Quail - Cyrtonyx ocellatus
+DACTHO:Singing Quail - Dactylortyx thoracicus
+ODOGUJ:Marbled Wood-Quail - Odontophorus gujanensis
+ODOMEL:Black-eared Wood-Quail - Odontophorus melanotis
+ODODIA:Tacarcuna Wood-Quail - Odontophorus dialeucos
+ODOLEU:Black-breasted Wood-Quail - Odontophorus leucolaemus
+ODOGUT:Spotted Wood-Quail - Odontophorus guttatus
+MELGAL:Wild Turkey - Meleagris gallopavo
+MELOCE:Ocellated Turkey - Meleagris ocellata
+BONUMB:Ruffed Grouse - Bonasa umbellus
+CANCAN:Spruce Grouse - Canachites canadensis
+LAGLAG:Willow Ptarmigan - Lagopus lagopus
+LAGMUT:Rock Ptarmigan - Lagopus muta
+LAGLEU:White-tailed Ptarmigan - Lagopus leucura
+CENURO:Greater Sage-Grouse - Centrocercus urophasianus
+CENMIN:Gunnison Sage-Grouse - Centrocercus minimus
+DENOBS:Dusky Grouse - Dendragapus obscurus
+DENFUU:Sooty Grouse - Dendragapus fuliginosus
+TYMPHA:Sharp-tailed Grouse - Tympanuchus phasianellus
+TYMCUP:Greater Prairie-Chicken - Tympanuchus cupido
+TYMPAL:Lesser Prairie-Chicken - Tympanuchus pallidicinctus
+PERPER:Gray Partridge - Perdix perdix
+PHACOL:Ring-necked Pheasant - Phasianus colchicus
+LOPLEU:Kalij Pheasant - Lophura leucomelanos
+PAVCRI:Indian Peafowl - Pavo cristatus
+ORTPON:Gray Francolin - Ortygornis pondicerianus
+FRAFRA:Black Francolin - Francolinus francolinus
+GALGAS:Red Junglefowl - Gallus gallus
+TETHIM:Himalayan Snowcock - Tetraogallus himalayensis
+ALECHU:Chukar - Alectoris chukar
+COTJAP:Japanese Quail - Coturnix japonica
+PTEERC:Erckel's Francolin - Pternistis erckelii
+PHORUB:American Flamingo - Phoenicopterus ruber
+TACDOM:Least Grebe - Tachybaptus dominicus
+PODPOD:Pied-billed Grebe - Podilymbus podiceps
+PODGIG:Atitlan Grebe - Podilymbus gigas
+PODAUR:Horned Grebe - Podiceps auritus
+PODGRI:Red-necked Grebe - Podiceps grisegena
+PODNIG:Eared Grebe - Podiceps nigricollis
+AECOCC:Western Grebe - Aechmophorus occidentalis
+AECOCL:Western/Clark's Grebe - Aechmophorus occidentalis/clarkii
+AECCLA:Clark's Grebe - Aechmophorus clarkii
+PTEEXU:Chestnut-bellied Sandgrouse - Pterocles exustus
+COLLIV:Rock Pigeon - Columba livia
+COLPAL:Common Wood Pigeon - Columba palumbus
+ECTMIG:Passenger Pigeon - Ectopistes migratorius
+PATCAY:Pale-vented Pigeon - Patagioenas cayennensis
+PATSPE:Scaled Pigeon - Patagioenas speciosa
+PATSQU:Scaly-naped Pigeon - Patagioenas squamosa
+PATLEU:White-crowned Pigeon - Patagioenas leucocephala
+PATFLA:Red-billed Pigeon - Patagioenas flavirostris
+PATINO:Plain Pigeon - Patagioenas inornata
+PATINW:Puerto Rican Plain Pigeon - Patagioenas inornata wetmorei
+PATFAS:Band-tailed Pigeon - Patagioenas fasciata
+PATCAR:Ring-tailed Pigeon - Patagioenas caribaea
+PATPLU:Plumbeous Pigeon - Patagioenas plumbea
+PATSUB:Ruddy Pigeon - Patagioenas subvinacea
+PATNIG:Short-billed Pigeon - Patagioenas nigrirostris
+PATGOO:Dusky Pigeon - Patagioenas goodsoni
+STRORI:Oriental Turtle-Dove - Streptopelia orientalis
+STRROS:African Collared-Dove - Streptopelia roseogrisea
+STRTUR:European Turtle-Dove - Streptopelia turtur
+STRDEC:Eurasian Collared-Dove - Streptopelia decaocto
+STRCHI:Spotted Dove - Streptopelia chinensis
+GEOSTR:Zebra Dove - Geopelia striata
+COLINC:Inca Dove - Columbina inca
+COLPAS:Common Ground Dove - Columbina passerina
+COLMIN:Plain-breasted Ground Dove - Columbina minuta
+COLTAL:Ruddy Ground Dove - Columbina talpacoti
+CLAPRE:Blue Ground Dove - Claravis pretiosa
+PARMOD:Maroon-chested Ground Dove - Paraclaravis mondetoura
+STACYA:Blue-headed Quail-Dove - Starnoenas cyanocephala
+GEOVER:Crested Quail-Dove - Geotrygon versicolor
+GEOMON:Ruddy Quail-Dove - Geotrygon montana
+GEOVIO:Violaceous Quail-Dove - Geotrygon violacea
+GEOCAN:Gray-fronted Quail-Dove - Geotrygon caniceps
+GEOLEU:White-fronted Quail-Dove - Geotrygon leucometopia
+GEOCHR:Key West Quail-Dove - Geotrygon chrysia
+GEOMYS:Bridled Quail-Dove - Geotrygon mystacea
+LEPVEG:Olive-backed Quail-Dove - Leptotrygon veraguensis
+LEPVEX:White-tipped Dove - Leptotila verreauxi
+LEPJAM:Caribbean Dove - Leptotila jamaicensis
+LEPCAS:Gray-chested Dove - Leptotila cassinii
+LEPPLU:Gray-headed Dove - Leptotila plumbeiceps
+LEPWEL:Grenada Dove - Leptotila wellsi
+ZENCAR:Tuxtla Quail-Dove - Zentrygon carrikeri
+ZENCOS:Buff-fronted Quail-Dove - Zentrygon costaricensis
+ZENLAW:Purplish-backed Quail-Dove - Zentrygon lawrencii
+ZENALB:White-faced Quail-Dove - Zentrygon albifacies
+ZENCHI:Chiriqui Quail-Dove - Zentrygon chiriquensis
+ZENGOL:Russet-crowned Quail-Dove - Zentrygon goldmani
+ZENASI:White-winged Dove - Zenaida asiatica
+ZENAUT:Zenaida Dove - Zenaida aurita
+ZENAUC:Eared Dove - Zenaida auriculata
+ZENMAC:Mourning Dove - Zenaida macroura
+ZENGRA:Socorro Dove - Zenaida graysoni
+CROMAJ:Greater Ani - Crotophaga major
+CROANI:Smooth-billed Ani - Crotophaga ani
+CROSUL:Groove-billed Ani - Crotophaga sulcirostris
+TAPNAE:Striped Cuckoo - Tapera naevia
+DROPHA:Pheasant Cuckoo - Dromococcyx phasianellus
+MORERY:Lesser Ground-Cuckoo - Morococcyx erythropygus
+GEOVEL:Lesser Roadrunner - Geococcyx velox
+GEOCAL:Greater Roadrunner - Geococcyx californianus
+NEOGEO:Rufous-vented Ground-Cuckoo - Neomorphus geoffroyi
+CUCCAN:Common Cuckoo - Cuculus canorus
+CUCOPT:Oriental Cuckoo - Cuculus optatus
+COCMIT:Little Cuckoo - Coccycua minuta
+COCPUM:Dwarf Cuckoo - Coccycua pumila
+PIACAY:Squirrel Cuckoo - Piaya cayana
+COCMEL:Dark-billed Cuckoo - Coccyzus melacoryphus
+COCAME:Yellow-billed Cuckoo - Coccyzus americanus
+COCEUL:Pearly-breasted Cuckoo - Coccyzus euleri
+COCMIR:Mangrove Cuckoo - Coccyzus minor
+COCFER:Cocos Cuckoo - Coccyzus ferrugineus
+COCERY:Black-billed Cuckoo - Coccyzus erythropthalmus
+COCLAN:Gray-capped Cuckoo - Coccyzus lansbergi
+COCPLU:Chestnut-bellied Cuckoo - Coccyzus pluvialis
+COCRUF:Bay-breasted Cuckoo - Coccyzus rufigularis
+COCVET:Jamaican Lizard-Cuckoo - Coccyzus vetula
+COCVIE:Puerto Rican Lizard-Cuckoo - Coccyzus vieilloti
+COCMER:Great Lizard-Cuckoo - Coccyzus merlini
+COCLON:Hispaniolan Lizard-Cuckoo - Coccyzus longirostris
+LURSEM:Short-tailed Nighthawk - Lurocalis semitorquatus
+CHOACU:Lesser Nighthawk - Chordeiles acutipennis
+CHOMIN:Common Nighthawk - Chordeiles minor
+CHOGUN:Antillean Nighthawk - Chordeiles gundlachii
+NYCALB:Common Pauraque - Nyctidromus albicollis
+PHANUT:Common Poorwill - Phalaenoptilus nuttallii
+SIPAME:Jamaican Pauraque - Siphonorhis americana
+SIPBRE:Least Pauraque - Siphonorhis brewsteri
+NYCMCL:Eared Poorwill - Nyctiphrynus mcleodii
+NYCYUC:Yucatan Poorwill - Nyctiphrynus yucatanicus
+NYCOCE:Ocellated Poorwill - Nyctiphrynus ocellatus
+ANTCAR:Chuck-will's-widow - Antrostomus carolinensis
+ANTRUF:Rufous Nightjar - Antrostomus rufus
+ANTCUB:Cuban Nightjar - Antrostomus cubanensis
+ANTEKM:Hispaniolan Nightjar - Antrostomus ekmani
+ANTSAL:Tawny-collared Nightjar - Antrostomus salvini
+ANTBAD:Yucatan Nightjar - Antrostomus badius
+ANTRID:Buff-collared Nightjar - Antrostomus ridgwayi
+ANTVOC:Eastern Whip-poor-will - Antrostomus vociferus
+ANTSAT:Dusky Nightjar - Antrostomus saturatus
+ANTARI:Mexican Whip-poor-will - Antrostomus arizonae
+ANTNOC:Puerto Rican Nightjar - Antrostomus noctitherus
+HYDCAY:White-tailed Nightjar - Hydropsalis cayennensis
+HYDMAU:Spot-tailed Nightjar - Hydropsalis maculicaudus
+CAPJOT:Gray Nightjar - Caprimulgus jotaka
+STECAR:Oilbird - Steatornis caripensis
+NYCGRA:Great Potoo - Nyctibius grandis
+NYCGRI:Common Potoo - Nyctibius griseus
+NYCJAM:Northern Potoo - Nyctibius jamaicensis
+CYPNIG:Black Swift - Cypseloides niger
+CYPSTO:White-fronted Swift - Cypseloides storeri
+CYPCRY:White-chinned Swift - Cypseloides cryptus
+CYPCHE:Spot-fronted Swift - Cypseloides cherriei
+STRRUT:Chestnut-collared Swift - Streptoprocne rutila
+STRZON:White-collared Swift - Streptoprocne zonaris
+STRSEM:White-naped Swift - Streptoprocne semicollaris
+CHACIN:Gray-rumped Swift - Chaetura cinereiventris
+CHASPI:Band-rumped Swift - Chaetura spinicaudus
+CHAFUM:Costa Rican Swift - Chaetura fumosa
+CHAMAR:Lesser Antillean Swift - Chaetura martinica
+CHAPEL:Chimney Swift - Chaetura pelagica
+CHAVAU:Vaux's Swift - Chaetura vauxi
+CHACHA:Chapman's Swift - Chaetura chapmani
+CHAMER:Sick's Swift - Chaetura meridionalis
+CHABRA:Short-tailed Swift - Chaetura brachyura
+HIRCAU:White-throated Needletail - Hirundapus caudacutus
+AERBAR:Mariana Swiftlet - Aerodramus bartschi
+APUAPU:Common Swift - Apus apus
+APUPAC:Fork-tailed Swift - Apus pacificus
+APUMEL:Alpine Swift - Apus melba
+AERSAX:White-throated Swift - Aeronautes saxatalis
+PANCAY:Lesser Swallow-tailed Swift - Panyptila cayennensis
+PANSAN:Great Swallow-tailed Swift - Panyptila sanctihieronymi
+TACPHO:Antillean Palm-Swift - Tachornis phoenicobia
+FLOMEL:White-necked Jacobin - Florisuga mellivora
+EUTAQU:White-tipped Sicklebill - Eutoxeres aquila
+GLAAEN:Bronzy Hermit - Glaucis aeneus
+GLAHIR:Rufous-breasted Hermit - Glaucis hirsutus
+THRRUC:Band-tailed Barbthroat - Threnetes ruckeri
+PHAGUY:Green Hermit - Phaethornis guy
+PHAMEX:Mexican Hermit - Phaethornis mexicanus
+PHALON:Long-billed Hermit - Phaethornis longirostris
+PHAANT:Pale-bellied Hermit - Phaethornis anthophilus
+PHASTR:Stripe-throated Hermit - Phaethornis striigularis
+DORLUD:Green-fronted Lancebill - Doryfera ludovicae
+COLDEL:Brown Violetear - Colibri delphinae
+COLTHA:Mexican Violetear - Colibri thalassinus
+COLCYA:Lesser Violetear - Colibri cyanotus
+ANDAEQ:Tooth-billed Hummingbird - Androdon aequatorialis
+HELBAR:Purple-crowned Fairy - Heliothryx barroti
+CHRMOS:Ruby-topaz Hummingbird - Chrysolampis mosquitus
+ANTPRE:Green-breasted Mango - Anthracothorax prevostii
+ANTNIG:Black-throated Mango - Anthracothorax nigricollis
+ANTVER:Veraguan Mango - Anthracothorax veraguensis
+ANTDOM:Hispaniolan Mango - Anthracothorax dominicus
+ANTAUR:Puerto Rican Mango - Anthracothorax aurulentus
+ANTVIR:Green Mango - Anthracothorax viridis
+ANTMAN:Jamaican Mango - Anthracothorax mango
+EULJUG:Purple-throated Carib - Eulampis jugularis
+EULHOL:Green-throated Carib - Eulampis holosericeus
+DISCON:Green Thorntail - Discosura conversii
+LOPBRA:Short-crested Coquette - Lophornis brachylophus
+LOPDEL:Rufous-crested Coquette - Lophornis delattrei
+LOPHEL:Black-crested Coquette - Lophornis helenae
+LOPADO:White-crested Coquette - Lophornis adorabilis
+HAPAUR:Greenish Puffleg - Haplophaedia aureliae
+HELJAC:Green-crowned Brilliant - Heliodoxa jacula
+EUGFUL:Rivoli's Hummingbird - Eugenes fulgens
+EUGSPE:Talamanca Hummingbird - Eugenes spectabilis
+PANINS:Fiery-throated Hummingbird - Panterpe insignis
+HELLON:Long-billed Starthroat - Heliomaster longirostris
+HELCON:Plain-capped Starthroat - Heliomaster constantii
+LAMVIR:Green-throated Mountain-gem - Lampornis viridipallens
+LAMSYB:Green-breasted Mountain-gem - Lampornis sybillae
+LAMAME:Amethyst-throated Mountain-gem - Lampornis amethystinus
+LAMCLE:Blue-throated Mountain-gem - Lampornis clemenciae
+LAMHEM:White-bellied Mountain-gem - Lampornis hemileucus
+LAMCAL:Purple-throated Mountain-gem - Lampornis calolaemus
+LAMCAS:White-throated Mountain-gem - Lampornis castaneoventris
+LAMRHA:Garnet-throated Hummingbird - Lamprolaima rhami
+PHIBRY:Magenta-throated Woodstar - Philodice bryantae
+PHIMIT:Purple-throated Woodstar - Philodice mitchellii
+DORENI:Slender Sheartail - Doricha enicura
+DORELI:Mexican Sheartail - Doricha eliza
+TILDUP:Sparkling-tailed Hummingbird - Tilmatura dupontii
+CALLUC:Lucifer Hummingbird - Calothorax lucifer
+CALPUL:Beautiful Hummingbird - Calothorax pulcher
+ARCCOL:Ruby-throated Hummingbird - Archilochus colubris
+ARCALE:Black-chinned Hummingbird - Archilochus alexandri
+MELMIN:Vervain Hummingbird - Mellisuga minima
+MELHEL:Bee Hummingbird - Mellisuga helenae
+NESEVE:Bahama Woodstar - Nesophlox evelynae
+NESLYR:Inagua Woodstar - Nesophlox lyrura
+CALANN:Anna's Hummingbird - Calypte anna
+CALANC:Anna's x Costa's Hummingbird Hybrid - Calypte anna x costae
+CALCOS:Costa's Hummingbird - Calypte costae
+SELCAL:Calliope Hummingbird - Selasphorus calliope
+SELRUF:Rufous Hummingbird - Selasphorus rufus
+SELRUS:Rufous x Allen's Hummingbird Hybrid - Selasphorus rufus x sasin
+SELSAS:Allen's Hummingbird - Selasphorus sasin
+SELPLA:Broad-tailed Hummingbird - Selasphorus platycercus
+SELHEL:Bumblebee Hummingbird - Selasphorus heloisa
+SELELL:Wine-throated Hummingbird - Selasphorus ellioti
+SELFLA:Volcano Hummingbird - Selasphorus flammula
+SELSCI:Scintillant Hummingbird - Selasphorus scintilla
+SELARD:Glow-throated Hummingbird - Selasphorus ardens
+SELSPS:Unidentified Selasphorus Hummingbird - Selaphorus (sp)
+PHASOR:Dusky Hummingbird - Phaeoptila sordida
+RICRIC:Cuban Emerald - Riccordia ricordii
+RICBRA:Brace's Emerald - Riccordia bracei
+RICSWA:Hispaniolan Emerald - Riccordia swainsonii
+RICMAU:Puerto Rican Emerald - Riccordia maugaeus
+RICBIC:Blue-headed Hummingbird - Riccordia bicolor
+CYNLAT:Broad-billed Hummingbird - Cynanthus latirostris
+CYNLAW:Tres Marias Hummingbird - Cynanthus lawrencei
+CYNDOU:Turquoise-crowned Hummingbird - Cynanthus doubledayi
+CYNAUR:Golden-crowned Emerald - Cynanthus auriceps
+CYNFOR:Cozumel Emerald - Cynanthus forficatus
+CYNCAN:Canivet's Emerald - Cynanthus canivetii
+CHLASS:Garden Emerald - Chlorostilbon assimilis
+BASLEU:White-eared Hummingbird - Basilinna leucotis
+BASXAN:Xantus's Hummingbird - Basilinna xantusii
+PAMCUR:Wedge-tailed Sabrewing - Pampa curvipennis
+PAMRUF:Rufous Sabrewing - Pampa rufa
+ABEABE:Emerald-chinned Hummingbird - Abeillia abeillei
+KLAGUI:Violet-headed Hummingbird - Klais guimeti
+ORTCRI:Antillean Crested Hummingbird - Orthorhyncus cristatus
+CAMHEM:Violet Sabrewing - Campylopterus hemileucurus
+CHAURO:Bronze-tailed Plumeleteer - Chalybura urochrysia
+CHABUF:White-vented Plumeleteer - Chalybura buffonii
+THACOL:Crowned Woodnymph - Thalurania colombica
+MICALB:Snowcap - Microchera albocoronata
+MICCUP:Coppery-headed Emerald - Microchera cupreiceps
+MICCHI:White-tailed Emerald - Microchera chionura
+GOLVIO:Violet-capped Hummingbird - Goldmania violiceps
+GOLBEL:Pirre Hummingbird - Goldmania bella
+EUPRID:Mexican Woodnymph - Eupherusa ridgwayi
+EUPPOL:White-tailed Hummingbird - Eupherusa poliocerca
+EUPCYP:Blue-capped Hummingbird - Eupherusa cyanophrys
+EUPEXI:Stripe-tailed Hummingbird - Eupherusa eximia
+EUPNIG:Black-bellied Hummingbird - Eupherusa nigriventris
+PHACUV:Scaly-breasted Hummingbird - Phaeochroa cuvierii
+TROPOL:Red-billed Streamertail - Trochilus polytmus
+TROSCI:Black-billed Streamertail - Trochilus scitulus
+RAMVIO:Violet-crowned Hummingbird - Ramosomyia violiceps
+RAMVIR:Green-fronted Hummingbird - Ramosomyia viridifrons
+SAUCYC:Azure-crowned Hummingbird - Saucerottia cyanocephala
+SAUHOF:Blue-vented Hummingbird - Saucerottia hoffmanni
+SAUBER:Berylline Hummingbird - Saucerottia beryllina
+SAUCYR:Blue-tailed Hummingbird - Saucerottia cyanura
+SAUEDW:Snowy-bellied Hummingbird - Saucerottia edward
+AMARUT:Cinnamon Hummingbird - Amazilia rutila
+AMAYUC:Buff-bellied Hummingbird - Amazilia yucatanensis
+AMATZA:Rufous-tailed Hummingbird - Amazilia tzacatl
+AMALUC:Honduran Emerald - Amazilia luciae
+AMZAMA:Amazilia Hummingbird - Amazilis amazilia
+CHRBOU:Mangrove Hummingbird - Chrysuronia boucardi
+CHYCOE:Sapphire-throated Hummingbird - Chrysuronia coeruleogularis
+CHRHUM:Humboldt's Sapphire - Chrysuronia humboldtii
+POLAMA:Blue-chested Hummingbird - Polyerata amabilis
+POLDEC:Charming Hummingbird - Polyerata decora
+CHLCAD:White-bellied Emerald - Chlorestes candida
+CHLELI:Blue-throated Goldentail - Chlorestes eliciae
+CHLJUL:Violet-bellied Hummingbird - Chlorestes julie
+TROHYB:Hybrid Hummingbird - Trochilidae hybrid
+TRCGSP:Unidentified Hummingbird - Trochilidae (gen, sp)
+AMLCON:Uniform Crake - Amaurolimnas concolor
+ARAAXI:Rufous-necked Wood-Rail - Aramides axillaris
+ARAALB:Russet-naped Wood-Rail - Aramides albiventris
+ARACAJ:Gray-cowled Wood-Rail - Aramides cajaneus
+RALOBS:Ridgway's Rail - Rallus obsoletus
+RALOBO:California Ridgway's Rail - Rallus obsoletus obsoletus
+RALOBL:Light-footed Ridgway's Rail - Rallus obsoletus levipes
+RALOBY:Yuma Ridgway's Rail - Rallus obsoletus yumanensis
+RALTEN:Aztec Rail - Rallus tenuirostris
+RALLON:Mangrove Rail - Rallus longirostris
+RALELE:King Rail - Rallus elegans
+RALCRE:Clapper Rail - Rallus crepitans
+RALLIM:Virginia Rail - Rallus limicola
+RALAQU:Western Water-Rail - Rallus aquaticus
+CRECRE:Corn Crake - Crex crex
+PORCAR:Sora - Porzana carolina
+PORPOZ:Spotted Crake - Porzana porzana
+GALGAT:Common Gallinule - Gallinula galeata
+GALGSA:Hawaiian Gallinule - Gallinula galeata sandvicensis
+GALCHL:Common Moorhen - Gallinula chloropus
+FULATR:Eurasian Coot - Fulica atra
+FULALA:Hawaiian Coot - Fulica alai
+FULAME:American Coot - Fulica americana
+PORMAR:Purple Gallinule - Porphyrio martinicus
+PORFLA:Azure Gallinule - Porphyrio flavirostris
+PORPOP:Purple Swamphen - Porphyrio porphyrio
+RUFSCH:Ocellated Crake - Rufirallus schomburgkii
+COTNOV:Yellow Rail - Coturnicops noveboracensis
+HAPFLA:Yellow-breasted Crake - Hapalocrex flaviventer
+LATRUB:Ruddy Crake - Laterallus ruber
+LATALB:White-throated Crake - Laterallus albigularis
+LATEXI:Gray-breasted Crake - Laterallus exilis
+LATJAM:Black Rail - Laterallus jamaicensis
+LATJAJ:Eastern Black Rail - Laterallus jamaicensis jamaicensis
+LATJAC:California Black Rail - Laterallus jamaicensis coturniculus
+ZAPPAL:Laysan Rail - Zapornia palmeri
+ZAPSAN:Hawaiian Rail - Zapornia sandwichensis
+HELFUL:Sungrebe - Heliornis fulica
+ARAGUA:Limpkin - Aramus guarauna
+ANTCAN:Sandhill Crane - Antigone canadensis
+ANTCAP:Mississippi Sandhill Crane - Antigone canadensis pulla
+GRUGRU:Common Crane - Grus grus
+GRUMON:Hooded Crane - Grus monacha
+GRUAME:Whooping Crane - Grus americana
+HESBIS:Double-striped Thick-knee - Hesperoburhinus bistriatus
+HIMHIM:Black-winged Stilt - Himantopus himantopus
+HIMMEX:Black-necked Stilt - Himantopus mexicanus
+HIMMKN:Hawaiian Stilt - Himantopus mexicanus knudseni
+RECAME:American Avocet - Recurvirostra americana
+HAEOST:Eurasian Oystercatcher - Haematopus ostralegus
+HAEPAL:American Oystercatcher - Haematopus palliatus
+HAEBAC:Black Oystercatcher - Haematopus bachmani
+PLUSQU:Black-bellied Plover - Pluvialis squatarola
+PLUAPR:European Golden-Plover - Pluvialis apricaria
+PLUDOM:American Golden-Plover - Pluvialis dominica
+PLUDOF:Lesser Golden-Plover - Pluvialis dominica/fulva
+PLUFUL:Pacific Golden-Plover - Pluvialis fulva
+EUDMOR:Eurasian Dotterel - Eudromias morinellus
+CHAVOC:Killdeer - Charadrius vociferus
+CHAHIA:Common Ringed Plover - Charadrius hiaticula
+CHASEM:Semipalmated Plover - Charadrius semipalmatus
+CHAMEL:Piping Plover - Charadrius melodus
+CHADUB:Little Ringed Plover - Charadrius dubius
+VANVAN:Northern Lapwing - Vanellus vanellus
+VANCHI:Southern Lapwing - Vanellus chilensis
+ANAMOG:Siberian Sand-Plover - Anarhynchus mongolus
+ANALES:Greater Sand-Plover - Anarhynchus leschenaultii
+ANAVER:Oriental Plover - Anarhynchus veredus
+ANAWIL:Wilson's Plover - Anarhynchus wilsonia
+ANACOL:Collared Plover - Anarhynchus collaris
+ANAMON:Mountain Plover - Anarhynchus montanus
+ANANIV:Snowy Plover - Anarhynchus nivosus
+ANANIN:Western Snowy Plover - Anarhynchus nivosus nivosus
+JACSPI:Northern Jacana - Jacana spinosa
+JACJAC:Wattled Jacana - Jacana jacana
+BARLON:Upland Sandpiper - Bartramia longicauda
+NUMTAH:Bristle-thighed Curlew - Numenius tahitiensis
+NUMPHA:Whimbrel - Numenius phaeopus
+NUMMIN:Little Curlew - Numenius minutus
+NUMBOR:Eskimo Curlew - Numenius borealis
+NUMAME:Long-billed Curlew - Numenius americanus
+NUMMAD:Far Eastern Curlew - Numenius madagascariensis
+NUMTEN:Slender-billed Curlew - Numenius tenuirostris
+NUMARQ:Eurasian Curlew - Numenius arquata
+LIMLAP:Bar-tailed Godwit - Limosa lapponica
+LIMLIM:Black-tailed Godwit - Limosa limosa
+LIMHAE:Hudsonian Godwit - Limosa haemastica
+LIMFED:Marbled Godwit - Limosa fedoa
+AREINT:Ruddy Turnstone - Arenaria interpres
+AREMEL:Black Turnstone - Arenaria melanocephala
+CALTEN:Great Knot - Calidris tenuirostris
+CALCAN:Red Knot - Calidris canutus
+CALCAR:Rufa Red Knot - Calidris canutus rufa
+CALVIR:Surfbird - Calidris virgata
+CALPUG:Ruff - Calidris pugnax
+CALFAL:Broad-billed Sandpiper - Calidris falcinellus
+CALACU:Sharp-tailed Sandpiper - Calidris acuminata
+CALHIM:Stilt Sandpiper - Calidris himantopus
+CALFER:Curlew Sandpiper - Calidris ferruginea
+CALTEM:Temminck's Stint - Calidris temminckii
+CALSUM:Long-toed Stint - Calidris subminuta
+CALPYG:Spoon-billed Sandpiper - Calidris pygmea
+CALRUF:Red-necked Stint - Calidris ruficollis
+CALALB:Sanderling - Calidris alba
+CALALP:Dunlin - Calidris alpina
+CALPTI:Rock Sandpiper - Calidris ptilocnemis
+CALMAR:Purple Sandpiper - Calidris maritima
+CALBAI:Baird's Sandpiper - Calidris bairdii
+CALMIA:Little Stint - Calidris minuta
+CALMIL:Least Sandpiper - Calidris minutilla
+CALFUS:White-rumped Sandpiper - Calidris fuscicollis
+CALSUR:Buff-breasted Sandpiper - Calidris subruficollis
+CALMET:Pectoral Sandpiper - Calidris melanotos
+CALPUS:Semipalmated Sandpiper - Calidris pusilla
+CALMAU:Western Sandpiper - Calidris mauri
+LIMGRI:Short-billed Dowitcher - Limnodromus griseus
+LIMSCO:Long-billed Dowitcher - Limnodromus scolopaceus
+LIMSPE:Unidentified Dowitcher - Limnodromus sp.
+LYMMIN:Jack Snipe - Lymnocryptes minimus
+SCORUS:Eurasian Woodcock - Scolopax rusticola
+SCOMIN:American Woodcock - Scolopax minor
+GALSOL:Solitary Snipe - Gallinago solitaria
+GALSTE:Pin-tailed Snipe - Gallinago stenura
+GALGAN:Common Snipe - Gallinago gallinago
+GALDEL:Wilson's Snipe - Gallinago delicata
+XENCIN:Terek Sandpiper - Xenus cinereus
+ACTHYP:Common Sandpiper - Actitis hypoleucos
+ACTMAC:Spotted Sandpiper - Actitis macularius
+TRIOCH:Green Sandpiper - Tringa ochropus
+TRISOL:Solitary Sandpiper - Tringa solitaria
+TRIBRE:Gray-tailed Tattler - Tringa brevipes
+TRIINC:Wandering Tattler - Tringa incana
+TRIFLA:Lesser Yellowlegs - Tringa flavipes
+TRISEM:Willet - Tringa semipalmata
+TRIERY:Spotted Redshank - Tringa erythropus
+TRINEB:Common Greenshank - Tringa nebularia
+TRIMEL:Greater Yellowlegs - Tringa melanoleuca
+TRITOT:Common Redshank - Tringa totanus
+TRIGLA:Wood Sandpiper - Tringa glareola
+TRISTA:Marsh Sandpiper - Tringa stagnatilis
+PHATRI:Wilson's Phalarope - Phalaropus tricolor
+PHALOB:Red-necked Phalarope - Phalaropus lobatus
+PHAFUL:Red Phalarope - Phalaropus fulicarius
+GLAPRA:Collared Pratincole - Glareola pratincola
+GLAMAL:Oriental Pratincole - Glareola maldivarum
+STESKU:Great Skua - Stercorarius skua
+STEMAC:South Polar Skua - Stercorarius maccormicki
+STEPOM:Pomarine Jaeger - Stercorarius pomarinus
+STEPAS:Parasitic Jaeger - Stercorarius parasiticus
+STELON:Long-tailed Jaeger - Stercorarius longicaudus
+ALLALL:Dovekie - Alle alle
+URIAAL:Common Murre - Uria aalge
+URILOM:Thick-billed Murre - Uria lomvia
+ALCTOR:Razorbill - Alca torda
+PINIMP:Great Auk - Pinguinus impennis
+CEPGRY:Black Guillemot - Cepphus grylle
+CEPCOL:Pigeon Guillemot - Cepphus columba
+BRAPER:Long-billed Murrelet - Brachyramphus perdix
+BRAMAR:Marbled Murrelet - Brachyramphus marmoratus
+BRAMAA:Alaska Marbled Murrelet - Brachyramphus marmoratus
+BRABRE:Kittlitz's Murrelet - Brachyramphus brevirostris
+SYNSCR:Scripps's Murrelet - Synthliboramphus scrippsi
+SYNHYP:Guadalupe Murrelet - Synthliboramphus hypoleucus
+SYNCRA:Craveri's Murrelet - Synthliboramphus craveri
+SYNANT:Ancient Murrelet - Synthliboramphus antiquus
+PTYALE:Cassin's Auklet - Ptychoramphus aleuticus
+AETPSI:Parakeet Auklet - Aethia psittacula
+AETPUS:Least Auklet - Aethia pusilla
+AETPYG:Whiskered Auklet - Aethia pygmaea
+AETCRI:Crested Auklet - Aethia cristatella
+CERMON:Rhinoceros Auklet - Cerorhinca monocerata
+FRAARC:Atlantic Puffin - Fratercula arctica
+FRACOR:Horned Puffin - Fratercula corniculata
+FRACIR:Tufted Puffin - Fratercula cirrhata
+CREFUR:Swallow-tailed Gull - Creagrus furcatus
+RISTRI:Black-legged Kittiwake - Rissa tridactyla
+RISBRE:Red-legged Kittiwake - Rissa brevirostris
+PAGEBU:Ivory Gull - Pagophila eburnea
+XEMSAB:Sabine's Gull - Xema sabini
+CHRPHI:Bonaparte's Gull - Chroicocephalus philadelphia
+CHRCIR:Gray-hooded Gull - Chroicocephalus cirrocephalus
+CHRRID:Black-headed Gull - Chroicocephalus ridibundus
+HYDMIN:Little Gull - Hydrocoloeus minutus
+RHSROS:Ross's Gull - Rhodostethia rosea
+LEUMOD:Gray Gull - Leucophaeus modestus
+LEUATC:Laughing Gull - Leucophaeus atricilla
+LEUPIP:Franklin's Gull - Leucophaeus pipixcan
+ICHICH:Pallas's Gull - Ichthyaetus ichthyaetus
+LARBEL:Belcher's Gull - Larus belcheri
+LARCRA:Black-tailed Gull - Larus crassirostris
+LARHEE:Heermann's Gull - Larus heermanni
+LARCAN:Common Gull - Larus canus
+LARBRA:Short-billed Gull - Larus brachyrhynchus
+LARDEL:Ring-billed Gull - Larus delawarensis
+LAROCC:Western Gull - Larus occidentalis
+LAROCG:Western X Glaucous-winged Gull Hybrid - Larus occidentalis x glaucescens
+LARLIV:Yellow-footed Gull - Larus livens
+LARCAL:California Gull - Larus californicus
+LARARG:Herring Gull - Larus argentatus
+LARMIC:Yellow-legged Gull - Larus michahellis
+LARGLD:Iceland Gull - Larus glaucoides
+LARGTH:Thayer's Gull - Larus glaucoides thayeri
+LARGTK:Thayer's/Kumlien's Gull - Larus glaucoides thayeri/kumlieni
+LARGKU:Kumlien's Gull - Larus glaucoides kumlieni
+LARFUS:Lesser Black-backed Gull - Larus fuscus
+LARSCH:Slaty-backed Gull - Larus schistisagus
+LARGLS:Glaucous-winged Gull - Larus glaucescens
+LARHYP:Glaucous Gull - Larus hyperboreus
+LARMAR:Great Black-backed Gull - Larus marinus
+LARDOM:Kelp Gull - Larus dominicanus
+LARSPE:Unidentified Larus Gull - Larus (sp)
+ANOSTO:Brown Noddy - Anous stolidus
+ANOMIN:Black Noddy - Anous minutus
+ANOCER:Blue-gray Noddy - Anous ceruleus
+GYGALB:White Tern - Gygis alba
+ONYFUS:Sooty Tern - Onychoprion fuscatus
+ONYLUN:Gray-backed Tern - Onychoprion lunatus
+ONYANA:Bridled Tern - Onychoprion anaethetus
+ONYALE:Aleutian Tern - Onychoprion aleuticus
+STEALB:Little Tern - Sternula albifrons
+STEANT:Least Tern - Sternula antillarum
+STEANA:Interior Least Tern - Sternula antillarum athalassos
+STEANB:California Least Tern - Sternula antillarum browni
+STESUP:Yellow-billed Tern - Sternula superciliaris
+PHASIM:Large-billed Tern - Phaetusa simplex
+GELNIL:Gull-billed Tern - Gelochelidon nilotica
+HYDCAP:Caspian Tern - Hydroprogne caspia
+LARINC:Inca Tern - Larosterna inca
+CHLNIG:Black Tern - Chlidonias niger
+CHLLEU:White-winged Tern - Chlidonias leucopterus
+CHLHYB:Whiskered Tern - Chlidonias hybrida
+STEDOU:Roseate Tern - Sterna dougallii
+STEHIR:Common Tern - Sterna hirundo
+STEPAD:Arctic Tern - Sterna paradisaea
+STEFOR:Forster's Tern - Sterna forsteri
+THAMAX:Royal Tern - Thalasseus maximus
+THABER:Great Crested Tern - Thalasseus bergii
+THASAN:Sandwich Tern - Thalasseus sandvicensis
+THASAE:Cayenne Tern - Thalasseus sandvicensis eurygnathus
+THAELE:Elegant Tern - Thalasseus elegans
+RYNNIG:Black Skimmer - Rynchops niger
+EURHEL:Sunbittern - Eurypyga helias
+PHALEP:White-tailed Tropicbird - Phaethon lepturus
+PHAAET:Red-billed Tropicbird - Phaethon aethereus
+PHARUB:Red-tailed Tropicbird - Phaethon rubricauda
+GAVSTE:Red-throated Loon - Gavia stellata
+GAVARC:Arctic Loon - Gavia arctica
+GAVPAC:Pacific Loon - Gavia pacifica
+GAVIMM:Common Loon - Gavia immer
+GAVADA:Yellow-billed Loon - Gavia adamsii
+THACHL:Yellow-nosed Albatross - Thalassarche chlororhynchos
+THACAU:White-capped Albatross - Thalassarche cauta
+THAERE:Chatham Albatross - Thalassarche eremita
+THASAL:Salvin's Albatross - Thalassarche salvini
+THAMEL:Black-browed Albatross - Thalassarche melanophris
+PHOPAL:Light-mantled Albatross - Phoebetria palpebrata
+DIOEXU:Wandering Albatross - Diomedea exulans
+PHOIMM:Laysan Albatross - Phoebastria immutabilis
+PHOIMN:Laysan X Black-foot. Albatross Hybrid - Phoebastria immutabilis x nigripes
+PHONIG:Black-footed Albatross - Phoebastria nigripes
+PHOIRR:Waved Albatross - Phoebastria irrorata
+PHOALB:Short-tailed Albatross - Phoebastria albatrus
+OCEOCE:Wilson's Storm-Petrel - Oceanites oceanicus
+PELMAR:White-faced Storm-Petrel - Pelagodroma marina
+FRETRO:Black-bellied Storm-Petrel - Fregetta tropica
+HYDPEL:European Storm-Petrel - Hydrobates pelagicus
+HYDFUR:Fork-tailed Storm-Petrel - Hydrobates furcatus
+HYDHOR:Ringed Storm-Petrel - Hydrobates hornbyi
+HYDMON:Swinhoe's Storm-Petrel - Hydrobates monorhis
+HYDLEU:Leach's Storm-Petrel - Hydrobates leucorhous
+HYDSOC:Townsend's Storm-Petrel - Hydrobates socorroensis
+HYDCHE:Ainley's Storm-Petrel - Hydrobates cheimomnestes
+HYDHOM:Ashy Storm-Petrel - Hydrobates homochroa
+HYDCAT:Band-rumped Storm-Petrel - Hydrobates castro
+HYDTET:Wedge-rumped Storm-Petrel - Hydrobates tethys
+HYDMEL:Black Storm-Petrel - Hydrobates melania
+HYDMAD:Guadalupe Storm-Petrel - Hydrobates macrodactylus
+HYDMAR:Markham's Storm-Petrel - Hydrobates markhami
+HYDTRI:Tristram's Storm-Petrel - Hydrobates tristrami
+HYDMIC:Least Storm-Petrel - Hydrobates microsoma
+MACHAL:Northern Giant-Petrel - Macronectes halli
+FULGLA:Northern Fulmar - Fulmarus glacialis
+PTEGOU:Gray-faced Petrel - Pterodroma gouldi
+PTESOL:Providence Petrel - Pterodroma solandri
+PTENEG:Kermadec Petrel - Pterodroma neglecta
+PTEARM:Trindade Petrel - Pterodroma arminjoniana
+PTEHER:Herald Petrel - Pterodroma heraldica
+PTEULT:Murphy's Petrel - Pterodroma ultima
+PTEINE:Mottled Petrel - Pterodroma inexpectata
+PTECAH:Bermuda Petrel - Pterodroma cahow
+PTECAR:Jamaican Petrel - Pterodroma caribbaea
+PTEHAS:Black-capped Petrel - Pterodroma hasitata
+PTEEXT:Juan Fernandez Petrel - Pterodroma externa
+PTEPHA:Galapagos Petrel - Pterodroma phaeopygia
+PTESAN:Hawaiian Petrel - Pterodroma sandwichensis
+PTECER:White-necked Petrel - Pterodroma cervicalis
+PTEHYP:Bonin Petrel - Pterodroma hypoleuca
+PTENIG:Black-winged Petrel - Pterodroma nigripennis
+PTEFEA:Fea's Petrel - Pterodroma feae
+PTEMAD:Zino's Petrel - Pterodroma madeira
+PTECOO:Cook's Petrel - Pterodroma cookii
+PTELON:Stejneger's Petrel - Pterodroma longirostris
+PSEROS:Tahiti Petrel - Pseudobulweria rostrata
+BULBUL:Bulwer's Petrel - Bulweria bulwerii
+BULFAL:Jouanin's Petrel - Bulweria fallax
+PROAEQ:White-chinned Petrel - Procellaria aequinoctialis
+PROPAR:Parkinson's Petrel - Procellaria parkinsoni
+CALLEU:Streaked Shearwater - Calonectris leucomelas
+CALDIO:Scopoli's Shearwater - Calonectris diomedea
+CALBOR:Cory's Shearwater - Calonectris borealis
+CALEDW:Cape Verde Shearwater - Calonectris edwardsii
+ARDPAC:Wedge-tailed Shearwater - Ardenna pacifica
+ARDBUL:Buller's Shearwater - Ardenna bulleri
+ARDTEN:Short-tailed Shearwater - Ardenna tenuirostris
+ARDGRI:Sooty Shearwater - Ardenna grisea
+ARDGRA:Great Shearwater - Ardenna gravis
+ARDCRE:Pink-footed Shearwater - Ardenna creatopus
+ARDCAR:Flesh-footed Shearwater - Ardenna carneipes
+PUFNAT:Christmas Shearwater - Puffinus nativitatis
+PUFSUB:Galapagos Shearwater - Puffinus subalaris
+PUFPUF:Manx Shearwater - Puffinus puffinus
+PUFAUR:Townsend's Shearwater - Puffinus auricularis
+PUFNEW:Newell's Shearwater - Puffinus newelli
+PUFBRY:Bryan's Shearwater - Puffinus bryani
+PUFOPI:Black-vented Shearwater - Puffinus opisthomelas
+PUFLHE:Sargasso Shearwater - Puffinus lherminieri
+PUFBAR:Barolo Shearwater - Puffinus baroli
+JCICMA:Maguari Stork - Ciconia maguari
+JABMYC:Jabiru - Jabiru mycteria
+MYCAME:Wood Stork - Mycteria americana
+FREARI:Lesser Frigatebird - Fregata ariel
+FREMAG:Magnificent Frigatebird - Fregata magnificens
+FREMIN:Great Frigatebird - Fregata minor
+SULDAC:Masked Booby - Sula dactylatra
+SULGRA:Nazca Booby - Sula granti
+SULNEB:Blue-footed Booby - Sula nebouxii
+SULVAR:Peruvian Booby - Sula variegata
+SULLEU:Brown Booby - Sula leucogaster
+SULBRE:Cocos Booby - Sula brewsteri
+SULSUL:Red-footed Booby - Sula sula
+MORBAS:Northern Gannet - Morus bassanus
+ANHANH:Anhinga - Anhinga anhinga
+URIPEN:Brandt's Cormorant - Urile penicillatus
+URIURI:Red-faced Cormorant - Urile urile
+URIPEL:Pelagic Cormorant - Urile pelagicus
+PHACAR:Great Cormorant - Phalacrocorax carbo
+NANAUR:Double-crested Cormorant - Nannopterum auritum
+NANBRA:Neotropic Cormorant - Nannopterum brasilianum
+PELERY:American White Pelican - Pelecanus erythrorhynchos
+PELOCC:Brown Pelican - Pelecanus occidentalis
+TIGLIN:Rufescent Tiger-Heron - Tigrisoma lineatum
+TIGMEX:Bare-throated Tiger-Heron - Tigrisoma mexicanum
+TIGFAS:Fasciated Tiger-Heron - Tigrisoma fasciatum
+COCCOL:Boat-billed Heron - Cochlearius cochlearius
+AGAAGA:Agami Heron - Agamia agami
+BOTEXI:Least Bittern - Botaurus exilis
+BOTLEN:American Bittern - Botaurus lentiginosus
+BOTPIN:Pinnated Bittern - Botaurus pinnatus
+BOTMIN:Little Bittern - Botarus minutus
+BOTSIN:Yellow Bittern - Botaurus sinensis
+PILPIL:Capped Heron - Pilherodius pileatus
+SYRSIB:Whistling Heron - Syrigma sibilatrix
+EGRCAE:Little Blue Heron - Egretta caerulea
+EGRTRI:Tricolored Heron - Egretta tricolor
+EGRRUF:Reddish Egret - Egretta rufescens
+EGREUL:Chinese Egret - Egretta eulophotes
+EGRTHU:Snowy Egret - Egretta thula
+EGRGAR:Little Egret - Egretta garzetta
+EGRGUL:Western Reef-Heron - Egretta gularis
+NYCVIO:Yellow-crowned Night Heron - Nyctanassa violacea
+NYCNYC:Black-crowned Night Heron - Nycticorax nycticorax
+BUTSTR:Striated Heron - Butorides striata
+BUTVIR:Green Heron - Butorides virescens
+ARDBAC:Chinese Pond-Heron - Ardeola bacchus
+ARDALB:Great Egret - Ardea alba
+ARDINT:Medium Egret - Ardea intermedia
+ARDIBI:Western Cattle-Egret - Ardea ibis
+ARDCOR:Eastern Cattle-Egret - Ardea coromanda
+ARDCIN:Gray Heron - Ardea cinerea
+ARDHER:Great Blue Heron - Ardea herodias
+ARDHOC:Great White Heron - Ardea herodias occidentalis
+ARDCOC:Cocoi Heron - Ardea cocoi
+ARDPUR:Purple Heron - Ardea purpurea
+EUDALB:White Ibis - Eudocimus albus
+EUDRUB:Scarlet Ibis - Eudocimus ruber
+PLEFAL:Glossy Ibis - Plegadis falcinellus
+PLECHI:White-faced Ibis - Plegadis chihi
+MESCAY:Green Ibis - Mesembrinibis cayennensis
+THECAU:Buff-necked Ibis - Theristicus caudatus
+PLALEU:Eurasian Spoonbill - Platalea leucorodia
+PLAAJA:Roseate Spoonbill - Platalea ajaja
+GYMCAL:California Condor - Gymnogyps californianus
+SARPAP:King Vulture - Sarcoramphus papa
+CORATR:Black Vulture - Coragyps atratus
+CAEAUR:Turkey Vulture - Cathartes aura
+CATBUR:Lesser Yellow-headed Vulture - Cathartes burrovianus
+PANHAL:Osprey - Pandion haliaetus
+GAMSWA:Pearl Kite - Gampsonyx swainsonii
+ELALEU:White-tailed Kite - Elanus leucurus
+CHOUNC:Hook-billed Kite - Chondrohierax uncinatus
+CHOWIL:Cuban Kite - Chondrohierax wilsonii
+LEPCAY:Gray-headed Kite - Leptodon cayanensis
+ELAFOR:Swallow-tailed Kite - Elanoides forficatus
+MORGUI:Crested Eagle - Morphnus guianensis
+HARHAR:Harpy Eagle - Harpia harpyja
+AQUCHR:Golden Eagle - Aquila chrysaetos
+SPITYR:Black Hawk-Eagle - Spizaetus tyrannus
+SPIMEL:Black-and-white Hawk-Eagle - Spizaetus melanoleucus
+SPIORN:Ornate Hawk-Eagle - Spizaetus ornatus
+HARBID:Double-toothed Kite - Harpagus bidentatus
+MICSUP:Tiny Hawk - Microspizias superciliosus
+CIRHUD:Northern Harrier - Circus hudsonius
+CIRBUF:Long-winged Harrier - Circus buffoni
+CIRAER:Western Marsh Harrier - Circus aeruginosus
+ACCPOL:Gray-bellied Hawk - Accipiter poliogaster
+ACCSOL:Chinese Sparrowhawk - Accipiter soloensis
+ACCSTR:Sharp-shinned Hawk - Accipiter striatus
+ACCSTV:Puerto Rican Sharp-shinned Hawk - Accipiter striatus venator
+ACCCOO:Cooper's Hawk - Accipiter cooperii
+ACCGUN:Gundlach's Hawk - Accipiter gundlachi
+ACCBIC:Bicolored Hawk - Accipiter bicolor
+ACCGEN:Eurasian Goshawk - Accipiter gentilis
+ACCATR:American Goshawk - Accipiter atricapillus
+ACCSPE:Unidentified Accipiter Hawk - Accipiter (sp)
+MILMIG:Black Kite - Milvus migrans
+HALLEU:Bald Eagle - Haliaeetus leucocephalus
+HALALB:White-tailed Eagle - Haliaeetus albicilla
+HALPEL:Steller's Sea-Eagle - Haliaeetus pelagicus
+ICTMIS:Mississippi Kite - Ictinia mississippiensis
+ICTPLU:Plumbeous Kite - Ictinia plumbea
+BUSNIG:Black-collared Hawk - Busarellus nigricollis
+GERCAE:Crane Hawk - Geranospiza caerulescens
+ROSSOC:Snail Kite - Rostrhamus sociabilis
+HELHAM:Slender-billed Kite - Helicolestes hamatus
+CRYPLU:Plumbeous Hawk - Cryptoleucopteryx plumbea
+BUTANT:Common Black Hawk - Buteogallus anthracinus
+BUTGUN:Cuban Black Hawk - Buteogallus gundlachii
+BUTMER:Savanna Hawk - Buteogallus meridionalis
+BUTURU:Great Black Hawk - Buteogallus urubitinga
+BUGSOL:Solitary Eagle - Buteogallus solitarius
+MORPRI:Barred Hawk - Morphnarchus princeps
+RUPMAG:Roadside Hawk - Rupornis magnirostris
+PARUNI:Harris's Hawk - Parabuteo unicinctus
+GERALB:White-tailed Hawk - Geranoaetus albicaudatus
+PSEALB:White Hawk - Pseudastur albicollis
+LEUSEL:Semiplumbeous Hawk - Leucopternis semiplumbeus
+BUTPLG:Gray Hawk - Buteo plagiatus
+BUTNIT:Gray-lined Hawk - Buteo nitidus
+BUTLIN:Red-shouldered Hawk - Buteo lineatus
+BUTRID:Ridgway's Hawk - Buteo ridgwayi
+BUTPLT:Broad-winged Hawk - Buteo platypterus
+BUTPLB:Puerto Rican Broad-winged Hawk - Buteo platypterus brunnescens
+BUESOL:Hawaiian Hawk - Buteo solitarius
+BUTBRA:Short-tailed Hawk - Buteo brachyurus
+BUTSWA:Swainson's Hawk - Buteo swainsoni
+BUTALB:Zone-tailed Hawk - Buteo albonotatus
+BUTJAM:Red-tailed Hawk - Buteo jamaicensis
+BUTJHA:Harlan's Hawk - Buteo jamaicensis harlani
+BUTLAG:Rough-legged Hawk - Buteo lagopus
+BUTREG:Ferruginous Hawk - Buteo regalis
+BUTRUF:Long-legged Buzzard - Buteo rufinus
+ACCGSP:Unidentified Hawk - Accipitridae (gen, sp)
+TYTFUR:American Barn Owl - Tyto furcata
+TYTGLA:Ashy-faced Owl - Tyto glaucops
+OTUSUN:Oriental Scops-Owl - Otus sunia
+PSIFLA:Flammulated Owl - Psiloscops flammeolus
+GYSNUD:Puerto Rican Owl - Gymnasio nudipes
+MEGTRI:Whiskered Screech-Owl - Megascops trichopsis
+MEGCLA:Bare-shanked Screech-Owl - Megascops clarkii
+MEGCHO:Tropical Screech-Owl - Megascops choliba
+MEGBAR:Bearded Screech-Owl - Megascops barbarus
+MEGCOO:Pacific Screech-Owl - Megascops cooperi
+MEGKEN:Western Screech-Owl - Megascops kennicottii
+MEGASI:Eastern Screech-Owl - Megascops asio
+MEGSED:Balsas Screech-Owl - Megascops seductus
+MEGGUA:Middle American Screech-Owl - Megascops guatemalae
+MEGCEN:Choco Screech-Owl - Megascops centralis
+MARLAW:Bare-legged Owl - Margarobyas lawrencii
+LOPCRI:Crested Owl - Lophostrix cristata
+PULPER:Spectacled Owl - Pulsatrix perspicillata
+BUBVIR:Great Horned Owl - Bubo virginianus
+BUBSCA:Snowy Owl - Bubo scandiacus
+SURULU:Northern Hawk Owl - Surnia ulula
+GLAGNO:Northern Pygmy-Owl - Glaucidium gnoma
+GLACOS:Costa Rican Pygmy-Owl - Glaucidium costaricanum
+GLAGRI:Central American Pygmy-Owl - Glaucidium griseiceps
+GLASAN:Tamaulipas Pygmy-Owl - Glaucidium sanchezi
+GLAPAL:Colima Pygmy-Owl - Glaucidium palmarum
+GLABRA:Ferruginous Pygmy-Owl - Glaucidium brasilianum
+GLASIJ:Cuban Pygmy-Owl - Glaucidium siju
+MICWHI:Elf Owl - Micrathene whitneyi
+ATHCUN:Burrowing Owl - Athene cunicularia
+STROCC:Spotted Owl - Strix occidentalis
+STROCO:California Spotted Owl - Strix occidentalis occidentalis
+STROCA:Northern Spotted Owl - Strix occidentalis caurina
+STROCL:Mexican Spotted Owl - Strix occidentalis lucida
+STROCV:Spotted x Barred Owl Hybrid - Strix occidentalis x varia
+STRVAR:Barred Owl - Strix varia
+STRSAR:Cinereous Owl - Strix sartorii
+STRFUL:Fulvous Owl - Strix fulvescens
+STRVIR:Mottled Owl - Strix virgata
+STRNIG:Black-and-white Owl - Strix nigrolineata
+STRNEB:Great Gray Owl - Strix nebulosa
+ASIOTU:Long-eared Owl - Asio otus
+ASISTY:Stygian Owl - Asio stygius
+ASIFLA:Short-eared Owl - Asio flammeus
+ASICLA:Striped Owl - Asio clamator
+ASIGRA:Jamaican Owl - Asio grammicus
+AEGFUN:Boreal Owl - Aegolius funereus
+AEGACA:Northern Saw-whet Owl - Aegolius acadicus
+AEGRID:Unspotted Saw-whet Owl - Aegolius ridgwayi
+NINJAP:Northern Boobook - Ninox japonica
+STRGSP:Unidentified Owl - Strigidae (gen, sp)
+PRITEM:Cuban Trogon - Priotelus temnurus
+PRIROS:Hispaniolan Trogon - Priotelus roseigaster
+TROCLA:Lattice-tailed Trogon - Trogon clathratus
+TROMAS:Slaty-tailed Trogon - Trogon massena
+TROMER:Black-tailed Trogon - Trogon melanurus
+TROMEC:Black-headed Trogon - Trogon melanocephalus
+TROCIT:Citreoline Trogon - Trogon citreolus
+TROCHI:White-tailed Trogon - Trogon chionurus
+TROBAI:Baird's Trogon - Trogon bairdii
+TROCAL:Gartered Trogon - Trogon caligatus
+TRORUS:Black-throated Trogon - Trogon rufus
+TROELE:Elegant Trogon - Trogon elegans
+TROMEX:Mountain Trogon - Trogon mexicanus
+TROCOL:Collared Trogon - Trogon collaris
+TROCAU:Orange-bellied Trogon - Trogon collaris aurantiiventris
+EUPNEO:Eared Quetzal - Euptilotis neoxenus
+PHAAUR:Golden-headed Quetzal - Pharomachrus auriceps
+PHAMOC:Resplendent Quetzal - Pharomachrus mocinno
+UPUEPO:Eurasian Hoopoe - Upupa epops
+TODMUL:Cuban Tody - Todus multicolor
+TODSUB:Broad-billed Tody - Todus subulatus
+TODANG:Narrow-billed Tody - Todus angustirostris
+TODTOD:Jamaican Tody - Todus todus
+TODMEX:Puerto Rican Tody - Todus mexicanus
+HYLMOM:Tody Motmot - Hylomanes momotula
+ASPGUL:Blue-throated Motmot - Aspatha gularis
+MOMMEX:Russet-crowned Motmot - Momotus mexicanus
+MOMCOE:Blue-capped Motmot - Momotus coeruliceps
+MOMLES:Lesson's Motmot - Momotus lessonii
+MOMSUB:Whooping Motmot - Momotus subrufescens
+BARMAR:Rufous Motmot - Baryphthengus martii
+ELECAR:Keel-billed Motmot - Electron carinatum
+ELEPLA:Broad-billed Motmot - Electron platyrhynchum
+EUMSUP:Turquoise-browed Motmot - Eumomota superciliosa
+MEGTOR:Ringed Kingfisher - Megaceryle torquata
+MEGALC:Belted Kingfisher - Megaceryle alcyon
+CHLAMA:Amazon Kingfisher - Chloroceryle amazona
+CHLAEN:American Pygmy Kingfisher - Chloroceryle aenea
+CHLAME:Green Kingfisher - Chloroceryle americana
+CHLIND:Green-and-rufous Kingfisher - Chloroceryle inda
+NYSRAD:Barred Puffbird - Nystalus radiatus
+NOTHYP:White-necked Puffbird - Notharchus hyperrhynchus
+NOTPEC:Black-breasted Puffbird - Notharchus pectoralis
+NOTTEC:Pied Puffbird - Notharchus tectus
+MALPAN:White-whiskered Puffbird - Malacoptila panamensis
+MICLAN:Lanceolated Monklet - Micromonacha lanceolata
+NONFRO:Gray-cheeked Nunlet - Nonnula frontalis
+MONMOR:White-fronted Nunbird - Monasa morphoeus
+BRASAL:Dusky-backed Jacamar - Brachygalba salmoni
+GALRUF:Rufous-tailed Jacamar - Galbula ruficauda
+JACAUR:Great Jacamar - Jacamerops aureus
+CAPMAC:Spot-crowned Barbet - Capito maculicoronatus
+EUBBOU:Red-headed Barbet - Eubucco bourcierii
+SEMFRA:Prong-billed Barbet - Semnornis frantzii
+AULPRA:Northern Emerald-Toucanet - Aulacorhynchus prasinus
+PTETOR:Collared Aracari - Pteroglossus torquatus
+PTEFRA:Fiery-billed Aracari - Pteroglossus frantzii
+SELSPT:Yellow-eared Toucanet - Selenidera spectabilis
+RAMSUL:Keel-billed Toucan - Ramphastos sulfuratus
+RAMAMB:Yellow-throated Toucan - Ramphastos ambiguus
+JYNTOR:Eurasian Wryneck - Jynx torquilla
+PICOLI:Olivaceous Piculet - Picumnus olivaceus
+NESMIC:Antillean Piculet - Nesoctites micromegas
+MELLEW:Lewis's Woodpecker - Melanerpes lewis
+MELHER:Guadeloupe Woodpecker - Melanerpes herminieri
+MENPOR:Puerto Rican Woodpecker - Melanerpes portoricensis
+MELERY:Red-headed Woodpecker - Melanerpes erythrocephalus
+MELFOR:Acorn Woodpecker - Melanerpes formicivorus
+MELCHC:Golden-naped Woodpecker - Melanerpes chrysauchen
+MELPUC:Black-cheeked Woodpecker - Melanerpes pucherani
+MELSTR:Hispaniolan Woodpecker - Melanerpes striatus
+MELRAD:Jamaican Woodpecker - Melanerpes radiolatus
+MELCHG:Golden-cheeked Woodpecker - Melanerpes chrysogenys
+MELHYI:Gray-breasted Woodpecker - Melanerpes hypopolius
+MELPYG:Yucatan Woodpecker - Melanerpes pygmaeus
+MELRUB:Red-crowned Woodpecker - Melanerpes rubricapillus
+MELURO:Gila Woodpecker - Melanerpes uropygialis
+MELHOF:Hoffmann's Woodpecker - Melanerpes hoffmannii
+MELAUR:Golden-fronted Woodpecker - Melanerpes aurifrons
+MELCAR:Red-bellied Woodpecker - Melanerpes carolinus
+MELSUP:West Indian Woodpecker - Melanerpes superciliaris
+SPHTHY:Williamson's Sapsucker - Sphyrapicus thyroideus
+SPHVAR:Yellow-bellied Sapsucker - Sphyrapicus varius
+SPHNUC:Red-naped Sapsucker - Sphyrapicus nuchalis
+SPHRUB:Red-breasted Sapsucker - Sphyrapicus ruber
+SPHHYB:Hybrid Sapsucker - Sphyrapicus hybrid
+SPHSPE:Unidentified Sapsucker - Sphyrapicus (sp)
+XIPPER:Cuban Green Woodpecker - Xiphidiopicus percussus
+PICDOR:American Three-toed Woodpecker - Picoides dorsalis
+PICARC:Black-backed Woodpecker - Picoides arcticus
+DENMAJ:Great Spotted Woodpecker - Dendrocopos major
+DRYPUB:Downy Woodpecker - Dryobates pubescens
+DRYNUT:Nuttall's Woodpecker - Dryobates nuttallii
+DRYSCA:Ladder-backed Woodpecker - Dryobates scalaris
+DRYBOR:Red-cockaded Woodpecker - Dryobates borealis
+DRYVIL:Hairy Woodpecker - Dryobates villosus
+DRYALB:White-headed Woodpecker - Dryobates albolarvatus
+DRYFUM:Smoky-brown Woodpecker - Dryobates fumigatus
+DRYARI:Arizona Woodpecker - Dryobates arizonae
+DRYSTR:Strickland's Woodpecker - Dryobates stricklandi
+DRYKIR:Red-rumped Woodpecker - Dryobates kirkii
+PICSIM:Rufous-winged Woodpecker - Piculus simplex
+PICCAL:Stripe-cheeked Woodpecker - Piculus callopterus
+PICCHR:Golden-green Woodpecker - Piculus chrysochloros
+COLRUB:Golden-olive Woodpecker - Colaptes rubiginosus
+COLAUC:Gray-crowned Woodpecker - Colaptes auricularis
+COLPUN:Spot-breasted Woodpecker - Colaptes punctigula
+COLAUT:Northern Flicker - Colaptes auratus
+COLMEX:Guatemalan Flicker - Colaptes mexicanoides
+COLAAU:Yellow-shafted Flicker - Colaptes auratus auratus
+COLAAC:Flicker Intergrade - Colaptes auratus auratus x cafer
+COLACA:Red-shafted Flicker - Colaptes auratus cafer
+COLCHR:Gilded Flicker - Colaptes chrysoides
+COLFER:Fernandina's Flicker - Colaptes fernandinae
+CELLOR:Cinnamon Woodpecker - Celeus loricatus
+CELCAS:Chestnut-colored Woodpecker - Celeus castaneus
+DRYLIN:Lineated Woodpecker - Dryocopus lineatus
+DRYPIL:Pileated Woodpecker - Dryocopus pileatus
+CAMHAE:Crimson-bellied Woodpecker - Campephilus haematogaster
+CAMMEL:Crimson-crested Woodpecker - Campephilus melanoleucos
+CAMGUA:Pale-billed Woodpecker - Campephilus guatemalensis
+CAMPRI:Ivory-billed Woodpecker - Campephilus principalis
+CAMIMP:Imperial Woodpecker - Campephilus imperialis
+PICGSP:Unidentified Woodpecker - Picinae (gen, sp)
+HERCAC:Laughing Falcon - Herpetotheres cachinnans
+MICRUF:Barred Forest-Falcon - Micrastur ruficollis
+MICMIR:Slaty-backed Forest-Falcon - Micrastur mirandollei
+MICSEM:Collared Forest-Falcon - Micrastur semitorquatus
+IBYAME:Red-throated Caracara - Ibycter americanus
+CARPLA:Crested Caracara - Caracara plancus
+CARPLU:Audubon's Crested Caracara - Caracara plancus audubonii
+CARLUT:Guadalupe Caracara - Caracara lutosa
+MILCHI:Yellow-headed Caracara - Milvago chimachima
+FALTIN:Eurasian Kestrel - Falco tinnunculus
+FALSPA:American Kestrel - Falco sparverius
+FALVES:Red-footed Falcon - Falco vespertinus
+FALCOL:Merlin - Falco columbarius
+FALSUB:Eurasian Hobby - Falco subbuteo
+FALFEM:Aplomado Falcon - Falco femoralis
+FALRUF:Bat Falcon - Falco rufigularis
+FALDEI:Orange-breasted Falcon - Falco deiroleucus
+FALRUS:Gyrfalcon - Falco rusticolus
+FALPER:Peregrine Falcon - Falco peregrinus
+FALMEX:Prairie Falcon - Falco mexicanus
+PYRPIC:Painted Parakeet - Pyrrhura picta
+PYRHOF:Sulphur-winged Parakeet - Pyrrhura hoffmanni
+MYIMON:Monk Parakeet - Myiopsitta monachus
+CONCAL:Carolina Parakeet - Conuropsis carolinensis
+EUPNAN:Olive-throated Parakeet - Eupsittula nana
+EUPCAN:Orange-fronted Parakeet - Eupsittula canicularis
+EUPPER:Brown-throated Parakeet - Eupsittula pertinax
+ARANEN:Nanday Parakeet - Aratinga nenday
+ARAARA:Blue-and-yellow Macaw - Ara ararauna
+ARASEV:Chestnut-fronted Macaw - Ara severus
+ARATRI:Cuban Macaw - Ara tricolor
+ARAMAC:Scarlet Macaw - Ara macao
+ARACHL:Red-and-green Macaw - Ara chloropterus
+ARAMIL:Military Macaw - Ara militaris
+ARAAMB:Great Green Macaw - Ara ambiguus
+PSIHOL:Green Parakeet - Psittacara holochlorus
+PSIBRE:Socorro Parakeet - Psittacara brevipes
+PSISTR:Pacific Parakeet - Psittacara strenuus
+PSIMIT:Mitred Parakeet - Psittacara mitratus
+PSIERY:Red-masked Parakeet - Psittacara erythrogenys
+PSIFIN:Crimson-fronted Parakeet - Psittacara finschi
+PSIEUO:Cuban Parakeet - Psittacara euops
+PSIMAU:Puerto Rican Parakeet - Psittacara maugei
+PSICHL:Hispaniolan Parakeet - Psittacara chloropterus
+RHYPAC:Thick-billed Parrot - Rhynchopsitta pachyrhyncha
+RHYTER:Maroon-fronted Parrot - Rhynchopsitta terrisi
+BOLLIN:Barred Parakeet - Bolborhynchus lineola
+FORCYA:Mexican Parrotlet - Forpus cyanopygius
+FORPAS:Green-rumped Parrotlet - Forpus passerinus
+FORCON:Spectacled Parrotlet - Forpus conspicillatus
+BROJUG:Orange-chinned Parakeet - Brotogeris jugularis
+BROVER:White-winged Parakeet - Brotogeris versicolurus
+BROCHI:Yellow-chevroned Parakeet - Brotogeris chiriri
+TOUCOS:Red-fronted Parrotlet - Touit costaricensis
+TOUDIL:Blue-fronted Parrotlet - Touit dilectissimus
+PYRHAE:Brown-hooded Parrot - Pyrilia haematotis
+PYRPYI:Saffron-headed Parrot - Pyrilia pyrilia
+PIOMEN:Blue-headed Parrot - Pionus menstruus
+PIOSEN:White-crowned Parrot - Pionus senilis
+AMAALB:White-fronted Parrot - Amazona albifrons
+AMAXAN:Yellow-lored Parrot - Amazona xantholora
+AMALEU:Cuban Parrot - Amazona leucocephala
+AMACOL:Yellow-billed Parrot - Amazona collaria
+AMAVEN:Hispaniolan Parrot - Amazona ventralis
+AMAVIT:Puerto Rican Parrot - Amazona vittata
+AMAAGI:Black-billed Parrot - Amazona agilis
+AMAVIR:Red-crowned Parrot - Amazona viridigenalis
+AMAFIN:Lilac-crowned Parrot - Amazona finschi
+AMAAUT:Red-lored Parrot - Amazona autumnalis
+AMAFAR:Mealy Parrot - Amazona farinosa
+AMAORA:Yellow-headed Parrot - Amazona oratrix
+AMAAUR:Yellow-naped Parrot - Amazona auropalliata
+AMAOCH:Yellow-crowned Parrot - Amazona ochrocephala
+AMAARA:Red-necked Parrot - Amazona arausiaca
+AMAVER:St. Lucia Parrot - Amazona versicolor
+AMAGUI:St. Vincent Parrot - Amazona guildingii
+AMAIMP:Imperial Parrot - Amazona imperialis
+PSIKRA:Rose-ringed Parakeet - Psittacula krameri
+AGAROS:Rosy-faced Lovebird - Agapornis roseicollis
+SAPAEN:Sapayoa - Sapayoa aenigma
+CHILAN:Lance-tailed Manakin - Chiroxiphia lanceolata
+CHILIN:Long-tailed Manakin - Chiroxiphia linearis
+CORALT:White-ruffed Manakin - Corapipo altera
+CRYHOL:Green Manakin - Cryptopipo holochlora
+LEPVEL:Velvety Manakin - Lepidothrix velutina
+MANCAN:White-collared Manakin - Manacus candei
+MANAUR:Orange-collared Manakin - Manacus aurantiacus
+MANVIT:Golden-collared Manakin - Manacus vitellinus
+PSEPIP:White-crowned Manakin - Pseudopipra pipra
+CERMEN:Red-capped Manakin - Ceratopipra mentalis
+CERERY:Golden-headed Manakin - Ceratopipra erythrocephala
+QUEPUR:Purple-throated Fruitcrow - Querula purpurata
+CEPGLA:Bare-necked Umbrellabird - Cephalopterus glabricollis
+COTAMA:Lovely Cotinga - Cotinga amabilis
+COTRID:Turquoise Cotinga - Cotinga ridgwayi
+COTNAT:Blue Cotinga - Cotinga nattererii
+LIPUNI:Rufous Piha - Lipaugus unirufus
+PROTRI:Three-wattled Bellbird - Procnias tricarunculatus
+CARHOP:Black-tipped Cotinga - Carpodectes hopkei
+CARANT:Yellow-billed Cotinga - Carpodectes antoniae
+CARNIT:Snowy Cotinga - Carpodectes nitidus
+SCHVER:Northern Schiffornis - Schiffornis veraepacis
+SCHSTE:Russet-winged Schiffornis - Schiffornis stenorhyncha
+LANRUF:Speckled Mourner - Laniocera rufescens
+TITSEM:Masked Tityra - Tityra semifasciata
+TITINQ:Black-crowned Tityra - Tityra inquisitor
+PACVER:Barred Becard - Pachyramphus versicolor
+PACRUF:Cinereous Becard - Pachyramphus rufus
+PACCIN:Cinnamon Becard - Pachyramphus cinnamomeus
+PACPOL:White-winged Becard - Pachyramphus polychopterus
+PACALB:Black-and-white Becard - Pachyramphus albogriseus
+PACMAJ:Gray-collared Becard - Pachyramphus major
+PACAGL:Rose-throated Becard - Pachyramphus aglaiae
+PACHOM:One-colored Becard - Pachyramphus homochrous
+PACNIG:Jamaican Becard - Pachyramphus niger
+OXYCRI:Sharpbill - Oxyruncus cristatus
+ONYCOR:Royal Flycatcher - Onychorhynchus coronatus
+TERERY:Ruddy-tailed Flycatcher - Terenotriccus erythrurus
+MYIVIL:Tawny-breasted Flycatcher - Myiobius villosus
+MYISUL:Sulphur-rumped Flycatcher - Myiobius sulphureipygius
+MYIATD:Black-tailed Flycatcher - Myiobius atricaudus
+PIPGRI:Gray-headed Piprites - Piprites griseiceps
+PLACAN:Stub-tailed Spadebill - Platyrinchus cancrominus
+PLAMYS:White-throated Spadebill - Platyrinchus mystaceus
+PLACOR:Golden-crowned Spadebill - Platyrinchus coronatus
+MIOOLI:Olive-striped Flycatcher - Mionectes olivaceus
+MIOOLE:Ochre-bellied Flycatcher - Mionectes oleagineus
+LEPAMA:Sepia-capped Flycatcher - Leptopogon amaurocephalus
+LEPSUP:Slaty-capped Flycatcher - Leptopogon superciliaris
+PHYFLA:Yellow-green Tyrannulet - Phylloscartes flavovirens
+PHYSUP:Rufous-browed Tyrannulet - Phylloscartes superciliaris
+PSEPEL:Bronze-olive Pygmy-Tyrant - Pseudotriccus pelzelni
+MYIATP:Black-capped Pygmy-Tyrant - Myiornis atricapillus
+LOPPIT:Scale-crested Pygmy-Tyrant - Lophotriccus pileatus
+LOPPIR:Pale-eyed Pygmy-Tyrant - Lophotriccus pilaris
+ONCCIN:Northern Bentbill - Oncostoma cinereigulare
+ONCOLI:Southern Bentbill - Oncostoma olivaceum
+POESYL:Slate-headed Tody-Flycatcher - Poecilotriccus sylvia
+TODCIN:Common Tody-Flycatcher - Todirostrum cinereum
+TODNIG:Black-headed Tody-Flycatcher - Todirostrum nigriceps
+CNISUB:Brownish Twistwing - Cnipodectes subbrunneus
+RHYBRE:Eye-ringed Flatbill - Rhynchocyclus brevirostris
+RHYOLI:Olivaceous Flatbill - Rhynchocyclus olivaceus
+TOLFLC:Yellow-winged Flatbill - Tolmomyias flavotectus
+TOLSUL:Yellow-olive Flatbill - Tolmomyias sulphurescens
+TOLFLN:Ochre-lored Flatbill - Tolmomyias flaviventris
+ORNSEM:Yellow-bellied Tyrannulet - Ornithion semiflavum
+ORNBRU:Brown-capped Tyrannulet - Ornithion brunneicapillus
+CAMIMB:Northern Beardless-Tyrannulet - Camptostoma imberbe
+CAMOBS:Southern Beardless-Tyrannulet - Camptostoma obsoletum
+NESRID:Cocos Flycatcher - Nesotriccus ridgwayi
+NESMUR:Mouse-colored Tyrannulet - Nesotriccus murinus
+CAPFLA:Yellow Tyrannulet - Capsiempis flaveola
+TYRELA:Yellow-crowned Tyrannulet - Tyrannulus elatus
+MYIGAI:Forest Elaenia - Myiopagis gaimardii
+MYICAN:Gray Elaenia - Myiopagis caniceps
+MYICOT:Jamaican Elaenia - Myiopagis cotta
+MYIVIR:Greenish Elaenia - Myiopagis viridicata
+ELAMAR:Caribbean Elaenia - Elaenia martinica
+ELAFLA:Yellow-bellied Elaenia - Elaenia flavogaster
+ELAALB:White-crested Elaenia - Elaenia albiceps
+ELAPAR:Small-billed Elaenia - Elaenia parvirostris
+ELACHI:Lesser Elaenia - Elaenia chiriquensis
+ELAFRA:Mountain Elaenia - Elaenia frantzii
+ELAFAL:Greater Antillean Elaenia - Elaenia fallax
+SERCIN:Torrent Tyrannulet - Serpophaga cinerea
+ACRZEL:White-fronted Tyrannulet - Acrochordopus zeledoni
+PHYGRI:Sooty-headed Tyrannulet - Phyllomyias griseiceps
+ZIMVIL:Guatemalan Tyrannulet - Zimmerius vilissimus
+ZIMPAR:Mistletoe Tyrannulet - Zimmerius parvus
+ATTSPA:Bright-rumped Attila - Attila spadiceus
+SIRALB:Choco Sirystes - Sirystes albogriseus
+RHYHOL:Rufous Mourner - Rhytipterna holerythra
+MYIYUC:Yucatan Flycatcher - Myiarchus yucatanensis
+MYIBAR:Sad Flycatcher - Myiarchus barbirostris
+MYITUB:Dusky-capped Flycatcher - Myiarchus tuberculifer
+MYIPAN:Panama Flycatcher - Myiarchus panamensis
+MYICIN:Ash-throated Flycatcher - Myiarchus cinerascens
+MYINUT:Nutting's Flycatcher - Myiarchus nuttingi
+MYICRI:Great Crested Flycatcher - Myiarchus crinitus
+MYITYR:Brown-crested Flycatcher - Myiarchus tyrannulus
+MYINUG:Grenada Flycatcher - Myiarchus nugator
+MYIVAL:Rufous-tailed Flycatcher - Myiarchus validus
+MYISAG:La Sagra's Flycatcher - Myiarchus sagrae
+MYISTO:Stolid Flycatcher - Myiarchus stolidus
+MYIANT:Puerto Rican Flycatcher - Myiarchus antillarum
+MYIOBE:Lesser Antillean Flycatcher - Myiarchus oberi
+RAMFLL:Flammulated Flycatcher - Ramphotrigon flammulatum
+PHYLIC:Lesser Kiskadee - Philohydor lictor
+PITSUL:Great Kiskadee - Pitangus sulphuratus
+MACRIX:Cattle Tyrant - Machetornis rixosa
+MEGPIT:Boat-billed Flycatcher - Megarynchus pitangua
+MYICAY:Rusty-margined Flycatcher - Myiozetetes cayanensis
+MYISIM:Social Flycatcher - Myiozetetes similis
+MYIGRA:Gray-capped Flycatcher - Myiozetetes granadensis
+CONALB:White-ringed Flycatcher - Conopias albovittatus
+MYIHEM:Golden-bellied Flycatcher - Myiodynastes hemichrysus
+MYIMAC:Streaked Flycatcher - Myiodynastes maculatus
+MYILUT:Sulphur-bellied Flycatcher - Myiodynastes luteiventris
+LEGLEU:Piratic Flycatcher - Legatus leucophaius
+EMPVAR:Variegated Flycatcher - Empidonomus varius
+EMPAUR:Crowned Slaty Flycatcher - Empidonomus aurantioatrocristatus
+TYRMEL:Tropical Kingbird - Tyrannus melancholicus
+TYRCOU:Couch's Kingbird - Tyrannus couchii
+TYRVOC:Cassin's Kingbird - Tyrannus vociferans
+TYRCRA:Thick-billed Kingbird - Tyrannus crassirostris
+TYRVER:Western Kingbird - Tyrannus verticalis
+TYRTYR:Eastern Kingbird - Tyrannus tyrannus
+TYRDOM:Gray Kingbird - Tyrannus dominicensis
+TYRCAU:Loggerhead Kingbird - Tyrannus caudifasciatus
+TYRCUB:Giant Kingbird - Tyrannus cubensis
+TYRFOR:Scissor-tailed Flycatcher - Tyrannus forficatus
+TYRSAV:Fork-tailed Flycatcher - Tyrannus savana
+MYIFAS:Bran-colored Flycatcher - Myiophobus fasciatus
+LATEUL:Euler's Flycatcher - Lathrotriccus euleri
+APHCAP:Tawny-chested Flycatcher - Aphanotriccus capitalis
+APHAUD:Black-billed Flycatcher - Aphanotriccus audax
+XENCAL:Belted Flycatcher - Xenotriccus callizonus
+XENMEX:Pileated Flycatcher - Xenotriccus mexicanus
+MITPHA:Tufted Flycatcher - Mitrephanes phaeocercus
+CONCOO:Olive-sided Flycatcher - Contopus cooperi
+CONPER:Greater Pewee - Contopus pertinax
+CONLUG:Dark Pewee - Contopus lugubris
+CONOCH:Ochraceous Pewee - Contopus ochraceus
+CONSOR:Western Wood-Pewee - Contopus sordidulus
+CONVIR:Eastern Wood-Pewee - Contopus virens
+CONCIN:Tropical Pewee - Contopus cinereus
+CONCAB:Cuban Pewee - Contopus caribaeus
+CONPAL:Jamaican Pewee - Contopus pallidus
+CONHIS:Hispaniolan Pewee - Contopus hispaniolensis
+CONLAT:Lesser Antillean Pewee - Contopus latirostris
+CONSPE:Unidentified Pewee - Contopus (sp.)
+EMPFLT:Yellow-bellied Flycatcher - Empidonax flaviventris
+EMPVIR:Acadian Flycatcher - Empidonax virescens
+EMPALN:Alder Flycatcher - Empidonax alnorum
+EMPALT:Traill's Flycatcher - Empidonax alnorum/traillii
+EMPTRA:Willow Flycatcher - Empidonax traillii
+EMPTEX:Southwestern Willow Flycatcher - Empidonax traillii extimus
+EMPALB:White-throated Flycatcher - Empidonax albigularis
+EMPMIN:Least Flycatcher - Empidonax minimus
+EMPHAM:Hammond's Flycatcher - Empidonax hammondii
+EMPHAO:Hammond's/Dusky Flycatcher - Empidonax hammondii/oberholseri
+EMPWRI:Gray Flycatcher - Empidonax wrightii
+EMPOBE:Dusky Flycatcher - Empidonax oberholseri
+EMPAFF:Pine Flycatcher - Empidonax affinis
+EMPDIF:Western Flycatcher - Empidonax difficilis
+EMPFLC:Yellowish Flycatcher - Empidonax flavescens
+EMPFUL:Buff-breasted Flycatcher - Empidonax fulvifrons
+EMPATR:Black-capped Flycatcher - Empidonax atriceps
+EMPSPE:Unidentified Empidonax - Empidonax (sp)
+SAYNIG:Black Phoebe - Sayornis nigricans
+SAYPHO:Eastern Phoebe - Sayornis phoebe
+SAYSAY:Say's Phoebe - Sayornis saya
+PYRRUB:Vermilion Flycatcher - Pyrocephalus rubinus
+FLUPIC:Pied Water-Tyrant - Fluvicola pica
+SUBARE:Northern Scrub-Flycatcher - Sublegatus arenarum
+COLCOL:Long-tailed Tyrant - Colonia colonus
+TYRGEN:Unidentified Flycatcher - Tyrannidae (gen, sp)
+PITMIC:Black-crowned Antpitta - Pittasoma michleri
+CYMLIN:Fasciated Antshrike - Cymbilaimus lineatus
+TARMAJ:Great Antshrike - Taraba major
+THADOL:Barred Antshrike - Thamnophilus doliatus
+THANIG:Black Antshrike - Thamnophilus nigriceps
+THABRI:Black-hooded Antshrike - Thamnophilus bridgesi
+THAATR:Black-crowned Antshrike - Thamnophilus atrinucha
+XENSET:Spiny-faced Antshrike - Xenornis setifrons
+THAANA:Russet Antshrike - Thamnistes anabatinus
+DYSMEN:Plain Antvireo - Dysithamnus mentalis
+DYSSTR:Streak-crowned Antvireo - Dysithamnus striaticeps
+DYSPUN:Spot-crowned Antvireo - Dysithamnus puncticeps
+MYRIGN:Moustached Antwren - Myrmotherula ignota
+MYRPAC:Pacific Antwren - Myrmotherula pacifica
+MYRAXI:White-flanked Antwren - Myrmotherula axillaris
+MYRSCH:Slaty Antwren - Myrmotherula schisticolor
+EPIFUL:Checker-throated Stipplethroat - Epinecrophylla fulviventris
+HERFRA:Rusty-winged Antwren - Herpsilochmus frater
+MICQUI:Dot-winged Antwren - Microrhopias quixensis
+FORGRI:White-fringed Antwren - Formicivora grisea
+EUCCAL:Rufous-rumped Antwren - Euchrepomis callinota
+CERTYR:Dusky Antbird - Cercomacroides tyrannina
+CERNIG:Jet Antbird - Cercomacra nigricans
+GYCNUD:Bare-crowned Antbird - Gymnocichla nudiceps
+HAFZEL:Zeledon's Antbird - Hafferia zeledoni
+MYRLON:White-bellied Antbird - Myrmeciza longipes
+POLEXS:Chestnut-backed Antbird - Poliocrania exsul
+SIPLAE:Dull-mantled Antbird - Sipia laemosticta
+HYLNAE:Spotted Antbird - Hylophylax naevioides
+MYRTOR:Wing-banded Antbird - Myrmornis torquata
+GYMBIC:Bicolored Antbird - Gymnopithys bicolor
+PHAMCL:Ocellated Antbird - Phaenostictus mcleannani
+GRAFLA:Ochre-breasted Antpitta - Grallaricula flavirostris
+MYRDIV:Thicket Antpitta - Myrmothera dives
+HYLPER:Streak-chested Antpitta - Hylopezus perspicillatus
+GRAGUA:Scaled Antpitta - Grallaria guatimalensis
+SCYPAN:Tacarcuna Tapaculo - Scytalopus panamensis
+SCYCHO:Choco Tapaculo - Scytalopus chocoensis
+SCYARG:Silvery-fronted Tapaculo - Scytalopus argentifrons
+FORMON:Mayan Antthrush - Formicarius moniliger
+FORANA:Black-faced Antthrush - Formicarius analis
+FORNIG:Black-headed Antthrush - Formicarius nigricapillus
+FORRUF:Rufous-breasted Antthrush - Formicarius rufipectus
+SCLMEX:Tawny-throated Leaftosser - Sclerurus mexicanus
+SCLALB:Gray-throated Leaftosser - Sclerurus albigularis
+SCLGUA:Scaly-throated Leaftosser - Sclerurus guatemalensis
+SITGRI:Olivaceous Woodcreeper - Sittasomus griseicapillus
+DECLON:Long-tailed Woodcreeper - Deconychura longicauda
+DENHOM:Ruddy Woodcreeper - Dendrocincla homochroa
+DENANA:Tawny-winged Woodcreeper - Dendrocincla anabatina
+DENFUA:Plain-brown Woodcreeper - Dendrocincla fuliginosa
+GLYSPI:Wedge-billed Woodcreeper - Glyphorynchus spirurus
+DENSAN:Northern Barred-Woodcreeper - Dendrocolaptes sanctithomae
+DENPIM:Black-banded Woodcreeper - Dendrocolaptes picumnus
+XIPPRO:Strong-billed Woodcreeper - Xiphocolaptes promeropirhynchus
+XIPSUS:Cocoa Woodcreeper - Xiphorhynchus susurrans
+XIPFLA:Ivory-billed Woodcreeper - Xiphorhynchus flavigaster
+XIPLAC:Black-striped Woodcreeper - Xiphorhynchus lachrymosus
+XIPERY:Spotted Woodcreeper - Xiphorhynchus erythropygius
+DENPIS:Straight-billed Woodcreeper - Dendroplex picus
+CAMTRO:Red-billed Scythebill - Campylorhamphus trochilirostris
+CAMPUS:Brown-billed Scythebill - Campylorhamphus pusillus
+LEPLEU:White-striped Woodcreeper - Lepidocolaptes leucogaster
+LEPSOU:Streak-headed Woodcreeper - Lepidocolaptes souleyetii
+LEPAFF:Spot-crowned Woodcreeper - Lepidocolaptes affinis
+XENMIT:Plain Xenops - Xenops minutus
+XENRUT:Streaked Xenops - Xenops rutilans
+PSELAW:Buffy Tuftedcheek - Pseudocolaptes lawrencii
+LOCNEM:Sharp-tailed Streamcreeper - Lochmias nematura
+PHIFUS:Slaty-winged Foliage-gleaner - Philydor fuscipenne
+DENRUF:Buff-fronted Foliage-gleaner - Dendroma rufa
+ANAVAR:Scaly-throated Foliage-gleaner - Anabacerthia variegaticeps
+SYNSUB:Lineated Foliage-gleaner - Syndactyla subalaris
+CLIRUB:Ruddy Foliage-gleaner - Clibanornis rubiginosus
+THRRUB:Streak-breasted Treehunter - Thripadectes rufobrunneus
+AUTOCH:Ochre-throated Foliage-gleaner - Automolus ochrolaemus
+AUTCER:Fawn-throated Foliage-gleaner - Automolus cervinigularis
+AUTEXS:Chiriqui Foliage-gleaner - Automolus exsertus
+AUTSUB:Striped Woodhaunter - Automolus subulatus
+PREBRU:Spotted Barbtail - Premnoplex brunnescens
+MARBEL:Beautiful Treerunner - Margarornis bellulus
+MARRUB:Ruddy Treerunner - Margarornis rubiginosus
+XENMIL:Double-banded Graytail - Xenerpestes minlosi
+CRAERY:Red-faced Spinetail - Cranioleuca erythrops
+CRADIS:Coiba Spinetail - Cranioleuca dissita
+SYNALB:Pale-breasted Spinetail - Synallaxis albescens
+SYNBRA:Slaty Spinetail - Synallaxis brachyura
+SYNERY:Rufous-breasted Spinetail - Synallaxis erythrothorax
+CYCGUJ:Rufous-browed Peppershrike - Cyclarhis gujanensis
+HYLFLA:Scrub Greenlet - Hylophilus flavipes
+VIRMEL:Chestnut-sided Shrike-Vireo - Vireolanius melitophrys
+VIRPUL:Green Shrike-Vireo - Vireolanius pulchellus
+VIREXI:Yellow-browed Shrike-Vireo - Vireolanius eximius
+TUNOCH:Tawny-crowned Greenlet - Tunchiornis ochraceiceps
+PACDEC:Lesser Greenlet - Pachysylvia decurtata
+PACAUR:Golden-fronted Greenlet - Pachysylvia aurantiifrons
+VIRHYP:Golden Vireo - Vireo hypochryseus
+VIROSB:Blue Mountain Vireo - Vireo osburni
+VIRBRE:Slaty Vireo - Vireo brevipennis
+VIRATR:Black-capped Vireo - Vireo atricapilla
+VIRNEL:Dwarf Vireo - Vireo nelsoni
+VIRGRI:White-eyed Vireo - Vireo griseus
+VIRCRA:Thick-billed Vireo - Vireo crassirostris
+VIRPAL:Mangrove Vireo - Vireo pallens
+VIRBAI:Cozumel Vireo - Vireo bairdi
+VIRCAB:San Andres Vireo - Vireo caribaeus
+VIRMOD:Jamaican Vireo - Vireo modestus
+VIRGUN:Cuban Vireo - Vireo gundlachii
+VIRLAT:Puerto Rican Vireo - Vireo latimeri
+VIRNAN:Flat-billed Vireo - Vireo nanus
+VIRBEL:Bell's Vireo - Vireo bellii
+VIRBPU:Least Bell's Vireo - Vireo bellii pusillus
+VIRVIC:Gray Vireo - Vireo vicinior
+VIRHUT:Hutton's Vireo - Vireo huttoni
+VIRFLF:Yellow-throated Vireo - Vireo flavifrons
+VIRCAM:Yellow-winged Vireo - Vireo carmioli
+VIRCAS:Cassin's Vireo - Vireo cassinii
+VIRSOL:Blue-headed Vireo - Vireo solitarius
+VIRSPE:Solitary Vireo - Vireo (sp)
+VIRPLU:Plumbeous Vireo - Vireo plumbeus
+VIRPHI:Philadelphia Vireo - Vireo philadelphicus
+VIRGIL:Warbling Vireo - Vireo gilvus
+VIRLEU:Brown-capped Vireo - Vireo leucophrys
+VIROLI:Red-eyed Vireo - Vireo olivaceus
+VIRFLD:Yellow-green Vireo - Vireo flavoviridis
+VIRALT:Black-whiskered Vireo - Vireo altiloquus
+VIRMAG:Yucatan Vireo - Vireo magister
+CHASCL:Kauai Elepaio - Chasiempis sclateri
+CHAIBI:Oahu Elepaio - Chasiempis ibidis
+CHASAN:Hawaii Elepaio - Chasiempis sandwichensis
+LANCRI:Brown Shrike - Lanius cristatus
+LANCOL:Red-backed Shrike - Lanius collurio
+LANLUD:Loggerhead Shrike - Lanius ludovicianus
+LANLUM:San Clemente Loggerhead Shrike - Lanius ludovicianus mearnsi
+LANBOR:Northern Shrike - Lanius borealis
+PERCAN:Canada Jay - Perisoreus canadensis
+CYAMIR:White-throated Jay - Cyanolyca mirabilis
+CYANAN:Dwarf Jay - Cyanolyca nanus
+CYAPUM:Black-throated Jay - Cyanolyca pumilo
+CYAARG:Silvery-throated Jay - Cyanolyca argentigula
+CYACUC:Azure-hooded Jay - Cyanolyca cucullata
+CYACOL:Black-throated Magpie-Jay - Cyanocorax colliei
+CYAFOR:White-throated Magpie-Jay - Cyanocorax formosus
+CYAMOR:Brown Jay - Cyanocorax morio
+CYAYNC:Green Jay - Cyanocorax yncas
+CYAMEL:Bushy-crested Jay - Cyanocorax melanocyaneus
+CYAYUC:Yucatan Jay - Cyanocorax yucatanicus
+CYABEE:Purplish-backed Jay - Cyanocorax beecheii
+CYASAN:San Blas Jay - Cyanocorax sanblasianus
+CYADIC:Tufted Jay - Cyanocorax dickeyi
+CYAAFF:Black-chested Jay - Cyanocorax affinis
+GYMCYA:Pinyon Jay - Gymnorhinus cyanocephalus
+CYASTE:Steller's Jay - Cyanocitta stelleri
+CYACRI:Blue Jay - Cyanocitta cristata
+APHCOE:Florida Scrub-Jay - Aphelocoma coerulescens
+APHINS:Island Scrub-Jay - Aphelocoma insularis
+APHCAL:California Scrub-Jay - Aphelocoma californica
+APHWOO:Woodhouse's Scrub-Jay - Aphelocoma woodhouseii
+APHULT:Transvolcanic Jay - Aphelocoma ultramarina
+APHWOL:Mexican Jay - Aphelocoma wollweberi
+APHUNI:Unicolored Jay - Aphelocoma unicolor
+NUCCOL:Clark's Nutcracker - Nucifraga columbiana
+PICHUD:Black-billed Magpie - Pica hudsonia
+PICNUT:Yellow-billed Magpie - Pica nuttalli
+CORMON:Eurasian Jackdaw - Corvus monedula
+CORFRU:Rook - Corvus frugilegus
+CORBRA:American Crow - Corvus brachyrhynchos
+CORMIN:Cuban Palm-Crow - Corvus minutus
+CORPAL:Hispaniolan Palm-Crow - Corvus palmarum
+CORNAS:Cuban Crow - Corvus nasicus
+CORLEU:White-necked Crow - Corvus leucognaphalus
+CORCOR:Hooded Crow - Corvus cornix
+CORJAM:Jamaican Crow - Corvus jamaicensis
+CORIMP:Tamaulipas Crow - Corvus imparatus
+CORSIN:Sinaloa Crow - Corvus sinaloae
+COROSS:Fish Crow - Corvus ossifragus
+CORHAW:Hawaiian Crow - Corvus hawaiiensis
+CORSPE:Unidentified Crow - Corvus (sp)
+CORCRY:Chihuahuan Raven - Corvus cryptoleucus
+CORCOX:Common Raven - Corvus corax
+AURFLA:Verdin - Auriparus flaviceps
+POECAR:Carolina Chickadee - Poecile carolinensis
+POEATR:Black-capped Chickadee - Poecile atricapillus
+POEGAM:Mountain Chickadee - Poecile gambeli
+POESCL:Mexican Chickadee - Poecile sclateri
+POERUF:Chestnut-backed Chickadee - Poecile rufescens
+POEHUD:Boreal Chickadee - Poecile hudsonicus
+POECIN:Gray-headed Chickadee - Poecile cinctus
+POEHYB:Hybrid Chickadee - Poecile hybrid
+POESPE:Unidentified Chickadee - Poecile (sp)
+BAEWOL:Bridled Titmouse - Baeolophus wollweberi
+BAEINO:Oak Titmouse - Baeolophus inornatus
+BAERID:Juniper Titmouse - Baeolophus ridgwayi
+BAEBIC:Tufted Titmouse - Baeolophus bicolor
+BAEATR:Black-crested Titmouse - Baeolophus atricristatus
+ALAARV:Eurasian Skylark - Alauda arvensis
+EREALP:Horned Lark - Eremophila alpestris
+EREALS:Streaked Horned Lark - Eremophila alpestris strigata
+ARUAED:Thick-billed Warbler - Arundinax aedon
+HIPICT:Icterine Warbler - Hippolais icterina
+ACRFAM:Millerbird - Acrocephalus familiaris
+ACRSCH:Sedge Warbler - Acrocephalus schoenobaenus
+ACRDUM:Blyth's Reed Warbler - Acrocephalus dumetorum
+DONATR:Black-capped Donacobius - Donacobius atricapilla
+HELCER:Pallas's Grasshopper Warbler - Helopsaltes certhiola
+HELOCH:Middendorff's Grasshopper Warbler - Helopsaltes ochotensis
+LOCLAN:Lanceolated Warbler - Locustella lanceolata
+LOCFLU:River Warbler - Locustella fluviatilis
+RIPRIP:Bank Swallow - Riparia riparia
+TACBIC:Tree Swallow - Tachycineta bicolor
+TACCYA:Bahama Swallow - Tachycineta cyaneoviridis
+TACTHA:Violet-green Swallow - Tachycineta thalassina
+TACEUC:Golden Swallow - Tachycineta euchrysea
+TACALB:Mangrove Swallow - Tachycineta albilinea
+ATTPIL:Black-capped Swallow - Atticora pileata
+ATTTIB:White-thighed Swallow - Atticora tibialis
+PYGCYA:Blue-and-white Swallow - Pygochelidon cyanoleuca
+STESER:Northern Rough-winged Swallow - Stelgidopteryx serripennis
+STERUF:Southern Rough-winged Swallow - Stelgidopteryx ruficollis
+PROTAP:Brown-chested Martin - Progne tapera
+PROSUB:Purple Martin - Progne subis
+PROELE:Southern Martin - Progne elegans
+PROCHA:Gray-breasted Martin - Progne chalybea
+PROSIN:Sinaloa Martin - Progne sinaloae
+PROCRY:Cuban Martin - Progne cryptoleuca
+PRODOM:Caribbean Martin - Progne dominicensis
+HIRRUS:Barn Swallow - Hirundo rustica
+DELURB:Western House-Martin - Delichon urbicum
+DELLAG:Siberian House-Martin - Delichon lagopodum
+PETPYR:Cliff Swallow - Petrochelidon pyrrhonota
+PETFUL:Cave Swallow - Petrochelidon fulva
+HIRGSP:Unidentified Swallow - Hirundinidae (gen, sp)
+PSAMIN:Bushtit - Psaltriparus minimus
+HORDIP:Japanese Bush Warbler - Horornis diphone
+PHYTRO:Willow Warbler - Phylloscopus trochilus
+PHYCOL:Common Chiffchaff - Phylloscopus collybita
+PHYSIB:Wood Warbler - Phylloscopus sibilatrix
+PHYFUS:Dusky Warbler - Phylloscopus fuscatus
+PHYPRO:Pallas's Leaf Warbler - Phylloscopus proregulus
+PHYINO:Yellow-browed Warbler - Phylloscopus inornatus
+PHYBOR:Arctic Warbler - Phylloscopus borealis
+PHYBOE:Arctic/Kamchatka Leaf Warbler - Phylloscopus borealis/examinandus
+PHYEXA:Kamchatka Leaf Warbler - Phylloscopus examinandus
+PYCCAF:Red-vented Bulbul - Pycnonotus cafer
+PYCJOC:Red-whiskered Bulbul - Pycnonotus jocosus
+SYLATR:Eurasian Blackcap - Sylvia atricapilla
+SYLCUR:Lesser Whitethroat - Sylvia curruca
+CHAFAS:Wrentit - Chamaea fasciata
+ZOSJAP:Warbling White-eye - Zosterops japonicus
+GARPEC:Greater Necklaced Laughingthrush - Garrulax pectoralis
+GARCAN:Hwamei - Garrulax canorus
+LEILUT:Red-billed Leiothrix - Leiothrix lutea
+CORCAL:Ruby-crowned Kinglet - Corthylio calendula
+REGSAT:Golden-crowned Kinglet - Regulus satrapa
+DULDOM:Palmchat - Dulus dominicus
+BOMGAR:Bohemian Waxwing - Bombycilla garrulus
+BOMCED:Cedar Waxwing - Bombycilla cedrorum
+PHAMEL:Black-and-yellow Silky-flycatcher - Phainoptila melanoxantha
+PTICIN:Gray Silky-flycatcher - Ptiliogonys cinereus
+PTICAU:Long-tailed Silky-flycatcher - Ptiliogonys caudatus
+PHANIT:Phainopepla - Phainopepla nitens
+MOHBRA:Kauai Oo - Moho braccatus
+MOHAPI:Oahu Oo - Moho apicalis
+MOHBIS:Bishop's Oo - Moho bishopi
+MOHNOB:Hawaii Oo - Moho nobilis
+CHAANG:Kioea - Chaetoptila angustipluma
+SITCAN:Red-breasted Nuthatch - Sitta canadensis
+SITCAR:White-breasted Nuthatch - Sitta carolinensis
+SITPYG:Pygmy Nuthatch - Sitta pygmaea
+SITPUS:Brown-headed Nuthatch - Sitta pusilla
+SITINS:Bahama Nuthatch - Sitta insularis
+CERAME:Brown Creeper - Certhia americana
+RAMMEL:Long-billed Gnatwren - Ramphocaenus melanurus
+MICCIN:Tawny-faced Gnatwren - Microbates cinereiventris
+POLSCH:Slate-throated Gnatcatcher - Polioptila schistaceigula
+POLLEM:Cuban Gnatcatcher - Polioptila lembeyei
+POLALV:Yucatan Gnatcatcher - Polioptila albiventris
+POLBIL:White-browed Gnatcatcher - Polioptila bilineata
+POLCAE:Blue-gray Gnatcatcher - Polioptila caerulea
+POLMEL:Black-tailed Gnatcatcher - Polioptila melanura
+POLCAL:California Gnatcatcher - Polioptila californica
+POLNIG:Black-capped Gnatcatcher - Polioptila nigriceps
+POLALL:White-lored Gnatcatcher - Polioptila albiloris
+SALOBS:Rock Wren - Salpinctes obsoletus
+MICPHI:Nightingale Wren - Microcerculus philomela
+MICMAR:Scaly-breasted Wren - Microcerculus marginatus
+CAPMEX:Canyon Wren - Catherpes mexicanus
+HYLSUM:Sumichrast's Wren - Hylorchilus sumichrasti
+HYLNAV:Nava's Wren - Hylorchilus navai
+PHESPA:Sooty-headed Wren - Pheugopedius spadix
+PHEATR:Black-throated Wren - Pheugopedius atrogularis
+PHERUT:Rufous-breasted Wren - Pheugopedius rutilus
+PHEMAC:Spot-breasted Wren - Pheugopedius maculipectus
+PHEFEL:Happy Wren - Pheugopedius felix
+PHEFAS:Black-bellied Wren - Pheugopedius fasciatoventris
+CANLEP:Stripe-throated Wren - Cantorchilus leucopogon
+CANTHO:Stripe-breasted Wren - Cantorchilus thoracicus
+CANMOD:Cabanis's Wren - Cantorchilus modestus
+CANZEL:Canebrake Wren - Cantorchilus zeledoni
+CANELU:Isthmian Wren - Cantorchilus elutus
+CANNIG:Bay Wren - Cantorchilus nigricapillus
+CANSEM:Riverside Wren - Cantorchilus semibadius
+CANLET:Buff-breasted Wren - Cantorchilus leucotis
+HENLES:White-breasted Wood-Wren - Henicorhina leucosticta
+HENLEP:Gray-breasted Wood-Wren - Henicorhina leucophrys
+CYPPHA:Song Wren - Cyphorhinus phaeocephalus
+UROLEU:White-bellied Wren - Uropsila leucogastra
+THRRUL:Rufous-and-white Wren - Thryophilus rufalbus
+THRSIN:Sinaloa Wren - Thryophilus sinaloa
+THRPLE:Banded Wren - Thryophilus pleurostictus
+CAMALB:White-headed Wren - Campylorhynchus albobrunneus
+CAMZON:Band-backed Wren - Campylorhynchus zonatus
+CAMMEG:Gray-barred Wren - Campylorhynchus megalopterus
+CAMCHI:Giant Wren - Campylorhynchus chiapensis
+CAMGRI:Bicolored Wren - Campylorhynchus griseus
+CAMHUM:Russet-naped Wren - Campylorhynchus humilis
+CAMRUF:Veracruz Wren - Campylorhynchus rufinucha
+CAMCAP:Rufous-backed Wren - Campylorhynchus capistratus
+CAMGUL:Spotted Wren - Campylorhynchus gularis
+CAMJOC:Boucard's Wren - Campylorhynchus jocosus
+CAMYUC:Yucatan Wren - Campylorhynchus yucatanicus
+CAMBRU:Cactus Wren - Campylorhynchus brunneicapillus
+THRBEW:Bewick's Wren - Thryomanes bewickii
+THRLUD:Carolina Wren - Thryothorus ludovicianus
+TROAED:Northern House Wren - Troglodytes aedon
+TROMUL:Southern House Wren - Troglodytes musculus
+TROBEA:Cozumel Wren - Troglodytes beani
+TROMAR:Kalinago Wren - Troglodytes martinicensis
+TROMES:St. Lucia Wren - Troglodytes mesoleucus
+TROMUC:St. Vincent Wren - Troglodytes musicus
+TROGRE:Grenada Wren - Troglodytes grenadensis
+TROAMU:Southern House-Wren - Troglodytes aedon musculus
+TROSIS:Socorro Wren - Troglodytes sissonii
+TROTAN:Clarion Wren - Troglodytes tanneri
+TRORUC:Rufous-browed Wren - Troglodytes rufociliatus
+TROOCH:Ochraceous Wren - Troglodytes ochraceus
+TROPAC:Pacific Wren - Troglodytes pacificus
+TROPAH:Pacific/Winter Wren - Troglodytes pacificus/hiemalis
+TROHIE:Winter Wren - Troglodytes hiemalis
+FERCER:Zapata Wren - Ferminia cerverai
+CISSTE:Sedge Wren - Cistothorus stellaris
+CISPLA:Grass Wren - Cistothorus platensis
+CISPAL:Marsh Wren - Cistothorus palustris
+THRBRO:Timberline Wren - Thryorchilus browni
+TRGGSP:Unidentified Wren - Troglodytidae (gen, sp)
+MELCAE:Blue Mockingbird - Melanotis caerulescens
+MELHYC:Blue-and-white Mockingbird - Melanotis hypoleucus
+MELGLA:Black Catbird - Melanoptila glabrirostris
+DUMCAR:Gray Catbird - Dumetella carolinensis
+RAMBRA:Martinique Thrasher - Ramphocinclus brachyurus
+RAMSAC:St. Lucia Thrasher - Ramphocinclus sanctaeluciae
+ALLFUC:Scaly-breasted Thrasher - Allenia fusca
+MARFUS:Pearly-eyed Thrasher - Margarops fuscatus
+CINRUF:Brown Trembler - Cinclocerthia ruficauda
+CINGUT:Gray Trembler - Cinclocerthia gutturalis
+TOXCUR:Curve-billed Thrasher - Toxostoma curvirostre
+TOXOCE:Ocellated Thrasher - Toxostoma ocellatum
+TOXRUF:Brown Thrasher - Toxostoma rufum
+TOXLON:Long-billed Thrasher - Toxostoma longirostre
+TOXGUT:Cozumel Thrasher - Toxostoma guttatum
+TOXBEN:Bendire's Thrasher - Toxostoma bendirei
+TOXCIN:Gray Thrasher - Toxostoma cinereum
+TOXRED:California Thrasher - Toxostoma redivivum
+TOXLEC:LeConte's Thrasher - Toxostoma lecontei
+TOXCRI:Crissal Thrasher - Toxostoma crissale
+OREMON:Sage Thrasher - Oreoscoptes montanus
+MIMGUN:Bahama Mockingbird - Mimus gundlachii
+MIMGRA:Socorro Mockingbird - Mimus graysoni
+MIMGIL:Tropical Mockingbird - Mimus gilvus
+MIMPOL:Northern Mockingbird - Mimus polyglottos
+STUVUL:European Starling - Sturnus vulgaris
+ACRTRI:Common Myna - Acridotheres tristis
+CINMEX:American Dipper - Cinclus mexicanus
+SIASIA:Eastern Bluebird - Sialia sialis
+SIAMEX:Western Bluebird - Sialia mexicana
+SIACUR:Mountain Bluebird - Sialia currucoides
+SIAHYB:Hybrid Bluebird - Sialia hybrid
+MYATOW:Townsend's Solitaire - Myadestes townsendi
+MYAOCC:Brown-backed Solitaire - Myadestes occidentalis
+MYAELI:Cuban Solitaire - Myadestes elisabeth
+MYAGEN:Rufous-throated Solitaire - Myadestes genibarbis
+MYAMEL:Black-faced Solitaire - Myadestes melanops
+MYACOL:Varied Solitaire - Myadestes coloratus
+MYAUNI:Slate-colored Solitaire - Myadestes unicolor
+MYAMYA:Kamao - Myadestes myadestinus
+MYAWOA:Amaui - Myadestes woahensis
+MYALAN:Olomao - Myadestes lanaiensis
+MYAOBS:Omao - Myadestes obscurus
+MYAPAL:Puaiohi - Myadestes palmeri
+ZOOAUR:White's Thrush - Zoothera aurea
+CATGRA:Black-billed Nightingale-Thrush - Catharus gracilirostris
+CATAUN:Orange-billed Nightingale-Thrush - Catharus aurantiirostris
+CATFUT:Slaty-backed Nightingale-Thrush - Catharus fuscater
+CATOCC:Russet Nightingale-Thrush - Catharus occidentalis
+CATFRA:Ruddy-capped Nightingale-Thrush - Catharus frantzii
+CASMEX:Black-headed Nightingale-Thrush - Catharus mexicanus
+CATDRY:Yellow-throated Nightingale-Thrush - Catharus dryas
+CATFUN:Veery - Catharus fuscescens
+CATMIN:Gray-cheeked Thrush - Catharus minimus
+CATMIB:Gray-cheeked/Bicknell's Thrush - Catharus minimus/bicknelli
+CATBIC:Bicknell's Thrush - Catharus bicknelli
+CATUST:Swainson's Thrush - Catharus ustulatus
+CATGUT:Hermit Thrush - Catharus guttatus
+HYLMUS:Wood Thrush - Hylocichla mustelina
+TURVIS:Mistle Thrush - Turdus viscivorus
+TURMER:Eurasian Blackbird - Turdus merula
+TUROBC:Eyebrowed Thrush - Turdus obscurus
+TUREUN:Dusky Thrush - Turdus eunomus
+TURNAU:Naumann's Thrush - Turdus naumanni
+TURPIL:Fieldfare - Turdus pilaris
+TURILI:Redwing - Turdus iliacus
+TURPHI:Song Thrush - Turdus philomelos
+TURNIG:Sooty Thrush - Turdus nigrescens
+TURINF:Black Thrush - Turdus infuscatus
+TURPLE:Mountain Thrush - Turdus plebejus
+TURFUM:Cocoa Thrush - Turdus fumigatus
+TUROBL:Pale-vented Thrush - Turdus obsoletus
+TURGRA:Clay-colored Thrush - Turdus grayi
+TURNUD:Spectacled Thrush - Turdus nudigenis
+TURJAM:White-eyed Thrush - Turdus jamaicensis
+TURASS:White-throated Thrush - Turdus assimilis
+TURRUP:Rufous-backed Robin - Turdus rufopalliatus
+TURRUT:Rufous-collared Robin - Turdus rufitorques
+TURMIG:American Robin - Turdus migratorius
+TURSWA:La Selle Thrush - Turdus swalesi
+TURAUR:White-chinned Thrush - Turdus aurantius
+TURRAV:Grand Cayman Thrush - Turdus ravidus
+TURPLU:Red-legged Thrush - Turdus plumbeus
+TURLHE:Forest Thrush - Turdus lherminieri
+IXONAE:Varied Thrush - Ixoreus naevius
+TURGSP:Unidentified Thrush - Turdidae (gen, sp)
+RIDPIN:Aztec Thrush - Ridgwayia pinicola
+MUSGRI:Gray-streaked Flycatcher - Muscicapa griseisticta
+MUSDAU:Asian Brown Flycatcher - Muscicapa dauurica
+MUSSTR:Spotted Flycatcher - Muscicapa striata
+MUSSIB:Dark-sided Flycatcher - Muscicapa sibirica
+COPMAL:White-rumped Shama - Copsychus malabaricus
+ERIRUB:European Robin - Erithacus rubecula
+LARCYA:Siberian Blue Robin - Larvivora cyane
+LARSIB:Rufous-tailed Robin - Larvivora sibilans
+CYASVE:Bluethroat - Cyanecula svecica
+CALCAP:Siberian Rubythroat - Calliope calliope
+TARCYA:Red-flanked Bluetail - Tarsiger cyanurus
+FICNAR:Narcissus Flycatcher - Ficedula narcissina
+FICMUG:Mugimaki Flycatcher - Ficedula mugimaki
+FICALB:Taiga Flycatcher - Ficedula albicilla
+PHOPHO:Common Redstart - Phoenicurus phoenicurus
+MONSAX:Rufous-tailed Rock-thrush - Monticola saxatilis
+SAXMAU:Asian Stonechat - Saxicola maurus
+OENOEN:Northern Wheatear - Oenanthe oenanthe
+OENPLE:Pied Wheatear - Oenanthe pleschanka
+PEUTAE:Olive Warbler - Peucedramus taeniatus
+PLOCUC:Village Weaver - Ploceus cucullatus
+EUPFRA:Northern Red Bishop - Euplectes franciscanus
+EUPAFE:Yellow-crowned Bishop - Euplectes afer
+VIDMAC:Pin-tailed Whydah - Vidua macroura
+SPECUC:Bronze Mannikin - Spermestes cucullata
+EUOCAN:African Silverbill - Euodice cantans
+EUOMAB:Indian Silverbill - Euodice malabarica
+PADORY:Java Sparrow - Padda oryzivora
+LONPUN:Scaly-breasted Munia - Lonchura punctulata
+LONMAL:Tricolored Munia - Lonchura malacca
+LONATR:Chestnut Munia - Lonchura atricapilla
+AMDAMA:Red Avadavat - Amandava amandava
+GLACAE:Lavender Waxbill - Glaucestrilda caerulescens
+ESTMEL:Orange-cheeked Waxbill - Estrilda melpoda
+ESTAST:Common Waxbill - Estrilda astrild
+ESTTRO:Black-rumped Waxbill - Estrilda troglodytes
+PRUMON:Siberian Accentor - Prunella montanella
+PASDOM:House Sparrow - Passer domesticus
+PASMON:Eurasian Tree Sparrow - Passer montanus
+MOTTSC:Eastern Yellow Wagtail - Motacilla tschutschensis
+MOTCIT:Citrine Wagtail - Motacilla citreola
+MOTCIN:Gray Wagtail - Motacilla cinerea
+MOTALB:White Wagtail - Motacilla alba
+ANTTRI:Tree Pipit - Anthus trivialis
+ANTHOD:Olive-backed Pipit - Anthus hodgsoni
+ANTGUS:Pechora Pipit - Anthus gustavi
+ANTCER:Red-throated Pipit - Anthus cervinus
+ANTJAP:Siberian Pipit - Anthus japonicus
+ANTRUB:American Pipit - Anthus rubescens
+ANTPRA:Meadow Pipit - Anthus pratensis
+ANTSPR:Sprague's Pipit - Anthus spragueii
+ANTCHI:Yellowish Pipit - Anthus chii
+FRICOE:Common Chaffinch - Fringilla coelebs
+FRIMON:Brambling - Fringilla montifringilla
+CHLELE:Elegant Euphonia - Chlorophonia elegantissima
+CHLMUS:Hispaniolan Euphonia - Chlorophonia musica
+CHLSCL:Puerto Rican Euphonia - Chlorophonia sclateri
+CHLFLF:Lesser Antillean Euphonia - Chlorophonia flavifrons
+CHPFLA:Yellow-collared Chlorophonia - Chlorophonia flavirostris
+CHLOCC:Blue-crowned Chlorophonia - Chlorophonia occipitalis
+CHLCAL:Golden-browed Chlorophonia - Chlorophonia callophrys
+EUPJAM:Jamaican Euphonia - Euphonia jamaica
+EUPGOD:West Mexican Euphonia - Euphonia godmani
+EUPAFF:Scrub Euphonia - Euphonia affinis
+EUPLUT:Yellow-crowned Euphonia - Euphonia luteicapilla
+EUPMIN:White-vented Euphonia - Euphonia minuta
+EUPHIR:Yellow-throated Euphonia - Euphonia hirundinacea
+EUPLAN:Thick-billed Euphonia - Euphonia laniirostris
+EUPIMI:Spot-crowned Euphonia - Euphonia imitans
+EUPGOU:Olive-backed Euphonia - Euphonia gouldi
+EUPFUL:Fulvous-vented Euphonia - Euphonia fulvicrissa
+EUPANN:Tawny-capped Euphonia - Euphonia anneae
+EUPXAN:Orange-bellied Euphonia - Euphonia xanthogaster
+COCABE:Hooded Grosbeak - Coccothraustes abeillei
+COCVES:Evening Grosbeak - Coccothraustes vespertinus
+COCCOT:Hawfinch - Coccothraustes coccothraustes
+CARERY:Common Rosefinch - Carpodacus erythrinus
+CARROS:Pallas's Rosefinch - Carpodacus roseus
+MELPHA:Poo-uli - Melamprosops phaeosoma
+OREBAI:Akikiki - Oreomystis bairdi
+PAMMAC:Oahu Alauahio - Paroreomyza maculata
+PARFLA:Kakawahie - Paroreomyza flammea
+PAMMON:Maui Alauahio - Paroreomyza montana
+LOXBAI:Palila - Loxioides bailleui
+TELCAN:Laysan Finch - Telespiza cantans
+TELULT:Nihoa Finch - Telespiza ultima
+CHLKON:Kona Grosbeak - Chloridops kona
+RHOFLA:Lesser Koa-Finch - Rhodacanthis flaviceps
+RHOPAL:Greater Koa-Finch - Rhodacanthis palmeri
+CIRANN:Ula-ai-hawane - Ciridops anna
+PALDOL:Akohekohe - Palmeria dolei
+HIMFRA:Laysan Honeycreeper - Himatione fraithii
+HIMSAN:Apapane - Himatione sanguinea
+DRECOC:Iiwi - Drepanis coccinea
+DREPAC:Hawaii Mamo - Drepanis pacifica
+DREFUN:Black Mamo - Drepanis funerea
+PSIPSI:Ou - Psittirostra psittacea
+DYSMUN:Lanai Hookbill - Dysmorodrepanis munroi
+PSEXAN:Maui Parrotbill - Pseudonestor xanthophrys
+HEMHAN:Kauai Nukupuu - Hemignathus hanapepe
+HEMLUC:Oahu Nukupuu - Hemignathus lucidus
+HEMAFF:Maui Nukupuu - Hemignathus affinis
+HEMWIL:Akiapolaau - Hemignathus wilsoni
+AKIOBS:Lesser Akialoa - Akialoa obscura
+AKISTE:Kauai Akialoa - Akialoa stejnegeri
+AKIELL:Oahu Akialoa - Akialoa ellisiana
+AKILAN:Maui-nui Akialoa - Akialoa lanaiensis
+MAGPAR:Anianiau - Magumma parva
+CHLVIR:Hawaii Amakihi - Chlorodrepanis virens
+CHDFLA:Oahu Amakihi - Chlorodrepanis flava
+CHLSTE:Kauai Amakihi - Chlorodrepanis stejnegeri
+VIRSAG:Greater Amakihi - Viridonia sagittirostris
+LOXMAN:Hawaii Creeper - Loxops mana
+LOXCAE:Akekee - Loxops caeruleirostris
+LOXWOL:Oahu Akepa - Loxops wolstenholmei
+LOXOCH:Maui Akepa - Loxops ochraceus
+LOXCOC:Hawaii Akepa - Loxops coccineus
+PINENU:Pine Grosbeak - Pinicola enucleator
+PYRPYH:Eurasian Bullfinch - Pyrrhula pyrrhula
+LEUARC:Asian Rosy-Finch - Leucosticte arctoa
+LEUTEP:Gray-crowned Rosy-Finch - Leucosticte tephrocotis
+LEUATT:Black Rosy-Finch - Leucosticte atrata
+LEUAUS:Brown-capped Rosy-Finch - Leucosticte australis
+HAEMEX:House Finch - Haemorhous mexicanus
+HAEPUR:Purple Finch - Haemorhous purpureus
+HAECAS:Cassin's Finch - Haemorhous cassinii
+HAESPE:Unidentified Haemorhous Finch - Haemorhous (sp)
+CHLSIN:Oriental Greenfinch - Chloris sinica
+CRIMOZ:Yellow-fronted Canary - Crithagra mozambica
+ACAFLA:Redpoll - Acanthis flammea
+LOXCUR:Red Crossbill - Loxia curvirostra
+LOXSIN:Cassia Crossbill - Loxia sinesciuris
+LOXMEG:Hispaniolan Crossbill - Loxia megaplaga
+LOXLEU:White-winged Crossbill - Loxia leucoptera
+CARCAU:European Goldfinch - Carduelis carduelis
+SPISPI:Eurasian Siskin - Spinus spinus
+SPIPIN:Pine Siskin - Spinus pinus
+SPIATC:Black-capped Siskin - Spinus atriceps
+SPINOT:Black-headed Siskin - Spinus notatus
+SPIXAN:Yellow-bellied Siskin - Spinus xanthogastrus
+SPICUC:Red Siskin - Spinus cucullatus
+SPUDOM:Antillean Siskin - Spinus dominicensis
+SPIPSA:Lesser Goldfinch - Spinus psaltria
+SPILAW:Lawrence's Goldfinch - Spinus lawrencei
+SPITRI:American Goldfinch - Spinus tristis
+SERCAN:Island Canary - Serinus canaria
+RHNROS:Rosy Thrush-Tanager - Rhodinocichla rosea
+CALLAP:Lapland Longspur - Calcarius lapponicus
+CALORN:Chestnut-collared Longspur - Calcarius ornatus
+CALPIC:Smith's Longspur - Calcarius pictus
+RHYMCC:Thick-billed Longspur - Rhynchophanes mccownii
+PLENIV:Snow Bunting - Plectrophenax nivalis
+PLEHYP:McKay's Bunting - Plectrophenax hyperboreus
+EMBLEU:Pine Bunting - Emberiza leucocephalos
+EMBCHR:Yellow-browed Bunting - Emberiza chrysophrys
+EMBPUS:Little Bunting - Emberiza pusilla
+EMBRUS:Rustic Bunting - Emberiza rustica
+EMBELE:Yellow-throated Bunting - Emberiza elegans
+EMBAUR:Yellow-breasted Bunting - Emberiza aureola
+EMBVAR:Gray Bunting - Emberiza variabilis
+EMBPAL:Pallas's Bunting - Emberiza pallasi
+EMBSCH:Reed Bunting - Emberiza schoeniclus
+CHLFLG:Yellow-throated Chlorospingus - Chlorospingus flavigularis
+CHLCAG:Ashy-throated Chlorospingus - Chlorospingus canigularis
+CHLPIL:Sooty-capped Chlorospingus - Chlorospingus pileatus
+CHLFLP:Common Chlorospingus - Chlorospingus flavopectus
+CHLTAC:Tacarcuna Chlorospingus - Chlorospingus tacarcunae
+CHLINO:Pirre Chlorospingus - Chlorospingus inornatus
+PEUCAR:Rufous-winged Sparrow - Peucaea carpalis
+PEUSUM:Cinnamon-tailed Sparrow - Peucaea sumichrasti
+PEURUF:Stripe-headed Sparrow - Peucaea ruficauda
+PEUHUM:Black-chested Sparrow - Peucaea humeralis
+PEUMYS:Bridled Sparrow - Peucaea mystacalis
+PEUBOT:Botteri's Sparrow - Peucaea botterii
+PEUCAS:Cassin's Sparrow - Peucaea cassinii
+PEUAES:Bachman's Sparrow - Peucaea aestivalis
+AMMSAV:Grasshopper Sparrow - Ammodramus savannarum
+AMMSFL:Florida Grasshopper Sparrow - Ammodramus savannarum floridanus
+ARRRUF:Olive Sparrow - Arremonops rufivirgatus
+ARRCHL:Green-backed Sparrow - Arremonops chloronotus
+ARRCON:Black-striped Sparrow - Arremonops conirostris
+AMPQUI:Five-striped Sparrow - Amphispizopsis quinquestriata
+AMPBIL:Black-throated Sparrow - Amphispiza bilineata
+CHOGRA:Lark Sparrow - Chondestes grammacus
+CALMEC:Lark Bunting - Calamospiza melanocorys
+SPIPAS:Chipping Sparrow - Spizella passerina
+SPIPAL:Clay-colored Sparrow - Spizella pallida
+SPIATG:Black-chinned Sparrow - Spizella atrogularis
+SPIPUS:Field Sparrow - Spizella pusilla
+SPIBRE:Brewer's Sparrow - Spizella breweri
+SPIWOR:Worthen's Sparrow - Spizella wortheni
+ARRCOS:Costa Rican Brushfinch - Arremon costaricensis
+ARRATR:Black-headed Brushfinch - Arremon atricapillus
+ARRAUR:Orange-billed Sparrow - Arremon aurantiirostris
+ARRVIR:Green-striped Brushfinch - Arremon virenticeps
+ARRBRU:Chestnut-capped Brushfinch - Arremon brunneinucha
+ARRCRA:Sooty-faced Finch - Arremon crassirostris
+PASILI:Fox Sparrow - Passerella iliaca
+SPIARB:American Tree Sparrow - Spizelloides arborea
+JUNVUL:Volcano Junco - Junco vulcani
+JUNINS:Guadalupe Junco - Junco insularis
+JUNHYE:Dark-eyed Junco - Junco hyemalis
+JUNHHY:Slate-colored Junco - Junco hyemalis hyemalis
+JUNHAI:White-winged Junco - Junco hyemalis aikeni
+JUNHOR:Oregon Junco - Junco hyemalis oreganus
+JUNHME:Pink-sided Junco - Junco hyemalis mearnsi
+JUNHCA:Gray-headed Junco - Junco hyemalis caniceps
+JUNHDO:Red-backed Junco - Junco hyemalis dorsalis
+JUNPHA:Yellow-eyed Junco - Junco phaeonotus
+JUNBAI:Baird's Junco - Junco bairdi
+ZONCAP:Rufous-collared Sparrow - Zonotrichia capensis
+ZONLEU:White-crowned Sparrow - Zonotrichia leucophrys
+ZONLLE:Eastern White-crowned Sparrow - Zonotrichia leucophrys leucophrys
+ZONLOR:Mountain White-crowned Sparrow - Zonotrichia leucophrys oriantha
+ZONLGA:Gambel's White-crowned Sparrow - Zonotrichia leucophrys gambelii
+ZONLPU:Puget Sound White-crowned Sparrow - Zonotrichia leucophrys pugetensis
+ZONLNU:Nuttall's White-crowned Sparrow - Zonotrichia leucophrys nuttalli
+ZONATR:Golden-crowned Sparrow - Zonotrichia atricapilla
+ZONQUE:Harris's Sparrow - Zonotrichia querula
+ZONALB:White-throated Sparrow - Zonotrichia albicollis
+ZONHYB:Zonotrichia Sparrow Hybrid - Zonotrichia hybrid
+ARTBEL:Bell's Sparrow - Artemisiospiza belli
+ARTNEB:Unidentified Sage Sparrow - Artemisiospiza nevadensis/belli
+ARTNEV:Sagebrush Sparrow - Artemisiospiza nevadensis
+ARTBEC:San Clemente Bell's Sparrow - Artemisiospiza belli clementeae
+ORISUP:Striped Sparrow - Oriturus superciliosus
+POOGRA:Vesper Sparrow - Pooecetes gramineus
+AMMLEC:LeConte's Sparrow - Ammospiza leconteii
+AMMMAR:Seaside Sparrow - Ammospiza maritima
+AMMMNI:Dusky Seaside-Sparrow - Ammospiza maritima nigrescens
+AMMMMI:Cape Sable Seaside-Sparrow - Ammospiza maritima mirabilis
+AMMNEL:Nelson's Sparrow - Ammospiza nelsoni
+AMMCAU:Saltmarsh Sparrow - Ammospiza caudacuta
+AMMNEC:Sharp-tailed Sparrow - Ammospiza nelsoni/caudacuta
+CENBAI:Baird's Sparrow - Centronyx bairdii
+CENHEN:Henslow's Sparrow - Centronyx henslowii
+PASSAN:Savannah Sparrow - Passerculus sandwichensis
+PASSPR:Ipswich Sparrow - Passerculus sandwichensis princeps
+PASSBE:Belding's Savannah Sparrow - Passerculus sandwichensis beldingi
+PASSRO:Large-billed Sparrow - Passerculus sandwichensis rostratus
+XENBAI:Sierra Madre Sparrow - Xenospiza baileyi
+MELMEL:Song Sparrow - Melospiza melodia
+MELLIN:Lincoln's Sparrow - Melospiza lincolnii
+MELGEO:Swamp Sparrow - Melospiza georgiana
+PEZCAP:Large-footed Finch - Pezopetes capitalis
+TORINE:Zapata Sparrow - Torreornis inexpectata
+MELKIE:Rusty-crowned Ground-Sparrow - Melozone kieneri
+MEZFUS:Canyon Towhee - Melozone fusca
+MELALB:White-throated Towhee - Melozone albicollis
+MELABE:Abert's Towhee - Melozone aberti
+MELCRI:California Towhee - Melozone crissalis
+MELCRE:Inyo California Towhee - Melozone crissalis eremophilus
+MELLEU:White-eared Ground-Sparrow - Melozone leucotis
+MELBIA:White-faced Ground-Sparrow - Melozone biarcuata
+MELCAB:Cabanis's Ground-Sparrow - Melozone cabanisi
+AIMRUS:Rusty Sparrow - Aimophila rufescens
+AIMRUP:Rufous-crowned Sparrow - Aimophila ruficeps
+AIMNOT:Oaxaca Sparrow - Aimophila notosticta
+PIPCHL:Green-tailed Towhee - Pipilo chlorurus
+PIPMAC:Spotted Towhee - Pipilo maculatus
+PIPMAE:Unidentified Rufous-sided Towhee - Pipilo maculatus/erythrophthalmus
+PIPERY:Eastern Towhee - Pipilo erythrophthalmus
+PIPOCA:Collared Towhee - Pipilo ocai
+PIPHYB:Hybrid Towhee - Pipilo hybrid
+ATLPIL:Rufous-capped Brushfinch - Atlapetes pileatus
+ATLALB:White-naped Brushfinch - Atlapetes albinucha
+ALTTIB:Yellow-thighed Brushfinch - Atlapetes tibialis
+ALTLUT:Yellow-green Brushfinch - Atlapetes luteoviridis
+PASGSP:Unidentified Sparrow - Passerellidae (gen, sp)
+CALTER:Western Chat-Tanager - Calyptophilus tertius
+CALFRU:Eastern Chat-Tanager - Calyptophilus frugivorus
+ZELCOR:Wrenthrush - Zeledonia coronata
+PHAPAL:Black-crowned Palm-Tanager - Phaenicophilus palmarum
+PHAPOL:Gray-crowned Palm-Tanager - Phaenicophilus poliocephalus
+XENMON:White-winged Warbler - Xenoligea montana
+MICPAL:Green-tailed Warbler - Microligea palustris
+NESSPE:Puerto Rican Tanager - Nesospingus speculiferus
+SPIZEN:Western Spindalis - Spindalis zena
+SPINIG:Jamaican Spindalis - Spindalis nigricephala
+SPDDOM:Hispaniolan Spindalis - Spindalis dominicensis
+SPIPOR:Puerto Rican Spindalis - Spindalis portoricensis
+TERFER:Yellow-headed Warbler - Teretistris fernandinae
+TERFOR:Oriente Warbler - Teretistris fornsi
+ICTVIR:Yellow-breasted Chat - Icteria virens
+XANXAN:Yellow-headed Blackbird - Xanthocephalus xanthocephalus
+DOLORY:Bobolink - Dolichonyx oryzivorus
+STULIL:Chihuahuan Meadowlark - Sturnella lilianae
+STUMAG:Eastern Meadowlark - Sturnella magna
+STUMAN:Eastern/Western Meadowlark - Sturnella magna/neglecta
+STUNEG:Western Meadowlark - Sturnella neglecta
+LEIMIL:Red-breasted Meadowlark - Leistes militaris
+AMBHOL:Yellow-billed Cacique - Amblycercus holosericeus
+CASMEL:Yellow-winged Cacique - Cassiculus melanicterus
+PSADEC:Crested Oropendola - Psarocolius decumanus
+PSAWAG:Chestnut-headed Oropendola - Psarocolius wagleri
+PSAMON:Montezuma Oropendola - Psarocolius montezuma
+PSAGUA:Black Oropendola - Psarocolius guatimozinus
+CACURO:Scarlet-rumped Cacique - Cacicus uropygialis
+CACCEL:Yellow-rumped Cacique - Cacicus cela
+ICTNOR:Bahama Oriole - Icterus northropi
+ICTMEL:Cuban Oriole - Icterus melanopsis
+ICTDOM:Hispaniolan Oriole - Icterus dominicensis
+ICTPOR:Puerto Rican Oriole - Icterus portoricensis
+ICTLAU:St. Lucia Oriole - Icterus laudabilis
+ICTOBE:Montserrat Oriole - Icterus oberi
+ICTBON:Martinique Oriole - Icterus bonana
+ICTWAG:Black-vented Oriole - Icterus wagleri
+ICTMAC:Bar-winged Oriole - Icterus maculialatus
+ICTPRO:Black-cowled Oriole - Icterus prosthemelas
+ICTSPU:Orchard Oriole - Icterus spurius
+ICTCUC:Hooded Oriole - Icterus cucullatus
+ICTCHR:Yellow-backed Oriole - Icterus chrysater
+ICTAUC:Orange-crowned Oriole - Icterus auricapillus
+ICTMES:Yellow-tailed Oriole - Icterus mesomelas
+ICTICT:Venezuelan Troupial - Icterus icterus
+ICTPUS:Streak-backed Oriole - Icterus pustulatus
+ICTBUL:Bullock's Oriole - Icterus bullockii
+ICTBUG:Bullock's x Baltimore Oriole Hybrid - Icterus bullockii x galbula
+ICTAUT:Orange Oriole - Icterus auratus
+ICTLEU:Jamaican Oriole - Icterus leucopteryx
+ICTPEC:Spot-breasted Oriole - Icterus pectoralis
+ICTGUL:Altamira Oriole - Icterus gularis
+ICTGRA:Audubon's Oriole - Icterus graduacauda
+ICTGAL:Baltimore Oriole - Icterus galbula
+ICTABE:Black-backed Oriole - Icterus abeillei
+ICTPAR:Scott's Oriole - Icterus parisorum
+NESNIG:Jamaican Blackbird - Nesopsar nigerrimus
+AGEPHO:Red-winged Blackbird - Agelaius phoeniceus
+AGEASS:Red-shouldered Blackbird - Agelaius assimilis
+AGETRI:Tricolored Blackbird - Agelaius tricolor
+AGEHUM:Tawny-shouldered Blackbird - Agelaius humeralis
+AGEXAN:Yellow-shouldered Blackbird - Agelaius xanthomus
+MOLBON:Shiny Cowbird - Molothrus bonariensis
+MOLAEN:Bronzed Cowbird - Molothrus aeneus
+MOLATE:Brown-headed Cowbird - Molothrus ater
+MOLORY:Giant Cowbird - Molothrus oryzivorus
+DIVDIV:Melodious Blackbird - Dives dives
+PTIATR:Cuban Blackbird - Ptiloxena atroviolacea
+EUPCAR:Rusty Blackbird - Euphagus carolinus
+EUPCYC:Brewer's Blackbird - Euphagus cyanocephalus
+QUIQUI:Common Grackle - Quiscalus quiscula
+QUIMAJ:Boat-tailed Grackle - Quiscalus major
+QUIMEX:Great-tailed Grackle - Quiscalus mexicanus
+QUIPAL:Slender-billed Grackle - Quiscalus palustris
+QUINIC:Nicaraguan Grackle - Quiscalus nicaraguensis
+QUINIG:Greater Antillean Grackle - Quiscalus niger
+QUILUG:Carib Grackle - Quiscalus lugubris
+CHRICT:Yellow-hooded Blackbird - Chrysomus icterocephalus
+ICTGSP:Unidentified Blackbird - Icteridae (gen, sp)
+SEIAUR:Ovenbird - Seiurus aurocapilla
+HELVER:Worm-eating Warbler - Helmitheros vermivorum
+PARMOT:Louisiana Waterthrush - Parkesia motacilla
+PARNOV:Northern Waterthrush - Parkesia noveboracensis
+VERBAC:Bachman's Warbler - Vermivora bachmanii
+VERCHR:Golden-winged Warbler - Vermivora chrysoptera
+VERCYA:Blue-winged Warbler - Vermivora cyanoptera
+VERCCY:Brewster's Warbler - Vermivora chrysoptera x cyanoptera
+VERCCH:Lawrence's Warbler - Vermivora cyanoptera x chrysoptera
+VERHYB:Blue-wg. x Golden-wg. Warbler Hybrid - Vermivora hybrid
+MNIVAR:Black-and-white Warbler - Mniotilta varia
+PROCIT:Prothonotary Warbler - Protonotaria citrea
+LIMSWA:Swainson's Warbler - Limnothlypis swainsonii
+ORESUP:Crescent-chested Warbler - Oreothlypis superciliosa
+OREGUT:Flame-throated Warbler - Oreothlypis gutturalis
+LEIPER:Tennessee Warbler - Leiothlypis peregrina
+LEICEL:Orange-crowned Warbler - Leiothlypis celata
+LEICRI:Colima Warbler - Leiothlypis crissalis
+LEILUC:Lucy's Warbler - Leiothlypis luciae
+LEIRUF:Nashville Warbler - Leiothlypis ruficapilla
+LEIVIR:Virginia's Warbler - Leiothlypis virginiae
+LEUSER:Semper's Warbler - Leucopeza semperi
+OPOAGI:Connecticut Warbler - Oporornis agilis
+GEOPOL:Gray-crowned Yellowthroat - Geothlypis poliocephala
+GEOTOL:MacGillivray's Warbler - Geothlypis tolmiei
+GEOPHI:Mourning Warbler - Geothlypis philadelphia
+GEOFOR:Kentucky Warbler - Geothlypis formosa
+GEOSEM:Olive-crowned Yellowthroat - Geothlypis semiflava
+GEOSPE:Black-polled Yellowthroat - Geothlypis speciosa
+GEOBEL:Belding's Yellowthroat - Geothlypis beldingi
+GEOROS:Bahama Yellowthroat - Geothlypis rostrata
+GEOFLA:Altamira Yellowthroat - Geothlypis flavovelata
+GEOTRI:Common Yellowthroat - Geothlypis trichas
+GEONEL:Hooded Yellowthroat - Geothlypis nelsoni
+CATBIS:Whistling Warbler - Catharopeza bishopi
+SETPLU:Plumbeous Warbler - Setophaga plumbea
+SETANG:Elfin-woods Warbler - Setophaga angelae
+SETPHA:Arrowhead Warbler - Setophaga pharetra
+SETCIT:Hooded Warbler - Setophaga citrina
+SETRUT:American Redstart - Setophaga ruticilla
+SETKIR:Kirtland's Warbler - Setophaga kirtlandii
+SETTIG:Cape May Warbler - Setophaga tigrina
+SETCER:Cerulean Warbler - Setophaga cerulea
+SETAME:Northern Parula - Setophaga americana
+SETAMD:Sutton's Warbler - Setophaga americana x dominica
+SETPIM:Tropical Parula - Setophaga pitiayumi
+SETMAG:Magnolia Warbler - Setophaga magnolia
+SETCAS:Bay-breasted Warbler - Setophaga castanea
+SETFUS:Blackburnian Warbler - Setophaga fusca
+SETPET:Yellow Warbler - Setophaga petechia
+SETPER:Mangrove Warbler - Setophaga petechia erithachorides
+SETPEN:Chestnut-sided Warbler - Setophaga pensylvanica
+SETSTR:Blackpoll Warbler - Setophaga striata
+SETCAE:Black-throated Blue Warbler - Setophaga caerulescens
+SETPAL:Palm Warbler - Setophaga palmarum
+SETPPA:Western Palm Warbler - Setophaga palmarum palmarum
+SETPHY:Yellow Palm Warbler - Setophaga palmarum hypochrysea
+SETPIP:Olive-capped Warbler - Setophaga pityophila
+SETPIN:Pine Warbler - Setophaga pinus
+SETCOR:Yellow-rumped Warbler - Setophaga coronata
+SETCCO:Myrtle Warbler - Setophaga coronata coronata
+SETCAU:Audubon's Warbler - Setophaga coronata auduboni
+SETDOM:Yellow-throated Warbler - Setophaga dominica
+SETFLA:Bahama Warbler - Setophaga flavescens
+SETVIT:Vitelline Warbler - Setophaga vitellina
+SETDIS:Prairie Warbler - Setophaga discolor
+SETADE:Adelaide's Warbler - Setophaga adelaidae
+SETSUB:Barbuda Warbler - Setophaga subita
+SETDEL:St. Lucia Warbler - Setophaga delicata
+SETGRA:Grace's Warbler - Setophaga graciae
+SETNIG:Black-throated Gray Warbler - Setophaga nigrescens
+SETTOW:Townsend's Warbler - Setophaga townsendi
+SETTOO:Townsend's x Hermit Warbler Hybrid - Setophaga townsendi x occidentalis
+SETOCC:Hermit Warbler - Setophaga occidentalis
+SETCHR:Golden-cheeked Warbler - Setophaga chrysoparia
+SETVIR:Black-throated Green Warbler - Setophaga virens
+MYIFUL:Buff-rumped Warbler - Myiothlypis fulvicauda
+BASLAC:Fan-tailed Warbler - Basileuterus lachrymosus
+BASRUF:Rufous-capped Warbler - Basileuterus rufifrons
+BASDEL:Chestnut-capped Warbler - Basileuterus delattrii
+BASMEG:Black-cheeked Warbler - Basileuterus melanogenys
+BASIGN:Pirre Warbler - Basileuterus ignotus
+BASBEL:Golden-browed Warbler - Basileuterus belli
+BASCUL:Golden-crowned Warbler - Basileuterus culicivorus
+BASMET:Costa Rican Warbler - Basileuterus melanotis
+BASTAC:Tacarcuna Warbler - Basileuterus tacarcunae
+CADCAN:Canada Warbler - Cardellina canadensis
+CARPUS:Wilson's Warbler - Cardellina pusilla
+CARRUF:Red-faced Warbler - Cardellina rubrifrons
+CARRUA:Red Warbler - Cardellina rubra
+CARVER:Pink-headed Warbler - Cardellina versicolor
+MYIPIC:Painted Redstart - Myioborus pictus
+MYIMIN:Slate-throated Redstart - Myioborus miniatus
+MYITOR:Collared Redstart - Myioborus torquatus
+PARHYB:Hybrid Warbler - Parulidae hybrid
+PARGSP:Unidentified Warbler - Parulidae (gen, sp)
+PIRROS:Rose-throated Tanager - Piranga roseogularis
+PIRFLA:Hepatic Tanager - Piranga flava
+PIRRUB:Summer Tanager - Piranga rubra
+PIROLI:Scarlet Tanager - Piranga olivacea
+PIRLUD:Western Tanager - Piranga ludoviciana
+PIRBID:Flame-colored Tanager - Piranga bidentata
+PIRLEU:White-winged Tanager - Piranga leucoptera
+PIRERY:Red-headed Tanager - Piranga erythrocephala
+PIRSPE:Unidentified Piranga Tanager - Piranga (sp)
+DRIFUS:Red-throated Ant-Tanager - Driophlox fuscicauda
+DRIATR:Black-cheeked Ant-Tanager - Driophlox atrimaxillaris
+HABRUB:Red-crowned Ant-Tanager - Habia rubica
+CHLCAR:Carmiol's Tanager - Chlorothraupis carmioli
+CHLOLI:Lemon-spectacled Tanager - Chlorothraupis olivacea
+PERCEL:Crimson-collared Grosbeak - Periporphyrus celaeno
+CARPOL:Black-faced Grosbeak - Caryothraustes poliogaster
+CATCAN:Yellow-green Grosbeak - Caryothraustes canadensis
+CARCAI:Northern Cardinal - Cardinalis cardinalis
+CARSIN:Pyrrhuloxia - Cardinalis sinuatus
+PHECHR:Yellow Grosbeak - Pheucticus chrysopeplus
+PHETIB:Black-thighed Grosbeak - Pheucticus tibialis
+PHELUD:Rose-breasted Grosbeak - Pheucticus ludovicianus
+PHEMEL:Black-headed Grosbeak - Pheucticus melanocephalus
+GRAVEN:Red-breasted Chat - Granatellus venustus
+GRASAL:Gray-throated Chat - Granatellus sallaei
+AMSCON:Blue Seedeater - Amaurospiza concolor
+CYACYD:Blue-black Grosbeak - Cyanoloxia cyanoides
+CYAPAR:Blue Bunting - Cyanocompsa parellina
+PASCAE:Blue Grosbeak - Passerina caerulea
+PASAMO:Lazuli Bunting - Passerina amoena
+PASCYM:Indigo X Lazuli Bunting Hybrid - Passerina cyanea x amoena
+PASCYA:Indigo Bunting - Passerina cyanea
+PASROS:Rose-bellied Bunting - Passerina rositae
+PASLEC:Orange-breasted Bunting - Passerina leclancherii
+PASVER:Varied Bunting - Passerina versicolor
+PASCIR:Painted Bunting - Passerina ciris
+SPIAME:Dickcissel - Spiza americana
+MITCAS:Dusky-faced Tanager - Mitrospingus cassinii
+BANARC:Blue-and-gold Tanager - Bangsia arcaei
+PARCOR:Red-crested Cardinal - Paroaria coronata
+PARCAP:Yellow-billed Cardinal - Paroaria capitata
+IXOGUT:Speckled Tanager - Ixothraupis guttata
+POEPAL:Gray-and-gold Tanager - Poecilostreptus palmeri
+POECAB:Azure-rumped Tanager - Poecilostreptus cabanisi
+THREPI:Blue-gray Tanager - Thraupis episcopus
+THRABB:Yellow-winged Tanager - Thraupis abbas
+THRPAL:Palm Tanager - Thraupis palmarum
+STILAR:Golden-hooded Tanager - Stilpnia larvata
+STICUC:Lesser Antillean Tanager - Stilpnia cucullata
+TANFUC:Green-naped Tanager - Tangara fucosa
+TANDOW:Spangle-cheeked Tanager - Tangara dowii
+TANINO:Plain-colored Tanager - Tangara inornata
+TANLAV:Rufous-winged Tanager - Tangara lavinia
+TANGYR:Bay-headed Tanager - Tangara gyrola
+TANFLO:Emerald Tanager - Tangara florida
+TANICT:Silver-throated Tanager - Tangara icterocephala
+CONLEU:White-eared Conebill - Conirostrum leucogenys
+SICFLA:Saffron Finch - Sicalis flaveola
+SICLUT:Grassland Yellow-Finch - Sicalis luteola
+HAPRUS:Slaty Finch - Haplospiza rustica
+ACABAI:Peg-billed Finch - Acanthidops bairdi
+DIGBAR:Cinnamon-bellied Flowerpiercer - Diglossa baritula
+DIGPLU:Slaty Flowerpiercer - Diglossa plumbea
+CHLSPI:Green Honeycreeper - Chlorophanes spiza
+CHRCHR:Black-and-yellow Tanager - Chrysothlypis chrysomelas
+HETRUB:Sulphur-rumped Tanager - Heterospingus rubrifrons
+HETXAN:Scarlet-browed Tanager - Heterospingus xanthopygius
+HEMFLA:Yellow-backed Tanager - Hemithraupis flavicollis
+VOLJAC:Blue-black Grassquit - Volatinia jacarina
+EUCPEN:Gray-headed Tanager - Eucometis penicillata
+LORLUC:White-shouldered Tanager - Loriotus luctuosus
+TACDEL:Tawny-crested Tanager - Tachyphonus delatrii
+TACRUF:White-lined Tanager - Tachyphonus rufus
+LANAUR:Black-throated Shrike-Tanager - Lanio aurantius
+LANLEU:White-throated Shrike-Tanager - Lanio leucothorax
+RAMSAG:Crimson-collared Tanager - Ramphocelus sanguinolentus
+RAMFLG:Flame-rumped Tanager - Ramphocelus flammigerus
+RAMPAS:Scarlet-rumped Tanager - Ramphocelus passerinii
+RAMDIM:Crimson-backed Tanager - Ramphocelus dimidiatus
+TERVIR:Swallow Tanager - Tersina viridis
+CYALUC:Shining Honeycreeper - Cyanerpes lucidus
+CYACAE:Purple Honeycreeper - Cyanerpes caeruleus
+CYACYU:Red-legged Honeycreeper - Cyanerpes cyaneus
+DACVEN:Scarlet-thighed Dacnis - Dacnis venusta
+DACCAY:Blue Dacnis - Dacnis cayana
+DACVIG:Viridian Dacnis - Dacnis viguieri
+COEFLA:Bananaquit - Coereba flaveola
+TIAOLI:Yellow-faced Grassquit - Tiaris olivaceus
+EUNCAM:Orangequit - Euneornis campestris
+MEPPOR:Puerto Rican Bullfinch - Melopyrrha portoricensis
+MELGRA:St. Kitts Bullfinch - Melopyrrha grandis
+MEPNIG:Cuban Bullfinch - Melopyrrha nigra
+MELTAY:Grand Cayman Bullfinch - Melopyrrha taylori
+MELVIO:Greater Antillean Bullfinch - Melopyrrha violacea
+LOXANO:Yellow-shouldered Grassquit - Loxipasser anoxanthus
+PHOCAN:Cuban Grassquit - Phonipara canora
+LOXNOC:Lesser Antillean Bullfinch - Loxigilla noctis
+LOXBAD:Barbados Bullfinch - Loxigilla barbadensis
+MELBIC:Black-faced Grassquit - Melanospiza bicolor
+MELRIC:St. Lucia Black Finch - Melanospiza richardsoni
+PININO:Cocos Finch - Pinaroloxias inornata
+SPOBOU:Lesson's Seedeater - Sporophila bouvronides
+SPOLIN:Lined Seedeater - Sporophila lineola
+SPOFUN:Thick-billed Seed-Finch - Sporophila funerea
+SPOCRA:Large-billed Seed-Finch - Sporophila crassirostris
+SPONUT:Nicaraguan Seed-Finch - Sporophila nuttingi
+SPOCOR:Variable Seedeater - Sporophila corvina
+SPOSCH:Slate-colored Seedeater - Sporophila schistacea
+SPOTOR:Cinnamon-rumped Seedeater - Sporophila torqueola
+SPOMOR:Morelet's Seedeater - Sporophila morelleti
+SPONIG:Yellow-bellied Seedeater - Sporophila nigricollis
+SPOMIN:Ruddy-breasted Seedeater - Sporophila minuta
+EMBHER:Wedge-tailed Grass-Finch - Emberizoides herbicola
+SALATR:Black-headed Saltator - Saltator atriceps
+SALMAX:Buff-throated Saltator - Saltator maximus
+SALGRO:Slate-colored Grosbeak - Saltator grossus
+SALALB:Lesser Antillean Saltator - Saltator albicollis
+SALGRA:Cinnamon-bellied Saltator - Saltator grandis
+SALSTR:Streaked Saltator - Saltator striatipectus
+AVEGSP:Unidentified Bird - Aves (gen, sp)
+PARMAS:Spotted Rail - Pardirallus maculatus
+MUSCER:Zapata Rail - Mustelirallus cerverai
+MUSCOL:Colombian Crake - Mustelirallus colombianus
+MUSERY:Paint-billed Crake - Mustelirallus erythrops
