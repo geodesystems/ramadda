@@ -4,7 +4,7 @@
    <column name="media_width" type="string" label="Width"  default="640" showinhtml="false"/>
    <column name="media_height" type="string" label="Height"  default="380" showinhtml="false"/>
    <column name="transcriptions_json" type="clob" label="Transcriptions" showinhtml="false"
-	   candisplay="false" xeditable="false"/>     
+	   candisplay="false" editable="false"/>     
    <embedwiki><![CDATA[{{embedmedia}}]]></embedwiki>
 
    <wikimacro name="annotated_media" label="Annotated Media">
