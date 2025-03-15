@@ -9,7 +9,7 @@ Quantity
 Storage unit
 
 
-#COLLECTION SITE
+##COLLECTION SITE
 
 Locality,,enumerationplus,group="Collection Site" 
 Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  
@@ -115,26 +115,19 @@ Collector,,string,
 Measurement
 
 
-##ornithology_specimen
-Ornithology Specimen
-Standardized 4- and 6-letter Bird Species (“Alpha“) Codes
+##type_archive_ornithology_specimen Ornithology Specimen
+alpha_code_four,4 Digit Alpha Code,enumerationplus,group="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  cansearch="true"
+alpha_code_six,6 Digit Alpha Code,enumerationplus,group="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes6.txt"  cansearch="true"
 
 
-##botany_specimen
-Botany Specimen
+##botany_specimen Botany Specimen
+
+##herpetology_specimen Herpetology Specimen
 
 
+##mammalogy_specimen Mammalogy Specimen
 
-
-##herpetology_specimen
-Herpetology Specimen
-
-
-##mammalogy_specimen
-Mammalogy Specimen
-
-##ichthyology_specimen
-Ichthyology Specimen
+##ichthyology_specimen Ichthyology Specimen
 
 
 ##Possible vertebrate zoology  and invertebrate zoology 
