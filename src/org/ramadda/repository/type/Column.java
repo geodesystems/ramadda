@@ -280,8 +280,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         subGroup  = XmlUtil.getAttribute(element, "subgroup",(String)null);
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
 						    ""), ",", true, true);
-        suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         displaySuffix = Utils.getAttributeOrTag(element, "displaysuffix", "");	
+        suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, displaySuffix);
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
