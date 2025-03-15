@@ -1,0 +1,18 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_ornithology_specimen.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_ornithology_specimen" 
+ description="Ornithology Specimen" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_archive_taxonomy" 
+ supercategory="Geoscience" 
+>
+
+<!-- Columns-->
+<column  name="alpha_code_four"  label="4 Digit Alpha Code"  type="enumerationplus"  xgroup="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  cansearch="true" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/archive/bird.png" />
+</type>

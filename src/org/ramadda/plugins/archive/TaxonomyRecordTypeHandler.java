@@ -55,13 +55,21 @@ public class TaxonomyRecordTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
     @Override
-    public void addColumnToEntryForm(Request request, Column column,
-                                     Appendable formBuffer, Entry parentEntry,Entry entry,
+    public void addColumnToEntryForm(Request request, Entry parentEntry, Entry entry,
+                                     Column column, Appendable formBuffer,
                                      Object[] values, Hashtable state,
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
+
+
+    /*    public void addColumnToEntryForm(Request request, Column column,
+                                     Appendable formBuffer, Entry parentEntry,Entry entry,
+                                     Object[] values, Hashtable state,
+                                     FormInfo formInfo,
+                                     TypeHandler sourceTypeHandler)*/
 	throws Exception {
-	super.addColumnToEntryForm(request, column, formBuffer, parentEntry, entry,
+	super.addColumnToEntryForm(request, parentEntry, entry,
+				   column,formBuffer,
 				   values, state, formInfo,
 				   sourceTypeHandler);
 	if(!column.getName().equals("common_name")) return;

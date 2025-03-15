@@ -23,7 +23,13 @@ var Itis = {
 	}
 	$(document).ready(()=>{
 	    let name = 'edit_type_archive_taxonomy_common_name';
-	    this.commonNames= $('[name="'+ name+'"]');
+	    this.commonNames= HU.jqname(name);
+	    this.birdCodeFour=HU.jqname('edit_type_archive_ornithology_specimen_alpha_code_four');
+	    this.birdCodeSix=HU.jqname('edit_type_archive_ornithology_specimen_alpha_code_six');	    
+	    if(this.birdCodeFour.length>0) {
+		let url = RamaddaUtil.getUrl('/archive/birdcodes.json');
+		$.getJSON(url, json=>{_this.birdCodes=json;}).fail(data=>{console.error('could not load birdcodes.json')});
+	    }
 	    if(this.commonNames.length==0) {
 		console.error('Could not find common names widget:'+'[name="'+ name+'"]');
 	    }
@@ -56,7 +62,7 @@ var Itis = {
 	});
     },
     fetch:function(url,callback) {
-	let _url = '/repository/proxy?url='+encodeURIComponent(url);
+	let _url = RamaddaUtil.getUrl('/proxy?url='+encodeURIComponent(url));
 	this.progress.html(HU.image(ramaddaBaseUrl+'/icons/progress.gif'));
 	let ok = data=>{
 	    this.progress.html(this.spacer);
@@ -91,7 +97,7 @@ var Itis = {
 	    this.items[idx] = item;
 	    let name = item.commonName;
 	    let link = HU.href('https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + item.tsn,
-			       HU.image(RamaddaUtil.getUrl('/archive/itis.png'),[ATTR_WIDTH,'24px']),
+			       HU.image(RamaddaUtils.getUrl('/archive/itis.png'),[ATTR_WIDTH,'24px']),
 			       [ATTR_TITLE,
 				'View record for TSN ' + item.tsn +' at itis.gov','target','itis']);
 
@@ -129,6 +135,7 @@ var Itis = {
 	    this.getInput('tsn_number',true).val(data.tsn);
 	    data.hierarchyList.forEach(hierarchyElement=>{
 		if(!hierarchyElement) return;
+
 		let rank = hierarchyElement.rankName.toLowerCase();
 		let input = this.getInput('taxon_'+rank);
 		if(input.length==0) {
@@ -145,8 +152,9 @@ var Itis = {
 	    });
 	};
 	let success2=(data)=>{
-	    if(data.combinedName) {
+	    if(Utils.stringDefined(data.combinedName)) {
 		this.getInput('scientific_name',true).val(data.combinedName);
+		this.applyBirdCodes(data.combinedName,null);
 	    }
 	};
 	let applyCommonNames=(data)=>{
@@ -168,11 +176,14 @@ var Itis = {
 		names.push(n);
 		seen[n]=true;
 	    });
+	    let commonNames = []
 	    data.commonNames.forEach(n=>{
 		if(seen[n.commonName]) return;
 		seen[n.commonName]=true;
 		names.push(n.commonName);
+		commonNames.push(n.commonName);
 	    });
+	    this.applyBirdCodes(null,commonNames);
 	    names = Utils.join(names,'\n');
 	    this.commonNames.val(names);
 	    this.color(this.commonNames);
@@ -180,6 +191,49 @@ var Itis = {
 	this.fetch(url1,success1);
 	this.fetch(url2,success2);
 	this.fetch(url3,applyCommonNames);    	
+    },
+    applyBirdCodes(sciname,commonNames) {
+	if(!this.birdCodes) return;
+	let match = (code,name)=>{
+	    if(code.sciname && code.sciname==name) return true;
+	    return false;
+	}
+	if(sciname)
+	    console.dir('sciname:',sciname);
+
+	let theCode = null;
+	if(sciname) {
+	    this.birdCodes.every(code=>{
+		if(match(code,sciname)) {
+		    theCode = code;
+		    return false;
+		}
+		return true;
+	    })
+	}
+	if(!theCode && commonNames && commonNames.length>0) {
+	    console.dir('common:',commonNames);	
+	    commonNames.every(name=>{
+		this.birdCodes.every(code=>{
+		    if(match(code,name)) {
+			theCode = code;
+			return false;
+		    }
+		    return true;
+		});
+		if(theCode) return false;
+		return true;
+	    });
+	}
+	console.dir('the code:',theCode);
+	if(theCode) {
+	    this.birdCodeFour.val(theCode.code4);
+	    this.birdCodeSix.val(theCode.code6);	    
+	    if(this.birdCodeFour.iconselectmenu && this.birdCodeFour.iconselectmenu('instance')) {
+                this.birdCodeFour.iconselectmenu('refresh');
+            }
+	}
+
     },
     getInput:function(taxa,plain) {
 	let name = 'edit_type_archive_taxonomy_'+ taxa+(plain?'':'_plus');
