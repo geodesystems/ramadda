@@ -29,15 +29,7 @@
 	    name="common_name" label="Common Names" rows="5"   type="list" size="1000" 
 	    cansearch="true" xsuffix="Press return to search for taxa"/>
 
-    <column name="scientific_name" label="Scientific Name"    type="string" size="500" 
-	    cansearch="true" />    
-
-
-<!--
-   <column name="taxon_domain" label="Domain"
-    type="enumerationplus" cansearch="true" values="Archaea,Bacteria,Eukarya"    group="Taxonomy"/>
-    -->
-
+    <column name="scientific_name" label="Scientific Name"    type="string" size="500" cansearch="true" />    
     <column type="enumerationplus" cansearch="true" name="taxon_kingdom" label="Kingdom" />
     <column type="enumerationplus" cansearch="true" name="taxon_division" label="Division"/>
     <column type="enumerationplus" cansearch="true" name="taxon_class" label="Class"/>

@@ -21,12 +21,21 @@ var Itis = {
 	let doSearch=(fromNameInput,v)=>{
 	    this.doSearch(fromNameInput,v);
 	}
-
-	let name = 'edit_type_archive_bio_common_name';
-	this.commonNames= $('[name="'+ name+'"]');
-	this.nameInput= jqid('entrynameinput');
-	
 	$(document).ready(()=>{
+	    let name = 'edit_type_archive_taxonomy_common_name';
+	    this.commonNames= $('[name="'+ name+'"]');
+	    if(this.commonNames.length==0) {
+		console.error('Could not find common names widget:'+'[name="'+ name+'"]');
+	    }
+	    this.nameInput= jqid('entrynameinput');
+	    this.nameInput.on('keypress', (event) =>{
+		if (event.which != 13) return;
+		event.preventDefault(); 
+		doSearch(true);
+	    });
+
+	    
+
 	    let _this = this;
 	    let uid = HU.getUniqueId('');
 	    let puid = HU.getUniqueId('');
@@ -44,11 +53,6 @@ var Itis = {
 		}
 	    });
 	    this.progress = jqid(puid);
-	});
-	this.nameInput.on('keypress', (event) =>{
-            if (event.which != 13) return;
-            event.preventDefault(); 
-	    doSearch(true);
 	});
     },
     fetch:function(url,callback) {
@@ -127,6 +131,10 @@ var Itis = {
 		if(!hierarchyElement) return;
 		let rank = hierarchyElement.rankName.toLowerCase();
 		let input = this.getInput('taxon_'+rank);
+		if(input.length==0) {
+//		    console.error('could not find input for:' + 'taxon_' + rank);
+		    return;
+		}
 		input.val(hierarchyElement.taxonName??'');
 		inputs.push(input);
 	    });
@@ -147,7 +155,16 @@ var Itis = {
 	    let names = [];
 	    let seen={};
 	    seen[name]=true;
-	    Utils.split(this.commonNames.val(),"\n",true,true).forEach(n=>{
+	    let value = this.commonNames.val();
+	    if(value===null) {
+		alert('No common names value found');
+		if(this.commonNames.length==0) {
+		    console.error('Could not find the common names widget');
+		}
+		return
+	    }
+	    Utils.split(value,"\n",true,true).forEach(n=>{
+		if(seen[n]) return;
 		names.push(n);
 		seen[n]=true;
 	    });
@@ -165,8 +182,9 @@ var Itis = {
 	this.fetch(url3,applyCommonNames);    	
     },
     getInput:function(taxa,plain) {
-	let name = 'edit_type_archive_bio_'+ taxa+(plain?'':'_plus');
-	return $('[name="'+ name+'"]');
+	let name = 'edit_type_archive_taxonomy_'+ taxa+(plain?'':'_plus');
+	let widget= $('[name="'+ name+'"]');
+	return widget;
     }
 }
 

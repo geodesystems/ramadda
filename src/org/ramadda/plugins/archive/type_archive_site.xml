@@ -12,20 +12,19 @@ This is a base entry that provides site information. It is used as a super type 
 >
 
 <!-- Columns-->
-<column  name="locality"  label="Locality"  type="enumerationplus"  group="Collection Site"   showenumerationpopup="true" />
-<column  name="country"  label="Country"  type="enumerationplus"  default="USA"   values="file:/resources/geo/countrylist.txt"  showenumerationpopup="true" />
-<column  name="county"  label="County"  type="enumerationplus"  values="file:/resources/geo/countylist.txt" showenumerationpopup="true"   />
-<column  name="state"  label="State"  type="enumerationplus"  values="file:/resources/geo/statelist.txt"  showenumerationpopup="true" />
-<column  name="waterbody_drain"  label="Waterbody Drain"  type="enumerationplus"  showenumerationpopup="true" />
-<column  name="township"  label="Township"  type="enumerationplus"  showenumerationpopup="true"   subgroup="Legal Land Description" />
-<column  name="range"  label="Range"  type="enumerationplus"  showenumerationpopup="true" />
-<column  name="section"  label="Section"  type="enumerationplus"  showenumerationpopup="true" />
+<column  name="locality"  label="Locality"  type="enumerationplus"  group="Collection Site"  />
+<column  name="country"  label="Country"  type="enumerationplus"  default="USA"   values="file:/resources/geo/countrylist.txt"   />
+<column  name="county"  label="County"  type="enumerationplus"  values="file:/resources/geo/countylist.txt"  />
+<column  name="state"  label="State"  type="enumerationplus"  values="file:/resources/geo/statelist.txt" />
+<column  name="waterbody_drain"  label="Waterbody/Drainage"  type="enumerationplus" />
+<column  name="township"  label="Township"  type="enumerationplus"  subgroup="Legal Land Description" />
+<column  name="range"  label="Range"  type="enumerationplus" />
+<column  name="section"  label="Section"  type="enumerationplus" />
 <column  name="utm_zone"  label="Utm Zone"  type="enumeration"  subgroup="UTM Coordinates"   values="file:/resources/geo/utmlist.txt"   showenumerationpopup="true" />
 <column  name="utm_easting"  label="Utm Easting"  type="double" />
 <column  name="utm_northing"  label="Utm Northing"  type="double" />
-<column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum"   values="file:/resources/geo/verticaldatums.txt"   showenumerationpopup="true" />
-<column  name="datum"  label="Datum"  type="enumerationplus"  values="file:/resources/geo/datums.txt"    showenumerationpopup="true" />
-<column  name="deposit_environment"  label="Deposit Environment"  type="enumerationplus"  subgroup="Environment" />
+<column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum"   values="file:/resources/geo/verticaldatums.txt"  />
+<column  name="datum"  label="Datum"  type="enumerationplus"  values="file:/resources/geo/datums.txt"   />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/site.png" />
@@ -38,6 +37,8 @@ This is a base entry that provides site information. It is used as a super type 
 <property  name="form.todate.show"  value="false" />
 <property  name="form.date.label"  value="Collection Date" />
 <property  name="html.tabs"  value="true" />
+<property  name="form.tabs"  value="true" />
+<property  name="column.showenumerationpopup"  value="true" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[

@@ -1,0 +1,50 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_taxonomy.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_taxonomy" 
+ description="Archive Taxonomy" 
+ handler="org.ramadda.plugins.archive.TaxonomyRecordTypeHandler" 
+ super="type_archive_site" 
+ supercategory="Geoscience" 
+>
+
+<!-- Columns-->
+<column  name="common_name"  label="Common Names"  type="list"  group="Taxonomy" rows="5"  size="1000"    cansearch="true" />
+<column  name="scientific_name"  label="Scientific Name"  type="string"  size="500" cansearch="true" />
+<column  name="taxon_kingdom"  label="Kingdom"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_division"  label="Division"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_class"  label="Class"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_order"  label="Order"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_family"  label="Family"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_genus"  label="Genus"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_species"  label="Species"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_variety"  label="Variety"  type="enumerationplus"  cansearch="true" />
+<column  name="tsn_number"  label="TSN Number"  type="enumerationplus"  cansearch="true" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="editfields"  value="name,common_name,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default" />
+<property  name="metadata"  value="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail" />
+<property  name="form.tabs"  value="true" />
+<property  name="form.basic.group"  value="Name and Taxonomy" />
+<property  name="form.name.showlabel"  value="true" />
+<property  name="form.description.rows"  value="5" />
+<property  name="form.description.label"  value="Description:" />
+<property  name="form.description.showwiki"  value="false" />
+<property  name="form.todate.show"  value="false" />
+<property  name="date.format"  value="yyyy-MM-dd" />
+<property  name="form.date.label"  value="Status Date" />
+<property  name="form.description.group"  value="Description" />
+<property  name="form.area.show"  value="true" />
+<property  name="form.geoposition"  value="group:Collection Site" />
+<property  name="search.metadatatypes"  value="archive_bio_alternate_name" />
+<property  name="html.changedate.show"  value="false" />
+<property  name="html.createdate.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.time.show"  value="false" />
+<property  name="html.type.show"  value="false" />
+<property  name="html.owner.show"  value="false" />
+<property  name="form.ark.show"  value="false" />
+<property  name="form.tags.show"  value="false" />
+</type>
