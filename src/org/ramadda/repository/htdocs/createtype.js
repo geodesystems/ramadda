@@ -11,13 +11,6 @@ var CreateType  = {
 	    HU.span([ATTR_ID,'bulkupload'],'Bulk Upload'),
 	    HU.span([ATTR_ID,'textdownload'],'Download Text')]));
 
-	let extras = $('.typecreate-column-extra');
-	extras.each(function() {
-	    _this.checkColumnExtra($(this));
-	});
-	extras.on('input',function() {
-	    _this.checkColumnExtra($(this));
-	});
 
 
 	_this.currentColumn = null;
@@ -128,35 +121,15 @@ var CreateType  = {
 		dialog.remove();
 	    });
 	});
-	if(formData) {
-//	    Utils.makeDownloadFile('data.json',JSON.stringify(formData));
-	    for(let i=0;i<formData.length;i++) {
-		let item = formData[i];
-		if(item.name) item.n = item.name;
-		if(item.value) item.v = item.value;
-		if(!this.canSaveInput(item.n)) continue;
-		let input = form.find('input[name="' + item.n+'"]');
-		if(input.length==0)
-		    input = form.find('textarea[name="' + item.n+'"]');
-		if(input.length==0)
-		    input = form.find('select[name="' + item.n+'"]');		
-		if(input.length==0) {
-		    console.log('could not find input:' + item.n);
-		} else {
-//		    console.log(item.n,input.attr('name'),item.v);
-		    if(input.attr("type") === "checkbox") {
-			if(String(item.v)==="true") {
-			    input.prop('checked',true);
-			} else {
-			    input.prop('checked',false);
-			}
-		    } else {
-			input.val(item.v);
-		    }
-		}
-	    };
-	    this.initLabel();
-	}
+	this.applyFormData(form,formData);
+	let extras = $('.typecreate-column-extra');
+	extras.each(function() {
+	    _this.checkColumnExtra($(this));
+	});
+	extras.on('input',function() {
+	    _this.checkColumnExtra($(this));
+	});
+	this.initLabel();
 	form.submit(function(event){
 	    _this.initLabel();
 	    let jsonContents = form.find('[name="json_contents"]');
@@ -186,6 +159,35 @@ var CreateType  = {
 	});
 
     },
+    applyFormData:function(form,formData) {
+	if(!formData) return;
+	for(let i=0;i<formData.length;i++) {
+	    let item = formData[i];
+	    if(item.name) item.n = item.name;
+	    if(item.value) item.v = item.value;
+	    if(!this.canSaveInput(item.n)) continue;
+	    let input = form.find('input[name="' + item.n+'"]');
+	    if(input.length==0)
+		input = form.find('textarea[name="' + item.n+'"]');
+	    if(input.length==0)
+		input = form.find('select[name="' + item.n+'"]');		
+	    if(input.length==0) {
+		console.log('could not find input:' + item.n);
+	    } else {
+		//		    console.log(item.n,input.attr('name'),item.v);
+		if(input.attr("type") === "checkbox") {
+		    if(String(item.v)==="true") {
+			input.prop('checked',true);
+		    } else {
+			input.prop('checked',false);
+		    }
+		} else {
+		    input.val(item.v);
+		}
+	    }
+	}
+    },
+
     checkColumnExtra:function(widget) {
 	let v = widget.val();
 	if(!v) return;
@@ -299,10 +301,8 @@ var CreateType  = {
 	    let extra = toks[3];
 	    if(extra)
 		extra = extra.replace(/_comma_/g,',');
-
-	    if(!Utils.stringDefined(id)) id = label;
+	    if(!Utils.stringDefined(id)) id = Utils.makeID(label);
 	    if(!Utils.stringDefined(label)) label = Utils.makeLabel(id);
-	    id = Utils.makeID(label);
 	    HU.jqname('column_name_' + theIdx).val(id);
 	    if(label)
 		HU.jqname('column_label_' + theIdx).val(label);
