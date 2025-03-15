@@ -420,20 +420,6 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-	    String fields = XmlUtil.getAttributeFromTree(node, "editfields", null);	    
-	    if(fields!=null) {
-		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
-		editFields = Utils.toStringArray(Utils.split(fields,",",true,true));
-	    }
-	    fields = XmlUtil.getAttributeFromTree(node, "newfields", null);	    
-	    if(fields!=null) {
-		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
-		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
-	    }
-	    fields = XmlUtil.getAttributeFromTree(node, "displayfields", null);	    
-	    if(fields!=null) {
-		displayFields = Utils.split(fields,",",true,true);
-	    }	    
 	    
 	    superCategory = XmlUtil.getAttributeFromTree(node,
 							 ATTR_SUPERCATEGORY, superCategory);
@@ -475,12 +461,14 @@ public class TypeHandler extends RepositoryManager {
                 services.add(new Service(getRepository(), serviceNode));
             }
 
+            setProperties(node);
 
 
-
-	    String metadata = XmlUtil.getAttributeFromTree(node,ATTR_METADATA,"");
-	    for(String mtd: Utils.split(metadata,",",true,true)) {
-		if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
+	    String metadata = getAttributeOrProperty(node,ATTR_METADATA);
+	    if(metadata!=null) {
+		for(String mtd: Utils.split(metadata,",",true,true)) {
+		    if(!metadataTypes.contains(mtd)) metadataTypes.add(mtd);
+		}
 	    }
 	    if(metadataTypes.size()==0) {
 		metadataTypes = makeInitialMetadataTypes();
@@ -556,7 +544,23 @@ public class TypeHandler extends RepositoryManager {
                 canCache = Boolean.valueOf(tmpCanCache.equals("tmpCanCache"));
             }
 
-            setProperties(node);
+
+	    String fields = getAttributeOrProperty(node, "editfields");	    
+	    if(fields!=null) {
+		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
+		editFields = Utils.toStringArray(Utils.split(fields,",",true,true));
+	    }
+	    fields = getAttributeOrProperty(node, "newfields");	    
+	    if(fields!=null) {
+		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
+		newFields = Utils.toStringArray(Utils.split(fields,",",true,true));
+	    }
+	    fields = getAttributeOrProperty(node, "displayfields");	    
+	    if(fields!=null) {
+		displayFields = Utils.split(fields,",",true,true);
+	    }	    
+
+
             if ( !Utils.stringDefined(description)) {
                 setDescription(Utils.getAttributeOrTag(node,
 						       ATTR_DB_DESCRIPTION, getType()));
@@ -618,6 +622,16 @@ public class TypeHandler extends RepositoryManager {
             throw new RuntimeException(exc);
         }
     }
+
+
+    private String getAttributeOrProperty(Element node, String attr) {
+	String value = XmlUtil.getAttributeFromTree(node, attr, null);	    
+	if(value==null) {
+	    value = getTypeProperty(attr,null);
+	}
+	return value;
+    }
+
 
 
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
@@ -747,8 +761,9 @@ public class TypeHandler extends RepositoryManager {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
         }
-	if(metadataTypes.size()==0)
+	if(metadataTypes.size()==0) {
             metadataTypes = makeInitialMetadataTypes();
+	}
 
         return metadataTypes;
     }
@@ -4075,6 +4090,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+
+
     public void addColumnToEntryForm(Request request, Column column,
                                      Appendable formBuffer, Entry parentEntry,Entry entry,
                                      Object[] values, Hashtable state,
@@ -4134,6 +4151,14 @@ public class TypeHandler extends RepositoryManager {
                                      TypeHandler sourceTypeHandler)
 	throws Exception {
 
+	if(parent!=null) {
+	    parent.addColumnToEntryForm(request, parentEntry, entry,
+					column,  formBuffer,
+					values, state,
+					formInfo,
+					sourceTypeHandler);
+	    return;
+	}
 	if(geoPosition!=null && Utils.equals(column.getName(), geoPosition)) {
 	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
 	}	
@@ -4412,6 +4437,8 @@ public class TypeHandler extends RepositoryManager {
 
 
         Object[] values = entry==null?null:entry.getValues();
+	String[] editFields = getEditFields();
+	String[] newFields = getNewFields();	
         String[] whatList = entry==null?newFields:editFields;
 	if(whatList==null) whatList = editFields;
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
@@ -4823,8 +4850,8 @@ public class TypeHandler extends RepositoryManager {
                         String selected = "";
                         if (entry != null) {
                             selected = entry.getCategory();
-                        }
-                        List   types  = getRepository().getDefaultCategorys();
+                        } 
+                       List   types  = getRepository().getDefaultCategorys();
                         String widget = ((types.size() > 1)
                                          ? HU.select(
 						     ARG_CATEGORY_SELECT, types,
@@ -4862,8 +4889,7 @@ public class TypeHandler extends RepositoryManager {
 		}
 		continue;
 	    }
-		
-	    System.err.println("Unknown edit field:" + what);
+	    //	    System.err.println("Unknown edit field:" + what);
         }
 
 
@@ -4886,6 +4912,23 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+
+
+    public String[] getEditFields() {
+	if(editFields!=null && editFields.length>0) return editFields;
+        if (parent != null) {
+	    return parent.getEditFields();
+	}
+	return null;
+    }
+
+    public String[] getNewFields() {
+	if(newFields!=null && newFields.length>0) return newFields;
+        if (parent != null) {
+	    return parent.getNewFields();
+	}
+	return null;
+    }
 
 
     public boolean downloadUrlAndSaveAsEntryFile(Request request,Entry entry,URL url,String fileName) {
