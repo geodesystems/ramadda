@@ -106,6 +106,8 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             List<String> attrs = new ArrayList<String>();
             for (int i = 0; i < headerRow.size(); i++) {
 		if(i == objIndex) continue;
+		if(!headerRow.indexOk(i)) continue;
+		if(!row.indexOk(i)) continue;
                 String field = headerRow.getString(i);
                 String value = row.getString(i);
                 attrs.add(field);
