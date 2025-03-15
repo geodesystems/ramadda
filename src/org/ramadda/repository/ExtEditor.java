@@ -2300,6 +2300,7 @@ public class ExtEditor extends RepositoryManager {
 	    //check for syntax validity
             root = XU.getRoot(xml);
 	    if(request.isAdmin() && request.exists(ARG_INSTALL)) {
+		getEntryManager().clearCache();
 		root.setAttribute("ignoreerrors","false");
 		try {
 		    getRepository().loadTypeHandler(root,true);
