@@ -213,13 +213,17 @@ public class Row {
      * @return _more_
      */
     public String getString(int index) {
+	return getString(index,"");
+    }
+
+    public String getString(int index,String dflt) {	
         if (index >= values.size()) {
             System.err.println("Row error:" + index + " " + values);
         }
         Object o = values.get(index);
 
         return (o == null)
-               ? ""
+               ? dflt
                : o.toString();
     }
 
