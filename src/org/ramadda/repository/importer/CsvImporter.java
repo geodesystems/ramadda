@@ -1,0 +1,218 @@
+/**
+Copyright (c) 2008-2025 Geode Systems LLC
+SPDX-License-Identifier: Apache-2.0
+*/
+
+package org.ramadda.repository.importer;
+
+
+import org.ramadda.repository.*;
+import org.ramadda.repository.metadata.*;
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.NamedInputStream;
+import org.ramadda.util.Utils;
+import org.ramadda.util.seesv.Seesv;
+import org.ramadda.util.seesv.DataProvider;
+import org.ramadda.util.seesv.Filter;
+import org.ramadda.util.seesv.Processor;
+import org.ramadda.util.seesv.Row;
+import org.ramadda.util.seesv.TextReader;
+
+import ucar.unidata.xml.XmlUtil;
+
+
+import org.w3c.dom.*;
+
+import ucar.unidata.util.DateUtil;
+
+import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
+
+
+import ucar.unidata.util.StringUtil;
+
+import ucar.unidata.util.TwoFacedObject;
+import ucar.unidata.xml.XmlUtil;
+
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
+
+import java.util.List;
+
+
+/**
+ */
+@SuppressWarnings("unchecked")
+public class CsvImporter extends ImportHandler {
+
+    public static final XmlUtil XU = null;    
+
+    /** _more_ */
+    public static final String TYPE_CSV = "CSV";
+
+    /** _more_ */
+    public static final String ARG_CSV_TYPE = "csv.type";
+
+    /**
+     * ctor
+     *
+     * @param repository _more_
+     */
+    public CsvImporter(Repository repository) {
+        super(repository);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param importTypes _more_
+     * @param formBuffer _more_
+     */
+    @Override
+    public void addImportTypes(List<TwoFacedObject> importTypes,
+                               Appendable formBuffer) {
+        super.addImportTypes(importTypes, formBuffer);
+        importTypes.add(new TwoFacedObject("CSV Import", TYPE_CSV));
+    }
+
+
+    @Override
+    public InputStream getStream(Request request, Entry parent,
+                                 String fileName, InputStream stream)
+            throws Exception {
+        if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV)) {
+            return null;
+        }
+
+        final StringBuffer sb = new StringBuffer("<entries>\n");
+	Processor myProcessor = new Processor() {
+		Row headerRow;
+		int typeIdx=-1;
+		int nameIdx=-1;
+		int descIdx=-1;
+		int idIdx=-1;
+		int parentIdx=-1;
+		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
+		String currentType="";
+		int cnt=0;
+		@Override
+		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
+							   org.ramadda.util.seesv.Row row) {
+		    try {
+			cnt++;
+			if(headerRow==null) {
+			    headerRow = row;
+			    for(int i=0;i<row.size();i++) {
+				String field = row.getString(i);
+				field = field.replace("\uFEFF", "");
+				String _field=field.toLowerCase().trim();
+				
+				System.err.println("FIELD:" + _field +" " + _field.length());
+				if(_field.equals("name")) {
+				    nameIdx=i;
+				} else if(_field.equals("type")) {
+				    typeIdx=i;
+				} else if(_field.equals("description")) {
+				    descIdx=i;
+				} else if(_field.equals("id")) {
+				    idIdx=i;
+				} else if(_field.equals("parent")) {
+				    parentIdx=i;
+				} else if(_field.startsWith("metadata:")) {
+				    String mtd= _field.substring("metadata:".length());
+				    metadataIdx.put(mtd,i);
+				} else {
+				    System.err.println("CsvImporter:Unknown field:" + _field);
+				}
+			    }
+			    if(typeIdx==-1) throw new IllegalArgumentException("input data must have a \"type\" column");
+			    if(nameIdx==-1) throw new IllegalArgumentException("input data must have a \"name\" column");			    
+			    return row;
+			}
+			String tmpType = row.getString(typeIdx,"");
+			if(Utils.stringDefined(tmpType)) {
+			    currentType = tmpType;
+			}
+			if(!Utils.stringDefined(currentType)) {
+			    throw new IllegalArgumentException("No type defined");
+			}
+			String name = row.getString(nameIdx,"");
+			String attrs =      XU.attrs("name",name,
+						     "type",currentType);
+			if(idIdx>=0) {
+			    attrs+=XU.attrs("id",row.getString(idIdx,"id" + cnt));
+			}
+			if(parentIdx>=0) {
+			    String parent = row.getString(parentIdx,"");
+			    if(Utils.stringDefined(parent)) {
+				attrs+=XU.attrs("parent",parent);
+			    }
+			}			
+
+			sb.append(XU.openTag("entry",attrs));
+			if(descIdx>=0) {
+			    String desc = row.getString(descIdx,"");
+			    if(Utils.stringDefined(desc)) {
+				sb.append(XU.openTag("description",""));
+				XU.appendCdata(sb,desc);
+				sb.append(XU.closeTag("description"));
+			    }
+			}
+			for (String mtdType : metadataIdx.keySet()) {
+			    int idx = metadataIdx.get(mtdType);
+			    String v = row.getString(idx,"");
+			    if(!Utils.stringDefined(v)) continue;
+			    List<String> toks = Utils.split(v,";",true,true);
+			    for(String tok: toks) {
+				List<String> subToks = Utils.split(tok,":");
+				sb.append(XU.openTag("metadata",XU.attrs("type",mtdType)));
+				int index=0;
+				for(String mtdValue: subToks) {
+				    index++;
+				    sb.append(XU.openTag("attr",
+						     XU.attrs("index",""+index,
+							      "encoded","false")));
+				    XU.appendCdata(sb,mtdValue);
+				    sb.append(XU.closeTag("attr"));
+				}
+				sb.append(XU.closeTag("metadata"));
+
+			    }
+			}
+			
+
+
+
+			sb.append(XU.closeTag("entry"));
+			return row;
+		    } catch (Exception exc) {
+			fatal(textReader, "Processing CSV import", exc);
+			return null;
+		    }
+		}
+	    };
+	
+
+	InputStream  source = new FileInputStream(fileName);
+	//	for(NamedInputStream input: sources) {
+	TextReader                textReader = new TextReader();
+	textReader.setInput(new NamedInputStream("input",
+						 new BufferedInputStream(source)));
+	textReader.addProcessor(myProcessor);
+	Seesv csvUtil = new Seesv(new ArrayList<String>());
+	DataProvider.CsvDataProvider provider =
+	    new DataProvider.CsvDataProvider(textReader,0);
+	csvUtil.process(textReader, provider,0);
+        sb.append("</entries>");
+	source.close();
+	//	System.out.println(sb);
+        return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+
+}
