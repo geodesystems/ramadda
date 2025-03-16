@@ -8,6 +8,7 @@ package org.ramadda.repository;
 
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.importer.*;
 import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.search.*;
 
@@ -894,6 +895,9 @@ public class PluginManager extends RepositoryManager {
             }
 
 
+	    if(importHandlers.size()==0) {
+		importHandlers.add(new CsvImporter(getRepository()));
+	    }
             if (ImportHandler.class.isAssignableFrom(c)) {
                 //                System.out.println("class:" + c.getName());
                 pluginStat("Import handler", c.getName());
