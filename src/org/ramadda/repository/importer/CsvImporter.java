@@ -152,7 +152,9 @@ public class CsvImporter extends ImportHandler {
 			     attrs += XU.attrs("name",name, "type",currentType);
 			}
 			if(idIdx>=0 && row.indexOk(idIdx)) {
-			    attrs+=XU.attrs("id",row.getString(idIdx,"id" + cnt));
+			    String id = row.getString(idIdx,"");
+			    if(!stringDefined(id)) id = "id" + cnt;
+			    attrs+=XU.attrs("id",id);
 			}
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
