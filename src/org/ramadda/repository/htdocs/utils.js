@@ -2993,6 +2993,15 @@ var Utils =  {
 	    $(this).addClass("ui-menu-icons ramadda-select-icon");
 	});
     },
+    setMenuValue:function(menu,value) {
+	menu.val(value);
+	if(menu.iconselectmenu && menu.iconselectmenu('instance')) {
+            menu.iconselectmenu('refresh');
+        }
+    },
+
+
+
     searchLastInput:"",
     searchAscending:false,
     searchCnt:0,
