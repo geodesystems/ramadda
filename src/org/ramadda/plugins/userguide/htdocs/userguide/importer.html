@@ -1,0 +1,152 @@
+<html>
+<head>
+<title>CSV Importer</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="toc.html#importer.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="index.html">RAMADDA User Guide</a>  > <a href="page_ramaddaentries.html">RAMADDA Entries</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><td valign=center><td><span title="Previous: Entry Permissions"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Entry Permissions</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 3.5: CSV Importer</a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="faq.html"><table><tr valign=center><td>FAQ</td><td><span title="Next: FAQ"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+
+
+
+
+
+:navtop
+
+:heading CSV Importer
+You can define one or more entries in a spreadsheet and import them.
+The steps are:
+<ul>
+<li> Prepare your spreadsheet (below). 
+<li> Navigate to the entry you want to import under
+<li>  From the entry popup menu select "Import"
+<li> Under "Type:" select "CSV Import". You can either provide an XLSX spreadsheet or a CSV file.
+<li> Press Submit
+</ul>
+:p
+
+:heading The Spreadsheet
+The upload can either be an XLSX or a CSV. Here is an
+example 
+<a href="examples/collections.xlsx">collections.xlsx</a> spreadsheeet.
+:p
+<ul>
+<li> Any line in the spreadsheet that starts with "#" is ignored.
+<li> The header must have a "type" and a "name" column.
+<li> The header may have a "description" column.
+</ul>
+Here is an example:
++css
+.ex {margin-left:40px;}
+.ex td {border:1px solid #ccc;}
+-css
+<table class=ex>
+<tr><td>#this is a comment</td><td></td><td></td></tr>
+<tr><td>type</td><td>name</td><td>description</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Some description</td></tr>
+<tr><td>type_archive_series</td><td>series 1</td><td>Some other description</td></tr>
+<tr><td></td><td>series 2</td><td>Some more description</td></tr>
+<tr><td>type_archive_file</td><td>file 1</td><td>Some file description</td></tr>
+<tr><td></td><td>file 2</td><td></td></tr>
+</table>
+
+
+You can view and search for entry types at the
+<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page. Clicking on the type ID
+will copy the ID to the clipboard where you can paste it into your spreadsheet.
+:p
+The type does not have to be repeated. If there is no value specified then the previous
+type is used.
+
+
+:heading Parent/Child Entries
+There may be an "id" and a "parent" column. This defines the entry hierarchy.
+So here we have a collection with id "c1". The parent of the series entries "s1" and "s2"
+is the collection. The parent of the "file 1" entry is the series "s1".
+The parent of the "file 2" entry is the series "s2".
+<table class=ex>
+<tr><td>type</td><td>name</td><td>id</td><td>parent</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>c1</td><td></td></tr>
+<tr><td>type_archive_series</td><td>series 1</td><td>s1</td><td>c1</td></tr>
+<tr><td></td><td>series 2</td><td>s2</td><td>c1</td></tr>
+<tr><td>type_archive_file</td><td>file 1</td><td></td><td>s1</td></tr>
+<tr><td></td><td>file 2</td><td></td><td>s2</td></tr>
+</table>
+
+:heading Metadata Types
+One or more metadata types can be added. Create a column of the form:
+:br
+metadata:<i>metadata type ID</i>
+:br
+The available metadata can be viewed at
+<a target=_other href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
+Clicking on the type ID
+
+Here we are defining an archive_subject and an archive_note.
+The values can be ";" delimited, so, e.g., we are adding two subjects - "subject 1" and "subject 2".
+If the metadata has multiple fields then seperated the field values with a ":".
+For example, the archive_note metadata takes two values - the note type and the note. So here we
+are adding one archive_note with type="Scope" and note="Some scope".
+<table class=ex>
+<tr><td>type</td><td>name</td><td>metadata:archive_subject</td><td>metadata:archive_note</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>subject1;subject 2</td><td>Scope:Some scope</td></tr>
+</table>
+
+:heading Entry properties
+Entries may have fixed properties. For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.
+These properties can be set by having a column of the form:
+:br
+<i>entry_type.column</i>
+:br
+
+For example:
+<table class=ex>
+<tr><td>type</td><td>name</td><td>type_archive_collection.shelf_location</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
+</table>
+
+The column names can be viewed from the 
+<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
+Click on an entry label to see the entry type details, e.g.
+<a target=_other href="{{root}}/entry/types.html?type=type_archive_collection">
+  {{root}}/entry/types.html?type=type_archive_collection</a>.
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="access.html"><table><td valign=center><td><span title="Previous: Entry Permissions"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Entry Permissions</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="faq.html"><table><tr valign=center><td>FAQ</td><td><span title="Next: FAQ"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
