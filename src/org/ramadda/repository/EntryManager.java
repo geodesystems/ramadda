@@ -1048,19 +1048,47 @@ public class EntryManager extends RepositoryManager {
 	    getRepository().getTypeHandlersForDisplay(false);
 	if(asHtml) {
 	    StringBuilder sb = new StringBuilder();
-	    getPageHandler().sectionOpen(request, sb,"Entry Type",false);
-	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
-	    sb.append("<table width=100%><tr><td width=25%  class=ramadda-table-heading>Type name</td><td width=25% class=ramadda-table-heading>Type ID</td><td width=25% class=ramadda-table-heading>Super Category</td><td width=25% class=ramadda-table-heading>Category</td></tr>");
-	    for (TypeHandler typeHandler : typeHandlers) {
-		String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
-		sb.append(HU.tr(HU.td(icon+" "+  typeHandler.getDescription())+
-				HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
-				HU.td(typeHandler.getSuperCategory()) +
-				HU.td(typeHandler.getCategory()),
-				HU.attr("class","ramadda-type")));
+	    String type = request.getString("type",null);
+	    if(type!=null) {
+		TypeHandler typeHandler = getRepository().getTypeHandler(type);
+		getPageHandler().sectionOpen(request, sb,"Entry Type  - " + typeHandler.getLabel(),false);
+		sb.append(HU.center(HU.href(getRepository().getUrlPath("/entry/types.html"),"Entry type list")));
+		String help = typeHandler.getHelp();
+		if(stringDefined(help)) {
+		    sb.append(getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
+		}
+		sb.append("<br>");
+		List<Column> columns = typeHandler.getColumns();
+		if (columns != null && columns.size()>0) {
+		    sb.append(HU.b("Columns:"));
+		    sb.append("<table><tr><td><b>Column ID</b></td><td><b>Label</b></td><td><b>Type</b></td></tr>");
+		    for(Column column: columns) {
+			sb.append(HU.tr(HU.td(column.getName()+"&nbsp;&nbsp;") +
+					HU.td(column.getLabel()+"&nbsp;&nbsp;") +
+					HU.td(column.getType())));
+		    }
+		    sb.append("<table>");
+		} else {
+		    sb.append("Entry type has no columns");
+		}
+	    } else {
+		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
+		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
+		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
+		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td></tr>");
+		for (TypeHandler typeHandler : typeHandlers) {
+		    String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
+		    String url = getRepository().getUrlPath("/entry/types.html?type="  + typeHandler.getType());
+		    String category = typeHandler.getSuperCategory();
+		    if(typeHandler.getCategory()!=null)category += " - " + typeHandler.getCategory();
+		    sb.append(HU.tr(HU.td(HU.href(url,icon+" "+  typeHandler.getDescription()))+
+				    HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
+				    HU.td(category),
+				    HU.attr("class","ramadda-type")));
+		}
+		sb.append("</table>");
+		HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
 	    }
-	    sb.append("</table>");
-	    HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
 	    getPageHandler().sectionClose(request, sb);
 	    return new Result("Entry Types",sb);
 	}
@@ -9695,6 +9723,7 @@ public class EntryManager extends RepositoryManager {
             ProcessFileTypeHandler tmp =
                 new ProcessFileTypeHandler(getRepository(), null);
             tmp.setType("type_process");
+	    tmp.setDescription("Process Entry");
             processFileTypeHandler = tmp;
         }
 

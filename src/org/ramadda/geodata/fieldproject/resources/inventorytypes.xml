@@ -1,5 +1,5 @@
 <types  supercategory="Science and Education">
-  <type name="project_tool"  category="Services" foruser="false"/>
+  <type name="project_tool" description="Base Project Tool"  category="Services" foruser="false"/>
 
 
   <type name="project_softwarepackage"  description="Software Tool" super="project_tool" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">

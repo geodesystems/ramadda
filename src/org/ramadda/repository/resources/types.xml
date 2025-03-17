@@ -1,6 +1,6 @@
 <types category="Information">
 
-  <type name="type_dummy"  foruser="false" isgroup="true" ></type>
+  <type name="type_dummy"  description="Dummy Type" foruser="false" isgroup="true" ></type>
 
 
   <type name="link"  description="Link"  priority="1" help="A web page link">
@@ -151,7 +151,7 @@ priority="2"       >
 
 
 
-  <type name="type_document"  foruser="false" category="Documents" >
+  <type name="type_document"  description="Base Document Type" foruser="false" category="Documents" >
      <property name="form.ark.show" value="true"/>    
   </type>
 
