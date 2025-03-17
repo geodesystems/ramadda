@@ -1352,7 +1352,6 @@ public class Seesv implements SeesvCommands {
 	    checkOkToRead(file.getPath());
         }
         if (file.matchesSuffix(".xls")) {
-	    System.err.println("***********  CONVERTING XLS");
             return  XlsUtil.xlsToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
 	} else if (file.matchesSuffix(".xlsx")) {
             return  XlsUtil.xlsxToCsv(file,myTextReader==null?-1:myTextReader.getMaxRows(),sheetNumber);
