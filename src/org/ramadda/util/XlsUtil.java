@@ -131,7 +131,9 @@ public class XlsUtil {
                                 if (row == null) {
                                     continue;
                                 }
-                                short firstCol = row.getFirstCellNum();
+				//                                short firstCol = row.getFirstCellNum();
+				//Always start at 0 
+                                short firstCol = 0;
                                 for (short col = firstCol;
                                         col < row.getLastCellNum(); col++) {
                                     Cell cell = row.getCell(col);
