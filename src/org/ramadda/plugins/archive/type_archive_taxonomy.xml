@@ -24,7 +24,7 @@ into some types.xml file
 <column  name="tsn_number"  label="TSN Number"  type="enumerationplus"  cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-<property  name="editfields"  value="name,common_name,alpha_code_four,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default" />
+<property  name="editfields"  value="name,common_name,alpha_code_four,alpha_code_six,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default" />
 <property  name="metadata"  value="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail" />
 <property  name="form.tabs"  value="true" />
 <property  name="form.basic.group"  value="Name and Taxonomy" />

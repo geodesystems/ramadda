@@ -162,6 +162,17 @@
       <template type="html"><![CDATA[<a target=_link href="${attr1}">${attr2}</a>]]></template>
     </type>
 
+    <type
+       id="archive_collection_details"
+       name="Collection Details"
+       searchable="true" >
+      <element datatype="enumerationplus" name="Collector"/>
+      <element name="Date Collection" datatype="date"/>
+      <element datatype="enumerationplus" name="Collection Method"
+	       values="trapping,shooting,mist-netting"/>
+      <element name="Notes" datatype="string" rows="5"/>      
+    </type>
+
 
 
 

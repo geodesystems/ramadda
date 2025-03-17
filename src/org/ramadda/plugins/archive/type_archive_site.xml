@@ -34,6 +34,7 @@ This is a base entry that provides site information. It is used as a super type 
 <property  name="form.location.show"  value="true" />
 <property  name="form.time.show"  value="false" />
 <property  name="form.geoposition"  value="locality" />
+<property  name="form.altitude.show"  value="true" />
 <property  name="form.todate.show"  value="false" />
 <property  name="form.date.label"  value="Collection Date" />
 <property  name="html.tabs"  value="true" />
@@ -74,5 +75,7 @@ inherited="false"  }}
 xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
 -col
 -row
+
+{{tabletree  message=""  prefix="==Files==" simple="false"  #maxHeight="500px"  }} 
 -section]]></wiki>
 </type>

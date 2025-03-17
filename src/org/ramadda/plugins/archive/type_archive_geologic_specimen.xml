@@ -11,22 +11,20 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="width"  label="Width"  type="double"  displaylabel="Dimensions" htmltemplate="${width} X ${height}" 
-group="Specimen Information" subgroup="Dimensions" suffix="cm"  displaysuffix="cm" />
-<column  name="height"  label="Height"  type="double"  suffix="cm"  displaysuffix="cm"  showinhtml="false" />
-<column  name="weight"  label="Weight"  type="double"  suffix="Kg" displaysuffix="Kg"  />
+<column  name="width"  label="Width"  type="double"  displaylabel="Dimensions"   htmltemplate="${width} X ${height}"   group="Specimen Information" subgroup="Dimensions"   displaysuffix="cm" />
+<column  name="height"  label="Height"  type="double"  displaysuffix="cm"  showinhtml="false" />
+<column  name="weight"  label="Weight"  type="double"  displaysuffix="Kg" />
 <column  name="collector"  label="Collector"  type="enumerationplus"  subgroup="Collection Information" />
 <column  name="collection_number"  label="Collection Number"  type="enumerationplus" />
 <column  name="study_number"  label="Study Number"  type="enumerationplus" />
 <column  name="condition"  label="Condition"  type="enumerationplus"  values="Good,Fair,Poor" />
-<column  name="maintenance_cycle"  label="Maintenance Cycle"  type="enumerationplus"  values="Cycle1,Cycle2,Cycle 3" />
-<column  name="condition_description"  label="Condition Description"  type="string" />
-<column  name="prep_material"  label="Prep Material"  type="enumerationplus" />
-<column  name="other_numbers"  label="Other Numbers"  type="string" />
+<column  name="data_of_last_maintenance"  label="Data Of	last Maintenance"  type="date" />
+<column  name="condition_description"  label="Condition Description"  type="string"  size="2000" rows="5" />
+<column  name="prep_material"  label="Prep Material"  type="string" />
 <column  name="eminent_figure"  label="Eminent Figure"  type="enumerationplus" />
-<column  name="rct_conservation"  label="Rct Conservation"  type="enumerationplus" />
+<column  name="recommended_conservation"  label="Recommended Conservation"  type="string"  size="1000" />
 <column  name="cataloger"  label="Cataloger"  type="enumerationplus" />
-<column  name="exhibit_label"  label="Exhibit Label"  type="string" />
+<column  name="exhibit_label"  label="Exhibit Label"  type="string"  size="2000" rows="5" />
 <column  name="lithology"  label="Lithology"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  subgroup="Geology" />
 <column  name="pedotype"  label="Pedotype"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/pedotypes.txt" />
 <column  name="period_system"  label="Period System"  type="enumerationplus"  values="file:/org/ramadda/plugins/archive/resources/periods.txt" />
@@ -36,6 +34,7 @@ group="Specimen Information" subgroup="Dimensions" suffix="cm"  displaysuffix="c
 <column  name="member"  label="Member"  type="enumerationplus" />
 <column  name="unit"  label="Unit"  type="enumerationplus" />
 <column  name="thin_section"  label="Thin Section"  type="enumerationplus" />
+<column  name="notes"  label="Notes"  type="string"  size="2000" rows="5" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/rocks.png" />

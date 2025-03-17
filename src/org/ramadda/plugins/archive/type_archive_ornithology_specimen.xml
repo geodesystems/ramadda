@@ -5,13 +5,24 @@ into some types.xml file
 -->
 <type  name="type_archive_ornithology_specimen" 
  description="Ornithology Specimen" 
- handler="org.ramadda.repository.type.GenericTypeHandler" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  super="type_archive_taxonomy" 
  supercategory="Geoscience" 
 >
 
 <!-- Columns-->
-<column  name="alpha_code_four"  label="4 Digit Alpha Code"  type="enumerationplus"  xgroup="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  cansearch="true" />
+<column  name="alpha_code_four"  label="4 Digit Alpha Code"  type="enumerationplus"  displaygroup="Ornithology" cansearch="true"   values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt" />
+<column  name="alpha_code_six"  label="6 Digit Alpha Code"  type="enumerationplus"  cansearch="true"   values="file:/org/ramadda/plugins/archive/resources/birdcodes6.txt" />
+<column  name="specimen_type"  label="Specimen Type"  type="enumerationplus"  subgroup="Specimen Details" cansearch="true"   values="skin,skeleton,preserved specimen,egg,nest,feather,mounted specimen,other" />
+<column  name="sex"  label="Sex"  type="enumeration"  values="male,female,unknown"	cansearch="true" />
+<column  name="age"  label="Age"  type="enumerationplus"  values="adult,juvenile,hatchling" cansearch="true" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="complete,incomplete,damaged" cansearch="true" />
+<column  name="body_length"  label="Body Length"  type="double"  subgroup="Dimensions" displaysuffix="cm" />
+<column  name="wingspan"  label="Wingspan"  type="double"  displaysuffix="cm" />
+<column  name="weight"  label="Weight"  type="double"  displaysuffix="grams" />
+<column  name="coloration"  label="Coloration"  type="string"  size="2000" rows="5" />
+<column  name="habitat_type"  label="Habitat Type"  type="enumerationplus"  subgroup="Habitat" cansearch="true"   values="forest,wetland,grassland,urban area" />
+<column  name="habitat_description"  label="Habitat Description"  type="string"  size="2000" rows="5" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/bird.png" />
