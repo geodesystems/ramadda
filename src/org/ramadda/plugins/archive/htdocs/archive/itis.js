@@ -122,10 +122,8 @@ var Itis = {
 	input.animate({ backgroundColor: "#fff" }, 2000);
     },
     loadTsn:function(item) {
-	let url1 = this.getUrl('getFullHierarchyFromTSN?tsn='+ item.tsn);
-	let url2 = this.getUrl('getScientificNameFromTSN?tsn=' + item.tsn);
-	let url3 = this.getUrl('getCommonNamesFromTSN?tsn=' + item.tsn);	
-	let success1=(data)=>{
+	let handleFullHierarchy=(data)=>{
+//	    console.dir('hierarchy',data);
 	    if(!data.hierarchyList) {
 		alert('No results');
 		return;
@@ -151,17 +149,20 @@ var Itis = {
 		this.color(input);
 	    });
 	};
-	let success2=(data)=>{
+	let handleScientificName=(data)=>{
+//	    console.dir('sciname',data);
 	    if(Utils.stringDefined(data.combinedName)) {
 		this.getInput('scientific_name',true).val(data.combinedName);
 		this.applyBirdCodes(data.combinedName,null);
 	    }
 	};
-	let applyCommonNames=(data)=>{
+	let handleCommonNames=(data)=>{
+//	    console.dir('commonNames',data);
 	    if(!data.commonNames) return
 	    let name = this.nameInput.val().trim();
 	    let names = [];
 	    let seen={};
+	    let firstName =null;
 	    seen[name]=true;
 	    let value = this.commonNames.val();
 	    if(value===null) {
@@ -178,19 +179,24 @@ var Itis = {
 	    });
 	    let commonNames = []
 	    data.commonNames.forEach(n=>{
+		if(firstName==null) firstName = n.commonName;
 		if(seen[n.commonName]) return;
 		seen[n.commonName]=true;
 		names.push(n.commonName);
 		commonNames.push(n.commonName);
 	    });
+	    if(!Utils.stringDefined(name) && firstName) {
+		this.nameInput.val(firstName);
+	    }
 	    this.applyBirdCodes(null,commonNames);
 	    names = Utils.join(names,'\n');
 	    this.commonNames.val(names);
 	    this.color(this.commonNames);
 	};	
-	this.fetch(url1,success1);
-	this.fetch(url2,success2);
-	this.fetch(url3,applyCommonNames);    	
+	
+	this.fetch(this.getUrl('getFullHierarchyFromTSN?tsn='+ item.tsn),handleFullHierarchy);
+	this.fetch(this.getUrl('getScientificNameFromTSN?tsn=' + item.tsn),handleScientificName);
+	this.fetch(this.getUrl('getCommonNamesFromTSN?tsn=' + item.tsn),handleCommonNames);    	
     },
     applyBirdCodes(sciname,commonNames) {
 	if(!this.birdCodes) return;
