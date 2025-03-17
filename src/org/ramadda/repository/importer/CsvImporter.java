@@ -10,6 +10,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.IO;
 import org.ramadda.util.NamedInputStream;
 import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
@@ -98,21 +99,24 @@ public class CsvImporter extends ImportHandler {
 		int idIdx=-1;
 		int parentIdx=-1;
 		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
+		Hashtable<String,Integer> propertyIdx= new Hashtable<String,Integer>();		
 		String currentType="";
 		int cnt=0;
 		@Override
 		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
 							   org.ramadda.util.seesv.Row row) {
 		    try {
+			//Check for comments
+			if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
 			cnt++;
+			//get the indices
 			if(headerRow==null) {
 			    headerRow = row;
 			    for(int i=0;i<row.size();i++) {
 				String field = row.getString(i);
 				field = field.replace("\uFEFF", "");
 				String _field=field.toLowerCase().trim();
-				
-				System.err.println("FIELD:" + _field +" " + _field.length());
+				//				System.err.println("FIELD:" + _field +" " + _field.length());
 				if(_field.equals("name")) {
 				    nameIdx=i;
 				} else if(_field.equals("type")) {
@@ -127,13 +131,14 @@ public class CsvImporter extends ImportHandler {
 				    String mtd= _field.substring("metadata:".length());
 				    metadataIdx.put(mtd,i);
 				} else {
-				    System.err.println("CsvImporter:Unknown field:" + _field);
+				    propertyIdx.put(_field,i);
 				}
 			    }
 			    if(typeIdx==-1) throw new IllegalArgumentException("input data must have a \"type\" column");
 			    if(nameIdx==-1) throw new IllegalArgumentException("input data must have a \"name\" column");			    
 			    return row;
-			}
+			}	
+			if(!row.indexOk(typeIdx)) return row;
 			String tmpType = row.getString(typeIdx,"");
 			if(Utils.stringDefined(tmpType)) {
 			    currentType = tmpType;
@@ -141,13 +146,15 @@ public class CsvImporter extends ImportHandler {
 			if(!Utils.stringDefined(currentType)) {
 			    throw new IllegalArgumentException("No type defined");
 			}
-			String name = row.getString(nameIdx,"");
-			String attrs =      XU.attrs("name",name,
-						     "type",currentType);
-			if(idIdx>=0) {
+			String attrs = "";
+			if(row.indexOk(nameIdx)) {
+			    String name = row.getString(nameIdx,"");
+			     attrs += XU.attrs("name",name, "type",currentType);
+			}
+			if(idIdx>=0 && row.indexOk(idIdx)) {
 			    attrs+=XU.attrs("id",row.getString(idIdx,"id" + cnt));
 			}
-			if(parentIdx>=0) {
+			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
 			    if(Utils.stringDefined(parent)) {
 				attrs+=XU.attrs("parent",parent);
@@ -155,7 +162,7 @@ public class CsvImporter extends ImportHandler {
 			}			
 
 			sb.append(XU.openTag("entry",attrs));
-			if(descIdx>=0) {
+			if(descIdx>=0 && row.indexOk(descIdx)) {
 			    String desc = row.getString(descIdx,"");
 			    if(Utils.stringDefined(desc)) {
 				sb.append(XU.openTag("description",""));
@@ -163,8 +170,25 @@ public class CsvImporter extends ImportHandler {
 				sb.append(XU.closeTag("description"));
 			    }
 			}
+			for (String prop : propertyIdx.keySet()) {
+			    int idx = propertyIdx.get(prop);
+			    if(!row.indexOk(idx)) continue;
+			    if(prop.indexOf(".")>0) {
+				List<String>propToks = Utils.splitUpTo(prop,".",2);
+				String propType = propToks.get(0);
+				if(!propType.equals(currentType)) continue;
+				prop = propToks.get(1);
+			    }
+
+			    String v = row.getString(idx,"");
+			    sb.append(XU.openTag(prop,""));
+			    XU.appendCdata(sb,v);
+			    sb.append(XU.closeTag(prop));
+			}
+
 			for (String mtdType : metadataIdx.keySet()) {
 			    int idx = metadataIdx.get(mtdType);
+			    if(!row.indexOk(idx)) continue;
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
 			    List<String> toks = Utils.split(v,";",true,true);
@@ -201,10 +225,13 @@ public class CsvImporter extends ImportHandler {
 	InputStream  source = new FileInputStream(fileName);
 	//	for(NamedInputStream input: sources) {
 	TextReader                textReader = new TextReader();
-	textReader.setInput(new NamedInputStream("input",
-						 new BufferedInputStream(source)));
+
 	textReader.addProcessor(myProcessor);
 	Seesv csvUtil = new Seesv(new ArrayList<String>());
+	textReader.setInput(new NamedInputStream("input",
+						 csvUtil.makeInputStream(new IO.Path(fileName))));
+	
+	//						 new BufferedInputStream(source)));
 	DataProvider.CsvDataProvider provider =
 	    new DataProvider.CsvDataProvider(textReader,0);
 	csvUtil.process(textReader, provider,0);
