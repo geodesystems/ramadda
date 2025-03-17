@@ -2018,7 +2018,7 @@ public class ExtEditor extends RepositoryManager {
 	
 	
 	getPageHandler().entrySectionClose(request, entry, sb);
-	Result result =  new Result("Create Type",sb);
+	Result result =  new Result("Create Type - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
 
