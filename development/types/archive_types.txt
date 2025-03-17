@@ -116,8 +116,18 @@ Measurement
 
 
 ##type_archive_ornithology_specimen Ornithology Specimen
-alpha_code_four,4 Digit Alpha Code,enumerationplus,group="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  cansearch="true"
-alpha_code_six,6 Digit Alpha Code,enumerationplus,group="Ornithology" values="file:/org/ramadda/plugins/archive/resources/birdcodes6.txt"  cansearch="true"
+alpha_code_four,4 Digit Alpha Code,enumerationplus,displaygroup="Ornithology" cansearch="true"\n values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  
+alpha_code_six,6 Digit Alpha Code,enumerationplus, cansearch="true"\n values="file:/org/ramadda/plugins/archive/resources/birdcodes6.txt"  
+specimen_type,Specimen Type,enumerationplus,subgroup="Specimen Details" cansearch="true"\n values="unknown\,skin\,skeleton\,preserved specimen\,egg\,nest\,feather\,mounted specimen\,other"
+sex,,enumeration,values="unknown\,male\,female" cansearch="true"
+age,,enumerationplus,values="unknown\,adult\,juvenile\,hatchling" cansearch="true"
+condition,,enumerationplus,values="unknown\,complete\,incomplete\,damaged" cansearch="true"
+body_length,,double, subgroup="Dimensions" displaysuffix="cm" 
+wingspan,,double,displaysuffix="cm" 
+weight,,double,displaysuffix="grams"
+coloration,,string,size="2000" rows="5"
+habitat_type,,enumerationplus,subgroup="Habitat" cansearch="true" \nvalues="unknown\,forest\,wetland\,grassland\,urban area" 
+habitat_description,,string,size="2000" rows="5"
 
 
 ##botany_specimen Botany Specimen
