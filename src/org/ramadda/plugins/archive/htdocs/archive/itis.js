@@ -204,9 +204,7 @@ var Itis = {
 	    if(code.sciname && code.sciname==name) return true;
 	    return false;
 	}
-	if(sciname)
-	    console.dir('sciname:',sciname);
-
+//	if(sciname) console.dir('sciname:',sciname);
 	let theCode = null;
 	if(sciname) {
 	    this.birdCodes.every(code=>{
@@ -218,7 +216,7 @@ var Itis = {
 	    })
 	}
 	if(!theCode && commonNames && commonNames.length>0) {
-	    console.dir('common:',commonNames);	
+//	    console.dir('common:',commonNames);	
 	    commonNames.every(name=>{
 		this.birdCodes.every(code=>{
 		    if(match(code,name)) {
@@ -231,13 +229,9 @@ var Itis = {
 		return true;
 	    });
 	}
-	console.dir('the code:',theCode);
 	if(theCode) {
-	    this.birdCodeFour.val(theCode.code4);
-	    this.birdCodeSix.val(theCode.code6);	    
-	    if(this.birdCodeFour.iconselectmenu && this.birdCodeFour.iconselectmenu('instance')) {
-                this.birdCodeFour.iconselectmenu('refresh');
-            }
+	    Utils.setMenuValue(this.birdCodeFour,theCode.code4);
+	    Utils.setMenuValue(this.birdCodeSix,theCode.code6);	    
 	}
 
     },
