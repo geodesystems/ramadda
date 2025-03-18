@@ -1914,6 +1914,17 @@ public class WikiManager extends RepositoryManager
                                           false);
             boolean showResource = getProperty(wikiUtil, props,
 					       "showResource", true);
+	    String macros = getProperty(wikiUtil,props,"macros",null);
+	    if(macros!=null) {
+		for(String key: Utils.split(macros,",",true,true)) {
+		    String macro =wikiUtil.getMacro(key);
+		    if(macro==null) continue;
+		    macro = wikifyEntry(request,entry,macro,false);
+		    props.put(key+".value",macro);
+		}
+	    }
+
+
             if ( !details) {
 		StringBuilder tb  = new StringBuilder();
                 entry.getTypeHandler().getEntryContent(myRequest,
