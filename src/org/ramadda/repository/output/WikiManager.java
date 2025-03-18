@@ -5938,6 +5938,14 @@ public class WikiManager extends RepositoryManager
 	throws Exception {
 	checkProperties(request,entry,props);
 
+	Hashtable wikiProps = wikiUtil.getWikiProperties();
+	for (Object key : wikiProps.keySet()) {
+	    if(!props.contains(key)) {
+		props.put(key,wikiProps.get(key));
+
+	    }
+	}
+
         boolean hideIfNoLocations = getProperty(wikiUtil, props, "hideIfNoLocations",false);
         String  width      = getProperty(wikiUtil, props, ATTR_WIDTH, "");
         String  height     = getProperty(wikiUtil, props, ATTR_HEIGHT, "300");
