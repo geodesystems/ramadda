@@ -134,6 +134,11 @@ public class WikiUtil implements HtmlUtilsConstants {
         return wikiProperties.get(key);
     }
     
+    public String getMacro(String key) {
+	if(rawMacros==null) return null;
+	return rawMacros.get(key);
+    }
+
     public Object getWikiProperty(Hashtable props, Object... args) {
         Object dflt = args[args.length - 1];
         for (int i = 0; i < args.length - 1; i++) {
@@ -727,6 +732,70 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    continue;
 		}
 
+
+                if (tline.startsWith("+macro")) {
+                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
+                    currentVar      = ((toks.size() > 1)
+                                       ? toks.get(1)
+                                       : "");
+		    currentVar = currentVar.trim();
+                    currentVarValue = new StringBuilder();
+                    continue;
+                }
+
+                if (tline.startsWith("-macro")) {
+		    if(currentVarValue!=null) {
+			String macro = currentVarValue.toString();
+			if(macros == null) {
+			    macros = new Hashtable<String,String>();
+			    rawMacros = new Hashtable<String,String>();
+			}
+			rawMacros.put(currentVar,macro);
+			//		    macro = wikify(macro, handler);
+			macros.put(currentVar, macro);
+		    }
+		    currentVar      = null;
+                    currentVarValue = null;
+                    continue;
+                }
+
+		if(tline.startsWith(":process ")) {
+                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
+		    if(toks.size()<=1) {
+			wikiError(buff,"Bad :process tag");
+			continue;
+		    }
+		    if(rawMacros==null) {
+			wikiError(buff,"No macros defined");
+			continue;
+		    }
+		    String proc = toks.get(1);
+		    Hashtable props = HU.parseHtmlProperties(toks.size()>2?toks.get(2):"");
+		    String macro =  rawMacros.get(proc);
+		    if(macro==null) {
+			wikiError(buff, "Could not find macro:" + proc);
+			continue;
+		    }
+		    for (java.util.Enumeration keys = props.keys();
+			 keys.hasMoreElements(); ) {
+			String key   = (String)keys.nextElement();
+			String value = (String)props.get(key);
+			macro = macro.replace("${" + key+"}",value);
+		    }
+		    macro = wikify(macro, handler);
+		    buff.append(macro);
+		    continue;
+		}
+
+
+                if (currentVar != null) {
+                    currentVarValue.append(line);
+                    currentVarValue.append("\n");		    
+                    continue;
+                }
+
+
+
 		if(tline.startsWith("+mermaid")) {
 		    inMermaid=true;
 		    if(!seen.contains("addedmermaid")) {
@@ -779,9 +848,6 @@ public class WikiUtil implements HtmlUtilsConstants {
                     buff.append("\n");
                     continue;
                 }
-
-
-
 
                 if (tline.startsWith("+splash")) {
 		    splashBuffer = new StringBuilder();
@@ -920,66 +986,6 @@ public class WikiUtil implements HtmlUtilsConstants {
 		}
 
 
-
-
-                if (tline.startsWith("+macro")) {
-                    List<String> toks = Utils.splitUpTo(tline, " ", 3);
-                    currentVar      = ((toks.size() > 1)
-                                       ? toks.get(1)
-                                       : "");
-		    currentVar = currentVar.trim();
-                    currentVarValue = new StringBuilder();
-                    continue;
-                }
-
-                if (tline.startsWith("-macro")) {
-		    String macro = currentVarValue.toString();
-		    if(macros == null) {
-			macros = new Hashtable<String,String>();
-			rawMacros = new Hashtable<String,String>();
-		    }
-		    rawMacros.put(currentVar,macro);
-		    //		    macro = wikify(macro, handler);
-                    macros.put(currentVar, macro);
-                    currentVar      = null;
-                    currentVarValue = null;
-                    continue;
-                }
-
-		if(tline.startsWith(":process ")) {
-                    List<String> toks  = Utils.splitUpTo(tline, " ", 3);
-		    if(toks.size()<=1) {
-			wikiError(buff,"Bad :process tag");
-			continue;
-		    }
-		    if(rawMacros==null) {
-			wikiError(buff,"No macros defined");
-			continue;
-		    }
-		    String proc = toks.get(1);
-		    Hashtable props = HU.parseHtmlProperties(toks.size()>2?toks.get(2):"");
-		    String macro =  rawMacros.get(proc);
-		    if(macro==null) {
-			wikiError(buff, "Could not find macro:" + proc);
-			continue;
-		    }
-		    for (java.util.Enumeration keys = props.keys();
-			 keys.hasMoreElements(); ) {
-			String key   = (String)keys.nextElement();
-			String value = (String)props.get(key);
-			macro = macro.replace("${" + key+"}",value);
-		    }
-		    macro = wikify(macro, handler);
-		    buff.append(macro);
-		    continue;
-		}
-
-
-                if (currentVar != null) {
-                    currentVarValue.append(line);
-                    currentVarValue.append("\n");		    
-                    continue;
-                }
 
 
                 if (tline.startsWith("+repeat")) {
