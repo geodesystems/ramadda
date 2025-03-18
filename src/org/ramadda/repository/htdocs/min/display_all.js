@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Mar 18 06:00:55 MDT 2025";
+var build_date="RAMADDA build date: Tue Mar 18 11:50:50 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -31362,6 +31362,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
+	{p:'useNearestDate',tt:'Sample on the selected record time',ex:'true'},	
 	{p:'showFirst',ex:'true',tt:'Show first record'},
 	{p:'showLast',ex:'true',tt:'Show last record'},		
 	{p:'showRecords',tt:'comma separated list of record indices',ex:'0,3,4'},
@@ -31399,7 +31400,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
-	    let records = this.filterData();
+	    let records = this.myRecords = this.filterData();
 	    if(!records) return;
 	    let fields = this.getFields();
             fields = this.getSelectedFields();
@@ -31906,6 +31907,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecords = args.records;
 	    this.selectedRecord = args.record;
+	    if(this.selectedRecord && this.getUseNearestDate() && this.myRecords) {
+		this.selectedRecord = this.findClosestDate(this.selectedRecord.getDate()).record;
+	    }
+
 	    if(this.getOnlyShowSelected()) {
 		this.updateUI();
 	    } else {
@@ -34192,7 +34197,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 		let w = Utils.stringDefined(label)?
 		    HU.div([ATTR_CLASS,"display-search-label",ATTR_STYLE,HU.css('xmin-width',HU.getDimension(this.getFormWidth()))], label):'';
-		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('display',opts.toggleClose?'none':'inline-block')],widget);
+		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
 		return HU.div([ATTR_CLASS,"display-search-block"], w);
 	    }
 	    return HU.formEntry("",widget);
