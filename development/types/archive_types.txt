@@ -11,17 +11,17 @@ Storage unit
 
 ##COLLECTION SITE
 
-Locality,,enumerationplus,group="Collection Site" 
+Locality,,enumerationplus,group="Collection Site" isgeoaccess="true" 
 Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  
 County,,enumerationplus,values="file:/resources/geo/countylist.txt" 
 State,,enumerationplus, values="file:/resources/geo/statelist.txt" 
 Waterbody/Drain,,enumerationplus,
-Township,,enumerationplus,subgroup="Legal Land Description"
-Range,,enumerationplus,
-Section,,enumerationplus,
-UTM Zone,,enumeration,subgroup="UTM Coordinates" values="file:/resources/geo/utmlist.txt"
-UTM Easting,,double
-UTM Northing,,double
+Township,,enumerationplus,subgroup="Legal Land Description" isgeoaccess="true" 
+Range,,enumerationplus, isgeoaccess="true" 
+Section,,enumerationplus, isgeoaccess="true" 
+UTM Zone,,enumeration,subgroup="UTM Coordinates" isgeoaccess="true" \nvalues="file:/resources/geo/utmlist.txt"
+UTM Easting,,double,isgeoaccess="true" 
+UTM Northing,,double,isgeoaccess="true" 
 Vertical Datum,,enumerationplus,subgroup="Datum"  values="file:/resources/geo/verticaldatums.txt"  
 Datum,,enumerationplus, values="file:/resources/geo/datums.txt"  
 Deposit Environment,,enumerationplus,subgroup="Environment"
