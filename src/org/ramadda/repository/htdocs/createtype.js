@@ -282,8 +282,9 @@ var CreateType  = {
 		break;
 	    }
 	}
+	v =v.replace(/\\\n/, " ");
 	let lines = 	Utils.split(v,'\n',true,true).filter(line=>{
-	    return !line.startsWith('#');
+	    return !line.startsWith('#') && line.length>0;
 	});
 	if(above) {
 	    this.insertRows(this.currentColumn,lines.length);
@@ -294,6 +295,7 @@ var CreateType  = {
 	lines.forEach(line=>{
 	    line = line.replace(/\\,/g,'_comma_');
 	    line = line.replace(/\\n/g,'\n');	    
+	    line = line.replace(/^\s+/gm,'');
 	    let toks = Utils.split(line,',',true);
 	    let id = Utils.makeID(toks[0]);
 	    let label = toks[1];
