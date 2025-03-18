@@ -173,7 +173,24 @@
       <element name="Notes" datatype="string" rows="5"/>      
     </type>
 
+    <type
+       id="archive_conservation_status"
+       name="Conservation Status"
+      searchable="true" >
+      <element datatype="enumerationplus" name="IUCN Red List Status"
+	       values="Least Concern,Endangered,Critically Endangered"/>
+      <element name="Legal Status" datatype="string" rows="5"/>
+      <element name="Threats" datatype="string" rows="5"/>            
+    </type>
 
-
-
+    <type
+       id="archive_preservation_storage"
+       name="Preservation and Storage Information"
+      searchable="true" >
+      <element datatype="enumerationplus" name="Preservation Method"
+	       values="formalin,ethanol,taxidermy,freeze-drying,mounting"/>
+      <element datatype="enumerationplus" name="Storage Location"/>
+      <element datatype="string" name="Condition" rows="5"/>
+      <element datatype="string" name="Parasites" rows="5"/>            
+    </type>
 </metadata>

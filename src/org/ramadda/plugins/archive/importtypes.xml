@@ -1,0 +1,12 @@
+<types>
+<import resource="type_archive_site.xml"/>
+<import resource="type_archive_taxonomy.xml"/>
+<import resource="type_archive_geologic_specimen.xml"/>
+<import resource="type_archive_paleontology_specimen.xml"/>
+<import resource="type_archive_ornithology_specimen.xml"/>
+<import resource="type_archive_herpetology_specimen.xml"/>
+<import resource="type_archive_mammalogy_specimen.xml"/>
+<import resource="type_archive_ichthyology_specimen.xml"/>
+<import resource="type_archive_botanical_specimen.xml"/>
+
+</types>

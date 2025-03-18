@@ -26,6 +26,8 @@ This is a base entry that provides site information. It is used as a super type 
 <column  name="vertical_datum"  label="Vertical Datum"  type="enumerationplus"  subgroup="Datum"  values="file:/resources/geo/verticaldatums.txt" />
 <column  name="datum"  label="Datum"  type="enumerationplus"  values="file:/resources/geo/datums.txt" />
 <column  name="deposit_environment"  label="Deposit Environment"  type="enumerationplus"  subgroup="Environment" />
+<column  name="habitat_type"  label="Habitat Type"  type="enumerationplus"  cansearch="true"   values="unknown,forest,wetland,grassland,urban area" />
+<column  name="habitat_description"  label="Habitat Description"  type="string"  size="2000" rows="5" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/site.png" />
