@@ -130,6 +130,11 @@ public class WikiUtil implements HtmlUtilsConstants {
         }
     }
     
+    public Hashtable getWikiProperties() {
+	return wikiProperties;
+
+    }
+
     public Object getWikiProperty(Object key) {
         return wikiProperties.get(key);
     }
