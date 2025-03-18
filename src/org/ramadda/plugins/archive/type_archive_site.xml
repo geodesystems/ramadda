@@ -45,16 +45,24 @@ This is a base entry that provides site information. It is used as a super type 
 <wiki><![CDATA[
 +section  title="{{typename}}: {{name}}"
 {{description wikify=true}}
++macro prop1
+{{properties stripe=false   propertyToggleLimit=100 message=""  
+metadata.types="tag:archivecultural"                                           
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
+inherited="false"  }} 
+-macro
++macro prop2
+{{properties  propertyToggleLimit=100 message=""  
+metadata.types="!tag:archiveinternal,!tag:archivecultural,!tag:internal"                
+headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"                                       
+inherited="false"  }}
+-macro
 +row
 +col-8
 :vspace 1em
-{{information  showDetails=true  showTitle="false"  showBase=false }} 
-<div class=metadata-full>
-{{properties  propertyToggleLimit=100 message=""  
-metadata.types="!tag:archiveinternal,!tag:archivecultural,!tag:internal"
-headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false"
-inherited="false"  }} 
-</div>
+{{information  showDetails=true  showTitle="false"  showBase=false 
+macros="prop1,prop2" prop1.title="Cultural Uses" prop2.title="Properties"
+}} 
 :vspace 1em
 -col
 +col-4
@@ -62,15 +70,16 @@ inherited="false"  }}
 +center
 {{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
 -center
+:vspace 1em
 {{properties message="" inherited="true" metadata.types="content.license" includeTitle=false}}
 :vspace 1em
 {{mapentry hideIfNoLocations=true width="100%" height="200px"}}
 +if anonymous=false
-{{properties  message=""  propertyToggleLimit=0 metadata.types="archive_research_activity"
+:vspace 1em
+{{properties  message=""  propertyToggleLimit=0 metadata.types="tag:archiveinternal"
 headingClass="formgroupheader" layout="linear"  includeTitle="true"  separator=""  decorate="false" 
 inherited="false"  }}
 -if
-:vspace 1em
 {{list includeIcon="true" details="false" entries="siblings,links"  message="" box.maxheight="200"
 xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
 -col

@@ -25,13 +25,12 @@ into some types.xml file
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="editfields"  value="name,common_name,alpha_code_four,alpha_code_six,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default" />
-<property  name="metadata"  value="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail" />
+<property  name="metadata"  value="archive_collection_details,archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail" />
 <property  name="form.tabs"  value="true" />
 <property  name="form.basic.group"  value="Name and Taxonomy" />
 <property  name="form.name.showlabel"  value="true" />
 <property  name="form.description.rows"  value="5" />
 <property  name="form.description.label"  value="Description:" />
-<property  name="form.description.showwiki"  value="false" />
 <property  name="form.todate.show"  value="false" />
 <property  name="date.format"  value="yyyy-MM-dd" />
 <property  name="form.date.label"  value="Status Date" />
