@@ -687,7 +687,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 		let w = Utils.stringDefined(label)?
 		    HU.div([ATTR_CLASS,"display-search-label",ATTR_STYLE,HU.css('xmin-width',HU.getDimension(this.getFormWidth()))], label):'';
-		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('display',opts.toggleClose?'none':'inline-block')],widget);
+		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
 		return HU.div([ATTR_CLASS,"display-search-block"], w);
 	    }
 	    return HU.formEntry("",widget);
