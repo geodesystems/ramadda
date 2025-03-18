@@ -5652,6 +5652,12 @@ public class Utils extends IO {
 
 
 
+    public static void addAllUnique(List source,List  other) {
+	for(Object o:other) {
+	    if(!source.contains(o)) source.add(o);
+	}
+    }
+
     /**
      * _more_
      *
