@@ -125,6 +125,7 @@ if {$groupID!=""} {
     runGroup "Earth Science" 624d4236-ac54-4566-ad5c-f46acdb26ee1
     runGroup "RAMADDA Tour" ramadda_tour
     runGroup "RAMADDA Tour - Part 2" ramadda_tour_2    
+    runGroup "Archive" archive_test
     runGroup "Misc" 81e5ae0a-be26-4133-89c3-1d3868d60e57
     runGroup "IMDV" aa5c104c-0c85-4937-86b1-7daf5e7dda28
     runGroup "Charts" 3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d
