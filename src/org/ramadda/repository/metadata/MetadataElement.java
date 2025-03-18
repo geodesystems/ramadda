@@ -967,13 +967,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             return getDateHandler().makeDateInput(request, arg, "", date);
         } else if (dataType.equals(DATATYPE_DATE)) {
-            Date date;
-            if (values != null) {
+            Date date=null;
+            if (value != null) {
                 date = parseDate(value);
             } else {
-                date = new Date();
+		//                date = new Date();
             }
-
             return getDateHandler().makeDateInput(request, arg, "", date,
                     null, false);
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
@@ -1133,15 +1132,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
     private Date parseDate(String value) {
-        return null;
+	if(!Utils.stringDefined(value)) return null;
+	return Utils.parseDate(value);
     }
 
 
