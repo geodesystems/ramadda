@@ -527,6 +527,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	{p:"selectField"},
 	{p:"selectValue"},
 	{p:'onlyShowSelected',ex:'true'},
+	{p:'useNearestDate',tt:'Sample on the selected record time',ex:'true'},	
 	{p:'showFirst',ex:'true',tt:'Show first record'},
 	{p:'showLast',ex:'true',tt:'Show last record'},		
 	{p:'showRecords',tt:'comma separated list of record indices',ex:'0,3,4'},
@@ -564,7 +565,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 	    this.updateUI();
 	},
 	updateUI: function() {
-	    let records = this.filterData();
+	    let records = this.myRecords = this.filterData();
 	    if(!records) return;
 	    let fields = this.getFields();
             fields = this.getSelectedFields();
@@ -1071,6 +1072,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
         handleEventRecordSelection: function(source, args) {
 	    this.selectedRecords = args.records;
 	    this.selectedRecord = args.record;
+	    if(this.selectedRecord && this.getUseNearestDate() && this.myRecords) {
+		this.selectedRecord = this.findClosestDate(this.selectedRecord.getDate()).record;
+	    }
+
 	    if(this.getOnlyShowSelected()) {
 		this.updateUI();
 	    } else {
