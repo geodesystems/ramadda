@@ -757,7 +757,22 @@ public class TypeHandler extends RepositoryManager {
     }
 
     
+    List<String> allMetadataTypes;
     public List<String> getMetadataTypes() {
+	if(allMetadataTypes==null) {
+	    allMetadataTypes = new ArrayList<String>();
+	    List<String> types = getMetadataTypesInner();
+	    if(types!=null) Utils.addAllUnique(allMetadataTypes,types);
+	    if(parent!=null) {
+		List<String> parentTypes = parent.getMetadataTypes();
+		if(parentTypes!=null) Utils.addAllUnique(allMetadataTypes,parentTypes);
+	    }
+	}
+	return allMetadataTypes;
+    }
+
+
+    private List<String> getMetadataTypesInner() {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
         }
@@ -2335,7 +2350,6 @@ public class TypeHandler extends RepositoryManager {
 	NamedBuffer sb = new NamedBuffer("");
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
 	contents.add(sb);
-
 	request.put("addmap","true");
         OutputType    output = request.getOutput();
         if (displayTemplatePath != null) {
@@ -2395,6 +2409,18 @@ public class TypeHandler extends RepositoryManager {
 				 props,seen,forOutput,contents);
 	}
 
+	
+	String macros = Utils.getProperty(props,"macros",null);
+	if(macros!=null) {
+	    for(String key: Utils.split(macros,",",true,true)) {
+		String value = Utils.getProperty(props,key+".value",null);
+		if(stringDefined(value)) {
+		    String title = Utils.getProperty(props,key+".title","Properties");
+		    contents.add(new NamedBuffer(title,value));
+		}
+	    }
+	}
+
 	applyContents(request, buff,contents);
     }
 
@@ -2410,9 +2436,14 @@ public class TypeHandler extends RepositoryManager {
 		    namedBuffer.setName("Information");
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append(HU.formTable());
-		sb.append(namedBuffer.getBuffer());
-		sb.append(HU.formTableClose());
+		String buffString = namedBuffer.getBuffer().toString();
+		//a hack
+		boolean addTable = buffString.startsWith("<tr");
+		if(addTable)
+		    sb.append(HU.formTable());
+		sb.append(buffString);
+		if(addTable)
+		    sb.append(HU.formTableClose());
 		namedBuffer.setBuffer(sb);
 	    }		      
 	    HU.makeTabs(buff, nonEmptyContents);
@@ -4609,6 +4640,7 @@ public class TypeHandler extends RepositoryManager {
 			String img = HU.span(HU.getIconImage("fa-brands fa-wikipedia-w"),HU.style("margin-left:12px;"));
 
                         String prefix = "";
+
                         if (getTypeProperty("form.description.showwiki",
                                             true)) {
                             String cbx = HU.labeledCheckbox(ARG_ISWIKI,
