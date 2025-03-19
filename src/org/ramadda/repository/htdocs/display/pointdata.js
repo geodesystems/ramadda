@@ -1827,24 +1827,23 @@ function CsvUtil() {
 		if(/*field.isFieldNumeric() && */field.getId()!="") {
 		    if(func.indexOf(field.getId())<0) return;
 		    let varName = field.getId().replace(/^([0-9]+)/g,"v$1");
-		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args[\"" + field.getId() + "\"]);\n";
+		    setVars += "\tvar " + varName + "=displayGetFunctionValue(args.values[\"" + field.getId() + "\"]);\n";
 		}
             });
 
 //	    setVars+="console.log('v:' + (max_pool_elevation-lake_reservoir_elevation));\n";
             let code = "function displayDerivedEval(args) {\n" + setVars +  func + "\n}";
-//	    console.log(code);
-
             eval(code);
+	    let funcState = {};		
 	    records.forEach((record, rowIdx)=>{
 		let newRecord = record.clone();
 		newRecord.data= record.data.slice();
 		newRecord.fields =  newFields;
 		newRecords.push(newRecord);
-		let funcArgs = {};
+		let funcArgs = {values:{},state:funcState,recordIndex:rowIdx,record:record};
 		fields.map((field,idx)=>{
-		    if(/*field.isFieldNumeric() &&*/ field.getId()!="") {
-			funcArgs[field.getId()] = record.getValue(field.getIndex());
+		    if(field.getId()!="") {
+			funcArgs.values[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
 		try {
@@ -1853,6 +1852,7 @@ function CsvUtil() {
 		} catch(exc) {
 		    console.log("Error processing derived:" + exc);
 		    newRecord.data.push(NaN);
+		    throw exc;
 		}
 	    });
 	    return   new  PointData("pointdata", newFields, newRecords,null,{parent:pointData});
