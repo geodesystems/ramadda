@@ -1257,6 +1257,8 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-callout-inner {
     display:inline-block;
+    /* a hack for alignment */
+    margin-top:-0.5em;
 }
 
 .ramadda-callout-inner i {
