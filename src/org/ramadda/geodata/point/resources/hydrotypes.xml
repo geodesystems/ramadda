@@ -135,8 +135,9 @@ You just need to specify the Site Number. The name and other metadata will be lo
      <property name="form.file.show" value="true"/>
  <property name="record.properties">
 picky=false
-fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip[type=string]
-point.csvcommands=-delimiter,tab,-skip,2,-print
+fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],gauge_height[unit="feet" label="Gauge Height" type=double]
+xxxfields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip1[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip2[type=string]
+point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,5_comma_7,-print
      </property>
      
      <!--
