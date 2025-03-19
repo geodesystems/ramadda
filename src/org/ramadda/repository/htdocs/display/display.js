@@ -3142,10 +3142,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return false;
         },
         fieldSelected: function(event) {
-            this.userHasSelectedAField = true;
+	    let _this = this;
             this.selectedFields = null;
             this.overrideFields = null;
-            this.removeProperty(PROP_FIELDS);
+	    this.userHasSelectedAField=true;
+	    let fields = [];
+	    this.fieldCheckboxes.each(function() {
+                if ($(this).is(':checked')) {
+		    let fieldId = $(this).attr('data-fieldid');
+		    if(fieldId)
+			fields.push(fieldId);
+		}
+	    });
+
+
+            this.setProperty(PROP_FIELDS,Utils.join(fields,','));
+//            this.removeProperty(PROP_FIELDS,Utils,);
             this.fieldSelectionChanged();
             if (event.shiftKey) {
                 let fields = this.getSelectedFields();
@@ -3243,6 +3255,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
 
+
                 let disabledFields = "";
                 if ( /*this.canDoMultiFields() && */ fields.length > 0) {
                     let selected = this.getSelectedFields([]);
@@ -3264,37 +3277,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             for (let fIdx = 0; fIdx < argFields.length; fIdx++) {
                                 if (argFields[fIdx].getId() == field.getId()) {
                                     on = true;
-                                    //                                        console.log("argField:"+ argFields[fIdx].getId()+ " field.id:" + field.getId() +" on:" +on);
+//				    if(on)    console.log('ON-0',field.getId());
                                     this.overrideFields.push(field.getId());
                                     break;
                                 }
                             }
                         } else if (selectedIds.length > 0) {
                             on = selectedIds.indexOf(field.getId()) >= 0;
-//                            console.log("selected ids   on:" + on +" " + field.getId());
+//			    if(on)    console.log('ON-1',field.getId());
+
                         }
+//			if(on)    console.log('on-0',field.getId());
 			if(!on) {
 			    if (fieldsMap != null) {
 				on = fieldsMap[field.getId()];
 				if (!on) {
                                     on = fieldsMap["#" + (tupleIdx + 1)];
 				}
+//				if(on) console.log('on-1',field.getId());
                             } else if (this.overrideFields != null) {
 				on = this.overrideFields.indexOf(field.getId()) >= 0;
 				if (!on) {
                                     on = (this.overrideFields.indexOf("#" + (tupleIdx + 1)) >= 0);
 				}
-				//                                console.log("override fields  on:" + on +" " + field.getId());
+//				if(on) console.log('on-2',field.getId());
                             } else {
 				if (this.selectedCbx.indexOf(field.getId()) >= 0) {
                                     on = true;
+//				    if(on) console.log('on-3',field.getId());
 				} else if (this.selectedCbx.length == 0) {
                                     on = (tupleIdx == 0);
+//				    if(on) console.log('on-4',field.getId());
 				}
 			    }
-                            //                                console.log("cbx fields:" + on + " " + field.getId());
                         }
-//			if(on)    console.log(field.getId(),on);
+//			if(on)    console.log('ON',field.getId(),on);
                         let label = field.getUnitLabel();
                         if (seenLabels[label]) {
                             label = label + " " + seenLabels[label];
@@ -3314,15 +3331,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				html += HU.tag(TAG_DIV, [],label + ' - ' +field.getId());
 			    } else {
 				if (this.canDoMultiFields()) {
-                                    widget = HU.checkbox(field.checkboxId, [ATTR_CLASS, checkboxClass,ATTR_TITLE,field.getId() +' - '+ field.getType()], on,label);
+                                    widget = HU.checkbox(field.checkboxId, [ATTR_CLASS, checkboxClass,
+									    'data-fieldid',field.getId(),
+									    ATTR_TITLE,field.getId() +' - '+ field.getType()], on,label);
 				    html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()], widget);
 				} else {
-                                    widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
+                                    widget = HU.radio(field.checkboxId, "field_radio", checkboxClass, "", on,
+						      HU.attrs(['data-fieldid',field.getId()]));
 				    html += HU.tag(TAG_DIV, [ATTR_TITLE, field.getId()],  widget + " " + label);
 				}
 			    }
                         }
-                        //                        html+= "<br>";
                     }
                 }
                 if (disabledFields != "") {
@@ -3330,21 +3349,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 html += HU.close(TAG_DIV);
             }
-
-
             this.writeHtml(ID_FIELDS, html);
-
-            this.userHasSelectedAField = false;
-            let theDisplay = this;
+            let _this = this;
             //Listen for changes to the checkboxes
-            $("." + checkboxClass).click(function(event) {
-                theDisplay.fieldSelected(event);
+	    this.fieldCheckboxes = $("." + checkboxClass);
+	    this.fieldCheckboxes.click(function(event) {
+                _this.fieldSelected(event);
             });
 
             $("." + groupByClass).change(function(event) {
-                theDisplay.groupBy = $(this).val();
-                if (theDisplay.displayData) {
-                    theDisplay.displayData();
+                _this.groupBy = $(this).val();
+                if (_this.displayData) {
+                    _this.displayData();
                 }
             });
         },
@@ -3421,7 +3437,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.lastSelectedFields = fields;
 //		console.log("BIN DATE:" + this.lastSelectedFields);
 	    }
-	    //	    console.log("fields:" + this.lastSelectedFields);
+
 
 	    let result =  Utils.cloneList(this.lastSelectedFields??[]);
 	    if(prefixFields) {
@@ -3432,12 +3448,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         },
         getSelectedFieldsInner: function(dfltList) {
-            if (this.debugSelected) {
+	    let debug = this.debugSelected;
+//	    debug=true;
+            if (debug) {
                 console.log("getSelectedFieldsInner dflt:" + (dfltList ? dfltList : "null"));
                 console.log("\tlast selected = " + this.lastSelectedFields);
 	    }
             if (this.selectedFields) {
-                if (this.debugSelected)
+                if (debug)
                     console.log("\treturning this.selectedFields:" + this.selectedFields);
                 return this.selectedFields;
             }
@@ -3445,6 +3463,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
             let fixedFields = this.getPropertyFields();
+
             if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields  = fixedFields.split(",");
 	    }
@@ -3480,7 +3499,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		//xxx
 //		console.log(fields.map(f=>{return f.getId() + '-' + f.getLabel();}));
                 if (fixedFields != null && fixedFields.length > 0) {
-                    if (this.debugSelected)
+                    if (debug)
                         console.log("\thave fixed fields:" + fixedFields);
 		    let selected = [];
                     for (let i = 0; i < fixedFields.length; i++) {
@@ -3501,53 +3520,34 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 	    }
 
-	    
-            if (!this.userHasSelectedAField && fixedFields != null && fixedFields.length > 0) {
-                if (this.debugSelected)
+            if (fixedFields != null && fixedFields.length > 0) {
+                if (debug)
                     console.log("\tfrom fixed:" + df.length);
                 return df;
             }
 
-	    this.userHasSelectedAField = false;
-            if (this.debugSelected)
+
+            if (debug)
                 console.log("\tuser has selected");
             let fieldsToSelect = null;
-            let firstField = null;
             this.selectedCbx = [];
-            let cbxExists = false;
             for (let collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
-                let pointData = dataList[collectionIdx];
-                fieldsToSelect = this.getFieldsToSelect(pointData);
-                for (let i = 0; i < fieldsToSelect.length; i++) {
-                    let field = fieldsToSelect[i];
-                    if (firstField == null && field.isNumeric()) firstField = field;
-                    let idBase = "cbx_" + collectionIdx + "_" + i;
-                    let cbxId = this.getDomId(idBase);
-                    let cbx = $("#" + cbxId);
-                    if (cbx.length>0) {
-                        cbxExists = true;
-                    } else {
-                        continue;
-                    }
-                    if (cbx.is(':checked')) {
-                        this.selectedCbx.push(field.getId());
-                        df.push(field);
-                    }
-                }
+                fieldsToSelect = this.getFieldsToSelect(dataList[collectionIdx]);
             }
 
-            if (df.length == 0 && !cbxExists) {
+            if (df.length == 0) {
                 if (this.lastSelectedFields && this.lastSelectedFields.length > 0) {
-                    if (this.debugSelected)
+                    if (debug)
                         console.log("\tlastSelectedFields:" + this.lastSelectedFields);
                     return this.lastSelectedFields;
                 }
             }
             if (df.length == 0) {
                 df = this.getDefaultSelectedFields(fieldsToSelect, dfltList,this.debugSelected);
-                if (this.debugSelected)
+                if (debug)
                     console.log("\tusing default selected:" + df);
             }
+
             return df;
         },
         getDefaultSelectedFields: function(fields, dfltList,debugArg) {
@@ -9552,7 +9552,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
 //	    console.log("fields before:" + this.getSelectedFields());
 //	    console.log("fields after:" + fields);
 
-            this.userHasSelectedAField = true;
             this.overrideFields = null;
             this.removeProperty(PROP_FIELDS);
             this.setSelectedFields(fields);
