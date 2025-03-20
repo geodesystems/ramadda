@@ -152,11 +152,13 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
                                        Hashtable properties,
                                        Hashtable requestProperties)
             throws Exception {
-	for(int i=0;i<CSV_COMMANDS.length;i++) {
-	    String command = CSV_COMMANDS[i];
-	    command = command.replace("${header}",useDailyValue(request, entry)?CSV_HEADER_DV:CSV_HEADER_IV);
-	    command = command.replace("${format}",useDailyValue(request, entry)?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
-	    properties.put("csvcommands" + (i+1),command);
+	if(!isPeakFlow(entry))  {
+	    for(int i=0;i<CSV_COMMANDS.length;i++) {
+		String command = CSV_COMMANDS[i];
+		command = command.replace("${header}",useDailyValue(request, entry)?CSV_HEADER_DV:CSV_HEADER_IV);
+		command = command.replace("${format}",useDailyValue(request, entry)?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
+		properties.put("csvcommands" + (i+1),command);
+	    }
 	}
         return new UsgsGaugeRecordFile(request, entry, getPathForRecordEntry(request,entry,requestProperties), properties);
     }
@@ -172,15 +174,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    this.request= request;
 	    this.entry = entry;
         }
-
-	public String xxxgetFieldsProperty() {
-	    if(useDailyValue(request,entry)) {
-		//		System.err.println("DV:" +FIELDS_DV);
-		return FIELDS_DV;
-	    }
-	    //	    System.err.println("IV:" +FIELDS_IV);
-	    return FIELDS_IV;		
-	}
 
 
         public boolean isMissingValue(BaseRecord record, RecordField field,
@@ -200,6 +193,10 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	return Misc.equals(entry.getStringValue(request,"use_daily_value",""),"true");
     }
 	
+    public static boolean isPeakFlow(Entry entry) {
+	return entry.getTypeHandler().isType("type_usgs_gauge_peak");
+    }
+
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -207,7 +204,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    return entry.getResource().getPath();
 	}
         String url = URL_TEMPLATE_FLOW;
-	if(entry.getTypeHandler().isType("type_usgs_gauge_peak")) {
+	if(isPeakFlow(entry)) {
 	    url = URL_TEMPLATE_PEAK;
 	} else {
 	    if(Misc.equals(entry.getStringValue(request,"use_date_range",null),"true")) {
