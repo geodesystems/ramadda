@@ -663,14 +663,7 @@ public class SeesvOperator {
         return -1;
     }
 
-    /**
-     *
-     * @param ctx _more_
-     * @param tok _more_
-     *
-     * @return _more_
-     */
-    public int getColumnIndex(TextReader ctx, String tok) {
+    public int getColumnIndex(TextReader ctx, String tok,boolean...optional) {
         checkColumns();
 	if(debug)
 	    debug("\tgetColumnIndex:" + tok);
@@ -692,10 +685,14 @@ public class SeesvOperator {
             String colId = Utils.makeID(tok, false);
             iv = columnMap.get(colId);
         }
-        if (iv == null && !Utils.equals("true",ctx.getProperty("goeasy")+"")) {
-            throw new SeesvException(this, "Could not find column:"
-				     + tok + "\npossible columns: " + Utils.getKeys(columnMap));
-        }
+
+	if(iv==null) {
+	    if(optional.length>0 && optional[0]) return -1;
+	    if (!Utils.equals("true",ctx.getProperty("goeasy")+"")) {
+		throw new SeesvException(this, "Could not find column:"
+					 + tok + "\npossible columns: " + Utils.getKeys(columnMap));
+	    }
+	}
 
         return (iv != null)
 	    ? iv
@@ -747,6 +744,8 @@ public class SeesvOperator {
             seen = new HashSet();
         }
         checkColumns();
+	boolean optional = s.startsWith("?");
+	if(optional) s = s.substring(1);
 	boolean isRegexp = s.startsWith("regex:");
 	if(isRegexp) {
             s = s.substring("regex:".length());
@@ -840,7 +839,7 @@ public class SeesvOperator {
 		    return;
 		}
 
-                Integer iv = getColumnIndex(ctx, tok);
+                Integer iv = getColumnIndex(ctx, tok,optional);
                 if (iv != null) {
                     start = end = iv;
                 } else {

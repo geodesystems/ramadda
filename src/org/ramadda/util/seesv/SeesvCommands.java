@@ -261,6 +261,7 @@ public interface SeesvCommands {
     public static final String CMD_FLOOR="-floor";
     public static final String CMD_DELTA="-delta";
     public static final String CMD_RUNNINGSUM="-runningsum";
+    public static final String CMD_INTEGRATE="-integrate";    
     public static final String CMD_CHANGECOUNTER="-changecounter";
     public static final String CMD_TRENDCOUNTER="-trendcounter";            
     public static final String CMD_OPERATOR="-operator";

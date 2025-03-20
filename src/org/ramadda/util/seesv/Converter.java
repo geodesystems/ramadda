@@ -15,7 +15,6 @@ import org.ramadda.util.PatternProps;
 import org.ramadda.util.Propper;
 import org.ramadda.util.Utils;
 
-
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -24,6 +23,7 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.net.*;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.security.MessageDigest;
 import java.security.*;
@@ -37,7 +37,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 import java.util.regex.*;
 import java.util.regex.Matcher;
@@ -53,43 +52,19 @@ import javax.crypto.spec.DESKeySpec;
 
 import javax.script.*;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Jan 9, '15
- * @author         Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public abstract class Converter extends Processor {
 
-
-    /**
-     *
-     */
     public Converter() {}
 
-    /**
-     * @param col _more_
-     */
     public Converter(String col) {
         super(col);
     }
 
-    /**
-     *
-     * @param cols _more_
-     */
     public Converter(List<String> cols) {
         super(cols);
     }
 
-
-    /**
-     * @param n _more_
-     * @return _more_
-     */
     private static String getLabel(int n) {
 	int d = (int) (n / 25.0);
 	int r = n % 25;
@@ -101,55 +76,27 @@ public abstract class Converter extends Processor {
 	}
     }
 
-
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ConverterGroup extends Converter {
 
-
-        /**
-         */
         public ConverterGroup() {}
 
     }
 
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class ColumnSelector extends Converter {
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public ColumnSelector(TextReader ctx, List<String> cols) {
             super(cols);
 	    if(ctx.getUniqueHeader()) {
 		HashSet seen = new HashSet();
 		for(String s: cols) {
-		     s = makeID(s);
-		     if(seen.contains(s))
-			 throw new RuntimeException("Non unique header value:" + s);
-		     seen.add(s);
+		    s = makeID(s);
+		    if(seen.contains(s))
+			throw new RuntimeException("Non unique header value:" + s);
+		    seen.add(s);
 		}
 	    }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -177,32 +124,14 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Roller extends Converter {
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public Roller(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
 	List<Row> prev= new ArrayList<Row>();
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) return row;
@@ -238,7 +167,6 @@ public abstract class Converter extends Processor {
 
     }
 
-
     public static class Grabber extends Converter {
 	int col=-1;
 	String scol;
@@ -253,12 +181,6 @@ public abstract class Converter extends Processor {
 	    this.names = names;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) {
@@ -284,52 +206,29 @@ public abstract class Converter extends Processor {
 	    return row;
         }
     }
-    
-
 
     public static class NoHeader extends Converter {
 
         public NoHeader() {
         }
 
-
-
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) return null;
 	    return row;
         }
     }
-    
 
-
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class FileNamePattern extends Converter {
 
 	List<String> names;
 	List<String> values;	
 	String pattern;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public FileNamePattern(TextReader ctx, String pattern, String names) {
 	    this.names = Utils.split(names,",",true,true);
 	    this.pattern=pattern;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(values==null) {
@@ -341,7 +240,7 @@ public abstract class Converter extends Processor {
 		    values.add(m);
 
 	    }
-		
+
 	    if(rowCnt++==0) {
 		row.addAll(names);
 	    } else {
@@ -351,33 +250,20 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
     public static class Editor extends Converter {
 	private Row header;
 
 	private BufferedReader br;
 
 	private boolean done = false;
-	
+
 	private Hashtable<String,String> seen = new Hashtable<String,String>();
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public Editor(String col) {
             super(col);
 	    br = new BufferedReader(new InputStreamReader(System.in));
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(done) return row;
@@ -385,7 +271,7 @@ public abstract class Converter extends Processor {
 		header = row;
 		return row;
 	    }
-	    
+
             int col  = getIndex(ctx);
 	    if(!header.indexOk(col) || !row.indexOk(col)) return row;
 	    String h = header.getString(col);
@@ -416,15 +302,10 @@ public abstract class Converter extends Processor {
 	    }
         }
     }
-    
+
     public static class Highlighter extends Converter {
 	String prefix;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public Highlighter(List<String> cols, String color) {
             super(cols);
 	    if(color.equals("green")) prefix=Utils.ANSI_GREEN_BOLD;
@@ -435,11 +316,6 @@ public abstract class Converter extends Processor {
 	    else prefix=Utils.ANSI_RED_BOLD;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -454,15 +330,10 @@ public abstract class Converter extends Processor {
 	    return row;
         }
     }
-    
+
     public static class Backgrounder extends Converter {
 	String prefix;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public Backgrounder(List<String> cols, String color) {
             super(cols);
 	    if(color.equals("green")) prefix=Utils.ANSI_GREEN_BACKGROUND;
@@ -473,11 +344,6 @@ public abstract class Converter extends Processor {
 	    else prefix=Utils.ANSI_RED_BACKGROUND;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -493,29 +359,18 @@ public abstract class Converter extends Processor {
         }
     }
 
-
     public static class RowAppender  extends Converter {
 	private int skip;
 	private int count;
 	private String delimiter;
 	private List<Row> rows = new ArrayList<Row>();
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public RowAppender(int skip, int count, String delimiter) {
 	    this.skip = skip;
 	    this.count = count;
 	    this.delimiter = delimiter;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(skip>0) {
@@ -541,37 +396,18 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class Faker extends Converter {
 
-        /**  */
         private String what;
 
-        /**  */
         com.github.javafaker.Faker faker = new com.github.javafaker.Faker();
 
-        /**  */
         private double v1 = Double.NaN;
 
-        /**  */
         private double v2 = Double.NaN;
 
-        /**  */
         private double v3 = Double.NaN;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param what _more_
-         * @param cols _more_
-         */
         public Faker(TextReader ctx, String what, List<String> cols) {
             super(cols);
             List<String> toks = Utils.split(what, ":", true, true);
@@ -587,33 +423,18 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         *  @return _more_
-         */
         private boolean hasV1() {
             return !Double.isNaN(v1);
         }
 
-        /**
-         *  @return _more_
-         */
         private boolean hasV2() {
             return !Double.isNaN(v2);
         }
 
-        /**
-         *  @return _more_
-         */
         private boolean hasV3() {
             return !Double.isNaN(v3);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -636,9 +457,6 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-        /**
-         *  @return _more_
-         */
         private String getFakerValue() {
 
             if (what.equals("boolean")) {
@@ -873,34 +691,14 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class ColumnFirst extends Converter {
 
-        /**  */
         private HashSet<Integer> firstSeen;
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public ColumnFirst(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    //	    debug = rowCnt++==0;
@@ -932,24 +730,12 @@ public abstract class Converter extends Processor {
 
     public static class ColumnLast extends Converter {
 
-        /**  */
         private HashSet<Integer> firstSeen;
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public ColumnLast(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    //	    debug = rowCnt++==0;
@@ -975,46 +761,23 @@ public abstract class Converter extends Processor {
                 result.add(s);
             }
 
-
             return new Row(result);
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class ColumnsBefore extends Converter {
 
-        /**  */
         private HashSet<Integer> set;
 
-        /**  */
         private String col;
 
-        /**  */
         private int colIdx = -1;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param col _more_
-         * @param cols _more_
-         */
         public ColumnsBefore(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (colIdx == -1) {
@@ -1052,41 +815,19 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class ColumnsAfter extends Converter {
 
-        /**  */
         private HashSet<Integer> set;
 
-        /**  */
         private String col;
 
-        /**  */
         private int colIdx = -1;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param col _more_
-         * @param cols _more_
-         */
         public ColumnsAfter(TextReader ctx, String col, List<String> cols) {
             super(cols);
             this.col = col;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (colIdx == -1) {
@@ -1130,30 +871,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnNotSelector extends Converter {
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public ColumnNotSelector(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -1162,53 +885,26 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
     /* */
 
-    /** _more_ */
     private static Hashtable<String, String> imageMap = new Hashtable<String,
 	String>();
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class ImageSearch extends Converter {
 
         /* */
 
-        /** _more_ */
         private String suffix;
 
-        /** _more_ */
         private String imageColumn;
 
-        /** _more_ */
         private int imageColumnIndex = -1;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param suffix _more_
-         */
         public ImageSearch(TextReader ctx, List<String> cols, String suffix) {
             super(cols);
             this.suffix = suffix;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param suffix _more_
-         * @param imageColumn _more_
-         */
         public ImageSearch(TextReader ctx, List<String> cols, String suffix,
                            String imageColumn) {
             super(cols);
@@ -1216,12 +912,6 @@ public abstract class Converter extends Processor {
             this.imageColumn = imageColumn;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ((imageColumn != null) && (imageColumnIndex == -1)) {
@@ -1234,7 +924,6 @@ public abstract class Converter extends Processor {
 
                 return row;
             }
-
 
             List<Integer> indices = getIndices(ctx);
             String        s       = "";
@@ -1305,39 +994,17 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Embed extends Converter {
 
-        /** _more_ */
         private String imageColumn;
 
-        /** _more_ */
         private int imageColumnIndex = -1;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param col _more_
-         */
         public Embed(TextReader ctx, String col) {
             super();
             imageColumn = col;
         }
 
-
-
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1380,33 +1047,16 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Fetch extends Converter {
 
-        /**  */
         private Row headerRow;
 
-        /** _more_ */
         private String name;
 
-        /** _more_ */
         private String urlTemplate;
 
 	private boolean ignoreErrors;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param name _more_
-         * @param urlTemplate _more_
-         */
         public Fetch(TextReader ctx, String name, boolean ignoreErrors, String urlTemplate) {
             super();
             this.name        = name;
@@ -1414,12 +1064,6 @@ public abstract class Converter extends Processor {
             this.urlTemplate = urlTemplate;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1455,34 +1099,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class WikiDescSearch extends Converter {
 
         /* */
 
-        /** _more_ */
         private String suffix;
 
-        /**
-         * @param cols _more_
-         * @param suffix _more_
-         */
         public WikiDescSearch(List<String> cols, String suffix) {
             super(cols);
             this.suffix = suffix;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1547,39 +1174,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 11, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnWidth extends Converter {
 
         /* */
 
-        /** _more_ */
         int size;
 
-        /**
-         *
-         *
-         * @param cols _more_
-         * @param size _more_
-         */
         public ColumnWidth(List<String> cols, int size) {
             super(cols);
             this.size = size;
         }
 
-
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -1599,38 +1204,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Dec 27, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnFormatter extends Converter {
 
         /* */
 
-        /** _more_ */
         private DecimalFormat format;
 
-        /**
-         *
-         * @param cols _more_
-         * @param fmt _more_
-         */
         public ColumnFormatter(List<String> cols, String fmt) {
             super(cols);
             format = new DecimalFormat(fmt);
         }
 
-
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -1648,40 +1232,21 @@ public abstract class Converter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class Padder extends Converter {
 
         /* */
 
-        /** _more_ */
         private int count;
 
         /* */
 
-        /** _more_ */
         private String pad;
 
-        /**
-         * @param count _more_
-         * @param s _more_
-         */
         public Padder(int count, String s) {
             this.count = count;
             this.pad   = s;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             while (row.getValues().size() < count) {
@@ -1696,38 +1261,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class Prefixer extends Converter {
-
-
 
         /* */
 
-        /** _more_ */
         private String pad;
 
-        /**
-         * @param cols _more_
-         * @param s _more_
-         */
         public Prefixer(List<String> cols, String s) {
             super(cols);
             this.pad = s;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1745,36 +1289,17 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class Suffixer extends Converter {
 
         /* */
 
-        /** _more_ */
         private String pad;
 
-        /**
-         * @param cols _more_
-         * @param s _more_
-         */
         public Suffixer(List<String> cols, String s) {
             super(cols);
             this.pad = s;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -1792,38 +1317,18 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Jan 24, '19
-     * @author         Enter your name here...
-     */
     public static class PrintHeader extends Converter {
 
         /* */
 
-        /** _more_ */
         private boolean asPoint = false;
 
-        /**
-         */
         public PrintHeader() {}
 
-        /**
-         * @param asPoint _more_
-         */
         public PrintHeader(boolean asPoint) {
             this.asPoint = asPoint;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             PrintWriter writer    = ctx.getWriter();
@@ -1884,25 +1389,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class HeaderNames extends Converter {
 
-        /**
-         */
         public HeaderNames() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ > 0) {
@@ -1931,25 +1421,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class HeaderIds extends Converter {
 
-        /**
-         */
         public HeaderIds() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ > 0) {
@@ -1966,26 +1441,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Ids extends Converter {
 
-        /**
-         */
         public Ids() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ > 0) {
@@ -2032,7 +1491,6 @@ public abstract class Converter extends Processor {
 		throw new RuntimeException(exc);
 	    }
 
-
             defaultType = Seesv.getDbProp(props, "default", "type",
 					  defaultType);
             defaultTypeFromProperties = Seesv.getDbProp(props, "default",
@@ -2066,16 +1524,8 @@ public abstract class Converter extends Processor {
 		}
 	    }
 
-
-
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             boolean debug = Misc.equals(props.get("debug"), "true");
@@ -2136,7 +1586,6 @@ public abstract class Converter extends Processor {
                     throw new IllegalArgumentException(exc);
                 }
 
-
                 Object osample = row.indexOk(i)?row.getValues().get(i):null;
                 if (osample == null) {
 		    osample = "";
@@ -2172,7 +1621,6 @@ public abstract class Converter extends Processor {
 		id = Utils.replaceAll(id,"thedelimiter","_");
                 id = Seesv.getDbProp(props, id, i, "id", id);
 
-
 		List<String> proppers = null;
 		if(propper!=null) {
 		    proppers = (List<String>)propper.get(col,id);
@@ -2198,7 +1646,6 @@ public abstract class Converter extends Processor {
 		    label = label.replaceAll("°"," ");
                 }
 		if(label!=null) label = label.replaceAll("[\"']+","");
-
 
                 String unit = StringUtil.findPattern(col,
 						     ".*?\\(([^\\)]+)\\).*");
@@ -2289,7 +1736,6 @@ public abstract class Converter extends Processor {
 
                 //              System.err.println("\tfinal type:" + type);
 
-
 		for(String[]tuple:typePatterns) {
 		    if(label.matches(tuple[0]) || id.matches(tuple[0])) {
 			type = tuple[1];
@@ -2298,12 +1744,7 @@ public abstract class Converter extends Processor {
 		}
                 type = Seesv.getDbProp(props, id, i, "type", type);
 
-
 		//		System.err.println("ID:"  + id  + " type:" + type +" format:" + format);
-
-
-
-
 
                 if (Misc.equals(type, "enum")) {
                     type = "enumeration";
@@ -2321,14 +1762,12 @@ public abstract class Converter extends Processor {
                                  + "\"");
                 }
 
-
                 if (Misc.equals(type, "date")) {
                     if (format == null) {
                         format = "yyyy-MM-dd";
                     }
                     attrs.append(" format=\"" + format + "\" ");
                 }
-
 
 		if(searchable)
 		    attrs.append(" searchable=\"" + "true" + "\" ");
@@ -2385,37 +1824,17 @@ public abstract class Converter extends Processor {
                 System.err.println("addheader: returning row:" + row);
             }
 
-
             return row;
 
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnPercenter extends Converter {
 
-        /**
-         * @param cols _more_
-         */
         public ColumnPercenter(List<String> cols) {
             super(cols);
         }
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List          values  = row.getValues();
@@ -2447,34 +1866,19 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
     public static class ColumnIncrease extends Converter {
 
-
-        /** _more_ */
         int step;
 
         /* */
 
-        /** _more_ */
         List<Double> values = new ArrayList<Double>();
 
-        /**
-         * @param col _more_
-         * @param step _more_
-         */
         public ColumnIncrease(String col, int step) {
             super(col);
             this.step = step;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int col = getIndex(ctx);
@@ -2509,30 +1913,17 @@ public abstract class Converter extends Processor {
 
     public static class ColumnDiff extends Converter {
 
-
-        /** _more_ */
         int step;
 
         /* */
 
-        /** _more_ */
         List<Double> values = new ArrayList<Double>();
 
-        /**
-         * @param col _more_
-         * @param step _more_
-         */
         public ColumnDiff(String col, int step) {
             super(col);
             this.step = step;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int col = getIndex(ctx);
@@ -2556,34 +1947,15 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Ranges extends Converter {
 
-        /** _more_ */
         String name;
 
-        /**  */
         double start;
 
-        /**  */
         double size;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param col _more_
-         * @param name _more_
-         * @param start _more_
-         * @param size _more_
-         */
         public Ranges(TextReader ctx, String col, String name, double start,
                       double size) {
             super(col);
@@ -2592,11 +1964,6 @@ public abstract class Converter extends Processor {
             this.size  = size;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int col = getIndex(ctx);
@@ -2629,33 +1996,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class And extends Converter {
 
-        /**  */
         private String name;
 
-        /**
-         * @param name _more_
-         * @param cols _more_
-         */
         public And(String name, List<String> cols) {
             super(cols);
             this.name = name;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -2681,35 +2030,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Or extends Converter {
 
-        /**  */
         private String name;
 
-        /**
-         * @param name _more_
-         * @param cols _more_
-         */
         public Or(String name, List<String> cols) {
             super(cols);
             this.name = name;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -2739,35 +2068,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Not extends Converter {
 
-        /**  */
         private String name;
 
-        /**
-         * @param name _more_
-         * @param col _more_
-         */
         public Not(String name, String col) {
             super(col);
             this.name = name;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -2783,48 +2092,28 @@ public abstract class Converter extends Processor {
 
     }
 
-    
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnAverage extends Converter {
 
         /* */
 
-        /** _more_ */
         public static final int MA = 0;
 
         /* */
 
-        /** _more_ */
         int what;
 
         /* */
 
-        /** _more_ */
         int period;
 
         /* */
 
-        /** _more_ */
         List<List<Double>> values = new ArrayList<List<Double>>();
 
         /* */
 
-        /** _more_ */
         String label;
 
-        /**
-         * @param what _more_
-         * @param cols _more_
-         * @param period _more_
-         * @param label _more_
-         */
         public ColumnAverage(int what, List<String> cols, int period,
                              String label) {
             super(cols);
@@ -2833,11 +2122,6 @@ public abstract class Converter extends Processor {
             this.label  = label;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -2878,37 +2162,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Checker extends Converter {
 
 	String strict;
 
-        /**
-         * @param what _more_
-         * @param cols _more_
-         * @param period _more_
-         * @param label _more_
-         */
         public Checker(List<String> cols, String strict) {
             super(cols);
 	    this.strict =strict;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -2937,48 +2199,22 @@ public abstract class Converter extends Processor {
 	}
     }
 
-
-
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnFunc extends Converter {
 
-        /** _more_ */
         String code;
 
-        /** _more_ */
         List<String> names;
 
-        /** _more_ */
         Row headerRow;
 
-        /** _more_ */
         org.mozilla.javascript.Context cx =
             org.mozilla.javascript.Context.enter();
 
-        /** _more_ */
         org.mozilla.javascript.Scriptable scope =
             cx.initSafeStandardObjects();
 
-        /** _more_ */
         org.mozilla.javascript.Script script;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param js _more_
-         * @param names _more_
-         * @param code _more_
-         */
         public ColumnFunc(TextReader ctx, String js, String names,
                           String code) {
             this.names = Utils.split(names, ",", true, true);
@@ -3005,12 +2241,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * _more_
-         * @param s _more_
-         * @return _more_
-         * @throws Exception _more_
-         */
         private Object eval(String s) throws Exception {
             if (s == null) {
                 return script.exec(cx, scope);
@@ -3019,22 +2249,10 @@ public abstract class Converter extends Processor {
             return cx.evaluateString(scope, s, "<cmd>", 1, null);
         }
 
-        /**
-         * _more_
-         * @param name _more_
-         * @param value _more_
-         * @throws Exception _more_
-         */
         private void put(String name, Object value) throws Exception {
             scope.put(name, scope, value);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             rowCnt++;
@@ -3108,26 +2326,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnOperator extends Converter {
 
-        /**
-         */
         public ColumnOperator() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List   values    = row.getValues();
@@ -3144,7 +2346,6 @@ public abstract class Converter extends Processor {
                     total += d;
                 } else {}
             }
-
 
             for (int i = 0; i < values.size(); i++) {
                 String s = values.get(i).toString();
@@ -3164,32 +2365,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class Changer extends Converter {
 
-        /** _more_ */
         boolean isRegex;
 
-        /**  */
         List<String[]> patterns = new ArrayList<String[]>();
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
-         */
         public Changer(TextReader ctx, List<String> cols, String pattern,
                        String value) {
             super(cols);
@@ -3207,14 +2388,10 @@ public abstract class Converter extends Processor {
             } else {
                 this.isRegex = StringUtil.containsRegExp(pattern);
                 patterns.add(new String[] { Utils.convertPattern(pattern),
-					   value });
+					    value });
             }
         }
 
-        /**
-         * @param file _more_
-         * @throws Exception _more_
-         */
         private void init(String file) throws Exception {
             String       contents = IO.readContents(file);
             List<String> lines    = Utils.split(contents, "\n");
@@ -3231,9 +2408,9 @@ public abstract class Converter extends Processor {
                 }
                 String pattern = toks.get(0);
                 patterns.add(new String[] { Utils.convertPattern(pattern),
-					   (toks.size() > 1)
-					   ? toks.get(1)
-					   : "" });
+					    (toks.size() > 1)
+					    ? toks.get(1)
+					    : "" });
                 //              System.out.println(Utils.convertPattern(pattern));
             }
 
@@ -3248,13 +2425,6 @@ public abstract class Converter extends Processor {
             //      for(String[]t:patterns)System.err.println(t[0]);
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         * @param s _more_
-         *  @return _more_
-         */
         String change(TextReader ctx, Row row, String s) {
             String os = s;
             //      System.out.println("change:" + s);
@@ -3278,40 +2448,15 @@ public abstract class Converter extends Processor {
             return s;
         }
 
-
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnChanger extends Changer {
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
-         */
         public ColumnChanger(TextReader ctx, List<String> cols,
                              String pattern, String value) {
             super(ctx, cols, pattern, value);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3337,20 +2482,10 @@ public abstract class Converter extends Processor {
 
     public static class CleanWhitespace extends Converter {
 
-        /**
-         *
-         * @param cols _more_
-         */
         public CleanWhitespace(List<String> cols) {
             super(cols);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3373,39 +2508,16 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnReplacer extends Converter {
 
-        /**  */
         String with;
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param with _more_
-         */
         public ColumnReplacer(TextReader ctx, List<String> cols,
                               String with) {
             super(cols);
             this.with = with;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3429,36 +2541,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Ascii extends Converter {
 
-        /** _more_ */
         private String value;
 
-
-        /**
-         * @param cols _more_
-         * @param value _more_
-         */
         public Ascii(List<String> cols, String value) {
             super(cols);
             this.value = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -3476,23 +2567,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class Cropper extends Converter {
 
-        /** _more_ */
         private List<String> patterns;
 
-        /**
-         * @param cols _more_
-         * @param patterns _more_
-         */
         public Cropper(List<String> cols, List<String> patterns) {
             super(cols);
             this.patterns = new ArrayList<String>();
@@ -3501,11 +2579,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3532,36 +2605,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Mar 14, '20
-     * @author         Enter your name here...
-     */
     public static class ColumnEndsWith extends Converter {
 
-        /** _more_ */
         private String value;
 
-        /**
-         * @param cols _more_
-         * @param value _more_
-         */
         public ColumnEndsWith(List<String> cols, String value) {
             super(cols);
             this.value = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3587,49 +2639,26 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Sep 5, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnExtracter extends Converter {
 
         /* */
 
-        /** _more_ */
         private int col = -1;
 
-        /**  */
         private String scol;
 
         /* */
 
-        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_ */
         private String replace;
 
         /* */
 
-        /** _more_ */
         private String name;
 
-        /**
-         * @param col _more_
-         * @param pattern _more_
-         * @param replace _more_
-         * @param name _more_
-         */
         public ColumnExtracter(String col, String pattern, String replace,
                                String name) {
             this.scol    = col;
@@ -3638,11 +2667,6 @@ public abstract class Converter extends Processor {
             this.name    = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -3673,21 +2697,13 @@ public abstract class Converter extends Processor {
 
     public static class HtmlExtracter extends Converter {
 	private String scol;
-	
+
 	private int col;
 
-        /** _more_ */
         private List<String> names;
 
-        /** _more_ */
         private Pattern pattern;
 
-	/**
-         * @param col _more_
-         * @param pattern _more_
-         * @param replace _more_
-         * @param name _more_
-         */
         public HtmlExtracter(String col, List<String> names, String pattern) {
             this.scol    = col;
 	    this.pattern  = Pattern.compile(pattern, Pattern.DOTALL | Pattern.MULTILINE);
@@ -3695,11 +2711,6 @@ public abstract class Converter extends Processor {
             this.names    = names;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -3731,30 +2742,22 @@ public abstract class Converter extends Processor {
 		System.err.println("error extracting html:" + url);
 		throw new RuntimeException(exc);
 	    }
-	    
+
 	    //            add(ctx, row, newValue);
             return row;
         }
 
     }
 
-
     public static class HtmlInfo extends Converter {
 	private String scol;
-	
+
 	private int col;
 
-	/**
-         */
         public HtmlInfo(String col) {
             this.scol    = col;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -3899,7 +2902,7 @@ public abstract class Converter extends Processor {
 			}
 		    }
 		}
-		
+
 		if(image32==null) image32 = image;
 		if(!Utils.stringDefined(image32)) {
 		    Pattern metaPattern3  = Pattern.compile("content=\"([^\"]+)\"",
@@ -3913,7 +2916,6 @@ public abstract class Converter extends Processor {
 			}
 		    }
 		}
-
 
 		if(Utils.stringDefined(image32)) {
 		    URL tmp = new URL(new URL(url),image32);
@@ -3933,25 +2935,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
     public static class CheckMissing extends Converter {
 	private String scol;
-	
+
 	private int col;
 	private String replace;
 
-	/**
-         */
         public CheckMissing(String col, String replace) {
             this.scol    = col;
 	    this.replace =replace;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -3988,38 +2982,18 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class UrlArg extends Converter {
 
-        /** _more_ */
         private String name;
 
-        /**  */
         private int index = -1;
 
-        /**
-         * @param col _more_
-         * @param name _more_
-         */
         public UrlArg(String col, String name) {
             super(col);
             this.name = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -4046,30 +3020,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class UrlEncode extends Converter {
 
-
-
-        /**
-         * @param name _more_
-         */
         public UrlEncode(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -4089,23 +3045,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-
     public static class XmlEncode extends Converter {
 
-
-
-        /**
-         * @param name _more_
-         */
         public XmlEncode(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -4124,31 +3069,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class UrlDecode extends Converter {
 
-
-
-        /**
-         * @param name _more_
-         */
         public UrlDecode(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -4167,46 +3093,21 @@ public abstract class Converter extends Processor {
             return row;
         }
     }
-    
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 4, '20
-     * @author         Enter your name here...
-     */
     public static class Truncater extends Converter {
 
-
-        /** _more_ */
         private int col;
 
-        /** _more_ */
         private int length;
 
-        /** _more_ */
         private String suffix;
 
-
-        /**
-         * @param col _more_
-         * @param length _more_
-         * @param suffix _more_
-         */
         public Truncater(int col, int length, String suffix) {
             this.col    = col;
             this.length = length;
             this.suffix = suffix;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             String value = row.get(col).toString();
@@ -4220,30 +3121,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class RowChanger extends Changer {
 
-        /** _more_ */
         private HashSet<Integer> rows;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param rowList _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
-         */
         public RowChanger(TextReader ctx, List<Integer> rowList,
                           List<String> cols, String pattern, String value) {
 
@@ -4254,11 +3135,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ( !rows.contains(rowCnt++)) {
@@ -4279,32 +3155,14 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class Shifter extends Converter {
 
-        /** _more_ */
         private HashSet<Integer> rows;
 
-        /** _more_ */
         private int column;
 
-        /** _more_ */
         private int count;
 
-        /**
-         * @param rowList _more_
-         * @param column _more_
-         * @param count _more_
-         */
         public Shifter(List<Integer> rowList, int column, int count) {
             rows = new HashSet<Integer>();
             for (int row : rowList) {
@@ -4314,11 +3172,6 @@ public abstract class Converter extends Processor {
             this.count  = count;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ( !rows.contains(rowCnt++)) {
@@ -4342,42 +3195,24 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...
-     */
     public static class RowMerger extends Converter {
 
         /* */
 
-        /** _more_ */
         HashSet<Integer> rows = new HashSet<Integer>();
 
         /* */
 
-        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_ */
         private String close;
 
         /* */
 
-        /** _more_ */
         private Row firstRow;
 
-        /**
-         * @param rows _more_
-         * @param delimiter _more_
-         * @param close _more_
-         */
         public RowMerger(List<Integer> rows, String delimiter, String close) {
             this.delimiter = delimiter;
             this.close     = close;
@@ -4386,11 +3221,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rows.size() == 0) {
@@ -4439,37 +3269,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnDebugger extends Converter {
 
         /* */
 
-        /** _more_ */
         private String pattern;
 
-
-        /**
-         * @param cols _more_
-         * @param pattern _more_
-         */
         public ColumnDebugger(List<String> cols, String pattern) {
             super(cols);
             this.pattern = pattern;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             //Don't process the first row
@@ -4495,7 +3305,6 @@ public abstract class Converter extends Processor {
 
     }
 
-
     public static class ColumnMapper extends Converter {
 
         private String name;
@@ -4505,12 +3314,6 @@ public abstract class Converter extends Processor {
         private Hashtable<String, String> map = new Hashtable();
 	private List<String> toks;
 
-
-        /**
-         * @param cols _more_
-         * @param name _more_
-         * @param toks _more_
-         */
         public ColumnMapper(List<String> cols, String name,
 			    boolean replace,
                             List<String> toks) {
@@ -4523,11 +3326,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -4575,36 +3373,16 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnSplitter extends Converter {
-
 
         /* */
 
-        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_ */
         private List<String> names;
 
-        /**
-         * @param col _more_
-         * @param delimiter _more_
-         * @param names _more_
-         */
         public ColumnSplitter(String col, String delimiter,
                               List<String> names) {
             super(col);
@@ -4612,11 +3390,6 @@ public abstract class Converter extends Processor {
             this.names     = names;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int index = getIndex(ctx);
@@ -4641,44 +3414,25 @@ public abstract class Converter extends Processor {
                 row.insert(index + 1 + (colOffset++), tok);
             }
 
-
             return row;
         }
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnConcatter extends Converter {
 
         /* */
 
-        /** _more_ */
         private String delimiter;
 
         /* */
 
-        /** _more_ */
         private String name;
 
         /* */
 
-        /** _more_ */
         private boolean inPlace;
 
-        /**
-         * @param indices _more_
-         * @param delimiter _more_
-         * @param name _more_
-         * @param inPlace _more_
-         */
         public ColumnConcatter(List<String> indices, String delimiter,
                                String name, boolean inPlace) {
             super(indices);
@@ -4687,11 +3441,6 @@ public abstract class Converter extends Processor {
             this.inPlace   = inPlace;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -4733,49 +3482,25 @@ public abstract class Converter extends Processor {
                 row.getValues().add(sb.toString());
             }
 
-
-
             return row;
         }
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnMerger extends Converter {
 
-
-        /** _more_ */
         private String name;
 
-        /**  */
         private List<String> what;
 
-        /** _more_ */
         private boolean inPlace;
 
-        /**
-         * @param indices _more_
-         * @param name _more_
-         * @param what _more_
-         */
         public ColumnMerger(List<String> indices, String name, String what) {
             super(indices);
             this.what = Utils.split(what, ",", true, true);
             this.name = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -4786,7 +3511,6 @@ public abstract class Converter extends Processor {
 
                 return row;
             }
-
 
             double min   = Double.POSITIVE_INFINITY;
             double max   = Double.NEGATIVE_INFINITY;
@@ -4832,43 +3556,20 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-
     /* */
 
-    /** _more_ */
     private static Properties genderProperties;
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jul 29, '19
-     * @author         Enter your name here...
-     */
     public static class Genderizer extends Converter {
 
         /* */
 
-        /** _more_ */
         private boolean doneHeader = false;
 
-
-        /**
-         * @param col _more_
-         */
         public Genderizer(String col) {
             super(col);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int  column = getIndex(ctx);
@@ -4913,50 +3614,28 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
     public static class Denormalizer extends Converter {
 
         /* */
 
-        /** _more_ */
         private Hashtable map = new Hashtable();
 
         /* */
 
-        /** _more_ */
         int destCol;
 
         /* */
 
-        /** _more_ */
         String newColName;
-
 
         /* */
 
-        /** _more_ */
         String mode;
 
         /* */
 
-        /** _more_ */
         boolean doDelete;
 
-        /**
-         * @param mapFile _more_
-         * @param col1 _more_
-         * @param col2 _more_
-         * @param col _more_
-         * @param newName _more_
-         * @param mode _more_
-         */
         public Denormalizer(String mapFile, int col1, int col2, String col,
                             String newName, String mode) {
 	    super(col);
@@ -4970,13 +3649,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-
-        /**
-         * @param filename _more_
-         * @param col1 _more_
-         * @param col2 _more_
-         * @throws Exception _more_
-         */
         private void makeMap(String filename, int col1, int col2)
 	    throws Exception {
             BufferedReader br = new BufferedReader(
@@ -4999,11 +3671,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List   values   = row.getValues();
@@ -5039,32 +3706,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnDeleter extends Converter {
 
-
-
-        /**
-         * @param indices _more_
-         */
         public ColumnDeleter(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             row = filterValues(ctx, row);
@@ -5073,39 +3720,20 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Dec 27, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnScaler extends Converter {
 
         /* */
 
-        /** _more_ */
         private double delta1;
 
         /* */
 
-        /** _more_ */
         private double delta2;
 
         /* */
 
-	/** _more_ */
         private double scale;
 
-
-        /**
-         * @param cols _more_
-         * @param delta1 _more_
-         * @param scale _more_
-         * @param delta2 _more_
-         */
         public ColumnScaler(List<String> cols, double delta1, double scale,
                             double delta2) {
             super(cols);
@@ -5114,11 +3742,6 @@ public abstract class Converter extends Processor {
             this.scale  = scale;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(rowCnt++==0) return row;
@@ -5145,18 +3768,10 @@ public abstract class Converter extends Processor {
 
     public static class MakeNumber extends Converter {
 
-        /**
-         * @param cols _more_
-         */
         public MakeNumber(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5184,40 +3799,21 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jul 29, '19
-     * @author         Enter your name here...
-     */
     public static class Decimals extends Converter {
 
         /* */
 
-        /** _more_ */
         private int tens;
 
-        /**  */
         private int decimals;
 
-        /**
-         * @param cols _more_
-         * @param decimals _more_
-         */
         public Decimals(List<String> cols, int decimals) {
             super(cols);
             this.decimals = decimals;
             this.tens     = (int) Math.pow(10, decimals);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -5243,29 +3839,14 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jul 29, '19
-     * @author         Enter your name here...
-     */
     public static class Fuzzer extends Converter {
 
-        /**  */
         private int places;
 
-        /**  */
         private int numRandomDigits;
 
-        /**  */
         private int tens;
 
-        /**
-         * @param cols _more_
-         * @param places _more_
-         * @param numRandomDigits _more_
-         */
         public Fuzzer(List<String> cols, int places, int numRandomDigits) {
             super(cols);
             this.places          = places;
@@ -5273,12 +3854,6 @@ public abstract class Converter extends Processor {
             this.tens            = (int) Math.pow(10, numRandomDigits);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -5337,34 +3912,15 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Ceil extends Converter {
 
-        /** _more_ */
         private double value;
 
-        /**
-         * @param cols _more_
-         * @param value _more_
-         */
         public Ceil(List<String> cols, double value) {
             super(cols);
             this.value = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5387,33 +3943,15 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Floor extends Converter {
 
-        /** _more_ */
         private double value;
 
-        /**
-         * @param cols _more_
-         * @param value _more_
-         */
         public Floor(List<String> cols, double value) {
             super(cols);
             this.value = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5436,37 +3974,17 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 29, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnCopier extends Converter {
 
         /* */
 
-        /** _more_ */
         private String name;
 
-
-        /**
-         *
-         * @param col _more_
-         * @param name _more_
-         */
         public ColumnCopier(String col, String name) {
             super(col);
             this.name = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int index = getIndex(ctx);
@@ -5484,31 +4002,14 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnNewer extends Converter {
 
         /* */
 
-        /** _more_ */
         private String delimiter;
 
-        /**  */
         private String name;
 
-        /**
-         * @param indices _more_
-         * @param delimiter _more_
-         * @param name _more_
-         */
         public ColumnNewer(List<String> indices, String delimiter,
                            String name) {
             super(indices);
@@ -5516,11 +4017,6 @@ public abstract class Converter extends Processor {
             this.name      = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5548,31 +4044,15 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class RowConcat extends Converter {
 
-        /** _more_ */
         private int num;
 	private List<Row> rows = new ArrayList<Row>();
 
-        /**
-         */
         public RowConcat(int num) {
 	    this.num = num;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5605,7 +4085,6 @@ public abstract class Converter extends Processor {
             super.finish(ctx);
 	}
 
-
 	private Row makeRow() {
 	    Row newRow = new Row();
 	    for(Row row: rows) {
@@ -5616,40 +4095,22 @@ public abstract class Converter extends Processor {
 	}
 
     }
-    
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnMathOperator extends Converter {
 
         /* */
 
-        /** _more_ */
         private String name;
 
         /* */
 
-        /** _more_ */
         private String op;
 
 	private String replaceCol;
 
 	private int replaceIdx=-1;
 
-        /**  */
         String foo;
-
-        /**
-         * @param indices _more_
-         * @param name _more_
-         * @param op _more_
-         */
 
         public ColumnMathOperator(List<String> indices, String name,
                                   String op) {
@@ -5660,15 +4121,9 @@ public abstract class Converter extends Processor {
 	    if(name.startsWith("replace:")) {
 		replaceCol = name.substring("replace:".length());
 	    }
-		    
+
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -5730,22 +4185,10 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class CompareNumber extends Converter {
 
-
-        /** _more_ */
         private String op;
 
 	private String scol1;
@@ -5753,24 +4196,12 @@ public abstract class Converter extends Processor {
 	private int col1;
 	private int col2;	
 
-
-        /**
-         * @param indices _more_
-         * @param name _more_
-         * @param op _more_
-         */
         public CompareNumber(String col1, String col2, String op) {
 	    this.scol1=  col1;
 	    this.scol2=  col2;	    
             this.op   = op;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5796,50 +4227,23 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Delta extends Converter {
 
-        /** _more_ */
         List<String> keys;
 
-
-        /** _more_ */
         private Hashtable<String, Row> prevRows = new Hashtable<String,
 	    Row>();
 
-        /** _more_ */
         List<Integer> indices;
 
-        /** _more_ */
         List<Integer> keyindices;
 
-
-
-        /**
-         * @param keys _more_
-         * @param indices _more_
-         */
         public Delta(List<String> keys, List<String> indices) {
             super(indices);
             this.keys = keys;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (indices == null) {
@@ -5894,20 +4298,10 @@ public abstract class Converter extends Processor {
 
 	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
 
-        /**
-         * @param keys _more_
-         * @param indices _more_
-         */
         public RunningSum(List<String> indices) {
             super(indices);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    List<Integer>indices    = getIndices(ctx);
@@ -5945,27 +4339,76 @@ public abstract class Converter extends Processor {
 
     }
 
+    public static class Integrate extends Converter {
+	String timeUnit;
+	String newName;
+	String dateSIndex;
+	int dateIndex;
+	Date lastDate;
+
+        public Integrate(String index,String dateSIndex,String timeUnit,String newName) {
+            super(index);
+	    this.dateSIndex = dateSIndex;
+	    this.timeUnit = timeUnit;
+	    this.newName = newName;
+        }
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		dateIndex = getIndex(ctx,dateSIndex);
+		row.add(newName);
+		return row;
+            }
+
+	    if (!row.indexOk(dateIndex)) {
+		return row;
+	    }
+
+	    String sdate = row.getString(dateIndex,"");
+	    Date  date = ctx.parseDate(sdate);
+	    if(date==null) {
+		row.add(Double.NaN);
+		return row;
+	    }
+	    if(lastDate==null) {
+		lastDate = date;
+		row.add(0);
+		return row;
+	    }
+
+	    int index =getIndex(ctx);
+	    if (!row.indexOk(index)) {
+		return row;
+	    }
+	    double rate = row.getDouble(index);
+	    if(Double.isNaN(rate)) {
+		row.add("0");
+	    } else {
+		long ms = date.getTime()-lastDate.getTime();
+		//cf/s
+		long currentMillis = Utils.toMillis(1,timeUnit);
+		double converted = rate/currentMillis;
+		double volume = converted*ms;
+		row.add(volume);
+
+	    }
+	    lastDate = date;
+            return row;
+        }
+
+    }
 
     public static class TrendCounter extends Converter {
 	String name;
 	int counter=0;
 	double lastValue=Double.NaN;
 
-        /**
-         * @param keys _more_
-         * @param indices _more_
-         */
         public TrendCounter(String col, String name) {
             super(col);
 	    this.name = name;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -5984,27 +4427,17 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
+
     public static class ChangeCounter extends Converter {
 	String name;
 	int counter=0;
 	double lastValue=Double.NaN;
 
-        /**
-         * @param keys _more_
-         * @param indices _more_
-         */
         public ChangeCounter(String col, String name) {
             super(col);
 	    this.name = name;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6023,32 +4456,14 @@ public abstract class Converter extends Processor {
         }
 
     }
-    
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Mercator extends Converter {
 
-
-        /**
-         * @param indices _more_
-         */
         public Mercator(List<String> indices) {
             super(indices);
 
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6078,32 +4493,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnRounder extends Converter {
 
-
-
-        /**
-         * @param indices _more_
-         */
         public ColumnRounder(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6129,32 +4524,15 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Bytes extends Converter {
 
-        /**  */
         private String unit;
 
-        /**
-         * @param unit _more_
-         * @param indices _more_
-         */
         public Bytes(String unit, List<String> indices) {
             super(indices);
             this.unit = unit;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -6185,10 +4563,6 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-        /**
-         * @param u _more_
-         *  @return _more_
-         */
         private double getMultiplier(String u) {
             if (unit.equals("binary")) {
                 return getMultiplier(u, 1024);
@@ -6197,11 +4571,6 @@ public abstract class Converter extends Processor {
             return getMultiplier(u, 1000);
         }
 
-        /**
-         * @param u _more_
-         * @param base _more_
-         *  @return _more_
-         */
         private double getMultiplier(String u, double base) {
             if (u.equals("kb")) {
                 return base;
@@ -6222,31 +4591,14 @@ public abstract class Converter extends Processor {
             return 1;
         }
 
-
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnAbs extends Converter {
 
-        /**
-         * @param indices _more_
-         */
         public ColumnAbs(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6270,41 +4622,20 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class ColumnRand extends Converter {
 
-        /**  */
         String name;
 
-        /**  */
         double min;
 
-        /**  */
         double max;
 
-        /**
-         *
-         * @param name _more_
-         * @param min _more_
-         * @param max _more_
-         */
         public ColumnRand(String name, double min, double max) {
             this.name = name;
             this.min  = min;
             this.max  = max;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6321,38 +4652,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class Case extends Converter {
 
         /* */
 
-        /** _more_ */
         String action;
 
-        /**
-         * @param indices _more_
-         * @param action _more_
-         */
         public Case(List<String> indices, String action) {
             super(indices);
             this.action = action;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6380,20 +4690,10 @@ public abstract class Converter extends Processor {
 
     public static class ToId extends Converter {
 
-
-        /**
-         * @param indices _more_
-         * @param action _more_
-         */
         public ToId(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6415,31 +4715,14 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class NumColumns extends Converter {
-        /**  */
+
         int number;
 
-        /**
-         * @param number _more_
-         */
         public NumColumns(int number) {
             this.number = number;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(number<0) {
@@ -6459,30 +4742,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class Trim extends Converter {
 
-        /**
-         * @param indices _more_
-         */
         public Trim(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -6504,30 +4769,14 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class PadLeftRight extends Converter {
 
-        /**  */
         private int length;
 
-        /**  */
         private String c;
 
-        /**  */
         private boolean left;
 
-        /**
-         * @param left _more_
-         * @param indices _more_
-         * @param c _more_
-         * @param length _more_
-         */
         public PadLeftRight(boolean left, List<String> indices, String c,
                             int length) {
             super(indices);
@@ -6536,11 +4785,6 @@ public abstract class Converter extends Processor {
             this.length = length;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6571,29 +4815,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class TrimQuotes extends Converter {
 
-        /**
-         * @param indices _more_
-         */
         public TrimQuotes(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List<Integer> indices = getIndices(ctx);
@@ -6620,30 +4847,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...
-     */
     public static class StripTags extends Converter {
 
-        /**
-         * @param indices _more_
-         */
         public StripTags(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6665,28 +4874,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...
-     */
     public static class Decoder extends Converter {
 
-        /**
-         * @param indices _more_
-         */
         public Decoder(List<String> indices) {
             super(indices);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6707,25 +4900,10 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class MD extends Converter {
 
-        /** _more_ */
         private MessageDigest md;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param indices _more_
-         * @param type _more_
-         */
         public MD(TextReader ctx, List<String> indices, String type) {
             super(indices);
             try {
@@ -6739,12 +4917,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6775,33 +4947,17 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class Subst extends Converter {
 	private List<String>header;
 	private List<String>_header;
 	private String name;
 	private String template;
 
-        /**
-         */
         public Subst(String name, String template) {
 	    this.name = name;
 	    this.template = template;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6825,35 +4981,15 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class SoundexMaker extends Converter {
 
-        /**  */
         private Soundex soundex;
 
-        /**
-         * @param indices _more_
-         */
         public SoundexMaker(List<String> indices) {
             super(indices);
             soundex = new Soundex();
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6879,32 +5015,12 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class Even extends Converter {
 
-
-        /**
-         * @param indices _more_
-         */
         public Even(List<String> indices) {
             super(indices);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -6941,28 +5057,14 @@ public abstract class Converter extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnInserter extends Converter {
 
-        /**  */
         private String name;
 
-        /** _more_ */
         private List<String> values;
 
 	private String value;
 
-        /**
-         * @param col _more_
-         * @param name _more_
-         * @param value _more_
-         */
         public ColumnInserter(String col, String name, String value) {
             super(col);
             this.values = Utils.split(value, ",", false, false);
@@ -6970,11 +5072,6 @@ public abstract class Converter extends Processor {
             this.name   = name;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             int    col = hasColumns()
@@ -7003,25 +5100,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Apr 9, '22
-     * @author         Enter your name here...
-     */
     public static class ColumnAdder extends Converter {
 
-        /**  */
         private List<String> names;
 
-        /** _more_ */
         private List<String> values;
 
-        /**
-         * @param names _more_
-         * @param values _more_
-         */
         public ColumnAdder(String names, String values) {
             this.names  = Utils.split(names, ",", false, false);
             this.values = Utils.split(values, ",", false, false);
@@ -7030,11 +5114,6 @@ public abstract class Converter extends Processor {
             }
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7047,36 +5126,16 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class Generator extends Converter {
 
-        /** _more_ */
         private String label;
 
-        /** _more_ */
         private double start;
 
-        /** _more_ */
         private double step;
 
-        /** _more_ */
         private double value;
 
-        /**
-         * @param label _more_
-         * @param start _more_
-         * @param step _more_
-         */
         public Generator(String label, double start, double step) {
             this.label = label;
             this.start = start;
@@ -7084,11 +5143,6 @@ public abstract class Converter extends Processor {
             value      = start;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7107,16 +5161,6 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jul 29, '19
-     * @author         Enter your name here...
-     */
     public static class ColumnMacro extends Converter {
 
 	private  String spattern;
@@ -7129,12 +5173,6 @@ public abstract class Converter extends Processor {
 
         private String value;
 
-
-        /**
-         * @param pattern _more_
-         * @param template _more_
-         * @param label _more_
-         */
         public ColumnMacro(String pattern, String template, String label) {
 	    spattern = pattern;
             this.pattern  = Pattern.compile(pattern, Pattern.MULTILINE);
@@ -7142,11 +5180,6 @@ public abstract class Converter extends Processor {
             this.label    = label;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    boolean debug =false;
@@ -7189,39 +5222,18 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class CopyIf extends Converter {
 
-        /**  */
         String pattern;
 
-        /** _more_ */
         String scol1;
 
-        /**  */
         String scol2;
 
-        /**  */
         int col1 = -1;
 
-        /**  */
         int col2 = -1;
 
-        /**
-         * _more_
-         * @param cols _more_
-         * @param pattern _more_
-         * @param col1 _more_
-         * @param col2 _more_
-         */
         public CopyIf(List<String> cols, String pattern, String col1,
                       String col2) {
             super(cols);
@@ -7230,11 +5242,6 @@ public abstract class Converter extends Processor {
             scol2        = col2;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7260,26 +5267,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class CopyColumns extends Converter {
 
-        /**  */
         List<String> toCols;
 
-        /**  */
         List<Integer> toIndices;
 
-        /**
-         * _more_
-         * @param cols _more_
-         * @param cols2 _more_
-         */
         public CopyColumns(List<String> cols, List<String> cols2) {
             super(cols);
             if (cols.size() != cols2.size()) {
@@ -7290,11 +5283,6 @@ public abstract class Converter extends Processor {
             this.toCols = cols2;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7315,50 +5303,26 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnNudger extends Converter {
 
         /* */
 
-        /** _more_ */
         private int col;
 
         /* */
 
-        /** _more_ */
         private int rowIdx;
 
         /* */
 
-        /** _more_ */
         private String value;
 
-
-        /**
-         * @param row _more_
-         * @param col _more_
-         * @param value _more_
-         */
         public ColumnNudger(int row, int col, String value) {
             this.rowIdx = row;
             this.col    = col;
             this.value  = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ((rowIdx < 0) || (rowIdx == rowCnt)) {
@@ -7376,45 +5340,21 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Jan 21, '18
-     * @author         Enter your name here...
-     */
     public static class ColumnUnNudger extends Converter {
 
         /* */
 
-        /** _more_ */
         private List<Integer> cols;
 
         /* */
 
-        /** _more_ */
         private int rowIdx;
 
-
-
-        /**
-         * @param row _more_
-         * @param cols _more_
-         */
         public ColumnUnNudger(int row, List<String> cols) {
             this.cols   = Utils.toInt(cols);
             this.rowIdx = row;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ((rowIdx < 0) || (rowIdx == rowCnt)) {
@@ -7435,38 +5375,20 @@ public abstract class Converter extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnSetter extends Converter {
 
         /* */
 
-        /** _more_ */
         private List<Integer> cols;
 
         /* */
 
-        /** _more_ */
         private List<Integer> rows;
 
         /* */
 
-        /** _more_ */
         private String value;
 
-
-        /**
-         * @param cols _more_
-         * @param rows _more_
-         * @param value _more_
-         */
         public ColumnSetter(List<String> cols, List<String> rows,
                             String value) {
             super(cols);
@@ -7474,11 +5396,6 @@ public abstract class Converter extends Processor {
             this.value = value;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (cols == null) {
@@ -7509,33 +5426,15 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class FillDown extends Converter {
 
-        /**  */
         private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
 	    String>();
 
-
-        /**
-         * @param cols _more_
-         */
         public FillDown(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7561,26 +5460,17 @@ public abstract class Converter extends Processor {
 
     public static class FillAcross extends Converter {
 
-        /**  */
         private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
 	    String>();
 
 	private HashSet<Integer> rows;
 
-        /**
-         * @param cols _more_
-         */
         public FillAcross(List<String> cols,List<Integer> rows) {
             super(cols);
 	    this.rows = new HashSet<Integer>();
 	    this.rows.addAll(rows);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(!rows.contains(rowCnt++)) return row;
@@ -7601,34 +5491,15 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Unfill extends Converter {
 
-        /**  */
         private Hashtable<Integer, String> lastValue = new Hashtable<Integer,
 	    String>();
 
-
-        /**
-         * @param cols _more_
-         */
         public Unfill(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7650,27 +5521,10 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Mar 24, '21
-     * @author         Enter your name here...
-     */
     public static class MakeIds extends Converter {
 
-
-        /**
-         */
         public MakeIds() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7688,53 +5542,28 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jan 20, '20
-     * @author         Enter your name here...
-     */
     public static class PriorPrefixer extends Converter {
 
-        /** _more_ */
         private int col;
 
-        /** _more_ */
         private String pattern;
 
-        /** _more_ */
         private String delim;
 
-        /** _more_ */
         private String prefix;
 
-        /**
-         * @param col _more_
-         * @param pattern _more_
-         * @param delim _more_
-         */
         public PriorPrefixer(int col, String pattern, String delim) {
             this.col     = col;
             this.pattern = pattern;
             this.delim   = delim;
         }
 
-        /**
-         * _more_
-         */
 	@Override
         public void reset(boolean force) {
             super.reset(force);
             prefix = null;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             String val = row.get(col).toString();
@@ -7751,32 +5580,14 @@ public abstract class Converter extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Oct 14, '19
-     * @author         Enter your name here...
-     */
     public static class Letter extends Converter {
 
         /* */
 
-        /** _more_ */
         int cnt = 0;
 
-        /**
-         *
-         * @param ctx _more_
-         */
         public Letter(TextReader ctx) {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             cnt++;
@@ -7790,32 +5601,14 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class Number extends Converter {
 
         /* */
 
-        /** _more_ */
         int cnt = 0;
 
-        /**
-         *
-         * @param ctx _more_
-         */
         public Number(TextReader ctx) {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             cnt++;
@@ -7829,32 +5622,12 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Feb 12, '21
-     * @author         Enter your name here...
-     */
     public static class UUID extends Converter {
 
-
-        /**
-         *
-         * @param ctx _more_
-         */
         public UUID(TextReader ctx) {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -7867,32 +5640,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class B64Encode extends Converter {
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public B64Encode(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *  @return _more_
-         */
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 for (int i : getIndices(ctx)) {
@@ -7907,27 +5660,14 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-
     }
 
     public static class ParseEmail extends Converter {
 
-
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public ParseEmail(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *  @return _more_
-         */
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
                 for (int i : getIndices(ctx)) {
@@ -7962,35 +5702,14 @@ public abstract class Converter extends Processor {
             return row;
         }
 
-
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class B64Decode extends Converter {
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public B64Decode(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -8009,30 +5728,12 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class Rot13 extends Converter {
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         */
         public Rot13(TextReader ctx, List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -8049,30 +5750,10 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class Crypt extends Converter {
 
-        /**  */
         protected Cipher cipher;
 
-        /**
-         *
-         *
-         * @param encrypt _more_
-         * @param ctx _more_
-         * @param cols _more_
-         * @param cipherSpec _more_
-         *
-         * @throws Exception _more_
-         */
         public Crypt(boolean encrypt, TextReader ctx, List<String> cols,
                      String password)
 	    throws Exception {
@@ -8088,25 +5769,9 @@ public abstract class Converter extends Processor {
 	}
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 6, '22
-     * @author         Enter your name here...
-     */
     public static class EncryptDecrypt extends Crypt {
 	boolean mode;
 
-        /**
-         *
-         * @param ctx _more_
-         * @param cols _more_
-         * @param cipherSpec _more_
-         * @param key _more_
-         *
-         * @throws Exception _more_
-         */
         public EncryptDecrypt(TextReader ctx, boolean encrypt, List<String> cols, 
 			      String key)
 	    throws Exception {
@@ -8114,11 +5779,6 @@ public abstract class Converter extends Processor {
 	    this.mode = encrypt;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -8145,52 +5805,24 @@ public abstract class Converter extends Processor {
         }
     }
 
-
-
-
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Dec 2, '15
-     * @author         Enter your name here...
-     */
     public static class ColumnPatternSetter extends Converter {
 
         /* */
 
-        /** _more_ */
         private int patternCol = -1;
 
-        /** _more_ */
         private String spatternCol;
 
-        /** _more_ */
         private String pattern;
 
         /* */
 
-        /** _more_ */
         private int writeCol = -1;
 
-        /** _more_ */
         private String swriteCol;
 
-        /** _more_ */
         private String what;
 
-
-
-        /**
-         * @param col1 _more_
-         * @param pattern _more_
-         * @param col2 _more_
-         * @param what _more_
-         */
         public ColumnPatternSetter(String col1, String pattern, String col2,
                                    String what) {
             this.spatternCol = col1;
@@ -8199,11 +5831,6 @@ public abstract class Converter extends Processor {
             this.what        = what;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -8225,46 +5852,6 @@ public abstract class Converter extends Processor {
 
         }
 
-    }
-
-    /**
-     *
-     *
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-	for(int i=0;i<2000;i++) {
-	    System.out.println("getLabel:" + i+"="+getLabel(i));
-	}
-	if(true) System.exit(0);
-        List l = new ArrayList();
-        l.add("a");
-        l.add("b");
-        l.add("c");
-        l.add(0, "x");
-        System.err.println(l);
-        if (true) {
-            return;
-        }
-
-
-
-        String s = "x";
-        try {
-            org.mozilla.javascript.Context cx =
-                org.mozilla.javascript.Context.enter();
-            org.mozilla.javascript.Scriptable scope =
-                cx.initSafeStandardObjects();
-            scope.put("x", scope, "33");
-            Object result = cx.evaluateString(scope, s, "<cmd>", 1, null);
-            System.err.println(
-			       org.mozilla.javascript.Context.toString(result));
-        } finally {
-            org.mozilla.javascript.Context.exit();
-        }
     }
 
 }
