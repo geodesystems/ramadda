@@ -135,9 +135,9 @@ You just need to specify the Site Number. The name and other metadata will be lo
      <property name="form.file.show" value="true"/>
  <property name="record.properties">
 picky=false
-fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],gauge_height[unit="feet" label="Gauge Height" type=double]
-xxxfields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],skip1[type=string],gauge_height[unit="feet" label="Gauge Height" type=double],skip2[type=string]
-point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,5_comma_7,-print
+#fields=agency[label="Agency" type=string],station_id[label="Station ID" type=string],date[type=date format="yyyy-MM-dd HH:mm" label="Date"],timezone[label="Timezone" type=string],discharge[unit="cfs" label="Discharge" type=double],gauge_height[unit="feet" label="Gauge Height" type=double]
+#point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,5_comma_7,-print
+#point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,?skip1_comma_?skip2,-print
      </property>
      
      <!--
@@ -155,6 +155,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,5_comma_7,-print
      <column  name="site_type"  label="Site Type" type="enumeration"  cansearch="true"/>
      <column  name="period"  label="Period" type="int"  default="30" suffix="Number of days"/>
      <column  name="use_date_range"  label="Use date range" type="boolean"  default="false" suffix="If set use the entry date range"/>     
+     <column  name="use_daily_value"  label="Use daily values" type="boolean"  default="false"/>
      <column  name="county"  label="County" type="enumerationplus" cansearch="true"/>
      <column  name="state"  label="State" type="enumerationplus" cansearch="true"/>
      <column  name="huc"  type="enumerationplus" label="HUC" cansearch="true"/>
@@ -173,6 +174,7 @@ point.csvcommands=-delimiter,tab,-skip,2,-notcolumns,5_comma_7,-print
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
 {{display type=linechart showMenu=true fields=discharge}}
+{{display type=linechart showMenu=true fields=total_volume}}
 {{display type=linechart showMenu=true fields=gauge_height}}
 :vspace 0.5em
 :heading Table
