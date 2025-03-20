@@ -577,7 +577,8 @@ public class TextRecord extends DataRecord {
                             dValue = textFile.parseValue(this, field, tok);
                         } catch (Exception exc) {
 			    if(doubleErrorCnt++<5)
-				System.err.println("Error parsing value:" + tok + " field:" + field +
+				System.err.println("Error parsing value:" + tok + " field:" + field +"\nfields:"+
+						   fields+
 						   "\n\tline:" + line);
 			    dValue=Double.NaN;
 			    objectValues[fieldCnt] = tok;
