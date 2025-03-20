@@ -5835,15 +5835,27 @@ public class Utils extends IO {
 
 
     public static double millisTo(long ms,String what) {
-	if(what.equals("seconds")) return millisToSeconds(ms);
-	if(what.equals("minutes")) return millisToMinutes(ms);	
-	if(what.equals("hours")) return millisToHours(ms);	
-	if(what.equals("days")) return millisToDays(ms);	
-	if(what.equals("weeks")) return millisToWeeks(ms);	
-	if(what.equals("months")) return millisToMonths(ms);	
-	if(what.equals("years")) return millisToYears(ms);	
+	if(what.startsWith("second")) return millisToSeconds(ms);
+	if(what.startsWith("minute")) return millisToMinutes(ms);	
+	if(what.startsWith("hour")) return millisToHours(ms);	
+	if(what.startsWith("day")) return millisToDays(ms);	
+	if(what.startsWith("week")) return millisToWeeks(ms);	
+	if(what.startsWith("month")) return millisToMonths(ms);	
+	if(what.startsWith("year")) return millisToYears(ms);	
 	throw new IllegalArgumentException("Unknown time unit to convert milliseconds to:" + what);
     }
+
+    public static long toMillis(double time, String what) {
+	if(what.startsWith("second")) return secondsToMillis(time);
+	if(what.startsWith("minute")) return minutesToMillis(time);	
+	if(what.startsWith("hour")) return hoursToMillis(time);	
+	if(what.startsWith("day")) return daysToMillis(time);	
+	if(what.startsWith("week")) return weeksToMillis(time);	
+	if(what.startsWith("month")) return monthsToMillis(time);	
+	if(what.startsWith("year")) return yearsToMillis(time);	
+	throw new IllegalArgumentException("Unknown time unit to convert time to milliseconds to:" + what);
+    }
+
 
     public static double millisToSeconds(long ms) {
 	return ms/1000.0;
@@ -5885,6 +5897,13 @@ public class Utils extends IO {
         return hoursToMillis(days*24);
     }
 
+    public static long weeksToMillis(double weeks) {
+        return daysToMillis(weeks*7);
+    }
+    public static long monthsToMillis(double months) {
+        return daysToMillis(months*30);
+    }    
+    
     public static long yearsToMillis(double years) {
         return daysToMillis(years*365);
     }            
