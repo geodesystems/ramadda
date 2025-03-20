@@ -156,7 +156,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    String command = CSV_COMMANDS[i];
 	    command = command.replace("${header}",useDailyValue(request, entry)?CSV_HEADER_DV:CSV_HEADER_IV);
 	    command = command.replace("${format}",useDailyValue(request, entry)?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
-	    System.err.println(command);
 	    properties.put("csvcommands" + (i+1),command);
 	}
         return new UsgsGaugeRecordFile(request, entry, getPathForRecordEntry(request,entry,requestProperties), properties);
