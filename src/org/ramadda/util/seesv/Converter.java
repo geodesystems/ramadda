@@ -4294,12 +4294,14 @@ public abstract class Converter extends Processor {
 
     public static class RunningSum extends Converter {
 
+	String nameTemplate;
 	Row prevRow;
 
 	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
 
-        public RunningSum(List<String> indices) {
+        public RunningSum(List<String> indices,String nameTemplate) {
             super(indices);
+	    this.nameTemplate = nameTemplate;
         }
 
         @Override
@@ -4308,7 +4310,15 @@ public abstract class Converter extends Processor {
             if (rowCnt++ == 0) {
                 for (Integer idx : indices) {
                     int index = idx.intValue();
-                    row.getValues().add("Sum " + row.get(index));
+		    if(row.indexOk(index)) {
+			String name = row.getString(index);
+			if(Utils.stringDefined(nameTemplate)) {
+			    name = nameTemplate.replace("${column_name}",name).replace("${name}",name);
+			} else {
+			    name = "Sum " + name;
+			}
+			row.getValues().add(name);
+		    }
                 }
                 return row;
             }
@@ -4355,6 +4365,13 @@ public abstract class Converter extends Processor {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    //true->missing ok
+	    int index =getIndex(ctx,true);
+	    if(index==UNDEFINED_INDEX) {
+		return row;
+	    }
+
+
             if (rowCnt++ == 0) {
 		dateIndex = getIndex(ctx,dateSIndex);
 		row.add(newName);
@@ -4377,10 +4394,11 @@ public abstract class Converter extends Processor {
 		return row;
 	    }
 
-	    int index =getIndex(ctx);
 	    if (!row.indexOk(index)) {
 		return row;
 	    }
+
+
 	    double rate = row.getDouble(index);
 	    if(Double.isNaN(rate)) {
 		row.add("0");

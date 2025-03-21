@@ -1970,6 +1970,7 @@ public class Seesv implements SeesvCommands {
 			"type","enumeration","values","UTF-8,UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
         new Cmd(CMD_HEADER, "Raw header",ARG_LABEL,"Add Header",
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
+
         new Cmd(CMD_UNITROW, "Second row contains units"),
 
         new Cmd(CMD_MULTIFILES, "Treat input files separately",ARG_LABEL,"Multi-files",
@@ -2833,7 +2834,8 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
         new Cmd(CMD_RUNNINGSUM,
                 "Make a running sum of the column values",
-		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
+		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
+                new Arg("name template", "Use ${name} to match source")),
         new Cmd(CMD_INTEGRATE,
                 "Calculate a volume. Mutliple a rate by the elapsed time",
 		new Arg(ARG_COLUMNS,"Rate column",ATTR_TYPE,TYPE_COLUMNS),
@@ -5171,7 +5173,7 @@ public class Seesv implements SeesvCommands {
 	    });
 	defineFunction(CMD_RUNNINGSUM, 2,(ctx,args,i) -> {
 		List<String> idxs    = getCols(args.get(++i));
-		ctx.addProcessor(new Converter.RunningSum(idxs));
+		ctx.addProcessor(new Converter.RunningSum(idxs,args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_INTEGRATE, 4,(ctx,args,i) -> {

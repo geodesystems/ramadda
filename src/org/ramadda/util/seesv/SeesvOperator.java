@@ -486,14 +486,19 @@ public class SeesvOperator {
      *
      * @return _more_
      */
-    public int getIndex(TextReader ctx) {
+    public int getIndex(TextReader ctx,boolean...missingOk) {	
         if (index != UNDEFINED_INDEX) {
             return index;
         }
         List<Integer> indices = getIndices(ctx);
         if (indices.size() == 0) {
-            fatal(ctx, "No indices specified");
+	    if(missingOk.length==0 || !missingOk[0]) {
+		fatal(ctx, "No indices specified");
+	    }
         }
+	if(indices.size()==0) {
+	    return UNDEFINED_INDEX;
+	}	    
         index = indices.get(0);
 
         return index;
