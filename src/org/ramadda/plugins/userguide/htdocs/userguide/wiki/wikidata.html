@@ -1,0 +1,75 @@
+<html>
+<head>
+<title></title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<div class="ramadda-doc-header">
+<div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#wiki/wikidata.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="../page_wikifacilities.html">Wiki Facilities</a> </div>
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikimaps.html"><table><td valign=center><td><span title="Previous: Maps"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Maps</td></tr></table></a></div></div></td>
+<td width=50% align=center>
+<div class="ramadda-page-title"><a href="#">Section 5.10: </a></div>
+</td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><tr valign=center><td>Display Glyphs</td><td><span title="Next: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+.ramadda-lheading {
+    margin-top:15px;
+}
+</style>
+
+<div class="ramadda-doc-contents" style="margin-left:20px;">
+[ht::head {Derived Data}]
+
+:navtop
+
++pre
++javascript
+function accumulateCfs(args) {
+    let state =args.state;
+    if(!state.lastDate) {
+        state.lastDate = args.record.getDate();
+        state.accum = 0;
+        return 0;
+    }
+    let seconds = (args.record.getDate().getTime()-state.lastDate.getTime())/1000;
+    state.lastDate = args.record.getDate();
+    let discharge = args.values['discharge'];
+    if(isNaN(discharge)) return NaN;
+    state.accum+=discharge*seconds;
+    return state.accum/43560;
+}
+-javascript
+
+
+{{display_linechart  fields="discharge,accumulated_volume"
+convertData="derived(field=accumulated_volume, unit=acre feet, function=return accumulateCfs(args));" 
+
+-pre
+
+[ht::foot]
+</div>
+<p>
+
+<p>&nbsp;<p>
+
+<div class="ramadda-doc-footer">
+<table width=100% cellspacing=0 cellpadding=0 >
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikimaps.html"><table><td valign=center><td><span title="Previous: Maps"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Maps</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><tr valign=center><td>Display Glyphs</td><td><span title="Next: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+</tr></table>
+</div>
+<p>
+</div>
+</body>
+</html>
+
