@@ -49,7 +49,8 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     private static String[] CSV_COMMANDS = {
 	"-tab,-header,${header}",
-	"-skip,3,-notcolumns,?skip1\\,?skip2,-change,discharge\\,gauge_height,(?i)(dis|ice|ssn|eqp|rat),0",
+	"-skip,3,-notcolumns,?skip1\\,?skip2",
+	"-change,discharge\\,gauge_height,(?i)(^$|dis|ice|ssn|eqp|rat),0",
 	"-integrate,discharge,date,second,volume",
 	//	"-debugrows,4",
 	"-scale,volume,0,0.00002295684,0",
@@ -170,7 +171,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 		command = command.replace("${header}",header);
 		command = command.replace("${format}",format);
 		properties.put("csvcommands" + (i+1),command);
-		System.err.println(command);
+		//		System.err.println(command);
 	    }
 	}
         return new UsgsGaugeRecordFile(request, entry, getPathForRecordEntry(request,entry,requestProperties), properties);
