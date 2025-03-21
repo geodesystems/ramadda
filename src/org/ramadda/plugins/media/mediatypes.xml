@@ -476,7 +476,7 @@ handler="org.ramadda.plugins.media.AnimatedGifTypeHandler">
 </type>
 
 <type name="media_3dmodel"
-      pattern="(?i).*(\.gltf|\.fbx|\.3ds|\.dae)"
+      pattern="(?i).*(\.gltf|\.glb|\.fbx|\.3ds|\.dae)"
       metadata="3dmodel_background,3dmodel_fixed_background,3dmodel_watermark,3dmodel_texture,3dmodel_normal"      
       description="3D Model" 
       handler="org.ramadda.plugins.media.ThreeDModelTypeHandler" 
