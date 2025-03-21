@@ -78,6 +78,16 @@ import java.nio.charset.StandardCharsets;
 @SuppressWarnings("unchecked")
 public class Utils extends IO {
 
+
+    public static final String TIME_UNIT_SECOND = "second";
+    public static final String TIME_UNIT_MINUTE = "minute";
+    public static final String TIME_UNIT_HOUR = "hour";
+    public static final String TIME_UNIT_DAY = "day";
+    public static final String TIME_UNIT_WEEK = "week";
+    public static final String TIME_UNIT_MONTH = "month";
+    public static final String TIME_UNIT_YEAR = "year";
+
+
     /** _more_ */
     public static final String[] LETTERS = {
         "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
@@ -2570,23 +2580,23 @@ public class Utils extends IO {
 		continue;
 	    }
 
-	    if (t.startsWith("year")) {
+	    if (t.startsWith(TIME_UNIT_YEAR)) {
 		s.append(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.YEAR) + "");
 		continue;
 	    }
-	    if (t.startsWith("month")) {
+	    if (t.startsWith(TIME_UNIT_MONTH)) {
 		s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.MONTH), 2));
 		continue;
             }
-	    if (t.startsWith("day")) {
+	    if (t.startsWith(TIME_UNIT_DAY)) {
 		s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.DAY_OF_MONTH), 2));
 		continue;
             }
-	    if (t.startsWith("hour")) {
+	    if (t.startsWith(TIME_UNIT_HOUR)) {
                 s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.HOUR_OF_DAY), 2));
 		continue;
             }
-	    if (t.startsWith("minute")) {
+	    if (t.startsWith(TIME_UNIT_MINUTE)) {
                 s.append(StringUtil.padZero(getCal(parseMacroDate(macro, parseSdf,  now, currentDate)).get(g.MINUTE), 2));
 		continue;
 	    }
@@ -3786,11 +3796,11 @@ public class Utils extends IO {
                              ? -1
                              : +1);
             String unit   = (String) toks.get(1);
-            if (unit.equals("week")) {
+            if (unit.equals(TIME_UNIT_WEEK)) {
                 cal.add(Calendar.WEEK_OF_MONTH, factor);
-            } else if (unit.equals("month")) {
+            } else if (unit.equals(TIME_UNIT_MONTH)) {
                 cal.add(Calendar.MONTH, factor);
-            } else if (unit.equals("year")) {
+            } else if (unit.equals(TIME_UNIT_YEAR)) {
                 cal.add(Calendar.YEAR, factor);
             } else if (unit.equals("century")) {
                 cal.add(Calendar.YEAR, factor * 100);
@@ -3820,19 +3830,19 @@ public class Utils extends IO {
                 }
                 long delta        = factor * Integer.parseInt(quantity);
                 long milliseconds = 0;
-                if (what.startsWith("second")) {
+                if (what.startsWith(TIME_UNIT_SECOND)) {
                     milliseconds = delta * 1000;
-                } else if (what.startsWith("minute")) {
+                } else if (what.startsWith(TIME_UNIT_MINUTE)) {
                     milliseconds = 60 * delta * 1000;
-                } else if (what.startsWith("hour")) {
+                } else if (what.startsWith(TIME_UNIT_HOUR)) {
                     milliseconds = 60 * 60 * delta * 1000;
-                } else if (what.startsWith("day")) {
+                } else if (what.startsWith(TIME_UNIT_DAY)) {
                     milliseconds = 24 * 60 * 60 * delta * 1000;
-                } else if (what.startsWith("week")) {
+                } else if (what.startsWith(TIME_UNIT_WEEK)) {
                     milliseconds = 7 * 24 * 60 * 60 * delta * 1000;
-                } else if (what.startsWith("month")) {
+                } else if (what.startsWith(TIME_UNIT_MONTH)) {
                     milliseconds = 30 * 24 * 60 * 60 * delta * 1000;
-                } else if (what.startsWith("year")) {
+                } else if (what.startsWith(TIME_UNIT_YEAR)) {
                     milliseconds = 365 * 24 * 60 * 60 * delta * 1000;
                 } else if (what.startsWith("century")) {
                     milliseconds = 100 * 365 * 24 * 60 * 60 * delta * 1000;
@@ -5835,24 +5845,24 @@ public class Utils extends IO {
 
 
     public static double millisTo(long ms,String what) {
-	if(what.startsWith("second")) return millisToSeconds(ms);
-	if(what.startsWith("minute")) return millisToMinutes(ms);	
-	if(what.startsWith("hour")) return millisToHours(ms);	
-	if(what.startsWith("day")) return millisToDays(ms);	
-	if(what.startsWith("week")) return millisToWeeks(ms);	
-	if(what.startsWith("month")) return millisToMonths(ms);	
-	if(what.startsWith("year")) return millisToYears(ms);	
+	if(what.startsWith(TIME_UNIT_SECOND)) return millisToSeconds(ms);
+	if(what.startsWith(TIME_UNIT_MINUTE)) return millisToMinutes(ms);	
+	if(what.startsWith(TIME_UNIT_HOUR)) return millisToHours(ms);	
+	if(what.startsWith(TIME_UNIT_DAY)) return millisToDays(ms);	
+	if(what.startsWith(TIME_UNIT_WEEK)) return millisToWeeks(ms);	
+	if(what.startsWith(TIME_UNIT_MONTH)) return millisToMonths(ms);	
+	if(what.startsWith(TIME_UNIT_YEAR)) return millisToYears(ms);	
 	throw new IllegalArgumentException("Unknown time unit to convert milliseconds to:" + what);
     }
 
     public static long toMillis(double time, String what) {
-	if(what.startsWith("second")) return secondsToMillis(time);
-	if(what.startsWith("minute")) return minutesToMillis(time);	
-	if(what.startsWith("hour")) return hoursToMillis(time);	
-	if(what.startsWith("day")) return daysToMillis(time);	
-	if(what.startsWith("week")) return weeksToMillis(time);	
-	if(what.startsWith("month")) return monthsToMillis(time);	
-	if(what.startsWith("year")) return yearsToMillis(time);	
+	if(what.startsWith(TIME_UNIT_SECOND)) return secondsToMillis(time);
+	if(what.startsWith(TIME_UNIT_MINUTE)) return minutesToMillis(time);	
+	if(what.startsWith(TIME_UNIT_HOUR)) return hoursToMillis(time);	
+	if(what.startsWith(TIME_UNIT_DAY)) return daysToMillis(time);	
+	if(what.startsWith(TIME_UNIT_WEEK)) return weeksToMillis(time);	
+	if(what.startsWith(TIME_UNIT_MONTH)) return monthsToMillis(time);	
+	if(what.startsWith(TIME_UNIT_YEAR)) return yearsToMillis(time);	
 	throw new IllegalArgumentException("Unknown time unit to convert time to milliseconds to:" + what);
     }
 
@@ -6113,15 +6123,15 @@ public class Utils extends IO {
      */
     public static String formatMinutes(int minutes) {
         if (minutes < 60) {
-            return minutes+" " +plural(minutes, "minute");
+            return minutes+" " +plural(minutes, TIME_UNIT_MINUTE);
         }
         int hours = minutes / 60;
         int rem   = minutes - (hours * 60);
         if (rem == 0) {
-            return hours+" " + plural(hours, "hour");
+            return hours+" " + plural(hours, TIME_UNIT_HOUR);
         }
 
-        return hours+ " "+ plural(hours, "hour") + " " + rem+" " + plural(rem, "minute");
+        return hours+ " "+ plural(hours, TIME_UNIT_HOUR) + " " + rem+" " + plural(rem, TIME_UNIT_MINUTE);
     }
 
 
