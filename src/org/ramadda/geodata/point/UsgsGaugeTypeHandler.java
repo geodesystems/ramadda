@@ -47,17 +47,34 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     private static String CSV_HEADER_UV = CSV_HEADER_IV;
 
-    private static String[] CSV_COMMANDS = {
+    private static String[] xxxCSV_COMMANDS = {
 	"-tab,-header,${header}",
 	"-skip,3,-notcolumns,?skip1\\,?skip2",
 	"-change,discharge\\,gauge_height,(?i)(^$|dis|ice|ssn|eqp|rat),0",
 	"-integrate,discharge,date,second,volume",
+	"-debugrows,10",
 	//	"-debugrows,4",
 	"-scale,volume,0,0.00002295684,0",
 	"-decimals,volume,2",
 	"-runningsum,volume,-set,sum_volume,0,total_volume",
 	"-addheader, station_id.type string   discharge.type double   gauge_height.type double total_volume.unit {acre feet} total_volume.type double   volume.type double date.format {${format}}"
     };
+
+    private static String[] CSV_COMMANDS = {
+	"-tab,-cut,1,-notcolumns,(?i).*cd",
+	"-changerow,0,0-10,.*date.*,date",
+	"-changerow,0,0-10,.*00065.*,Gauge Height",
+	"-changerow,0,0-10,.*00060.*,Discharge",
+	"-change,?discharge_comma_?gauge_height,(?i)(^$|dis|ice|ssn|eqp|rat),0,-if",
+	"-has,discharge,-integrate,?discharge,date",
+	"second,volume,-scale,volume,0",
+	"0.00002295684,0,-runningsum,volume,Total volume",
+	"-decimals,volume_comma_total_volume,2,-endif,-addheader",
+	"site_no.type string discharge.type double gauge_height.type double total_volume.unit {acre feet} total_volume.type double volume.type double date.format {${format}yyyy-MM-dd}"
+    };
+
+
+
 
     private static final String OLD_URL_FLOW =
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
