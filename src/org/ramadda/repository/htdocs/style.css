@@ -3140,6 +3140,10 @@ table.dataTable tbody td {
     margin-bottom:0.5em;    
 }    
 
+.formcontents .ramadda-form-help {
+    margin-bottom:0.0em;    
+}
+
 .ramadda-form-header {
     margin-top:4px;
     padding:4px !important;    
