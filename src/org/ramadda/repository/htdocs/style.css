@@ -4061,7 +4061,8 @@ a.btn-primary:link, a.btn-primary  {
 
 
 div.ramadda-menu-item {
-    border-bottom  :var(--basic-border);
+    /**    border-bottom  :var(--basic-border);
+*/
     padding:4px;
 }
 
