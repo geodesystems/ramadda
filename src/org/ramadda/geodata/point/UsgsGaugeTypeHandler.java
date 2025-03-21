@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point;
@@ -42,8 +42,56 @@ import java.util.HashSet;
 
 @SuppressWarnings("unchecked")
 public class UsgsGaugeTypeHandler extends PointTypeHandler {
+
+    //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
+    private static String CSV_HEADER_DV = "agency\\,station_id\\,date\\,discharge\\,skip1\\,gauge_height\\,skip2";
+
+
+    //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
+    private static String CSV_HEADER_IV = "agency\\,station_id\\,date\\,timezone\\,discharge\\,skip1\\,gauge_height\\,skip2";
+
+    private static String CSV_HEADER_UV = CSV_HEADER_IV;
+
+    
+    private static String[] CSV_COMMANDS = {
+	"-tab,-header,${header}",
+	"-skip,3,-notcolumns,?skip1\\,?skip2,-change,discharge\\,gauge_height,(?i)(dis|ice|ssn|eqp|rat),0",
+	"-integrate,discharge,date,second,volume",
+	//	"-debugrows,4",
+	"-scale,volume,0,0.00002295684,0",
+	"-decimals,volume,2",
+	"-runningsum,volume,-set,sum_volume,0,total_volume",
+	"-addheader, station_id.type string   discharge.type double   gauge_height.type double total_volume.unit {acre feet} total_volume.type double   volume.type double date.format {${format}}"
+    };
+
+
+
+    private static final String OLD_URL_FLOW =
+        "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
+
+    private static final String URL_FLOW =
+	"https://nwis.waterdata.usgs.gov/usa/nwis/uv/?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
+
+    private static final String URL_FLOW_DATE_DV =
+	"https://waterservices.usgs.gov/nwis/dv/?format=rdb&site=${station_id}&startDT=${startDate}&endDT=${endDate}&parameterCd=00060,00065";
+    private static final String URL_FLOW_DATE_IV =
+	"https://waterservices.usgs.gov/nwis/iv/?format=rdb&site=${station_id}&startDT=${startDate}&endDT=${endDate}&parameterCd=00060,00065";    
+
+    private static final String URL_PEAK =
+	"https://nwis.waterdata.usgs.gov/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";
+
+    private static final String FIELDS_IV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd HH:mm\" label=\"Date\"],timezone[label=\"Timezone\" type=string],discharge[unit=\"cfs\" label=\"Discharge\" type=double],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double]";
+
+    //agency_cd	site_no	datetime	128646_00060_00003	128646_00060_00003_cd	238320_00065_00003	238320_00065_00003_cd
+    //USGS	06447000	2024-04-01	168	A	4.71	A
+    private static final String FIELDS_DV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd\" label=\"Date\"],discharge[unit=\"cfs\" label=\"Discharge\" type=double],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double]";        
+
+
+
+
+
     public UsgsGaugeTypeHandler(Repository repository, Element node)
-            throws Exception {
+	throws Exception {
         super(repository, node);
 	/*
 	  Don't do this all the time. This is just here to fix the extra spaces in the
@@ -56,14 +104,14 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     private void doCleanup() {
 	System.err.println("USGS: cleanup");
 	/*
-	TYPE_USGS_GAUGE
-    ID (VARCHAR 200)
-    STATION_ID (VARCHAR 200)
-    PERIOD (INTEGER 10)
-    STATE (VARCHAR 200)
-    HUC (VARCHAR 200)
-    HOMEPAGE (VARCHAR 200)
-    COUNTY (VARCHAR 200)
+	  TYPE_USGS_GAUGE
+	  ID (VARCHAR 200)
+	  STATION_ID (VARCHAR 200)
+	  PERIOD (INTEGER 10)
+	  STATE (VARCHAR 200)
+	  HUC (VARCHAR 200)
+	  HOMEPAGE (VARCHAR 200)
+	  COUNTY (VARCHAR 200)
 	*/
 
 	try {
@@ -102,62 +150,43 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    
     }
 
-    //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
-    private static String CSV_HEADER_DV = "agency\\,station_id\\,date\\,discharge\\,skip1\\,gauge_height\\,skip2";
+    public static boolean useDailyValue(Request request, Entry entry) {
+	return Misc.equals(entry.getStringValue(request,"use_daily_value",""),"true");
+    }
+	
+    public static boolean isPeakFlow(Entry entry) {
+	return entry.getTypeHandler().isType("type_usgs_gauge_peak");
+    }
 
-    //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
-    private static String CSV_HEADER_IV = "agency\\,station_id\\,date\\,timezone\\,discharge\\,skip1\\,gauge_height\\,skip2";    
-
-    
-    private static String[] CSV_COMMANDS = {
-
-	"-tab,-header,${header}",
-	"-skip,3,-notcolumns,?skip1\\,?skip2,-change,discharge\\,gauge_height,(?i)(dis|ice|ssn|eqp|rat)",
-	"0,-integrate,discharge,date,second",
-	"volume,-scale,volume,0,0.00002295684",
-	"0,-decimals,volume,2,-runningsum",
-	"volume,-set,sum_volume,0,total_volume",
-	"-addheader, station_id.type string   discharge.type double   gauge_height.type double total_volume.unit {acre feet} total_volume.type double   volume.type double date.format {${format}}"
-    };
+    public static boolean useDateRange(Request request, Entry entry) {
+	return Misc.equals(entry.getStringValue(request,"use_date_range",null),"true");
+    }
 
 
-
-    private static final String OLD_URL_TEMPLATE_FLOW =
-        "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
-
-    private static final String URL_TEMPLATE_FLOW =
-	"https://nwis.waterdata.usgs.gov/usa/nwis/uv/?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
-
-    private static final String URL_TEMPLATE_FLOW_DATE_DV =
-	"https://waterservices.usgs.gov/nwis/dv/?format=rdb&site=${station_id}&startDT=${startDate}&endDT=${endDate}&parameterCd=00060,00065";
-    private static final String URL_TEMPLATE_FLOW_DATE_IV =
-	"https://waterservices.usgs.gov/nwis/iv/?format=rdb&site=${station_id}&startDT=${startDate}&endDT=${endDate}&parameterCd=00060,00065";    
-
-    private static final String URL_TEMPLATE_PEAK =
-	"https://nwis.waterdata.usgs.gov/nwis/peak?site_no=${station_id}&agency_cd=USGS&format=rdb";
-
-
-
-    //    private static final String FIELDS_IV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd HH:mm\" label=\"Date\"],timezone[label=\"Timezone\" type=string],discharge[unit=\"cfs\" label=\"Discharge\" type=double],skip1[type=string],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double],skip2[type=string]";
-    private static final String FIELDS_IV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd HH:mm\" label=\"Date\"],timezone[label=\"Timezone\" type=string],discharge[unit=\"cfs\" label=\"Discharge\" type=double],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double]";
-
-    //agency_cd	site_no	datetime	128646_00060_00003	128646_00060_00003_cd	238320_00065_00003	238320_00065_00003_cd
-    //USGS	06447000	2024-04-01	168	A	4.71	A
-    //    private static final String FIELDS_DV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd\" label=\"Date\"],discharge[unit=\"cfs\" label=\"Discharge\" type=double],skip1[type=string],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double],skip2[type=string]";
-    private static final String FIELDS_DV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd\" label=\"Date\"],discharge[unit=\"cfs\" label=\"Discharge\" type=double],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double]";        
 
 
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
                                        Hashtable requestProperties)
-            throws Exception {
+	throws Exception {
 	if(!isPeakFlow(entry))  {
+	    String header;
+	    String format= "yyyy-MM-dd HH:mm";
+	    if(!useDateRange(request,entry)) {
+		header = CSV_HEADER_UV;
+	    } else if(useDailyValue(request, entry)) {
+		header =CSV_HEADER_DV;
+		format = "yyyy-MM-dd";
+	    }  else {
+		header = CSV_HEADER_IV;
+	    }
 	    for(int i=0;i<CSV_COMMANDS.length;i++) {
 		String command = CSV_COMMANDS[i];
-		command = command.replace("${header}",useDailyValue(request, entry)?CSV_HEADER_DV:CSV_HEADER_IV);
-		command = command.replace("${format}",useDailyValue(request, entry)?"yyyy-MM-dd":"yyyy-MM-dd HH:mm");
+		command = command.replace("${header}",header);
+		command = command.replace("${format}",format);
 		properties.put("csvcommands" + (i+1),command);
+		System.err.println(command);
 	    }
 	}
         return new UsgsGaugeRecordFile(request, entry, getPathForRecordEntry(request,entry,requestProperties), properties);
@@ -169,7 +198,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	Entry entry;
 
         public UsgsGaugeRecordFile(Request request,Entry entry,IO.Path path, Hashtable properties)
-                throws IOException {
+	    throws IOException {
             super(path, properties);
 	    this.request= request;
 	    this.entry = entry;
@@ -189,26 +218,19 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     }
 
-    public static boolean useDailyValue(Request request, Entry entry) {
-	return Misc.equals(entry.getStringValue(request,"use_daily_value",""),"true");
-    }
-	
-    public static boolean isPeakFlow(Entry entry) {
-	return entry.getTypeHandler().isType("type_usgs_gauge_peak");
-    }
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
-            throws Exception {
+	throws Exception {
 	if(entry.isFile()) {
 	    return entry.getResource().getPath();
 	}
-        String url = URL_TEMPLATE_FLOW;
+        String url = URL_FLOW;
 	if(isPeakFlow(entry)) {
-	    url = URL_TEMPLATE_PEAK;
+	    url = URL_PEAK;
 	} else {
-	    if(Misc.equals(entry.getStringValue(request,"use_date_range",null),"true")) {
-		url =  useDailyValue(request, entry)?URL_TEMPLATE_FLOW_DATE_DV:URL_TEMPLATE_FLOW_DATE_IV;
+	    if(useDateRange(request,entry)) {
+		url =  useDailyValue(request, entry)?URL_FLOW_DATE_DV:URL_FLOW_DATE_IV;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date start = DateHandler.checkDate(new Date(entry.getStartDate()));
 		Date end = DateHandler.checkDate(new Date(entry.getEndDate()));		
@@ -222,7 +244,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }
 	}
 	url = url.replace("${station_id}",("" + entry.getValue(request,"station_id")).trim());
-	//	System.err.println("URL: "+ url);
+	System.err.println("URL: "+ url);
         return url;
     }
 
@@ -286,11 +308,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 		System.err.println("Error parsing contributing drainage area:" + drainageArea);
 	    }
 	}
-
-
-
-
-
 	String block = StringUtil.findPattern(html,"(?s)<div +id=\"stationTable\">(.*?)<table");
 	if(block==null) {
 	    System.err.println("Failed to read text block from:" + url);
@@ -350,13 +367,11 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }
 	}
 
-
 	if(request.get(ARG_DOWNLOAD_FILE, false)) {
 	    URL trendUrl = new URL(getPathForEntry(request,  entry, true));
 	    downloadUrlAndSaveAsEntryFile(request, entry, trendUrl,id+"_usgs.dat");
 	}
 
     }
-
 
 }
