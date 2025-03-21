@@ -5,7 +5,6 @@
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -23,7 +22,6 @@ import ucar.unidata.util.StringUtil;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
 import org.w3c.dom.*;
 
 import java.net.URL;
@@ -38,21 +36,17 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.HashSet;
 
-
-
 @SuppressWarnings("unchecked")
 public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
     private static String CSV_HEADER_DV = "agency\\,station_id\\,date\\,discharge\\,skip1\\,gauge_height\\,skip2";
 
-
     //agency_cd	site_no	datetime	tz_cd	129346_00060	129346_00060_cd	283298_00065	283298_00065_cd
     private static String CSV_HEADER_IV = "agency\\,station_id\\,date\\,timezone\\,discharge\\,skip1\\,gauge_height\\,skip2";
 
     private static String CSV_HEADER_UV = CSV_HEADER_IV;
 
-    
     private static String[] CSV_COMMANDS = {
 	"-tab,-header,${header}",
 	"-skip,3,-notcolumns,?skip1\\,?skip2,-change,discharge\\,gauge_height,(?i)(dis|ice|ssn|eqp|rat),0",
@@ -63,8 +57,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	"-runningsum,volume,-set,sum_volume,0,total_volume",
 	"-addheader, station_id.type string   discharge.type double   gauge_height.type double total_volume.unit {acre feet} total_volume.type double   volume.type double date.format {${format}}"
     };
-
-
 
     private static final String OLD_URL_FLOW =
         "https://waterdata.usgs.gov/nwis/uv?cb_00060=on&cb_00065=on&format=rdb&site_no=${station_id}&period=${period}";
@@ -86,10 +78,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     //USGS	06447000	2024-04-01	168	A	4.71	A
     private static final String FIELDS_DV="agency[label=\"Agency\" type=string],station_id[label=\"Station ID\" type=string],date[type=date format=\"yyyy-MM-dd\" label=\"Date\"],discharge[unit=\"cfs\" label=\"Discharge\" type=double],gauge_height[unit=\"feet\" label=\"Gauge Height\" type=double]";        
 
-
-
-
-
     public UsgsGaugeTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
@@ -99,7 +87,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	  Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
 	*/
     }
-
 
     private void doCleanup() {
 	System.err.println("USGS: cleanup");
@@ -147,13 +134,13 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	}catch(Exception exc) {
 	    exc.printStackTrace();
 	}
-	    
+
     }
 
     public static boolean useDailyValue(Request request, Entry entry) {
 	return Misc.equals(entry.getStringValue(request,"use_daily_value",""),"true");
     }
-	
+
     public static boolean isPeakFlow(Entry entry) {
 	return entry.getTypeHandler().isType("type_usgs_gauge_peak");
     }
@@ -161,9 +148,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
     public static boolean useDateRange(Request request, Entry entry) {
 	return Misc.equals(entry.getStringValue(request,"use_date_range",null),"true");
     }
-
-
-
 
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
@@ -192,7 +176,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
         return new UsgsGaugeRecordFile(request, entry, getPathForRecordEntry(request,entry,requestProperties), properties);
     }
 
-
     public static class UsgsGaugeRecordFile extends CsvFile {
 	Request request;
 	Entry entry;
@@ -203,7 +186,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    this.request= request;
 	    this.entry = entry;
         }
-
 
         public boolean isMissingValue(BaseRecord record, RecordField field,
                                       String s) {
@@ -217,7 +199,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
         }
 
     }
-
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
@@ -332,7 +313,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }		
 	}
 
-
 	block = block.replace("\n", " ");
 	String huc = StringUtil.findPattern(block,"(?s)Hydrologic\\s+Unit\\s+([^<]+)(<|\n)");
 	if(huc!=null) entry.setValue("huc",huc.trim());
@@ -348,15 +328,12 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	if(elev==null)
 	    elev = StringUtil.findPattern(block,"Land surface altitude:  (.*?) feet");
 
-
 	String datum = StringUtil.findPattern(block, "(?i)feet above &nbsp; *([^<\\.]+)(\\.|<)");
 	if(datum!=null) entry.setValue("gage_datum", datum);
 
 	if(lat==null || lon == null ||huc==null || county==null || state==null || elev==null) {
 	    //	    System.err.println("huc:" + huc +" county:" + county + " state:" + state +" elev:"+ elev + " lat:" + lat+" lon:" + lon +" site type:" + siteType);
 	}
-
-
 
 	if(stringDefined(elev)) {
 	    elev = elev.replace(",","").trim();
