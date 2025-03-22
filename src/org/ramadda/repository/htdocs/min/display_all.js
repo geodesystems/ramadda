@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Mar 22 05:32:43 MDT 2025";
+var build_date="RAMADDA build date: Sat Mar 22 07:04:21 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5402,7 +5402,7 @@ function DisplayThing(argId, argProperties) {
             this.displayParent = parent;
         },
         getDisplayParent: function() {
-            if (this.displayParent == null) {
+            if (this.displayParent == null && this.getLayoutManager) {
                 this.displayParent = this.getLayoutManager();
             }
             return this.displayParent;
@@ -5625,20 +5625,47 @@ function DisplayThing(argId, argProperties) {
                     return value;
 		}
 	    }
+	    
 	    if(!skipParent) {
+		let undefined = v=>{
+		    return (v===null) || (v=== void 0);
+		}
+		let parent = this.displayParent;
+		let displayManager = this.getDisplayManager?this.getDisplayManager():null;
+		let typePrefix = this.type+'.';
 		for(let i=0;i<keys.length;i++) {
 		    let key = keys[i];
+//		    debug = key=='showMenu' && this.type=='linechart';
+		    if(debug) console.log(this.type,'looking for:' + key +' has parent:',parent!=null,' has display manager:',displayManager!=null);
 		    let fromParent=null;
-		    if (this.displayParent != null) {
-			fromParent =  this.displayParent.getPropertyInner("inherit."+key, dflt,skipThis,null, srcDisplay);
-			if(debug) console.log("\tgetProperty from display parent:" + fromParent);
+		    if (parent != null) {
+			fromParent =  parent.getPropertyInner(typePrefix+key, dflt,skipThis,null, srcDisplay);
+			if(debug) console.log("\tgetProperty from display parent using type prefix:" + fromParent);
+			if (undefined(fromParent)) {
+			    fromParent =  parent.getPropertyInner('inherit.'+key, dflt,skipThis,null, srcDisplay);
+			    if(debug) console.log("\tgetProperty from display parent:" + fromParent);
+			}
+			if (undefined(fromParent)) {
+			    fromParent =  parent.getPropertyInner(key, dflt,skipThis,null, srcDisplay);
+			    if(debug) console.log("\tgetProperty from display parent using key:" + fromParent);
+			}
 		    }
-		    if (!fromParent && this.getDisplayManager) {
-			fromParent=  this.getDisplayManager().getPropertyInner("inherit."+key);
+		    if (undefined(fromParent) && displayManager) {
+			fromParent=  displayManager.getPropertyInner('inherit.'+key);
 			if(debug) console.log("\tgetProperty from display manager:" + fromParent);
+			if (undefined(fromParent)) {
+			    fromParent =  displayManager.getPropertyInner(typePrefix+key);
+			    if(debug) console.log("\tgetProperty from display parent using type prefix:" + fromParent);
+			}
+			if (undefined(fromParent)) {
+			    fromParent =  displayManager.getPropertyInner(key);
+			    if(debug) console.log("\tgetProperty from display parent using key:" + fromParent);
+			}
 		    }
-		    if(fromParent) {
-			if(debug) console.log("\tgetProperty from parent:" + fromParent);
+
+
+		    if(!undefined(fromParent)) {
+			if(debug) console.log("\tgotProperty from parent:" + fromParent);
 			return fromParent;
 		    }
 		}
@@ -6184,7 +6211,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.displayManager;
         },
         getLayoutManager: function() {
-            return this.getDisplayManager().getLayoutManager();
+	    let displayManager = this.getDisplayManager();
+	    if(!displayManager.getLayoutManager) return null;
+            return displayManager.getLayoutManager();
         },
 
 	createTagDialog: function(cbxs,  anchor,cbxChange, type,label) { 
