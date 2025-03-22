@@ -223,7 +223,7 @@ Add a URL from a THREDDS NetCDF Subset Service:
 -toggle
 +row
 +col-md-8
-<table><tr><td width=20px>{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" groupDiv="charts${wikiid}" displayInline=true}}
+<table><tr><td width=20px>{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" groupDiv="charts${wikiid}"}}
 </td><td>{{display_download showMenu=false layoutHere=true displayInline=true}}
 </td></tr></table>
 <div id="charts${wikiid}"></div>
