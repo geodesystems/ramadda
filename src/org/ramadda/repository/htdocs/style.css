@@ -6522,7 +6522,7 @@ a.wiki-link-noexist {
     margin-right:2px;
     margin-left:2px;    
     padding:4px;    
-    border-right:var(--basic-border);
+    /*border-right:var(--basic-border);*/
     font-size:90%;
 }
 
