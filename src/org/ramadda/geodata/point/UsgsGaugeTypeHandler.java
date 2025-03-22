@@ -243,7 +243,7 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	    }
 	}
 	url = url.replace("${station_id}",("" + entry.getValue(request,"station_id")).trim());
-	System.err.println("URL: "+ url);
+	//	System.err.println("URL: "+ url);
         return url;
     }
 
