@@ -1,6 +1,6 @@
 <html>
 <head>
-<title></title>
+<title>Derived Data</title>
   <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
 
 </head>
@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikimaps.html"><table><td valign=center><td><span title="Previous: Maps"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Maps</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 5.10: </a></div>
+<div class="ramadda-page-title"><a href="#">Section 5.10: Derived Data</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><tr valign=center><td>Display Glyphs</td><td><span title="Next: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -28,35 +28,183 @@ pre {
 </style>
 
 <div class="ramadda-doc-contents" style="margin-left:20px;">
-[ht::head {Derived Data}]
+
+
 
 :navtop
 
+
+You can define certain data manipulation functions and create new derived data
+in the displays.
+:heading Convert Data
+The convertData attribute of a display  takes the form of:
++pre addCopy=true
+{{display_linechart   
+convertData="func1(args); func2(args);"
+}}
+-pre
+Where convertData can be any number of ";" delimited functions.
+The available functions are:
+
+:p
+Replace:
++pre
+convertData="replace(fields=field_ids, pattern=,with=);"
+-pre
+
+TBD:
++pre addCopy=true
+convertData="roundDate(round=hour|day|week|month|year);"
+-pre
+
+TBD:
++pre addCopy=true
+filterDate(one of month=0);
+-pre
+
+TBD:
++pre addCopy=true
+groupTime(field=field to group time on);
+-pre
+
+Merge rows:
++pre addCopy=true
+mergeRows(keyFields=f1_comma_f2, operator=count|sum|average, valueFields=);
+-pre
+
+
+Add percent increase:
++pre addCopy=true
+addPercentIncrease(replaceValues=false);
+-pre
+
+Calculate # days to double:
++pre addCopy=true
+doublingRate(fields=f1\\,f2, keyFields=f3);
+-pre
+
+Add a fixed value:
++pre addCopy=true
+addFixed(id=field_name, value=3700,type=double);
+-pre
+
+TBD:
++pre addCopy=true
+accum(fields=);
+-pre
+
+TBD:
++pre addCopy=true
+mean(fields=);
+-pre
+
+Uniquify rows:
++pre addCopy=true
+unique(groupFields=f1\\,f2,valueField=);
+-pre
+
+Count uniques:
++pre addCopy=true
+count(field=,sort=true);
+-pre
+
+Unfurl:
++pre addCopy=true
+unfurl(headerField=field to get header from,uniqueField=e.g. date,valueFields=);
+-pre
+
+Rotate data:
++pre addCopy=true
+rotateData(includeFields=true,includeDate=true,flipColumns=true);
+-pre
+
+Prune where fields are all NaN:
++pre addCopy=true
+prune(fields=);
+-pre
+
+Scale and offset:
++pre addCopy=true
+accum(scale=1,offset1=0,offset2=0,unit=,fields=);
+
+where we scale the value as:
+(value + offset1) * scale + offset2
+-pre
+
+
+:heading Specifying a function
+
+You  can also specify your own function with the <i>derived</i> convertData.
+For example, lets say you have  data  with values <i>a</i> and <i>b</i> and you want to
+add a new field to the data "a+b". To do this simply specify a convertData attribute:
+
++pre
+{{display_linechart   fields="a_and_b"
+convertData="derived(field=a_and_b, function=return a+b)"}}
+-pre
+
+The derived function takes a field name and a function that is applied to each record in turn.
+:p
+
+A more complicated example is below. Here we are using a separately defined Javascript function
+to take a dataset that contains a "discharge" field which is cubic feet/second of water flow
+and calculate both a volume for each record time step as well as a running total.
+The display has a convertData attribute. This has a "fields" attribute which is a comma separated
+list of field names (note the escaped comma). If just one field you can also use a "field" attribute.
+This also has an optional "units" attribute.
+The function needs to be of the form: "return <i>function_name</i>(args)".
++pre
+{{display_linechart
+convertData="derived(fields=volume\,total_volume, units=acre feet\,acre feet, function=return calculateVolume(args));" 
+entry=76c9e5a1-2875-4a08-9b45-d106e9b1f341   fields="volume,total_volume"}}
+-pre
+
+To define the javascript you can include javascript inline with the "+javascript/-javascript" wiki tag.
+This gets called for every record.
+The args object contains:
++pre
+{
+values:{},
+recordIndex:rowIdx,
+record:record
+};
+-pre
+Where:
+<ul>
+  <li> values - is a map  holding the record values, e.g. values['a'], values['b']
+  <li> state - an object that exists 
+  <li> recordIndex 
+  <li> record - the data record
+</ul>
+
+The args object also is the same object call by call so you can store other values in it.
+Here is the calculateVolume function:
+
 +pre
 +javascript
-function accumulateCfs(args) {
-    let state =args.state;
-    if(!state.lastDate) {
-        state.lastDate = args.record.getDate();
-        state.accum = 0;
-        return 0;
+function calculateVolume(args) {
+    if(!args.lastDate) {
+    //if first record then initialize date and total_volume
+        args.lastDate = args.record.getDate();
+        args.total_volume = 0;
+        return [0,0];
     }
-    let seconds = (args.record.getDate().getTime()-state.lastDate.getTime())/1000;
-    state.lastDate = args.record.getDate();
+    //calculate the volume for this record
+    let seconds = (args.record.getDate().getTime()-args.lastDate.getTime())/1000;
+    args.lastDate = args.record.getDate();
     let discharge = args.values['discharge'];
     if(isNaN(discharge)) return NaN;
-    state.accum+=discharge*seconds;
-    return state.accum/43560;
+    let volume = discharge*seconds/43560;
+    args.total_volume+=volume;
+    return [volume,args.total_volume];
 }
+
 -javascript
 
 
-{{display_linechart  fields="discharge,accumulated_volume"
-convertData="derived(field=accumulated_volume, unit=acre feet, function=return accumulateCfs(args));" 
-
 -pre
 
-[ht::foot]
+
 </div>
 <p>
 
