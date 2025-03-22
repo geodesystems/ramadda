@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Mar 21 07:20:21 MDT 2025";
+var build_date="RAMADDA build date: Sat Mar 22 05:32:43 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -15608,7 +15608,7 @@ function makePointData(json, derived, source,url,callback) {
                     code += tmpFunc + "\n";
                     d.compiledFunction = new Function("args", code);
                     //                    console.log("Func:" + d.compiledFunction);
-                }
+		}
                 //TODO: compile the function once and call it
                 let args = [];
                 let anyNotNan = false;
@@ -16138,15 +16138,18 @@ function CsvUtil() {
 	    let fields =  pointData.getRecordFields();
 	    let newFields =  fields.slice();
 	    let newRecords  =[];
-	    let id = args["field"] || ("field_" + fields.length);
-            newFields.push(new RecordField({
-		id:id,
-		index:fields.length,
-		label:Utils.makeLabel(id),
-		type:"double",
-		chartable:true,
-		unit: args.unit
-            }));
+	    let fieldArgs = args['field'] ?? args['fields']?? ("field_" + fields.length);
+	    let units = Utils.split(args['units'] ?? args['unit']?? '',',');
+	    Utils.split(fieldArgs,',',true,true).forEach((id,idx)=>{
+		newFields.push(new RecordField({
+		    id:id,
+		    index:newFields.length,
+		    label:Utils.makeLabel(id),
+		    type:"double",
+		    chartable:true,
+		    unit: units[idx]
+		}));
+	    });
 	    let func = args["function"];
 	    if(!func) {
 		console.log("No func specified in derived");
@@ -16174,15 +16177,20 @@ function CsvUtil() {
 		newRecord.data= record.data.slice();
 		newRecord.fields =  newFields;
 		newRecords.push(newRecord);
-		let funcArgs = {values:{},state:funcState,recordIndex:rowIdx,record:record};
+		funcState.values={};
+		funcState.recordIndex = rowIdx;
+		funcState.record = record;
 		fields.map((field,idx)=>{
 		    if(field.getId()!="") {
-			funcArgs.values[field.getId()] = record.getValue(field.getIndex());
+			funcState.values[field.getId()] = record.getValue(field.getIndex());
 		    }
 		});
 		try {
-		    let value = displayDerivedEval(funcArgs);
-		    newRecord.data.push(value);
+		    let values = displayDerivedEval(funcState);
+		    if(!Array.isArray(values)) values=[values];
+		    values.forEach((value)=>{
+			newRecord.data.push(value);
+		    });
 		} catch(exc) {
 		    console.log("Error processing derived:" + exc);
 		    newRecord.data.push(NaN);
