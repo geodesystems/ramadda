@@ -3452,7 +3452,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getLogManager().logRequest(request, Result.RESPONSE_BLOCKED);
 	if(sleep)
 	    Misc.sleepSeconds(10);
-        Result r = new Result("", new StringBuilder());
+        Result r = new Result("", new StringBuilder("This IP address is blocked"));
         r.setResponseCode(Result.RESPONSE_NOTFOUND);
         return r;
     }
