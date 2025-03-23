@@ -14,6 +14,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 import org.ramadda.util.geo.GeoUtils;
 
 import ucar.unidata.util.Misc;
@@ -331,4 +332,24 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     }
 
+
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+	if(!tag.equals("usgs_gauge_charts")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+	String fields  = entry.getStringValue(request,"chart_fields","discharge,total_volume,gauge_height");
+	fields = Column.escapeComma(fields);
+	StringBuilder wiki = new StringBuilder("\n");
+	for(String field:Utils.split(fields,",",true,true)) {
+	    field = Column.unescapeComma(field);
+	    wiki.append("{{display_linechart showMenu=true fields=\"" + field+"\"}}\n");
+	}
+	return getWikiManager().wikifyEntry(request, entry,wiki.toString());
+    }
+    
 }

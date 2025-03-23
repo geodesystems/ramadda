@@ -166,6 +166,11 @@ picky=false
      <column  name="contributing_drainage_area"  label="Contrib. Drainage Area" type="double" default="0" />     
      <column  name="gage_datum"  label="Gage Datum" type="string" />     
      <column  name="homepage"  label="USGS page" type="url" canlist="false"/>
+     <column  name="chart_fields"  label="Chart Fields" type="list"
+	      showinhtml="false"
+	      help="What charts to show"
+	      suffix="e.g. discharge,total_volume,volume,gauge_height"
+	      canlist="false" default="discharge,total_volume,gauge_height" rows="3"/>     
 <wiki>
 <![CDATA[
 +section title={{name}}
@@ -176,9 +181,12 @@ picky=false
 {{property max=30000}}
 {{group showMenu=true  targetDiv="${entryid}_group" }}
 <div id="{{entryid}}_group"></div> 
+{{usgs_gauge_charts}}
++skip
 {{display type=linechart showMenu=true fields=discharge}}
 {{display type=linechart showMenu=true fields=total_volume}}
 {{display type=linechart showMenu=true fields=gauge_height}}
+-skip
 :vspace 0.5em
 :heading Table
 {{display_download showMenu=false}}
