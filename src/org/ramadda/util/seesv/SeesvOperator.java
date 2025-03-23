@@ -1,10 +1,9 @@
 /**
-   Copyright (c) 2008-2023 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.text.similarity.FuzzyScore;
@@ -15,7 +14,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 
 import org.ramadda.util.Utils;
-
 
 import org.ramadda.util.geo.GeoUtils;
 
@@ -38,127 +36,73 @@ import java.util.List;
 import java.text.SimpleDateFormat;
 import java.util.regex.*;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Jan 9, '15
- * @author         Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public class SeesvOperator {
 
-    /**  */
     public static final HtmlUtils HU = null;
 
-    /** _more_ */
     public static int OP_LT = 0;
 
-    /** _more_ */
     public static int OP_LE = 1;
 
-    /** _more_ */
     public static int OP_GT = 2;
 
-    /** _more_ */
     public static int OP_GE = 3;
 
-    /** _more_ */
     public static int OP_EQUALS = 4;
 
-    /** _more_ */
     public static int OP_NOTEQUALS = 5;
 
-    /** _more_ */
     public static int OP_DEFINED = 6;
 
-    /** _more_ */
     public static int OP_MATCH = 7;
 
-    /**  */
     public static final String OPERAND_PERCENT = "percent";
 
-    /**  */
     public static final String OPERAND_COUNT = "count";
 
-    /**  */
     public static final String OPERAND_SUM = "sum";
 
-    /**  */
     public static final String OPERAND_MIN = "min";
 
-    /**  */
     public static final String OPERAND_MAX = "max";
 
-    /**  */
     public static final String OPERAND_AVERAGE = "average";
 
     public static final String OPERAND_AVG = "avg";    
 
-
-    /** _more_ */
     protected int rowCnt = 0;
 
-    /** _more_ */
     public static final int UNDEFINED_INDEX = -1;
 
-    /** _more_ */
     public static final int INDEX_ALL = -9999;
 
-    /** _more_ */
     private int index = UNDEFINED_INDEX;
 
-    /** _more_ */
     protected List<String> sindices;
 
-    /** _more_ */
     List<Integer> indices;
 
-    /** _more_ */
     HashSet<Integer> indexMap;
 
-    /** _more_ */
     HashSet<Integer> colsSeen = new HashSet<Integer>();
 
-    /** _more_ */
     private List header;
 
-    /** _more_ */
     private LinkedHashMap<String, Integer> columnMap;
 
-    /** _more_ */
     private List<String> columnNames;
 
-
-    /** _more_ */
     private String scol;
 
-    /**  */
     Seesv seesv;
 
-
-
-    /**
-     * _more_
-     */
     public SeesvOperator() {}
 
-    /**
-     
-     *
-     * @param seesv _more_
-     */
     public SeesvOperator(Seesv seesv) {
         this.seesv = seesv;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param col _more_
-     */
     public SeesvOperator(String col) {
         sindices = new ArrayList<String>();
         if (Utils.stringDefined(col)) {
@@ -166,15 +110,9 @@ public class SeesvOperator {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     */
     public SeesvOperator(List<String> cols) {
         this.sindices = cols;
     }
-
 
     public String replaceMacros(String v, Row header, Row row) {
 	for(int j=0;j<row.size();j++) {
@@ -188,11 +126,6 @@ public class SeesvOperator {
 	return v;
     }
 
-    /**
-     *
-     * @param name _more_
-     * @return _more_
-     */
     public String getProperty(String name) {
         if (seesv != null) {
             return seesv.getProperty(name);
@@ -201,14 +134,6 @@ public class SeesvOperator {
         return null;
     }
 
-
-
-    /**
-     *
-     * @param obj _more_
-     *
-     * @return _more_
-     */
     public String makeID(Object obj) {
         String colId = Utils.makeLabel(obj.toString());
         colId = colId.toLowerCase().replaceAll(" ",
@@ -219,26 +144,12 @@ public class SeesvOperator {
         return colId;
     }
 
-
-
-    /**  */
     private JaroWinklerDistance jaro;
 
-    /**  */
     private Soundex soundex;
 
-    /**  */
     private FuzzyScore fuzzy;
 
-    /**
-     *
-     * @param s1 _more_
-     * @param s2 _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public int similarScore(String s1, String s2) throws Exception {
         int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s1, s2);
         if (true) {
@@ -259,20 +170,10 @@ public class SeesvOperator {
         return max;
     }
 
-
-    /**
-     *
-     * @param i _more_
-     */
     public void setIndices(List<Integer> i) {
         indices = i;
     }
 
-
-    /**
-     *
-     * @return _more_
-     */
     public boolean hasColumns() {
         return (sindices != null) && (sindices.size() > 0);
     }
@@ -288,28 +189,15 @@ public class SeesvOperator {
 	}
     }
 
-
-    /** _more_ */
     private Hashtable<String, Integer> debugCounts = new Hashtable<String,
 	Integer>();
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void debug(String msg) {
         debug(msg, null);
     }
 
     public boolean debug = false;
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     * @param extra _more_
-     */
     public void debug(String msg, Object extra) {
         if (!debug) {
             return;
@@ -331,26 +219,10 @@ public class SeesvOperator {
                                             : ""));
     }
 
-
-    /**
-     * Parse the string as a double
-     *
-     * @param s the string
-     *
-     * @return the double
-     */
     public double parse(String s) {
 	return parse(null, s);
     }
 
-    /**
-     * Parse the string as a double
-     * Use the row (if non-null) to add context to the error message
-     *
-     * @param s The string to parse
-     *
-     * @return double value
-     */
     public double parse(Row row, String s) {
         s = s.trim().replaceAll(",", "");
         if (s.equals("")) {
@@ -367,15 +239,6 @@ public class SeesvOperator {
 	}
     }    
 
-
-
-    /**
-     * _more_
-     *
-     * @param reader _more_
-     * @param row _more_
-     * @param values _more_
-     */
     public void add(TextReader reader, Row row, Object... values) {
         if (reader.getPositionStart()) {
             for (int i = values.length - 1; i >= 0; i--) {
@@ -388,25 +251,8 @@ public class SeesvOperator {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @throws Exception _more_
-     */
     public void processFirstRow(TextReader ctx, Row row) throws Exception {}
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDescription() {
         String className = getClass().getName();
 
@@ -414,62 +260,26 @@ public class SeesvOperator {
                                  "").replaceAll("^[^\\$]+\\$", "");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param row _more_
-     */
     public void setHeaderIfNeeded(Row row) {
         if (header == null) {
             setHeader(row.getValues());
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param header _more_
-     */
     public void setHeader(List header) {
         List tmp = new ArrayList();
         tmp.addAll(header);
         this.header = tmp;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasHeader() {
         return header != null;
     }
 
-
-    /**
-     *
-     *
-     * @param ctx _more_
-     * @param msg _more_
-     *
-     * @throws RuntimeException _more_
-     */
     public void fatal(TextReader ctx, String msg) throws RuntimeException {
         throw new SeesvException(this,msg);
     }
 
-    /**
-     *
-     *
-     * @param ctx _more_
-     * @param msg _more_
-     * @param exc _more_
-     *
-     * @throws RuntimeException _more_
-     */
     public void fatal(TextReader ctx, String msg, Exception exc)
 	throws RuntimeException {
         Throwable inner = LogUtil.getInnerException(exc);
@@ -478,14 +288,6 @@ public class SeesvOperator {
                                    + getClass().getSimpleName(), inner);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     *
-     * @return _more_
-     */
     public int getIndex(TextReader ctx,boolean...missingOk) {	
         if (index != UNDEFINED_INDEX) {
             return index;
@@ -504,13 +306,6 @@ public class SeesvOperator {
         return index;
     }
 
-
-    /**
-     *
-     * @param v _more_
-     *
-     * @return _more_
-     */
     public boolean getBoolean(String v) {
         if (v == null) {
             return false;
@@ -533,15 +328,6 @@ public class SeesvOperator {
         return false;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static int getOperator(String s) {
         s = s.trim();
         if (s.equals("<")) {
@@ -569,7 +355,6 @@ public class SeesvOperator {
         throw new RuntimeException("unknown operator:" + s);
     }
 
-
     public boolean  checkOperator(int op, double v1,double v2) {
 	if (op == OP_LT) {
 	    return v1<v2;
@@ -595,19 +380,8 @@ public class SeesvOperator {
 	return true;
     }
 
-
-    /** _more_ */
     public static final String[] FILE_PREFIXES = { "/org/ramadda/repository/resources/geo" };
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static InputStream getInputStream(String filename)
 	throws Exception {
         try {
@@ -628,14 +402,6 @@ public class SeesvOperator {
         throw new RuntimeException("Could not open file:" + filename);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public int xgetColumnIndex(String s) {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(null, indices, s, null);
@@ -643,23 +409,10 @@ public class SeesvOperator {
         return indices.get(0);
     }
 
-    /**
-     *
-     * @param tok _more_
-     *
-     * @return _more_
-     */
     private boolean isLastIndex(String tok) {
         return tok.startsWith("_last") && tok.endsWith("_");
     }
 
-    /**
-     *
-     * @param tok _more_
-     * @param last _more_
-     *
-     * @return _more_
-     */
     private int getLastIndex(String tok, int last) {
         if (tok.equals("_last_")) {
             return last;
@@ -677,7 +430,6 @@ public class SeesvOperator {
 	if(tok.startsWith(">")) {
 	    int index = Integer.parseInt(tok.substring(1))+1;
 	    return columnNames.size()-index;
-
 
 	}
         if (iv == null) {
@@ -704,9 +456,6 @@ public class SeesvOperator {
 	    : -1;
     }
 
-
-    /**
-     */
     private void checkColumns() {
         if (columnNames == null) {
             columnNames = new ArrayList<String>();
@@ -730,18 +479,6 @@ public class SeesvOperator {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param ctx _more_
-     * @param indices _more_
-     * @param s _more_
-     * @param seen _more_
-     *
-     */
     public void getColumnIndex(TextReader ctx, List<Integer> indices,
                                String s, HashSet seen) {
 
@@ -827,7 +564,6 @@ public class SeesvOperator {
 
                     return;
                 }
-
 
 		//check for regexp
                 if (tok.indexOf("*")>=0 || tok.indexOf("+")>=0) {
@@ -930,14 +666,6 @@ public class SeesvOperator {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     *
-     * @return _more_
-     */
     public List<Integer> getIndices(TextReader ctx) {
         if (indices == null) {
             indices = getIndices(ctx, sindices);
@@ -946,15 +674,6 @@ public class SeesvOperator {
         return indices;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param ctx _more_
-     * @param cols _more_
-     *
-     * @return _more_
-     */
     public List<Integer> getIndices(TextReader ctx, List<String> cols) {
 	if(debug)
 	    debug("getIndices:" + cols);
@@ -972,16 +691,6 @@ public class SeesvOperator {
         return indices;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param idx _more_
-     *
-     * @return _more_
-     */
     public int getIndex(TextReader ctx, String idx) {
         List<Integer> indices = new ArrayList<Integer>();
         getColumnIndex(ctx, indices, idx, new HashSet());
@@ -994,15 +703,6 @@ public class SeesvOperator {
         return indices.get(0);
     }
 
-
-
-    /**
-     *
-     * @param indices _more_
-     * @param row _more_
-     *
-     * @return _more_
-     */
     public Row removeColumns(List<Integer> indices, Row row) {
         if (indices.size() == 0) {
             debug("processRow- no indices");
@@ -1019,31 +719,12 @@ public class SeesvOperator {
         return new Row(result);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     */
     public Row filterValues(TextReader ctx, Row row) {
         row.setValues(filterValues(ctx, row.getValues()));
 
         return row;
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param values _more_
-     *
-     * @return _more_
-     */
     public List filterValues(TextReader ctx, List values) {
         List             newValues = new ArrayList();
         HashSet<Integer> indexMap  = getIndexMap(ctx);
@@ -1056,14 +737,6 @@ public class SeesvOperator {
         return newValues;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     *
-     * @return _more_
-     */
     public HashSet<Integer> getIndexMap(TextReader ctx) {
         if (indexMap == null) {
             List<Integer> indices = getIndices(ctx);
@@ -1076,16 +749,6 @@ public class SeesvOperator {
         return indexMap;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param rows _more_
-     * @param indices _more_
-     * @param keys _more_
-     *
-     * @return _more_
-     */
     public Hashtable<Object, List<Row>> groupRows(List<Row> rows,
 						  List<Integer> indices, List keys) {
         Hashtable<Object, List<Row>> rowMap = new Hashtable<Object,
@@ -1112,27 +775,14 @@ public class SeesvOperator {
         return rowMap;
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...    
-     */
     public static class Tuple {
 
-	/**  */
 	int count = 0;
 
-	/**  */
 	double min = 0;
 
-	/**  */
 	double max = 0;
 
-	/**  */
 	double sum = 0;
 
 	int nanCount =0;
@@ -1165,18 +815,10 @@ public class SeesvOperator {
 	    sum+=v;
 	}
 
-
-
-	/**
-	 *
-	 * @return _more_
-	 */
 	public String toString() {
 	    return "cnt:" + count + " min:" + min + " max:" + max
 		+ " sum:" + sum;
 	}
     }
-
-
 
 }

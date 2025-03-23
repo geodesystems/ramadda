@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.apache.commons.codec.language.Soundex;
 import org.apache.commons.lang3.text.StrTokenizer;
@@ -13,8 +12,6 @@ import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import org.ramadda.util.HtmlUtils;
-
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
@@ -53,140 +50,52 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.*;
 
-
-/**
- *
- * @author Jeff McWhirter
- */
-
 @SuppressWarnings("unchecked")
 public abstract class Processor extends SeesvOperator {
-
     //These are copies from /org.ramadda.data.record.RecordField;
-
-    /** _more_ */
     public static final String TYPE_STRING = "string";
-
-    /** _more_ */
     public static final String TYPE_URL = "url";
-
-    /** _more_ */
     public static final String TYPE_ENUMERATION = "enumeration";
-
-    /** _more_ */
     public static final String TYPE_IMAGE = "image";
-
-    /** _more_ */
     public static final String TYPE_DATE = "date";
-
-
-    /** _more_ */
     public static final String TYPE_DOUBLE = "double";
-
-    /** _more_ */
     public static final String TYPE_INT = "int";
-
-
 
     /** the processor chain */
     private Processor nextProcessor;
 
-
-    /**
-     * _more_
-     */
     public Processor() {}
 
-
-
-
-
-
-    /**
-     
-     *
-     * @param seesv _more_
-     */
     public Processor(Seesv seesv) {
         super(seesv);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param col _more_
-     */
     public Processor(String col) {
         super(col);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param cols _more_
-     */
     public Processor(List<String> cols) {
         super(cols);
     }
 
-
-    /**
-     *  Set the NextProcessor property.
-     *
-     *  @param value The new value for NextProcessor
-     */
     public void setNextProcessor(Processor value) {
         nextProcessor = value;
     }
 
-    /**
-     *  Get the NextProcessor property.
-     *
-     *  @return The NextProcessor
-     */
     public Processor getNextProcessor() {
         return nextProcessor;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean buffersRows() {
         return false;
     }
 
-    /**
-     *     _more_
-     *
-     *     @param name _more_
-     *
-     *     @return _more_
-     */
     public static String cleanName(String name) {
-        name = name.toLowerCase().replaceAll("\\s+", "_").replaceAll(",",
-                                             "_");
+        name = name.toLowerCase().replaceAll("\\s+", "_").replaceAll(",", "_");
         name = name.replaceAll("__+", "_");
-
         return name;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param sb _more_
-     * @param index _more_
-     * @param seen _more_
-     * @param rows _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addFieldDescriptor(String name, Appendable sb,
                                           int index, HashSet<String> seen,
                                           List<Row> rows)
@@ -274,21 +183,10 @@ public abstract class Processor extends SeesvOperator {
         sb.append("  ]");
     }
 
-    /**  */
     private Row extraRow;
 
-    /**  */
     private boolean consumeColumns = false;
 
-    /**
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Row handleRow(TextReader ctx, Row row) throws Exception {
         setHeaderIfNeeded(row);
 	row = processRow(ctx, row);
@@ -299,39 +197,14 @@ public abstract class Processor extends SeesvOperator {
         return row;
     }
 
-
-    /**
-     *
-     * @param b _more_
-     */
     public void setConsumeColumns(boolean b) {
         consumeColumns = b;
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Row processRow(TextReader ctx, Row row) throws Exception {
         return row;
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Row> processRowReturnList(TextReader ctx, Row row)
             throws Exception {
         List<Row> l = new ArrayList<Row>();
@@ -343,12 +216,6 @@ public abstract class Processor extends SeesvOperator {
         return l;
     }
 
-    /**
-     *
-     * @param ctx _more_
-     *
-     * @throws Exception _more_
-     */
     public void finish(TextReader ctx) throws Exception {
         if (nextProcessor != null) {
             nextProcessor.finish(ctx);
@@ -366,12 +233,6 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     */
     public  void reset(boolean force) {
 	if(force) {
 	    rowCnt=0;
@@ -381,36 +242,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Expand extends Processor {
 
-        /**  */
         private Seesv seesv;
 
-        /**  */
         private List<String> args;
 
-        /**  */
         private TextReader applyCtx;
 
-
-        /**
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         * @param cols _more_
-         * @param args _more_
-         */
         public Expand(Seesv seesv, TextReader ctx, List<String> cols,
                       List<String> args) {
             super(cols);
@@ -418,11 +257,6 @@ public abstract class Processor extends SeesvOperator {
             this.args    = args;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         */
         private void makeCommands(TextReader ctx, Row row) {
             boolean debug = false;
             //      debug =true;
@@ -477,11 +311,6 @@ public abstract class Processor extends SeesvOperator {
 
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -498,35 +327,16 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...
-     */
     public static class Propper extends Processor {
 
-        /** _more_ */
         public static final int FLAG_NONE = -1;
 
-        /** _more_ */
         public static final int FLAG_POSITION = 0;
 
-        /** _more_ */
         private int flag;
 
-        /** _more_ */
         private boolean value;
 
-        /**
-         * _more_
-         *
-         * @param flag _more_
-         * @param value _more_
-         */
         public Propper(String flag, String value) {
             this.flag = flag.equals("position")
                         ? FLAG_POSITION
@@ -536,17 +346,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (flag == FLAG_POSITION) {
@@ -564,8 +363,6 @@ public abstract class Processor extends SeesvOperator {
 
         public UnitRow() {
 	}
-
-
 
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
@@ -589,26 +386,10 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...
-     */
     public static class UniqueHeader extends Processor {
 
-        /**
-         * _more_
-         *
-         * @param flag _more_
-         * @param value _more_
-         */
         public UniqueHeader(TextReader ctx) {
         }
-
 
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
@@ -620,37 +401,19 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sun, Apr 5, '20
-     * @author         Enter your name here...
-     */
     public static class MathStats extends Processor {
 
 	List<Stat> stats = new ArrayList<Stat>();
 
 	Row header;
 
-        /**
-         * _more_
-         *
-         * @param flag _more_
-         * @param value _more_
-         */
         public MathStats() {
         }
-
 
 	public static class Stat {
 	    double min= Double.NaN;
 	    double max =Double.NaN;	    
-	    
+
 	    public void check(double v) {
 		if(Double.isNaN(min)) min = v;
 		else min = Math.min(min, v);
@@ -660,17 +423,6 @@ public abstract class Processor extends SeesvOperator {
 
 	}
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    if(header == null) {
@@ -689,7 +441,6 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-
 	public void finish(TextReader ctx) throws Exception {
 	    for(int i=0;i<header.size();i++) {
 		Stat stat = stats.get(i);
@@ -699,37 +450,17 @@ public abstract class Processor extends SeesvOperator {
 	    }
 	}
 
-
     }
 
     public static class JsonValue extends Processor {
 
 	String path;
 
-        /**
-         * _more_
-         *
-         * @param flag _more_
-         * @param value _more_
-         */
-	
         public JsonValue(List<String> cols, String path) {
             super(cols);
 	    this.path = path;
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    if(rowCnt++==0) return row;
@@ -749,33 +480,14 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-    
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Dissector extends Processor {
 
-        /**  */
         Pattern pattern;
 
-        /**  */
         List<String> patternNames;
 
-        /**  */
         int index;
 
-        /**
-         *
-         *
-         * @param col _more_
-         * @param pattern _more_
-         */
         public Dissector(String col, String pattern) {
             super(col);
 	    pattern = pattern.replace("_quote_","\"");
@@ -784,13 +496,6 @@ public abstract class Processor extends SeesvOperator {
             this.pattern = Pattern.compile(pattern);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -824,24 +529,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
     public static class Scraper extends Processor {
 
-        /**  */
         Pattern pattern;
 
-        /**  */
         List<String> names;
 
-        /**  */
         int index;
 
-        /**
-         *
-         *
-         * @param col _more_
-         * @param pattern _more_
-         */
         public Scraper(String col, String names,String pattern) {
             super(col);
 	    pattern = pattern.replace("_quote_","\"");
@@ -849,13 +544,6 @@ public abstract class Processor extends SeesvOperator {
             this.pattern = Pattern.compile(pattern);
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -877,40 +565,18 @@ public abstract class Processor extends SeesvOperator {
 		    row.add("");
 	    }
 
-
             return row;
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Downloader extends Processor {
 
-        /**  */
         private Seesv seesv;
 
-        /**  */
         private String suffix;
 
-        /**  */
         private int index;
 
-        /**
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param seesv _more_
-         * @param col _more_
-         * @param suffix _more_
-         */
         public Downloader(TextReader ctx, Seesv seesv, String col,
                           String suffix) {
             super(col);
@@ -918,13 +584,6 @@ public abstract class Processor extends SeesvOperator {
             this.suffix  = suffix;
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -967,43 +626,18 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class KeyValue extends Processor {
 
-        /**  */
         private List<String> keys;
 
-        /**  */
         private int index = -1;
 
-        /**  */
         private String extraId;
 
-        /**
-         *
-         *
-         * @param col _more_
-         */
         public KeyValue(String col) {
             super(col);
         }
 
-
-        /**
-         * @param ctx _more
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (Misc.equals(row.getId(), extraId)) {
@@ -1053,46 +687,20 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class First extends Processor {
 
-        /**  */
         private int index = -1;
 
-        /**  */
         private String name;
 
-        /**  */
         private int number;
 
-        /**
-         *
-         *
-         * @param col _more_
-         * @param name _more_
-         * @param num _more_
-         */
         public First(String col, String name, String num) {
             super(col);
             this.name = name;
             number    = Integer.parseInt(num);
         }
 
-
-        /**
-         * @param ctx _more
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -1114,46 +722,20 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Last extends Processor {
 
-        /**  */
         private int index = -1;
 
-        /**  */
         private String name;
 
-        /**  */
         private int number;
 
-        /**
-         *
-         *
-         * @param col _more_
-         * @param name _more_
-         * @param num _more_
-         */
         public Last(String col, String name, String num) {
             super(col);
             this.name = name;
             number    = Integer.parseInt(num);
         }
 
-
-        /**
-         * @param ctx _more
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -1176,36 +758,16 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Between extends Processor {
 
-        /**  */
         private int index = -1;
 
-        /**  */
         private String name;
 
-        /**  */
         private int start;
 
-        /**  */
         private int end;
 
-        /**
-         *
-         *
-         * @param col _more_
-         * @param name _more_
-         * @param start _more_
-         * @param end _more_
-         */
         public Between(String col, String name, String start, String end) {
             super(col);
             this.name  = name;
@@ -1213,15 +775,6 @@ public abstract class Processor extends SeesvOperator {
             this.end   = Integer.parseInt(end);
         }
 
-
-        /**
-         * @param ctx _more
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -1247,40 +800,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class FromHeading extends Processor {
 
-        /**  */
         private List<String> names;
 
-        /**  */
         private List<String> values;
 
-        /**  */
         Pattern pattern;
 
-
-
-        /**
-         *
-         *
-         * @param col _more_
-         * @param name _more_
-         * @param start _more_
-         * @param end _more_
-         *
-         * @param cols _more_
-         * @param names _more_
-         * @param pattern _more_
-         */
         public FromHeading(List<String> cols, String names, String pattern) {
             super(cols);
             this.names   = Utils.split(names, ",");
@@ -1291,15 +818,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**
-         * @param ctx _more
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             String        corpus;
@@ -1343,37 +861,10 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Pass extends Processor {
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public Pass(TextReader ctx) {}
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             System.err.println("#" + (rowCnt++) + " row:" + row);
@@ -1382,43 +873,21 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class Progress extends Processor {
 
-        /**  */
         int every;
 
 	String prefix;
-	
-        /**  */
+
         int printCnt = 0;
 
 	long t1;
-	
-        /**
-         * _more_
-         *
-         * @param every _more_
-         */
+
         public Progress(String prefix,int every) {
 	    this.prefix = prefix;
             this.every = every;
         }
 
-
-        /**
-         *
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
@@ -1427,17 +896,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    if(rowCnt++==0) {
@@ -1459,41 +917,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class DebugRows extends Processor {
 
-        /**  */
         int rows;
 
-        /**
-         * _more_
-         *
-         * @param every _more_
-         *
-         * @param rows _more_
-         */
         public DebugRows(int rows) {
             this.rows = rows;
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             rowCnt++;
@@ -1505,35 +936,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 19, '19
-     * @author         Enter your name here...
-     */
     public static class If extends Processor {
 
-        /**  */
         Seesv seesv;
 
-        /**  */
         TextReader predicate;
 
-        /**  */
         TextReader ctx;
 
-        /**
-         * _more_
-         *
-         *
-         * @param dummy _more_
-         * @param seesv _more_
-         * @param predicate _more_
-         * @param ctx _more_
-         */
         public If(TextReader dummy, Seesv seesv, TextReader predicate,
                   TextReader ctx) {
             this.seesv   = seesv;
@@ -1541,28 +951,11 @@ public abstract class Processor extends SeesvOperator {
             this.ctx       = ctx;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             Row tmp = predicate.processRow(seesv, row);
@@ -1584,37 +977,12 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Verifier extends Processor {
 
-        /** _more_ */
         private int cnt = -1;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public Verifier(TextReader ctx) {}
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (cnt == -1) {
@@ -1631,43 +999,20 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
     public static class Ext extends Processor {
 
-        /**  */
         Process process;
 
-        /**  */
         OutputStream outputStream;
 
-        /**  */
         InputStream inputStream;
 
-        /**  */
         PrintWriter pw;
 
-        /**  */
         BufferedReader reader;
 
-        /**  */
         StringTokenizer tokenizer;
 
-
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         * @param id _more_
-         * @param args _more_
-         */
         public Ext(Seesv seesv, TextReader ctx, String id,
                    List<String> args) {
 
@@ -1696,18 +1041,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             String output = Utils.columnsToString(row.getValues(), ",");
@@ -1731,12 +1064,6 @@ public abstract class Processor extends SeesvOperator {
             return r;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
             process.destroy();
@@ -1744,30 +1071,12 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
     public static class Exec extends Processor {
 
 	Row header;
 
-
 	List<String> commands;
 
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         * @param id _more_
-         * @param args _more_
-         */
         public Exec(Seesv seesv, TextReader ctx, String id,
                    List<String> args) {
 
@@ -1783,20 +1092,6 @@ public abstract class Processor extends SeesvOperator {
             commands.addAll(args);
         }
 
-
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    List<String> args = new ArrayList<String>(commands);
@@ -1825,62 +1120,33 @@ public abstract class Processor extends SeesvOperator {
             }
 	}
 
-
     }
 
-    
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jul 8, '15
-     * @author         Enter your name here...
-     */
     public static class Printer extends Processor {
 
-        /** _more_ */
         private String template;
 
-        /** _more_ */
         private String prefix;
 
 	private boolean haveWrittenPrefix = false;
 
-        /** _more_ */
         private String suffix;
 
-        /** _more_ */
         private String delimiter=null;
 
 	private String columnDelimiter = ",";
 
-        /** _more_ */
         private boolean addPointHeader = false;
 
-        /** _more_ */
         private boolean trim = false;
 
-        /**  */
         private String commentChar;
 
-        /**  */
         private Row headerRow;
 
         public Printer() {
 	}
 
-        /**
-         * ctor
-         *
-         *
-         * @param prefix _more_
-         * @param template _more_
-         * @param delimiter _more_
-         * @param suffix _more_
-         */
         public Printer(String prefix, String template, String delimiter,
                        String suffix) {
             this.prefix   = initDelimiter(prefix);
@@ -1889,34 +1155,15 @@ public abstract class Processor extends SeesvOperator {
             this.suffix = initDelimiter(suffix);
         }
 
-        /**
-         * _more_
-         *
-         * @param template _more_
-         * @param trim _more_
-         */
         public Printer(String template, boolean trim) {
             this.template = template;
             this.trim     = trim;
         }
 
-        /**
-         * _more_
-         *
-         * @param addHeader _more_
-         */
         public Printer(boolean addHeader) {
             this.addPointHeader = addHeader;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param addHeader _more_
-         * @param trim _more_
-         * @param delimiter _more_
-         */
         public Printer(boolean addHeader, boolean trim, String columnDelimiter) {
             this(addHeader);
             this.columnDelimiter = initDelimiter(columnDelimiter);
@@ -1932,11 +1179,6 @@ public abstract class Processor extends SeesvOperator {
 	    }
         }
 
-
-        /**
-         *
-         * @param delimiter _more_
-         */
         private String initDelimiter(String s) {
             if (s == null) {return s;}
 	    if (s.equals("tab")) {
@@ -1946,16 +1188,6 @@ public abstract class Processor extends SeesvOperator {
 	    return s;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    //            debug("processRow");
@@ -1968,21 +1200,11 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param writer _more_
-         * @param header _more_
-         * @param exValues _more_
-         *
-         * @throws Exception _more_
-         */
         public void handleHeaderRow(Appendable writer, Row header,
                                      List exValues)
                 throws Exception {
 	    //	    System.err.println("\theader row:" + header);
-	    
+
             StringBuilder   sb     = new StringBuilder();
             HashSet<String> seen   = new HashSet<String>();
             List            values = header.getValues();
@@ -2002,14 +1224,6 @@ public abstract class Processor extends SeesvOperator {
             writer.append("\n");
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @throws Exception _more_
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             debug("finish");
@@ -2021,17 +1235,6 @@ public abstract class Processor extends SeesvOperator {
             super.finish(ctx);
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param writer _more_
-         * @param row _more_
-         *
-         * @throws Exception _more_
-         */
         public void handleRow(TextReader ctx, PrintWriter writer, Row row)
                 throws Exception {
 	    handleRow(ctx,writer,row,true);
@@ -2070,7 +1273,7 @@ public abstract class Processor extends SeesvOperator {
 		ctxPrefix = ctxPrefix.replaceAll("_bom_","\ufeff").replaceAll("_nl_","\n");
 		writer.append(ctxPrefix);
 	    }
-     
+
             List    values        = row.getValues();
             boolean escapeColumns = true;
             if (theTemplate == null) {
@@ -2123,7 +1326,6 @@ public abstract class Processor extends SeesvOperator {
                 }
             }
 
-
             if (theTemplate == null) {
 		writer.append("\n");
 		if(firstRow) {
@@ -2145,19 +1347,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param writer _more_
-         * @param rows _more_
-         *
-         * @throws Exception _more_
-         */
         public void writeCsv(TextReader ctx, PrintWriter writer,
                              List<Row> rows)
                 throws Exception {
@@ -2189,18 +1378,13 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-
     public static class Subd extends Printer {
 
 	private  List<Integer> indices;
 	private List<String> cols;
 
-        /**  */
         private Seesv seesv;
 
-        /**  */
         private String output;
 
 	private List<Range> ranges;
@@ -2208,19 +1392,10 @@ public abstract class Processor extends SeesvOperator {
 	private  int[] rangeIndices;
 	private Row header;
 
-
-
 	private Hashtable<String,PrintWriter> writers = new Hashtable<String,PrintWriter>();
 
 	private List<PrintWriter> pws = new ArrayList<PrintWriter>();
 
-        /**
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         * @param cols _more_
-         * @param args _more_
-         */
         public Subd(Seesv seesv,  List<String> cols, String rangeDef, String output) {
 	    super(false,false,",");
 	    this.cols =cols;
@@ -2244,7 +1419,6 @@ public abstract class Processor extends SeesvOperator {
 	    double min;
 	    double max;
 	    int steps;
-	    
 
 	    public Range(double min, double max, int steps) {
 		this.min = min;
@@ -2273,18 +1447,12 @@ public abstract class Processor extends SeesvOperator {
 	    }
 	}
 
-
 	private String fmt(double d) {
 	    if(d==(int)d) return ""+(int)d;
 	    return ""+d;
 
 	}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -2345,15 +1513,11 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-
     public static class Chunker extends Printer {
 
 	private Seesv seesv;
 	private int numRows;
 
-        /** _more_ */
         private String template;
 
 	private int count;
@@ -2364,8 +1528,6 @@ public abstract class Processor extends SeesvOperator {
 
 	PrintWriter pw;
 
-        /**
-         */
         public Chunker(Seesv seesv, String template,int numRows) {
             this.seesv = seesv;
             this.template = template;
@@ -2378,11 +1540,6 @@ public abstract class Processor extends SeesvOperator {
 	    }
 	}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    try {
@@ -2416,38 +1573,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
     public static class Cols extends Processor {
 
-        /**  */
         private int width;
 
-        /**
-         * ctor
-         *
-         * @param width _more_
-         */
         public Cols(int width) {
             this.width = width;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             for (int i = 0; i < row.size(); i++) {
@@ -2463,43 +1596,18 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-
     }
 
-
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Jan 30, '18
-     * @author         Enter your name here...
-     */
     public static class DbXml extends Processor {
 
-        /** _more_ */
         private Dictionary<String, String> props;
 
-        /**  */
         private List<String[]> patternProps = new ArrayList<String[]>();
 
-        /** _more_ */
         private Row row1;
 
-        /** _more_ */
         private String tableId;
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param props _more_
-         */
         public DbXml(TextReader ctx, Dictionary<String, String> props) {
             this.props = props;
             for (Enumeration k = props.keys(); k.hasMoreElements(); ) {
@@ -2510,12 +1618,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-        /**
-         *
-         * @param patternString _more_
-         *
-         * @return _more_
-         */
         private static boolean containsRegExp(String patternString) {
             return ((patternString.indexOf('^') >= 0)
                     || (patternString.indexOf('*') >= 0)
@@ -2528,12 +1630,6 @@ public abstract class Processor extends SeesvOperator {
                             >= 0)) || (patternString.indexOf('+') >= 0));
         }
 
-
-        /**
-         * Get the TableId property.
-         *
-         * @return The TableId
-         */
         public String getTableId() {
             return tableId;
         }
@@ -2544,14 +1640,6 @@ public abstract class Processor extends SeesvOperator {
 	    return v.equals("true");
 	}
 
-        /**
-         *
-         * @param colId _more_
-         * @param prop _more_
-         * @param dflt _more_
-         *
-         * @return _more_
-         */
         public String getDbProp(String colId, String prop, String dflt) {
             String v = Seesv.getDbProp(props, colId, prop, (String) null);
             if (v != null) {
@@ -2569,17 +1657,6 @@ public abstract class Processor extends SeesvOperator {
             return dflt;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param reader _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader reader, Row row) throws Exception {
 
@@ -2622,7 +1699,6 @@ public abstract class Processor extends SeesvOperator {
                 writer.println("<tables>");
             }
 
-
             String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
             if (labels.length() > 0) {
                 tableAttrs += XmlUtil.attrs("labelColumns", labels);
@@ -2639,10 +1715,6 @@ public abstract class Processor extends SeesvOperator {
                     tableAttrs += XmlUtil.attr(prop, v);
                 }
             }
-
-
-
-
 
             writer.println(XmlUtil.openTag("table", tableAttrs));
 
@@ -2690,8 +1762,6 @@ public abstract class Processor extends SeesvOperator {
                 }
                 writer.println(include);
             }
-
-
 
             List<Row> samples = new ArrayList<Row>();
             samples.add(row);
@@ -2745,10 +1815,8 @@ public abstract class Processor extends SeesvOperator {
                 colId = getDbProp(colId, "id", colId);
                 label = Utils.makeLabel(colId);
 
-
                 String suffix = getDbProp(colId, "suffix", (String) null);
                 String help   = getDbProp(colId, "help", (String) null);
-
 
                 label = getDbProp(colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
@@ -2756,7 +1824,6 @@ public abstract class Processor extends SeesvOperator {
                 if (getDbProp(colId, "skip", "false").equals("true")) {
                     continue;
                 }
-
 
                 String  type     = getDbProp("table", "type", null);
 		if(type==null) {
@@ -2861,7 +1928,6 @@ public abstract class Processor extends SeesvOperator {
                     }
                 }
 
-
 		boolean doPolygonSearch ="true".equals(getDbProp(colId, "dopolygonsearch","false"));
 		if(doPolygonSearch)
 		    attrs.append(XmlUtil.attrs(new String[] {"dopolygonsearch","true"}));
@@ -2929,7 +1995,7 @@ public abstract class Processor extends SeesvOperator {
 		    if(fmt!=null) 
 			attrs.append(XmlUtil.attrs(new String[] { "displayFormat",
 								 fmt}));
-	   
+
                 }
 
 		String numFmt = getDbProp(colId, "numberFormat", numberFormat);
@@ -2948,7 +2014,6 @@ public abstract class Processor extends SeesvOperator {
 
                 boolean doStats = "true".equals(getDbProp(colId, "dostats",
                                       dfltDoStats + ""));
-
 
                 if (doStats) {
 		    attrs.append(XmlUtil.attrs(new String[] { "dostats","true"}));
@@ -2988,30 +2053,12 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class DbProps extends Processor {
 
-        /**  */
         String idPattern;
 
-        /**  */
         String suffixPattern;
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param idPattern _more_
-         * @param suffixPattern _more_
-         */
         public DbProps(TextReader ctx, String idPattern,
                        String suffixPattern) {
             this.idPattern = idPattern;
@@ -3024,16 +2071,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-
-        /**
-         *
-         * @param id _more_
-         * @param suffix _more_
-         * @param value _more_
-         *
-         * @return _more_
-         */
         private boolean print(String id, String suffix, String value) {
             if (Utils.stringDefined(idPattern)) {
                 if ( !id.matches(idPattern)) {
@@ -3050,16 +2087,6 @@ public abstract class Processor extends SeesvOperator {
             return true;
         }
 
-        /**
-         * _more_
-         *
-         * @param reader _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader reader, Row row) throws Exception {
             if (rowCnt++ > 0) {
@@ -3104,32 +2131,10 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Fields extends Processor {
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public Fields(TextReader ctx) {}
 
-
-        /**
-         *
-         *
-         * @param reader _more_
-         * @param row _more_
-         *  @return _more_
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader reader, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -3151,29 +2156,14 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 9, '15
-     * @author         Jeff McWhirter
-     */
     public static class Uniquifier extends Processor {
 
-        /** _more_ */
         private List<HashSet> contains;
 
-        /** _more_ */
         private List<List> values;
 
-        /**
-         * _more_
-         */
         public Uniquifier() {}
 
-        /**
-         * _more_
-         */
 	@Override
         public void reset(boolean force) {
 	    super.reset(force);
@@ -3181,17 +2171,6 @@ public abstract class Processor extends SeesvOperator {
             values   = null;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             boolean first = false;
@@ -3215,11 +2194,6 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         *   @throws Exception On badness
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
@@ -3239,73 +2213,34 @@ public abstract class Processor extends SeesvOperator {
             ctx.flush();
         }
 
-
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jan 12, '15
-     * @author         Enter your name here...
-     */
     public static class Counter extends Processor {
 
-        /** _more_ */
         private int rowCount;
 
-        /** _more_ */
         private int currentNumCols = -1;
 
-        /** _more_ */
         private boolean strict = false;
 
-        /** _more_ */
         private boolean error = false;
 
-        /** _more_ */
         private Hashtable<Integer, Integer> uniqueCounts =
             new Hashtable<Integer, Integer>();
 
-        /** _more_ */
         private List<Integer> counts = new ArrayList<Integer>();
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public Counter(TextReader ctx) {}
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param strict _more_
-         */
         public Counter(TextReader ctx, boolean strict) {
             this.strict = strict;
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param strict _more_
-         * @param error _more_
-         */
         public Counter(TextReader ctx, boolean strict, boolean error) {
             this.strict = strict;
             this.error  = error;
         }
 
-        /**
-         * _more_
-         */
 	@Override
         public void reset(boolean force) {
 	    super.reset(force);
@@ -3314,17 +2249,6 @@ public abstract class Processor extends SeesvOperator {
             counts       = new ArrayList<Integer>();
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             int size = row.size();
@@ -3332,7 +2256,6 @@ public abstract class Processor extends SeesvOperator {
             if (currentNumCols < 0) {
                 currentNumCols = size;
             }
-
 
             if (strict) {
                 if (size != currentNumCols) {
@@ -3359,12 +2282,6 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-        /**
-         *   _more_
-         *
-         * @param ctx _more_
-         * @throws Exception On badness
-         */
         @Override
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
@@ -3382,45 +2299,18 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Mon, Jul 29, '19
-     * @author         Enter your name here...
-     */
     public static class Logger extends Processor {
 
-        /** _more_ */
         private int total;
 
-        /** _more_ */
         private int rowCount;
 
         /*
          * _more_
          */
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         */
         public Logger(TextReader ctx) {}
 
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             total++;
@@ -3434,25 +2324,12 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Jan 17, '18
-     * @author         Enter your name here...
-     */
     public static class Prettifier extends Processor {
 
-        /** _more_ */
         private List headerValues;
 
-        /** _more_ */
         private int cnt = 0;
 
-        /**  */
         private int maxWidth = 0;
 
         /*
@@ -3460,25 +2337,8 @@ public abstract class Processor extends SeesvOperator {
          *
          */
 
-        /**
-         * _more_
-         */
         public Prettifier() {}
 
-
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
@@ -3502,15 +2362,6 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @throws Exception _more_
-         */
         public void printRow(TextReader ctx, Row row) throws Exception {
             if (headerValues == null) {
                 headerValues = row.getValues();
@@ -3529,20 +2380,6 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param rows _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void toCsv(List<Row> rows, Appendable sb) throws Exception {
         for (int i = 0; i < rows.size(); i++) {
             Row row = rows.get(i);
@@ -3551,61 +2388,27 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class Joiner extends Processor {
 
-        /** _more_ */
         private List<String> keys1;
 
-        /** _more_ */
         private List<String> values1;
 
-        /** _more_ */
         private List<String> keys2;
 
-        /** _more_ */
-
-        /** _more_ */
         private String file;
 
-        /** _more_ */
         private Hashtable<String, Row> map;
 
-        /** _more_ */
         private Row headerRow1;
 
-        /** _more_ */
         private List<Integer> values1Indices;
 
-        /** _more_ */
         private Row headerRow2;
 
-        /**  */
         private String dflt;
         private List<String> dflts;	
 
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param keys1 _more_
-         * @param values1 _more_
-         * @param file _more_
-         * @param keys2 _more_
-         * @param dflt _more_
-         */
         public Joiner(TextReader ctx, List<String> keys1,
                       List<String> values1, String file, List<String> keys2,
                       String dflt) {
@@ -3624,13 +2427,7 @@ public abstract class Processor extends SeesvOperator {
 
 	int xcnt = 0;
 	int ycnt = 0;	
-        /**
-         * _more_
-         *
-         *
-         * @param ctx _more_
-         * @throws Exception _more_
-         */
+
         private void init(TextReader ctx) throws Exception {
             if ( !IO.okToReadFrom(file)) {
                 throw new RuntimeException("Cannot read file:" + file);
@@ -3690,20 +2487,8 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**  */
         List<Integer> keys2Indices;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
 
@@ -3749,69 +2534,30 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-    
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class FuzzyJoiner extends Processor {
 
-        /**  */
         private JaroWinklerDistance distance = new JaroWinklerDistance();
 
-        /**  */
         private int threshold = 85;
 
-        /**  */
         private String dflt;
 
-        /** _more_ */
         private List<String> keys1;
 
-        /**  */
         private List<Integer> keys2Indices;
 
-        /** _more_ */
         private List<String> values1;
 
-        /** _more_ */
         private List<String> keys2;
 
-        /** _more_ */
         private List<KeyRow> rows;
 
-        /** _more_ */
         private Row headerRow1;
 
-        /** _more_ */
         private List<Integer> values1Indices;
 
-        /** _more_ */
         private Row headerRow2;
 
-
-
-        /**
-         * _more_
-         *
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param threshold _more_
-         * @param keys1 _more_
-         * @param values1 _more_
-         * @param file _more_
-         * @param keys2 _more_
-         * @param dflt _more_
-         */
         public FuzzyJoiner(TextReader ctx, int threshold, List<String> keys1,
                            List<String> values1, String file,
                            List<String> keys2, String dflt) {
@@ -3827,44 +2573,18 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Thu, Nov 4, '21
-         * @author         Enter your name here...
-         */
         static class KeyRow {
 
-            /**  */
             String key;
 
-            /**  */
             Row row;
 
-            /**
-             *
-             *
-             * @param key _more_
-             * @param row _more_
-             */
             KeyRow(String key, Row row) {
                 this.key = key;
                 this.row = row;
             }
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         *
-         * @param ctx _more_
-         * @param file _more_
-         * @throws Exception _more_
-         */
         private void init(TextReader ctx, String file) throws Exception {
             List<Integer> keys1Indices = null;
             BufferedReader br = new BufferedReader(
@@ -3923,16 +2643,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         * @throws Exception On badness
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (keys2Indices == null) {
@@ -3984,37 +2694,16 @@ public abstract class Processor extends SeesvOperator {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Doit extends Processor {
 
-        /**  */
         private HashSet genres = new HashSet();
 
-        /**  */
         private SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
 
-        /**  */
         private SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
 
-        /**
-         *
-         */
         public Doit() {}
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             try {
@@ -4024,13 +2713,6 @@ public abstract class Processor extends SeesvOperator {
             }
         }
 
-        /**
-         *
-         * @param v _more_
-         * @param tag _more_
-         *
-         * @return _more_
-         */
         private String makeTags(Object v, String tag) {
             List<String>  toks = Utils.split(v.toString(), ",");
             StringBuilder sb   = new StringBuilder();
@@ -4052,28 +2734,11 @@ public abstract class Processor extends SeesvOperator {
             return sb.toString();
         }
 
-
-        /**
-         *
-         * @param tag _more_
-         * @param v _more_
-         *
-         * @return _more_
-         */
         private String makeTag(String tag, Object v) {
             return XmlUtil.tag(tag, "",
                                XmlUtil.getCdata(v.toString().trim()));
         }
 
-        /**
-         *
-         * @param ctx _more_
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row processRowInner(TextReader ctx, Row row) throws Exception {
 
             if (rowCnt++ == 0) {
@@ -4148,12 +2813,6 @@ public abstract class Processor extends SeesvOperator {
             return row;
         }
 
-        /**
-         *
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(TextReader ctx) throws Exception {
             super.finish(ctx);
             ctx.println("</entries>");
@@ -4161,15 +2820,6 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
-
-
-
-    /**
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         String s = args[0];
         org.apache.commons.text.similarity.JaroWinklerDistance distance =
@@ -4190,8 +2840,5 @@ public abstract class Processor extends SeesvOperator {
             //      System.err.println("lev:" + levenshteinScore +" fuzzy:" + fuzzyScore +" sound:" + sound +" jaro:" + ((int)(100*jaro)) +" " + args[i]);
         }
     }
-
-
-
 
 }

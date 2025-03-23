@@ -4296,7 +4296,6 @@ public abstract class Converter extends Processor {
 
 	String nameTemplate;
 	Row prevRow;
-
 	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
 
         public RunningSum(List<String> indices,String nameTemplate) {
@@ -4371,7 +4370,6 @@ public abstract class Converter extends Processor {
 		return row;
 	    }
 
-
             if (rowCnt++ == 0) {
 		dateIndex = getIndex(ctx,dateSIndex);
 		row.add(newName);
@@ -4397,7 +4395,6 @@ public abstract class Converter extends Processor {
 	    if (!row.indexOk(index)) {
 		return row;
 	    }
-
 
 	    double rate = row.getDouble(index);
 	    if(Double.isNaN(rate)) {

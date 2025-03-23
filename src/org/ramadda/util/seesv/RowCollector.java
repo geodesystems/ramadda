@@ -5,10 +5,7 @@
 
 package org.ramadda.util.seesv;
 
-
 import org.ramadda.util.HtmlUtils;
-
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.MyDateFormat;
@@ -21,7 +18,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
 
 import java.text.SimpleDateFormat;
 
@@ -43,22 +39,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.*;
 
-
-
 @SuppressWarnings("unchecked")
 public class RowCollector extends Processor {
     private List<Row> rows = new ArrayList<Row>();
-    
+
     public RowCollector() {}
 
     public RowCollector(String col) {
         super(col);
     }
-    
+
     public RowCollector(List<String> cols) {
         super(cols);
     }
-    
+
     public void finish(TextReader ctx) throws Exception {
         Processor nextProcessor = getNextProcessor();
         //      System.err.println("RowCollector.finish:" + rows.size() +" next:" + nextProcessor.getClass().getSimpleName());
@@ -72,26 +66,21 @@ public class RowCollector extends Processor {
         }
     }
 
-
-    
     public List<Row> finish(TextReader ctx, List<Row> rows) throws Exception {
         return rows;
     }
 
-    
     @Override
     public boolean buffersRows() {
         return true;
     }
 
-    
     @Override
     public void reset(boolean force) {
         super.reset(force);
         rows = new ArrayList<Row>();
     }
 
-    
     public Row handleRow(TextReader ctx, Row row) throws Exception {
         //Here we don't call nextProcessor.handleRow
         setHeaderIfNeeded(row);
@@ -99,31 +88,24 @@ public class RowCollector extends Processor {
         return row;
     }
 
-
-    
     @Override
     public Row processRow(TextReader ctx, Row row) throws Exception {
         rows.add(row);
         return row;
     }
 
-
-    
     public void addRow(Row row) {
         rows.add(row);
     }
 
-    
     public void setRows(List<Row> value) {
         rows = value;
     }
 
-    
     public List<Row> getRows() {
         return rows;
     }
 
-    
     public List<Row> getRows(List<Row> incoming) {
         if (incoming != null) {
             return incoming;
@@ -132,7 +114,6 @@ public class RowCollector extends Processor {
         return rows;
     }
 
-    
     public static class RowOperator extends RowCollector {
         public static final int OP_SUM = 0;
         public static final int OP_MIN = 1;
@@ -143,7 +124,6 @@ public class RowCollector extends Processor {
         private String opLabel;
         private List<String> valueCols;
 
-        
         public RowOperator(List<String> keys, List<String> values,
                            String op) {
             super(keys);
@@ -164,8 +144,6 @@ public class RowCollector extends Processor {
             this.valueCols = values;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> r)
 	    throws Exception {
@@ -244,10 +222,6 @@ public class RowCollector extends Processor {
 
     }
 
-
-
-
-
     private static  class Count {
 	Row sample;
 	double min;
@@ -294,7 +268,7 @@ public class RowCollector extends Processor {
 	public boolean lastBin() {
 	    return (max==Double.POSITIVE_INFINITY);
 	}
-	    
+
 	public boolean inRange(double v) {
 	    if(firstBin()) {
 		return v<max;
@@ -315,12 +289,9 @@ public class RowCollector extends Processor {
 	}
     }
 
-
-
-    
     public static class Rotator extends RowCollector {
         public Rotator(TextReader ctx) {}
-        
+
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -341,11 +312,10 @@ public class RowCollector extends Processor {
 
     }
 
-    
     public static class RowShuffler extends RowCollector {
         boolean atStart;
         String pattern;
-        
+
         public RowShuffler(TextReader ctx, boolean atStart, List<String> cols,
                            String pattern) {
             super(cols);
@@ -353,7 +323,6 @@ public class RowCollector extends Processor {
             this.pattern = pattern;
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -395,18 +364,15 @@ public class RowCollector extends Processor {
 
     }
 
-
-    
     public static class MaxValue extends RowCollector {
         String key;
         String value;
-        
+
         public MaxValue(TextReader ctx, String key, String value) {
             this.key   = key;
             this.value = value;
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -446,19 +412,15 @@ public class RowCollector extends Processor {
 
     }
 
-
-    
     public static class MinValue extends RowCollector {
         String key;
         String value;
 
-        
         public MinValue(TextReader ctx, String key, String value) {
             this.key   = key;
             this.value = value;
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -497,13 +459,9 @@ public class RowCollector extends Processor {
 
     }
 
-    
-
-
-    
     public static class Flipper extends RowCollector {
         public Flipper(TextReader ctx) {}
-        
+
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -519,19 +477,17 @@ public class RowCollector extends Processor {
 
     }
 
-    
     public static class TclWrapper extends RowCollector {
         private String prefix;
-        
+
         public TclWrapper(TextReader ctx, String prefix) {
             super();
             this.prefix = prefix;
         }
 
-        
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-	    
+
             PrintWriter writer = ctx.getWriter();
 	    int cnt = 0;
 	    int cols = 0;
@@ -574,10 +530,6 @@ public class RowCollector extends Processor {
 
     }
 
-
-
-
-    
     public static class Exploder extends RowCollector {
 	String template;
         public Exploder(TextReader ctx, String col,String template) {
@@ -588,7 +540,7 @@ public class RowCollector extends Processor {
 	    this.template=template;
 
         }
-        
+
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -614,7 +566,6 @@ public class RowCollector extends Processor {
                 }
                 myRows.add(row);
             }
-
 
             for (String v : keys) {
                 List<Row> myRows = map.get(v);
@@ -646,9 +597,6 @@ public class RowCollector extends Processor {
 
     }
 
-
-
-    
     public static class Html extends RowCollector {
         protected int cnt = 0;
         int maxCount = 0;
@@ -661,7 +609,6 @@ public class RowCollector extends Processor {
             return row;
         }
 
-        
         public void printRow(TextReader ctx, Row row, boolean addCnt, boolean even)
 	    throws Exception {
             List values = row.getValues();
@@ -763,7 +710,6 @@ public class RowCollector extends Processor {
             cnt++;
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -779,13 +725,8 @@ public class RowCollector extends Processor {
             return rows;
         }
 
-
     }
 
-
-
-
-    
     public static class Unfurler extends RowCollector {
         private int unfurlIndex = -1;
         private String unfurlCol;
@@ -795,7 +736,7 @@ public class RowCollector extends Processor {
         private List<String> valueCols;
         private int unitIndex = -1;
         private HashSet<String> seenValue = new HashSet<String>();
-        
+
         public Unfurler(TextReader ctx, String unfurlIndex, List<String> valueCols,
                         String uniqueCol, List<String> extraCols) {
             super(extraCols);
@@ -805,13 +746,10 @@ public class RowCollector extends Processor {
             this.uniqueCol = uniqueCol;
         }
 
-        
         public void setUnitIndex(int index) {
             unitIndex = index;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -868,7 +806,6 @@ public class RowCollector extends Processor {
                 }
                 rowIndex++;
             }
-
 
             Collections.sort(newColumns);
             for (int i = 0; i < newColumns.size(); i++) {
@@ -951,7 +888,6 @@ public class RowCollector extends Processor {
             super(cols);
         }
 
-        
 	@Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             if (rowCnt++ == 0) {
@@ -977,9 +913,6 @@ public class RowCollector extends Processor {
             return null;
         }
 
-
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1002,7 +935,6 @@ public class RowCollector extends Processor {
             super(cols);
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1064,13 +996,12 @@ public class RowCollector extends Processor {
             return rows;
         }
 
-        
         private static class KeyValue {
             int index;
             String key;
             String value;
             boolean matched = false;
-            
+
             KeyValue(int index, String key, String value) {
                 this.index = index;
                 this.key   = key;
@@ -1078,7 +1009,6 @@ public class RowCollector extends Processor {
             }
         }
 
-        
         private static String[] replace = new String[] {
             "ÁĂẮẶẰẲẴǍÂẤẬẦẨẪÄǞȦǠẠȀÀẢȂĀĄÅǺḀÃǼǢ", "A", "ḂḄḆ", "B", "ĆČÇḈĈĊ", "C",
             "ĎḐḒḊḌḎ", "D", "ÉĔĚȨḜÊẾỆỀỂỄḘËĖẸȄÈẺȆĒḖḔĘẼḚÉ", "E", "Ḟ", "F",
@@ -1092,7 +1022,6 @@ public class RowCollector extends Processor {
             //      "  +"," "
         };
 
-        
         public static String cleanName(String s) {
             s = s.toUpperCase();
             for (int i = 0; i < replace.length; i += 2) {
@@ -1104,25 +1033,19 @@ public class RowCollector extends Processor {
 
     }
 
-
-
-    
     public static class Melter extends RowCollector {
         private List<Integer> indices;
         private List<String> cols;
         private Row header;
         private String label1;
         private String label2;
-        
+
         public Melter(TextReader ctx, List<String> cols, String label1, String label2) {
             super(cols);
             this.label1 = label1;
             this.label2 = label2;
         }
 
-
-
-        
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
             List<Integer>    indices   = getIndices(ctx);
@@ -1160,18 +1083,13 @@ public class RowCollector extends Processor {
         }
     }
 
-
-
-    
     public static class Dups extends RowCollector {
         private List<String> columns;
-        
+
         public Dups(TextReader ctx, List<String> columns) {
             this.columns = columns;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1207,15 +1125,12 @@ public class RowCollector extends Processor {
         }
     }
 
-
-
-    
     public static class Splatter extends RowCollector {
         private String key;
         private String value;
         private String delimiter;
         private String name;
-        
+
         public Splatter(TextReader ctx, String key, String value, String delim, String name) {
             this.key       = key;
             this.value     = value;
@@ -1223,8 +1138,6 @@ public class RowCollector extends Processor {
             this.name      = name;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1266,8 +1179,6 @@ public class RowCollector extends Processor {
         }
     }
 
-
-    
     public static class Breaker extends RowCollector {
         private String label1;
         private String label2;
@@ -1278,9 +1189,6 @@ public class RowCollector extends Processor {
             this.label2 = label2;
         }
 
-
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1330,9 +1238,6 @@ public class RowCollector extends Processor {
         }
     }
 
-
-
-    
     public static class Sorter extends RowCollector {
         private boolean asc = true;
 	private String how="";
@@ -1348,8 +1253,6 @@ public class RowCollector extends Processor {
 	    this.how = how;
         }	
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1367,12 +1270,10 @@ public class RowCollector extends Processor {
         }
     }
 
-
-    
     public static class Stats extends Html {
         private static SimpleDateFormat fmtSdf =
             new SimpleDateFormat("yyyy-MM-dd hh:mm");
-        
+
         private Seesv util;
         private boolean justStats;
         private List<ColStat> cols;
@@ -1389,8 +1290,6 @@ public class RowCollector extends Processor {
 	    this.showSummary = showSummary;
         }
 
-
-        
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             rowCnt++;
@@ -1418,8 +1317,6 @@ public class RowCollector extends Processor {
             return row;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -1621,10 +1518,8 @@ public class RowCollector extends Processor {
 		}
 	    }
 
-
 	    //J+
             return rows;
-
 
         }
 
@@ -1643,24 +1538,19 @@ public class RowCollector extends Processor {
             int numErrors = 0;
             int numMissing = 0;
             boolean interactive;
-            
+
             Hashtable<Object, Integer> uniques = new Hashtable<Object,
 		Integer>();
 
-            
             List<Double> pts = new ArrayList<Double>();
 
-
-            
             Date minDate;
 
-            
             Date maxDate;
 
 	    boolean skip = false;
 	    boolean mergeNext = false;
 
-            
             public ColStat(Seesv util, boolean interactive, String n,
                            String sample) {
                 this.interactive = interactive;
@@ -1703,14 +1593,14 @@ public class RowCollector extends Processor {
 		if(sdf==null)
 		    sdf = new MyDateFormat(this.format);
 		return sdf;
-		    
+
 	    }
 	    public String toString() {
 		return name;
 	    }
 
 	    boolean loggedError = false;
-            
+
             public Date getDate(Object v) {
                 try {
                     return getSdf().parse(v.toString());
@@ -1723,7 +1613,6 @@ public class RowCollector extends Processor {
                 }
             }
 
-            
             public Object format(TextReader ctx,Object v) {
                 if (type.equals("date") && (format != null)) {
                     Date date = getDate(v);
@@ -1751,7 +1640,6 @@ public class RowCollector extends Processor {
                 return v;
             }
 
-            
             public void addValue(String v) {
                 if (sample == null) {
                     sample = v;
@@ -1796,7 +1684,6 @@ public class RowCollector extends Processor {
                 uniques.put(v, cnt);
             }
 
-            
             public void finish(PrintWriter writer) {
                 if (interactive) {
                     writer.print("<pre>");
@@ -1825,14 +1712,8 @@ public class RowCollector extends Processor {
 
         }
 
-
-
     }
 
-
-
-
-    
     public static class Summary extends RowCollector {
 	private List<String> what;
         private List<Integer> uniqueIndices;
@@ -1847,10 +1728,10 @@ public class RowCollector extends Processor {
 	Hashtable<String, Row> origMap   = new Hashtable<String, Row>();
 	Row                    headerRow;
 	Row                    firstRow ;
-        
+
         public Summary(TextReader ctx, List<String> what,List<String> keys, List<String> values,
 		       List<String> extra) {
-	    
+
 	    if(what.size()==0) {
 		what =new ArrayList<String>();
 		what.add(OPERAND_COUNT);
@@ -1860,7 +1741,6 @@ public class RowCollector extends Processor {
             this.values = values;
             this.extra  = extra;
         }
-
 
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    //            super.processRow(ctx, row);
@@ -1912,12 +1792,10 @@ public class RowCollector extends Processor {
 	    return null;
 	}
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
-	    
+
             List<Row> newRows   = new ArrayList<Row>();
             Row       newHeader = new Row();
 	    for(int i:uniqueIndices) {
@@ -1963,7 +1841,7 @@ public class RowCollector extends Processor {
                     }
                     continue;
                 }
-		
+
                 Row newRow = null;
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
@@ -1996,37 +1874,29 @@ public class RowCollector extends Processor {
 
             return newRows;
 
-
         }
     }
 
-    
     public static class Pivot extends RowCollector {
 	LinkedHashMap<String,String> seenColumns = new LinkedHashMap<String,String>();
 	LinkedHashMap<String,String> seenRows = new LinkedHashMap<String,String>();	
 	Hashtable<String, Tuple> values = new Hashtable<String,Tuple>();
         LinkedHashMap<String, StringBuilder> map = new LinkedHashMap<String,
 	    StringBuilder>();
-        
+
         private List<String> keyCols;
         private List<String> columnCols;	
 	private List<String> operators;
 	private String valueColumn;
-	
-        
+
         private List<Integer> keyIndices;
 
-        
         private List<Integer> columnIndices;
 
-        
         private int valueIndex;
-
 
 	private Row  headerRow;
 
-
-        
         public Pivot(TextReader ctx, List<String> keys,List<String> columns, String valueColumn,
 		     List<String> operators) {
 	    if(operators.size()==0) {
@@ -2037,7 +1907,6 @@ public class RowCollector extends Processor {
 	    this.valueColumn = valueColumn;
             this.operators  = operators;
         }
-
 
         public Row processRow(TextReader ctx, Row row) throws Exception {
 	    if(rowCnt++==0) {
@@ -2069,7 +1938,6 @@ public class RowCollector extends Processor {
 		//		System.err.println("C:" + colKey);
 	    }
 
-
 	    StringBuilder keyValue = null;
 	    for(int index: keyIndices) {
 		if(!row.indexOk(index)) continue;
@@ -2097,12 +1965,10 @@ public class RowCollector extends Processor {
 	    return null;
 	}
 
-
 	public String getValueKey(Object row,Object col) {
 	    return row+"----" + col;
 	}
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -2132,7 +1998,6 @@ public class RowCollector extends Processor {
 		    }
 		}
 	    }
-
 
 	    for (String rowKey : seenRows.keySet()) {
 		Row row = new Row();
@@ -2192,7 +2057,7 @@ public class RowCollector extends Processor {
                     }
                     continue;
                 }
-		
+
                 Row newRow = null;
                 for (int i = 0; i < valueIndices.size(); i++) {
                     int    valueIdx = valueIndices.get(i);
@@ -2229,15 +2094,12 @@ public class RowCollector extends Processor {
 	}
     }
 
-
-
-    
     public static class Histogram extends RowCollector {
 	List<Bin> bins;
 	List<String> what;
 	String scolumn;
 	int column;
-        
+
         public Histogram(TextReader ctx, String column, String bins,List<String> cols,String what) {
 	    super(cols);
 	    this.scolumn = column;
@@ -2252,7 +2114,6 @@ public class RowCollector extends Processor {
 	    this.bins.add(new Bin(prevValue,Double.POSITIVE_INFINITY));
         }
 
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> rows)
 	    throws Exception {
@@ -2278,7 +2139,6 @@ public class RowCollector extends Processor {
             Function<Integer,Integer> percent = (col) -> {
 		return (int)((col/(double)total)*100);
 	    };
-
 
             for (Row row : allRows) {
                 List          values = row.getValues();
@@ -2310,7 +2170,7 @@ public class RowCollector extends Processor {
 			bin.label = ""+((int)bin.min);
 		    }
 		}
-		
+
 	    }
 
 	    for(Bin bin: bins) {
@@ -2337,26 +2197,17 @@ public class RowCollector extends Processor {
 		    }
 		}
 
-
-
 	    }
 	    return newRows;
 	}
 
-
-
-
-
     }
 
-
-
-    
     public static class GroupFilter extends RowCollector {
         private int op;
         private String value;
         private int valueIdx;
-        
+
         public GroupFilter(TextReader ctx, List<String> cols, int valueIdx, int op,
                            String value) {
             super(cols);
@@ -2365,8 +2216,6 @@ public class RowCollector extends Processor {
             this.value    = value;
         }
 
-
-        
         private double getValue(String v) {
             try {
                 return Double.parseDouble(v);
@@ -2375,8 +2224,6 @@ public class RowCollector extends Processor {
             }
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> finalRows)
 	    throws Exception {
@@ -2443,28 +2290,23 @@ public class RowCollector extends Processor {
                     newRows.addAll(rows);
                 }
 
-
             }
 
             return newRows;
         }
     }
 
-
-
-    
     public static class Slicer extends RowCollector {
         String sdest;
         int dest;
         List<String> fill;
-        
+
         public Slicer(TextReader ctx, List<String> cols, String sdest, List<String> fill) {
             super(cols);
             this.sdest = sdest;
             this.fill  = fill;
         }
 
-        
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
             super.processRow(ctx, row);
@@ -2476,8 +2318,6 @@ public class RowCollector extends Processor {
             return null;
         }
 
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> tmp)
 	    throws Exception {
@@ -2508,10 +2348,6 @@ public class RowCollector extends Processor {
 
     }
 
-
-
-
-    
     public static class DateLatest extends RowCollector {
         List<String> keys;
         private Hashtable<String, Row> rows = new Hashtable<String, Row>();
@@ -2523,7 +2359,6 @@ public class RowCollector extends Processor {
         private SimpleDateFormat sdf;
         private Row header;
 
-        
         public DateLatest(TextReader ctx, List<String> cols, String colName,
                           SimpleDateFormat sdf) {
             this.keys    = cols;
@@ -2531,7 +2366,6 @@ public class RowCollector extends Processor {
             this.sdf     = sdf;
         }
 
-        
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -2578,9 +2412,6 @@ public class RowCollector extends Processor {
             return null;
         }
 
-
-
-        
         @Override
         public List<Row> finish(TextReader ctx, List<Row> tmp)
 	    throws Exception {
@@ -2596,11 +2427,10 @@ public class RowCollector extends Processor {
 
     }
 
-    
     public static class Crosser extends RowCollector {
         private String file;
 	private List<Row> rows2;
-        
+
         public Crosser(TextReader ctx,  String file) {
             this.file    = file;
             try {
@@ -2610,8 +2440,6 @@ public class RowCollector extends Processor {
             }
         }
 
-
-        
         private void init(TextReader ctx) throws Exception {
             if ( !IO.okToReadFrom(file)) {
                 throw new RuntimeException("Cannot read file:" + file);
@@ -2645,7 +2473,6 @@ public class RowCollector extends Processor {
             }
         }
 
-
 	private Row makeRow(Row row1,Row row2) {
 	    Row newRow = new Row();
 	    for(Object o: row1.getValues()) newRow.add(o);
@@ -2670,7 +2497,6 @@ public class RowCollector extends Processor {
         }
     }
 
-
     public static class Cloner extends Converter {
         private int count;
 
@@ -2678,7 +2504,6 @@ public class RowCollector extends Processor {
             this.count = cnt;
         }
 
-        
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++==0) return row;
@@ -2693,6 +2518,5 @@ public class RowCollector extends Processor {
             return row;
         }
     }
-
 
 }

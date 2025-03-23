@@ -22,7 +22,6 @@ import org.ramadda.util.PhoneUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 
-
 import org.apache.commons.io.input.BOMInputStream;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.IOUtil;
@@ -37,7 +36,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-
 import java.util.function.*;
 
 import java.util.ArrayList;
@@ -49,121 +47,55 @@ import java.util.List;
 import java.util.Properties;
 import java.util.zip.*;
 
-
 import java.sql.*;
 import org.ramadda.util.sql.SqlUtil;
 
-
-/**
- *
- * @author Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public class Seesv implements SeesvCommands {
 
     public static final String PREFIX_FILE = "file:";
     public static final String PREFIX_RESOURCE = "resource:";    
-
-    /** _more_          */
     private static boolean debugFiles = false;
-
-    /** _more_          */
     private static boolean debugArgs = false;
-
     private static File tmpCacheDir;
-
     private boolean externalAccess = true;
-
     private boolean interactive = false;
-    
-    /** _more_ */
     private List<String> args;
-
     private List<Processor> suffix;
-
-    /** _more_ */
     private OutputStream outputStream = System.out;
-
-    /** _more_ */
     private InputStream inputStream;
-
     private ReadableByteChannel channel;
-    
-
     private int sheetNumber =0;
-    
     private Hashtable<String,String> macros = new Hashtable<String,String>();
-    
-    /** _more_ */
     private File destDir = new File(".");
-
-    /** _more_ */
     private TextReader myTextReader;
-
     private boolean multiFiles = false;
     private String multiFileTemplate = null;
-
-    /** _more_ */
     private String currentArg;
-
-    /** _more_ */
     private Row currentRow;
-
-    /** _more_ */
     private String errorDescription;
-
-    /** _more_ */
     private File outputFile;
-
-    /** _more_ */
     private Processor.DbXml dbXml;
-
-    /** _more_ */
     private boolean okToRun = true;
-
-    /** _more_ */
     private int rawLines = 0;
-
-    /** _more_ */
     private String delimiter;
-
-    /** _more_ */
     private List<String> changeTo = new ArrayList<String>();
 
-    /** _more_ */
     private StringBuilder js = new StringBuilder();
-
-
     private Dater inDater = new Dater();    
     private Dater outDater = new Dater();
-
     private PropertyProvider propertyProvider;
-
     private MapProvider mapProvider;    
-
     private List<IO.Path> inputFiles;
-
     private boolean makeInputStreamRaw = false;
-
     private SeesvContext seesvContext;
-
     private List<ExtCommand> extCommands;
-
     private boolean hasSink = false;
-
     private boolean inputIsBom = false;
     private String encoding;
-
     private boolean commandLine = false;
     private boolean isVerifiedUser = false;    
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public Seesv(String[] args) throws Exception {
 	this(args,null);
     }
@@ -183,31 +115,14 @@ public class Seesv implements SeesvCommands {
 	//	debugArgs = true;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public Seesv(List<String> args) throws Exception {
         this.args = args;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param destDir _more_
-     *
-     * @throws Exception _more_
-     */
     public Seesv(List<String> args, File destDir) throws Exception {
         this(args);
         this.destDir = destDir;
     }
-
-
 
     public Seesv(String[]args,List<Processor>suffix,
 		 InputStream input, OutputStream output) throws Exception {
@@ -215,7 +130,6 @@ public class Seesv implements SeesvCommands {
 	this.inputStream = input;
         this.outputStream = output;
     }
-
 
     public Seesv(String[]args,InputStream input, OutputStream output) throws Exception {
 	this(args);
@@ -229,37 +143,18 @@ public class Seesv implements SeesvCommands {
         this.outputStream = output;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param out _more_
-     * @param destDir _more_
-     *
-     * @throws Exception _more_
-     */
     public Seesv(List<String> args, OutputStream out, File destDir)
 	throws Exception {
         this(args, destDir);
         this.outputStream = out;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param out _more_
-     * @param destDir _more_
-     *
-     * @throws Exception _more_
-     */
     public Seesv(String[] args, OutputStream out, File destDir)
 	throws Exception {
         this(args);
         this.destDir      = destDir;
         this.outputStream = out;
     }
-
 
     private TextReader initTextReader(TextReader textReader) {
 	textReader.setInDater(inDater);
@@ -273,17 +168,10 @@ public class Seesv implements SeesvCommands {
 	return initTextReader(textReader);
     }
 
-
-     public List<String> getHeaderLines() {
+    public List<String> getHeaderLines() {
         return myTextReader.getHeaderLines();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param seesv _more_
-     */
     public void initWith(Seesv seesv) {
 	this.inDater = seesv.inDater;
 	this.outDater = seesv.outDater;	
@@ -297,12 +185,6 @@ public class Seesv implements SeesvCommands {
 	return inputFiles;
     }
 
-
-    /**
-       Set the Context property.
-
-       @param value The new value for Context
-    **/
     public void setSeesvContext (SeesvContext value) {
 	seesvContext = value;
 	extCommands = new ArrayList<ExtCommand>();
@@ -320,11 +202,6 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-    /**
-       Get the Context property.
-
-       @return The Context
-    **/
     public SeesvContext getSeesvContext () {
 	return seesvContext;
     }
@@ -334,19 +211,10 @@ public class Seesv implements SeesvCommands {
 	return null;
     }
 
-
-    /**
-       Set the PropertyProvider property.
-       @param value The new value for PropertyProvider
-    **/
     public void setPropertyProvider (PropertyProvider value) {
 	propertyProvider = value;
     }
 
-    /**
-       Get the PropertyProvider property.
-       @return The PropertyProvider
-    **/
     public PropertyProvider getPropertyProvider () {
 	return propertyProvider;
     }
@@ -355,17 +223,15 @@ public class Seesv implements SeesvCommands {
 	return mapProvider;
     }
 
-
     public void setMapProvider (MapProvider mp) {
 	mapProvider = mp;
     }
-    
+
     public String getProperty(String name, String dflt) {
 	String v = getProperty(name);
 	if(v==null) return dflt;
 	return v;
     }
-
 
     public String getProperty(String name) {
 	if(propertyProvider!=null) {
@@ -377,21 +243,10 @@ public class Seesv implements SeesvCommands {
 	return System.getenv(name);
     }
 
-
-    /**
-       Set the Interactive property.
-
-       @param value The new value for Interactive
-    **/
     public void setInteractive (boolean value) {
 	interactive = value;
     }
 
-    /**
-       Get the Interactive property.
-
-       @return The Interactive
-    **/
     public boolean getInteractive () {
 	return interactive;
     }
@@ -400,12 +255,6 @@ public class Seesv implements SeesvCommands {
 	isVerifiedUser = v;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param inputStream _more_
-     */
     public Seesv setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
 	return this;
@@ -416,26 +265,16 @@ public class Seesv implements SeesvCommands {
 	return this;
     }    
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getOkToRun() {
         return okToRun;
     }
 
-    /**
-     * _more_
-     */
     public void stopRunning() {
         okToRun = false;
         if (myTextReader != null) {
             myTextReader.stopRunning();
         }
     }
-
 
     public Connection getDbConnection(TextReader ctx, SeesvOperator op, Dictionary<String,String> props, String db, String table) throws Exception {
 	String dbs = getProperty("seesv_dbs");
@@ -468,7 +307,6 @@ public class Seesv implements SeesvCommands {
 									 table, true), "\t", "\n"));
 	}
 
-
 	//Check tables whitelist
 	String tables   = getProperty(prefix + "_tables",  "");
 	List   okTables = Utils.split(tables, ",", true, true);
@@ -476,14 +314,13 @@ public class Seesv implements SeesvCommands {
 	    okTables = SqlUtil.getTableNames(connection);
 	}
 
-
 	List<String> tableList = Utils.split(table, ",", true, true);
 	if (tableList.size() == 0) {
 	    op.fatal(ctx, "No table specified"
 		     + "\nAvailable tables:\n"
 		     + Utils.wrap(okTables, "\t", "\n"));
 	}
-	
+
 	for (String t : tableList) {
 	    if ( !Utils.containsIgnoreCase(okTables, t)) {
 		op.fatal(ctx, "Unknown table:" + t
@@ -492,48 +329,23 @@ public class Seesv implements SeesvCommands {
             }
 	}
 
-
-
-
 	return connection;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getErrorDescription() {
         return errorDescription;
     }
 
-    /**
-     * Set the DestDir property.
-     *
-     * @param value The new value for DestDir
-     */
     public void setDestDir(File value) {
         destDir = value;
     }
 
-    /**
-     * Get the DestDir property.
-     *
-     * @return The DestDir
-     */
     public File getDestDir() {
         destDir.mkdir();
 
         return destDir;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     */
     public void setOutputFile(File file) {
         this.outputFile = file;
         if (file != null) {
@@ -541,13 +353,6 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public OutputStream getOutputStream() throws Exception {
         if (this.outputStream == null) {
             if (myTextReader != null) {
@@ -560,12 +365,6 @@ public class Seesv implements SeesvCommands {
         return this.outputStream;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param out _more_
-     */
     public void setOutputStream(OutputStream out) {
         this.outputStream = out;
     }
@@ -594,9 +393,6 @@ public class Seesv implements SeesvCommands {
 	return tmpFile;
     }
 
-
-
-
     public static String makeCsvCommands(List<String> args) {
 	StringBuilder argsBuff = null;
 	int                doArgsCnt     = 0;
@@ -616,7 +412,7 @@ public class Seesv implements SeesvCommands {
 		i++;
 		continue;
 	    }
-	    
+
 	    if (argsBuff == null) {
 		argsBuff = new StringBuilder();
 		argsBuff.append("csvcommands1=");
@@ -638,14 +434,6 @@ public class Seesv implements SeesvCommands {
 	return "";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     public void run(List<IO.Path> files) throws Exception {
         try {
             runInner(files);
@@ -667,13 +455,6 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     private void runInner(List<IO.Path> files) throws Exception {
 
         if (files == null) {
@@ -722,7 +503,6 @@ public class Seesv implements SeesvCommands {
 		continue;
 	    }	    
 	}
-
 
 	//	System.err.println("args:" + args);
         for (int i = 0; i < args.size(); i++) {
@@ -773,7 +553,6 @@ public class Seesv implements SeesvCommands {
 		argsBuff.append(arg);
 		continue;
 	    }
-
 
             //      System.out.println("ARG:" + arg);
             //      if(true) continue;
@@ -827,7 +606,6 @@ public class Seesv implements SeesvCommands {
                 return;
             }
 
-	    
             if (arg.equals("-alldata")) {
                 myTextReader.setAllData(true);
                 continue;
@@ -838,12 +616,10 @@ public class Seesv implements SeesvCommands {
                 continue;
             }
 
-
             if (arg.equals(CMD_CAT)) {
                 doConcat = true;
                 continue;
             }
-
 
             if (arg.equals(CMD_MULTIFILES)) {
 		multiFiles = true;
@@ -885,7 +661,6 @@ public class Seesv implements SeesvCommands {
             }
             extra.add(arg);
 	}
-
 
 	if(doTypeXml) {
 	    if (argsBuff != null) {
@@ -944,7 +719,6 @@ public class Seesv implements SeesvCommands {
 	    return;
 	}
 
-
 	if (doArgs) {
 	    if (argsBuff != null) {
 		argsBuff.append("\n");
@@ -959,7 +733,6 @@ public class Seesv implements SeesvCommands {
             currentArg = null;
             return;
         }
-
 
         currentArg = null;
         if (printArgs) {
@@ -1042,12 +815,6 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void process(TextReader ctx) throws Exception {
         DataProvider.CsvDataProvider provider =
             new DataProvider.CsvDataProvider(ctx,0);
@@ -1055,7 +822,6 @@ public class Seesv implements SeesvCommands {
 	ctx.flush();
 	ctx.close();
     }
-
 
     /**
      * Run through the csv file in the TextReader
@@ -1085,14 +851,6 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param provider _more_
-     *
-     * @throws Exception _more_
-     */
     private void processInner(TextReader ctx, DataProvider provider,int fileCnt)
 	throws Exception {
         int rowCnt   = 0;
@@ -1128,19 +886,9 @@ public class Seesv implements SeesvCommands {
 	//        }
     }
 
-    /**
-     * _more_
-     *
-     * @param row _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean processRow(TextReader ctx, Row row)
 	throws Exception {
 
-	    
         ctx.initRow(row);
         if ((ctx.getMaxRows() >= 0)
 	    && (ctx.getVisitedRows() > ctx.getMaxRows())) {
@@ -1163,7 +911,6 @@ public class Seesv implements SeesvCommands {
         return true;
     }
 
-
     private InputStream wrapInputStream(InputStream is) {
 	if(inputIsBom) {
 	    return new BOMInputStream(is);
@@ -1171,15 +918,6 @@ public class Seesv implements SeesvCommands {
 	return is;
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<NamedInputStream> getStreams(List<IO.Path> files)
 	throws Exception {
         if (debugFiles) {
@@ -1198,7 +936,6 @@ public class Seesv implements SeesvCommands {
         }
         return streams;
     }
-
 
     private List<NamedChannel> getChannels(List<String> files)
 	throws Exception {
@@ -1249,15 +986,6 @@ public class Seesv implements SeesvCommands {
         return channels;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getNewFiles() {
         return myTextReader.getFiles();
     }
@@ -1265,8 +993,6 @@ public class Seesv implements SeesvCommands {
     public TextReader getContext() {
 	return myTextReader;
     }
-
-
 
     /**
      *  Check if this is an OK path to write to
@@ -1285,8 +1011,6 @@ public class Seesv implements SeesvCommands {
         return new FileOutputStream(file);
     }
 
-
-
     public static void setTmpCacheDir(File dir) {
 	tmpCacheDir = dir;
     }
@@ -1303,7 +1027,6 @@ public class Seesv implements SeesvCommands {
 	    throw new IllegalArgumentException("Cannot write file:"   + file);
     }
 
-
     public void setExternalAccess(boolean v) {
 	externalAccess = v;
     }
@@ -1317,7 +1040,6 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-
     public String readFile(String file) throws Exception {
 	if (file.startsWith(PREFIX_RESOURCE)) {
 	    file = file.substring(PREFIX_RESOURCE.length());
@@ -1329,7 +1051,6 @@ public class Seesv implements SeesvCommands {
 	    }
 	}
 
-
 	if (file.startsWith(PREFIX_FILE)) {
 	    file = file.substring(PREFIX_FILE.length());
 	}
@@ -1337,16 +1058,6 @@ public class Seesv implements SeesvCommands {
 	return  IO.readContents(new File(file));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public InputStream makeInputStream(IO.Path file) throws Exception {
 	if(!Utils.isUrl(file.getPath())) {
 	    checkOkToRead(file.getPath());
@@ -1392,16 +1103,6 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param files _more_
-     * @param ctx _more_
-     * @param asPoint _more_
-     *
-     * @throws Exception _more_
-     */
     public void header(List<IO.Path> files, TextReader ctx, boolean asPoint)
 	throws Exception {
         PrintWriter   writer    = ctx.getWriter();
@@ -1494,20 +1195,11 @@ public class Seesv implements SeesvCommands {
 	while((line=textReader.readLine())!=null) {
 	    pw.println(line);
 	}
-	
+
 	pw.flush();
 	pw.close();
     }
 
-
-    /**
-     *     _more_
-     *
-     *     @param files _more_
-     *     @param ctx _more_
-     *
-     *     @throws Exception _more_
-     */
     public void raw(List<IO.Path> files, TextReader ctx) throws Exception {
         int         numLines    = ctx.getMaxRows();
         PrintWriter writer      = ctx.getWriter();
@@ -1562,21 +1254,6 @@ public class Seesv implements SeesvCommands {
         writer.close();
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param colId _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static String getDbProp(Dictionary<String, String> props,
                                    String colId, String prop, String dflt) {
         String key   = (colId == null)
@@ -1609,18 +1286,6 @@ public class Seesv implements SeesvCommands {
         return dflt;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param colId _more_
-     * @param index _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static String getDbProp(Dictionary<String, String> props,
                                    String colId, int index, String prop,
                                    String dflt) {
@@ -1632,17 +1297,6 @@ public class Seesv implements SeesvCommands {
         return getDbProp(props, index + "", prop, dflt);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param colId _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static boolean getDbProp(Dictionary<String, String> props,
                                     String colId, String prop, boolean dflt) {
         String value = getDbProp(props, colId, prop, (String) null);
@@ -1663,17 +1317,6 @@ public class Seesv implements SeesvCommands {
         return getDbProp(props, index + "", prop, dflt);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param props _more_
-     * @param colId _more_
-     * @param prop _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static boolean getDbProp(PatternProps props,
                                     String colId, String prop, boolean dflt) {
         String value = getDbProp(props, colId, prop, (String) null);
@@ -1682,29 +1325,11 @@ public class Seesv implements SeesvCommands {
         }
         return value.equals("true");
     }
-    
 
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static String cleanColumnValue(String s) {
         return cleanColumnValue(s, ",");
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param delimiter _more_
-     *
-     * @return _more_
-     */
     public static String cleanColumnValue(String s, String delimiter) {
         boolean needToQuote = false;
         if (s.indexOf("\n") >= 0) {
@@ -1725,40 +1350,18 @@ public class Seesv implements SeesvCommands {
         return s;
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Mar 24, '20
-     * @author         Enter your name here...
-     */
     public static class Arg {
 
-        /** _more_ */
         String id;
 
-        /** _more_ */
         String desc;
 
-        /** _more_ */
         String[] props;
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         */
         public Arg(String id) {
             this(id, "");
         }
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param desc _more_
-         * @param props _more_
-         */
         public Arg(String id, String desc, String... props) {
             if ((desc.length() == 0) && id.equals("columns")) {
                 desc = HELP_COLUMNS;
@@ -1772,49 +1375,26 @@ public class Seesv implements SeesvCommands {
         }
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...
-     */
     public static class Cmd {
 
-        /** _more_ */
         boolean category;
 
-        /** _more_ */
         String cmd;
 
-        /** _more_ */
         String label;
 
-        /** _more_ */
         List<Arg> args = new ArrayList<Arg>();
 
-        /** _more_ */
         String desc;
 
         public Cmd() {
 	}
 
-        /**
-         * _more_
-         *
-         * @param cmd _more_
-         * @param args _more_
-         * @param desc _more_
-         */
         public Cmd(String cmd, String desc, Object... args) {
 	    //	    String _cmd = "CMD_" +cmd.toUpperCase().replace("-","");
 	    //	    String tcl  ="tclsh ~/bin/cvrt.tcl ";
 	    //	    String QT = "\\\"";
 	    //	    if(cmd.indexOf("<")<0)System.out.println(tcl +  QT+cmd+QT +" " + _cmd +" Seesv.java");
-
 
             this.cmd  = cmd;
             this.desc = desc;
@@ -1835,22 +1415,10 @@ public class Seesv implements SeesvCommands {
 	    }
         }
 
-        /**
-         * _more_
-         *
-         * @param s _more_
-         *
-         * @return _more_
-         */
         public boolean match(String s) {
             return cmd.indexOf(s) >= 0;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getLine(boolean decorate,boolean format,boolean json) {
 	    String prefix1 = (decorate?Utils.ANSI_BLUE:"");
 	    String prefix2 = (decorate?Utils.ANSI_GREEN:"");
@@ -1889,24 +1457,16 @@ public class Seesv implements SeesvCommands {
 
     public static class Category extends Cmd {
 
-        /**
-         * _more_
-         *
-         * @param isCat _more_
-         * @param category _more_
-         */
         public Category(String category,String desc) {
             this.category = true;
 	    this.cmd = category;
             this.desc     = desc;
         }
 
-
         public Category(String category) {
 	    this( category,"");
 	}
     }
-
 
     private static String add(String ...values) {
 	StringBuilder sb = new StringBuilder();
@@ -1929,8 +1489,6 @@ public class Seesv implements SeesvCommands {
 	return sb.toString();
     }    
 
-
-    /** _more_ */
     private static final Cmd[] commands = {
         new Cmd(CMD_HELP, "print this help"),
         new Cmd(CMD_HELP+":<topic search string>",
@@ -1954,7 +1512,6 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Quotes Not Special"),
         new Cmd(CMD_CLEANINPUT, "Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files",
 		ARG_LABEL,"Input is Clean"),
-
 
         new Cmd(CMD_START, "Start at pattern in source file",
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
@@ -2257,7 +1814,6 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_PATTERN, "Pattern template, e.g. ^${value}"),
                 new Arg("file", "The file"),
                 new Arg("column2", "Column in main file", ATTR_TYPE, TYPE_COLUMN)),	
-	
 
         new Cmd(CMD_SKIPPATTERN, "Skip any line that matches the pattern",
 		ARG_LABEL,"Skip Pattern",
@@ -2269,7 +1825,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ENSURE_NUMERIC, "Throw error if non-numeric",
 		ARG_LABEL,"Ensure Numeric",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
-	
+
         /** *  Sliceand dice * */
         new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
@@ -2445,7 +2001,6 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_CROSS, "Make a cross product of 2 data files",
                 new Arg("file", "File to cross with", ATTR_TYPE, "file")),
 
-
         new Cmd(CMD_NORMAL, "Normalize the strings",
 		ARG_LABEL,"Normalize",
                 new Arg(ARG_COLUMNS, "Columns", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2562,7 +2117,6 @@ public class Seesv implements SeesvCommands {
                 new Arg("character", "Character to pad to"),
                 new Arg("length", "Length")),	
 
-
         new Cmd(CMD_TRIM, "Trim leading and trailing white space",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_TRIMQUOTES, "Trim leading and trailing quotes",
@@ -2671,7 +2225,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PARSEEMAIL, "Parse out name and email",
 		ARG_LABEL,"Parse Email",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
-		
+
         new Cmd(CMD_MAKEIDS, "Turn the header row into IDs (lowercase, no space, a-z0-9_)",
 		ARG_LABEL,"Make IDs"),
 
@@ -2732,7 +2286,6 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_GENDER, "Figure out the gender of the name in the column",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 
-
         /** *  Dates * */
         new Category("Dates"),
         new Cmd(CMD_INDATEFORMATS, "Specify one or more date formats for parsing",
@@ -2775,7 +2328,6 @@ public class Seesv implements SeesvCommands {
 		new Arg("what", "What type of offset, e.g., year, month, day_of_week, etc", "values",
 			"days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),	
 
-
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_MSTO, "Convert milliseconds to",
@@ -2797,7 +2349,6 @@ public class Seesv implements SeesvCommands {
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, "enumeration","values","<,<=,=,!=,>=,>")),	
-	
 
         /** *  Numeric * */
 	new Category("Numeric"),
@@ -3018,7 +2569,6 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("default","Default value")),	
 
-
         /** * Other  * */
         new Category("Misc"),
         new Cmd(CMD_APPLY, "Apply the commands to each of the columns",
@@ -3136,7 +2686,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_TCL, "Generate a TCL script",
 		ARG_LABEL,"Make TCL Script",
                 new Arg("proc_name", "")),
-	
+
         new Cmd(CMD_SUBD, "Subdivide into different files",
 		ARG_LABEL,"Subdivide",
 		new Arg(ARG_COLUMNS,"columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		
@@ -3147,7 +2697,6 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMNS,"lat/lon columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS),		
 		new Arg("degrees","Degrees per tile. Defaults to 1"),
 		new Arg("output_template","Output template - use ${ikey} or ${vkey}, e.g., tile${vkey}.csv. Defaults to a tile${vket}.csv")),		
-
 
         new Cmd(CMD_CHUNK, "Make a number of output files with a max number of rows",
 		ARG_LABEL,"Chunk Output",
@@ -3210,7 +2759,6 @@ public class Seesv implements SeesvCommands {
 	return s;
     }
 
-
     public void printVersion() throws Exception {
 	try {
 	    String path = "/org/ramadda/util/seesv/build.properties";
@@ -3228,15 +2776,6 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param msg _more_
-     * @param match _more_
-     * @param args _more_
-     * @throws Exception _more_
-     */
     public void usage(String msg, boolean format, String match, String... args)
 	throws Exception {
         boolean exact = false;
@@ -3365,7 +2904,7 @@ public class Seesv implements SeesvCommands {
                 } else {
 		    cmd = cmd.replaceAll("<br>","\n");
                     pw.println(pad + cmd);
-		    
+
                 }
             }
             if (raw && cmd.startsWith(CMD_DB)) {
@@ -3381,12 +2920,6 @@ public class Seesv implements SeesvCommands {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void genHelp() throws Exception {
 	StringBuilder sb = new StringBuilder();
 	StringBuilder header = new StringBuilder();	
@@ -3414,7 +2947,7 @@ public class Seesv implements SeesvCommands {
 		    sb.append("</div>");
 		}
 		sb.append("${header" + headers.size()+"}");
-	
+
 		if(hb.length()>0) {
 		    hb.append("</ul></div>");
 		}
@@ -3479,7 +3012,6 @@ public class Seesv implements SeesvCommands {
 	pw.append("</html>\n");	
         pw.flush();
     }
-
 
     private void processHelpContents(StringBuilder sb, String help) throws Exception {
 	if(help==null) return;
@@ -3562,17 +3094,6 @@ public class Seesv implements SeesvCommands {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param i _more_
-     * @param cnt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean ensureArg(List args, int i, int cnt) throws Exception {
         if (args.size() <= (i + cnt)) {
             String arg = (String) args.get(i);
@@ -3586,7 +3107,6 @@ public class Seesv implements SeesvCommands {
 	int method(TextReader ctx, List<String> args,int index); 
 
     }
-
 
     public static int SKIP_INDEX = -999;
     public static class CsvFunctionHolder {
@@ -3621,12 +3141,10 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-
     private void defineFunction(String[] names, int args, CsvFunction func) {
 	for(String  name: names)
 	    defineFunction(name,args,func);
     }
-
 
     private CsvFunctionHolder defineFunction(String name, int args, CsvFunction func) {
 	CsvFunctionHolder csvFunction = new CsvFunctionHolder(this,name,args,func);
@@ -3637,9 +3155,6 @@ public class Seesv implements SeesvCommands {
     }
 
     private void makeFunctions() {
-
-
-
 
 	defineFunction(new String[]{CMD_SKIPROWS,"-skip"},1,(ctx,args,i) -> {
 		ctx.setSkipRows(parseInt(args.get(++i)));
@@ -3711,8 +3226,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
 	defineFunction(new String[]{"-c",CMD_COLUMNS},1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSelector(ctx, getCols(args.get(++i))));
 		return i;
@@ -3755,7 +3268,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_FROMB64,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.B64Decode(ctx,getCols(args.get(++i))));
 		return i;
@@ -3765,7 +3277,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ParseEmail(ctx,getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_TOB64,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.B64Encode(ctx,getCols(args.get(++i))));
@@ -3804,8 +3315,6 @@ public class Seesv implements SeesvCommands {
 		ctx.setUniqueHeader(true);
 		return i;
 	    });
-
-	
 
 	defineFunction(CMD_ENSURE_NUMERIC,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.EnsureNumeric(ctx,getCols(args.get(++i))));
@@ -3863,7 +3372,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Fields(ctx));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_IF,3, (ctx,args,i) -> {
 		String type = args.get(++i);
@@ -3921,8 +3429,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Expand(this,ctx,cols,applyArgs));
 		return i;
 	    });
-
-
 
 	CsvFunction unfurlFunc = (ctx,args,i) -> {
 	    String       mainCol   = args.get(++i);
@@ -3996,7 +3502,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Filter.MatchesFile(ctx, false, args.get(++i),args.get(++i),args.get(++i),args.get(++i)));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_JOIN,5,(ctx,args,i) -> {
 		List<String> keys1   = getCols(args.get(++i));
@@ -4021,7 +3526,7 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.FuzzyJoiner(ctx, threshold, keys1, values1, file, keys2,args.get(++i)));
 		return i;
 	    });
-	
+
 	defineFunction(CMD_NORMAL,1,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
 		ctx.addProcessor(new RowCollector.Normal(ctx, cols));
@@ -4121,7 +3626,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction("-log",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Logger(ctx));
 		return i;
@@ -4136,7 +3640,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Counter(ctx, true, true));
 		return i;
 	    });
-
 
 	defineFunction(CMD_ROTATE,0,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Rotator(ctx));
@@ -4157,7 +3660,7 @@ public class Seesv implements SeesvCommands {
 		ctx.setLineFilters(Utils.split(args.get(++i)));
 		return i;
 	    });
-	
+
 	defineFunction(CMD_TAB,0,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = "tab");
 		return i;
@@ -4217,19 +3720,20 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_INCLUDE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.RowCutter(ctx, Utils.getNumbers(args.get(++i)), false));
 		return i;
 	    });
 
-
-	
 	defineFunction(CMD_GOEASY,0,(ctx,args,i) -> {
 		ctx.putProperty("goeasy",true);
 		return i;
 	    });
 
+	defineFunction(CMD_SETTING,2,(ctx,args,i) -> {
+		ctx.putProperty(args.get(++i),args.get(++i));
+		return i;
+	    });
 
 	defineFunction(CMD_SHEET,1,(ctx,args,i) -> {
 		sheetNumber = Integer.parseInt(args.get(++i));
@@ -4246,13 +3750,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-	
 	defineFunction(CMD_PERCENT,  1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnPercenter(getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_AVERAGE,3,(ctx,args,i) -> {
 		List<String> cols   = getCols(args.get(++i));
@@ -4290,7 +3791,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });				
 
-
 	defineFunction("-sumrow",0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnOperator());
 
@@ -4311,7 +3811,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Suffixer(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_EXPLODE,2,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Exploder(ctx, args.get(++i),args.get(++i)));
@@ -4347,7 +3846,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.FromHeading(getCols(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
 	    });				
-
 
 	defineFunction(CMD_GENDER,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Genderizer(args.get(++i)));
@@ -4405,7 +3903,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_GEOCODE,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
@@ -4417,7 +3914,6 @@ public class Seesv implements SeesvCommands {
 					 parseDouble(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_GEOCODEIFNEEDED,5,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(),args.get(++i),
@@ -4437,8 +3933,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
 	defineFunction(CMD_GEOCODEADDRESSDB,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Geocoder(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim(), true));
 		return i;
@@ -4451,7 +3945,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_POPULATION,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Populator(getCols(args.get(++i)), args.get(++i).trim(),args.get(++i).trim()));
 		return i;
@@ -4461,7 +3954,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.Regionator(getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_CROP,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Cropper(getCols(args.get(++i)), Utils.split(args.get(++i), ",", true, true)));
@@ -4482,12 +3974,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_ASCII,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ascii(getCols(args.get(++i)),args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_ISMOBILE,1,(ctx,args,i) -> {
 		if(!commandLine && !isVerifiedUser) {
@@ -4517,7 +4007,6 @@ public class Seesv implements SeesvCommands {
 		    });
 		return i;
 	    });
-	
 
 	defineFunction(CMD_SMS,3,(ctx,args,i) -> {
 		if(!commandLine && !isVerifiedUser) {
@@ -4579,7 +4068,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_CLEANPHONE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter(getCols(args.get(++i))) {
 			@Override
@@ -4622,14 +4110,11 @@ public class Seesv implements SeesvCommands {
 		    });
 		return i;
 	    });
-	
 
 	defineFunction(CMD_ENDSWITH,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnEndsWith(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-
-
 
 	defineFunction(CMD_EXTRACT,4,(ctx,args,i) -> {
 		String   col     = args.get(++i);
@@ -4643,7 +4128,6 @@ public class Seesv implements SeesvCommands {
 
 		return i;
 	    });
-
 
 	defineFunction(CMD_EXTRACTHTML,3,(ctx,args,i) -> {
 		String col = args.get(++i);
@@ -4664,13 +4148,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_CHECKMISSING,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.CheckMissing(args.get(++i),args.get(++i)));
 		return i;
 	    });	
-	
-
 
 	defineFunction(CMD_URLARG,2,(ctx,args,i) -> {
 		ctx.addProcessor(
@@ -4693,8 +4174,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.UrlDecode(getCols(args.get(++i))));
 		return i;
 	    });	
-	
-
 
 	defineFunction(CMD_TRUNCATE,3,(ctx,args,i) -> {
 		int    col    = parseInt(args.get(++i));
@@ -4705,7 +4184,6 @@ public class Seesv implements SeesvCommands {
 
 		return i;
 	    });
-
 
 	defineFunction(CMD_CHANGEROW,4,(ctx,args,i) -> {
 		List<Integer> rows    = Utils.getNumbers(args.get(++i));
@@ -4739,14 +4217,12 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_DATEFORMAT, 2,(ctx,args,i) -> {
 		outDater = inDater = new Dater(args.get(++i),args.get(++i));
 		ctx.addProcessor(new DateOps.DateFormatSetter(true, inDater));
 		ctx.addProcessor(new DateOps.DateFormatSetter(false, outDater));
 		return i;
 	    });
-
 
 	defineFunction(new String[]{CMD_INDATEFORMATS,"-indateformat"}, 2,(ctx,args,i) -> {
 		inDater = new Dater(args.get(++i),args.get(++i));
@@ -4793,8 +4269,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new DateOps.FormatDateOffset(col, what));
 		return i;
 	    });
-
-
 
 	defineFunction(CMD_BEFORE,2,(ctx,args,i) -> {
 		try {
@@ -4844,11 +4318,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
-
-
-
 	defineFunction(new String[]{CMD_HTMLTABLE,"-html"},3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.HtmlDataProvider(args.get(++i), args.get(++i),
 									 parseProps(args.get(++i))));
@@ -4868,7 +4337,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_TEXT,3,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.TextDataProvider(args.get(++i), args.get(++i), args.get(++i)));
 
@@ -4878,7 +4346,6 @@ public class Seesv implements SeesvCommands {
 		ctx.getProviders().add(new DataProvider.Pattern2DataProvider(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_EXTRACTPATTERN,2,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.PatternExtractDataProvider(args.get(++i), args.get(++i)));
@@ -4918,7 +4385,7 @@ public class Seesv implements SeesvCommands {
 
 		return i;
 	    });
-	
+
 	defineFunction(CMD_SQL,5,(ctx,args,i) -> {
 		//-sql db table cols "col1 value col2 value"
 		ctx.getProviders().add(new DataProvider.SqlDataProvider(args.get(++i),
@@ -4946,19 +4413,18 @@ public class Seesv implements SeesvCommands {
 		ctx.getProviders().add(new DataProvider.Pdf(this));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_SHAPEFILE,1,(ctx,args,i) -> {
 		makeInputStreamRaw = true;
 		ctx.getProviders().add(new ShapefileProvider(parseProps(args.get(++i))));
 		return i;
 	    });
-	
+
 	defineFunction("-kml",0,(ctx,args,i) -> {
 		ctx.getProviders().add(new DataProvider.KmlDataProvider());	
 		return i;
 	    });
-	
+
 	defineFunction(CMD_CHANGERAW,2,(ctx,args,i) -> {
 		ctx.addChangeFromTo(args.get(++i),args.get(++i));
 		return i;
@@ -4973,7 +4439,6 @@ public class Seesv implements SeesvCommands {
 		ctx.setPruneBytes(parseInt(args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_MERGEROWS,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowMerger(Utils.getNumbers(args.get(++i)), args.get(++i), args.get(++i)));
@@ -4992,7 +4457,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	
 	defineFunction(CMD_MAP, 3,(ctx,args,i) -> {
 		List<String> values;
 		List<String> cols  = getCols(args.get(++i));
@@ -5029,8 +4493,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ColumnMapper(cols, name, replace, values));
 		return i;
 	    });
-
-	
 
 	defineFunction(CMD_SPLIT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnSplitter(
@@ -5069,7 +4531,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new RowCollector.Slicer(ctx, cols, dest,fill));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_GENERATE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Generator(args.get(++i), parseDouble(args.get(++i)),
@@ -5077,19 +4538,15 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
 	defineFunction(CMD_MACRO, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnMacro(args.get(++i), args.get(++i), args.get(++i)));
 		return i;
 	    });
 
-
 	defineFunction(CMD_FORMAT, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnFormatter(getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
-
 
 	defineFunction(CMD_SCALE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)),
@@ -5104,7 +4561,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.MakeNumber(getCols(args.get(++i))));
 		return i;
 	    });	
-
 
 	defineFunction(CMD_DECIMALS, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Decimals(getCols(args.get(++i)), parseInt(args.get(++i))));
@@ -5125,7 +4581,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	
 	defineFunction(CMD_COPY, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 		return i;
@@ -5155,7 +4610,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Grabber(col,pattern,cols,names));
 		return i;
 	    });	
-
 
 	defineFunction(CMD_SPLAT, 4,(ctx,args,i) -> {
 		String key       = args.get(++i);
@@ -5190,8 +4644,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });			
 
-
-
 	defineFunction(CMD_OPERATOR, 3,(ctx,args,i) -> {
 		List<String> idxs = getCols(args.get(++i));
 		String       name = args.get(++i);
@@ -5207,13 +4659,11 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_DATECOMPARE, 3,(ctx,args,i) -> {
 		Processor processor = new DateOps.CompareDate(args.get(++i),args.get(++i),args.get(++i));
 		ctx.addProcessor(processor);
 		return i;
 	    });
-	
 
 	defineFunction(CMD_JS, 1,(ctx,args,i) -> {
 		js.append(args.get(++i));
@@ -5265,7 +4715,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction("-striptags", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.StripTags(getCols(args.get(++i))));
 		return i;
@@ -5274,7 +4723,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.Decoder(getCols(args.get(++i))));
 		return i;
 	    });	
-
 
 	defineFunction(CMD_CASE, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Case(getCols(args.get(++i)),args.get(++i)));
@@ -5285,7 +4733,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_PADLEFT, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PadLeftRight(true,getCols(args.get(++i)),args.get(++i),parseInt(args.get(++i))));
 		return i;
@@ -5295,13 +4742,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_NUMCOLUMNS, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.NumColumns(parseInt(args.get(++i))));
 		return i;
 	    });	
-
-
 
 	defineFunction(CMD_TRIM, 1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Trim(getCols(args.get(++i))));
@@ -5316,7 +4760,7 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new RowCollector.Cloner(parseInt(args.get(++i))));
 		return i;
 	    });
-	
+
 	defineFunction(CMD_ADDCELL, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnNudger(parseInt(args.get(++i)),parseInt(args.get(++i)), args.get(++i)));
 		return i;
@@ -5351,7 +4795,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_PRIORPREFIX, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PriorPrefixer(parseInt(args.get(++i)), args.get(++i), args.get(++i)));
 		return i;
@@ -5362,12 +4805,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_FAKER, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Faker(ctx,args.get(++i),getCols(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_MAKEIDS, 0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.MakeIds());
@@ -5393,13 +4834,10 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
-
 	defineFunction(CMD_COMBINE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnConcatter(getCols(args.get(++i)),args.get(++i),args.get(++i),false));
 		return i;
 	    });
-
 
 	defineFunction(CMD_COMBINEINPLACE, 3,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ColumnConcatter(getCols(args.get(++i)),args.get(++i),args.get(++i),true));
@@ -5417,7 +4855,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction("-or",0,(ctx,args,i) -> {
 		ctx.setFilterToAddTo(new Filter.FilterGroup(ctx,false));
 		ctx.addProcessor(ctx.getFilterToAddTo());
@@ -5434,7 +4871,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(ctx.getFilterToAddTo());
 		return i;
 	    });
-
 
 	defineFunction(CMD_SAME, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.Same(ctx,args.get(++i), args.get(++i),false));
@@ -5479,7 +4915,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-
 	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
@@ -5495,7 +4930,6 @@ public class Seesv implements SeesvCommands {
 						     parseDouble(args.get(++i))));
 		return i;
 	    });
-
 
 	defineFunction(CMD_LT, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
@@ -5532,7 +4966,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });		
 
-
 	defineFunction(CMD_BETWEENSTRING, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.BetweenString(ctx,false,
@@ -5568,8 +5001,6 @@ public class Seesv implements SeesvCommands {
 						     parseDouble(args.get(++i))));						     
 		return i;
 	    });
-	
-
 
 	defineFunction("-defined", 1,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
@@ -5592,7 +5023,6 @@ public class Seesv implements SeesvCommands {
 
 		return i;
 	    });
-	
 
 	defineFunction("-quit",0,(ctx,args,i) -> {
 		String last = args.get(args.size() - 1);
@@ -5620,7 +5050,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.DebugRows(parseInt(args.get(++i))));
 		return i;
 	    });
-	
 
 	defineFunction(CMD_HEADERNAMES,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderNames());
@@ -5631,12 +5060,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.HeaderIds());
 		return i;
 	    });
-	
+
 	defineFunction(CMD_IDS,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Ids());
 		return i;
 	    });	
-
 
 	defineFunction(CMD_ADDHEADER,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderMaker(this,parseProps(args.get(++i))));
@@ -5652,7 +5080,6 @@ public class Seesv implements SeesvCommands {
 		ctx.putProperty("deheader","true");
 		return i;
 	    });
- 
 
 	defineFunction("-output",1,(ctx,args,i) -> {
 		try {
@@ -5674,7 +5101,6 @@ public class Seesv implements SeesvCommands {
 		    throw new RuntimeException(exc);
 		}
 	    });
-
 
 	defineFunction(CMD_TOXML,2,(ctx,args,i) -> {
 		hasSink = true;
@@ -5700,8 +5126,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new DataSink.ToUrl());
 		return i;
 	    });
-	
-
 
 	defineFunction(CMD_TOJSON,1,(ctx,args,i) -> {
 		hasSink = true;
@@ -5713,9 +5137,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new DataSink.Write(this,args.get(++i),args.get(++i)));
 		return i;
 	    });
-	
-	
-
 
 	defineFunction(CMD_TABLE,0, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.Html(ctx));
@@ -5726,7 +5147,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Cols(parseInt(args.get((++i)))));
 		return i;
 	    });	
-
 
 	defineFunction("-dump",0,(ctx,args,i) -> {
 		ctx.addProcessor(
@@ -5749,7 +5169,6 @@ public class Seesv implements SeesvCommands {
 		ctx.setOutputPrefix(args.get(++i));
 		return i;
 	    });	
-	
 
 	defineFunction(CMD_OUTPUT,1,(ctx,args,i) -> {
 		String file  = args.get(++i);
@@ -5769,13 +5188,11 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-
 	defineFunction(CMD_EDIT,1,(ctx,args,i) -> {
 		if(!commandLine) throw new IllegalArgumentException(CMD_EDIT+" only enabled for command line usage");
 		ctx.addProcessor(new Converter.Editor(args.get(++i)));
 		return i;
 	    });	
-
 
 	defineFunction(new String[]{"-tocsv",CMD_PRINT,"-p",CMD_PRINTDELIM}, 0,(ctx,args,i) -> {
 		if(hasSink) return SKIP_INDEX;
@@ -5813,8 +5230,6 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new RowCollector.Stats(ctx, this,false,false));
 		return i;
 	    });		
-	
-
 
 	defineFunction(CMD_CHUNK, 2,(ctx,args,i) -> {
 		ctx.addProcessor(new Processor.Chunker(this, args.get(++i), parseInt(args.get(++i))));
@@ -5834,10 +5249,9 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Processor.Subd(this,cols,
 						    range,
 						    Utils.getDefinedString(args.get(++i), "tile${vkey}.csv")));
-		
+
 		return i;
 	    });	
-
 
 	defineFunction(CMD_TEMPLATE,4,(ctx,args,i) -> {
 		try {
@@ -5853,8 +5267,6 @@ public class Seesv implements SeesvCommands {
 		    throw new RuntimeException(exc);
 		}
 	    });
-
-
 
 	defineFunction(new String[]{"-hl",CMD_HIGHLIGHT},2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.Highlighter(
@@ -5874,20 +5286,15 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	
 	defineFunction(CMD_POINTHEADER,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.PrintHeader(true));
 		return i;
 	    });
 
-
-
 	defineFunction("-tcl", 1,(ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.TclWrapper(ctx, args.get(++i)));
 		return i;
 	    });
-
-
 
 	defineFunction("-dummy",0,(ctx,args,i) -> {return i;});
 
@@ -5900,17 +5307,6 @@ public class Seesv implements SeesvCommands {
 	return functions.get(id);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param files _more_
-     * @param providers _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public boolean parseArgs(List<String> args, TextReader ctx,    final List<IO.Path> files)
 	throws Exception {
 	this.inputFiles = files;
@@ -5964,7 +5360,6 @@ public class Seesv implements SeesvCommands {
 	    newArgs.add(arg);
 	}
 
-
 	if(filePatternNames.size()>0) {
 	    List<IO.Path> tmpFiles = new ArrayList<IO.Path>();
 	    if(files.size()>0) {
@@ -6005,7 +5400,6 @@ public class Seesv implements SeesvCommands {
 
 	args = newArgs;
 	//	debugArgs = true;
-
 
 	for (int i = 0; i < args.size(); i++) {
 	    String arg = args.get(i).trim();
@@ -6070,7 +5464,6 @@ public class Seesv implements SeesvCommands {
 		    if(gotOne) continue;
 		}
 
-
 		CsvFunctionHolder func = getFunction(arg);
 		if(func!=null) {
 		    int idx = func.run(ctx, args,i);
@@ -6081,7 +5474,6 @@ public class Seesv implements SeesvCommands {
 		    i = idx;
 		    continue;
 		}
-
 
 		if (arg.equals(CMD_ARGS)) {
 		    doArgs = true;
@@ -6117,7 +5509,6 @@ public class Seesv implements SeesvCommands {
 		    throw new IllegalArgumentException("Unknown argument: args[" + i+"]=" +
 						       arg+"  args:" + Utils.wrap(args,"a[${index}]=",", "));
 		}
-
 
 		if (addFiles) {
 		    if (debugFiles) {
@@ -6159,7 +5550,6 @@ public class Seesv implements SeesvCommands {
 	return true;
     }
 
-
     private void outputScript(List<String> args, TextReader ctx) throws Exception {
 	PrintWriter pw        = new PrintWriter(getOutputStream());
 	pw.println("#!/bin/sh");
@@ -6181,26 +5571,10 @@ public class Seesv implements SeesvCommands {
 	pw.close();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private List<String> getCols(String s) {
 	return Utils.split(s, ",", true, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param ctx _more_
-     * @param filterToAddTo _more_
-     * @param converter _more_
-     */
     private void handleFilter(TextReader ctx,
 			       Filter.FilterGroup filterToAddTo,
 			       Filter converter) {
@@ -6211,13 +5585,6 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public  Dictionary<String, String> parseProps(String s) {
 	if(s.startsWith(PREFIX_FILE) || s.startsWith(PREFIX_RESOURCE)) {
 	    try {
@@ -6257,7 +5624,6 @@ public class Seesv implements SeesvCommands {
 	s = s.replaceAll("_quote_", "\"");
 	s = s.replaceAll("\n", " ");
 
-
 	List<String> toks = Utils.parseCommandLine(s);
 	//	System.err.println("toks:" + toks);
 	Hashtable<String, String> props = new Hashtable<String, String>();
@@ -6283,7 +5649,6 @@ public class Seesv implements SeesvCommands {
 	}
 	return props;
     }
-
 
     public static int parseInt(String s,int...dflt) {
 	s = s.trim();
@@ -6338,8 +5703,6 @@ public class Seesv implements SeesvCommands {
         return toks;
     }
 
-
-
     public static List<List<String>> tokenizeCommands(String commandString, boolean keepLineSeparation) {
 	List<StringBuilder> toks =
 	    Seesv.tokenizeCommands(commandString);
@@ -6368,24 +5731,10 @@ public class Seesv implements SeesvCommands {
 	return llines;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDbId() {
 	return dbXml.getTableId();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception On badness
-     */
     public static void main(String[] args) throws Exception {
 	if(args.length>0 && args[0].equals("-s3")) {
 	    S3File.main(args);
@@ -6460,7 +5809,6 @@ public class Seesv implements SeesvCommands {
 	    setFormat(fmt,tz);
 	}
 
-
 	public void setFormat(String fmt, String timezone) {
 	    if(!Utils.stringDefined(fmt)) fmt = DFLT_DATEFORMAT;
 	    sdfString = fmt;
@@ -6475,7 +5823,7 @@ public class Seesv implements SeesvCommands {
 	    }
 
 	}
-	
+
 	public Date parseDate(String d) {
 	    if(!Utils.stringDefined(d)) return null;
 	    if(sdfs.size()==0) {
@@ -6513,7 +5861,7 @@ public class Seesv implements SeesvCommands {
 	    }
 	    return sdfs.get(0).format(d);
 	}
-	
+
 	public TimeZone getTimeZone() {
 	    return TimeZone.getTimeZone(timezone);
 	}

@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -19,138 +19,42 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.net.URL;
 
-
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
-/**
- * Class description
- *
- *
- * @version        $version$, Fri, Jan 9, '15
- * @author         Jeff McWhirter
- */
 @SuppressWarnings("unchecked")
 public abstract class Geo extends Processor {
 
-
-    /**
-     *
-     */
     public Geo() {}
 
-    /**
-     * @param col _more_
-     */
     public Geo(String col) {
         super(col);
     }
 
-    /**
-     *
-     * @param cols _more_
-     */
     public Geo(List<String> cols) {
         super(cols);
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Geocoder extends Geo {
-
-        /* */
-
-        /** _more_ */
         private HashSet seen = new HashSet();
-
-        /* */
-
-        /** _more_ */
         private boolean writeForDb = false;
-
-        /* */
-
-        /** _more_ */
         private int badCnt = 0;
-
-        /* */
-
-        /** _more_ */
         private int nameIndex;
-
-        /* */
-
-        /** _more_ */
         private int latIndex;
-
-        /* */
-
-        /** _more_ */
         private int lonIndex;
-
-        /* */
-
-        /** _more_ */
         private Hashtable<String, double[]> map;
-
-        /* */
-
-        /** _more_ */
         private boolean doneHeader = false;
-
-        /* */
-
-        /** _more_ */
         private boolean doAddress = false;
-
-        /* */
-
-        /** _more_ */
         private String prefix;
-
-        /* */
-
-        /** _more_ */
         private String suffix;
-
-        /* */
-
-        /** _more_ */
         private String latLabel = "Latitude";
-
-        /* */
-
-        /** _more_ */
         private String lonLabel = "Longitude";
-
-        /**  */
         private boolean ifNeeded;
-
-        /**  */
         private String sLatColumn;
-
-        /**  */
         private String sLonColumn;
 
-        /**
-         * @param col _more_
-         * @param mapFile _more_
-         * @param nameIndex _more_
-         * @param latIndex _more_
-         * @param lonIndex _more_
-         * @param writeForDb _more_
-         */
         public Geocoder(String col, String mapFile, int nameIndex,
                         int latIndex, int lonIndex, boolean writeForDb) {
 
@@ -166,13 +70,6 @@ public abstract class Geo extends Processor {
             }
         }
 
-
-
-        /**
-         * @param cols _more_
-         * @param prefix _more_
-         * @param suffix _more_
-         */
         public Geocoder(List<String> cols, String prefix, String suffix) {
             super(cols);
             this.prefix     = prefix;
@@ -181,15 +78,6 @@ public abstract class Geo extends Processor {
             doAddress       = true;
         }
 
-        /**
-         
-         *
-         * @param cols _more_
-         * @param prefix _more_
-         * @param suffix _more_
-         * @param lat _more_
-         * @param lon _more_
-         */
         public Geocoder(List<String> cols, String prefix, String suffix,
                         String lat, String lon) {
             this(cols, prefix, suffix);
@@ -198,13 +86,6 @@ public abstract class Geo extends Processor {
             sLonColumn = lon;
         }
 
-
-        /**
-         * @param cols _more_
-         * @param prefix _more_
-         * @param suffix _more_
-         * @param forDb _more_
-         */
         public Geocoder(List<String> cols, String prefix, String suffix,
                         boolean forDb) {
             super(cols);
@@ -214,11 +95,6 @@ public abstract class Geo extends Processor {
             doAddress       = true;
         }
 
-        /**
-         * @param filename _more_
-         * @return _more_
-         * @throws Exception _more_
-         */
         private Hashtable<String, double[]> makeMap(String filename)
                 throws Exception {
             Hashtable<String, double[]> map = new Hashtable<String,
@@ -256,11 +132,6 @@ public abstract class Geo extends Processor {
             return map;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
 
@@ -375,34 +246,14 @@ public abstract class Geo extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class StateNamer extends Geo {
 
-
-        /** _more_ */
         private int col = -1;
 
-        /**
-         * @param col _more_
-         */
         public StateNamer(String col) {
             super(col);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (col < 0) {
@@ -427,52 +278,24 @@ public abstract class Geo extends Processor {
 
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class Elevation extends Geo {
 
-
-        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_ */
         private String lat;
 
-        /** _more_ */
         private String lon;
 
-
-        /** _more_ */
         private int latColumn = -1;
 
-        /** _more_ */
         private int lonColumn = -1;
 
-
-        /**
-         * @param lat _more_
-         * @param lon _more_
-         */
         public Elevation(String lat, String lon) {
             super();
             this.lat = lat;
             this.lon = lon;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowIdx++ == 0) {
@@ -507,40 +330,20 @@ public abstract class Geo extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Neighborhood extends Geo {
 
-
-        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_ */
         private String lat;
 
-        /** _more_ */
         private String lon;
 
-
-        /** _more_ */
         private int latColumn = -1;
 
-        /** _more_ */
         private int lonColumn = -1;
-
 
 	private String dflt;
 
-        /**
-         * @param lat _more_
-         * @param lon _more_
-         */
         public Neighborhood(String lat, String lon, String dflt) {
             super();
             this.lat = lat;
@@ -548,11 +351,6 @@ public abstract class Geo extends Processor {
 	    this.dflt = dflt;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowIdx++ == 0) {
@@ -581,45 +379,22 @@ public abstract class Geo extends Processor {
 
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class GeoNamer extends Geo {
 
-
-        /** _more_ */
         private int rowIdx = 0;
 
-        /** _more_ */
         private String where;
 
-        /** _more_ */
         private String lat;
 
-        /** _more_ */
         private String lon;
 
-
-        /** _more_ */
         private int latColumn = -1;
 
-        /** _more_ */
         private int lonColumn = -1;
 
-
-        /**  */
         private List<String> fields;
 
-        /**
-         * @param where _more_
-         * @param what _more_
-         * @param lat _more_
-         * @param lon _more_
-         */
         public GeoNamer(String where, String what, String lat, String lon) {
             super();
             this.fields = Utils.split(what, ",", true, true);
@@ -628,11 +403,6 @@ public abstract class Geo extends Processor {
             this.lon    = lon;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowIdx++ == 0) {
@@ -691,45 +461,20 @@ public abstract class Geo extends Processor {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
     public static class GeoContains extends Geo {
 
-
-        /**  */
         private String file;
 
-        /** _more_ */
         private String name;
 
-        /** _more_ */
         private String lat;
 
-        /** _more_ */
         private String lon;
 
-
-        /** _more_ */
         private int latColumn = -1;
 
-        /** _more_ */
         private int lonColumn = -1;
 
-
-
-        /**
-         * @param file _more_
-         * @param name _more_
-         * @param lat _more_
-         * @param lon _more_
-         */
         public GeoContains(String file, String name, String lat, String lon) {
             super();
             this.file = file;
@@ -738,11 +483,6 @@ public abstract class Geo extends Processor {
             this.lon  = lon;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -778,30 +518,12 @@ public abstract class Geo extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
     public static class DecodeLatLon extends Geo {
 
-
-        /**
-         *
-         * @param cols _more_
-         */
         public DecodeLatLon(List<String> cols) {
             super(cols);
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -816,46 +538,21 @@ public abstract class Geo extends Processor {
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Apr 13, '22
-     * @author         Enter your name here...    
-     */
     public static class GetAddress extends Geo {
 
-
-        /**  */
         private String lat;
 
-        /**  */
         private String lon;
 
-        /**  */
         private int latColumn;
 
-        /**  */
         private int lonColumn;
 
-
-
-        /**
-         * @param file _more_
-         * @param lat _more_
-         * @param lon _more_
-         */
         public GetAddress(String lat, String lon) {
             this.lat = lat;
             this.lon = lon;
         }
 
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if (rowCnt++ == 0) {
@@ -895,78 +592,46 @@ public abstract class Geo extends Processor {
 
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Mar 14, '20
-     * @author         Enter your name here...
-     */
     public static class Populator extends Geo {
 
         /* */
 
-        /** _more_ */
         private HashSet seen = new HashSet();
 
-        /** _more_ */
         private int badCnt = 0;
 
         /* */
 
-        /** _more_ */
         private int nameIndex;
 
         /* */
 
-        /** _more_ */
         private int latIndex;
 
         /* */
 
-        /** _more_ */
         private int lonIndex;
 
         /* */
 
-        /** _more_ */
         private Hashtable<String, double[]> map;
 
         /* */
 
-        /** _more_ */
         private boolean doneHeader = false;
 
-        /** _more_ */
         private String prefix;
 
         /* */
 
-        /** _more_ */
         private String suffix;
 
-        /**
-         * _more_
-         * @param cols _more_
-         * @param prefix _more_
-         * @param suffix _more_
-         */
         public Populator(List<String> cols, String prefix, String suffix) {
             super(cols);
             this.prefix = prefix;
             this.suffix = suffix;
         }
 
-
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             List values = row.getValues();
@@ -1006,7 +671,6 @@ public abstract class Geo extends Processor {
                 key.append(suffix);
             }
 
-
             Place place = GeoUtils.getLocationFromAddress(key.toString(),
                               null);
             if (place != null) {
@@ -1022,10 +686,7 @@ public abstract class Geo extends Processor {
 
     }
 
-
-
     public static class InBounds extends Filter {
-
 
 	String latCol;
 	String lonCol;
@@ -1068,27 +729,12 @@ public abstract class Geo extends Processor {
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, Mar 14, '20
-     * @author         Enter your name here...
-     */
     public static class Regionator extends Geo {
 
-        /** _more_ */
         private boolean doneHeader = false;
 
-        /** _more_ */
         private Properties props;
 
-
-        /**
-         * _more_
-         * @param cols _more_
-         */
         public Regionator(List<String> cols) {
             super(cols);
             props = new Properties();
@@ -1103,12 +749,6 @@ public abstract class Geo extends Processor {
             }
         }
 
-
-        /**
-         * @param ctx _more_
-         * @param row _more_
-         * @return _more_
-         */
         @Override
         public Row processRow(TextReader ctx, Row row) {
             if ( !doneHeader) {
@@ -1146,9 +786,5 @@ public abstract class Geo extends Processor {
         }
 
     }
-
-
-
-
 
 }
