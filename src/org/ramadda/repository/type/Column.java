@@ -1057,6 +1057,18 @@ public class Column implements DataTypes, Constants, Cloneable {
         formatValue(request, entry, sb, output, values, null, raw,notMacros);
     }
     
+    public static String escapeComma(String s) {
+	if(s==null) return s;
+	s = s.replace("\\,","_comma_");
+	return s;
+    }
+    public static String unescapeComma(String s) {
+	if(s==null) return s;
+	s = s.replace("_comma_",",");
+	return s;
+    }    
+
+
     /**
        get display value for html
      */
@@ -1293,7 +1305,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             } else {
                 if (isType(DATATYPE_LIST)) {
-                    s = s.replaceAll("\n", "<br>");
+		    System.err.println("before:" + s);
+		    s = escapeComma(s);
+                    s = s.replace(",", "<br>");
+		    s = unescapeComma(s);
+		    System.err.println("after:" + s);
                 }
             }
             if (s.length() == 0) {
@@ -2682,9 +2698,11 @@ public class Column implements DataTypes, Constants, Cloneable {
             } else {
                 String domId = HU.getUniqueId("input_");
                 if ((rows > 1) || isWiki) {
+		    value = value.replace("\\n","\n");
                     if (isType(DATATYPE_LIST)) {
-                        value = StringUtil.join("\n",
-						Utils.split(value, ",", true, true));
+			value = escapeComma(value);
+			value = StringUtil.join("\n",Utils.split(value, ",", true, true));
+			value = unescapeComma(value);
                     }
                     if (isWiki) {
                         StringBuilder tmp = new StringBuilder();
@@ -2838,6 +2856,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (request.exists(urlArg)) {
                 String value = request.getAnonymousEncodedString(urlArg,
 								 (String)Utils.getNonNull(values[offset],dflt,""));
+		value = value.replace(",","\\,");
                 value = StringUtil.join(", ",
                                         Utils.split(value, "\n", true, true));
                 values[offset] = value;
