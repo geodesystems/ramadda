@@ -33,11 +33,9 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -56,7 +54,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-
 @SuppressWarnings("unchecked")
 public class Column implements DataTypes, Constants, Cloneable {
     static int xcnt;
@@ -65,8 +62,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final HtmlUtils HU = null;
     public static final boolean DEBUG_TIME=false;
     public static final boolean DEBUG=false;
-
-
 
     public static final String ARG_EDIT_PREFIX = "edit_";
     public static final String ARG_SEARCH_PREFIX = "search.";
@@ -79,7 +74,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final String EXPR_GT = ">";
     public static final String EXPR_GE = ">=";
     public static final String EXPR_BETWEEN = "between";
-    
+
     public static final List EXPR_ITEMS =
         Misc.newList(new TwoFacedObject("", ""),
                      new TwoFacedObject("=", EXPR_EQUALS),
@@ -91,7 +86,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	+ "|" + EXPR_GE + "|"
 	+ EXPR_BETWEEN;
 
-    
     public static final String SEARCHTYPE_TEXT = "text";
     public static final String SEARCHTYPE_SELECT = "select";
     public static final String TAG_COLUMN = "column";
@@ -137,16 +131,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     private SimpleDateFormat dateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm Z");
-    
+
     private SimpleDateFormat fullDateTimeFormat =
         new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
-    
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private SimpleDateFormat displayFormat = null;
     private SimpleDateFormat dateParser = null;
     private boolean importDateIsEpoch = false;
-
 
     /** Lat/Lon format */
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
@@ -257,7 +250,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.offset      = offset;
     }
 
-
     public Column(TypeHandler typeHandler, Element element, int offset)
 	throws Exception {
 
@@ -285,8 +277,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         help = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         postFix = Utils.getAttributeOrTag(element, ATTR_POSTFIX, (String) null);	
         searchHelp = Utils.getAttributeOrTag(element, "searchhelp", (String) null);	
-
-
 
 	//	if(Utils.stringDefined(suffix))
 	//	    System.err.println(typeHandler +" " +name + " suffix:" + Utils.clip(suffix,20,"...").replaceAll("\n"," "));	
@@ -337,13 +327,11 @@ public class Column implements DataTypes, Constants, Cloneable {
                            XmlUtil.getAttribute(propNode, "value"));
         }
 
-
         List displayNodes = XmlUtil.findChildren(element, "display");
         for (int i = 0; i < displayNodes.size(); i++) {
             Element node = (Element) displayNodes.get(i);
             displays.add(new Display(node));
         }
-
 
         description = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
 
@@ -365,14 +353,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    macros  =Utils.splitMacros(htmlTemplate);
 	}
 
-
-
         type = Utils.getAttributeOrTag(element, ATTR_TYPE, DATATYPE_STRING);
         changeType = getAttributeOrTag(element, ATTR_CHANGETYPE, false);
 	dropColumnVersion = XmlUtil.getAttribute(element,"dropcolumnversion",(String)null);
 
         showEmpty  = getAttributeOrTag(element, "showempty", true);
-
 
         doPolygonSearch     = getAttributeOrTag(element, "dopolygonsearch", false);
 	//If it is a latlon then always do the negation
@@ -439,7 +424,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             numberFormat = new DecimalFormat(tmp);
         }
 
-
         if (isEnumeration()) {
             String valueString = XmlUtil.getAttribute(element, ATTR_VALUES,
 						      (String) null);
@@ -489,8 +473,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-
-
     public String getDisplayAttribute(String attr, Object v) {
         Display d = getDisplay(v);
         if (d == null) {
@@ -499,8 +481,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         return d.getAttribute(attr);
     }
-
-
 
     public Display getDisplay(Object v) {
         if (displays.size() == 0) {
@@ -529,7 +509,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return null;
     }
 
-
     public String getIcon(String v) {
 	if(icons!=null) {
 	    String icon = null;
@@ -544,7 +523,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	}
 	return null;
     }
-
 
     public String decorate(String v) {
         Display d = getDisplay(v);
@@ -573,7 +551,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return names;
     }
 
-
     public static Object[] makeValueArray(List<Column> columns) {
         int size = 0;
         for (Column c : columns) {
@@ -590,7 +567,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         return new Object[size];
     }
-
 
     public static List<Column> sortColumns(List<Column> columns) {
         List<Column> tmp = new ArrayList<Column>();
@@ -621,7 +597,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         enumValues = new ArrayList<HtmlUtils.Selector>();
 
 	String icon = null;
-	
+
 	int cnt = 0;
 	for (String tok : tmp) {
 	    tok  =tok.trim();
@@ -663,7 +639,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-
     public boolean isType(String t) {
         return type.equals(t);
     }
@@ -671,7 +646,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean getDoInlineEdit() {
 	return doInlineEdit;
     }
-
 
     public String getProperty(String key) {
         return getProperty(key, null);
@@ -689,40 +663,30 @@ public class Column implements DataTypes, Constants, Cloneable {
         return prop;
     }
 
-
-    
     public void putProperty(String key, String value) {
         properties.put(key, value);
     }
 
-
-    
     public Hashtable getProperties() {
         return properties;
     }
 
-
-    
     public String msg(String s) {
         return typeHandler.msg(s);
     }
 
-    
     public String msgLabel(String s) {
         return typeHandler.msgLabel(s);
     }
 
-    
     public Repository getRepository() {
         return typeHandler.getRepository();
     }
 
-    
     public DatabaseManager getDatabaseManager() {
         return getRepository().getDatabaseManager();
     }
 
-    
     public String getJson(Request request) throws Exception {
 	if(adminOnly &&!request.isAdmin()) return null;
         List<String> col = new ArrayList<String>();
@@ -785,15 +749,11 @@ public class Column implements DataTypes, Constants, Cloneable {
 
         return JsonUtil.map(col);
 
-
     }
 
-
-    
     public boolean isNumeric() {
         return isInteger() || isDouble();
     }
-
 
     public boolean isInteger() {
         return isType(DATATYPE_INT);
@@ -807,7 +767,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return isType(DATATYPE_PASSWORD);
     }
 
-    
     public boolean isBoolean() {
         return isType(DATATYPE_BOOLEAN);
     }
@@ -819,8 +778,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean isLatLon() {
 	return isType(DATATYPE_LATLON);
     }
-    
-    
+
     public boolean isEnumeration() {
         return isType(DATATYPE_ENUMERATION)
 	    || isType(DATATYPE_ENUMERATIONPLUS)
@@ -831,18 +789,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         return  isType(DATATYPE_MULTIENUMERATION);
     }    
 
-    
     public boolean isDate() {
         return isType(DATATYPE_DATETIME) || isType(DATATYPE_DATE);
     }
 
-    
     public boolean isDouble() {
         return isType(DATATYPE_DOUBLE) || isType(DATATYPE_PERCENTAGE);
     }
 
-
-    
     public boolean isString() {
         return isType(DATATYPE_STRING) || isEnumeration()
 	    || isType(DATATYPE_CLOB) || isType(DATATYPE_JSONLIST)
@@ -851,16 +805,13 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    || isType(DATATYPE_LIST);
     }
 
-    
     public boolean isMediaUrl() {
         return isMediaUrl;
     }
 
-    
     public boolean isRequired() {
         return required;
     }
-
 
     public boolean getAdminOnly() {
 	return adminOnly;
@@ -879,7 +830,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return true;
     }
 
-
     public Object uncheckedGetObject(Request request, Object[] values) {
         if (values == null) {
             return null;
@@ -895,7 +845,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return values[idx];
     }
 
-    
     public String uncheckedGetString(Request request,Object[] values) {
 	Object o = uncheckedGetObject(request, values);
         if (o == null) {
@@ -919,7 +868,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
         return ((Double) o).doubleValue();
     }
-
 
     private String toString(Object[] values, int idx) {
         if (values == null) {
@@ -958,7 +906,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return latLonFormat.format(d);
     }
 
-    
     private boolean toBoolean(Object[] values, int idx) {
         if (values[idx] == null) {
             if (Utils.stringDefined(dflt)) {
@@ -971,7 +918,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ((Boolean) values[idx]).booleanValue();
     }
 
-
     public Object getValue(Request request, Entry entry) {
 	if(!accessOk(request, entry)) {
 	    return null;
@@ -982,7 +928,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     private static final double[]NULL_BBOX={Double.NaN,Double.NaN,Double.NaN,Double.NaN};
     private static final double[]NULL_LATLON={Double.NaN,Double.NaN,Double.NaN,Double.NaN};    
-
 
     public double[] getLatLonBbox(Request request,Entry entry) {
 	if(entry==null) return NULL_BBOX;
@@ -1016,7 +961,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                               Utils.getDouble(values[offset + 3]) };
     }
 
-
     public double[] getLatLon(Request request,Object []values) {
 	if(values==null) return NULL_LATLON;
 	double lat = Double.NaN;
@@ -1030,18 +974,15 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return new double[]{lat,lon};
     }
 
-    
     public boolean hasLatLon(Request request,Entry entry) {
 	double[]latlon = getLatLon(request,entry);
 	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]);
     }
 
-    
     public boolean hasLatLonBox(Request request,Entry entry) {
 	double[]latlon = getLatLonBbox(request,entry);
 	return !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[1]) && !Double.isNaN(latlon[2])&& !Double.isNaN(latlon[3]);
     }
-
 
     public String formatValue(Request request, Entry entry,  Object[] values,boolean...notMacros)
 	throws Exception {
@@ -1050,13 +991,12 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return sb.toString();
     }
 
-    
     public void formatValue(Request request, Entry entry, Appendable sb,
                             String output, Object[] values, boolean raw,boolean...notMacros)
 	throws Exception {
         formatValue(request, entry, sb, output, values, null, raw,notMacros);
     }
-    
+
     public static String escapeComma(String s) {
 	if(s==null) return s;
 	s = s.replace("\\,","_comma_");
@@ -1067,7 +1007,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	s = s.replace("_comma_",",");
 	return s;
     }    
-
 
     /**
        get display value for html
@@ -1230,7 +1169,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 				getRepository().getEntryManager().getAjaxLink(
 									      request, theEntry,
 									      theEntry.getName()).toString();
-			    
+
 			    if(cnt++>0) sb.append(", ");
 			    sb.append(link);
 			}
@@ -1296,7 +1235,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             }
 
-
         } else {
             String s = toString(values, offset);
             if (raw) {
@@ -1317,7 +1255,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                     return false;
                 }
             }
-
 
             if (rows > 1) {
                 s = getRepository().getWikiManager().wikifyEntry(request,
@@ -1364,12 +1301,9 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-
-    
     public LinkedHashMap<String, String> getEnumTable() {
         return enumMap;
     }
-
 
     /**
      * Gets the string to display for enumeration values
@@ -1382,7 +1316,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return getEnumLabel(value, true);
     }
 
-    
     public String getEnumLabel(String value, boolean forDisplay) {
         String label = getEnumLabelInner(value);
         if ( !forDisplay && (label.length() == 0)) {
@@ -1392,7 +1325,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return label;
     }
 
-    
     private String getEnumLabelInner(String value) {
         if (value == null) {
             return "null";
@@ -1423,9 +1355,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return label;
     }
 
-
-
-    
     public String getEnumValue(String label) {
         if (label == null) {
             return null;
@@ -1440,17 +1369,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         return label;
     }
 
-    
     public int getOffset() {
         return offset;
     }
 
-    
     public void setOffset(int o) {
         offset = o;
     }
 
-    
     protected int setValues(PreparedStatement statement, Object[] values,
                             int statementIdx)
 	throws Exception {
@@ -1466,7 +1392,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-    
     private int setValuesInner(PreparedStatement statement, Object[] values,
                                int statementIdx)
 	throws Exception {
@@ -1608,8 +1533,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-
-    
     public void addToEntryNode(Request request,Entry entry, Object[] values, Element node,boolean encode)
 	throws Exception {
 	if(!accessOk(request, entry)) return;
@@ -1641,8 +1564,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 						    stringValue, encode));
     }
 
-
-    
     public int readValues(Entry entry, ResultSet results, Object[] values,
                           int valueIdx)
 	throws Exception {
@@ -1763,7 +1684,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-    
     public void createTable(Statement statement, boolean ignoreErrors)
 	throws Exception {
 	if (isSynthetic()) {
@@ -1827,7 +1747,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 					       + " for " + name);
         }
 
-
         if (oldNames != null) {
             for (int i = 0; i < oldNames.size(); i++) {
                 String sql = "update " + getTableName() + " set " + name
@@ -1847,8 +1766,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-
-    
     public Object convert(String value) {
 	if(isSynthetic()) {
 	    //noop
@@ -1871,17 +1788,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return value;
     }
 
-
-    
     public String getTableName() {
         return typeHandler.getTableName();
     }
 
-
-
-    
-
-    
     public void addGeoExclusion(List<Clause> clauses) {
         if (isLatLon()) {
             String id = getFullName();
@@ -1894,8 +1804,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return  request.getString(searchArg+"_"+ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(VALUE_AREA_OVERLAPS);
     }
 
-
-
     public double[] getAreaSearchArgs(Request request) {
 	String searchArg=getSearchArg();
 	double north = request.get(searchArg + "_north",Double.NaN);
@@ -1906,7 +1814,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-    
     public void assembleWhereClause(Request request, List<Clause> where,  Appendable searchCriteria)
 	throws Exception {
 	assembleWhereClause(request, where, searchCriteria,getSearchArg());
@@ -1926,7 +1833,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    return;
 	}
 
-
         boolean[] fromFile  = { false };
         boolean   doNegate  = false;
         if (request.defined(searchArg + "_not")) {
@@ -1943,8 +1849,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 					  true, true);
             }
         }
-
-
 
         String          columnName = getFullName();
         DatabaseManager dbm        = getDatabaseManager();
@@ -2015,7 +1919,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    where.add(Clause.or(ors));
 		}
 	    }
-
 
             getRepository().getSessionManager().setArea(request, north, west,
 							south, east);
@@ -2259,8 +2162,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-
-    
     public void addTextSearch(String text, List<Clause> where,
                               boolean doNegate) {
         String       DELIM_AND = " AND ";
@@ -2326,7 +2227,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-    
     private String getSearchValue(Request request) {
         String dflt      = null;
         String searchArg = getSearchArg();
@@ -2337,8 +2237,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return dflt;
     }
 
-
-    
     private List<String> getSearchValues(Request request, String searchArg) throws Exception {
         List<String> result    = new ArrayList<String>();
 	for (Object arg : request.get(searchArg,  new ArrayList())) {
@@ -2347,8 +2245,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return result;
     }
 
-
-    
     public int matchValue(String arg, Object value, Object[] values) {
         if (isLatLon()) {
             //TODO:
@@ -2419,21 +2315,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         formBuffer.append("\n");
     }
 
-
-
-
     //For now just change the edit argument by adding a edit_ prefix
 
-    
     public String getEditArg() {
         return ARG_EDIT_PREFIX + getFullName().replace(".", "_");
     }
 
-
-    
     private String overrideSearchArg;
 
-    
     public void setSearchArg(String arg) {
         overrideSearchArg = arg;
     }
@@ -2442,7 +2331,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return arg+"_raw";
     }
 
-    
     public String getSearchArg() {
         if (overrideSearchArg != null) {
             return overrideSearchArg;
@@ -2451,7 +2339,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
-    
     public String getFormWidget(Request request, Entry entry,
                                 Object[] values, FormInfo formInfo)
 	throws Exception {
@@ -2536,7 +2423,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    //For now ask the typehandler for the enum values
 	    //we used to just use the  TypeHandler.enumValues but that is wrong?
 	    List<HtmlUtils.Selector> enumValues;
-	    
+
 	    if(false &&
 	       isType(DATATYPE_ENUMERATION) &&
 	       this.enumValues!=null && this.enumValues.size()>0) {
@@ -2544,8 +2431,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    } else {
 		enumValues = typeHandler.getEnumValues(request, this, null);
 	    }
-
-
 
 	    String widgetId = HU.getUniqueId("widget_");
 	    String width = (String) Utils.getNonNull(menuWidth,"14em");
@@ -2584,9 +2469,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    } else {
 		widget = HU.input(urlArg, value,HU.attr("size",""+ columns));
 	    }
-
-
-
 
         } else if (isType(DATATYPE_INT)) {
             String value = ((dflt != null)
@@ -2739,7 +2621,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return widget;
     }
 
-    
     private List getEnumPlusValues(Request request, Entry entry)
 	throws Exception {
         List<HtmlUtils.Selector> enums = typeHandler.getEnumValues(request, this,
@@ -2764,14 +2645,13 @@ public class Column implements DataTypes, Constants, Cloneable {
         return enums;
     }
 
-    
     private String getEnumerationPopup(String widgetId) {
 	String popupArgs = "{icon:true,makeButtons:false,after:true,single:true}";
 	return HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 				 HU.quote("#"+widgetId),
 				 popupArgs));
     }
-    
+
     public void setValue(Request request, Entry entry, Object[] values)
 	throws Exception {
 
@@ -2947,18 +2827,14 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-
     public boolean isDefaultNone() {
 	return Utils.equals(dflt,"none");
     }
 
-    
     public void setValue(Entry entry,  Object value)
 	throws Exception {
 	setValue(entry,entry.getTypeHandler().getEntryValues(entry), value);
     }
-
-
 
     public void setValue(Entry entry, Object[] values, Object value)
 	throws Exception {
@@ -3025,8 +2901,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         }
     }
 
-
-    
     private Date parseDate(String value) throws Exception {
         if ( !Utils.stringDefined(value)) {
             return null;
@@ -3050,15 +2924,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         return Utils.parseDate(value);
     }
 
-    
     public void addToSearchForm(Request request, Appendable formBuffer,
                                 List<Clause> where,boolean...horizontal)
 	throws Exception {
         addToSearchForm(request, formBuffer, where, null,horizontal);
     }
 
-
-    
     private String[] getNWSE(Request request, Entry entry, String searchArg,
                              boolean fromEntry) {
         if ( !fromEntry && request.defined(searchArg + "_north")) {
@@ -3078,7 +2949,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return new String[] { "", "", "", "" };
     }
 
-    
     public void addToSearchForm(Request request, Appendable formBuffer,
                                 List<Clause> where, Entry entry,boolean...horizontal)
 	throws Exception {
@@ -3095,7 +2965,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 				 boolean...horizontal)
 	throws Exception {	
 	boolean vertical = horizontal.length>0?!horizontal[0]:true;
-
 
         String       columnName = getFullName();
 
@@ -3203,7 +3072,6 @@ public class Column implements DataTypes, Constants, Cloneable {
                 selectExtra += HU.cssClass("search-select");
             }
 
-
             //      if(true) return;
             //            System.err.println(getName() + " values=" + tmpValues);
             StringBuilder tmpb = new StringBuilder();
@@ -3215,7 +3083,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 		tmpb.append("Or select:");
 		tmpb.append(HU.space(1));		
 	    }
-
 
 	    List<String> selectedValues = new ArrayList<String>();
 	    for(String v: getSearchValues(request,searchArg)) {
@@ -3431,7 +3298,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget += HU.div(HU.makeShowHideBlock("File...", file, visible));
         }
 
-
 	if(horizontal.length>0 && horizontal[0]) {
 	    HU.formEntry(formBuffer,    msgLabel(getSearchLabel()),widget);
 	} else {
@@ -3442,7 +3308,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         formBuffer.append("\n");
 
     }
-
 
     private List<Column> getGroupedColumns() throws Exception {
 	if(groupedColumns==null) {
@@ -3460,7 +3325,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return groupedColumns;
     }
 
-    
     protected String getLabel(String value) throws Exception {
         String desc = getRepository().getFieldDescription(value + ".label",
 							  propertiesFile);
@@ -3476,7 +3340,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     }
 
-    
     public String getFullName() {
         if (fullName == null) {
             fullName = getTableName() + "." + name;
@@ -3484,14 +3347,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return fullName;
     }
 
-
-    
     public void setName(String value) {
         name = value;
     }
 
-
-    
     public List<String> getColumnNames() {
         List<String> names = null;
         if (names == null) {
@@ -3514,7 +3373,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return names;
     }
 
-    
     public String getSortByColumn() {
         if (isLatLon()) {
             return name + "_lat";
@@ -3526,14 +3384,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         return name;
     }
 
-
-    
     public String getName() {
         return name;
     }
-
-    
-
 
     public String getDisplayGroup(){
         return displayGroup;
@@ -3543,27 +3396,22 @@ public class Column implements DataTypes, Constants, Cloneable {
         return editGroup;
     }    
 
-
     public String getSubGroup(){
 	return subGroup;
     }
-    
+
     public String getPropertiesFile() {
         return propertiesFile;
     }
 
-    
     public void setLabel(String value) {
         label = value;
     }
 
-    
     public String getDisplayLabel() {
 	if(displayLabel!=null) return displayLabel;
 	return getLabel();
     }
-
-
 
     public String getLabel() {
         return label;
@@ -3573,27 +3421,22 @@ public class Column implements DataTypes, Constants, Cloneable {
         return searchLabel;
     }    
 
-    
     public void setDescription(String value) {
         description = value;
     }
 
-    
     public String getDescription() {
         return description;
     }
 
-    
     public void setType(String value) {
         type = value;
     }
 
-    
     public String getType() {
         return type;
     }
 
-    
     public boolean isField(String name) {
         return Misc.equals(this.name, name) || Misc.equals(this.label, name);
     }
@@ -3601,64 +3444,51 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void setValues(List<HtmlUtils.Selector> value) {
         enumValues = value;
     }
-    
 
     public List<HtmlUtils.Selector> getValues() {
         return enumValues;
     }
 
-    
     public void setDflt(String value) {
         dflt = value;
     }
 
-    
     public String getDflt() {
         return dflt;
     }
 
-    
     public String toString() {
         return name+" type:" + type +" offset:" + offset;
     }
 
-    
     public int getRows() {
         return rows;
     }
 
-    
     public void setSize(int value) {
         size = value;
     }
 
-    
     public int getSize() {
         return size;
     }
 
-
-    
     public void setEditable(boolean value) {
         editable = value;
     }
 
-    
     public boolean getEditable() {
         return editable;
     }
 
-    
     public boolean getShowInForm() {
         return showInForm;
     }
 
-    
     public String getSuffix() {
         return suffix;
     }
 
-    
     public String getHelp() {
         return help;
     }
@@ -3667,9 +3497,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return postFix;
     }    
 
-
-
-    
     public String getAttributeOrTag(Element node, String attrOrTag,
                                     String dflt)
 	throws Exception {
@@ -3691,7 +3518,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return dflt;
     }
 
-    
     public String getAttributeOrTagOrFromType(Element node, String attrOrTag,
 					      String dflt)
 	throws Exception {
@@ -3710,9 +3536,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return s;
     }
 
-
-
-    
     private boolean getAttributeOrTag(Element node, String attrOrTag,
                                       boolean dflt)
 	throws Exception {
@@ -3724,8 +3547,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return attrValue.equals("true");
     }
 
-
-    
     private int getAttributeOrTag(Element node, String attrOrTag, int dflt)
 	throws Exception {
         String attrValue = getAttributeOrTag(node, attrOrTag, (String) null);
@@ -3736,8 +3557,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         return Integer.parseInt(attrValue);
     }
 
-
-    
     public double getAttributeOrTag(Element node, String attrOrTag,
                                     double dflt)
 	throws Exception {
@@ -3749,38 +3568,30 @@ public class Column implements DataTypes, Constants, Cloneable {
         return Double.parseDouble(attrValue);
     }
 
-    
     public void setColumnIndex(int value) {
         columnIndex = value;
     }
 
-    
     public int getColumnIndex() {
         return columnIndex;
     }
 
-
-    
     public void setAlias(String value) {
         alias = value;
     }
 
-    
     public String getAlias() {
         return alias;
     }
 
-    
     public void setDoStats(boolean value) {
         doStats = value;
     }
 
-    
     public boolean getDoStats() {
         return doStats;
     }
 
-    
     public String getLookupDB() {
         return lookupDB;
     }
@@ -3792,27 +3603,27 @@ public class Column implements DataTypes, Constants, Cloneable {
     public void setIsIndex(boolean value) {
         isIndex = value;
     }
-    
+
     public boolean getIsIndex() {
         return isIndex;
     }
-    
+
     public void setIsCategory(boolean value) {
         isCategory = value;
     }
-    
+
     public boolean getIsCategory() {
         return isCategory;
     }
-    
+
     public boolean getShowEmpty() {
         return showEmpty;
     }
-    
+
     public void setCanShow(boolean value) {
         canShow = value;
     }
-    
+
     public boolean getCanShow() {
         if (isType(DATATYPE_PASSWORD)) {
             return false;
@@ -3824,81 +3635,58 @@ public class Column implements DataTypes, Constants, Cloneable {
     public boolean getCanExport() {
         return canExport;
     }
-    
+
     public boolean getShowLabel() {
         return showLabel;
     }
 
-
-    
     public void setCanSearch(boolean value) {
         canSearch = value;
     }
 
-    
     public boolean getCanSearch() {
         return canSearch;
     }
 
-    
     public boolean getCanSort() {
         return canSort;
     }
 
-    
     public void setSearchRows(int value) {
         searchRows = value;
     }
 
-    
     public int getSearchRows() {
         return searchRows;
     }
 
-
-
-
-    
     public void setCanSearchText(boolean value) {
         canSearchText = value;
     }
 
-    
     public boolean getCanSearchText() {
         return canSearchText;
     }
 
-    
     public boolean getAdvancedSearch() {
         return advancedSearch;
     }
 
-
-
-
-    
     public void setCanList(boolean value) {
         canList = value;
     }
 
-    
     public boolean getCanList() {
         return canList;
     }
 
-
-    
     public void setCanDisplay(boolean value) {
         canDisplay = value;
     }
 
-    
     public boolean getCanDisplay() {
         return canDisplay;
     }
-
-
-
 
     public static class Display {
         String value;
@@ -3909,7 +3697,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         String icon;
         double min;
         double max;
-
 
         public Display(Element element) {
             value = XmlUtil.getAttribute(element, "value", "");
@@ -3927,7 +3714,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 					: Double.MAX_VALUE);
         }
 
-        
         public String getAttribute(String attr) {
             if (attr.equals("mapFillColor")) {
                 return mapFillColor;
@@ -3942,8 +3728,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             return null;
         }
 
-
-        
         public String decorate(String v) {
             String style = "";
             if (background != null) {
@@ -3952,7 +3736,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             if (color != null) {
                 style += "color:" + color + ";";
             }
-
 
             if (style.length() > 0) {
                 v = HU.div(v, HU.style(style));
@@ -3964,7 +3747,5 @@ public class Column implements DataTypes, Constants, Cloneable {
             return v;
         }
     }
-
-
 
 }

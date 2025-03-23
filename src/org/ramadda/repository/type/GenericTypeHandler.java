@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 
 import org.ramadda.repository.database.*;
@@ -35,7 +34,6 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.util.WrapperException;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.File;
 
 import java.lang.reflect.*;
@@ -52,8 +50,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
 
 @SuppressWarnings("unchecked")
 public class GenericTypeHandler extends TypeHandler {
@@ -72,14 +68,11 @@ public class GenericTypeHandler extends TypeHandler {
         super(null);
     }
 
-    
     public GenericTypeHandler(Repository repository, String type,
                               String description) {
         super(repository, type, description);
     }
 
-
-    
     public GenericTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
@@ -88,9 +81,6 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-
-
-    
     public void initGenericTypeHandler(Element entryNode) throws Exception {
         if (getType().indexOf(".") >= 0) {
             //Were screwed - too may types had a . in them
@@ -109,8 +99,6 @@ public class GenericTypeHandler extends TypeHandler {
         initColumns((List<Element>) columnNodes,ignoreErrors);
     }
 
-
-    
     private boolean getMeFirst() {
         if (meFirst) {
             return true;
@@ -123,12 +111,9 @@ public class GenericTypeHandler extends TypeHandler {
         return false;
     }
 
-
-    
     public void initColumns(List<Element> columnNodes) throws Exception {
 	initColumns(columnNodes,true);
     }
-
 
     private void initColumns(List<Element> columnNodes, boolean ignoreErrors) throws Exception {
         Statement statement = getDatabaseManager().createStatement();
@@ -194,21 +179,14 @@ public class GenericTypeHandler extends TypeHandler {
         //TODO: Run through the table and delete any columns and indices that aren't defined anymore
     }
 
-
-    
     public List<String> getColumnNames() {
         return colNames;
     }
 
-
-    
     public List<Column> getMyColumns() {
         return myColumns;
     }
 
-
-
-    
     @Override
     public List<Column> getColumns() {
         if (allColumns == null) {
@@ -268,7 +246,6 @@ public class GenericTypeHandler extends TypeHandler {
 	return columns.get(index);
     }
 
-
     /**
      * create  the entry value array and populate it with any column values stored in the map argument
      *
@@ -292,8 +269,6 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
-
-    
     public Object convert(String columnName, String value) {
         Column column = findColumn(columnName);
         if (column == null) {
@@ -306,17 +281,10 @@ public class GenericTypeHandler extends TypeHandler {
         return column.convert(value);
     }
 
-
-
-
-
-    
     private boolean haveDatabaseTable() {
         return colNames.size() > 0;
     }
 
-
-    
     public int getNumberOfMyValues() {
         if ( !haveDatabaseTable()) {
             return 0;
@@ -330,7 +298,6 @@ public class GenericTypeHandler extends TypeHandler {
 
         return new Object[numberOfValues];
     }
-
 
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
@@ -350,8 +317,6 @@ public class GenericTypeHandler extends TypeHandler {
 	column.setValue(request, entry, values);
     }    
 
-
-    
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
@@ -369,8 +334,6 @@ public class GenericTypeHandler extends TypeHandler {
             Element child = (Element) elements.item(i);
             nodes.put(child.getTagName(), child);
         }
-
-
 
         for (Column column : getMyColumns()) {
             String  value = null;
@@ -394,9 +357,6 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-
-
-    
     public int matchValue(String arg, Object value, Entry entry) {
         for (Column column : getColumns()) {
             int match = column.matchValue(arg, value, ((entry == null)
@@ -413,8 +373,6 @@ public class GenericTypeHandler extends TypeHandler {
         return MATCH_UNKNOWN;
     }
 
-
-    
     public List<TwoFacedObject> getListTypes(boolean longName) {
         List<TwoFacedObject> list = super.getListTypes(longName);
         for (Column column : getColumns()) {
@@ -430,8 +388,6 @@ public class GenericTypeHandler extends TypeHandler {
         return list;
     }
 
-
-    
     public Result processList(Request request, String what) throws Exception {
         Column theColumn = null;
         for (Column column : getColumns()) {
@@ -507,10 +463,6 @@ public class GenericTypeHandler extends TypeHandler {
             repository.getOutputHandler(request).getMimeType(output));
     }
 
-
-
-
-    
     public boolean equals(Object obj) {
         if ( !super.equals(obj)) {
             return false;
@@ -520,16 +472,12 @@ public class GenericTypeHandler extends TypeHandler {
         return true;
     }
 
-
-    
     public void deleteEntry(Request request, Statement statement, Entry entry)
             throws Exception {
         deleteEntryFromDatabase(request, statement, entry.getId());
         super.deleteEntry(request, statement, entry);
     }
 
-
-    
     @Override
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parent, Object[] values)
@@ -538,8 +486,6 @@ public class GenericTypeHandler extends TypeHandler {
         super.deleteEntry(request, statement, id, parent, values);
     }
 
-
-    
     private void deleteEntryFromDatabase(Request request,
                                          Statement statement, String id)
             throws Exception {
@@ -551,9 +497,6 @@ public class GenericTypeHandler extends TypeHandler {
         statement.execute(query);
     }
 
-
-
-    
     @Override
     public List<Clause> assembleWhereClause(Request request,
                                             Appendable searchCriteria)
@@ -582,8 +525,6 @@ public class GenericTypeHandler extends TypeHandler {
         return where;
     }
 
-
-    
     @Override
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {
@@ -608,9 +549,6 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-
-
-    
     @Override
     public void setStatement(Entry entry, PreparedStatement stmt,
                              boolean isNew)
@@ -619,8 +557,6 @@ public class GenericTypeHandler extends TypeHandler {
         setStatement(entry, getEntryValues(entry), stmt, isNew);
     }
 
-
-    
     public int setStatement(Entry entry, Object[] values,
                             PreparedStatement stmt, boolean isNew)
             throws Exception {
@@ -642,8 +578,6 @@ public class GenericTypeHandler extends TypeHandler {
         return stmtIdx;
     }
 
-
-    
     @Override
     public void initializeEntryFromDatabase(Entry entry) throws Exception {
         //Always call getEntryValues here so we get create the correct size array
@@ -655,9 +589,6 @@ public class GenericTypeHandler extends TypeHandler {
         readValuesFromDatabase(entry, values);
     }
 
-
-
-    
     private Object[] readValuesFromDatabase(Entry entry, Object[] values)
             throws Exception {
         Clause clause = Clause.eq(COL_ID, entry.getId());
@@ -723,7 +654,6 @@ public class GenericTypeHandler extends TypeHandler {
         return values;
     }
 
-    
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, Appendable tmpSb,
                                       Object[] values)
@@ -732,8 +662,6 @@ public class GenericTypeHandler extends TypeHandler {
                            false);
     }
 
-
-    
     @Override
     public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
         super.getTextCorpus(entry, sb,args);
@@ -753,16 +681,12 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-
-    
     public boolean shouldShowInHtml(Request requst, Entry entry,
                                     OutputType output) {
         return output.equals(OutputHandler.OUTPUT_HTML)
                || output.equals(HtmlOutputHandler.OUTPUT_INLINE);
     }
 
-
-    
     @Override
     public String getFieldHtml(Request request, Entry entry, Hashtable props,
                                String name, boolean raw)
@@ -794,7 +718,6 @@ public class GenericTypeHandler extends TypeHandler {
         return super.getFieldHtml(request, entry, props, name, raw);
     }
 
-    
     @Override
     public void getInnerEntryContent(Entry entry, Request request,
 				     TypeHandler typeHandler, OutputType output,
@@ -817,7 +740,6 @@ public class GenericTypeHandler extends TypeHandler {
         if (Misc.equals(props.get("showDetails"), "false") || justBasic) {
             return;
         }
-
 
 	addColumnsToHtml(request,typeHandler, entry, contents,seen);
     }
@@ -857,7 +779,6 @@ public class GenericTypeHandler extends TypeHandler {
 
     }
 
-
     @Override
     public String addColumnToHtml(Request request, TypeHandler typeHandler,Entry entry,String columnName, Appendable sb, String group) throws Exception {
 	Column column =findColumn(columnName);
@@ -871,7 +792,6 @@ public class GenericTypeHandler extends TypeHandler {
 	addColumnToTable(request, entry,column,sb);
 	return group;
     }
-
 
     public void addColumnToTable(Request request, Entry entry,Column column,Appendable sb,String...searchArgs) throws Exception {
 	if(column==null) return;
@@ -892,7 +812,6 @@ public class GenericTypeHandler extends TypeHandler {
 	if(subGroup!=null) {
 	    HU.formEntry(sb,HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
 	}
-
 
 	if (column.getShowLabel()) {
 	    String label = tmpSb.toString();
@@ -915,9 +834,6 @@ public class GenericTypeHandler extends TypeHandler {
 	}
     }
 
-
-
-    
     public String processDisplayTemplate(Request request, Entry entry,
                                          String html)
             throws Exception {
@@ -939,9 +855,6 @@ public class GenericTypeHandler extends TypeHandler {
         return html;
     }
 
-
-
-    
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forReading)
             throws Exception {
@@ -965,8 +878,6 @@ public class GenericTypeHandler extends TypeHandler {
         return path;
     }
 
-
-    
     protected List getTablesForQuery(Request request, List initTables) {
         super.getTablesForQuery(request, initTables);
         for (Column column : getMyColumns()) {
@@ -983,7 +894,6 @@ public class GenericTypeHandler extends TypeHandler {
         return initTables;
     }
 
-    
     @Override
     public String getTableName() {
         String typeName = getType();
@@ -1004,8 +914,6 @@ public class GenericTypeHandler extends TypeHandler {
                               sourceTypeHandler, seen);
     }
 
-
-    
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry parentEntry, Entry entry, FormInfo formInfo,
                                       TypeHandler sourceTypeHandler, HashSet seen)
@@ -1015,9 +923,6 @@ public class GenericTypeHandler extends TypeHandler {
 							   : getEntryValues(entry)), formInfo, sourceTypeHandler,seen);
     }
 
-
-
-    
     public void addColumnsToEntryForm(Request request, Appendable formBuffer,
                                       Entry parentEntry, Entry entry, Object[] values,
                                       FormInfo formInfo,
@@ -1034,9 +939,6 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-
-
-    
     @Override
     public void addToEntryNode(Request request, Entry entry,
                                FileWriter fileWriter, Element node,boolean encode)
@@ -1052,7 +954,6 @@ public class GenericTypeHandler extends TypeHandler {
         }
     }
 
-    
     @Override
     public void addToSpecialSearchForm(Request request,
                                        Appendable formBuffer,
@@ -1070,8 +971,6 @@ public class GenericTypeHandler extends TypeHandler {
 
     }
 
-
-    
     @Override
     public void addToSearchForm(Request request, List<String> titles,
                                 List<String> contents, List<Clause> where,
@@ -1108,6 +1007,5 @@ public class GenericTypeHandler extends TypeHandler {
             contents.add(typeSB.toString());
         }
     }
-
 
 }

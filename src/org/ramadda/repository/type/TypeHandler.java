@@ -5,11 +5,9 @@
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
-
 
 import org.ramadda.repository.map.*;
 
@@ -47,7 +45,6 @@ import org.ramadda.util.sql.SqlUtil;
 
 import java.sql.Connection;
 import java.net.URL;
-
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
@@ -90,7 +87,6 @@ import java.util.regex.Pattern;
 
 import java.util.function.BiConsumer;
 
-
 /**
  * Provide the core services around the entry types.
  */
@@ -110,7 +106,6 @@ public class TypeHandler extends RepositoryManager {
 	CHANGETYPE,
 	NONE
     }    
-
 
     public static boolean debug = false;
 
@@ -151,10 +146,10 @@ public class TypeHandler extends RepositoryManager {
     public static final String TARGET_SIBLING = "sibling";
     public static final RequestArgument REQUESTARG_FROMDATE =
         new RequestArgument("ramadda.arg.fromdate");
-    
+
     public static final RequestArgument REQUESTARG_TODATE =
         new RequestArgument("ramadda.arg.todate");
-    
+
     public static final String CATEGORY_DEFAULT = "Information";
     public static final String TYPE_ANY = Constants.TYPE_ANY;
     public static final String TYPE_GUESS = "guess";
@@ -279,8 +274,6 @@ public class TypeHandler extends RepositoryManager {
         super(repository);
     }
 
-
-    
     public TypeHandler(Repository repository, Element entryNode) {
         this(repository);
         if (entryNode != null) {
@@ -288,20 +281,15 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public TypeHandler(Repository repository, String type) {
         this(repository, type, "");
     }
 
-
-    
     public TypeHandler(Repository repository, String type,
                        String description) {
         this(repository, type, description, CATEGORY_DEFAULT);
     }
 
-    
     public TypeHandler(Repository repository, String type,
                        String description, String category) {
         super(repository);
@@ -312,19 +300,14 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
     public boolean isNew(NewType newType) {
 	return newType==NewType.NEW;
     }
 
-    
     public void setParentTypeHandler(TypeHandler parent) {
         this.parent = parent;
     }
 
-
-
-    
     public static void printAttrs(Node node,boolean doParent) {
 	if(node==null) return;
 	if(doParent)
@@ -378,11 +361,9 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
 
-
-
             displayTemplatePath = Utils.getAttributeOrTag(node,
 							  "displaytemplate", displayTemplatePath);
-	    
+
 	    //printAttrs(node,true);
             iconPath = XmlUtil.getAttributeFromTree(node, "icon",  iconPath);
             priority    = XmlUtil.getAttributeFromTree(node, "priority", priority);
@@ -401,10 +382,6 @@ public class TypeHandler extends RepositoryManager {
 		metadataPatterns.add(mp);
 	    }
 
-
-
-
-
 	    //	    if(stringDefined(filePattern))System.err.println(filePattern);
             fileNotPattern = Utils.getAttributeOrTag(node, ATTR_NOTPATTERN, null);	    
             help     = Utils.getAttributeOrTag(node, "help", help);
@@ -418,9 +395,6 @@ public class TypeHandler extends RepositoryManager {
 		newHelp = newHelp.replace("\\n","\n");
             mimeType     = XmlUtil.getAttributeFromTree(node, "mimetype", mimeType);	    
 
-
-
-	    
 	    superCategory = XmlUtil.getAttributeFromTree(node,
 							 ATTR_SUPERCATEGORY, superCategory);
 
@@ -440,10 +414,7 @@ public class TypeHandler extends RepositoryManager {
                 this.fieldFilePattern = Pattern.compile(this.filePattern);
             }
 
-
             defaultChildrenEntries = Utils.getAttributeOrTag(node,TAG_CHILDREN, defaultChildrenEntries);
-
-
 
             List metadataNodes = XmlUtil.findChildren(node, TAG_METADATA);
             for (int i = 0; i < metadataNodes.size(); i++) {
@@ -462,7 +433,6 @@ public class TypeHandler extends RepositoryManager {
             }
 
             setProperties(node);
-
 
 	    String metadata = getAttributeOrProperty(node,ATTR_METADATA);
 	    if(metadata!=null) {
@@ -506,7 +476,6 @@ public class TypeHandler extends RepositoryManager {
 		wikiMacros.add(m);
 	    }
 
-
 	    List wikis = XmlUtil.findChildrenRecurseUp(node,"wikis");
 	    for (int i = 0; i < wikis.size(); i++) {
 		Element wiki = (Element) wikis.get(i);
@@ -519,8 +488,6 @@ public class TypeHandler extends RepositoryManager {
 	    }
 
             wikiTemplateInner = Utils.trimLinesLeft(Utils.getAttributeOrTag(node, ATTR_WIKI_INNER, wikiTemplateInner));
-
-
 
             includeInSearch = Utils.getAttributeOrTag(node,
 						      "includeInSearch", includeInSearch);
@@ -544,7 +511,6 @@ public class TypeHandler extends RepositoryManager {
                 canCache = Boolean.valueOf(tmpCanCache.equals("tmpCanCache"));
             }
 
-
 	    String fields = getAttributeOrProperty(node, "editfields");	    
 	    if(fields!=null) {
 		fields = fields.replace("_default",DEFAULT_EDIT_FIELDS);
@@ -560,12 +526,10 @@ public class TypeHandler extends RepositoryManager {
 		displayFields = Utils.split(fields,",",true,true);
 	    }	    
 
-
             if ( !Utils.stringDefined(description)) {
                 setDescription(Utils.getAttributeOrTag(node,
 						       ATTR_DB_DESCRIPTION, getType()));
             }
-
 
             String llf = getTypeProperty("location.format", (String) null);
             if (llf != null) {
@@ -598,8 +562,6 @@ public class TypeHandler extends RepositoryManager {
 				     XmlUtil.getAttribute(actionNode, "icon", getIconProperty(ICON_WIKI)),
 				     XmlUtil.getChildText(actionNode)));
             }	    
-	    
-
 
 	    String  startDateTemplate = getTypeProperty("startdate.template",null);
 	    if(startDateTemplate!=null)  {
@@ -617,12 +579,10 @@ public class TypeHandler extends RepositoryManager {
                 parent.addChildTypeHandler(this);
 	    }
 
-
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
     }
-
 
     private String getAttributeOrProperty(Element node, String attr) {
 	String value = XmlUtil.getAttributeFromTree(node, attr, null);	    
@@ -632,8 +592,6 @@ public class TypeHandler extends RepositoryManager {
 	return value;
     }
 
-
-
     public boolean applyEditCommand(Request request,Entry entry, String command,String...args) throws Exception {
 	return false;
     }
@@ -642,7 +600,6 @@ public class TypeHandler extends RepositoryManager {
 	if(!entry.isImage()) return false;
 	return getRepository().getMetadataManager().addThumbnail(request,entry,deleteExisting);
     }
-
 
     public void addAction(Action action) {
 	if(action.getId().equals("documentchat") ||
@@ -665,7 +622,6 @@ public class TypeHandler extends RepositoryManager {
 	    this.parent.getWikiTags(tags, entry);
 	}
     }
-
 
     public List<WikiMacro>getWikiMacros() {
 	List<WikiMacro> macros=null;
@@ -703,7 +659,6 @@ public class TypeHandler extends RepositoryManager {
 	return null;
     }
 
-
     public boolean hasSearchDisplayText(Request request, Entry entry) throws Exception {
 	String name = getTypeProperty("search.wikimacro",null);
 	if(name!=null) {
@@ -714,7 +669,6 @@ public class TypeHandler extends RepositoryManager {
 	}
 	return false;
     }
-
 
     public String getEmbedWiki(Request request, Entry entry) {
 	if(embedWiki!=null) return embedWiki;
@@ -734,11 +688,9 @@ public class TypeHandler extends RepositoryManager {
 	return null;
     }
 
-
     public void childrenChanged(Entry entry,boolean isNew) {
     }
 
-    
     private void checkAncestorTypes(String type) {
         if (type.equals(getType())) {
             throw new IllegalStateException(
@@ -749,14 +701,12 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
     public List<String> makeInitialMetadataTypes() {
 	return Utils.split(EnumeratedMetadataHandler.TYPE_TAG + ","
 			   + ContentMetadataHandler.TYPE_THUMBNAIL + ","
 			   + ContentMetadataHandler.TYPE_ALIAS,",");
     }
 
-    
     List<String> allMetadataTypes;
     public List<String> getMetadataTypes() {
 	if(allMetadataTypes==null) {
@@ -771,7 +721,6 @@ public class TypeHandler extends RepositoryManager {
 	return allMetadataTypes;
     }
 
-
     private List<String> getMetadataTypesInner() {
         if (metadataTypes == null) {
             metadataTypes = makeInitialMetadataTypes();
@@ -783,14 +732,12 @@ public class TypeHandler extends RepositoryManager {
         return metadataTypes;
     }
 
-
     public String getDescriptionCorpus(Entry entry) throws Exception {
 	Appendable sb = new StringBuilder();
 	//False->don't include the column values, don't include metadata
 	getTextCorpus(entry, sb,false,false);
 	return sb.toString();
     }
-
 
     /**
      * _more_
@@ -813,7 +760,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
     /**
      * Called by lucene index to get non file contents
      *
@@ -826,8 +772,6 @@ public class TypeHandler extends RepositoryManager {
     public void getTextContents(Entry entry, StringBuilder sb)
 	throws Exception {}
 
-
-    
     public boolean getCanCache(Entry entry) {
         if (canCache != null) {
             return canCache;
@@ -839,7 +783,6 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-    
     public String getMediaUrl(Request request, Entry entry) throws Exception {
         List<Column> columns = getColumns();
         if (columns != null) {
@@ -858,9 +801,6 @@ public class TypeHandler extends RepositoryManager {
         return getEntryResourceUrl(request, entry);
     }
 
-
-
-    
     public String getJson(Request request) throws Exception {
         List<String> items = new ArrayList<String>();
         items.add("id");
@@ -879,10 +819,6 @@ public class TypeHandler extends RepositoryManager {
 	    items.add("mapwiki");
 	    items.add(JU.quote(bubble));
 	}
-	
-
-
-
 
         List<String> cols    = new ArrayList<String>();
         List<Column> columns = getColumns();
@@ -906,22 +842,15 @@ public class TypeHandler extends RepositoryManager {
         return JsonUtil.map(items);
     }
 
-
-    
     public void addToJson(Request request, Entry entry, List<String> items,
                           List<String> attrs)
 	throws Exception {}
 
-
-    
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> topProps) {
         return null;
     }
 
-
-
-    
     public String getWikiTemplate(Request request, Entry entry)
 	throws Exception {
         if (wikiTemplate != null) {
@@ -945,19 +874,14 @@ public class TypeHandler extends RepositoryManager {
 
         return null;
     }
-    
 
-    
     public void addWikiProperties(Entry entry, WikiUtil wikiUtil, String tag,
                                   Hashtable props) {}
 
-
-    
     public String getBubbleTemplate(Request request, Entry entry)
 	throws Exception {
 	return getBubbleTemplate(request, entry, true);
     }
-
 
     private String getBubbleTemplate(Request request, Entry entry, boolean checkMetadata)
 	throws Exception {	
@@ -1012,7 +936,6 @@ public class TypeHandler extends RepositoryManager {
 	     bubbleTemplate = getProperty(entry, "map.popup",null);
 	}
 
-
         if (bubbleTemplate != null) {
             return bubbleTemplate;
         }
@@ -1023,16 +946,11 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-
-
-
-    
     public String preProcessWikiText(Request request, Entry entry,
                                      String wikiText) {
         return wikiText;
     }
 
-    
     public String getWikiTemplateInner() {
         return wikiTemplateInner;
     }
@@ -1041,8 +959,6 @@ public class TypeHandler extends RepositoryManager {
 	wikiTemplate=wiki;
     }
 
-
-    
     public int getTotalNumberOfValues() {
         int cnt = getNumberOfMyValues();
         if (parent != null) {
@@ -1052,12 +968,10 @@ public class TypeHandler extends RepositoryManager {
         return cnt;
     }
 
-    
     public int getNumberOfMyValues() {
         return 0;
     }
 
-    
     public Object[] getEntryValues(Entry entry) {
         Object[] values = entry.getValues();
         if (values == null) {
@@ -1068,7 +982,6 @@ public class TypeHandler extends RepositoryManager {
         return values;
     }
 
-    
     public int getValueIndex(String name) {
         for (Column column : getColumns()) {
             if (column.getName().equalsIgnoreCase(name)) {
@@ -1083,9 +996,6 @@ public class TypeHandler extends RepositoryManager {
         getEntryValues(entry)[index] = value;
     }
 
-
-
-    
     public int getValuesOffset() {
         if (parent != null) {
             return parent.getTotalNumberOfValues();
@@ -1094,7 +1004,6 @@ public class TypeHandler extends RepositoryManager {
         return 0;
     }
 
-    
     public List<Comment> getComments(Request request, Entry entry)
 	throws Exception {
         return null;
@@ -1104,15 +1013,10 @@ public class TypeHandler extends RepositoryManager {
 	return new  Entry.EntryHistory(entry);
     }
 
-
-
-    
     public int getDefaultQueryLimit(Request request, Entry entry) {
         return getRepository().getDefaultMaxEntries();
     }
 
-
-    
     public void getTableNames(List<String> tableNames) {
         String tableName = getTableName();
         if (stringDefined(tableName) &&  !tableNames.contains(tableName)) {
@@ -1126,11 +1030,9 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public List<String> getDefaultChildrenTypes() {
 	return childTypes;
     }
-
 
     public void getChildTypes(List<String> types) {
         if ( !types.contains(getType())) {
@@ -1141,21 +1043,16 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public void addChildTypeHandler(TypeHandler child) {
         if ( !childrenTypes.contains(child)) {
             childrenTypes.add(child);
         }
     }
 
-
-    
     public TypeHandler getParent() {
         return parent;
     }
 
-
-    
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
 	if(isSynthType()) {
 	    if(entry.getTypeHandler().isSynthType()) {
@@ -1170,7 +1067,6 @@ public class TypeHandler extends RepositoryManager {
         return this;
     }
 
-    
     public Resource getResourceForCopy(Request request, Entry oldEntry,
                                        Entry newEntry)
 	throws Exception {
@@ -1188,7 +1084,6 @@ public class TypeHandler extends RepositoryManager {
 
         return newResource;
     }
-
 
     public Rectangle2D.Double getBounds(Request request,Entry entry, Rectangle2D.Double bounds) {
 	if (entry.hasAreaDefined(request) || entry.hasLocationDefined(request)) {
@@ -1213,8 +1108,6 @@ public class TypeHandler extends RepositoryManager {
 	return bounds;
     }
 
-
-    
     public boolean addToMap(Request request, Entry entry, MapInfo map)
 	throws Exception {
         if (parent != null) {
@@ -1242,48 +1135,35 @@ public class TypeHandler extends RepositoryManager {
 	return true;
     }
 
-
-
-
-    
     public boolean shouldShowPolygonInMap() {
         return false;
     }
 
-    
     public boolean addToMapSelector(Request request, Entry entry, Entry forEntry, MapInfo map)
 	throws Exception {
         return true;
     }
 
-
-    
     public String getEntryText(Entry entry) {
         return entry.getDescription();
     }
 
-    
     public String getExtraText(Entry entry) {
         return null;
     }
 
-    
     public String getTextForWiki(Request request, Entry entry,
                                  Hashtable properties)
 	throws Exception {
         return entry.getDescription();
     }
 
-
-    
     public void childEntryChanged(Request request,Entry entry, boolean isNew)
 	throws Exception {}
 
-    
     public void metadataChanged(Request request, Entry entry)
 	throws Exception {}
 
-    
     public String getTypePermissionName(String type) {
 	if(true) return null;
         if (type.equals(Permission.ACTION_TYPE1)) {
@@ -1293,8 +1173,6 @@ public class TypeHandler extends RepositoryManager {
         return "Type specific 2";
     }
 
-
-    
     public void handleNoEntriesHtml(Request request, Entry entry,
                                     Appendable sb) {
         if ( !Utils.stringDefined(entry.getDescription())
@@ -1305,29 +1183,21 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public boolean shouldExportTable(String tableName) {
         return true;
     }
 
-    
     public void initAfterDatabaseImport() throws Exception {}
 
-
-    
     public void clearCache() {
         columnEnumValues = new Hashtable<String, HashSet>();
     }
 
-    
     public InputStream getResourceInputStream(Entry entry) throws Exception {
         return new BufferedInputStream(
 				       getStorageManager().getFileInputStream(getFileForEntry(entry)));
     }
 
-
-    
     public Result getHtmlDisplay(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -1337,22 +1207,18 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     public String getInnerWikiContent(Request request, Entry entry,
                                       String wikiTemplate)
 	throws Exception {
         return null;
     }
 
-    
     public Result processEntryAccess(Request request, Entry entry)
 	throws Exception {
         return new Result("Error",
                           new StringBuilder("Entry access not defined"));
     }
 
-
-    
     public String getEntryActionUrl(Request request, Entry entry,
                                     String action)
 	throws Exception {
@@ -1361,7 +1227,6 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
         String action = request.getString("action", "");
@@ -1369,11 +1234,9 @@ public class TypeHandler extends RepositoryManager {
 	    return getLLMManager().processDocumentChat(request,entry,action.equals("documentchat"));
 	}
 
-
         if (action.equals("applyllm")) {
 	    return getLLMManager().applyLLM(request,entry);
 	}	
-
 
 	Action a = actionMap.get(action);
 	if(a!=null && a.wikiText!=null) {
@@ -1395,20 +1258,15 @@ public class TypeHandler extends RepositoryManager {
         return new Result("Error", sb);
     }
 
-
-    
     public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {}
 
-
-    
     public boolean isDefaultHtmlOutput(Request request) {
         return Misc.equals(
 			   OutputHandler.OUTPUT_HTML.getId(),
 			   request.getString(ARG_OUTPUT, OutputHandler.OUTPUT_HTML.getId()));
     }
-
 
     public String applyMacros(Request request, Entry entry, List<Utils.Macro> macros,Object[]values,
 			      Object value,String s) throws Exception {
@@ -1482,9 +1340,6 @@ public class TypeHandler extends RepositoryManager {
 	return tmp.toString();
     }
 
-
-
-    
     public Result xgetHtmlDisplay(Request request, Entry group,
 				  List<Entry> children)
 	throws Exception {
@@ -1506,7 +1361,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     public String getInlineHtml(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -1516,8 +1370,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-
-    
     public boolean canBeCreatedBy(Request request) {
         if (parent != null) {
             return parent.canBeCreatedBy(request);
@@ -1526,8 +1378,6 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-
-    
     public boolean adminOnly() {
         if (adminOnly) {
             return true;
@@ -1539,7 +1389,6 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-    
     public boolean canCreate(Request request) {
 	if(!canCreate) return false;
         if (adminOnly()) {
@@ -1553,8 +1402,6 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-
-    
     public boolean isSynthType() {
 	if(isSynthType)  return true;
         if (parent != null) {
@@ -1585,8 +1432,6 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-
-    
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry ancestor, String synthId)
 	throws Exception {
@@ -1600,7 +1445,6 @@ public class TypeHandler extends RepositoryManager {
 					   + " in class:" + getClass().getName());
     }
 
-    
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
 	throws Exception {
         if (parent != null) {
@@ -1613,9 +1457,6 @@ public class TypeHandler extends RepositoryManager {
 					   + getClass().getName());
     }
 
-
-
-    
     public Entry getSynthTopLevelEntry() throws Exception {
         if (synthTopLevelEntry == null) {
             synthTopLevelEntry = doMakeSynthTopLevelEntry();
@@ -1624,7 +1465,6 @@ public class TypeHandler extends RepositoryManager {
         return synthTopLevelEntry;
     }
 
-    
     public Entry doMakeSynthTopLevelEntry() throws Exception {
         Entry parentEntry = new Entry(this, true);
         parentEntry.setUser(getUserManager().getLocalFileUser());
@@ -1645,8 +1485,6 @@ public class TypeHandler extends RepositoryManager {
         return parentEntry;
     }
 
-
-    
     public Entry makeSynthEntry(Request request, Entry parentEntry,
                                 List<String> entryNames)
 	throws Exception {
@@ -1666,7 +1504,6 @@ public class TypeHandler extends RepositoryManager {
 	return getTypeProperty("file.cache",60*60);
     }
 
-    
     /**
        Set the FlushedFromCache property.
 
@@ -1685,36 +1522,26 @@ public class TypeHandler extends RepositoryManager {
 	return flushedFromCache;
     }
 
-
-
     public boolean getTypeProperty(String name, boolean dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
-    
     public int getTypeProperty(String name, int dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
-    
     protected void setTypeProperty(String name, String value) {
         properties.put(name, value);
     }
 
-
-    
     public String getTypeProperty(String name, String dflt) {
         return getProperty((Entry) null, name, dflt);
     }
 
-
-    
     public String getProperty(Entry entry, String name) {
         return getProperty(entry, name, null);
     }
 
-
-    
     public String getProperty(Entry entry, String name, String dflt) {
         String result = (String) properties.get(name);
         if (result != null) {
@@ -1727,7 +1554,6 @@ public class TypeHandler extends RepositoryManager {
         return dflt;
     }
 
-    
     public int getProperty(Entry entry, String name, int dflt) {
         String s = getProperty(entry, name, null);
         if (s == null) {
@@ -1737,25 +1563,18 @@ public class TypeHandler extends RepositoryManager {
         return Integer.parseInt(s);
     }
 
-
-    
     public boolean getProperty(Entry entry, String name, boolean dflt) {
         String s = getProperty(entry, name, Boolean.toString(dflt));
 
         return s.equals("true");
     }
 
-
-    
     public void putProperty(String name, String value) {
         properties.put(name, value);
         if (parent != null) {
             //            parent.putProperty(name, value);
         }
     }
-
-
-
 
     public String getFormLabel(Entry parentEntry,Entry entry, String arg, String dflt) {
         return getProperty(entry, "form." + arg + ".label", dflt);
@@ -1776,16 +1595,12 @@ public class TypeHandler extends RepositoryManager {
         return value.equals("true");
     }
 
-
-    
     public boolean okToShowInHtml(Entry entry, String arg, boolean dflt) {
         String key   = "html." + arg + ".show";
         String value = getProperty(entry, key, "" + dflt);
         return value.equals("true");
     }
 
-
-    
     public boolean okToList(Entry entry, String arg, Hashtable props,
                             boolean dflt) {
         String key   = "list." + arg + ".show";
@@ -1800,9 +1615,6 @@ public class TypeHandler extends RepositoryManager {
         return dflt;
     }
 
-
-
-    
     public String getFormDefault(Entry entry, String arg, String dflt) {
         String prop = getProperty(entry, "form." + arg + ".default");
         if (prop == null) {
@@ -1812,18 +1624,14 @@ public class TypeHandler extends RepositoryManager {
         return prop;
     }
 
-
     public Entry createEntry() {
 	return createEntry(getRepository().getGUID());
     }
 
-
-    
     public Entry createEntry(String id) {
         return new Entry(id, this);
     }
 
-    
     public boolean returnToEditForm() {
         if (parent != null) {
             return parent.returnToEditForm();
@@ -1832,9 +1640,6 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-
-    
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
                                        Hashtable<String, File> files)
@@ -1843,11 +1648,8 @@ public class TypeHandler extends RepositoryManager {
             parent.initializeEntryFromXml(request, entry, node, files);
         }
 
-
     }
 
-
-    
     public String convertIdsFromImport(String s, List<String[]> idList) {
         if ( !Utils.stringDefined(s)) {
             return s;
@@ -1864,7 +1666,6 @@ public class TypeHandler extends RepositoryManager {
         return s;
     }
 
-    
     public boolean convertIdsFromImport(Entry newEntry,
                                         List<String[]> idList) {
         boolean changed = false;
@@ -1886,9 +1687,6 @@ public class TypeHandler extends RepositoryManager {
         return changed;
     }
 
-
-
-    
     public boolean convertIdsFromImportInFile(Entry newEntry,
 					      List<String[]> idList) {
         if (idList.size() == 0) {
@@ -1923,8 +1721,6 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-
-    
     public void addToEntryNode(Request request, Entry entry,
                                FileWriter fileWriter, Element node,boolean encode)
 	throws Exception {
@@ -1933,9 +1729,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public boolean equals(Object obj) {
         if ( !(obj.getClass().equals(getClass()))) {
             return false;
@@ -1944,7 +1737,6 @@ public class TypeHandler extends RepositoryManager {
         return Misc.equals(type, ((TypeHandler) obj).getType());
     }
 
-    
     public String getNodeType() {
         if (parent != null) {
             return parent.getNodeType();
@@ -1953,9 +1745,6 @@ public class TypeHandler extends RepositoryManager {
         return NODETYPE_ENTRY;
     }
 
-
-
-    
     public boolean canChangeTo(TypeHandler newType) {
         return true;
     }
@@ -1965,7 +1754,6 @@ public class TypeHandler extends RepositoryManager {
 	String path = entry.getResource().getPath();
 	return  getSearchManager().extractCorpus(request, entry,path, null);
     }
-	
 
     public Entry changeType(Request request, Entry entry) throws Exception {
         //Recreate the entry. This will fill in any extra entry type db tables
@@ -2000,24 +1788,18 @@ public class TypeHandler extends RepositoryManager {
         return entry;
     }
 
-
-    
     public String getDefaultFilename() {
         return getTypeProperty("defaultFilename", "tmp.txt");
     }
 
-    
     public String getType() {
         return type;
     }
 
-
-    
     public void setType(String value) {
         this.type = value;
     }
 
-    
     public boolean isType(String type) {
         if (this.type.equals(type)) {
             return true;
@@ -2029,18 +1811,13 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-    
     public final Entry createEntryFromDatabase(Connection connection,ResultSet results)
 	throws Exception {
         return createEntryFromDatabase(connection,results, false);
     }
 
-    
     public void initEntryHasBeenCalled(Entry entry) {}
 
-
-    
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
 	throws Exception {
@@ -2050,8 +1827,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public void initializeEntryFromHarvester(Request request, Entry entry,
                                              boolean firstCall)
 	throws Exception {
@@ -2063,9 +1838,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-
     public void addInitialMetadata(Request request, Entry entry,boolean force) throws Exception {
 	if(this.parent!=null) {
 	    this.parent.addInitialMetadata(request, entry,force);
@@ -2073,14 +1845,12 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-    
     public void initializeEntryFromDatabase(Entry entry) throws Exception {
         if (parent != null) {
             parent.initializeEntryFromDatabase(entry);
         }
     }
 
-    
     public void doFinalEntryInitialization(Request request, Entry entry,
                                            boolean fromImport) {
         //Clear the column value cache?
@@ -2099,7 +1869,6 @@ public class TypeHandler extends RepositoryManager {
                     getEntryManager().processEntryXml(request, root, entry,
 						      new Hashtable<String, File>(), new StringBuilder());
             }
-
 
             if (requiredMetadata.size() == 0) {
                 return;
@@ -2121,7 +1890,6 @@ public class TypeHandler extends RepositoryManager {
                 getMetadataManager().insertMetadata(metadata);
             }
 
-
             //            getEntryManager().setBoundsFromChildren(request, entry.getParentEntry());
             //            getEntryManager().setTimeFromChildren(request, entry.getParentEntry(), null);
 
@@ -2130,22 +1898,18 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public void entryChanged(Entry entry) throws Exception {
         if (parent != null) {
             parent.entryChanged(entry);
         }
     }
 
-    
     public void entryDeleted(String id) throws Exception {
         if (parent != null) {
             parent.entryDeleted(id);
         }
     }
 
-
-    
     public boolean anySuperTypesOfThisType() {
         Class       myClass = getClass();
         TypeHandler parent  = this.parent;
@@ -2161,13 +1925,10 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-    
     public String getFilePattern() {
         return filePattern;
     }
 
-    
     public boolean canHandleResource(String fullPath, String name) {
         if (filePattern == null) {
             return false;
@@ -2177,9 +1938,8 @@ public class TypeHandler extends RepositoryManager {
             if (name.matches(fileNotPattern)) {
 		return false;
 	    }
-	    
-	}
 
+	}
 
         //If the pattern has file delimiters then use the whole path
         if (filePattern.indexOf("/") >= 0) {
@@ -2204,7 +1964,6 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-    
     public String getDefaultEntryName(String path) {
         return IO.getFileTail(path);
     }
@@ -2226,7 +1985,6 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-    
     public final Entry createEntryFromDatabase(Connection connection,
 					       ResultSet results, boolean abbreviated)
 	throws Exception {
@@ -2287,8 +2045,6 @@ public class TypeHandler extends RepositoryManager {
 	    getDatabaseManager().closeConnection(connection);
 	}
 
-
-	
         Entry parent = getEntryManager().findGroup(getRepository().getAdminRequest(), parentId);	
 	entry.setParentEntry(parent);
         if ( !abbreviated) {
@@ -2298,13 +2054,9 @@ public class TypeHandler extends RepositoryManager {
         return entry;
     }
 
-
-
-    
     public void addMetadataToXml(Entry entry, Element root,
                                  Appendable extraXml, String metadataType) {}
 
-    
     public String processDisplayTemplate(Request request, Entry entry,
                                          String html)
 	throws Exception {
@@ -2338,8 +2090,6 @@ public class TypeHandler extends RepositoryManager {
         return html;
     }
 
-
-    
     public final void getEntryContent(Request request, Entry entry,
 				      boolean showDescription,
 				      boolean showResource,
@@ -2409,7 +2159,6 @@ public class TypeHandler extends RepositoryManager {
 				 props,seen,forOutput,contents);
 	}
 
-	
 	String macros = Utils.getProperty(props,"macros",null);
 	if(macros!=null) {
 	    for(String key: Utils.split(macros,",",true,true)) {
@@ -2450,7 +2199,6 @@ public class TypeHandler extends RepositoryManager {
 	    return;
 	}
 
-
 	for(NamedBuffer namedBuffer:contents) {
 	    String title   = namedBuffer.getName();
 	    entryTableOpen(request,buff);
@@ -2461,16 +2209,13 @@ public class TypeHandler extends RepositoryManager {
 	    entryTableClose(request,buff);
 	}
 
-
     }
-
 
     public void addColumnsToHtml(Request request, TypeHandler typeHandler,Entry entry,
 				 List<NamedBuffer> contents,
 				 HashSet<String> seen) throws Exception {
     }
 
-    
     public void entryTableOpen(Request request, Appendable sb) throws Exception {
 	sb.append("<table class=formtable width=100%>\n");
     }
@@ -2478,7 +2223,7 @@ public class TypeHandler extends RepositoryManager {
     public void entryTableClose(Request request, Appendable sb) throws Exception {
 	sb.append("</table>\n");
     }
-    
+
     public void addEntryProperty(Request request, Appendable sb, String label,String value) throws Exception {
 	label = msgLabel(label);
         if (request.isMobile()) {
@@ -2492,7 +2237,6 @@ public class TypeHandler extends RepositoryManager {
 	sb.append("</td></tr>");
     }
 
-
     public Column findColumn(String columnName) {
         return null;
     }
@@ -2502,7 +2246,7 @@ public class TypeHandler extends RepositoryManager {
     }
 
     private static HashSet seenProps = new HashSet();
-    
+
     protected void setProperties(Element entryNode) {
         //        boolean debug = type.equals("type_fred_series");
         boolean debug = false;
@@ -2532,14 +2276,10 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public Hashtable getProperties() {
         return properties;
     }
 
-    
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
         for (OutputHandler handler : getRepository().getOutputHandlers()) {
@@ -2547,8 +2287,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public boolean processCommandView(
 				      org.ramadda.repository.harvester.CommandHarvester.CommandRequest request,
 				      Entry entry,
@@ -2569,12 +2307,9 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-    
     public boolean isGroup() {
         return isGroup;
     }
-
 
     private  void addActionLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
 	throws Exception {
@@ -2603,13 +2338,11 @@ public class TypeHandler extends RepositoryManager {
 						 action.id), action.icon, action.label,
 			       type));
 	}
-				
+
     }
 
-    
     public void getEntryLinks(Request request, Entry entry, OutputHandler.State state, List<Link> links)
 	throws Exception {
-
 
         if (parent != null) {
             parent.getEntryLinks(request, entry, state, links);
@@ -2617,11 +2350,9 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
 
-
         boolean isGroup = entry.isGroup();
         boolean canDoNew = isGroup
 	    && getAccessManager().canDoNew(request, entry);
-
 
         if (canDoNew) {
             links.add(
@@ -2678,7 +2409,6 @@ public class TypeHandler extends RepositoryManager {
 			       | OutputType.TYPE_TOOLBAR));
         }
 
-
 	boolean canEdit = getAccessManager().canDoEdit(request, entry);
         if (canEdit) {
             links.add(
@@ -2700,7 +2430,6 @@ public class TypeHandler extends RepositoryManager {
 				   ));
             }
 
-
 	}
 	if ((request.getUser() != null)
 	    && !request.getUser().getAnonymous()) {
@@ -2711,7 +2440,6 @@ public class TypeHandler extends RepositoryManager {
 						       ARG_FROM), ICON_MOVE, "Move/Copy/Link",
 			       OutputType.TYPE_EDIT));
 	}
-
 
 	if(canEdit) {
 
@@ -2727,8 +2455,6 @@ public class TypeHandler extends RepositoryManager {
 						getMetadataManager().URL_METADATA_FORM,
 						entry), ICON_METADATA_EDIT, "Edit Properties",
 			       OutputType.TYPE_EDIT));
-	    
-
 
             links.add(
 		      new Link(
@@ -2747,8 +2473,6 @@ public class TypeHandler extends RepositoryManager {
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
             }
 
-
-
             if (getAccessManager().canSetAccess(request, entry)) {
                 links.add(
 			  new Link(
@@ -2757,7 +2481,6 @@ public class TypeHandler extends RepositoryManager {
 						    entry), ICON_ACCESS, "Permissions",
 				   OutputType.TYPE_EDIT));
             }
-
 
             links.add(
 		      new Link(
@@ -2794,7 +2517,6 @@ public class TypeHandler extends RepositoryManager {
             links.add(0,downloadLink);
         }
 
-
         if (getRepository().getCommentsEnabled()) {
             if (getRepository().isReadOnly()) {
                 links.add(
@@ -2813,12 +2535,9 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
 	addActionLinks(request, entry,state, links);	
 
-
     }
-
 
     private void addImportExportLinks(Request request, Entry entry,List<Link>links, boolean canDoNew)  throws Exception {
         if (getAccessManager().canDoExport(request, entry)) {
@@ -2836,7 +2555,6 @@ public class TypeHandler extends RepositoryManager {
 	    l.setTooltip("Just export this entry, not it's children");
             links.add(l);	    
 
-
         }
 
         //Add an import link if they have the right privileges
@@ -2851,9 +2569,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     private Link makeHRLink(int mask) {
         Link hr = new Link(true);
         hr.setLinkType(mask);
@@ -2861,7 +2576,6 @@ public class TypeHandler extends RepositoryManager {
         return hr;
     }
 
-    
     private boolean addTypesFromEntries(Request request, Entry entry,
                                         List<Link> links,
                                         List<Entry> entries,
@@ -2883,8 +2597,6 @@ public class TypeHandler extends RepositoryManager {
         return addTypes(request, entry, links, types, seen);
     }
 
-
-    
     private boolean addTypes(Request request, Entry entry, List<Link> links,
                              List<String> types, HashSet<String> seen)
 	throws Exception {
@@ -2921,9 +2633,6 @@ public class TypeHandler extends RepositoryManager {
         return didone;
     }
 
-
-
-    
     public String getIconProperty(String dflt) {
         String icon = iconPath;
         if (icon == null) {
@@ -2936,7 +2645,6 @@ public class TypeHandler extends RepositoryManager {
         return icon;
     }
 
-    
     public String getTypeIconUrl() {
         String icon = getIconProperty(null);
         if (icon != null) {
@@ -2946,8 +2654,6 @@ public class TypeHandler extends RepositoryManager {
         return icon;
     }
 
-
-    
     public boolean canDownload(Request request, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -2961,8 +2667,6 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
-
-    
     public String getPathForEntry(Request request, Entry entry,boolean forReading)
 	throws Exception {
         Resource resource = entry.getResource();
@@ -2982,9 +2686,6 @@ public class TypeHandler extends RepositoryManager {
         return path;
     }
 
-
-
-    
     public File getFileForEntry(Entry entry)  {
 	try {
 	    return getStorageManager().getEntryFile(entry);
@@ -2994,19 +2695,13 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-
-
-    
     private HashSet seenIt = new HashSet();
 
-
-    
     public Link getEntryDownloadLink(Request request, Entry entry)
 	throws Exception {
         return getEntryDownloadLink(request, entry, "Download File");
     }
 
-    
     public Link getEntryDownloadLink(Request request, Entry entry,
                                      String label)
 	throws Exception {
@@ -3028,7 +2723,6 @@ public class TypeHandler extends RepositoryManager {
 	return link;
     }
 
-    
     public void getInnerEntryContent(Entry entry, Request request,
 				     TypeHandler typeHandler, OutputType output,
 				     boolean showDescription, boolean showResource,
@@ -3047,8 +2741,6 @@ public class TypeHandler extends RepositoryManager {
 					props,seen,forOutput,contents);
 	    return;
         }
-
-
 
         if ((props != null) && Misc.equals(props.get("showBase"), "false")) {
             return;
@@ -3198,7 +2890,6 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-
     public void addDescriptionToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String desc = entry.getDescription();
 	if ((desc != null) && (desc.length() > 0)
@@ -3248,17 +2939,16 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-
     public void addCreateDateToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	addEntryProperty(request, sb,"Created",
 			 getDateHandler().formatDate(request,
 						     entry, entry.getCreateDate()));
-	    
+
 	if (entry.getCreateDate() != entry.getChangeDate()) {
 	    addEntryProperty(request, sb,"Modified",
 			     getDateHandler().formatDate(
 							 request, entry, entry.getChangeDate()));
-	    
+
 	}
     }
 
@@ -3305,7 +2995,6 @@ public class TypeHandler extends RepositoryManager {
 	}
     }
 
-
     public void addUserSearchLink(Request request, Entry entry, Appendable sb) throws Exception  {
 	if (!okToShowInHtml(entry, "owner", true)) return;
 	String userSearchLink =
@@ -3317,7 +3006,7 @@ public class TypeHandler extends RepositoryManager {
 		       entry.getUser().getId()), entry
 		  .getUser()
 		  .getLabel(), "title=\"View user profile\"");
-	
+
 	String linkMsg = "Search for entries of this type created by the user";
 	String userLinkId = HU.getUniqueId("userlink_");
 	userSearchLink = HtmlUtils
@@ -3335,7 +3024,7 @@ public class TypeHandler extends RepositoryManager {
 	String overview = getUserManager().getUserAvatar(request,entry.getUser(),true,40,null);
 	if(overview!=null) {
 	    userSearchLink+="<br>" + overview;
-	    
+
 	}
 	addEntryProperty(request, sb,"Created by", userSearchLink);
 
@@ -3349,8 +3038,6 @@ public class TypeHandler extends RepositoryManager {
 	addAltitudeToHtml(request,this,entry,sb);
     }
 
-
-    
     public String formatLocation(double lat, double lon) {
         if (latLonFormat != null) {
             synchronized (latLonFormat) {
@@ -3362,9 +3049,6 @@ public class TypeHandler extends RepositoryManager {
         return Misc.format(lat) + "/" + Misc.format(lon);
     }
 
-
-
-    
     public static boolean isWikiText(String desc) {
         if (desc == null) {
             return false;
@@ -3375,8 +3059,6 @@ public class TypeHandler extends RepositoryManager {
                 || desc.startsWith(WIKI_PREFIX));
     }
 
-
-    
     public String getEntryResourceHref(Request request, Entry entry)
 	throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
@@ -3407,16 +3089,12 @@ public class TypeHandler extends RepositoryManager {
 		       + entry.getName());
     }
 
-
-
-    
     public String getEntryResourceUrl(Request request, Entry entry)
 	throws Exception {
         return getEntryResourceUrl(request, entry,
                                    EntryManager.ARG_INLINE_FALSE,false);
     }
 
-    
     public String getEntryResourceUrl(Request request, Entry entry,
                                       boolean inline)
 	throws Exception {
@@ -3433,8 +3111,6 @@ public class TypeHandler extends RepositoryManager {
 	return url;
     }
 
-
-    
     public boolean okToSetNewNameDefault() {
         return !getTypeProperty("name.raw",false);
     }
@@ -3477,7 +3153,6 @@ public class TypeHandler extends RepositoryManager {
 	return entries;
     }
 
-    
     public void initializeColumns(Request request, Entry entry,
 				  NewType newType) throws Exception {
 	if(!isNew(newType)) return;
@@ -3494,7 +3169,6 @@ public class TypeHandler extends RepositoryManager {
                                    NewType newType)
 	throws Exception {
 
-
         if (parent != null) {
             parent.initializeNewEntry(request, entry, newType);
         } else 	{
@@ -3510,7 +3184,7 @@ public class TypeHandler extends RepositoryManager {
 		    System.err.println("filename pattern: no match:" + mp.spattern +" file:" + fileName);
 		    continue;
 		}
-		    
+
 		String v1 = matcher.group(1);
 		String v2 = matcher.groupCount()>1?matcher.group(2):null;
 		String v3 = matcher.groupCount()>2?matcher.group(3):null;		
@@ -3556,7 +3230,6 @@ public class TypeHandler extends RepositoryManager {
 		entry.setEndDate(endDate.getTime());		
 	}
 
-
         //Check if we're supposed to extract urls from the file
         if (getTypeProperty(PROP_INGEST_LINKS, "false").equals("true")
 	    && entry.getResource().isFile()) {
@@ -3574,8 +3247,6 @@ public class TypeHandler extends RepositoryManager {
 							      url, url, "", "", ""));
             }
         }
-
-
 
         //Do we extract metadata from the file path
         if (fieldFilePattern != null) {
@@ -3650,7 +3321,6 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
         if (newType==NewType.NEW) {
 	    String inheritLocation = getTypeProperty("inheritlocationfromtype",null);
 	    if(inheritLocation!=null
@@ -3671,17 +3341,13 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 
-
             //Now run the services
             for (Service service : services) {
 		applyService(request, entry,service);
 	    }
         }
 
-
-
     }
-
 
     public void applyService(Request request, Entry entry, Service service) {
 	if ( !service.isEnabled()) {
@@ -3722,7 +3388,7 @@ public class TypeHandler extends RepositoryManager {
 				     + "\n", exc);
 	}
     }
-    
+
     public void handleServiceResults(Request request, Entry entry,
                                      Service service, ServiceOutput output)
 	throws Exception {
@@ -3730,7 +3396,6 @@ public class TypeHandler extends RepositoryManager {
             parent.handleServiceResults(request, entry, service, output);
             return;
         }
-
 
         String namePattern = service.getNamePattern();
         if (namePattern != null) {
@@ -3741,7 +3406,6 @@ public class TypeHandler extends RepositoryManager {
             }
 	    //            System.err.println("name= " + name);
         }
-
 
 	//	getLogManager().logSpecial("handle service: " + service);
 
@@ -3755,7 +3419,6 @@ public class TypeHandler extends RepositoryManager {
             }
 	    //            System.err.println("description= " + description);
         }
-
 
         List<Entry> entries = output.getEntries();
         if (entries.size() == 0) {
@@ -3776,7 +3439,6 @@ public class TypeHandler extends RepositoryManager {
                 String fileName = getStorageManager().copyToEntryDir(entry,
 								     serviceEntry.getFile()).getName();
 
-
                 String mtype = isImage(serviceEntry)
 		    ? ContentMetadataHandler.TYPE_THUMBNAIL
 		    : ContentMetadataHandler.TYPE_ATTACHMENT;
@@ -3794,8 +3456,6 @@ public class TypeHandler extends RepositoryManager {
                 String name = f.getName();
                 f = getStorageManager().copyToStorage(request, f,
 						      getStorageManager().getStorageFileName(f.getName()));
-
-
 
                 TypeHandler typeHandler = null;
                 if (service.getTargetType() != null) {
@@ -3822,7 +3482,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public boolean isImage(Entry entry) {
         if (isType("type_image")) {
             return true;
@@ -3834,19 +3493,14 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-    
     public boolean isDescriptionWiki(Entry entry) {
         return getProperty(entry, "form.description.iswiki", false);
     }
 
-
-    
     public String getUploadedFile(Request request) {
         return request.getUploadedFile(ARG_FILE);
     }
 
-    
     public void initializeCopiedEntry(Entry newEntry, Entry oldEntry)
 	throws Exception {
         if (parent != null) {
@@ -3854,32 +3508,25 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public List<TwoFacedObject> getListTypes(boolean longName) {
         return new ArrayList<TwoFacedObject>();
 
     }
 
-    
     public Result processList(Request request, String what) throws Exception {
         return new Result("Error",
                           new StringBuilder(msgLabel("Unknown listing type")
                                             + what));
     }
 
-
     public String getEntriesTableName() {
         return Tables.ENTRIES.NAME;
     }
-
 
     public String getTableName() {
         return "";
     }
 
-
-    
     private String cleanQueryString(String s) {
         s = s.replace("\r\n", " ");
         s = StringUtil.stripAndReplace(s, "'", "'", "'dummy'");
@@ -3887,10 +3534,6 @@ public class TypeHandler extends RepositoryManager {
         return s;
     }
 
-
-
-
-    
     public Statement select(Request request, String what, Clause clause,
                             String extra)
 	throws Exception {
@@ -3900,14 +3543,11 @@ public class TypeHandler extends RepositoryManager {
         return select(request, what, clauses, extra);
     }
 
-
-    
     public Statement select(Request request, String what,
                             List<Clause> clauses, String extra)
 	throws Exception {
 
         clauses = new ArrayList<Clause>(clauses);
-
 
         //We do the replace because (for some reason) any CRNW screws up the pattern matching
         String       whatString   = cleanQueryString(what);
@@ -3952,7 +3592,6 @@ public class TypeHandler extends RepositoryManager {
             didEntries = true;
         }
 
-
         int metadataCnt = 0;
 
         while (true) {
@@ -3969,7 +3608,6 @@ public class TypeHandler extends RepositoryManager {
 							       new ArrayList());
 	    getDatabaseManager().addTypeClause(getRepository(),request, typeList,clauses);
         }
-
 
         if (isOrSearch(request)) {
             Clause clause = Clause.or(clauses);
@@ -3996,12 +3634,8 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-
     public void addWidgetHelp(Request request,Entry entry,Appendable formBuffer,Column column,Object[]values) throws Exception {
     }
-
-
-
 
     public void addNewEntryPageHeader(Request request, Entry group,Appendable sb) throws Exception {
 
@@ -4014,10 +3648,8 @@ public class TypeHandler extends RepositoryManager {
 
 	msg+="\n-callout\n";
 	sb.append(getWikiManager().wikify(request, msg));
-	
 
     }
-
 
     public void addToEntryFormHeader(Request request, Appendable sb,Entry entry) throws Exception {
 	String header = getTypeProperty(entry==null?"form.header.new":"form.header", (String) null);
@@ -4036,11 +3668,7 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	}
 
-
-
-
     }
-
 
     public void addToEntryForm(Request request, Appendable sb,
                                Entry parentEntry, Entry entry,
@@ -4074,7 +3702,7 @@ public class TypeHandler extends RepositoryManager {
 				  HU.squote(
 					    getRepository().getUrlBase() + "/user/search")));
             }
-	    
+
 	    List<Appendable>contents = buffers.getBuffers();
 	    List<String>groups = buffers.getGroups();
 	    if(getTypeProperty("form.tabs",false) && contents.size()>1) {
@@ -4101,7 +3729,6 @@ public class TypeHandler extends RepositoryManager {
 		}
 	    }
 
-
         } catch (Exception exc) {
             StringBuilder tmp = new StringBuilder();
             tmp.append(
@@ -4119,9 +3746,6 @@ public class TypeHandler extends RepositoryManager {
         }
 
     }
-
-
-
 
     public void addColumnToEntryForm(Request request, Column column,
                                      Appendable formBuffer, Entry parentEntry,Entry entry,
@@ -4154,7 +3778,6 @@ public class TypeHandler extends RepositoryManager {
 	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
 	}
 
-
         boolean canEdit    = sourceTypeHandler.getEditable(column);
         boolean canDisplay = sourceTypeHandler.getCanDisplay(column);
         boolean hasValue = entry!=null?entry.getStringValue(request,column,null) != null:false;
@@ -4171,9 +3794,7 @@ public class TypeHandler extends RepositoryManager {
                                  state, formInfo, sourceTypeHandler);
         }
 
-
     }
-
 
     public void addColumnToEntryForm(Request request, Entry parentEntry, Entry entry,
                                      Column column, Appendable formBuffer,
@@ -4194,7 +3815,6 @@ public class TypeHandler extends RepositoryManager {
 	    addSpatialToEntryForm(request, formBuffer, parentEntry, entry, formInfo);
 	}	
 
-
 	String subGroup = column.getSubGroup();
 	if(subGroup!=null) {
 	    HU.formEntry(formBuffer, HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
@@ -4203,7 +3823,6 @@ public class TypeHandler extends RepositoryManager {
         column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,
                               formInfo, sourceTypeHandler);
     }
-
 
     public String getFormWidget(Request request, Entry entry, Column column,
                                 String widget)
@@ -4214,7 +3833,6 @@ public class TypeHandler extends RepositoryManager {
 
         return HU.hbox(widget, getFormHelp(request, entry, column));
     }
-
 
     public String getFormHelp(Request request, Entry entry, Column column)
 	throws Exception {
@@ -4233,7 +3851,6 @@ public class TypeHandler extends RepositoryManager {
             return;
         }
     }
-
 
     public void addSpatialToEntryForm(Request request, Appendable sb,
                                       Entry parentEntry, Entry entry,
@@ -4270,7 +3887,6 @@ public class TypeHandler extends RepositoryManager {
 										null));
 	    getMapManager().initMapSelector(request, this,parentEntry, entry, map);
 
-
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
 						  "", "");
 	    String help = getTypeProperty("form.location.help",null);
@@ -4283,8 +3899,6 @@ public class TypeHandler extends RepositoryManager {
         } else if (okToShowInForm(entry, ARG_AREA)) {
             addAreaWidget(request, parentEntry, entry, sb, formInfo);
         }
-
-
 
         if (okToShowInForm(entry, ARG_ALTITUDE, false)) {
             String altitude = "";
@@ -4316,10 +3930,7 @@ public class TypeHandler extends RepositoryManager {
 				+ msg("meters")));
         }
 
-
-
     }
-
 
     public void addAreaWidget(Request request, Entry parentEntry,
 			      Entry entry, Appendable sb,
@@ -4327,7 +3938,6 @@ public class TypeHandler extends RepositoryManager {
 	throws Exception {
         String[]                  nwse  = null;
         Hashtable<String, String> props = null;
-
 
         if (entry != null) {
             props = getMapManager().getMapProps(request, entry, props);
@@ -4352,12 +3962,9 @@ public class TypeHandler extends RepositoryManager {
 	if(stringDefined(help)) {
 	    sb.append(formEntry(request,"",TypeHandler.wrapHelp(help)));
 	}
-	    
 
         sb.append(formEntry(request, msgLabel(getFormLabel(parentEntry,entry,"location","Location")), mapSelector));
     }
-
-
 
     public void addDateToEntryForm(Request request, GroupedBuffers sb,
                                    Entry parentEntry,Entry entry)
@@ -4365,7 +3972,6 @@ public class TypeHandler extends RepositoryManager {
 	String group = getTypeProperty("form.date.group",null);
 	if(group!=null)
 	    sb.setGroup(group);
-
 
         String dateHelp = " (e.g., 2007-12-11 00:00:00)";
         /*        String fromDate = ((entry != null)
@@ -4432,7 +4038,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
     public Date[] getDefaultDateRange(Request request, Entry entry) {
         Date fromDate = ((entry != null)
                          ? new Date(entry.getStartDate())
@@ -4466,14 +4071,12 @@ public class TypeHandler extends RepositoryManager {
 					 "", size)));
         }
 
-
         Object[] values = entry==null?null:entry.getValues();
 	String[] editFields = getEditFields();
 	String[] newFields = getNewFields();	
         String[] whatList = entry==null?newFields:editFields;
 	if(whatList==null) whatList = editFields;
 	if(whatList==null) whatList = entry == null  ? FIELDS_NOENTRY: FIELDS_ENTRY;
-
 
         for (String what : whatList) {
             if (what.equals("quit")) {
@@ -4498,7 +4101,6 @@ public class TypeHandler extends RepositoryManager {
 		addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo, this,seen);
 		continue;
 	    }
-
 
 	    if(what.equals(FIELD_DOWNLOADFILE)) {
 		sb.append(formEntry(request, "",
@@ -4608,7 +4210,6 @@ public class TypeHandler extends RepositoryManager {
 			desc = entryHistory.getDescription();
 		    }
 
-
                     if (desc.length() > 100) {
                         rows = rows * 2;
                     }
@@ -4705,7 +4306,6 @@ public class TypeHandler extends RepositoryManager {
                 boolean showResourceForm = okToShowInForm(entry,
 							  ARG_RESOURCE);
 
-
                 if (showResourceForm) {
                     boolean showDownload = showFile
 			&& okToShowInForm(entry,
@@ -4724,7 +4324,6 @@ public class TypeHandler extends RepositoryManager {
                         }
                         String formContent = HU.fileInput(ARG_FILE, fileAttrs);
                         tabTitles.add(msg(fileLabel));
-
 
 			boolean showDnd =getTypeProperty("form.dnd.show",true);
                         if (entry == null) {
@@ -4796,7 +4395,6 @@ public class TypeHandler extends RepositoryManager {
                         }
                     }
 
-
 		    StringBuilder extras = new StringBuilder();
 		    extras.append("<div class=ramadda-entry-edit-options>");
                     getFileExtras(request, entry,extras);
@@ -4823,7 +4421,7 @@ public class TypeHandler extends RepositoryManager {
 			    sb.append(HU.b(msgLabel(tabTitles.get(0))) + HU.space(1) +
 				      tabContent.get(0) + HU.div(extra,""));
 			    sb.append("</td></tr>");
-			    
+
                         }
                     } else {
                         if (showFile
@@ -4900,7 +4498,6 @@ public class TypeHandler extends RepositoryManager {
                 continue;
             }
 
-
             if (what.equals(ARG_DATE)) {
                 addDateToEntryForm(request, sb, parentEntry,entry);
                 continue;
@@ -4924,7 +4521,6 @@ public class TypeHandler extends RepositoryManager {
 	    //	    System.err.println("Unknown edit field:" + what);
         }
 
-
         if (entry == null) {
             for (String[] idLabel : requiredMetadata) {
                 MetadataHandler handler =
@@ -4944,8 +4540,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
     public String[] getEditFields() {
 	if(editFields!=null && editFields.length>0) return editFields;
         if (parent != null) {
@@ -4961,7 +4555,6 @@ public class TypeHandler extends RepositoryManager {
 	}
 	return null;
     }
-
 
     public boolean downloadUrlAndSaveAsEntryFile(Request request,Entry entry,URL url,String fileName) {
 	try {
@@ -4979,7 +4572,6 @@ public class TypeHandler extends RepositoryManager {
 	return true;
     }
 
-
     public static void addExtra(Appendable extras, String label, String contents) {
 	if(contents.length()==0) return;
 	try {
@@ -4995,14 +4587,9 @@ public class TypeHandler extends RepositoryManager {
 	}
     }				
 
-
     public void getFileExtras(Request request, Entry entry, Appendable extras)
 	throws Exception {
 	String space = HU.space(3);
-
-
-	
-
 
 	String uploadFlags = getTypeProperty("upload.flags",null);
 	if(uploadFlags!=null) {
@@ -5012,7 +4599,6 @@ public class TypeHandler extends RepositoryManager {
 		extras.append("<br>");
 	    }
 	}
-
 
         String unzipWidget =
             HU.labeledCheckbox(ARG_FILE_UNZIP, "true", true, "Unzip archive")+
@@ -5029,9 +4615,7 @@ public class TypeHandler extends RepositoryManager {
 	    HU.labeledCheckbox(ARG_METADATA_ADDSHORT, "true", false,
 			       "Just spatial/temporal properties");
 
-
 	String extract = getLLMManager().getNewEntryExtract(request);
-
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));
@@ -5047,16 +4631,11 @@ public class TypeHandler extends RepositoryManager {
 					  "Date formats to use to extract date from filename. e.g.:" +
 					  HU.pre("yyyyMMdd\nyyyy-MM-dd\nyyyy_MM_dd\nyyyyMMddHHmm\nyyyy_MM_dd_HHmm\nyyyy-MM-dd_HHmm",HU.style("max-height:50px;overflow-y:auto;")));
 
-
-
         String extraMore = "";
         if ((entry == null) && getType().equals(TYPE_FILE)) {
             extraMore = HU.labeledCheckbox(ARG_TYPE_GUESS, "true",
 					   true, "Figure out the type from the file name");
         }
-
-
-
 
 	extras.append("<table>");
 	if(entry != null && entry.isFile()) {
@@ -5066,15 +4645,12 @@ public class TypeHandler extends RepositoryManager {
 		     +" --- " + file);
 	}
 
-
 	addExtra(extras,"Entry type:",extraMore);
 	addExtra(extras,"Zip files:",unzipWidget);	
 
 	String images =	    HU.labeledCheckbox(ARG_STRIPEXIF, "true",
 					       request.get(ARG_STRIPEXIF,false),
 					       "Strip metadata from images");
-
-
 
 	addExtra(extras,"Images:",images);
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
@@ -5084,10 +4660,6 @@ public class TypeHandler extends RepositoryManager {
 	    addExtra(extras,"OCR:",ocr);
 	} 
 
-
-
-
-
 	if(stringDefined(extract)) 
 	    addExtra(extras,"Use LLM:",extract);
 
@@ -5096,34 +4668,25 @@ public class TypeHandler extends RepositoryManager {
 	getEntryManager().makeTypePatternsInput(request, ARG_TYPEPATTERNS,
 						extras,request.getString(ARG_TYPEPATTERNS,""));
 
-
 	addExtra(extras,"Date Format:",dateFormatWidget);	
 	if(entry==null)
 	    addExtra(extras,"",HU.labeledCheckbox(ARG_TESTNEW,"true", request.get(ARG_TESTNEW,false),"Test the upload"));
 
-
-
 	extras.append("</table>");	
 
-
-
     }
-
 
     public String getWikiEditorSidebar(Request request, Entry entry)
 	throws Exception {
         return "";
     }
 
-
     public void addToSelectMenu(Request request, Entry entry,
                                 StringBuilder sb, String type, String target)
 	throws Exception {}
 
-
     public void addToWikiToolbar(Request request, Entry entry,
                                  StringBuilder buttons, String textAreaId) {}
-
 
     public void addReadOnlyWikiEditor(Request request, Entry entry,
                                       Appendable sb, String text)
@@ -5132,7 +4695,6 @@ public class TypeHandler extends RepositoryManager {
         addWikiEditor(request, entry, sb, null, dummyId, text, null, true, 0,
                       true);
     }
-
 
     public String addWikiEditor(Request request, Entry entry, Appendable sb,
                                 FormInfo formInfo, String hiddenId,
@@ -5220,7 +4782,6 @@ public class TypeHandler extends RepositoryManager {
         if ( !readOnly) {
             HU.close(sb, "div");
         }
-	
 
         return editorId;
     }
@@ -5229,11 +4790,9 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     public List<Column> getColumnsForPointJson() {
         return getColumns();
     }
-
 
     public String getFieldLabel(String field) {
 	if(field.equals(FIELD_NAME)) return  "Name";
@@ -5248,11 +4807,7 @@ public class TypeHandler extends RepositoryManager {
 	}
 	return Utils.makeLabel(field);
     }
-	
 
-
-
-    
     public Column getColumn(String columnName) {
         List<Column> columns = getColumns();
         if (columns == null) {
@@ -5268,7 +4823,6 @@ public class TypeHandler extends RepositoryManager {
 	return columnMap.get(columnName);
     }
 
-    
     public String applyTemplate(Request request,Entry entry, String template) throws Exception {
 	return applyTemplate(request,entry, template, false);
     }	
@@ -5302,10 +4856,6 @@ public class TypeHandler extends RepositoryManager {
 	return template;
     }
 
-
-
-
-    
     public List<String> getColumnEnumerationProperties(Column column,
 						       String propertyValue, String delimiter)
 	throws Exception {
@@ -5327,8 +4877,6 @@ public class TypeHandler extends RepositoryManager {
         return tmp;
     }
 
-
-    
     public final String getIconUrl(Request request, Entry entry)
 	throws Exception {
         return null;
@@ -5354,7 +4902,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     public String decorateValue(Request request, Entry entry, Column column,
                                 String s) {
         if (parent != null) {
@@ -5373,7 +4920,6 @@ public class TypeHandler extends RepositoryManager {
 	return null;
     }
 
-    
     public String getEntryIconUrl(Request request, Entry entry)
 	throws Exception {
 	//check if the entry has a field for the icon
@@ -5383,7 +4929,7 @@ public class TypeHandler extends RepositoryManager {
 	    if(stringDefined(value)) {
 		value = value.trim();
 		String icon = getRepository().getProperty("icon." + value,   (String) null);
-		
+
 		if(icon==null)
 		    icon = getRepository().getProperty(value,   (String) null);
 
@@ -5400,13 +4946,10 @@ public class TypeHandler extends RepositoryManager {
             return getIconUrl(icon);
         }
 
-
         icon = getIconProperty(null);
         if (icon != null) {
             return getIconUrl(icon);
         }
-
-
 
         if (entry.isGroup()) {
             if (getAccessManager().hasPermissionSet(entry,
@@ -5424,8 +4967,6 @@ public class TypeHandler extends RepositoryManager {
         return getIconUrlFromPath(path);
     }
 
-
-    
     public String getIconUrlFromPath(String path) throws Exception {
         String img = ICON_FILE;
         if (path != null) {
@@ -5439,7 +4980,6 @@ public class TypeHandler extends RepositoryManager {
         return getIconUrl(img);
     }
 
-    
     public String getLabelFromPath(String path) throws Exception {
         if (path != null) {
             String suffix = IO.getFileExtension(path.toLowerCase());
@@ -5453,12 +4993,6 @@ public class TypeHandler extends RepositoryManager {
         return getTypeProperty("file.label", (String) null);
     }
 
-
-
-
-
-
-    
     public String getUrlFromPath(String path) throws Exception {
         if (path != null) {
             String suffix = IO.getFileExtension(path.toLowerCase());
@@ -5471,10 +5005,6 @@ public class TypeHandler extends RepositoryManager {
         return getTypeProperty("file.url", (String) null);
     }
 
-
-
-
-    
     public void addTextSearch(Request request, Appendable sb, String type) {
         try {
             String name           = (String) request.getString(ARG_TEXT, "");
@@ -5519,8 +5049,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public void addToSpecialSearchForm(Request request,
                                        Appendable formBuffer,
                                        HashSet<String> fieldsToShow)
@@ -5530,13 +5058,10 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public void addToSearchForm(Request request, List<String> titles,
                                 List<String> contents, List<Clause> where,
                                 boolean advancedForm, boolean showText)
 	throws Exception {
-
 
         if (parent != null) {
             parent.addToSearchForm(request, titles, contents, where,
@@ -5554,7 +5079,6 @@ public class TypeHandler extends RepositoryManager {
                 //                typeHandlers.add(typeHandler);
             }
         }
-
 
         /*
 	  if(minDate==null || maxDate == null) {
@@ -5582,12 +5106,9 @@ public class TypeHandler extends RepositoryManager {
         StringBuilder basicSB    = new StringBuilder(HU.formTable());
         StringBuilder advancedSB = new StringBuilder(HU.formTable());
 
-
-
         if (showText) {
             addTextSearch(request, basicSB, type);
         }
-
 
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlers();
         if (true || (typeHandlers.size() > 1)) {
@@ -5633,17 +5154,14 @@ public class TypeHandler extends RepositoryManager {
 				     msg(typeHandlers.get(0).getDescription())));
         }
 
-
 	basicSB.append(formEntry(request, msgLabel("Creator"),
 				 HU.input(ARG_USER_ID,
 					  request.getString(ARG_USER_ID,
 							    ""))));
 
-
         for (DateArgument arg : DateArgument.SEARCH_ARGS) {
             addDateSearch(getRepository(), request, basicSB, arg, false);
         }
-
 
         if (advancedForm || request.defined(ARG_GROUP)) {
             String groupArg = (String) request.getString(ARG_GROUP, "");
@@ -5663,11 +5181,9 @@ public class TypeHandler extends RepositoryManager {
                 }
             } else {
 
-                
             }
             advancedSB.append("\n");
         }
-
 
         if (advancedForm) {
             String             radio = getSpatialSearchTypeWidget(request);
@@ -5682,15 +5198,11 @@ public class TypeHandler extends RepositoryManager {
             addSearchField(request, ARG_FILESUFFIX, basicSB);
         }
 
-
-
-
         /*
 	  if (collection != null) {
 	  basicSB.append(formEntry(request,msgLabel("Collection"),
 	  collectionSelect));
 	  }*/
-
 
         basicSB.append(HU.formTableClose());
         advancedSB.append(HU.formTableClose());
@@ -5700,13 +5212,10 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-
     public static String wrapHelp(String help) {
 	return HU.div(help,HU.cssClass("ramadda-form-help"));
     }
 
-
-    
     public static void addDateSearch(Repository repository, Request request,
                                      Appendable basicSB, DateArgument arg,
                                      boolean showTime)
@@ -5734,8 +5243,6 @@ public class TypeHandler extends RepositoryManager {
         dateSelect.add(new TwoFacedObject(msg("Past 6 months"), "-6 month"));	
         dateSelect.add(new TwoFacedObject(msg("Past year"), "-1 year"));	
 
-
-
         if (request.exists(arg.getRelative())) {
             dateSelectValue = request.getString(arg.getRelative(), "");
         } else {
@@ -5746,7 +5253,6 @@ public class TypeHandler extends RepositoryManager {
 					   dateSelect, dateSelectValue);
         String minDate = request.getDateSelect(arg.getFrom(), (String) null);
         String maxDate = request.getDateSelect(arg.getTo(), (String) null);
-
 
         String dateTypeValue = request.getString(arg.getMode(),
 						 DATE_SEARCHMODE_DEFAULT);
@@ -5801,8 +5307,6 @@ public class TypeHandler extends RepositoryManager {
 
     }
 
-
-    
     public static String getSpatialSearchTypeWidget(Request request) {
 	//	String dflt = VALUE_AREA_OVERLAPS
 	String value = request.getString(ARG_AREA_MODE,VALUE_AREA_CONTAINS);
@@ -5815,8 +5319,6 @@ public class TypeHandler extends RepositoryManager {
         return radio;
     }
 
-
-    
     public void addSearchField(Request request, String what, Appendable sb) {
         if (what.equals(ARG_FILESUFFIX)) {
             Utils.append(sb,
@@ -5826,27 +5328,15 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-
-    
     public boolean isAnyHandler() {
         return getType().equals(TypeHandler.TYPE_ANY);
     }
 
-
-
-
-
-    
     public List<Clause> assembleWhereClause(Request request)
 	throws Exception {
         return assembleWhereClause(request, new StringBuilder());
     }
 
-
-
-    
     public List<Clause> assembleWhereClause(Request request,
                                             Appendable searchCriteria)
 	throws Exception {
@@ -5892,8 +5382,6 @@ public class TypeHandler extends RepositoryManager {
 					request.getString(ARG_USER_ID, ""), where);
         }
 
-        
-
         if (request.defined(ARG_FILESUFFIX)) {
             addCriteria(request, searchCriteria, "File Suffix=",
                         request.getString(ARG_FILESUFFIX, ""));
@@ -5911,7 +5399,6 @@ public class TypeHandler extends RepositoryManager {
                 where.add(Clause.or(clauses));
             }
         }
-
 
         if (request.defined(ARG_GROUP)) {
             String  groupId = (String) request.getString(ARG_GROUP,
@@ -5988,7 +5475,6 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
         List<Clause> dateClauses = new ArrayList<Clause>();
         for (DateArgument arg : getDateArgs()) {
             Date[] dateRange = request.getDateRange(arg.getFrom(),
@@ -6055,7 +5541,6 @@ public class TypeHandler extends RepositoryManager {
                 }
             }
 
-
             String noDataMode = request.getString(ARG_DATE_NODATAMODE, "");
             if (noDataMode.equals(VALUE_NODATAMODE_INCLUDE)
 		&& (dateClauses.size() > 0)) {
@@ -6075,16 +5560,13 @@ public class TypeHandler extends RepositoryManager {
                             "");
             }
 
-
         }
-
 
         if (dateClauses.size() > 1) {
             where.add(Clause.and(dateClauses));
         } else if (dateClauses.size() == 1) {
             where.add(dateClauses.get(0));
         }
-
 
         boolean contains = !(request.getString(
 					       ARG_AREA_MODE, VALUE_AREA_OVERLAPS).equals(
@@ -6159,8 +5641,6 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
-
         if (areaClauses.size() == 1) {
             //            System.err.println("Single:" + areaClauses.get(0));
             where.add(areaClauses.get(0));
@@ -6168,8 +5648,6 @@ public class TypeHandler extends RepositoryManager {
             //            System.err.println("Multiple:" + areaClauses);
             where.add(Clause.or(areaClauses));
         }
-
-
 
         Hashtable args        = request.getArgs();
         String metadataPrefix = ARG_METADATA_ATTR1 + "_";
@@ -6216,7 +5694,6 @@ public class TypeHandler extends RepositoryManager {
 						 valueArray[0],
 						 valueArray[1], valueArray[2],
 						 valueArray[3], "");
-
 
                 metadata.setInherited(request.get(ARG_METADATA_INHERITED
 						  + "." + type, false));
@@ -6279,8 +5756,6 @@ public class TypeHandler extends RepositoryManager {
             }
         }
 
-
-
         String[] textArgs = { ARG_NAME, ARG_DESCRIPTION };
         String[] columns = { Tables.ENTRIES.COL_NAME,
                              Tables.ENTRIES.COL_DESCRIPTION };
@@ -6302,7 +5777,6 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
         //A hook to allow the database manager do its own text search based on the dbms type
         if (textToSearch.length() > 0) {
@@ -6312,16 +5786,10 @@ public class TypeHandler extends RepositoryManager {
         return where;
     }
 
-
-
-    
     private Clause getSpatialDefinedClause(String column) {
         return Clause.neq(column, Double.valueOf(Entry.NONGEO));
     }
 
-
-
-    
     public void getChildrenEntries(Request request, Entry group,
                                    List<Entry> children, SelectInfo select)
 	throws Exception {
@@ -6337,16 +5805,12 @@ public class TypeHandler extends RepositoryManager {
         children.addAll(postProcessEntries(request, myEntries));
     }
 
-    
     public List<Entry> postProcessEntries(Request request,
                                           List<Entry> entries)
 	throws Exception {
         return entries;
     }
 
-
-
-    
     public void addTextDbSearch(Request request, String textToSearch,
                                 Appendable searchCriteria, List<Clause> where)
 	throws Exception {
@@ -6371,9 +5835,6 @@ public class TypeHandler extends RepositoryManager {
                         doDesc, doFile);
     }
 
-
-
-    
     public void addTextDbSearch(Request request, String textToSearch,
                                 Appendable searchCriteria,
                                 List<Clause> where, boolean doName,
@@ -6532,25 +5993,16 @@ public class TypeHandler extends RepositoryManager {
             where.add(textOrs.get(0));
         }
 
-
-
     }
 
-
-
-
-    
     public boolean isOrSearch(Request request) {
         return request.getString("search.or", "false").equals("true");
     }
 
-
-    
     public void setStatement(Entry entry, PreparedStatement stmt,
                              boolean isNew)
 	throws Exception {}
 
-    
     public void getInsertSql(boolean isNew,
                              List<TypeInsertInfo> typeInserts) {
         if (parent != null) {
@@ -6558,7 +6010,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public void deleteEntry(Request request, Statement statement, Entry entry)
 	throws Exception {
         if (parent != null) {
@@ -6566,8 +6017,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-    
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parentEntry, Object[] values)
 	throws Exception {
@@ -6576,12 +6025,10 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     protected List getTablesForQuery(Request request) {
         return getTablesForQuery(request, new ArrayList());
     }
 
-    
     protected List getTablesForQuery(Request request, List initTables) {
         if (parent != null) {
             parent.getTablesForQuery(request, initTables);
@@ -6593,9 +6040,6 @@ public class TypeHandler extends RepositoryManager {
         return initTables;
     }
 
-
-
-    
     public Object convert(String columnName, String value) {
         if (parent != null) {
             return parent.convert(columnName, value);
@@ -6604,7 +6048,6 @@ public class TypeHandler extends RepositoryManager {
         return value;
     }
 
-    
     public Object[] makeEntryValues(Hashtable map) {
         if (parent != null) {
             return parent.makeEntryValues(map);
@@ -6613,7 +6056,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     public String[] getValueNames() {
         if (parent != null) {
             return parent.getValueNames();
@@ -6622,7 +6064,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    
     protected boolean addOr(String column, String value, List list,
                             boolean quoteThem) {
         if ((value != null) && (value.trim().length() > 0)
@@ -6636,11 +6077,6 @@ public class TypeHandler extends RepositoryManager {
         return false;
     }
 
-
-
-
-
-    
     public String getFileTypeDescription(Request request, Entry entry) {
         try {
             String desc = msg(entry.getTypeHandler().getDescription());
@@ -6692,9 +6128,6 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public String getTemplateContent(Request request, Entry entry,
                                      String property, String dflt)
 	throws Exception {
@@ -6706,24 +6139,19 @@ public class TypeHandler extends RepositoryManager {
         return dflt;
     }
 
-
-    
     public int matchValue(String arg, Object value, Entry entry) {
         return MATCH_UNKNOWN;
     }
 
-
     public TwoFacedObject getCategory(Request request,Entry entry,String categoryType) {
         return new TwoFacedObject(description, this.type);
     }
-
 
     public String getMapInfoBubble(Request request, Entry entry)
 	throws Exception {
         return getBubbleTemplate(request, entry);
     }
 
-    
     public String getSimpleDisplay(Request request, Hashtable props,
                                    Entry entry)
 	throws Exception {
@@ -6745,30 +6173,22 @@ public class TypeHandler extends RepositoryManager {
 	wikiText.put(tag,text);
     }
 
-
-    
     public String toString() {
         return type + " " + description;
     }
 
-    
     public void setDefaultCategory(String value) {
         defaultCategory = value;
     }
 
-    
     public String getDefaultCategory() {
         return defaultCategory;
     }
 
-    
     public boolean hasDefaultCategory() {
         return (defaultCategory != null) && (defaultCategory.length() > 0);
     }
 
-
-
-    
     private Hashtable<String, HashSet> columnEnumValues =
         new Hashtable<String, HashSet>();
 
@@ -6815,7 +6235,6 @@ public class TypeHandler extends RepositoryManager {
 	//If we get back null then the column should have values
 	List<HtmlUtils.Selector> columnValues = column.getValues();
 
-
         List<HtmlUtils.Selector> tfos = new ArrayList<HtmlUtils.Selector>();
 	if(!forSearch && columnValues!=null) {
 	    for(HtmlUtils.Selector sel: columnValues) {
@@ -6827,8 +6246,6 @@ public class TypeHandler extends RepositoryManager {
 	if(set!=null)
 	    tmp.addAll(set);
 
-
-
         for (String s : (List<String>) Misc.sort(tmp)) {
             String label = s;
             if (s.length() == 0) {
@@ -6836,13 +6253,12 @@ public class TypeHandler extends RepositoryManager {
             } else {
 		label = column.getEnumLabel(label);
 	    }
-	    
+
 	    HtmlUtils.Selector sel = new HtmlUtils.Selector(label, s);
 	    if(!tfos.contains(sel)) {
 		tfos.add(sel);
 	    }
         }
-
 
         return tfos;
     }
@@ -6937,7 +6353,6 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	}
 
-
         //Use the clause string as part of the key
         String  key = getEnumValueKey(column, entry) + ((clause == null)
 							? ""
@@ -6970,24 +6385,19 @@ public class TypeHandler extends RepositoryManager {
         return set;
     }
 
-    
     public Clause getEnumValuesClause(Column column, Entry entry)
 	throws Exception {
         return null;
     }
 
-
-    
     public void setCategory(String value) {
         this.category = value;
     }
 
-    
     public void setSuperCategory(String value) {
         this.superCategory = value;
     }
 
-    
     public String getCategory() {
         if (Misc.equals(this.category, CATEGORY_DEFAULT)
 	    && (parent != null)) {
@@ -6997,8 +6407,6 @@ public class TypeHandler extends RepositoryManager {
         return this.category;
     }
 
-
-    
     public String getSuperCategory() {
         if ((this.superCategory.length() == 0) && (parent != null)) {
             return parent.getSuperCategory();
@@ -7011,34 +6419,22 @@ public class TypeHandler extends RepositoryManager {
         return this.superCategory;
     }
 
-
-    
     public void setIncludeInSearch(boolean value) {
         includeInSearch = value;
     }
 
-    
     public boolean getIncludeInSearch() {
         return includeInSearch;
     }
-
-
-
-
 
     public void setCanCreate(boolean v) {
         this.canCreate = v;
     }
 
-
-
-    
     public void setForUser(boolean v) {
         this.forUser = v;
     }
 
-
-    
     public boolean getForUser() {
         if ( !forUser) {
             return false;
@@ -7055,17 +6451,11 @@ public class TypeHandler extends RepositoryManager {
         */
     }
 
-    
     public boolean entryHasDefaultName(Entry entry) {
         return Misc.equals(getStorageManager().getFileTail(entry),
                            entry.getName());
     }
 
-
-
-
-
-    
     public TimeZone getTimeZone(Request request, Entry entry, int index)
 	throws Exception {
         TimeZone timeZone = null;
@@ -7087,13 +6477,10 @@ public class TypeHandler extends RepositoryManager {
         return timeZone;
     }
 
-
-    
     public void setSpecialSearch(SpecialSearch value) {
         specialSearch = value;
     }
 
-    
     public SpecialSearch getSpecialSearch() {
         if (specialSearch == null) {
             specialSearch = new SpecialSearch(this);
@@ -7102,14 +6489,10 @@ public class TypeHandler extends RepositoryManager {
         return specialSearch;
     }
 
-    
     public String getEntryName(Entry entry) {
         return entry.getName();
     }
 
-
-
-    
     private List<DateArgument> getDateArgs() {
         if (dateArgs == null) {
             List<DateArgument> tmp = new ArrayList<DateArgument>();
@@ -7143,10 +6526,6 @@ public class TypeHandler extends RepositoryManager {
         return dateArgs;
     }
 
-
-
-
-    
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -7154,10 +6533,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-
-
-
-    
     public static void addPropertyTags(Hashtable properties,
                                        Appendable inner) {
         for (Enumeration keys = properties.keys(); keys.hasMoreElements(); ) {
@@ -7170,13 +6545,9 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
-    
     public void initMapAttrs(Entry entry, MapInfo mapInfo,
                              StringBuilder sb) {}
 
-
-
-    
     public String getLabel() {
         if ( !Utils.stringDefined(description)) {
             return getType();
@@ -7185,8 +6556,6 @@ public class TypeHandler extends RepositoryManager {
         return description;
     }
 
-
-    
     public int getPriority() {
         return priority;
     }
@@ -7195,17 +6564,14 @@ public class TypeHandler extends RepositoryManager {
         priority = p;
     }    
 
-    
     public String getDescription() {
         return description;
     }
 
-    
     public void setDescription(String d) {
         description = d;
     }
 
-    
     public String getHelp() {
         return help;
     }
@@ -7214,13 +6580,10 @@ public class TypeHandler extends RepositoryManager {
 	return mimeType;
     }
 
-    
     public void setHelp(String d) {
         help = d;
     }
 
-
-    
     public static void main(String[] args) throws Exception {
         String pattern = ".*\\.ggp$";
         System.err.println(args[0].toLowerCase().matches(pattern));
@@ -7261,7 +6624,7 @@ public class TypeHandler extends RepositoryManager {
 	}
 
     }
-    
+
     public static class MetadataPattern {
 	String spattern;
 	Pattern pattern;
@@ -7274,7 +6637,5 @@ public class TypeHandler extends RepositoryManager {
 	    this.metadataType = metadataType;
 	}
     }
-
-
 
 }
