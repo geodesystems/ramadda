@@ -1,15 +1,14 @@
 
+##Specimen
+Catalog number,,string,
+Handling,,enumerationplus,
+Object status,,enumerationplus,
+Item count,,int,default="0"
+Quantity,,int,default="0"
+Storage unit,,enumerationplus,
 
-Object/science
-Catalog number
-Handling
-Object status
-Item count 
-Quantity 
-Storage unit
 
-
-##COLLECTION SITE
+##collection site
 
 Locality,,enumerationplus,group="Collection Site" isgeoaccess="true" 
 Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  
