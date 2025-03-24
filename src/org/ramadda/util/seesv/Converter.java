@@ -4296,7 +4296,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class RunningSum extends Converter {
-
 	String nameTemplate;
 	Row prevRow;
 	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
@@ -4310,7 +4309,12 @@ public abstract class Converter extends Processor {
         public RunningSum(TextReader ctx, List<String> indices,String nameTemplate) {
             super(indices);
 	    this.nameTemplate = nameTemplate;
-	    String reset = (String)ctx.getProperty("runningsum.reset");
+	    String reset=null;
+	    reset = (String)ctx.getProperty("runningsum.reset." + nameTemplate);
+	    if(reset==null && indices.size()>0)
+		reset = (String)ctx.getProperty("runningsum.reset." + indices.get(0));
+	    if(reset==null)
+		reset = (String)ctx.getProperty("runningsum.reset");
 	    if(reset!=null) {
 		List<String> toks = Utils.split(reset,":");
 		if(toks.size()!=2) {
