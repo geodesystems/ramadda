@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util;
@@ -48,8 +48,10 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
@@ -777,7 +779,7 @@ public class Utils extends IO {
         // FIRST TEST reference point
         System.out.println("Julian date for May 23, 1968 : "
                            + toJulian(new int[] { 1968,
-						 5, 23 }));
+						  5, 23 }));
         // output : 2440000
         int results[] = fromJulian(toJulian(new int[] { 1968, 5, 23 }));
         System.out.println("... back to calendar : " + results[0] + " "
@@ -786,7 +788,7 @@ public class Utils extends IO {
         // SECOND TEST today
         Calendar today = Calendar.getInstance();
         double todayJulian = toJulian(new int[] { today.get(Calendar.YEAR),
-						 today.get(Calendar.MONTH) + 1, today.get(Calendar.DATE) });
+						  today.get(Calendar.MONTH) + 1, today.get(Calendar.DATE) });
         System.out.println("Julian date for today : " + todayJulian);
         results = fromJulian(todayJulian);
         System.out.println("... back to calendar : " + results[0] + " "
@@ -1889,7 +1891,7 @@ public class Utils extends IO {
 
     /**
        split the string and trim each line
-     */
+    */
     public static String trimLinesLeft(String s) {
 	if(s==null) return null;
 	StringBuilder sb  =new StringBuilder();
@@ -1983,7 +1985,7 @@ public class Utils extends IO {
     }
 
     private static final String[] ISDATE_PATTERNS = { "\\d\\d\\d\\d-\\d\\d-\\d\\d",
-	"(january|february|march\\s|april|may\\s|june|july|august|septembe|october|november|december).*" };
+						      "(january|february|march\\s|april|may\\s|june|july|august|septembe|october|november|december).*" };
 
     public static boolean isDate(String s) {
         for (String p : ISDATE_PATTERNS) {
@@ -2137,7 +2139,7 @@ public class Utils extends IO {
 
     /**
        compare the strings. Handle for null. If they are equal return dflt
-     */
+    */
     public static int compare(String s1, String s2, int dflt) {
 	if(s1==null && s2==null) return dflt;
 	if(s1==null && s2!=null) return 1;
@@ -2642,7 +2644,7 @@ public class Utils extends IO {
 	"^\\d{8}_\\d{2}$","yyyyMMdd_HH",
 	"^\\d{6}$", "yyyyMMdd",
 	"^\\d{4}-\\d{2}$","yyyy-MM"
-  };
+    };
 
     public static final SimpleDateFormat findDateFormat(String s) {
 	for(int i=0;i<FIND_DATE_PATTERNS.length;i+=2) {
@@ -4334,11 +4336,11 @@ public class Utils extends IO {
 
     public static void pauseEvery(int minutesDelta,Appendable msg)  {
 	try {
-        long sleepTime = Misc.getPauseEveryTime(minutesDelta);
-	if(msg!=null) {
-	    msg.append(""+new Date(new Date().getTime()+sleepTime));
-	}
-        Misc.sleep((long) sleepTime);
+	    long sleepTime = Misc.getPauseEveryTime(minutesDelta);
+	    if(msg!=null) {
+		msg.append(""+new Date(new Date().getTime()+sleepTime));
+	    }
+	    Misc.sleep((long) sleepTime);
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
@@ -4785,5 +4787,40 @@ public class Utils extends IO {
             System.out.println(method.getName());
         }
     }
+
+    private static  Map<String, Integer> calendarFields;
+
+    public static int getCalendarField(String fieldName) {
+	if(calendarFields==null) {
+	    Map<String, Integer> tmp  = new HashMap<String,Integer>();
+	    tmp.put("year", Calendar.YEAR);
+	    tmp.put("month", Calendar.MONTH);
+	    tmp.put("day", Calendar.DAY_OF_MONTH);
+	    tmp.put("hour", Calendar.HOUR);
+	    tmp.put("hour_of_day", Calendar.HOUR_OF_DAY);
+	    tmp.put("minute", Calendar.MINUTE);
+	    tmp.put("second", Calendar.SECOND);
+	    tmp.put("millisecond", Calendar.MILLISECOND);
+	    tmp.put("week_of_year", Calendar.WEEK_OF_YEAR);
+	    tmp.put("week_of_month", Calendar.WEEK_OF_MONTH);
+	    tmp.put("day_of_year", Calendar.DAY_OF_YEAR);
+	    tmp.put("day_of_week", Calendar.DAY_OF_WEEK);
+	    tmp.put("day_of_week_in_month", Calendar.DAY_OF_WEEK_IN_MONTH);
+	    calendarFields = tmp;
+	}
+	
+
+        // Lookup the corresponding Calendar field constant
+        Integer fieldConstant = calendarFields.get(fieldName.toLowerCase());
+
+        if (fieldConstant == null) {
+	    return -1;
+	}
+	return fieldConstant;
+    }
+
+
+
+
 
 }
