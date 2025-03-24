@@ -2852,6 +2852,8 @@ public class Request implements Constants, Cloneable {
 	}
 
 	return Utils.indexOf(userAgent,
+			     "l9explore",
+			     "scrapy",
 			     "#skip python-requests",
 			     "go-http-client",
 			     "yandex.com/bots",
