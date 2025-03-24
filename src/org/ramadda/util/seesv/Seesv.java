@@ -4627,7 +4627,7 @@ public class Seesv implements SeesvCommands {
 	    });
 	defineFunction(CMD_RUNNINGSUM, 2,(ctx,args,i) -> {
 		List<String> idxs    = getCols(args.get(++i));
-		ctx.addProcessor(new Converter.RunningSum(idxs,args.get(++i)));
+		ctx.addProcessor(new Converter.RunningSum(ctx,idxs,args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_INTEGRATE, 4,(ctx,args,i) -> {

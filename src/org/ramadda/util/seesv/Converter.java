@@ -42,6 +42,9 @@ import java.util.regex.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -4297,16 +4300,40 @@ public abstract class Converter extends Processor {
 	String nameTemplate;
 	Row prevRow;
 	Hashtable<Integer,Double> values = new Hashtable<Integer,Double>();
+	int lastDate=-1;
+	String sresetDateIndex;
+	int resetDateIndex=-1;
+	int calendarField=-1;
+	GregorianCalendar cal;
+	
 
-        public RunningSum(List<String> indices,String nameTemplate) {
+        public RunningSum(TextReader ctx, List<String> indices,String nameTemplate) {
             super(indices);
 	    this.nameTemplate = nameTemplate;
+	    String reset = (String)ctx.getProperty("runningsum.reset");
+	    if(reset!=null) {
+		List<String> toks = Utils.split(reset,":");
+		if(toks.size()!=2) {
+		    throw new IllegalArgumentException("Incorrect runninsum.reset value:" + reset +" needs to be date_column:<year|month|day|hour|minute>");
+		}
+		sresetDateIndex = toks.get(0);
+		calendarField=Utils.getCalendarField(toks.get(1));
+		if(calendarField==-1) {
+		    throw new IllegalArgumentException("Incorrect calendar field" + toks.get(1) +" needs to be one of year|month|day|hour|minute|second");
+		}
+		cal = new GregorianCalendar();
+	    }
+
         }
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    List<Integer>indices    = getIndices(ctx);
             if (rowCnt++ == 0) {
+		if(sresetDateIndex!=null) {
+		    resetDateIndex = getIndex(ctx,sresetDateIndex);
+		}
+
                 for (Integer idx : indices) {
                     int index = idx.intValue();
 		    if(row.indexOk(index)) {
@@ -4321,6 +4348,22 @@ public abstract class Converter extends Processor {
                 }
                 return row;
             }
+	    if(resetDateIndex>=0){
+		String sdttm = row.getString(resetDateIndex,"");
+		Date dttm = Utils.parseDate(sdttm);
+		cal.setTime(dttm);
+		if(lastDate==-1) {
+		    lastDate = cal.get(calendarField);
+		} else {
+		    int date = cal.get(calendarField);
+		    if(date!=lastDate) {
+			lastDate = date;
+			System.err.println("reset:" + dttm);
+			values = new Hashtable<Integer,Double>();
+		    }
+
+		}
+	    }
             if (prevRow == null) {
                 prevRow = row;
                 for (int i : indices) {
