@@ -169,8 +169,8 @@ picky=false
      <column  name="chart_fields"  label="Chart Fields" type="list"
 	      showinhtml="false"
 	      help="What charts to show"
-	      suffix="e.g. discharge,total_volume,volume,gauge_height"
-	      canlist="false" default="discharge,total_volume,gauge_height" rows="3"/>     
+	      suffix="e.g. discharge,volume,gauge_height,total_volume,yearly_total_volume&lt;br&gt;height:400px,fixed:flood_level:3700,gauge_height"
+	      canlist="false" default="discharge,total_volume,gauge_height" rows="5"/>     
 <wiki>
 <![CDATA[
 +section title={{name}}

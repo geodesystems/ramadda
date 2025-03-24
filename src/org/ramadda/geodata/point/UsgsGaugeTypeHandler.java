@@ -46,7 +46,10 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	"-change,?discharge_comma_?gauge_height,(?i)(^$|dis|ice|ssn|eqp|rat),0,-if",
 	"-has,discharge,-integrate,?discharge,date",
 	"second,volume,-scale,volume,0",
-	"0.00002295684,0,-runningsum,volume,Total volume",
+	"0.00002295684,0",
+	"-setting,runningsum.reset.yearly_total_volume,date:year",
+	"-runningsum,volume,Total volume",
+	"-runningsum,volume,yearly_total_volume",
 	"-decimals,volume_comma_total_volume,2,-endif,-addheader",
 	"site_no.type string discharge.type double gauge_height.type double total_volume.unit {acre feet} total_volume.type double volume.type double date.format {${format}yyyy-MM-dd}"
     };
@@ -345,9 +348,25 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	String fields  = entry.getStringValue(request,"chart_fields","discharge,total_volume,gauge_height");
 	fields = Column.escapeComma(fields);
 	StringBuilder wiki = new StringBuilder("\n");
-	for(String field:Utils.split(fields,",",true,true)) {
-	    field = Column.unescapeComma(field);
-	    wiki.append("{{display_linechart showMenu=true fields=\"" + field+"\"}}\n");
+	for(String line:Utils.split(fields,",",true,true)) {
+	    line = Column.unescapeComma(line);
+	    List<String> fieldList = new ArrayList<String>();
+	    StringBuilder args = new StringBuilder();
+	    for(String tok:Utils.split(line,",",true,true)) {
+		if(tok.startsWith("height:")) {
+		    args.append(" height=\"" +tok.substring("height:".length()) +"\" ");
+		} else if(tok.startsWith("fixed:")) {
+		    List<String> subToks = Utils.split(tok,":");
+		    if(subToks.size()>2) {
+			fieldList.add(subToks.get(1));
+			args.append(" convertData=\"addFixed(id=" + subToks.get(1)+", value=" + subToks.get(2)+");\" ");
+		    }
+		} else {
+		    fieldList.add(tok);
+		}
+	    }
+
+	    wiki.append("{{display_linechart showMenu=true " + args+" fields=\"" + Utils.join(fieldList,",")+"\"}}\n");
 	}
 	return getWikiManager().wikifyEntry(request, entry,wiki.toString());
     }
