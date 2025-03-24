@@ -2679,7 +2679,28 @@ Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>name template</i>:
 Use ${name} to match source<br>
 </ul>
-</div></div><div class=seesv-item>
+This creates a running sum  of one or more column values.
+<p>
+The sum can be reset to 0 upon a date change. For  example, if you had data across mulitple
+years you can reset the sum whenever the year changes. To do this you can set a property
+with the -setting command:
+<seesv>
+-setting  runningsum.reset &lt;date column&gt;:&lt;calendar field&gt;<br>
+-runningsum column new_name
+</seesv>
+
+
+Where date_column is the column that holds the data and "calendar field" is one of
+year,month,day,hour,minute.
+So, to reset the value at every year do:
+
+<seesv>
+-setting  runningsum.reset date:year<br>
+-runningsum column new_name
+</seesv>
+
+
+<p></div></div><div class=seesv-item>
 <a name='-integrate'></a><div class=command> <i><a href='#-integrate'>-integrate</a></i>  &lt;columns&gt;  &lt;column&gt;  &lt;time unit&gt;  &lt;name&gt; </div><div class=command-block>Calculate a volume. Mutliple a rate by the elapsed time<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
