@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
@@ -99,7 +99,7 @@ public abstract class Processor extends SeesvOperator {
     public static void addFieldDescriptor(String name, Appendable sb,
                                           int index, HashSet<String> seen,
                                           List<Row> rows)
-            throws Exception {
+	throws Exception {
 
         List<String>  toks   = Utils.split(name, ":unit:", true, true);
         String        id     = cleanName(toks.get(0));
@@ -108,7 +108,7 @@ public abstract class Processor extends SeesvOperator {
         if (toks.size() > 1) {
             String unit = toks.get(1);
             unit = unit.replaceAll(" / ", "/").replaceAll(",",
-                                   "_").replaceAll("\"", "_");
+							  "_").replaceAll("\"", "_");
             suffix = cleanName(unit);
             extra.append(" unit=\"");
             extra.append(unit);
@@ -206,7 +206,7 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public List<Row> processRowReturnList(TextReader ctx, Row row)
-            throws Exception {
+	throws Exception {
         List<Row> l = new ArrayList<Row>();
         Row       r = processRow(ctx, row);
         if (r != null) {
@@ -290,7 +290,7 @@ public abstract class Processor extends SeesvOperator {
                     Seesv.CsvFunctionHolder func = seesv.getFunction(arg);
                     if (func == null) {
                         throw new RuntimeException(
-                            "Unknown function in -apply:" + cvrtedArgs);
+						   "Unknown function in -apply:" + cvrtedArgs);
                     }
                     int idx = 0;
                     try {
@@ -303,7 +303,7 @@ public abstract class Processor extends SeesvOperator {
                     }
                     if (idx < 0) {
                         throw new RuntimeException(
-                            "Unknown function in -apply:" + args);
+						   "Unknown function in -apply:" + args);
                     }
                     j = idx;
                 }
@@ -339,8 +339,8 @@ public abstract class Processor extends SeesvOperator {
 
         public Propper(String flag, String value) {
             this.flag = flag.equals("position")
-                        ? FLAG_POSITION
-                        : FLAG_NONE;
+		? FLAG_POSITION
+		: FLAG_NONE;
             if (this.flag == FLAG_POSITION) {
                 this.value = value.equals("start");
             }
@@ -910,7 +910,7 @@ public abstract class Processor extends SeesvOperator {
                 String pre = "\b\b\b\b\b\b\b\b\b\b\b"+prefix;
                 System.err.print(pre
                                  + StringUtil.padRight("#" + rowCnt, 10,
-                                     " "));
+						       " "));
             }
 
             return row;
@@ -992,7 +992,7 @@ public abstract class Processor extends SeesvOperator {
             }
             if (row.size() != cnt) {
                 throw new IllegalArgumentException("Bad column count:"
-                        + row.size() + " row:" + row);
+						   + row.size() + " row:" + row);
             }
 
             return row;
@@ -1034,7 +1034,7 @@ public abstract class Processor extends SeesvOperator {
                 pw           = new PrintWriter(outputStream);
                 InputStreamReader isr =
                     new InputStreamReader(
-                        inputStream, java.nio.charset.StandardCharsets.UTF_8);
+					  inputStream, java.nio.charset.StandardCharsets.UTF_8);
                 reader = new BufferedReader(isr);
             } catch (Exception exc) {
                 fatal(ctx, "Error creating external command:" + args, exc);
@@ -1078,7 +1078,7 @@ public abstract class Processor extends SeesvOperator {
 	List<String> commands;
 
         public Exec(Seesv seesv, TextReader ctx, String id,
-                   List<String> args) {
+		    List<String> args) {
 
             String path = (String) seesv.getProperty("seesv_exec_" + id);
             if (path == null) {
@@ -1201,8 +1201,8 @@ public abstract class Processor extends SeesvOperator {
         }
 
         public void handleHeaderRow(Appendable writer, Row header,
-                                     List exValues)
-                throws Exception {
+				    List exValues)
+	    throws Exception {
 	    //	    System.err.println("\theader row:" + header);
 
             StringBuilder   sb     = new StringBuilder();
@@ -1216,8 +1216,8 @@ public abstract class Processor extends SeesvOperator {
                     sb.append("#fields=");
                 }
                 String name = (headerValue == null)
-                              ? "field"
-                              : headerValue.toString();
+		    ? "field"
+		    : headerValue.toString();
                 addFieldDescriptor(name, sb, i, seen, null /*rows*/);
             }
             writer.append(sb.toString());
@@ -1236,7 +1236,7 @@ public abstract class Processor extends SeesvOperator {
         }
 
         public void handleRow(TextReader ctx, PrintWriter writer, Row row)
-                throws Exception {
+	    throws Exception {
 	    handleRow(ctx,writer,row,true);
 	}
 
@@ -1349,7 +1349,7 @@ public abstract class Processor extends SeesvOperator {
 
         public void writeCsv(TextReader ctx, PrintWriter writer,
                              List<Row> rows)
-                throws Exception {
+	    throws Exception {
             if (prefix != null) {
                 writer.append(prefix);
             }
@@ -1406,8 +1406,8 @@ public abstract class Processor extends SeesvOperator {
 		List<String> toks = Utils.splitUpTo(tuple,";",3);
 		if(toks.size()<2 || toks.size()>3) fatal(null,"Bad range specification for -subd:" + tuple);
 		ranges.add(new Range(Double.parseDouble(toks.get(0)),
-				    Double.parseDouble(toks.get(1)),
-				    toks.size()>2?Integer.parseInt(toks.get(2)):10));
+				     Double.parseDouble(toks.get(1)),
+				     toks.size()>2?Integer.parseInt(toks.get(2)):10));
 
 	    }
 	    if(ranges.size()!=cols.size()) {
@@ -1646,8 +1646,8 @@ public abstract class Processor extends SeesvOperator {
                 return v;
             }
             String key = (colId == null)
-                         ? prop
-                         : colId + "." + prop;
+		? prop
+		: colId + "." + prop;
             for (String[] tuple : patternProps) {
                 if (key.matches(tuple[0])) {
                     return tuple[1];
@@ -1680,7 +1680,7 @@ public abstract class Processor extends SeesvOperator {
             label   = getDbProp("table", "label", label);
             label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
-                                      "_");
+								     "_");
 
             tableId = getDbProp("table", "id", tableId);
 
@@ -1689,9 +1689,9 @@ public abstract class Processor extends SeesvOperator {
             File   output = reader.getOutputFile();
             if (output != null) {
                 reader.setOutputFile(
-                    new File(
-                        IOUtil.joinDir(
-                            output.getParentFile(), tableId + "db.xml")));
+				     new File(
+					      IOUtil.joinDir(
+							     output.getParentFile(), tableId + "db.xml")));
             }
 
             if (writer == null) {
@@ -1707,9 +1707,9 @@ public abstract class Processor extends SeesvOperator {
             for (String prop : new String[] {
 		    "defaultView", "mapProperties",
 		    "defaultOrder", "icon", "showEntryCreate",
-                "showFeedView", "showDateView", "showChartView",
-		"mapMarkersShow","mapPolygonsShow","mapDotLimit"
-            }) {
+		    "showFeedView", "showDateView", "showChartView",
+		    "mapMarkersShow","mapPolygonsShow","mapDotLimit"
+		}) {
                 String v = getDbProp("table", prop, (String) null);
                 if (v != null) {
                     tableAttrs += XmlUtil.attr(prop, v);
@@ -1719,8 +1719,8 @@ public abstract class Processor extends SeesvOperator {
             writer.println(XmlUtil.openTag("table", tableAttrs));
 
             for (String prop : new String[] { "searchForLabel",
-                    "addressTemplate", "mapLabelTemplate",
-                    "mapLabelTemplatePrint" }) {
+					      "addressTemplate", "mapLabelTemplate",
+					      "mapLabelTemplatePrint" }) {
                 String v = getDbProp("table", prop, (String) null);
                 if (v != null) {
                     writer.println("<" + prop + "><![CDATA[" + v + "]]></"
@@ -1741,7 +1741,7 @@ public abstract class Processor extends SeesvOperator {
                     String jsfile = formjs.substring("file:".length());
                     if ( !IO.okToReadFrom(jsfile)) {
                         throw new RuntimeException("Cannot read file:"
-                                + jsfile);
+						   + jsfile);
                     }
                     formjs = IO.readContents(jsfile);
                 }
@@ -1756,7 +1756,7 @@ public abstract class Processor extends SeesvOperator {
                     String jsfile = include.substring("file:".length());
                     if ( !IO.okToReadFrom(jsfile)) {
                         throw new RuntimeException("Cannot read file:"
-                                + jsfile);
+						   + jsfile);
                     }
                     include = IO.readContents(jsfile);
                 }
@@ -1775,7 +1775,7 @@ public abstract class Processor extends SeesvOperator {
             for (Row sample : samples) {
                 //                System.err.println("sample:" + sample);
                 for (int colIdx = 0; colIdx < sample.getValues().size();
-                        colIdx++) {
+		     colIdx++) {
                     Object value = sample.getValues().get(colIdx);
                     try {
 			double d = Double.parseDouble(value.toString());
@@ -1793,9 +1793,9 @@ public abstract class Processor extends SeesvOperator {
             boolean dfltDoStats = getDbProp("table", "dostats",
                                             "false").equals("true");
             boolean dfltCanSearch = getDbProp("table", "cansearch",
-                                        "true").equals("true");
+					      "true").equals("true");
             boolean dfltAddRawInput = getDbProp("table", "addrawinput",
-                                        "false").equals("true");	    
+						"false").equals("true");	    
             boolean dfltCanSort = getDbProp("table", "cansort",
                                             "false").equals("true");
             boolean dfltCanList = getDbProp("table", "canlist",
@@ -1843,29 +1843,29 @@ public abstract class Processor extends SeesvOperator {
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
                 if (suffix != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "suffix",
-                            suffix }));
+							      suffix }));
                 }
                 if (help != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "help",
-                            help }));
+							      help }));
                 }
 
                 String placeholderMin = getDbProp(colId, "placeholderMin",
-                                            (String) null);
+						  (String) null);
                 if (placeholderMin != null) {
                     attrs.append(XmlUtil.attrs(new String[] {
-                        "placeholderMin",
-                        placeholderMin }));
+				"placeholderMin",
+				placeholderMin }));
                 }
                 String placeholderMax = getDbProp(colId, "placeholderMax",
-                                            (String) null);
+						  (String) null);
                 if (placeholderMax != null) {
                     attrs.append(XmlUtil.attrs(new String[] {
-                        "placeholderMax",
-                        placeholderMax }));
+				"placeholderMax",
+				placeholderMax }));
                 }
                 for (String prop : new String[] { "addnot", "unit",
-                        "addfiletosearch" }) {
+						  "addfiletosearch" }) {
                     String v = getDbProp(colId, prop, (String) null);
                     if (v != null) {
                         attrs.append(XmlUtil.attrs(new String[] { prop, v }));
@@ -1873,33 +1873,33 @@ public abstract class Processor extends SeesvOperator {
                 }
 
                 String placeholder = getDbProp(colId, "placeholder",
-                                         (String) null);
+					       (String) null);
                 if (placeholder != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "placeholder",
-                            placeholder }));
+							      placeholder }));
                 }
                 String numberOfSearchWidgets = getDbProp(colId,
-                                                   "numberOfSearchWidgets",
-                                                   (String) null);
+							 "numberOfSearchWidgets",
+							 (String) null);
                 if (numberOfSearchWidgets != null) {
                     attrs.append(XmlUtil.attrs(new String[] {
-                        "numberOfSearchWidgets",
-                        numberOfSearchWidgets }));
+				"numberOfSearchWidgets",
+				numberOfSearchWidgets }));
 
                 }
                 if (getDbProp(colId, "changetype",
                               dfltChangeType).equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "changetype",
-                            "true" }));
+							      "true" }));
                 }
                 String size = getDbProp(colId, "size", null);
                 if (size != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
-                            size }));
+							      size }));
                 }
 
                 if ((colId.indexOf("type") >= 0)
-                        || (colId.indexOf("category") >= 0)) {
+		    || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.equals("date")) {
                     type = "date";
@@ -1917,14 +1917,14 @@ public abstract class Processor extends SeesvOperator {
                 String values     = getDbProp(colId, "values", null);
                 String searchRows = getDbProp(colId, "searchrows", "");
                 String defaultsort = getDbProp(colId, "defaultsort",
-                                         (String) null);
+					       (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
-                            "true" }));
+							      "true" }));
                     String asc = getDbProp(colId, "ascending", (String) null);
                     if (asc != null) {
                         attrs.append(XmlUtil.attrs(new String[] { "ascending",
-                                asc }));
+								  asc }));
                     }
                 }
 
@@ -1938,25 +1938,25 @@ public abstract class Processor extends SeesvOperator {
 		}
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
-                        canSearch + ""));
+						    canSearch + ""));
                 addRawInput = "true".equals(getDbProp(colId, "addrawinput",
 						      addRawInput + ""));		
                 canSort = "true".equals(getDbProp(colId, "cansort",
-                        canSort + ""));
+						  canSort + ""));
                 canList = "true".equals(getDbProp(colId, "canlist",   canList + ""));
 		if(getDbProp(colId, "after.canlist",dfltCanList)!=dfltCanList) {
 		    dfltCanList=!dfltCanList;
 		}
 
                 attrs.append(XmlUtil.attrs(new String[] {
-                    "type", type, "label", label,
-		    "cansearch", "" + canSearch,
-                    "canlist", "" + canList
-                }));
+			    "type", type, "label", label,
+			    "cansearch", "" + canSearch,
+			    "canlist", "" + canList
+			}));
 		if(addRawInput) {
-                attrs.append(XmlUtil.attrs(new String[] {
-			    "addrawinput", "" + addRawInput
-                }));
+		    attrs.append(XmlUtil.attrs(new String[] {
+				"addrawinput", "" + addRawInput
+			    }));
 
 		}
                 String preamble = getDbProp(colId, "preamble", (String) null);
@@ -1967,41 +1967,41 @@ public abstract class Processor extends SeesvOperator {
                 String group = getDbProp(colId, "group", (String) null);
                 if (group != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "group",
-                            group }));
+							      group }));
                 }
 
                 if (canSort) {
                     attrs.append(XmlUtil.attrs(new String[] { "cansort",
-                            "true" }));
+							      "true" }));
                 }
                 if (values != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "values",
-                            values }));
+							      values }));
                 }
                 String lookupDB = getDbProp(colId, "lookupdb", (String) null);
 
                 if (lookupDB != null) {
                     attrs.append(XmlUtil.attrs(new String[] { "lookupdb",
-                            lookupDB }));
+							      lookupDB }));
                 }
                 if (searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
-                            searchRows }));
+							      searchRows }));
                 }
                 if (type.equals("date") || type.equals("datetime")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",
-                            getDbProp(colId, "format", format) }));
+							      getDbProp(colId, "format", format) }));
 		    String fmt = getDbProp(colId, "displayFormat", displayFormat);
 		    if(fmt!=null) 
 			attrs.append(XmlUtil.attrs(new String[] { "displayFormat",
-								 fmt}));
+								  fmt}));
 
                 }
 
 		String numFmt = getDbProp(colId, "numberFormat", numberFormat);
 		if(numFmt!=null) 
 		    attrs.append(XmlUtil.attrs(new String[] { "numberFormat",
-								 numFmt}));
+							      numFmt}));
 
                 StringBuffer inner = new StringBuffer();
                 boolean isindex = "true".equals(getDbProp(colId, "isindex",
@@ -2013,7 +2013,7 @@ public abstract class Processor extends SeesvOperator {
                 }
 
                 boolean doStats = "true".equals(getDbProp(colId, "dostats",
-                                      dfltDoStats + ""));
+							  dfltDoStats + ""));
 
                 if (doStats) {
 		    attrs.append(XmlUtil.attrs(new String[] { "dostats","true"}));
@@ -2021,26 +2021,26 @@ public abstract class Processor extends SeesvOperator {
                 if (Seesv.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "iscategory", "value", "true" })));
+						     "name",
+						     "iscategory", "value", "true" })));
                 }
                 if (Seesv.getDbProp(props, colId, "formap", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "formap", "value", "true" })));
+						     "name",
+						     "formap", "value", "true" })));
                 }
 
                 if (Seesv.getDbProp(props, colId, "islabel", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "islabel", "value", "true" })));
+						     "name",
+						     "islabel", "value", "true" })));
                 }
 
                 if (inner.length() > 0) {
                     writer.println(XmlUtil.tag("column", attrs.toString(),
-                            inner.toString()));
+					       inner.toString()));
                 } else {
                     writer.println(XmlUtil.tag("column", attrs.toString()));
                 }
@@ -2077,7 +2077,7 @@ public abstract class Processor extends SeesvOperator {
                     return false;
                 }
             }
-           if (Utils.stringDefined(suffixPattern)) {
+	    if (Utils.stringDefined(suffixPattern)) {
                 if ( !suffix.matches(suffixPattern)) {
                     return false;
                 }
@@ -2101,7 +2101,7 @@ public abstract class Processor extends SeesvOperator {
                 }
                 String type = "{}";
                 if ((colId.indexOf("type") >= 0)
-                        || (colId.indexOf("category") >= 0)) {
+		    || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.indexOf("date") >= 0) {
                     type = "date";
@@ -2372,8 +2372,8 @@ public abstract class Processor extends SeesvOperator {
             ctx.println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
                 String label = (i < headerValues.size())
-                               ? headerValues.get(i).toString()
-                               : "NA";
+		    ? headerValues.get(i).toString()
+		    : "NA";
                 label = StringUtil.padLeft(label, maxWidth);
                 ctx.println(label + ": " + values.get(i));
             }
@@ -2435,8 +2435,8 @@ public abstract class Processor extends SeesvOperator {
             List<Integer> keys1Indices = null;
             //      System.err.println("key:" + keys1 +" " + keys1Indices);
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(file)));
+						   new InputStreamReader(
+									 getInputStream(file)));
             SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             map        = new Hashtable<String, Row>();
@@ -2588,8 +2588,8 @@ public abstract class Processor extends SeesvOperator {
         private void init(TextReader ctx, String file) throws Exception {
             List<Integer> keys1Indices = null;
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        getInputStream(file)));
+						   new InputStreamReader(
+									 getInputStream(file)));
             SeesvOperator operator = null;
             TextReader  reader   = new TextReader(br);
             rows       = new ArrayList<KeyRow>();
@@ -2722,9 +2722,9 @@ public abstract class Processor extends SeesvOperator {
                     continue;
                 }
                 String contents = XmlUtil.tag("attr",
-                                      XmlUtil.attr("encoded", "false")
-                                      + XmlUtil.attr("index",
-                                          "1"), XmlUtil.getCdata(value));
+					      XmlUtil.attr("encoded", "false")
+					      + XmlUtil.attr("index",
+							     "1"), XmlUtil.getCdata(value));
                 sb.append(XmlUtil.tag("metadata",
                                       XmlUtil.attr("type", "netflix_" + tag),
                                       contents));
@@ -2752,22 +2752,22 @@ public abstract class Processor extends SeesvOperator {
             String       dttm      = ((String) row.get(18)).trim();
             List<String> genreToks = Utils.split((String) row.get(1), ",");
             String       genre     = (genreToks.size() > 0)
-                                     ? genreToks.get(0)
-                                     : "Film";
+		? genreToks.get(0)
+		: "Film";
             genre = genre.trim();
             if (genre.length() == 0) {
                 genre = "Miscellaneous";
             }
             if ( !genres.contains(genre)) {
                 ctx.print(XmlUtil.tag("entry",
-                                     XmlUtil.attr("type", "group")
-                                     + XmlUtil.attr("id", genre)
-                                     + XmlUtil.attr("name", genre), ""));
+				      XmlUtil.attr("type", "group")
+				      + XmlUtil.attr("id", genre)
+				      + XmlUtil.attr("name", genre), ""));
                 genres.add(genre);
             }
 
             ctx.print("<entry " + XmlUtil.attr("type", "type_netflix_movie")
-                     + XmlUtil.attr("parent", genre));
+		      + XmlUtil.attr("parent", genre));
             if (dttm.length() > 0) {
                 Date date = sdf.parse(dttm);
                 ctx.print(XmlUtil.attr("fromdate", sdf2.format(date)));
@@ -2775,7 +2775,7 @@ public abstract class Processor extends SeesvOperator {
             ctx.println(">");
             ctx.print(makeTag("name", row.get(0)));
             ctx.print(makeTag("description",
-                             "<snippet>" + row.get(23) + "</snippet>"));
+			      "<snippet>" + row.get(23) + "</snippet>"));
             ctx.print(makeTag("series_or_movie", row.get(4)));
             ctx.print(makeTag("hidden_gem_score", row.get(5)));
             ctx.print(makeTag("runtime", row.get(7)));
@@ -2794,8 +2794,8 @@ public abstract class Processor extends SeesvOperator {
             String thumb = row.getString(25);
             if (thumb.trim().length() > 0) {
                 ctx.print(
-                    "<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">"
-                    + thumb + "</attr></metadata>");
+			  "<metadata type=\"content.thumbnail\"><attr index=\"1\" encoded=\"false\">"
+			  + thumb + "</attr></metadata>");
             }
             ctx.print(makeTag("poster", row.get(26)));
             ctx.print(makeTag("tmdb_trailer", row.get(27)));
@@ -2826,13 +2826,13 @@ public abstract class Processor extends SeesvOperator {
             new org.apache.commons.text.similarity.JaroWinklerDistance();
         org.apache.commons.text.similarity.FuzzyScore fuzzy =
             new org.apache.commons.text.similarity.FuzzyScore(
-                java.util.Locale.getDefault());
+							      java.util.Locale.getDefault());
         LevenshteinDistance lev     = new LevenshteinDistance(10);
         Soundex             soundex = new Soundex();
         for (int i = 1; i < args.length; i++) {
             int fuzzyScore = fuzzy.fuzzyScore(s, args[i]).intValue();
             int levenshteinScore = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,
-                                       args[i]);
+									 args[i]);
             //      int fuzzy = me.xdrop.fuzzywuzzy.FuzzySearch.ratio(s,args[i]);
             int    sound = 25 * soundex.difference(s, args[i]);
             double jaro  = distance.apply(s, args[i]);
