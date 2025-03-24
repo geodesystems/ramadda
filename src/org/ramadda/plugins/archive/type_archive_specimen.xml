@@ -1,0 +1,36 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_specimen.xml"/>
+into some types.xml file
+This is a base entry that provides site information. It is used as a super type for the Geology and Paleontonlogy types
+-->
+<type  name="type_archive_specimen" 
+ description="Archive Specimen" 
+ handler="org.ramadda.repository.type.GenericTypeHandler" 
+ super="type_archive_site" 
+ supercategory="General" 
+ category="Archive" 
+>
+
+<!-- Columns-->
+<column  name="catalog_number"  label="Catalog Number"  type="string" />
+<column  name="handling"  label="Handling"  type="enumerationplus" />
+<column  name="object_status"  label="Object Status"  type="enumerationplus" />
+<column  name="item_count"  label="Item Count"  type="int"  default="0" />
+<column  name="quantity"  label="Quantity"  type="int"  default="0" />
+<column  name="storage_unit"  label="Storage Unit"  type="enumerationplus" />
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="form.tags.show"  value="false" />
+<property  name="form.resource.show"  value="false" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<property  name="form.time.show"  value="false" />
+<property  name="form.geoposition"  value="locality" />
+<property  name="form.altitude.show"  value="true" />
+<property  name="form.todate.show"  value="false" />
+<property  name="form.date.label"  value="Collection Date" />
+<property  name="html.tabs"  value="true" />
+<property  name="form.tabs"  value="true" />
+<property  name="column.showenumerationpopup"  value="true" />
+</type>

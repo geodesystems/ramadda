@@ -193,4 +193,17 @@
       <element datatype="string" name="Condition" rows="5"/>
       <element datatype="string" name="Parasites" rows="5"/>            
     </type>
+
+    <type
+       id="archive_specimen_media"
+       name="Specimen Media"
+      searchable="true" >
+      <element datatype="enumerationplus" name="Media Type"
+	       values="General,Alarm call,Territorial call" istitle="true"/>
+      <element name="Media File" datatype="file"  istitle="true"/>
+      <element datatype="string" name="Notes" rows="5"/>
+    </type>
+    
+
+
 </metadata>

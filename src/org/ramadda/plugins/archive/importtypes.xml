@@ -1,4 +1,5 @@
 <types>
+<import resource="type_archive_specimen.xml"/>
 <import resource="type_archive_site.xml"/>
 <import resource="type_archive_taxonomy.xml"/>
 <import resource="type_archive_geologic_specimen.xml"/>
