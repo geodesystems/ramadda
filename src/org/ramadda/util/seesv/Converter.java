@@ -4358,7 +4358,6 @@ public abstract class Converter extends Processor {
 		    int date = cal.get(calendarField);
 		    if(date!=lastDate) {
 			lastDate = date;
-			System.err.println("reset:" + dttm);
 			values = new Hashtable<Integer,Double>();
 		    }
 
