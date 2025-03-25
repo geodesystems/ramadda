@@ -31,6 +31,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.ImageUtils;
 import java.awt.Image;
 
+import org.json.*;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -2078,9 +2079,31 @@ public class ExtEditor extends RepositoryManager {
 	return dfltProps;
     }
 
+    private Metadata getDefineTypeMetadata(Request request, Entry entry) throws Exception {
+	List<Metadata> metadataList =
+	    getMetadataManager().findMetadata(request, entry,
+					      new String[]{AdminMetadataHandler.TYPE_ENTRY_TYPE},false);
+
+
+	if(metadataList!=null && metadataList.size()>0) {
+	    return metadataList.get(0);
+	}
+	return null;
+    }	
+
     public Result doOutputCreateType(Request request, Entry entry,StringBuilder sb,boolean create)
 	throws Exception {
-
+	boolean applyMetadata = request.get("applymetadata",false);
+	Metadata jsonMetadata = getDefineTypeMetadata(request, entry);
+	if(applyMetadata) {
+	    if(jsonMetadata==null) throw new IllegalArgumentException("No entry type metadata available:" + entry);
+	    String json = jsonMetadata.getAttr1();
+	    JSONArray a  =new JSONArray(json);
+	    for (int i = 0; i < a.length(); i++) {
+		JSONObject param= a.getJSONObject(i);
+		request.put(param.getString("n"),param.getString("v"));
+	    }
+	}
 	String id = request.getString(ARG_TYPEID,"").trim();
 	if(!Utils.stringDefined(id)) {
 	    sb.append(getPageHandler().showDialogError("No ID specified"));
@@ -2105,20 +2128,8 @@ public class ExtEditor extends RepositoryManager {
 	else if(handler.matches("^(TypeHandler|GenericTypeHandler|ExtensibleGroupTypeHandler)$")) {
 	    handler = "org.ramadda.repository.type."+handler;
 	}
-	List<Metadata> metadataList =
-	    getMetadataManager().findMetadata(request, entry,
-					      new String[]{AdminMetadataHandler.TYPE_ENTRY_TYPE},false);
-
-	Metadata jsonMetadata = null;
-	if(metadataList!=null && metadataList.size()>0) {
-	    jsonMetadata = metadataList.get(0);
-	}
-
-
-
-
 	String json = request.getString(ARG_JSON_CONTENTS,null);
-	if(json!=null) {
+	if(json!=null && !applyMetadata) {
 	    if(jsonMetadata==null) {
 		jsonMetadata = new Metadata(getRepository().getGUID(), entry.getId(),
 					    getMetadataManager().findType(AdminMetadataHandler.TYPE_ENTRY_TYPE),
