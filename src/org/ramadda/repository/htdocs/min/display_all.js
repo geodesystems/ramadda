@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Mar 22 07:04:21 MDT 2025";
+var build_date="RAMADDA build date: Mon Mar 24 20:07:45 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -65114,6 +65114,23 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 let color = this.getProperty(field.getId()+'.color');
 		if(!color)color= i >= colors.length ? colors[0] : colors[i];
                 let values = this.getColumnValues(records, field).values;
+		let tooltips = null;
+		let hoverTemplate=null;
+		let template = this.getTooltip(null);
+		if(template) {
+		    let ttf = this.getTooltipFields();
+		    if(!ttf)
+			ttf = this.getFields();
+		    hoverTemplate = '%{text}<extra></extra>';
+		    tooltips = records.map((record,idx)=>{
+			let html = '';
+			ttf.forEach(field=>{
+			    html+='<b>' + field.getLabel()+': </b>' +
+				field.getValue(record)+'<br>';
+			});
+			return  html;
+		    });
+		}
                 if (colorBy.index >= 0) {
 		    color = [];
 		    records.map(record=>{
@@ -65128,12 +65145,15 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                         labels.push("Point " + (j + 1));
                     }
                 }
+
                 plotData.push({
                     type: 'scatter',
                     x: values,
                     y: labels,
                     mode: 'markers',
                     name: field.getLabel(),
+		    text:tooltips,
+		    hovertemplate: hoverTemplate,
                     marker: {
                         color: color,
                         line: {
@@ -65354,6 +65374,7 @@ function RamaddaProfileDisplay(displayManager, id, properties) {
 		    trace.xaxis="x2";
 		data.push(trace);
 	    });
+
 
 
 	    let labelName = indexField.getLabel();
