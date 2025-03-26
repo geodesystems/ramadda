@@ -151,6 +151,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     private boolean thumbnail = false;
 
+    private boolean embed=false;
+
     /** _more_ */
     private boolean required = false;
 
@@ -220,6 +222,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
         required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
+        embed= XmlUtil.getAttribute(node, "embed", false);
         setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
 
         if (dataType.equals(MetadataElement.DATATYPE_ENUMERATION)
@@ -405,6 +408,33 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (getThumbnail()) {
                 return null;
             }
+
+	    if(embed) {
+		String[] nameUrl = type.getFileUrl(request, entry, containerMetadata);
+		if (nameUrl == null) {
+		    return null;
+		}
+		String file = value;
+		String _file = getRepository().getStorageManager().getOriginalFilename(file);
+		String label = _file;
+		String contents=null;
+		if(HU.isAudio(file)) {
+		    contents  =HU.getAudioEmbed(nameUrl[1]);
+		} else	if(HU.isVideo(file)) {
+		    contents = HU.getMediaEmbed(nameUrl[1],"400","300");
+		} else if(HU.isPdf(file)) {
+		    contents = HU.getPdfEmbed(nameUrl[1],null);
+		} else if(Utils.isImage(file)) {
+		    contents = HU.image(nameUrl[1],"width","100%");
+		} else {
+		    contents  = HU.href(nameUrl[1],label);
+		}
+		if(contents!=null) {
+		    return new MetadataHtml(
+					    "",contents);
+		}
+		return null;
+	    }
 
             String url = getFileUrl(request, entry, containerMetadata, this,true,
                                      null);
