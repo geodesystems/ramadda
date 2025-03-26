@@ -1,7 +1,7 @@
 
 ##Specimen
-Catalog number,,string,
-Handling,,enumerationplus,
+Catalog number,,string,group="Specimen"
+Handling,,string,size="2000" rows="5"
 Object status,,enumerationplus,
 Item count,,int,default="0"
 Quantity,,int,default="0"
@@ -130,19 +130,44 @@ wingspan,,double,displaysuffix="cm"
 weight,,double,displaysuffix="grams"
 coloration,,string,size="2000" rows="5"
 
+##mammalogy_specimen Mammalogy Specimen
+specimen_type,Specimen Type,enumerationplus,group="Mammalogy" subgroup="Specimen Details" cansearch="true"\n \
+values="unknown\,skin\,skeleton\,preserved specimen\,mounted specimen\,other"
+sex,,enumeration,values="unknown\,male\,female" cansearch="true"
+age,,enumerationplus,values="unknown\,adult\,juvenile\,hatchling" cansearch="true"
+condition,,enumerationplus,values="unknown\,complete\,incomplete\,damaged" cansearch="true"
+body_length,,double, subgroup="Dimensions" displaysuffix="cm" 
+weight,,double,displaysuffix="grams"
+coloration,,string,size="2000" rows="5"
+
+
+
+##herpetology_specimen Herpetology Specimen
+specimen_type,Specimen Type,enumerationplus,group="Herpetology" subgroup="Specimen Details" cansearch="true"\n \
+values="unknown\,skin\,skeleton\,preserved specimen\,mounted specimen\,other"
+sex,,enumeration,values="unknown\,male\,female" cansearch="true"
+age,,enumerationplus,values="unknown\,adult\,juvenile\,hatchling" cansearch="true"
+condition,,enumerationplus,values="unknown\,complete\,incomplete\,damaged" cansearch="true"
+body_length,,double, subgroup="Dimensions" displaysuffix="cm" 
+weight,,double,displaysuffix="grams"
+coloration,,string,size="2000" rows="5"
+
+
+##ichthyology_specimen Ichthyology Specimen
+specimen_type,Specimen Type,enumerationplus,group="Ichthyology" subgroup="Specimen Details" cansearch="true"\n \
+values="unknown\,skin\,skeleton\,preserved specimen\,mounted specimen\,other"
+sex,,enumeration,values="unknown\,male\,female" cansearch="true"
+age,,enumerationplus,values="unknown\,adult\,juvenile\,hatchling" cansearch="true"
+condition,,enumerationplus,values="unknown\,complete\,incomplete\,damaged" cansearch="true"
+body_length,,double, subgroup="Dimensions" displaysuffix="cm" 
+weight,,double,displaysuffix="grams"
+coloration,,string,size="2000" rows="5"
+
 
 
 ##botany_specimen Botany Specimen
 
-##herpetology_specimen Herpetology Specimen
 
-
-##mammalogy_specimen Mammalogy Specimen
-
-##ichthyology_specimen Ichthyology Specimen
-
-
-##Possible vertebrate zoology  and invertebrate zoology 
 
 
 
