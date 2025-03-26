@@ -1887,7 +1887,8 @@ public class ExtEditor extends RepositoryManager {
 	String catHelp=HU.href(getRepository().getUrlBase()+"/search/type",
 			       "View all Categories","target=_cats");
         main.append(HU.formEntryTop(msgLabel("Super Category"),
-				    HU.input("supercategory",request.getString("supercategory","Geoscience"),HU.attrs("size","30")) +
+				    HU.input("supercategory",request.getString("supercategory",""),
+					     HU.attrs("placeholder","e.g. Geoscience","size","30")) +
 				    HU.space(1) + catHelp));
         main.append(HU.formEntryTop(msgLabel("Category"),
 				  HU.input("category",request.getString("category",""),HU.attrs("placeholder","e.g., Point Data","size","30"))));
