@@ -1243,11 +1243,9 @@ public class Column implements DataTypes, Constants, Cloneable {
                 }
             } else {
                 if (isType(DATATYPE_LIST)) {
-		    System.err.println("before:" + s);
 		    s = escapeComma(s);
                     s = s.replace(",", "<br>");
 		    s = unescapeComma(s);
-		    System.err.println("after:" + s);
                 }
             }
             if (s.length() == 0) {
