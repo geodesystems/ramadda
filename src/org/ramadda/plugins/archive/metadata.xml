@@ -145,7 +145,7 @@
     <type
 	tag="archivecultural"
 	id="archive_media_resource" name="Media Resource"   displaygroup="Media Resources">
-      <element name="Media File" datatype="file"  istitle="true"/>
+      <element name="Media File" datatype="file"  istitle="true" />
       <element name="Alternate URL" datatype="url"/>
       <element name="Caption" datatype="string" />
       <element name="Description" datatype="string" rows="5"/>      
@@ -200,7 +200,7 @@
       searchable="true" >
       <element datatype="enumerationplus" name="Media Type"
 	       values="General,Alarm call,Territorial call" istitle="true"/>
-      <element name="Media File" datatype="file"  istitle="true"/>
+      <element name="Media File" datatype="file"  istitle="true" embed="true"/>
       <element datatype="string" name="Notes" rows="5"/>
     </type>
     

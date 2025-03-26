@@ -7,7 +7,17 @@ into some types.xml file
  description="Ichthyology Specimen" 
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  super="type_archive_taxonomy" 
+ supercategory="Geoscience" 
 >
+
+<!-- Columns-->
+<column  name="specimen_type"  label="Specimen Type"  type="enumerationplus"  group="Ichthyology" subgroup="Specimen Details" cansearch="true"  values="unknown,skin,skeleton,preserved specimen,mounted specimen,other" />
+<column  name="sex"  label="Sex"  type="enumeration"  values="unknown,male,female" cansearch="true" />
+<column  name="age"  label="Age"  type="enumerationplus"  values="unknown,adult,juvenile,hatchling" cansearch="true" />
+<column  name="condition"  label="Condition"  type="enumerationplus"  values="unknown,complete,incomplete,damaged" cansearch="true" />
+<column  name="body_length"  label="Body Length"  type="double"  subgroup="Dimensions" displaysuffix="cm" />
+<column  name="weight"  label="Weight"  type="double"  displaysuffix="grams" />
+<column  name="coloration"  label="Coloration"  type="string"  size="2000" rows="5" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/fish.png" />

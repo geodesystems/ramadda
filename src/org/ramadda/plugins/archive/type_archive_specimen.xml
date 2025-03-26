@@ -10,11 +10,12 @@ This is a base entry that provides site information. It is used as a super type 
  super="type_archive_site" 
  supercategory="General" 
  category="Archive" 
+metadata="archive_specimen_media"
 >
 
 <!-- Columns-->
-<column  name="catalog_number"  label="Catalog Number"  type="string" />
-<column  name="handling"  label="Handling"  type="enumerationplus" />
+<column  name="catalog_number"  label="Catalog Number"  type="string"  group="Specimen" />
+<column  name="handling"  label="Handling"  type="string"  size="2000" rows="5" />
 <column  name="object_status"  label="Object Status"  type="enumerationplus" />
 <column  name="item_count"  label="Item Count"  type="int"  default="0" />
 <column  name="quantity"  label="Quantity"  type="int"  default="0" />
