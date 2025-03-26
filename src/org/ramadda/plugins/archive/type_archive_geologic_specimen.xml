@@ -7,7 +7,6 @@ into some types.xml file
  description="Geologic Specimen" 
  handler="org.ramadda.repository.type.GenericTypeHandler" 
  super="type_archive_specimen" 
- supercategory="Geoscience" 
 >
 
 <!-- Columns-->

@@ -9,8 +9,8 @@ This is a base entry that provides site information. It is used as a super type 
  handler="org.ramadda.repository.type.GenericTypeHandler" 
  super="type_archive_site" 
  supercategory="General" 
- category="Archive" 
 metadata="archive_specimen_media"
+foruser="false"
 >
 
 <!-- Columns-->

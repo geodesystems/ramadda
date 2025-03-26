@@ -7,7 +7,6 @@ into some types.xml file
  description="Ichthyology Specimen" 
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  super="type_archive_taxonomy" 
- supercategory="Geoscience" 
 >
 
 <!-- Columns-->

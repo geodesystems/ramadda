@@ -7,7 +7,7 @@ into some types.xml file
  description="Archive Taxonomy" 
  handler="org.ramadda.plugins.archive.TaxonomyRecordTypeHandler" 
  super="type_archive_specimen" 
- supercategory="Geoscience" 
+foruser="false"
 >
 
 <!-- Columns-->
