@@ -312,15 +312,13 @@ public class LogManager extends RepositoryManager {
         try {
             //            logger = Logger.getLogger(logId.getId());
             long t1 = System.currentTimeMillis();
-	    System.err.println("log-1");
-	    System.setProperty("log4j2.hostname", "ramaddahost");
+	    //	    System.err.println(java.net.InetAddress.getLocalHost().getHostName());
             Logger _logger =
                 org.apache.logging.log4j.LogManager.getLogger(logId);
             if (_logger != null) {
                 logger = new MyLogger(_logger);
             }
             long t2 = System.currentTimeMillis();
-	    System.err.println("log-2");
             if (t2 - t1 > 1000) {
                 Utils.printTimes("log initialization time:", t1, t2);
             }
