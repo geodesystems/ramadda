@@ -55,7 +55,7 @@ csv -progress 100 \
     -operator "${base2}_total_volume,${base1}_total_volume" volume_total_difference "-" \
     -operator "${base2}_yearly_total_volume,${base1}_yearly_total_volume" volume_yearly_total_difference "-" \
     -set ${base1}_date 0 date \
-    -columns "date,discharge_difference,volume_difference,volume_total_difference,volume_yearly_total_difference,${base1}_discharge,${base2}_discharge,${base1}_gauge_height,${base2}_gauge_height,${base1}_volume,${base2}_volume,${base1}_total_volume,${base2}_total_volume,${base1}_yearly_total_volume,${base2}_yearly_total_volume," \
+    -columns "date,volume_yearly_total_difference,${base1}_yearly_total_volume,${base2}_yearly_total_volume,discharge_difference,volume_difference,${base1}_discharge,${base2}_discharge,${base1}_gauge_height,${base2}_gauge_height,${base1}_volume,${base2}_volume," \
     -p "$joined" > "$difference"
 
 
