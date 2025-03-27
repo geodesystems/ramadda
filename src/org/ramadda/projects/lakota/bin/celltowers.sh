@@ -1,19 +1,31 @@
-#download the ftp://wirelessftp.fcc.gov/pub/uls/complete/r_tower.zip
+#
+#download and unzip the file @ ftp://wirelessftp.fcc.gov/pub/uls/complete/r_tower.zip
+#this results in
+#RA.dat - registration information
+#EN.dat - entity info
+#CO.dat = coordinates
+
+#These are | delimited files with no header
+#We use RAMADDA's SeeSV package to process the files
+#https://ramadda.org/repository/a/seesv
+
 
 csv() {
     sh ${SEESV} "$@"
 }
 
 
+#process the registrations
 if [ ! -e "ra.csv" ]; then
     csv -delimiter "|" \
 	-progress 1000 \
 	-header "Record Type,Content Indicator,File Number,Registration Number,Unique System Identifier,Application Purpose,Previous Purpose,Input Source Code,Status Code,Date Entered,Date Received,Date Issued,Date Constructed,Date Dismantled,Date Action,Archive Flag Code,Version,Signature First Name,Signature Middle Initial,Signature Last Name,Signature Suffix,Signature Title,Invalid Signature,Structure_Street Address,Structure_City,Structure_State Code,County Code,ZIP Code,Height of Structure,Ground Elevation,Overall Height Above Ground,Overall Height AMSL,Structure Type,Date FAA Determination Issued,FAA Study Number,FAA Circular Number,Specification Option,Painting and Lighting,Proposed Marking and Lighting,Marking and Lighting Other,FAA EMI Flag,NEPA Flag,Date Signed,Assignor Signature Last Name,Assignor Signature First Name,Assignor Signature Middle Initial,Assignor Signature Suffix,Assignor Signature Title,Assignor Date Signed" \
-	-p ra.dat > ra.csv
+	-p RA.dat > ra.csv
 fi
 
 
 
+#process the entity data
 if [ ! -e "en.csv" ]; then
     echo "making en.csv"
     csv -delimiter "|" \
@@ -23,6 +35,8 @@ if [ ! -e "en.csv" ]; then
 fi
 
 
+
+#process the coordinates and extract the lat/lon
 if [ ! -e "co.csv" ]; then
     echo "making co.csv"
     csv -delimiter "|" \
@@ -35,6 +49,7 @@ if [ ! -e "co.csv" ]; then
 	-p CO.dat > co.csv
 fi
 
+#Now join the registration and entity data with the coordinates
 if [ ! -e "merged.csv" ]; then
     echo "making merged.csv"
     csv     -progress 1000 \
@@ -43,6 +58,8 @@ if [ ! -e "merged.csv" ]; then
 	    -p co.csv > merged.csv
 fi
 
+#Now extract the South Dakota towers
+#the -addheader adds RAMADDA's CSV header defining the types of a couple of the fields
 csv -match structure_state_code "(SD)" \
     -addheader "structure_state.type enumeration  structure_type.type enumeration" \
     -p merged.csv > sd_antennas.csv
