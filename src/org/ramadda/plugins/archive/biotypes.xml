@@ -1,5 +1,6 @@
 <types 	priority="10" supercategory="General" category="Archive">
   <type name="type_archive_bio"  description="Archive Bio Record"
+	foruser="false"
 	handler="org.ramadda.plugins.archive.BioRecordTypeHandler"  
 	editfields="name,common_name,scientific_name,taxon_kingdom,taxon_division,taxon_class,taxon_order,taxon_family,taxon_genus,taxon_species,taxon_variety,tsn_number,_default"
 	metadata="archive_alternate_name,archive_cultural_use,archive_media_resource,archive_research_activity,content.thumbnail">
