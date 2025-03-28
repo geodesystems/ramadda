@@ -737,6 +737,7 @@ MapGlyph.prototype = {
 	if(this.isMapServer()) {
 	    let url = this.jq('serverurl').val();
 	    if(url) {
+		url = url.trim();
 		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.png/, "/${z}/${x}/${y}.png");
 		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpg/, "/${z}/${x}/${y}.jpg");
 		url = url.replace(/\/(\d+)\/(\d+)\/(\d+)\.jpeg/, "/${z}/${x}/${y}.jpeg");
@@ -3089,7 +3090,6 @@ MapGlyph.prototype = {
 		}, {
 		    opacity:1.0
 		});
-		console.dir(this.mapServerLayer);
 	    } else if(Utils.stringDefined(url)) {
 		this.createMapServer();
 	    } else if(Utils.stringDefined(this.attrs.predefinedLayer)) {
