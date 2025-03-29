@@ -15,9 +15,8 @@
     <api request="/colortables"      method="processColorTables"/>
     <api request="/favicon.ico"      method="processFavIcon"/>
     <api request="/base.js"          method="processBaseJs"/>
+    <api request="/base.js"          method="processBaseJs"/>
     <api request="/testaction"       method="processTestAction"/>
-    <api request="/printdb"       method="processPrintDb"/>
-    <api request="/flush"       method="processFlush"/>                       
   </group>
 
 
@@ -96,6 +95,8 @@
     <api request="/wiki/findentryfromid"             method="processFindEntryFromId"/>
     <api request="/wiki/getentries"             method="processGetEntries"/>
     <api request="/wiki/getmacros"             method="processGetMacros"/>                      
+    <api request="/icons.html"          method="processDisplayIcons"/>
+
   </group>
 
   <group handler="commentmanager">
