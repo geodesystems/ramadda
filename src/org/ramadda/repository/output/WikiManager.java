@@ -1600,6 +1600,30 @@ public class WikiManager extends RepositoryManager
 
 
     
+    public Result processDisplayIcons(Request request) throws Exception {
+	StringBuilder sb = new StringBuilder();
+	sb.append(
+		  HU.importJS(
+			      getRepository().getHtdocsUrl(
+							   "/displayicons.js")));
+
+	String id = HU.getUniqueId("icons");
+	String searchid = HU.getUniqueId("search");
+        getPageHandler().sectionOpen(request, sb,"Icons",false);
+	HU.div(sb,"Click to copy the icon link","");
+	HU.div(sb,"",HU.attrs("id",searchid));
+	HU.div(sb,"",HU.attrs("id",id));
+	sb.append(HtmlUtils.script(HU.call("ramaddaDisplayIcons",HU.squote("#" + id))));
+        getPageHandler().sectionClose(request, sb);
+	HU.addPageSearch(sb,"#" + id +" .ramadda-icon",null,"Find",
+			 "target",HU.squote("#"+searchid));
+
+        return  new Result("Icons",sb);
+    }
+
+
+
+
     public Result processGetWikiToolbar(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request,
 						 request.getString(ARG_ENTRYID, ""));
@@ -8320,6 +8344,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/search/info#entrytypes", "Entry Types");
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
+        makeHelp.accept("/icons.html", "Icons");	
 
         wikiMenuEtcButton = makeMenuButton("Misc", etc.toString());
         wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,true);
