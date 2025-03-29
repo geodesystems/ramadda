@@ -2768,15 +2768,15 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'inputSize',d:'200px',ex:'100%'},
 	{p:'placeholder'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
-	{p:'doPageSearch',ex:'true'},
-	{p:'autoFocus',d:true,ex:'false'},	
+	{p:'doPageSearch',ex:'true',tt:'Just search in the page'},
+	{p:'autoFocus',d:true,ex:'false',tt:'auto focus on the search input field'},	
 	{p:'doTagSearch',ex:'true'},
 	{p:'tagShowGroup',d:true},
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
-        {p:'showParent',ex:'true',tt:'Show parent entry in search results'},	
 	{p:'pageSearchSelector',d:'.search-component,.entry-list-row-data'},
 	{p:'applyToEntries',ex:true,tt:'When doing the entry search use the IDs to hide/show components'},
-	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},		
+	{p:'pageSearchParent',ex:'.class or #id',tt:'set this to limit the scope of the search'},
+        {p:'showParent',ex:'true',tt:'Show parent entry in search results'},		
     ];
 
     if(!properties.width) properties.width=properties.inputSize??"230px";
