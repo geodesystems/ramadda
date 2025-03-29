@@ -3901,9 +3901,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     initPageSearch:function(select,parentSelect,label,hideAll,opts) {
+
 	let args = {
 	    focus:true,
 	    inputSize:'15',
+	    target:null,
+	    hideAll:hideAll
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
@@ -3942,9 +3945,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		jqid(b.id).button().click(function() {
 		    let button = buttonMap[$(this).attr(ATTR_ID)];
 		    if(button.clear) {
-			HU.doPageSearch('',select,parentSelect,hideAll);
+			HU.doPageSearch('',select,parentSelect,args.hideAll);
 		    }
-		    HU.doPageSearch(button.value,select,parentSelect,hideAll);
+		    HU.doPageSearch(button.value,select,parentSelect,args.hideAll);
 		});
 	    })
 	}
@@ -3967,7 +3970,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		return
 	    }
 	    let value = $(this).val();
-	    HU.doPageSearch(value,select,parentSelect,hideAll);
+	    HU.doPageSearch(value,select,parentSelect,args.hideAll);
 	    if(Utils.stringDefined(value)) {
 		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
 	    } else {
@@ -3977,7 +3980,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
 
 	if(Utils.stringDefined(initValue)) {
-	    HU.doPageSearch(initValue,select,parentSelect,hideAll);
+	    HU.doPageSearch(initValue,select,parentSelect,args.hideAll);
 	}
 
 
