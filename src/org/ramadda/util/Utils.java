@@ -1790,7 +1790,9 @@ public class Utils extends IO {
 		continue;
 	    }
             if(t.equals("now.month")) {
-		s.append(StringUtil.padZero(g.get(g.MONTH), 2));
+		int month = g.get(g.MONTH);
+		if(macro.getProperty("usebaseone",false)) month+=1;
+		s.append(StringUtil.padZero(month, 2));
 		continue;
 	    }
 	    if(t.equals("now.day")) {
