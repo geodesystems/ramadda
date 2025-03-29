@@ -1610,7 +1610,7 @@ public class WikiManager extends RepositoryManager
 	String id = HU.getUniqueId("icons");
 	String searchid = HU.getUniqueId("search");
         getPageHandler().sectionOpen(request, sb,"Icons",false);
-	HU.div(sb,"Click to copy the icon link","");
+	HU.div(sb,"Click an image to copy the icon link","");
 	HU.div(sb,"",HU.attrs("id",searchid));
 	HU.div(sb,"",HU.attrs("id",id));
 	sb.append(HtmlUtils.script(HU.call("ramaddaDisplayIcons",HU.squote("#" + id))));
