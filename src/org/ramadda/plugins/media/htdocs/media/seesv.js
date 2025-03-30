@@ -1,3 +1,5 @@
+
+
 var Seesv = {};
 
 function  SeesvForm(inputId, entry,params) {
@@ -234,6 +236,9 @@ function  SeesvForm(inputId, entry,params) {
 					      ATTR_ID,_this.domId(ID_DO_COMMANDS)],_this.doCommands,"Do commands") +"<br>";
 		html += HtmlUtil.checkbox("",[ATTR_TITLE,"Apply this set of commands to all of the siblings of this entry",
 					      ATTR_ID,_this.domId(ID_APPLY_TO_SIBLINGS)], _this.applyToSiblings, "Apply to siblings");
+		html+=HU.div([ATTR_CLASS,'ramadda-clickable'],HU.href(RamaddaUtils.getUrl('/userguide/seesv.html'),'Main Help',[ATTR_TARGET,'_help']));
+
+
 		html = HU.div([ATTR_STYLE,HU.css("margin","10px")],html);
 
 		let dialog = HU.makeDialog({content:html,my:"right top",at:"right bottom",xtitle:"",anchor:$(this),draggable:true,header:true,inPlace:false});
@@ -957,7 +962,21 @@ function  SeesvForm(inputId, entry,params) {
 				    cmd = line.substring(0,idx);
 				    comment = "<i>" + line.substring(idx)+"</i>";
 				}
-				line = "      <a href=# onclick=\"Seesv.insertCommand('" + cmd.trim() +"')\">" + cmd.trim() +"</a> " + comment;
+				let shortCmd = cmd.trim();
+				let idx2= shortCmd.indexOf(" ");
+				if(idx2>0) {
+				    shortCmd = shortCmd.substring(0,idx2);
+				}
+				let prefix = '';
+				if(shortCmd.startsWith('-')) {
+				    let helpUrl = RamaddaUtils.getUrl('/userguide/seesv.html#' + shortCmd);
+				
+				    let help = HU.href(helpUrl,
+						       HU.getIconImage('fas fa-question'),
+						       [ATTR_TARGET,'_help',ATTR_TITLE,'Full help']);
+				    prefix = help +' ';
+				}
+				line = "      " + prefix +"<a title='Insert command' href=# onclick=\"Seesv.insertCommand('" + cmd.trim() +"')\">" + cmd.trim() +"</a> " + comment;
 			    }  else {
 				line = "<b>" + line +"</b>"
 			    }
