@@ -1830,9 +1830,14 @@ public class Seesv implements SeesvCommands {
         new Category("Slice and Dice","Add/remove columns, rows, restructure, etc"),
         new Cmd(CMD_COLUMNS,  "Only include the given columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+	/*
         new Cmd(CMD_NOTCOLUMNS, "Don't include given columns",
 		ARG_LABEL,"Not Columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+	*/
+        new Cmd(CMD_DROP, "Don't include given columns",
+		ARG_LABEL,"Not Columns",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
         new Cmd(CMD_FIRSTCOLUMNS, "Move columns to beginning",
 		ARG_LABEL,"Move Columns First",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -3247,7 +3252,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
-	defineFunction(CMD_NOTCOLUMNS,1,(ctx,args,i) -> {
+	defineFunction(new String[]{CMD_DROP,CMD_NOTCOLUMNS},1,(ctx,args,i) -> {
 		List<String> cols = getCols(args.get(++i));
 		ctx.addProcessor(new Converter.ColumnNotSelector(ctx, cols));
 		return i;

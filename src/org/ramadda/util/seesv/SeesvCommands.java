@@ -126,6 +126,7 @@ public interface SeesvCommands {
     public static final String CMD_SKIPPATTERN="-skippattern";
     public static final String CMD_SKIPROWS="-skiprows";
     public static final String CMD_COLUMNS="-columns";
+    public static final String CMD_DROP="-drop";
     public static final String CMD_NOTCOLUMNS="-notcolumns";
     public static final String CMD_FIRSTCOLUMNS="-firstcolumns";
     public static final String CMD_LASTCOLUMNS="-lastcolumns";    
