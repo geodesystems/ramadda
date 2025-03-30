@@ -32,8 +32,7 @@ pre {
 </head>    
 <notcl>
 <style type='text/css'>
-  body {font-family: Arial, sans-serif;    line-height:1.5em;
-       }
+  body {font-family: Arial, sans-serif;    line-height:1.5em;}
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
   a:hover {
@@ -76,11 +75,10 @@ pre {
       margin-top:5px;
       padding:4px;
   }
-
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 317 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 318 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide
 
@@ -177,41 +175,69 @@ seesv -ids -printheader test.csv
 <div class=seesv-item>
 
 <h2>Some Examples</h2>  
+Selecting columns
 <pre class=examples>
-####  selecting columns
 #Subset test.csv and only include column1 and column2
-seesv -columns column1,column2 -p test.csv > newtest.csv
+seesv -columns "column1,column2" -p test.csv > newtest.csv
+</pre>
 
-#You can also use numeric indices - zero based
-seesv -columns 0,1 -p test.csv > newtest.csv
-
-#Specify a range of columns
-#either using column names:
-seesv -columns column1-columnN -p test.csv > newtest.csv
+You can also use numeric indices - zero based
+<pre class=examples>
+seesv -columns "0,1" -p test.csv > newtest.csv
+</pre>
+Specify a range of columns either using column names:
+<pre class=examples>
+seesv -columns "column1-columnN" -p test.csv > newtest.csv
 #or indices:
-seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
-
+seesv -columns "1-5,6,7,10-15" -p test.csv > newtest.csv>
 #or mix and match numeric and names
-seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+seesv -columns "0-1,columnA,columnB,columnF-columnZ" -p test.csv > newtest.csv
+</pre>
 
-#Specify a step:
-#seesv -columns start-end:step
-
+Specify a step:
+<pre class=examples>
+#seesv -columns "start-end:step"
 #e.g. below gives 0,3,6,9,12,15
-seesv -columns 0-15:3
+seesv -columns "0-15:3"
+</pre>
 
-#include all columns except column1
-seesv -notcolumns column1 -p test.csv > newtest.csv
+Specify an index based on the last column using "&gt;index", where index is
+a 0-based index from the end.
+<pre class=examples>
+seesv -columns "&gt;some_index"
+</pre>
 
-#subset columns and then change the values 
-seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+Selecting the last column:
+<pre class=examples>
+seesv -columns "&gt;0"
+</pre>
 
-#Only include column1 and then only pass through unique values matching exactly
+So selecting the 3rd column from the end:
+<pre class=examples>
+seesv -columns "&gt;2"
+</pre>
+
+
+Exclude  column1
+<pre class=examples>
+seesv -drop column1 -p test.csv > newtest.csv
+</pre>
+
+
+Subset columns and then change the values 
+<pre class=examples>
+seesv -columns "column1,column2" -change "column1,column2" "pattern" "new value" -p test.csv > newtest.csv
+</pre>
+
+Only include column1 and then only pass through unique values matching exactly
+<pre class=examples>
 seesv -columns column1 -unique 0 exact -p test.csv > newtest.csv
+</pre>
 
-#Only pass throught unique values in the first column and then sort the output
+Only pass throught unique values in the first column and then sort the output
+<pre class=examples>
 seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
-
+</pre>
 
 </pre>
 </div>
@@ -265,7 +291,18 @@ Use 'space' for space, 'tab' for tab,'?' to guess between tab and space<br>
 <li> <i>comment</i>:
 <br>
 </ul>
-</div></div><div class=seesv-item>
+This lets you specify which lines to ignore. The default is to ignore lines that
+start with "#".
+But for example, if your comment lines started with "&gt;", e.g.:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >&gt;comment line</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >some_name</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >jim</td></tr>
+</table><br>
+You can do:
+<seesv>seesv  -inputcomment "&gt;" ...</seesv>
+
+
+<p></div></div><div class=seesv-item>
 <a name='-tab'></a><div class=command> <i><a href='#-tab'>-tab</a></i> </div><div class=command-block>Use tabs. A shortcut for -delimiter tab<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-widths'></a><div class=command> <i><a href='#-widths'>-widths</a></i>  &lt;widths&gt; </div><div class=command-block>Columns are fixed widths<br class=seesv-hide>
@@ -296,17 +333,57 @@ enclosing commas or new lines. If the quotes in your CSV file aren't special the
 <li> <i>start pattern</i>:
 <br>
 </ul>
-</div></div><div class=seesv-item>
+The start pattern is the pattern that matches the header line
+For example, you might have data like:
+<pre>
+some header comments
+name
+Joe
+Sue
+</pre>
+
+You can use the -start command:
+<seesv>seesv -start "name"</seesv>
+
+
+<p></div></div><div class=seesv-item>
 <a name='-stop'></a><div class=command> <i><a href='#-stop'>-stop</a></i>  &lt;stop pattern&gt; </div><div class=command-block>End at pattern in source file<br class=seesv-hide>
 <ul>
 <li> <i>stop pattern</i>:
 <br>
 </ul>
-</div></div><div class=seesv-item>
+For example, you might have data like:
+<pre>
+some_name
+Joe
+Sue
+And this is a comment line at
+the end of the file
+</pre>
+
+You can use the -stop command to stop processing the file:
+<seesv>seesv -stop "And this is"</seesv>
+
+<p></div></div><div class=seesv-item>
 <a name='-trimline'></a><div class=command> <i><a href='#-trimline'>-trimline</a></i> </div><div class=command-block>Trim the input line<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-bom'></a><div class=command> <i><a href='#-bom'>-bom</a></i> </div><div class=command-block>Input has a leading byte order mark (BOM) that should be stripped out<br class=seesv-hide>
-</div></div><div class=seesv-item>
+If you ever have a problem where the first column name looks like, e.g.:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >some_name</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Joe</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Sue</td></tr>
+</table><br>
+And you are referencing some_name 
+<seesv>seesv -columns some_name</seesv>
+and you get an error like:
+<pre>
+ColumnSelector: Could not find column:some_name
+possible columns: [some_name, 0]
+</pre>
+
+Then it could be that there is a leading bom character. In that case call:
+<seesv>seesv -bom -columns some_name</seesv>
+<p></div></div><div class=seesv-item>
 <a name='-encoding'></a><div class=command> <i><a href='#-encoding'>-encoding</a></i>  &lt;encoding&gt; </div><div class=command-block>Specify the file encoding<br class=seesv-hide>
 <ul>
 <li> <i>encoding</i>:
@@ -320,9 +397,36 @@ Column names<br>
 </ul>
 Use this if your file does not have a header.
 
+So, with this data:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >jim</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >male</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >sue</td><td style='padding:4px;border:1px solid #ccc;' >female</td></tr>
+</table><br>
+You can do:
+<seesv>seesv  -header "name,gender"</seesv>
+
+
 <p></div></div><div class=seesv-item>
 <a name='-unitrow'></a><div class=command> <i><a href='#-unitrow'>-unitrow</a></i> </div><div class=command-block>Second row contains units<br class=seesv-hide>
-</div></div><div class=seesv-item>
+One often sees science data like:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value1</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >value2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >unit1</td><td style='padding:4px;border:1px solid #ccc;' >unit2</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >12</td><td style='padding:4px;border:1px solid #ccc;' >57</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
+</table><br>
+e.g.:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >speed</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >weight</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >m/h</td><td style='padding:4px;border:1px solid #ccc;' >kg</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >12</td><td style='padding:4px;border:1px solid #ccc;' >57</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >...</td></tr>
+</table><br>
+
+The package can carry process the line with the units with:
+<seesv>seesv  -unitrow ...</seesv>
+
+
+
+
+<p></div></div><div class=seesv-item>
 <a name='-multifiles'></a><div class=command> <i><a href='#-multifiles'>-multifiles</a></i>  &lt;template&gt; </div><div class=command-block>Treat input files separately<br class=seesv-hide>
 <ul>
 <li> <i>template</i>:
@@ -1287,14 +1391,14 @@ How many rows to skip<br>
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Slice and Dice'></a><b style='font-size:120%;'>Slice and Dice</b><br>
-Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-notcolumns'><i>-notcolumns</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-lastcolumns'><i>-lastcolumns</i>: Move columns to end</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-roll'><i>-roll</i>: Roll columns down into rows</a><li> <a href='#-grab'><i>-grab</i>: Look for rows that match a pattern and grab column values and add them to subsequent rows</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-melt'><i>-melt</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
+Add/remove columns, rows, restructure, etc</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-columns'><i>-columns</i>: Only include the given columns</a><li> <a href='#-drop'><i>-drop</i>: Don't include given columns</a><li> <a href='#-firstcolumns'><i>-firstcolumns</i>: Move columns to beginning</a><li> <a href='#-lastcolumns'><i>-lastcolumns</i>: Move columns to end</a><li> <a href='#-columnsbefore'><i>-columnsbefore</i>: Move columns before the given column</a><li> <a href='#-columnsafter'><i>-columnsafter</i>: Move columns after given column</a><li> <a href='#-delete'><i>-delete</i>: Remove the columns</a><li> <a href='#-cut'><i>-cut</i>: Drop rows</a><li> <a href='#-include'><i>-include</i>: Only include specified rows</a><li> <a href='#-shuffle'><i>-shuffle</i>: Randomize the rows</a><li> <a href='#-rows_first'><i>-rows_first</i>: Move rows to the top that match the pattern</a><li> <a href='#-rows_last'><i>-rows_last</i>: Move rows to the end of list that match the pattern</a><li> <a href='#-copy'><i>-copy</i>: Copy column</a><li> <a href='#-add'><i>-add</i>: Add new columns</a><li> <a href='#-insert'><i>-insert</i>: Insert new column values</a><li> <a href='#-concat'><i>-concat</i>: Create a new column from the given columns</a><li> <a href='#-concatrows'><i>-concatrows</i>: Concatenate multiple rows into a single row</a><li> <a href='#-combine'><i>-combine</i>: Combine columns with the delimiter. deleting columns</a><li> <a href='#-combineinplace'><i>-combineinplace</i>: Combine columns with the delimiter</a><li> <a href='#-merge'><i>-merge</i>: Apply operators to columns</a><li> <a href='#-split'><i>-split</i>: Split the column</a><li> <a href='#-splat'><i>-splat</i>: Create a new column from the values in the given column</a><li> <a href='#-roll'><i>-roll</i>: Roll columns down into rows</a><li> <a href='#-grab'><i>-grab</i>: Look for rows that match a pattern and grab column values and add them to subsequent rows</a><li> <a href='#-shift'><i>-shift</i>: Shift columns over by count for given rows</a><li> <a href='#-slice'><i>-slice</i>: Slide columns down and over to append new rows to the bottom</a><li> <a href='#-addcell'><i>-addcell</i>: Add a new cell at row/column</a><li> <a href='#-deletecell'><i>-deletecell</i>: Delete cell at row/column</a><li> <a href='#-clone'><i>-clone</i>: Clone each row N times</a><li> <a href='#-appendrows'><i>-appendrows</i>: Only include specified rows</a><li> <a href='#-mergerows'><i>-mergerows</i>: Merge rows</a><li> <a href='#-rowop'><i>-rowop</i>: Apply an operator to columns and merge rows</a><li> <a href='#-rotate'><i>-rotate</i>: Rotate the data</a><li> <a href='#-flip'><i>-flip</i>: Reverse the order of the rows except the header</a><li> <a href='#-makefields'><i>-makefields</i>: Make new columns from data values</a><li> <a href='#-melt'><i>-melt</i>: Use values in header to make new row</a><li> <a href='#-explode'><i>-explode</i>: Make separate files based on value of column</a><li> <a href='#-join'><i>-join</i>: Join the 2 files together</a><li> <a href='#-fuzzyjoin'><i>-fuzzyjoin</i>: Join the 2 files together using fuzzy matching logic</a><li> <a href='#-cross'><i>-cross</i>: Make a cross product of 2 data files</a><li> <a href='#-normal'><i>-normal</i>: Normalize the strings</a><li> <a href='#-countunique'><i>-countunique</i>: Count number of unique values</a><li> <a href='#-dissect'><i>-dissect</i>: Make fields based on patterns</a><li> <a href='#-keyvalue'><i>-keyvalue</i>: Make fields from key/value pairs, e.g. name1=value1 name2=value2 ...</a><li> <a href='#-firstchars'><i>-firstchars</i>: Extract first N characters and create new column</a><li> <a href='#-lastchars'><i>-lastchars</i>: Extract last N characters and create new column</a><li> <a href='#-between_indices'><i>-between_indices</i>: Extract characters between the 2 indices</a><li> <a href='#-fromheading'><i>-fromheading</i>: Extract column values from headings</a></ul></div></div><div class=seesv-item>
 <a name='-columns'></a><div class=command> <i><a href='#-columns'>-columns</a></i>  &lt;columns&gt; </div><div class=command-block>Only include the given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
-<a name='-notcolumns'></a><div class=command> <i><a href='#-notcolumns'>-notcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Don't include given columns<br class=seesv-hide>
+<a name='-drop'></a><div class=command> <i><a href='#-drop'>-drop</a></i>  &lt;columns&gt; </div><div class=command-block>Don't include given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
@@ -1345,6 +1449,8 @@ One or more rows. -1 to the end. e.g., 0-3,5,10,-1<br>
 <li> <i>rows</i>:
 one or more rows, -1 to the end<br>
 </ul>
+</div></div><div class=seesv-item>
+<a name='-shuffle'></a><div class=command> <i><a href='#-shuffle'>-shuffle</a></i> </div><div class=command-block>Randomize the rows<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a name='-rows_first'></a><div class=command> <i><a href='#-rows_first'>-rows_first</a></i>  &lt;columns&gt;  &lt;pattern&gt; </div><div class=command-block>Move rows to the top that match the pattern<br class=seesv-hide>
 <ul>
@@ -1458,19 +1564,49 @@ What to split on<br>
 <li> <i>names</i>:
 Comma separated new column names<br>
 </ul>
-</div></div><div class=seesv-item>
+For example, if you have this data of the form city-state
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >location</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >boulder-colorado</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >denver-colorado</td></tr>
+</table><br>
+Running:
+<seesv>seesv -split location "city,state"</seesv>
+Would give:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >location</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >city</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >state</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >boulder-colorado</td><td style='padding:4px;border:1px solid #ccc;' >boulder</td><td style='padding:4px;border:1px solid #ccc;' >colorado</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >denver-colorado</td><td style='padding:4px;border:1px solid #ccc;' >denver</td><td style='padding:4px;border:1px solid #ccc;' >colorado</td></tr>
+</table><br>
+<p></div></div><div class=seesv-item>
 <a name='-splat'></a><div class=command> <i><a href='#-splat'>-splat</a></i>  &lt;keycol&gt;  &lt;column&gt;  &lt;delimiter&gt;  &lt;name&gt; </div><div class=command-block>Create a new column from the values in the given column<br class=seesv-hide>
 <ul>
 <li> <i>keycol</i>:
 Key column<br>
 <li> <i>column</i>:
-<br>
+Value column<br>
 <li> <i>delimiter</i>:
 <br>
 <li> <i>name</i>:
 new column name<br>
 </ul>
-</div></div><div class=seesv-item>
+The splat command groups rows based on the key column.
+It then concatenates all of the values defined in the <i>value column</i> argument
+with the given delimiter and adds them as a new column to the last row in the group.
+:p
+For example, if you have this data:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >gender</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Jim</td><td style='padding:4px;border:1px solid #ccc;' >male</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Joe</td><td style='padding:4px;border:1px solid #ccc;' >male</td><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Jill</td><td style='padding:4px;border:1px solid #ccc;' >female</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Sue</td><td style='padding:4px;border:1px solid #ccc;' >female</td></tr>
+</table><br>
+Running:
+<seesv>seesv -splat gender name -- combined</seesv>
+Would give:
+<br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >gender</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >combined</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Joe</td><td style='padding:4px;border:1px solid #ccc;' >male</td><td style='padding:4px;border:1px solid #ccc;' >Jim--Joe</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Sue</td><td style='padding:4px;border:1px solid #ccc;' >female</td><td style='padding:4px;border:1px solid #ccc;' >Jill--Sue</td></tr>
+</table><br>
+<p></div></div><div class=seesv-item>
 <a name='-roll'></a><div class=command> <i><a href='#-roll'>-roll</a></i>  &lt;columns&gt; </div><div class=command-block>Roll columns down into rows<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -3210,12 +3346,12 @@ Which gives:
 <tr><td style='padding:4px;border:1px solid #ccc;' >40.01667</td><td style='padding:4px;border:1px solid #ccc;' >107.66667</td></tr>
 </table><br>
 <p></div></div><div class=seesv-item>
-<a name='-getaddress'></a><div class=command> <i><a href='#-getaddress'>-getaddress</a></i>  &lt;latitude&gt;  &lt;latitude&gt; </div><div class=command-block>Get address from lat/lon<br class=seesv-hide>
+<a name='-getaddress'></a><div class=command> <i><a href='#-getaddress'>-getaddress</a></i>  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Get address from lat/lon<br class=seesv-hide>
 <ul>
 <li> <i>latitude</i>:
 latitude column<br>
-<li> <i>latitude</i>:
-latitude column<br>
+<li> <i>longitude</i>:
+longitude column<br>
 </ul>
 This function takes a latitude and longitude column and does an address lookup using either
 geocod.io or here.com apis. See above for the API keys that need to be set. 
