@@ -21,7 +21,6 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -386,7 +385,6 @@ public class RowCollector extends Processor {
         }
 
     }
-
 
     public static class MaxValue extends RowCollector {
         String key;

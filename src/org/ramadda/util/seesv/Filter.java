@@ -1,15 +1,13 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
-
 
 import java.io.*;
 
@@ -26,7 +24,6 @@ import java.util.List;
 
 import java.util.regex.*;
 
-
 /**
  *
  * @author Jeff McWhirter
@@ -35,10 +32,8 @@ import java.util.regex.*;
 @SuppressWarnings("unchecked")
 public class Filter extends Processor {
 
-
     /** _more_ */
     private String commentPrefix = "#";
-
 
     /** _more_ */
     protected int cnt = 0;
@@ -77,9 +72,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
-
     /**
      * _more_
      *
@@ -92,7 +84,6 @@ public class Filter extends Processor {
     public boolean rowOk(TextReader ctx, Row row) {
         return true;
     }
-
 
     /**
      * Class description
@@ -120,7 +111,6 @@ public class Filter extends Processor {
         public ColumnFilter(int col) {
             this.col = col;
         }
-
 
         /**
          * _more_
@@ -150,7 +140,6 @@ public class Filter extends Processor {
             super(cols);
             this.negate = negate;
         }
-
 
         /**
          * _more_
@@ -208,7 +197,6 @@ public class Filter extends Processor {
             return col;
         }
 
-
     }
 
     /**
@@ -225,7 +213,6 @@ public class Filter extends Processor {
 
         /** _more_ */
         private boolean andLogic = true;
-
 
         /**
          * _more_
@@ -287,9 +274,6 @@ public class Filter extends Processor {
             return true;
         }
     }
-
-
-
 
     /**
      * Class description
@@ -381,7 +365,6 @@ public class Filter extends Processor {
             }
         }
 
-
         /**
          * _more_
          *
@@ -409,7 +392,6 @@ public class Filter extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -421,7 +403,6 @@ public class Filter extends Processor {
 
         /**  */
         private boolean greater;
-
 
         /**  */
         private int length;
@@ -445,7 +426,6 @@ public class Filter extends Processor {
             this.greater = greater;
             this.length  = length;
         }
-
 
         /**
          * _more_
@@ -486,7 +466,6 @@ public class Filter extends Processor {
         }
 
     }
-
 
     public static class Has extends Filter {
 	List<String> cols;
@@ -566,8 +545,6 @@ public class Filter extends Processor {
 	}
 
     }
-    
-    
 
     /**
      * Class description
@@ -671,7 +648,6 @@ public class Filter extends Processor {
             }
         }
 
-
         /**
          * _more_
          *
@@ -708,9 +684,6 @@ public class Filter extends Processor {
 
     }
 
-
-
-
     /**
      * Class description
      *
@@ -743,7 +716,6 @@ public class Filter extends Processor {
 
 	boolean isEquals = false;
 
-
         /**
          * _more_
          *
@@ -763,7 +735,6 @@ public class Filter extends Processor {
 
         }
 
-
         /**
          * _more_
          *
@@ -780,7 +751,6 @@ public class Filter extends Processor {
                 setIndex(-1);
             }
         }
-
 
         /**
          *
@@ -805,7 +775,6 @@ public class Filter extends Processor {
             indices.add(idx);
             setIndices(indices);
         }
-
 
         /**
          * _more_
@@ -840,7 +809,6 @@ public class Filter extends Processor {
                 this.pattern = Pattern.compile(pattern);
             }
         }
-
 
         /**
          * _more_
@@ -964,7 +932,6 @@ public class Filter extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -1006,7 +973,6 @@ public class Filter extends Processor {
             }
         }
 
-
         /**
          *
          * @param s _more_
@@ -1031,8 +997,6 @@ public class Filter extends Processor {
             indices.add(idx);
             setIndices(indices);
         }
-
-
 
         /**
          * _more_
@@ -1170,7 +1134,6 @@ public class Filter extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -1198,7 +1161,6 @@ public class Filter extends Processor {
             super(col);
             this.count = count;
         }
-
 
         /**
          * _more_
@@ -1246,7 +1208,6 @@ public class Filter extends Processor {
         /** _more_ */
         private int skip;
 
-
         /**
          * _more_
          *
@@ -1259,8 +1220,6 @@ public class Filter extends Processor {
             this.start = start;
             this.skip  = skip;
         }
-
-
 
         /**
          * _more_
@@ -1301,7 +1260,6 @@ public class Filter extends Processor {
         /** _more_ */
         private boolean seenStop;
 
-
         /**
          * _more_
          *
@@ -1313,8 +1271,6 @@ public class Filter extends Processor {
             this.pattern  = pattern;
             this.seenStop = false;
         }
-
-
 
         /**
          * _more_
@@ -1340,7 +1296,6 @@ public class Filter extends Processor {
             return true;
         }
     }
-
 
     /**
      * Class description
@@ -1372,8 +1327,6 @@ public class Filter extends Processor {
 	    isRegexp  =  StringUtil.containsRegExp(pattern);
         }
 
-
-
         /**
          * _more_
          *
@@ -1404,8 +1357,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -1418,7 +1369,6 @@ public class Filter extends Processor {
         /** _more_ */
         private int cnt;
 
-
         /**
          * _more_
          *
@@ -1429,8 +1379,6 @@ public class Filter extends Processor {
         public MinColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
-
-
 
         /**
          * _more_
@@ -1466,7 +1414,6 @@ public class Filter extends Processor {
         /** _more_ */
         private int cnt;
 
-
         /**
          * _more_
          *
@@ -1476,8 +1423,6 @@ public class Filter extends Processor {
         public MaxColumns(TextReader ctx, int cnt) {
             this.cnt = cnt;
         }
-
-
 
         /**
          * _more_
@@ -1502,10 +1447,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
-
-
     /**
      * Class description
      *
@@ -1515,15 +1456,11 @@ public class Filter extends Processor {
      */
     public static class ValueFilter extends ColumnFilter {
 
-
         /** _more_ */
         private int op;
 
         /** _more_ */
         private double value;
-
-
-
 
         /**
          * _more_
@@ -1540,9 +1477,6 @@ public class Filter extends Processor {
             this.op    = op;
             this.value = value;
         }
-
-
-
 
         /**
          * _more_
@@ -1581,10 +1515,7 @@ public class Filter extends Processor {
         }
     }
 
-
     public static class EnsureNumeric extends Filter {
-
-
 
         /**
          * _more_
@@ -1598,9 +1529,6 @@ public class Filter extends Processor {
         public EnsureNumeric(TextReader ctx, List<String> cols) {
             super(cols);
         }
-
-
-
 
         /**
          * _more_
@@ -1626,9 +1554,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
-
     /**
      * Class description
      *
@@ -1646,9 +1571,6 @@ public class Filter extends Processor {
 
         /**  */
         private double max;
-
-
-
 
         /**
          * _more_
@@ -1668,9 +1590,6 @@ public class Filter extends Processor {
             this.min     = min;
             this.max     = max;
         }
-
-
-
 
         /**
          * _more_
@@ -1718,7 +1637,6 @@ public class Filter extends Processor {
         }
     }
 
-
     /**
      * Class description
      *
@@ -1740,7 +1658,6 @@ public class Filter extends Processor {
         private String end;
 	private boolean inside = false;
 
-
         /**
          * _more_
          *
@@ -1759,7 +1676,6 @@ public class Filter extends Processor {
             this.start = start;
             this.end = end;
         }
-
 
         /**
          * _more_
@@ -1798,7 +1714,7 @@ public class Filter extends Processor {
 
         }
     }
-    
+
     /**
      * Class description
      *
@@ -1878,9 +1794,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
-
     /**
      * Class description
      *
@@ -1921,7 +1834,7 @@ public class Filter extends Processor {
 	    } else {
 		throw new IllegalArgumentException("-unique: unknown mode:"  + mode + " valid values: exact fuzzy"); 
 	    }
-    
+
         }
 
         /**
@@ -1998,8 +1911,6 @@ public class Filter extends Processor {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -2008,7 +1919,6 @@ public class Filter extends Processor {
      * @author         Enter your name here...
      */
     public static class Sample extends Filter {
-
 
         /**  */
         private double prob;
@@ -2023,7 +1933,6 @@ public class Filter extends Processor {
         public Sample(TextReader ctx, double prob) {
             this.prob = prob;
         }
-
 
         /**
          * _more_
@@ -2043,7 +1952,5 @@ public class Filter extends Processor {
             return r <= prob;
         }
     }
-
-
 
 }

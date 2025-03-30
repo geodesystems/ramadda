@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.IO;
@@ -19,7 +18,6 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  *
@@ -71,8 +69,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             return row;
         }
 
-
-
         /**
          * _more_
          *
@@ -85,7 +81,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             super.finish(ctx);
             ctx.getWriter().println("]");
         }
-
 
         /**
          * _more_
@@ -121,8 +116,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
-
-
 
     /**
      * Class description
@@ -184,9 +177,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             return row;
         }
 
-
-
-
         /**
          * _more_
          *
@@ -214,11 +204,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
-    
-
-
-
-
 
     /**
      * Class description
@@ -233,7 +218,7 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         Row header = null;
 
 	List<String> ids;
-	
+
         /** _more_ */
         String tag;
 
@@ -257,7 +242,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             this.tag  = tag;
             this.tag2 = tag2;
         }
-
 
         /**
          * _more_
@@ -352,7 +336,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 	    this.slon = slon;
         }
 
-
         /**
          */
         @Override
@@ -426,9 +409,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
 
     }
 
-
-
-
     public static class ToDb extends Processor {
 
         /**  */
@@ -461,7 +441,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         /**  */
         String insert;
 
-
         /**
          * _more_
          *
@@ -493,7 +472,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             this.props = props;
             this.table = table;
         }
-
 
         /**
          * _more_
@@ -588,7 +566,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
             }
         }
 
-
         /**
          * _more_
          *
@@ -655,7 +632,6 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
     public static class ToUrl extends Processor {
 	List<String> ids;
 
-
         /**
          * _more_
          *
@@ -702,10 +678,5 @@ public abstract  class DataSink extends Processor implements SeesvPlugin {
         }
 
     }
-    
-
-
-
-
 
 }

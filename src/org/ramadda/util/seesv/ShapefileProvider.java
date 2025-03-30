@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -15,7 +14,6 @@ import java.io.*;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -41,7 +39,6 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
 
     }
 
-
     /**
      * _more_
      *
@@ -51,7 +48,6 @@ public class ShapefileProvider extends DataProvider.BulkDataProvider {
      * @throws Exception _more_
      */
     public void tokenize(TextReader ctx, String s) throws Exception {}
-
 
     /**
      * _more_

@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.ramadda.util.Utils;
 
@@ -24,62 +23,33 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
 
-
-/**
- *
- * @author Jeff McWhirter
- */
-
 @SuppressWarnings("unchecked")
 public class Row {
 
-    /** _more_ */
     private static int cnt = 0;
 
-    /** _more_ */
     private int id = (cnt++);
 
-
-    /**  */
     private int rowCount = -1;
 
-    /** _more_ */
     private List values;
 
     private Date dateForSort;
 
     private Row unitRow;
-    
-    /**
-     * _more_
-     */
+
     public Row() {
         values = new ArrayList();
     }
 
-    /**
-     * _more_
-     *
-     * @param r _more_
-     */
     public Row(Row r) {
         values = new ArrayList(r.getValues());
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     */
     public Row(List values) {
         this.values = values;
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     */
     public Row(Object[] values) {
         this.values = new ArrayList();
         for (Object o : values) {
@@ -87,15 +57,9 @@ public class Row {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getId() {
         return id;
     }
-
 
     /**
        is this row the first row created by the DataProvider
@@ -104,42 +68,18 @@ public class Row {
 	return rowCount==0;
     }
 
-    /**
-     * Set the RowCount property.
-     *
-     * @param value The new value for RowCount
-     */
     public void setRowCount(int value) {
         rowCount = value;
     }
 
-    /**
-     * Get the RowCount property.
-     *
-     * @return The RowCount
-     */
     public int getRowCount() {
         return rowCount;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return " id:" + id + " values:" + values.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param r _more_
-     *
-     * @return _more_
-     */
     public String print(Row r) {
         StringBuilder sb = new StringBuilder("***** row:" + values.size()
                                              + "\n");
@@ -152,40 +92,18 @@ public class Row {
         return sb.toString();
     }
 
-    /**
-     *
-     * @param index _more_
-      * @return _more_
-     */
     public boolean indexOk(int index) {
         return (index >= 0) && (index < size());
     }
 
-    /**
-     * Set the Values property.
-     *
-     * @param value The new value for Values
-     */
     public void setValues(List value) {
         values = value;
     }
 
-    /**
-     * Get the Values property.
-     *
-     * @return The Values
-     */
     public List getValues() {
         return values;
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     */
     public Object get(int index) {
 	if(index<0 || index>=values.size()) {
 	    throw new IllegalArgumentException("SeeSV error: bad row index:" + index+" size:" + values.size() +" values:" + this);
@@ -193,25 +111,12 @@ public class Row {
         return values.get(index);
     }
 
-    /**
-     *
-     * @param index _more_
-      * @return _more_
-     */
     public double getDouble(int index) {
         String s = getString(index);
 
         return Seesv.parseDouble(s);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param index _more_
-     *
-     * @return _more_
-     */
     public String getString(int index) {
 	return getString(index,"");
     }
@@ -227,25 +132,12 @@ public class Row {
                : o.toString();
     }
 
-    /**
-     *
-     * @param index _more_
-     *  @return _more_
-     *
-     * @throws UnsupportedEncodingException _more_
-     */
     public byte[] getBytes(int index) throws UnsupportedEncodingException {
         String s = getString(index);
 
         return s.getBytes("UTF-8");
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     * @param object _more_
-     */
     public void set(int index, Object object) {
         while (index >= values.size()) {
             values.add("");
@@ -253,28 +145,14 @@ public class Row {
         values.set(index, object);
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     */
     public void insert(Object object) {
         values.add(object);
     }
 
-    /**
-     *
-     * @param values _more_
-     */
     public void addAll(List values) {
 	this.values.addAll(values);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public void add(Object... args) {
         for (Object object : args) {
             values.add(object);
@@ -286,68 +164,32 @@ public class Row {
 	else values.add(v);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param index _more_
-     * @param object _more_
-     */
     public void insert(int index, Object object) {
         values.add(index, object);
     }
 
-    /**
-     * _more_
-     *
-     * @param index _more_
-     */
     public void remove(int index) {
         values.remove(index);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int size() {
         return values.size();
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Wed, Nov 25, '15
-     * @author         Enter your name here...
-     */
     public static class RowCompare implements Comparator<Row> {
 
 	private TextReader ctx;
 
-        /** _more_ */
         private boolean checked = false;
 
-        /** _more_ */
         private List<Integer> indices;
 
-        /** _more_ */
         private boolean ascending;
 
-        /** _more_ */
         private boolean isNumber = false;
 
 	private String how="string";
 
-        /**
-         *
-         * @param indices _more_
-         * @param asc _more_
-         */
         public RowCompare(TextReader ctx,List<Integer> indices, boolean asc,String how) {
 	    this.ctx = ctx;
             this.indices   = indices;
@@ -356,14 +198,6 @@ public class Row {
 	    if(this.how.equals("")) this.how = "string";
         }
 
-
-        /**
-         * _more_
-         *
-         *
-         * @param idx _more_
-         * @param asc _more_
-         */
         public RowCompare(TextReader ctx,int idx, boolean asc) {
 	    this.ctx= ctx;
             this.indices = new ArrayList<Integer>();
@@ -371,15 +205,6 @@ public class Row {
             this.ascending = asc;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param r1 _more_
-         * @param r2 _more_
-         *
-         * @return _more_
-         */
         public int compare(Row r1, Row r2) {
             int result;
             for (int idx : indices) {
@@ -467,25 +292,12 @@ public class Row {
 
     }
 
-    /**
-       Set the UnitRow property.
-
-       @param value The new value for UnitRow
-    **/
     public void setUnitRow (Row value) {
 	unitRow = value;
     }
 
-    /**
-       Get the UnitRow property.
-
-       @return The UnitRow
-    **/
     public Row getUnitRow () {
 	return unitRow;
     }
-
-
-
 
 }

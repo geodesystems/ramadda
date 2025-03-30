@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -20,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
 
 /**
  * Class description
@@ -63,7 +61,6 @@ public class EntryXmlProcessor extends RowCollector {
         }
         List<Row>       rows = getRows();
         StringBuilder   sb   = new StringBuilder("<entries>\n");
-
 
         HashSet<String> seen = new HashSet<String>();
 
@@ -166,15 +163,9 @@ public class EntryXmlProcessor extends RowCollector {
                 //                System.err.println(n +"=" + v);
             }
 
-
-
-
             s = s.replace("${theory_development}", theory_development);
             s = s.replace("${resilience_definition}", resilience_definition);
             s = s.replace("${assessment_type}", assessment_type);
-
-
-
 
             if (seen.contains(file)) {
                 //                System.err.println ("DUP:" + file);
@@ -205,9 +196,6 @@ public class EntryXmlProcessor extends RowCollector {
                     + author + "]]></attr></metadata>\n");
             }
 
-
-
-
             s = s.replace("${id}", id);
             s = s.replace("${content}", content.toString());
             s = s.replace("${attrs}", attrs.toString());
@@ -219,6 +207,5 @@ public class EntryXmlProcessor extends RowCollector {
         System.out.println(sb);
 
     }
-
 
 }

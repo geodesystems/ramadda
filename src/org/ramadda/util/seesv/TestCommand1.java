@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -11,7 +11,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
 /**
  * This is an example of the extended command.
  * Write a class like this and seet the environment variable:
@@ -22,11 +21,11 @@ import java.util.Properties;
 public class TestCommand1 extends ExtCommand {
 
     int rowIndex = 0;
-    
+
     String arg;
-    
+
     List<Row> rows;
-    
+
     /**
      * _more_
      */
@@ -34,7 +33,6 @@ public class TestCommand1 extends ExtCommand {
 	//If this command collects the rows then finishes them we use this to hold the rows
 	rows = new ArrayList<Row>();
     }
-
 
     /**
      * 
@@ -46,8 +44,6 @@ public class TestCommand1 extends ExtCommand {
     public boolean canHandle(Seesv seesv, String arg) {
 	return arg.equals("-command1");
     }	
-
- 
 
     /**
      *
@@ -62,7 +58,6 @@ public class TestCommand1 extends ExtCommand {
 	arg = args.get(++index);
         return index;
     }
-
 
     /**
      * Process the row
@@ -105,7 +100,5 @@ public class TestCommand1 extends ExtCommand {
 	finishRows(ctx,newRows);
 	*/
     }
-
-
 
 }

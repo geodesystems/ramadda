@@ -1,11 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
-
 
 /**
  */
@@ -20,7 +18,6 @@ public class SearchField {
     /** _more_ */
     private String value;
 
-
     /**
      * _more_
      *
@@ -29,7 +26,6 @@ public class SearchField {
     public SearchField(String name) {
         this.name = name;
     }
-
 
     /**
      * _more_
@@ -96,7 +92,6 @@ public class SearchField {
         return value;
     }
 
-
     /**
      * Set the Label property.
      *
@@ -118,9 +113,5 @@ public class SearchField {
 
         return label;
     }
-
-
-
-
 
 }

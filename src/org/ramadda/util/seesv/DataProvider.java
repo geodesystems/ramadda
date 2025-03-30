@@ -1,10 +1,9 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
@@ -45,7 +44,6 @@ import java.util.List;
 
 import java.util.regex.*;
 
-
 /**
  *
  * @author Jeff McWhirter
@@ -56,7 +54,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     public static final JsonUtil JU = null;
     boolean debugInput = false;
-
 
     TextReader ctx;
 
@@ -72,7 +69,6 @@ public abstract class DataProvider extends SeesvOperator {
      * _more_
      */
     public DataProvider(TextReader ctx) {this.ctx=ctx;}    
-
 
     /**
      * _more_
@@ -90,7 +86,6 @@ public abstract class DataProvider extends SeesvOperator {
 	}
         rowCnt = 0;
     }
-
 
     /**  */
     private int rowCnt = 0;
@@ -130,12 +125,10 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public abstract Row readRow() throws Exception;
 
-
     /**
      * _more_
      */
     public void finish() {}
-
 
     /**
      * Class description
@@ -224,9 +217,7 @@ public abstract class DataProvider extends SeesvOperator {
         public abstract void tokenize(TextReader ctx, String s)
          throws Exception;
 
-
     }
-
 
     /**
      * Class description
@@ -329,7 +320,6 @@ public abstract class DataProvider extends SeesvOperator {
                         extractUrls), Utils.getProperty(props,
                             prefix + "stripTags", stripTags)));
             }
-
 
             String removePattern =
                 Utils.convertPattern(props.get("removePattern"));
@@ -467,14 +457,9 @@ public abstract class DataProvider extends SeesvOperator {
                 }
             }
 
-
-
         }
 
-
-
     }
-
 
     /**
      * Class description
@@ -485,10 +470,8 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class Harvester extends BulkDataProvider {
 
-
         /** _more_ */
         private String pattern;
-
 
         /**
          * _more_
@@ -530,11 +513,7 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-
-
     }
-
-
 
     /**
      * Class description
@@ -557,8 +536,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         private String pattern;
 
-
-
         /**
          * _more_
          *
@@ -575,8 +552,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.end     = end;
             this.pattern = pattern;
         }
-
-
 
         /**
          * _more_
@@ -644,8 +619,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -661,8 +634,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         private String objectPath;
 
-
-
         /**
          * _more_
          *
@@ -674,7 +645,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.arrayPath  = arrayPath;
             this.objectPath = objectPath;
         }
-
 
         /**
          * _more_
@@ -711,7 +681,6 @@ public abstract class DataProvider extends SeesvOperator {
 			array.put(obj);
 		    }
 		}
-
 
                 if (array==null && arrayPath != null) {
                     array = JsonUtil.readArray(root, arrayPath);
@@ -858,7 +827,6 @@ public abstract class DataProvider extends SeesvOperator {
                     }
 		}
 
-
                 if (names == null) {
                     names = new ArrayList<String>();
                     Row row = makeRow();
@@ -896,7 +864,6 @@ public abstract class DataProvider extends SeesvOperator {
                   }
                 ***/
 
-
                 for (Hashtable h : secondary) {
                     Row row = makeRow();
                     addRow(row);
@@ -910,7 +877,7 @@ public abstract class DataProvider extends SeesvOperator {
                     }
                 }
             }
-	    
+
 	    if (debug) {
 		List<Row> rows = getRows();
 		for(int i=0;i<rows.size()&& i<5;i++) {
@@ -918,9 +885,6 @@ public abstract class DataProvider extends SeesvOperator {
 		}
 	    }
 	}
-
-
-
 
     }
 
@@ -952,7 +916,6 @@ public abstract class DataProvider extends SeesvOperator {
 	    this.missing = missing;
         }
 
-
         /**
          * _more_
          *
@@ -976,8 +939,6 @@ public abstract class DataProvider extends SeesvOperator {
 	    }
 	}
     }
-
-
 
     /**
      * Class description
@@ -1164,7 +1125,6 @@ public abstract class DataProvider extends SeesvOperator {
             maxRows   = ctx.getMaxRows();
         }
 
-
         /**
          * _more_
          *
@@ -1209,10 +1169,7 @@ public abstract class DataProvider extends SeesvOperator {
             this.statement = null;
         }
 
-
     }
-
-
 
     /**
      * Class description
@@ -1238,7 +1195,6 @@ public abstract class DataProvider extends SeesvOperator {
             super();
             this.arrayPath = arrayPath;
         }
-
 
         /**
          * _more_
@@ -1355,7 +1311,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-
     /**
      * Class description
      *
@@ -1365,7 +1320,6 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class KmlDataProvider extends BulkDataProvider {
 
-
         /**
          * _more_
          *
@@ -1373,7 +1327,6 @@ public abstract class DataProvider extends SeesvOperator {
         public KmlDataProvider() {
             super();
         }
-
 
         /**
          *
@@ -1395,7 +1348,6 @@ public abstract class DataProvider extends SeesvOperator {
             read(root);
         }
 
-
         /**
          *
          * @param ctx _more_
@@ -1404,7 +1356,6 @@ public abstract class DataProvider extends SeesvOperator {
          * @throws Exception _more_
          */
         public void tokenize(TextReader ctx, String s) throws Exception {}
-
 
         /**
          * _more_
@@ -1465,7 +1416,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-
         /**
          *
          * @param nodes _more_
@@ -1486,7 +1436,6 @@ public abstract class DataProvider extends SeesvOperator {
             <west>-108.80926513671875</west>
             </LatLonBox>
             </GroundOverlay>
-
 
              */
             Row header = makeRow();
@@ -1530,8 +1479,6 @@ public abstract class DataProvider extends SeesvOperator {
                 row.add("" + west);
             }
         }
-
-
 
         /**
          *
@@ -1595,9 +1542,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.pattern = Utils.convertPattern(pattern);
         }
 
-
-
-
         /**
          * _more_
          *
@@ -1631,8 +1575,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -1651,7 +1593,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         String tokenPattern;
 
-
         /**
          * _more_
          *
@@ -1666,7 +1607,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.chunkPattern = Utils.convertPattern(chunkPattern);
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
-
 
         /**
          * _more_
@@ -1728,8 +1668,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -1743,10 +1681,8 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         String header;
 
-
         /** _more_ */
         String tokenPattern;
-
 
         /**
          * _more_
@@ -1760,7 +1696,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.header       = header;
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
-
 
         /**
          * _more_
@@ -1825,8 +1760,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-
-
     /**
      * Class description
      *
@@ -1845,7 +1778,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         String tokenPattern;
 
-
         /**
          * _more_
          *
@@ -1860,7 +1792,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.chunkPattern = Utils.convertPattern(chunkPattern);
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
-
 
         /**
          * _more_
@@ -1910,7 +1841,7 @@ public abstract class DataProvider extends SeesvOperator {
 		    if(p1==null) {
 			s = s.substring(m2.end());
 			System.err.println("rest:" + Utils.clip(s.replace("\n"," "),400,""));
-		    
+
 		    }
                     Row row = makeRow();
                     addRow(row);
@@ -1933,8 +1864,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
     }
 
-
-
     /**
      * Class description
      *
@@ -1950,7 +1879,6 @@ public abstract class DataProvider extends SeesvOperator {
         /** _more_ */
         int rawLines = 0;
 
-
         /** _more_ */
         int rowCnt = 0;
 
@@ -1964,7 +1892,7 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private boolean guessDelimiter = false;	
 	private List<String> delimiters;
-	
+
         /**
          * _more_
          *
@@ -2131,7 +2059,6 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-
     /**
      * Class description
      *
@@ -2141,7 +2068,6 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class Lines extends DataProvider {
 
-
         /**  */
         boolean didFirst = false;
 
@@ -2149,9 +2075,6 @@ public abstract class DataProvider extends SeesvOperator {
          * _more_
          */
         public Lines() {}
-
-
-
 
         /**
          * _more_
@@ -2221,7 +2144,6 @@ public abstract class DataProvider extends SeesvOperator {
 	    while(this.values.size()<this.header.size()) this.values.add("");
         }
 
-
         /**
          * _more_
          *
@@ -2261,7 +2183,6 @@ public abstract class DataProvider extends SeesvOperator {
         }
 
     }
-
 
     /**
      * Class description
@@ -2304,8 +2225,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-
-
         /**
          * _more_
          *
@@ -2329,11 +2248,9 @@ public abstract class DataProvider extends SeesvOperator {
             stdInput = new BufferedReader(
                 new InputStreamReader(proc.getInputStream()));
 
-
             BufferedReader stdError = new BufferedReader(
                                           new InputStreamReader(
                                               proc.getErrorStream()));
-
 
             /*
               while ((s = stdError.readLine()) != null) {
@@ -2370,6 +2287,5 @@ public abstract class DataProvider extends SeesvOperator {
         }
 
     }
-
 
 }

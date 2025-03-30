@@ -1,17 +1,15 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.util.seesv;
-
 
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  *
@@ -46,7 +44,6 @@ public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlu
 	return false;
     }
 
-
     /**
      *
      * @param seesv _more_
@@ -58,7 +55,6 @@ public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlu
     public int processArgs(Seesv seesv, List<String> args, int index) {
         return index;
     }
-
 
     /**
      *
@@ -84,7 +80,6 @@ public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlu
         return row;
     }
 
-
     /**
      * _more_
      *
@@ -96,7 +91,5 @@ public abstract class ExtCommand extends Processor implements Cloneable,SeesvPlu
      * @throws Exception On badness
      */
     public void finish(TextReader ctx) throws Exception {}
-
-
 
 }

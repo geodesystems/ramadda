@@ -1,5 +1,5 @@
 /**
-Copyright (c) 2008-2023 Geode Systems LLC
+Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -22,7 +22,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-
 /**
  * Class description
  *
@@ -33,7 +32,6 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public abstract class DateOps extends Processor {
 
-
     public static final int[]DATE_COMPONENTS = {
 	Calendar.MILLISECOND,
 	Calendar.SECOND, 
@@ -43,7 +41,6 @@ public abstract class DateOps extends Processor {
 	Calendar.DAY_OF_MONTH,
 	Calendar.MONTH};
 
-
     private static int OFFSET_BASE = -1000;
     private static int OFFSET_IDX = OFFSET_BASE;
     private static final int OFFSET_DAYS_IN_YEAR = OFFSET_IDX--;
@@ -51,8 +48,6 @@ public abstract class DateOps extends Processor {
     private static final int OFFSET_MINUTES_IN_YEAR = OFFSET_IDX--;
     private static final int OFFSET_SECONDS_IN_YEAR = OFFSET_IDX--;
     private static final int DECADE= OFFSET_IDX--;        
-
-
 
     /**
      *
@@ -73,7 +68,6 @@ public abstract class DateOps extends Processor {
     public DateOps(List<String> cols) {
         super(cols);
     }
-
 
     /**
      * Class description
@@ -115,8 +109,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
-
     /**
      * Class description
      *
@@ -125,7 +117,6 @@ public abstract class DateOps extends Processor {
      * @author         Enter your name here...
      */
     public static class DateAdder extends Converter {
-
 
         /**  */
         private int type;
@@ -181,7 +172,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -190,7 +180,6 @@ public abstract class DateOps extends Processor {
      * @author         Enter your name here...
      */
     public static class DateClear extends Converter {
-
 
         /**  */
         private int type;
@@ -226,7 +215,7 @@ public abstract class DateOps extends Processor {
             String s     = row.getString(col);
             Date   dttm  = ctx.parseDate(s);
             cal.setTime(dttm);
-	    
+
 	    for(int comp: DATE_COMPONENTS) {
 		if(comp==Calendar.YEAR)
 		    cal.set(Calendar.MONTH, Calendar.JANUARY);
@@ -245,8 +234,6 @@ public abstract class DateOps extends Processor {
         }
 
     }
-
-    
 
     /**
      * Class description
@@ -336,7 +323,6 @@ public abstract class DateOps extends Processor {
 		    add(ctx, row, v);
 		}
 
-
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -352,10 +338,8 @@ public abstract class DateOps extends Processor {
         private int what = GregorianCalendar.HOUR_OF_DAY;
 	private String name;
 
-
 	private SimpleDateFormat sdf;
 	private Date start;
-
 
         /**
          * @param col _more_
@@ -418,8 +402,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
-
     /**
      * Class description
      *
@@ -428,7 +410,6 @@ public abstract class DateOps extends Processor {
      * @author         Enter your name here...
      */
     public static class DateBefore extends Converter {
-
 
         /** _more_ */
         private int col;
@@ -439,7 +420,6 @@ public abstract class DateOps extends Processor {
         private Date date;
 
         /* */
-
 
         /**
          * @param col _more_
@@ -482,7 +462,6 @@ public abstract class DateOps extends Processor {
         }
 
     }
-
 
     /**
      * Class description
@@ -538,10 +517,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
-
-
-
     /**
      * Class description
      *
@@ -587,7 +562,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
     /**
      * Class description
      *
@@ -596,7 +570,6 @@ public abstract class DateOps extends Processor {
      * @author         Enter your name here...
      */
     public static class Elapsed extends Converter {
-
 
         /**  */
         private Date lastDate;
@@ -643,7 +616,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-
     public static class MsTo extends Converter {
 
         private int index;
@@ -671,7 +643,6 @@ public abstract class DateOps extends Processor {
         }
 
     }
-    
 
     /**
      * Class description
@@ -681,7 +652,6 @@ public abstract class DateOps extends Processor {
      * @author         Enter your name here...
      */
     public static class Diff extends Converter {
-
 
         /**  */
         private int index1;
@@ -749,7 +719,6 @@ public abstract class DateOps extends Processor {
 
     }
 
-    
     public static class DateFormatSetter extends Processor {
 	boolean in;
 	Seesv.Dater dater;
@@ -765,10 +734,7 @@ public abstract class DateOps extends Processor {
 	    return row;
 	}
 
-
-
     }
-
 
     /**
      * Class description
@@ -787,7 +753,6 @@ public abstract class DateOps extends Processor {
 	private int col1;
 	private int col2;	
 
-
         /**
          * @param indices _more_
          * @param name _more_
@@ -798,7 +763,6 @@ public abstract class DateOps extends Processor {
 	    this.scol2=  col2;	    
             this.op   = op;
         }
-
 
         /**
          * @param ctx _more_
@@ -836,10 +800,6 @@ public abstract class DateOps extends Processor {
         }
 
     }
-    
-
-
-
 
     /**
      *
@@ -888,7 +848,5 @@ public abstract class DateOps extends Processor {
             throw new IllegalArgumentException("Unknown date part:" + what);
         }
     }
-
-
 
 }
