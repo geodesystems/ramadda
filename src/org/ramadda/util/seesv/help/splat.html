@@ -1,0 +1,22 @@
+The splat command groups rows based on the key column.
+It then concatenates all of the values defined in the <i>value column</i> argument
+with the given delimiter and adds them as a new column to the last row in the group.
+:p
+For example, if you have this data:
+<data>
+name,gender
+Jim,male
+Joe,male,
+Jill,female
+Sue,female
+</data>
+
+Running:
+seesv:seesv -splat gender name -- combined
+
+Would give:
+<data>
+name,gender,combined
+Joe,male,Jim--Joe
+Sue,female,Jill--Sue
+</data>

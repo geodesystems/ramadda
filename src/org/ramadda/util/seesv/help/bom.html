@@ -1,0 +1,18 @@
+If you ever have a problem where the first column name looks like, e.g.:
+<data>
+some_name
+Joe
+Sue
+</data>
+
+And you are referencing some_name 
+seesv:seesv -columns some_name
+
+and you get an error like:
+<pre>
+ColumnSelector: Could not find column:some_name
+possible columns: [some_name, 0]
+</pre>
+
+Then it could be that there is a leading bom character. In that case call:
+seesv:seesv -bom -columns some_name

@@ -3,8 +3,7 @@
 </head>    
 <notcl>
 <style type='text/css'>
-  body {font-family: Arial, sans-serif;    line-height:1.5em;
-       }
+  body {font-family: Arial, sans-serif;    line-height:1.5em;}
   ul {margin:0px;}
   .header {margin:10px;} .header a, .command a {color:#000; text-decoration:none;}
   a:hover {
@@ -47,7 +46,6 @@
       margin-top:5px;
       padding:4px;
   }
-
 </style>
 
 <h2>RAMADDA SeeSV</h2>
@@ -148,41 +146,69 @@ seesv -ids -printheader test.csv
 <div class=seesv-item>
 
 <h2>Some Examples</h2>  
+Selecting columns
 <pre class=examples>
-####  selecting columns
 #Subset test.csv and only include column1 and column2
-seesv -columns column1,column2 -p test.csv > newtest.csv
+seesv -columns "column1,column2" -p test.csv > newtest.csv
+</pre>
 
-#You can also use numeric indices - zero based
-seesv -columns 0,1 -p test.csv > newtest.csv
-
-#Specify a range of columns
-#either using column names:
-seesv -columns column1-columnN -p test.csv > newtest.csv
+You can also use numeric indices - zero based
+<pre class=examples>
+seesv -columns "0,1" -p test.csv > newtest.csv
+</pre>
+Specify a range of columns either using column names:
+<pre class=examples>
+seesv -columns "column1-columnN" -p test.csv > newtest.csv
 #or indices:
-seesv -columns 1-5,6,7,10-15 -p test.csv > newtest.csv
-
+seesv -columns "1-5,6,7,10-15" -p test.csv > newtest.csv>
 #or mix and match numeric and names
-seesv -columns 0-1,columnA,columnB,columnF-columnZ -p test.csv > newtest.csv
+seesv -columns "0-1,columnA,columnB,columnF-columnZ" -p test.csv > newtest.csv
+</pre>
 
-#Specify a step:
-#seesv -columns start-end:step
-
+Specify a step:
+<pre class=examples>
+#seesv -columns "start-end:step"
 #e.g. below gives 0,3,6,9,12,15
-seesv -columns 0-15:3
+seesv -columns "0-15:3"
+</pre>
 
-#include all columns except column1
-seesv -notcolumns column1 -p test.csv > newtest.csv
+Specify an index based on the last column using "&gt;index", where index is
+a 0-based index from the end.
+<pre class=examples>
+seesv -columns "&gt;some_index"
+</pre>
 
-#subset columns and then change the values 
-seesv -columns column1,column2 -change column1,column2 "pattern" "new value" -p test.csv > newtest.csv
+Selecting the last column:
+<pre class=examples>
+seesv -columns "&gt;0"
+</pre>
 
-#Only include column1 and then only pass through unique values matching exactly
+So selecting the 3rd column from the end:
+<pre class=examples>
+seesv -columns "&gt;2"
+</pre>
+
+
+Exclude  column1
+<pre class=examples>
+seesv -drop column1 -p test.csv > newtest.csv
+</pre>
+
+
+Subset columns and then change the values 
+<pre class=examples>
+seesv -columns "column1,column2" -change "column1,column2" "pattern" "new value" -p test.csv > newtest.csv
+</pre>
+
+Only include column1 and then only pass through unique values matching exactly
+<pre class=examples>
 seesv -columns column1 -unique 0 exact -p test.csv > newtest.csv
+</pre>
 
-#Only pass throught unique values in the first column and then sort the output
+Only pass throught unique values in the first column and then sort the output
+<pre class=examples>
 seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
-
+</pre>
 
 </pre>
 </div>

@@ -1,0 +1,13 @@
+This lets you specify which lines to ignore. The default is to ignore lines that
+start with "#".
+But for example, if your comment lines started with "&gt;", e.g.:
+<data>
+&gt;comment line
+some_name
+jim
+</data>
+
+You can do:
+seesv:seesv  -inputcomment "&gt;" ...
+
+

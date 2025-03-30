@@ -1,0 +1,16 @@
+For example, if you have this data of the form city-state
+<data>
+location
+boulder-colorado
+denver-colorado
+</data>
+
+Running:
+seesv:seesv -split location "city,state"
+
+Would give:
+<data>
+location,city,state
+boulder-colorado,boulder,colorado
+denver-colorado,denver,colorado
+</data>
