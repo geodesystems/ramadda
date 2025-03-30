@@ -762,7 +762,7 @@ new MapLayer('opentopo','OpenTopo','//a.tile.opentopomap.org/${z}/${x}/${y}.png}
 
 new MapLayer('usfs','Forest Service','https://caltopo.com/tile/f16a/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
-new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
+//new MapLayer('caltopo.mapbuilder','MapBuilder Topo','https://img.caltopo.com/tile/mbt/${z}/${x}/${y}.png',{attribution:'Map courtesy of Caltopo'});
 
 new MapLayer('usgs.topo','USGS Topo','https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}',{attribution:'USGS - The National Map'});
 

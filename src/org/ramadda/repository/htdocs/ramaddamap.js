@@ -5255,7 +5255,8 @@ RepositoryMap.prototype = {
 	    markerText =marker.text;
 	}
 
-	if(markerText.contents) {
+
+	if(markerText && markerText.contents) {
 	    if(markerText.init) {
 		inputProps = $.extend(inputProps,{init:markerText.init});
 		markerText=  markerText.contents;
