@@ -2869,8 +2869,8 @@ public class WikiUtil implements HtmlUtilsConstants {
 		    String sel1 = Utils.getProperty(props,"selector",TAG_DIV);
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
-		    String hideAll = Utils.getProperty(props,"hideAll","false");		    		    
-		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,"hideAll",hideAll);
+		    String hideAll = Utils.getProperty(props,"hideAll","false");
+		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,"hideAll",JsonUtil.quoteType(hideAll));
 		    continue;
 		}
 
