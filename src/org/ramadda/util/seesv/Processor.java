@@ -2331,13 +2331,11 @@ public abstract class Processor extends SeesvOperator {
         private int cnt = 0;
 
         private int maxWidth = 0;
+	private boolean bold = false;
 
-        /*
-         * _more_
-         *
-         */
-
-        public Prettifier() {}
+        public Prettifier(TextReader ctx) {
+	    bold = Misc.equals(ctx.getProperty("label.bold"),"true");
+	}
 
         @Override
         public Row processRow(TextReader ctx, Row row) throws Exception {
@@ -2375,6 +2373,8 @@ public abstract class Processor extends SeesvOperator {
 		    ? headerValues.get(i).toString()
 		    : "NA";
                 label = StringUtil.padLeft(label, maxWidth);
+		if(bold)
+		    label = Utils.ANSI_BLACK_BOLD + label+Utils.ANSI_RESET;
                 ctx.println(label + ": " + values.get(i));
             }
         }

@@ -21,6 +21,7 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -312,11 +314,11 @@ public class RowCollector extends Processor {
 
     }
 
-    public static class RowShuffler extends RowCollector {
+    public static class FirstLast extends RowCollector {
         boolean atStart;
         String pattern;
 
-        public RowShuffler(TextReader ctx, boolean atStart, List<String> cols,
+        public FirstLast(TextReader ctx, boolean atStart, List<String> cols,
                            String pattern) {
             super(cols);
             this.atStart = atStart;
@@ -363,6 +365,28 @@ public class RowCollector extends Processor {
         }
 
     }
+
+    public static class Shuffler extends RowCollector {
+        public Shuffler(TextReader ctx) {
+        }
+
+        @Override
+        public List<Row> finish(TextReader ctx, List<Row> rows)
+	    throws Exception {
+	    Random random = new Random();
+            List<Row>     newRows       = new ArrayList<Row>();
+	    newRows.add(rows.get(0));
+	    rows.remove(0);
+	    while(rows.size()>0) {
+		int randomIndex = random.nextInt(rows.size()); 
+		newRows.add(rows.get(randomIndex));
+		rows.remove(randomIndex);
+            }
+            return newRows;
+        }
+
+    }
+
 
     public static class MaxValue extends RowCollector {
         String key;

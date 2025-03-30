@@ -307,11 +307,23 @@ public abstract class Converter extends Processor {
     }
 
     public static class Highlighter extends Converter {
+	static String[] rainbows = {
+	    Utils.ANSI_RED_BOLD,
+	    Utils.ANSI_ORANGE_BOLD,	    
+	    Utils.ANSI_YELLOW_BOLD,
+	    Utils.ANSI_BLUE_BOLD,
+	    Utils.ANSI_GREEN_BOLD,
+	    Utils.ANSI_PURPLE_BOLD,
+	    Utils.ANSI_CYAN_BOLD
+	};
+
 	String prefix;
+	boolean rainbow=false;
 
         public Highlighter(List<String> cols, String color) {
             super(cols);
-	    if(color.equals("green")) prefix=Utils.ANSI_GREEN_BOLD;
+	    if(color.equals("rainbow")) rainbow=true;
+	    else if(color.equals("green")) prefix=Utils.ANSI_GREEN_BOLD;
 	    else if(color.equals("yellow")) prefix=Utils.ANSI_YELLOW_BOLD;
 	    else if(color.equals("blue")) prefix=Utils.ANSI_BLUE_BOLD;
 	    else if(color.equals("purple")) prefix=Utils.ANSI_PURPLE_BOLD;
@@ -325,8 +337,14 @@ public abstract class Converter extends Processor {
                 return row;
             }
             List<Integer> indices = getIndices(ctx);
+	    int cnt=-1;
 	    for(int idx:getIndices(ctx)) {
 		if(row.indexOk(idx)) {
+		    if(rainbow) {
+			cnt++;
+			if(cnt>=rainbows.length) cnt=0;
+			prefix = rainbows[cnt];
+		    }
 		    row.set(idx,prefix+row.getString(idx)+Utils.ANSI_RESET);
 		}
 	    }

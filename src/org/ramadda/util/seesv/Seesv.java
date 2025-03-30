@@ -1836,7 +1836,7 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
 	*/
         new Cmd(CMD_DROP, "Don't include given columns",
-		ARG_LABEL,"Not Columns",
+		ARG_LABEL,"Drop Columns",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
         new Cmd(CMD_FIRSTCOLUMNS, "Move columns to beginning",
 		ARG_LABEL,"Move Columns First",
@@ -1863,6 +1863,7 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Include Rows",
                 new Arg("rows", "one or more rows, -1 to the end", ATTR_TYPE,
                         TYPE_ROWS)),
+	new Cmd(CMD_SHUFFLE, "Randomize the rows"),
 	new Cmd(CMD_ROWS_FIRST, "Move rows to the top that match the pattern",
 		ARG_LABEL,"Move Rows First",
                 new Arg(ARG_COLUMNS, "columns to match on", ATTR_TYPE,  TYPE_COLUMNS),
@@ -3200,12 +3201,16 @@ public class Seesv implements SeesvCommands {
 							   args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_SHUFFLE,0, (ctx,args,i) -> {
+		ctx.addProcessor(new RowCollector.Shuffler(ctx));
+		return i;
+	    });
 	defineFunction(CMD_ROWS_FIRST,2, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.RowShuffler(ctx, true,getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new RowCollector.FirstLast(ctx, true,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });
 	defineFunction(CMD_ROWS_LAST,2, (ctx,args,i) -> {
-		ctx.addProcessor(new RowCollector.RowShuffler(ctx,false,getCols(args.get(++i)), args.get(++i)));
+		ctx.addProcessor(new RowCollector.FirstLast(ctx,false,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });		
 	defineFunction(CMD_EMBED,1, (ctx,args,i) -> {
@@ -5161,7 +5166,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(new String[]{CMD_TORECORD,"-record"},0,(ctx,args,i) -> {
 		ctx.addProcessor(
-				 new Processor.Prettifier());
+				 new Processor.Prettifier(ctx));
 		return i;
 	    });
 

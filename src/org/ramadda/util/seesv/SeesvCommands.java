@@ -271,6 +271,7 @@ public interface SeesvCommands {
     public static final String CMD_ABS="-abs";
     public static final String CMD_CLIP="-clip";
     public static final String CMD_RAND="-rand";
+    public static final String CMD_SHUFFLE="-shuffle";
     public static final String CMD_EVEN="-even";
     public static final String CMD_SUM="-sum";
     public static final String CMD_PIVOT="-pivot";
