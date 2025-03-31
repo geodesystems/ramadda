@@ -3906,7 +3906,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    focus:true,
 	    inputSize:'15',
 	    target:null,
-	    hideAll:hideAll
+	    hideAll:hideAll,
+	    linkSelector:null
 	};
 	if(opts) $.extend(args,opts);
 	let id = HU.getUniqueId('search_');
@@ -3933,6 +3934,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		input+=HU.span([ATTR_ID,b.id],b.label);
 	    });
 	}
+	if(args.linkSelector) {
+	    args.linksDivId = HU.getUniqueId('links');
+	    input+=HU.div([ATTR_ID,args.linksDivId]);
+	}
 
 
 	if(args.target) {
@@ -3945,9 +3950,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		jqid(b.id).button().click(function() {
 		    let button = buttonMap[$(this).attr(ATTR_ID)];
 		    if(button.clear) {
-			HU.doPageSearch('',select,parentSelect,args.hideAll);
+			HU.doPageSearch('',select,parentSelect,args.hideAll,args);
 		    }
-		    HU.doPageSearch(button.value,select,parentSelect,args.hideAll);
+		    HU.doPageSearch(button.value,select,parentSelect,args.hideAll,args);
 		});
 	    })
 	}
@@ -3970,7 +3975,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		return
 	    }
 	    let value = $(this).val();
-	    HU.doPageSearch(value,select,parentSelect,args.hideAll);
+	    HU.doPageSearch(value,select,parentSelect,args.hideAll,args);
 	    if(Utils.stringDefined(value)) {
 		HU.addToDocumentUrl(ARG_PAGESEARCH,value);
 	    } else {
@@ -3980,7 +3985,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	});
 
 	if(Utils.stringDefined(initValue)) {
-	    HU.doPageSearch(initValue,select,parentSelect,args.hideAll);
+	    HU.doPageSearch(initValue,select,parentSelect,args.hideAll,args);
 	}
 
 
@@ -3988,7 +3993,15 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     classes:function() {
 	return Utils.join(Array.from(arguments),' ');
     },
-    doPageSearch(value,select,parentSelect,hideAll) {
+    doPageSearch:function(value,select,parentSelect,hideAll,args) {
+	args = args??{}
+	let linksDiv;
+	let linkNames=[];
+	if(args.linksDivId) {
+	    linksDiv=jqid(args.linksDivId);
+	    linksDiv.html('');
+	}
+
 	let s  = $(select);
 	if(hideAll) {
 	    if(Utils.stringDefined(value)) {
@@ -4049,6 +4062,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    } else {
 		$(this).attr('isvisible','true');
 		$(this).show();
+		if(linksDiv && args.linkSelector) {
+		    let links = $(this).find(args.linkSelector);
+		    if(links.length) {
+			let name = links.attr('name');
+			if(name)
+			    linkNames.push(name);
+		    }
+		}
+
+
 	    }
 	});
 	if(parentSelect) {
@@ -4066,6 +4089,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		}
 	    });
 	}
+	//Only show a few of the links
+	if(linkNames.length>0 && linkNames.length<15) {
+	    linkNames.forEach(name=>{
+		let link = HU.href('#' + name,name);
+		linksDiv.append(link+' ');
+	    });
+	}
+
+
+    
     },				  
     initScreenshot: function(img) {
 	img.width/=2
