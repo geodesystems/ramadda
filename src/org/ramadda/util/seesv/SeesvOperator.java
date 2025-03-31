@@ -427,7 +427,7 @@ public class SeesvOperator {
 	    debug("\tgetColumnIndex:" + tok);
         Integer iv = columnMap.get(tok);
         //      System.err.println("\t\tiv-a:" + iv);
-	if(tok.startsWith(">")) {
+	if(tok.startsWith(">") || tok.startsWith("<")) {
 	    int index = Integer.parseInt(tok.substring(1))+1;
 	    return columnNames.size()-index;
 
