@@ -4505,10 +4505,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
                + backAttrs + ">" + back + "</div></div></div>";
     }
     
-    public static void addPageSearch(Appendable buff, String sel1, String sel2, String label,   Object...args)  {
+    public static void addPageSearch(Appendable buff, String sel1, String sel2, String label) {
+	addPageSearch(buff,sel1,sel2,label,null);
+    }
+
+
+    public static void addPageSearch(Appendable buff, String sel1, String sel2, String label,List<String>args) {
 	try {
 	    buff.append("<center>");
-	    String opts = JsonUtil.map(args);
+	    String opts = args==null?"{}":JsonUtil.map(args);
 	    HtmlUtils.script(buff,HtmlUtils.call("HtmlUtils.initPageSearch",
 						 HtmlUtils.squote(sel1), 
 						 sel2==null?"null":HtmlUtils.squote(sel2),
