@@ -1,0 +1,31 @@
+For example, with this data:
+data:simple.csv
+
+Calling:
+seesv: -template "PREFIX\n" "name:\${name} value:\${value}" "\nROW DELIMITER\n" "\nSUFFIX\n" test.csv 
+Results in:
+<pre>
+PREFIX
+name:joe value:5
+ROW DELIMITER
+name:jill value:2
+ROW DELIMITER
+name:bill value:7
+SUFFIX
+</pre>
+
+Note: the row delimiter is only printed between rows.
+<p>
+If you wanted to generated custom XML, for example, call:
+seesv:seesv -template "<mytags>\n" "<tag name=\"\${name}\" value=\"\${value}\"></tag>" "\n" "\n</mytags>\n" test.csv
+Which results in:
+<pre>
+&lt;mytags&gt;
+&lt;tag name="joe" value="5"&gt;&lt;/tag&gt;
+&lt;tag name="jill" value="2"&gt;&lt;/tag&gt;
+&lt;tag name="bill" value="7"&gt;&lt;/tag&gt;
+&lt;/mytags&gt;
+</pre>
+
+
+

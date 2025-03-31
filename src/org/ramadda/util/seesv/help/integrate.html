@@ -1,0 +1,9 @@
+The integrate command takes some value column, usually a rate,  a date column,
+a date-time unit specifier and volume column name and calculates the volume by
+figuring out the elapsed time since the prior record and multiplies the rate by the time.
+:p
+For example, USGS stream gauge data has a discharge column in cubic feet per second (CFS).
+The below command creates a volume based on the discharge.
+
+
+seesv:seesv  -integrate discharge date second volume 

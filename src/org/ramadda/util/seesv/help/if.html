@@ -1,4 +1,11 @@
 For example, the below command would change the value of column2 for all rows
-that match the -pattern column1 string command.
+that whose column1 value matches "string":
 
-seesv:seesv -if -pattern column1 string -change column2 .* XXX  -endif
+seesv:seesv -if -match column1 string -change column2 .* XXX  -endif
+
+And here is a real world example of using the -if command for USGS Stream Gauge data.
+This checks if there is a discharge column. If there is then it calculates a volume
+from the discharge.
+
+seesv:seesv -if -has discharge -integrate discharge date second volume -endif
+

@@ -156,6 +156,7 @@ You can also use numeric indices - zero based
 <pre class=examples>
 seesv -columns "0,1" -p test.csv > newtest.csv
 </pre>
+
 Specify a range of columns either using column names:
 <pre class=examples>
 seesv -columns "column1-columnN" -p test.csv > newtest.csv
@@ -187,6 +188,18 @@ So selecting the 3rd column from the end:
 <pre class=examples>
 seesv -columns "&gt;2"
 </pre>
+
+Normally, if you specify a column that does not exist in the file then an error is thrown:
+<pre class=examples>
+#This results in an error
+seesv -columns column1,missing_column,column3 
+</pre>
+
+To make the column be optional preface the column name with "?":
+<pre class=examples>
+seesv -columns column1,?missing_column,column3 
+</pre>
+
 
 
 Exclude  column1
