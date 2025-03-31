@@ -2866,11 +2866,17 @@ public class WikiUtil implements HtmlUtilsConstants {
                     Hashtable props = HU.parseHtmlProperties((toks.size() > 1)
 							     ? toks.get(1)
 							     : "");
+		    List<String> opts = new ArrayList<String>();
 		    String sel1 = Utils.getProperty(props,"selector",TAG_DIV);
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
 		    String hideAll = Utils.getProperty(props,"hideAll","false");
-		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,"hideAll",JsonUtil.quoteType(hideAll));
+		    String linkSelector = Utils.getProperty(props,"linkSelector",null);
+		    if(linkSelector!=null) 
+			Utils.add(opts,"linkSelector",JsonUtil.quote(linkSelector));
+
+		    Utils.add(opts,"hideAll",JsonUtil.quoteType(hideAll));
+		    HtmlUtils.addPageSearch(buff,sel1,sel2,label,opts);
 		    continue;
 		}
 
