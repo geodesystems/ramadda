@@ -185,6 +185,7 @@ You can also use numeric indices - zero based
 <pre class=examples>
 seesv -columns "0,1" -p test.csv > newtest.csv
 </pre>
+
 Specify a range of columns either using column names:
 <pre class=examples>
 seesv -columns "column1-columnN" -p test.csv > newtest.csv
@@ -216,6 +217,18 @@ So selecting the 3rd column from the end:
 <pre class=examples>
 seesv -columns "&gt;2"
 </pre>
+
+Normally, if you specify a column that does not exist in the file then an error is thrown:
+<pre class=examples>
+#This results in an error
+seesv -columns column1,missing_column,column3 
+</pre>
+
+To make the column be optional preface the column name with "?":
+<pre class=examples>
+seesv -columns column1,?missing_column,column3 
+</pre>
+
 
 
 Exclude  column1
@@ -951,9 +964,15 @@ regexp or prefix with includes:s1,s2 to do substrings match<br>
 </div></div><div class=seesv-item>
 <a name='-if'></a><div class=command> <i><a href='#-if'>-if</a></i> </div><div class=command-block>Next N args specify a filter command followed by any change commands followed by an -endif.<br class=seesv-hide>
 For example, the below command would change the value of column2 for all rows
-that match the -pattern column1 string command.
+that whose column1 value matches "string":
 
-<seesv>seesv -if -pattern column1 string -change column2 .* XXX  -endif</seesv>
+<seesv>seesv -if -match column1 string -change column2 .* XXX  -endif</seesv>
+And here is a real world example of using the -if command for USGS Stream Gauge data.
+This checks if there is a discharge column. If there is then it calculates a volume
+from the discharge.
+
+<seesv>seesv -if -has discharge -integrate discharge date second volume -endif</seesv>
+
 <p></div></div><div class=seesv-item>
 <a name='-rawlines'></a><div class=command> <i><a href='#-rawlines'>-rawlines</a></i>  &lt;lines&gt; </div><div class=command-block><ul>
 <li> <i>lines</i>:
@@ -1595,7 +1614,7 @@ with the given delimiter and adds them as a new column to the last row in the gr
 For example, if you have this data:
 <br><table cellpadding=0 cellspacing=0 style=' border-collapse: collapse;'><tr><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >name</td><td style='padding:4px;border:1px solid #ccc;background:#F5F5F5;'  align=center >gender</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >Jim</td><td style='padding:4px;border:1px solid #ccc;' >male</td></tr>
-<tr><td style='padding:4px;border:1px solid #ccc;' >Joe</td><td style='padding:4px;border:1px solid #ccc;' >male</td><td style='padding:4px;border:1px solid #ccc;' >&lt;blank&gt;</td></tr>
+<tr><td style='padding:4px;border:1px solid #ccc;' >Joe</td><td style='padding:4px;border:1px solid #ccc;' >male</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >Jill</td><td style='padding:4px;border:1px solid #ccc;' >female</td></tr>
 <tr><td style='padding:4px;border:1px solid #ccc;' >Sue</td><td style='padding:4px;border:1px solid #ccc;' >female</td></tr>
 </table><br>
@@ -2848,7 +2867,16 @@ The time unit values:millisecond,second,minute,hour,day,year <br>
 <li> <i>name</i>:
 New column name<br>
 </ul>
-</div></div><div class=seesv-item>
+The integrate command takes some value column, usually a rate,  a date column,
+a date-time unit specifier and volume column name and calculates the volume by
+figuring out the elapsed time since the prior record and multiplies the rate by the time.
+:p
+For example, USGS stream gauge data has a discharge column in cubic feet per second (CFS).
+The below command creates a volume based on the discharge.
+
+
+<seesv>seesv  -integrate discharge date second volume</seesv>
+<p></div></div><div class=seesv-item>
 <a name='-changecounter'></a><div class=command> <i><a href='#-changecounter'>-changecounter</a></i>  &lt;column&gt;  &lt;name&gt; </div><div class=command-block>Make counter field that is incremented everytime the value column changes<br class=seesv-hide>
 <ul>
 <li> <i>column</i>:
