@@ -1615,8 +1615,10 @@ public class WikiManager extends RepositoryManager
 	HU.div(sb,"",HU.attrs("id",id));
 	sb.append(HtmlUtils.script(HU.call("ramaddaDisplayIcons",HU.squote("#" + id))));
         getPageHandler().sectionClose(request, sb);
-	HU.addPageSearch(sb,"#" + id +" .ramadda-icon",null,"Find",
-			 "target",HU.squote("#"+searchid));
+	List<String> opts = new ArrayList<String>();
+	Utils.add(opts,"target",HU.squote("#"+searchid));
+	HU.addPageSearch(sb,"#" + id +" .ramadda-icon",null,"Find",opts);
+			 
 
         return  new Result("Icons",sb);
     }
