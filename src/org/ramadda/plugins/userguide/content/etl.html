@@ -6,8 +6,13 @@
 
 RAMADDA provides an interactive facility to transform CSV, JSON, XML or HTML files and create structured
 point data files and databases.
+This uses the <a href=seesv.html>SeeSV</a> facility.
 <p>
-To start, upload the CSV/JSON/XML/HTML file into RAMADDA. Go to the  [ht::menu {Main Menu} View {Convert Data}] menu to see the conversion interface below.  <a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples+Data/Documentation/World%27s+Oldest+People+Raw+Html+File?entryid=920b0986-c7c2-4a8f-8e8f-22e52fd865e8&output=convert_form">Here</a> is the convert page for the below example.
+  To start, upload the CSV/JSON/XML/HTML file into RAMADDA. Go to the  [ht::menu {Main Menu} View {Convert Data}] menu to see the conversion interface below.  <a href="https://ramadda.org/repository/entry/show/Home/Content/RAMADDA+Examples+Data/Documentation/World%27s+Oldest+People+Raw+Html+File?entryid=920b0986-c7c2-4a8f-8e8f-22e52fd865e8&output=convert_form">Here</a> is the convert page for the below example.
+There are many other interactive examples available on
+<a href=https://ramadda.org/repository/a/seesv>ramadda.org</a>
+
+
 [ht::screenshot images/etl.png {CSV Conversion Interface}]
 
 A pipeline of commands are defined for manipulating the rows and columns of the source file. 
@@ -15,9 +20,11 @@ These commands can be on the same line or on multiple lines. If on multiple line
 
 
 <ul>
-  <li> The <span><i class="fa fa-plus"></i></span> button allows you to add a new command. Once added you can edit the command in place or right click on the command to bring up the command editor dialog (see below).
-  <li> The <span><i class="fa fa-file"></i></span> button allows you to insert a reference to another file in RAMADDA for those c
-ommands (e.g., join) that require other files.
+  <li> The <span><i class="fa fa-plus"></i></span> button allows you to add a new command.
+    Once added you can edit the command in place or right click on the command to
+    bring up the command editor dialog (see below).
+  <li> The <span><i class="fa fa-file"></i></span> button allows you to insert a reference to
+    another file in RAMADDA for those commands (e.g., join) that require other files.
   <li> The <span><i class="fa fa-sliders-h"></i></span> button allows you to specify settings -
     <ul>
     </ul>
