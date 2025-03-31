@@ -1,0 +1,12 @@
+This applies the pattern to each line that is read in before
+it is tokenized into
+columns. The "to" string can contain grouping of the form "$1", "$2".
+e.g. for the file:
+<pre>
+prefix:column1,column2
+prefix:0,1    
+prefix:3,4  
+</pre>
+
+The prefix: can be stripped out
+seesv: seesv -changeline "prefix:(.*)" "\$1" 

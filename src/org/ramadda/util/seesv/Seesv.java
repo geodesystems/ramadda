@@ -1647,6 +1647,13 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_CHOP, "Write out last N lines. include the header",
 		new Arg("numlines","Number of lines to leave"),
 		new Arg("file","*.csv")),
+
+        new Cmd(CMD_FILEPATTERN, "Extract a macro value from a filename and apply it to the commands",
+		ARG_LABEL,"File Pattern",
+		new Arg(ARG_NAME,"Macro name"),
+		new Arg(ARG_PATTERN,HELP_PATTERN,ATTR_TYPE, TYPE_PATTERN)),		
+
+
         new Cmd(CMD_FILENAMEPATTERN, "Extract strings from the file name and add them as new columns",
 		ARG_LABEL,"Filename Pattern",
                 new Arg("pattern", "Pattern to match", ATTR_TYPE, TYPE_PATTERN),
@@ -2599,16 +2606,13 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_VALUE, "Define a macro value for later use",
 		new Arg(ARG_NAME,ARG_NAME),
 		new Arg("value","Value")),
-        new Cmd(CMD_FILEPATTERN, "Extract a macro value from a filename",
-		ARG_LABEL,"File Pattern",
-		new Arg(ARG_NAME,"Macro name"),
-		new Arg(ARG_PATTERN,HELP_PATTERN,ATTR_TYPE, TYPE_PATTERN)),		
-        new Cmd(CMD_CHANGELINE,  "Change the line",
-		ARG_LABEL,"Change Line",
+        new Cmd(CMD_CHANGERAW,  "Change the entire input text",
+		ARG_LABEL,"Change Input",
                 new Arg("from","From pattern"),
 		new Arg("to","To string")),
-        new Cmd(CMD_CHANGERAW,  "Change input text",
-		ARG_LABEL,"Change Input",
+
+        new Cmd(CMD_CHANGELINE,  "Change the line",
+		ARG_LABEL,"Change Line",
                 new Arg("from","From pattern"),
 		new Arg("to","To string")),
         new Cmd(CMD_CROP,  "Crop last part of string after any of the patterns",
@@ -2760,6 +2764,9 @@ public class Seesv implements SeesvCommands {
         for (Enumeration keys = macros.keys(); keys.hasMoreElements(); ) {
 	    String key =(String) keys.nextElement(); 
 	    String value = macros.get(key);
+	    if(debugArgs) {
+		System.err.println("applying macro:" + key +" value:" + value +" to argument:" + s);
+	    }
 	    s= s.replace("%" + key+"%",value);
         }
 	return s;
@@ -2966,7 +2973,7 @@ public class Seesv implements SeesvCommands {
 	    String extra = IO.readContents(path,(String)null);
 	    if(c.cmd.startsWith(CMD_HELP)) continue;
 	    sb.append("<div class=seesv-item>\n");
-	    sb.append("<a name='" + c.cmd+"'></a>");
+	    sb.append("<a class=command-link name='" + c.cmd+"'></a>");
 	    hb.append("<li> <a href='#" + c.cmd +"'><i>" + c.cmd+"</i>: " + c.desc +"</a>");
 	    sb.append("<div class=command> <i><a href='#" + c.cmd +"'>" + c.cmd+"</a></i> ");
 	    for(Arg arg: c.args) {
@@ -3186,10 +3193,19 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_CHANGERAW,2,(ctx,args,i) -> {
+		ctx.addChangeFromTo(args.get(++i),args.get(++i));
+		return i;
+	    });
+
+
 	defineFunction(CMD_CHANGELINE,2,(ctx,args,i) -> {
 		ctx.setChangeString(args.get(++i), args.get(++i));
 		return i;
 	    });
+
+
+
 
 	defineFunction(CMD_IMAGE,2, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
@@ -4435,10 +4451,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	defineFunction(CMD_CHANGERAW,2,(ctx,args,i) -> {
-		ctx.addChangeFromTo(args.get(++i),args.get(++i));
-		return i;
-	    });
 
 	defineFunction(CMD_MAXROWS,1,(ctx,args,i) -> {
 		ctx.setMaxRows(parseInt(args.get(++i)));
@@ -5388,8 +5400,9 @@ public class Seesv implements SeesvCommands {
 	    }
 	    for(IO.Path file: tmpFiles) {
 		for(int i=0;i<filePatterns.size();i++) {
-		    String value = StringUtil.findPattern(file.getPath(), ".*"+filePatterns.get(i));
-		    System.err.println("file:" + file +" pattern:" + filePatterns.get(i) +" " + value);
+		    //		    String pattern =  ".*"+filePatterns.get(i);
+		    String pattern =  filePatterns.get(i);		    
+		    String value = StringUtil.findPattern(file.getPath(),pattern);
 		    if(value!=null) {
 			macros.put(filePatternNames.get(i), value);
 		    }

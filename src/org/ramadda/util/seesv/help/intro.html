@@ -51,7 +51,7 @@
 <h2>RAMADDA SeeSV</h2>
 <center>${header}</center>
 
-:pagesearch selector=.seesv-item hideAll=.seesv-hide
+:pagesearch selector=.seesv-item hideAll=.seesv-hide linkSelector=.command-link
 
 <div class=seesv-item>
 <h2>Introduction</h2>
@@ -64,22 +64,25 @@ For brevity, in the below documentation we're assuming  that you are using an al
 alias seesv="sh /path/to/seesv/seesv.sh"  
 </pre>
 
-The examples here show the command line use. If running interactively through the RAMADDA web interface
-the commands are the same form except for the seesv command call and the specification of the input file. So, for example, if you are calling the tool from the command line as:
+The examples here show the command line use. If running interactively through the
+<a href=https://ramadda.org/userguide/etl.html>RAMADDA web interface</a>
+the commands are the same form except for the seesv command call and the specification of the
+input file. So, for example, if you are calling the tool from the command line as:
 <pre class=example>
 seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
-The corresponding commands interactively would be:
+The corresponding commands in the web-based interactive form would be:
 <pre class=example>
 -columns column1,column2
 </pre>
 </div>
 
 <div class=seesv-item>
-<h2>Install</h2>
+<h2>Install the command line version</h2>
 <ul>
-<li> Download the seesv.zip file from the RAMADDA <a href=https://geodesystems.com/repository/alias/release>download</a> site
+  <li> Download the seesv.zip file from the RAMADDA
+    <a href=https://ramadda.org/repository/alias/release>download</a> site
 <li> Unzip the file
 <li> Consult the README
 <li> SeeSV runs using Java 1.8 or higher. Set the JAVA environment variable to point to the java runtime.
@@ -114,9 +117,6 @@ seesv -p file.csv &gt; output.csv
 
 #With no processing commands and a record oriented  output:
 seesv -record file.csv &gt; output.csv
-
-#With the -columns command printing csv output
-seesv -columns column1,column2 -p file.csv > output.csv
 </pre>
 
 </div>
@@ -146,81 +146,91 @@ seesv -ids -printheader test.csv
 <div class=seesv-item>
 
 <h2>Some Examples</h2>  
-Selecting columns
+
+<b>Selecting columns:</b><br>
 <pre class=examples>
 #Subset test.csv and only include column1 and column2
-seesv -columns "column1,column2" -p test.csv > newtest.csv
+seesv -columns "column1,column2" -p test.csv
 </pre>
 
 You can also use numeric indices - zero based
 <pre class=examples>
-seesv -columns "0,1" -p test.csv > newtest.csv
+seesv -columns "0,1" -p test.csv
 </pre>
 
+<b>Ranges:</b><br>
 Specify a range of columns either using column names:
 <pre class=examples>
-seesv -columns "column1-columnN" -p test.csv > newtest.csv
+seesv -columns "column1-columnN" -p test.csv
+
 #or indices:
-seesv -columns "1-5,6,7,10-15" -p test.csv > newtest.csv>
+seesv -columns "1-5,6,7,10-15" -p test.csv
+
 #or mix and match numeric and names
-seesv -columns "0-1,columnA,columnB,columnF-columnZ" -p test.csv > newtest.csv
+seesv -columns "0-1,columnA,columnB,columnF-columnZ" -p test.csv
 </pre>
 
-Specify a step:
+<b>Steps:</b><br>
+To specify a step the format is:
 <pre class=examples>
 #seesv -columns "start-end:step"
+
 #e.g. below gives 0,3,6,9,12,15
 seesv -columns "0-15:3"
 </pre>
 
-Specify an index based on the last column using "&gt;index", where index is
+<b>Offset from the last column:</b><br>
+Specify an index based on the last column using "&lt;index", where index is
 a 0-based index from the end.
 <pre class=examples>
-seesv -columns "&gt;some_index"
+seesv -columns "&lt;some_index"
 </pre>
 
 Selecting the last column:
 <pre class=examples>
-seesv -columns "&gt;0"
+seesv -columns "&lt;0"
 </pre>
 
 So selecting the 3rd column from the end:
 <pre class=examples>
-seesv -columns "&gt;2"
+seesv -columns "&lt;2"
 </pre>
 
+<b>Optional columns:</b><br>
 Normally, if you specify a column that does not exist in the file then an error is thrown:
 <pre class=examples>
 #This results in an error
-seesv -columns column1,missing_column,column3 
+seesv -columns "column1,missing_column,column3"
 </pre>
 
 To make the column be optional preface the column name with "?":
 <pre class=examples>
-seesv -columns column1,?missing_column,column3 
+seesv -columns "column1,?missing_column,column3" 
 </pre>
 
 
-
-Exclude  column1
+<b>Basic Operations:</b><br>
+Drop  column1
 <pre class=examples>
-seesv -drop column1 -p test.csv > newtest.csv
+seesv -drop column1 -p test.csv
 </pre>
 
 
-Subset columns and then change the values 
+Select columns and then change the values 
 <pre class=examples>
-seesv -columns "column1,column2" -change "column1,column2" "pattern" "new value" -p test.csv > newtest.csv
+seesv -columns "column1,column2" -change "column1,column2" "pattern" "new value" -p test.csv
 </pre>
 
 Only include column1 and then only pass through unique values matching exactly
 <pre class=examples>
-seesv -columns column1 -unique 0 exact -p test.csv > newtest.csv
+seesv -columns column1 -unique 0 exact -p test.csv
+#Which is the same as:
+seesv -columns column1 -unique column1 exact -p test.csv  
 </pre>
 
-Only pass throught unique values in the first column and then sort the output
+Only pass through unique values in the first column and then sort the output
 <pre class=examples>
-seesv -columns column1 -unique 0 -sort column1 -p test.csv > newtest.csv
+seesv -columns column1 -unique column1 -sort column1 -p test.csv
 </pre>
 
 </pre>

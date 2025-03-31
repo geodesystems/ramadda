@@ -1,0 +1,17 @@
+This macro value is then applied the other SeeSV input commands.
+This lets you extract some string from the filename and then use it in the commands.
+The macro in the command is of the form:
+<pre>
+ %macroname%
+</pre>
+
+For example, if you wanted to extract the filename without the prefix and add it as a new column you could do:
+seesv: -filepattern filename "/?(.*)\.csv" -add new_column "%filename%" test.csv
+would give:
+
+<data>
+name,new_column
+jim,test
+jill,test  
+</data>
+
