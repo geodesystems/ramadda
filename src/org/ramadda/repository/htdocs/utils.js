@@ -5881,7 +5881,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     checkbox: function(id, attrs, checked,label) {
-
 	attrs = attrs||[];
 	if(!Utils.stringDefined(id)) {
 	    for(let i=0;i<attrs.length;i+=2) {
@@ -5912,7 +5911,12 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    break;
 		}
 	    }
-            cbx += "&nbsp;" + HU.tag("label",["for", id,ATTR_TITLE,title],label);
+	    let cbxAttrs = ["for", id];
+	    if(Utils.stringDefined(title)) {
+		cbxAttrs.push(ATTR_TITLE);
+		cbxAttrs.push(title);
+	    }
+            cbx += "&nbsp;" + HU.tag("label",cbxAttrs,label);
         }
         return cbx;
     },
@@ -6167,7 +6171,10 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    HU.radio(id, radioName,'',label,selected,null,label):
 		    HU.checkbox(id,[],selected,label);
 
-		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag','tag',$(this).html() +' ' + value], cbx);
+		let cbxLabel = $(this).html() +' ' + value;
+		cbx = HU.div([ATTR_CLASS,'ramadda-select-tag',
+			      ATTR_TITLE,value,
+			      'tag',cbxLabel], cbx);
 		cbxs.push(cbx);
 	    });
 	    let cbxInner = HU.div([ATTR_STYLE,HU.css("margin","5px", ATTR_WIDTH,"600px;","max-height","300px","overflow-y","auto")],    Utils.wrap(cbxs,"",""));
@@ -6186,6 +6193,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    let contents = HU.div([ATTR_STYLE,HU.css("margin","10px")], HU.center(input) + cbxInner);
 	    let dialog = HU.makeDialog({content:contents,anchor:anchor,title:label,
 					draggable:true,header:true});
+
 	    dialog.find(":checkbox").change(cbxChange);
 	    dialog.find(":radio").change(cbxChange);
 	    let tags = dialog.find(".ramadda-select-tag");
