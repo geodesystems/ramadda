@@ -287,7 +287,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    _values.push((""+v).toLowerCase());
 		    try {
 			matchers.push(new TextMatcher(v));
-		    } catch(skipIt){}
+		    } catch(skipIt){
+		    }
 		});
 	    }
 	    let anyValues = value!=null;
@@ -1273,7 +1274,7 @@ function TextMatcher (pattern,myId) {
     if(pattern) {
         pattern = pattern.trim();
     }
-    if(pattern&& pattern.length>0) {
+    if(pattern && pattern.length>0) {
         pattern = pattern.replace(/\./g,"\\.");
         if(pattern.startsWith('"') && pattern.endsWith('"')) {
             pattern  = pattern.replace(/^"/,"");
@@ -1283,7 +1284,11 @@ function TextMatcher (pattern,myId) {
             pattern.split(" ").map(p=>{
                 p = p.trim();
 		try {
-                    this.regexps.push(new RegExp("(" + p + ")","ig"));
+		    //check if the string has a regep fragment
+		    if(p.includes('(') || p.includes(')')) {
+		    } else {
+			this.regexps.push(new RegExp("(" + p + ")","ig"));
+		    }
 		} catch(err) {
 		    console.log('Error creating pattern matcher:' + err,p);
 		}
