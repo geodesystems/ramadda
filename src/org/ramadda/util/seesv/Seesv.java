@@ -1690,6 +1690,11 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_MAX,
 		"Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header",
 		new Arg("max # columns", "", ATTR_TYPE, TYPE_NUMBER)),
+        new Cmd(CMD_ISNUMBER, "The columns must be numbers",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_ISNOTNUMBER, "The columns must not be numbers",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
+
         new Cmd(CMD_NUMCOLUMNS,
 		"Remove or add values so each row has the number of columns",
 		ARG_LABEL,"Ensure # of columns",
@@ -4912,6 +4917,18 @@ public class Seesv implements SeesvCommands {
 		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.PatternFilter(ctx,getCols(args.get(++i)),args.get(++i), true));
 		return i;
 	    });
+
+	defineFunction(CMD_ISNUMBER, 1,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNumber(ctx,getCols(args.get(++i))));
+		return i;
+	    });
+
+
+	defineFunction(CMD_ISNOTNUMBER, 1,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNotNumber(ctx,getCols(args.get(++i))));
+		return i;
+	    });
+	
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),

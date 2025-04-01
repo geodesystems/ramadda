@@ -88,6 +88,8 @@ public interface SeesvCommands {
     public static final String CMD_IFNUMCOLUMNS="-ifnumcolumns";    
     public static final String CMD_PATTERN="-pattern";
     public static final String CMD_FIND="-find";
+    public static final String CMD_ISNUMBER="-isnumber";
+    public static final String CMD_ISNOTNUMBER="-isnotnumber";        
     public static final String CMD_MATCH="-match";    
     public static final String CMD_NOTMATCH="-notmatch";    
     public static final String CMD_NOTPATTERN="-notpattern";

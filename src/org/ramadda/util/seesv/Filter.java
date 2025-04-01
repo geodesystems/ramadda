@@ -467,6 +467,63 @@ public class Filter extends Processor {
 
     }
 
+    public static class IsNumber extends Filter {
+
+        public IsNumber(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+
+            for (int idx : getIndices(ctx)) {
+		if(!row.indexOk(idx)) continue;
+		String  s  = row.getString(idx).trim();
+                if (s.length() ==0) return false;
+		try {
+		    Double.parseDouble(s);
+		} catch(Exception exc) {
+                    return false;
+                }
+	    }
+            return true;
+        }
+
+    }
+
+    public static class IsNotNumber extends Filter {
+
+        public IsNotNumber(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+
+            for (int idx : getIndices(ctx)) {
+		if(!row.indexOk(idx)) continue;
+		String  s  = row.getString(idx).trim();
+                if (s.length() ==0) return true;
+		try {
+		    Double.parseDouble(s);
+		} catch(Exception exc) {
+                    return true;
+                }
+	    }
+            return false;
+        }
+
+    }
+
+
     public static class Has extends Filter {
 	List<String> cols;
 
