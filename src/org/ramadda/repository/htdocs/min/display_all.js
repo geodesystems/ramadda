@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Mar 31 06:25:37 MDT 2025";
+var build_date="RAMADDA build date: Mon Mar 31 19:31:24 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5917,6 +5917,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'&lt;field&gt;.filterMultipleSize',ex:5},
 	{p:'&lt;field&gt;.filterIncludeAll',ex:true},
 	{p:'&lt;field&gt;.filterShowPopup',tt:'Show the popup dialog button',ex:true},
+	{p:'&lt;field&gt;.filterDepends',ex:'other_field',tt:'Filter field that this filter depends on'},
+
 	{p:'filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterLive',ex:'true',tt:'Search live as the user presses a key'},
 	{p:'&lt;field&gt;.filterDateSelects',
@@ -18451,7 +18453,8 @@ function RecordFilter(display,filterFieldId, properties) {
 		    _values.push((""+v).toLowerCase());
 		    try {
 			matchers.push(new TextMatcher(v));
-		    } catch(skipIt){}
+		    } catch(skipIt){
+		    }
 		});
 	    }
 	    let anyValues = value!=null;
@@ -19437,7 +19440,7 @@ function TextMatcher (pattern,myId) {
     if(pattern) {
         pattern = pattern.trim();
     }
-    if(pattern&& pattern.length>0) {
+    if(pattern && pattern.length>0) {
         pattern = pattern.replace(/\./g,"\\.");
         if(pattern.startsWith('"') && pattern.endsWith('"')) {
             pattern  = pattern.replace(/^"/,"");
@@ -19447,7 +19450,11 @@ function TextMatcher (pattern,myId) {
             pattern.split(" ").map(p=>{
                 p = p.trim();
 		try {
-                    this.regexps.push(new RegExp("(" + p + ")","ig"));
+		    //check if the string has a regep fragment
+		    if(p.includes('(') || p.includes(')')) {
+		    } else {
+			this.regexps.push(new RegExp("(" + p + ")","ig"));
+		    }
 		} catch(err) {
 		    console.log('Error creating pattern matcher:' + err,p);
 		}
