@@ -1802,6 +1802,8 @@ public abstract class Processor extends SeesvOperator {
                                             "true").equals("true");
             String dfltChangeType = getDbProp("table", "changetype", "false");
             String dfltShowMultiples  = getDbProp("table", "showmultiples", null);	    
+            String dfltShowEnumerationPopup  = getDbProp("table", "showenumerationpopup", null);
+	    
 
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
             String displayFormat = getDbProp("table", "displayFormat", (String)null);
@@ -1936,6 +1938,13 @@ public abstract class Processor extends SeesvOperator {
 		if(showMultiples!=null && type.startsWith("enumeration")) {
 		    attrs.append(XmlUtil.attrs(new String[] {"enumeration_search_multiples",showMultiples}));
 		}
+
+		String showPopup =getDbProp(colId, "showenumerationpopup",dfltShowEnumerationPopup);
+		if(showPopup!=null) {
+		    attrs.append(XmlUtil.attrs(new String[] {"showenumerationpopup",showPopup}));
+		}
+
+
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
 						    canSearch + ""));
@@ -2390,6 +2399,8 @@ public abstract class Processor extends SeesvOperator {
 
     public static class Joiner extends Processor {
 
+	private static String  KEY_DELIM = "_";
+
         private List<String> keys1;
 
         private List<String> values1;
@@ -2441,7 +2452,9 @@ public abstract class Processor extends SeesvOperator {
             TextReader  reader   = new TextReader(br);
             map        = new Hashtable<String, Row>();
             headerRow1 = null;
+	    String split = (String) ctx.getProperty("join.split");
             String delimiter = null;
+	    //	    System.err.println("join-processing file");
             while (true) {
                 String line = reader.readLine();
                 if (line == null) {
@@ -2466,22 +2479,38 @@ public abstract class Processor extends SeesvOperator {
                     values1Indices = operator.getIndices(reader, values1);
                 }
 
-                String key = "";
+		List<String> keyValues = new ArrayList<String>();
                 for (int i : keys1Indices) {
                     if ((i < 0) || (i >= cols.size())) {
                         fatal(ctx,
                               "Mismatch between columns and keys. Columns:"
                               + cols + " key index:" + i);
                     }
-                    key += cols.get(i) + "_";
+		    keyValues.add(cols.get(i));
                 }
                 Row row = new Row(cols);
                 if (headerRow1 == null) {
                     headerRow1 = row;
                 }
+		if(split!=null) {
+		    for(String keyValue: keyValues) {
+			for(String tok:Utils.split(keyValue,split,true,true)) {
+			    String key = tok+KEY_DELIM;
+			    map.put(key, row);
+			    //			    System.out.println(key);
+			}
+		    }
+		} else {
+		    String key = "";
+		    for(String keyValue: keyValues) {
+			key += keyValue + KEY_DELIM;
+		    }
+		    map.put(key, row);
+		}
 		//		if(xcnt++<10)   System.err.println("key:" + key +" row:" + row);
-                map.put(key, row);
+
             }
+	    //	    System.err.println("join-done processing file");
             if (operator == null) {
                 fatal(ctx, "Unable to read any data from:" + file);
             }
@@ -2510,7 +2539,7 @@ public abstract class Processor extends SeesvOperator {
 		String keyValue="key";
 		if(row.indexOk(i))
 		    keyValue = row.getString(i);
-                key += keyValue + "_";
+                key += keyValue + KEY_DELIM;
             }
 	    //	    if(ycnt++<10)System.err.println("value:" + key);
             Row other = map.get(key);
