@@ -1,0 +1,8 @@
+
+If the file you are joining with has multiple key values within a column (e.g., space separated
+IDS) you can specify a split character that is applied to the string in the column.
+Each token that is split is then added as a key.
+:p
+To do this call the -setting command
+seesv:seesv -setting join.split " " -join key_column value_column file.csv source_key_column default_value
+
