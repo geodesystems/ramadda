@@ -104,8 +104,6 @@ public class Utils extends IO {
 
     public static final String ANSI_RED_BOLD = "\033[1;31m";    // RED
     public static final String ANSI_ORANGE_BOLD = "\033[1;38;5;208m";
-
-
     public static final String ANSI_GREEN_BOLD = "\033[1;32m";  // GREEN
     public static final String ANSI_YELLOW_BOLD = "\033[1;33m"; // YELLOW
     public static final String ANSI_BLUE_BOLD = "\033[1;34m";   // BLUE
@@ -115,7 +113,6 @@ public class Utils extends IO {
     public static final String ANSI_BLACK_BOLD = "\033[1;30m";
     
 
-
     public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
     public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
@@ -124,12 +121,17 @@ public class Utils extends IO {
     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    //    public static final String ANSI_LIGHTGRAY_BACKGROUND = "\033[47m";
+    public static final String ANSI_LIGHTGRAY_BACKGROUND = "\033[48;5;250m";        
+
 
     private static DecimalFormat[] FORMATS = {
         new DecimalFormat("#0"), new DecimalFormat("#0.0"),
         new DecimalFormat("#0.00"), new DecimalFormat("#0.000"),
         new DecimalFormat("#0.0000"), new DecimalFormat("#0.00000"),
     };
+
+
 
     //From https://stackoverflow.com/questions/4731055/whitespace-matching-regex-java
     public static final String WHITESPACE_CHARS = ""
@@ -193,6 +195,11 @@ public class Utils extends IO {
         isoSdf = new SimpleDateFormat("yyyy-MM-dd\'T\'HH:mm:ssZ");
         isoSdf.setTimeZone(TIMEZONE_DEFAULT);
     }
+
+    public static String ansi(String ansi,Object text)  {
+	return ansi + text + ANSI_RESET;
+    }
+
 
     public static String getMonthName(int month) {
 	if(month<0 || month>11) throw new IllegalArgumentException("Bad month:" + month);
