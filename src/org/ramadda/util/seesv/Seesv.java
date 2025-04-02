@@ -1499,6 +1499,9 @@ public class Seesv implements SeesvCommands {
 		new Arg("file", "The file of commands. Any # of lines",
 			ATTR_TYPE, "file")),			
 
+        new Cmd(CMD_ERROR, "throw an error",
+		new Arg("message", "Error message")),
+	
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
@@ -2750,6 +2753,9 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_PROGRESS, "Show progress",
 		ARG_LABEL,"Print Progress",
 		new Arg("rows", "How often to print")),
+        new Cmd(CMD_PRINTCOLUMNS, "Print the column values",
+		ARG_LABEL,"Print Columns",
+		new Arg(ARG_COLUMNS,"lat/lon columns to subdivide on",ATTR_TYPE,TYPE_COLUMNS)),		
         new Cmd(CMD_DEBUGROWS, "Debug # rows",
 		ARG_LABEL,"Debug Rows",
 		new Arg("rows", "# of rows")),	
@@ -3701,6 +3707,7 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });	
 
+
 	defineFunction(CMD_DELIMITER,1,(ctx,args,i) -> {
 		ctx.setDelimiter(delimiter = args.get(++i));
 		return i;
@@ -3745,6 +3752,13 @@ public class Seesv implements SeesvCommands {
 		ctx.setOutputDelimiter(s);
 		return i;
 	    });
+
+	defineFunction(CMD_ERROR,1,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.Error(ctx,args.get(++i)));
+		return i;
+	    });
+
+
 
 	defineFunction(CMD_CUT,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Filter.RowCutter(ctx,Utils.getNumbers(args.get(++i)), true));
@@ -4954,6 +4968,12 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
+	defineFunction(CMD_PRINTCOLUMNS, 1,(ctx,args,i) -> {
+		ctx.addProcessor(new Processor.PrintColumns(ctx, getCols(args.get(++i))));
+		return i;
+	    });
+
+
 	defineFunction(CMD_EQ, 2,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),
 			      new Filter.ValueFilter(ctx,getCols(args.get(++i)),
@@ -5073,6 +5093,9 @@ public class Seesv implements SeesvCommands {
 		}
 		return -1;
 	    });
+
+
+
 
 	defineFunction(new String[]{CMD_PROGRESS,"-dots"},1,(ctx,args,i) -> {
 		String cnt = args.get(++i);

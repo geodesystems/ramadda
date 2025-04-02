@@ -30,6 +30,7 @@ public interface SeesvCommands {
     public static final String TYPE_PATTERN = "pattern";
 
     public static final String CMD_VERSION="-version";
+    public static final String CMD_ERROR="-error";
     public static final String CMD_HELP="-help";
     public static final String CMD_HELP_PRETTY="-helppretty";    
     public static final String CMD_DELIMITER="-delimiter";
@@ -358,6 +359,7 @@ public interface SeesvCommands {
     public static final String CMD_RUN="-run";
     public static final String CMD_PROGRESS="-progress";
     public static final String CMD_DEBUGROWS="-debugrows";
+    public static final String CMD_PRINTCOLUMNS="-printcolumns";    
     public static final String CMD_SCRIPT="-script";
     public static final String CMD_ARGS="-args";
     public static final String CMD_TYPE_XML="-typexml";

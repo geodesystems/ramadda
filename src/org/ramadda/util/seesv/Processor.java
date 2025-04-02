@@ -327,6 +327,65 @@ public abstract class Processor extends SeesvOperator {
 
     }
 
+    public static class PrintColumns extends Processor {
+	Row header;
+	boolean decorate = false;
+        public PrintColumns(TextReader ctx, List<String> cols) {
+            super(cols);
+	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
+        }
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(header==null) {
+		header=row;
+		return row;
+	    }
+            List<Integer> indices = getIndices(ctx);
+	    for(int idx:indices) {
+		if(row.indexOk(idx) && header.indexOk(idx)) {
+		    if(decorate) {
+			System.err.print(Utils.ansi(Utils.ANSI_BLACK_BOLD,header.get(idx)));
+			System.err.print("="); 
+			System.err.print(Utils.ansi(Utils.ANSI_LIGHTGRAY_BACKGROUND,row.get(idx)));
+			System.err.print(" ");
+		    } else {
+			System.err.print(header.get(idx));
+			System.err.print("="); 
+			System.err.print(row.get(idx));
+			System.err.print(" ");
+		    }
+		}
+	    }
+	    System.err.println("");
+	    return row;
+        }
+
+    }
+
+
+    public static class Error extends Processor {
+
+	private String message;
+
+        public Error(TextReader ctx, String message) {
+            this.message = message;
+        }
+
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+		return row;
+            }
+	    throw new RuntimeException(message+" row:" + row);
+        }
+
+    }
+
+
+
     public static class Propper extends Processor {
 
         public static final int FLAG_NONE = -1;
