@@ -1697,6 +1697,9 @@ public abstract class Processor extends SeesvOperator {
             if (writer == null) {
                 writer = reader.getWriter();
                 writer.println("<tables>");
+		String comment = (String)reader.getProperty("db.comment");
+		if(comment!=null)
+		    writer.println(XmlUtil.comment(comment));
             }
 
             String tableAttrs = XmlUtil.attrs("id", tableId, "name", label);
