@@ -348,10 +348,12 @@ public abstract class Processor extends SeesvOperator {
         }
 
 
-	private void printWidths(TextReader ctx, Row r) {
+	private String printWidths(TextReader ctx, List<Integer> widths, boolean decorate, Row r) {
+	    StringBuilder sb = new StringBuilder();
             List<Integer> indices = getIndices(ctx);
 	    int cnt=0;
 	    int lastWidth=10;
+	    
 	    for(int idx:indices) {
 		String v = r.indexOk(idx)?r.getString(idx):"";
 		int w=cnt<widths.size()?widths.get(cnt):lastWidth;
@@ -366,16 +368,18 @@ public abstract class Processor extends SeesvOperator {
 		if(v.length()>w) {
 		    v = v.substring(0,w);
 		}
-		System.err.print(v+" ");
+		if(decorate)
+		    v = Utils.ansi(Utils.getAnsiColor(cnt-1),v);
+		sb.append(v+" ");
 	    }
-	    System.err.println("");
+	    return sb.toString();
 	}
 
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
 	    if(widths!=null) {
-		printWidths(ctx,row);
+		System.out.println(printWidths(ctx,widths,decorate,row));
 		return row;
 	    }
 	    if(header==null) {
@@ -383,22 +387,23 @@ public abstract class Processor extends SeesvOperator {
 		return row;
 	    }
             List<Integer> indices = getIndices(ctx);
+	    int cnt = 0;
 	    for(int idx:indices) {
 		if(row.indexOk(idx) && header.indexOk(idx)) {
 		    if(decorate) {
-			System.err.print(Utils.ansi(Utils.ANSI_BLACK_BOLD,header.get(idx)));
-			System.err.print("="); 
-			System.err.print(Utils.ansi(Utils.ANSI_LIGHTGRAY_BACKGROUND,row.get(idx)));
-			System.err.print(" ");
+			System.out.print(Utils.ansi(Utils.ANSI_BLACK_BOLD,header.get(idx)));
+			System.out.print("="); 
+			System.out.print(Utils.ansi(Utils.getAnsiColor(cnt++),row.get(idx)));
+			System.out.print(" ");
 		    } else {
-			System.err.print(header.get(idx));
-			System.err.print("="); 
-			System.err.print(row.get(idx));
-			System.err.print(" ");
+			System.out.print(header.get(idx));
+			System.out.print("="); 
+			System.out.print(row.get(idx));
+			System.out.print(" ");
 		    }
 		}
 	    }
-	    System.err.println("");
+	    System.out.println("");
 	    return row;
         }
 
@@ -2437,6 +2442,7 @@ public abstract class Processor extends SeesvOperator {
 
     public static class Prettifier extends Processor {
 
+	private boolean decorate= false;
         private List headerValues;
 
         private int cnt = 0;
@@ -2446,6 +2452,8 @@ public abstract class Processor extends SeesvOperator {
 
         public Prettifier(TextReader ctx) {
 	    bold = Misc.equals(ctx.getProperty("label.bold"),"true");
+	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
+	    System.err.println("D:" + decorate);
 	}
 
         @Override
@@ -2484,9 +2492,12 @@ public abstract class Processor extends SeesvOperator {
 		    ? headerValues.get(i).toString()
 		    : "NA";
                 label = StringUtil.padLeft(label, maxWidth);
-		if(bold)
-		    label = Utils.ANSI_BLACK_BOLD + label+Utils.ANSI_RESET;
-                ctx.println(label + ": " + values.get(i));
+		if(bold || decorate)
+		    label = Utils.ansi(Utils.ANSI_BLACK_BOLD,label);
+		Object value = values.get(i);
+		if(decorate)
+		    value = Utils.ansi(Utils.getAnsiColor(i), value);
+                ctx.println(label + ": " + value);
             }
         }
     }

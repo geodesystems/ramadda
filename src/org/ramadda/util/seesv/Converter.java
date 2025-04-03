@@ -307,15 +307,6 @@ public abstract class Converter extends Processor {
     }
 
     public static class Highlighter extends Converter {
-	static String[] rainbows = {
-	    Utils.ANSI_RED_BOLD,
-	    Utils.ANSI_ORANGE_BOLD,	    
-	    Utils.ANSI_YELLOW_BOLD,
-	    Utils.ANSI_BLUE_BOLD,
-	    Utils.ANSI_GREEN_BOLD,
-	    Utils.ANSI_PURPLE_BOLD,
-	    Utils.ANSI_CYAN_BOLD
-	};
 
 	String prefix;
 	boolean rainbow=false;
@@ -337,15 +328,14 @@ public abstract class Converter extends Processor {
                 return row;
             }
             List<Integer> indices = getIndices(ctx);
-	    int cnt=-1;
+	    int cnt=0;
 	    for(int idx:getIndices(ctx)) {
 		if(row.indexOk(idx)) {
 		    if(rainbow) {
-			cnt++;
-			if(cnt>=rainbows.length) cnt=0;
-			prefix = rainbows[cnt];
+			prefix = Utils.getAnsiColor(cnt++);
 		    }
-		    row.set(idx,prefix+row.getString(idx)+Utils.ANSI_RESET);
+
+		    row.set(idx,Utils.ansi(prefix,row.getString(idx)));
 		}
 	    }
 	    return row;

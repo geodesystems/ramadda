@@ -2667,7 +2667,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HIGHLIGHT, "Highlight the columns",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("color", "Color",
-			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),
+			ATTR_TYPE, "enumeration","values","rainbow,red,green,yellow,blue,purple,cyan")),
         new Cmd(CMD_BACKGROUND, "Background the columns",
 		new Arg("color", "Color",
 			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),	

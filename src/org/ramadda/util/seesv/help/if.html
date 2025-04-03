@@ -9,3 +9,10 @@ from the discharge.
 
 seesv:seesv -if -has discharge -integrate discharge date second volume -endif
 
+Here is an example that checks if a value is NaN and if so it prints the columns
+seesv:seesv -if  -isnan value -printcolumns 0-5 -endif
+
+Here we do the same but set fixed widths and decorate the output
+seesv:seesv -if  -isnan value -setting xwidths "50,>15" -setting decorate true -printcolumns 0-5 -endif
+
+
