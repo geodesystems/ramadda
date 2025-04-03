@@ -78,7 +78,7 @@ pre {
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 318 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 324 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide linkSelector=.command-link
 
@@ -272,6 +272,12 @@ seesv -columns column1 -unique column1 -sort column1 -p test.csv
 <ul>
 <li> <i>file</i>:
 The file of commands. Any # of lines<br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-error'></a><div class=command> <i><a href='#-error'>-error</a></i>  &lt;message&gt; </div><div class=command-block>throw an error<br class=seesv-hide>
+<ul>
+<li> <i>message</i>:
+Error message<br>
 </ul>
 </div></div><div class=seesv-hide><hr><a name='Input'></a><b style='font-size:120%;'>Input</b><br>
 Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc.</div><div class=seesv-hide> The default input type is CSV. To print out a CSV file just do:
@@ -966,7 +972,7 @@ Pattern to match<br>
 Comma separated list of column names<br>
 </ul>
 </div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Filter'></a><b style='font-size:120%;'>Filter</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-maxrows'><i>-maxrows</i>: Set max rows to process</a><li> <a href='#-match'><i>-match</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notmatch'><i>-notmatch</i>: Pass through rows that don't match the pattern</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-has'><i>-has</i>: Only pass through anything if the data has the given columns</a><li> <a href='#-ifnumcolumns'><i>-ifnumcolumns</i>: Only pass through rows with number of columns passing the operator</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-nonunique'><i>-nonunique</i>: Pass through non-unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-minvalue'><i>-minvalue</i>: Pass through the row that has the min value in the group of columns defined by the key column</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skiprows'><i>-skiprows</i>: Skip number of processed rows.</a><li> <a href='#-ensurenumeric'><i>-ensurenumeric</i>: Throw error if non-numeric</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-skiplines'><i>-skiplines</i>: Skip number of raw lines.</a><li> <a href='#-maxrows'><i>-maxrows</i>: Set max rows to process</a><li> <a href='#-match'><i>-match</i>: Pass through rows that the columns each match the pattern</a><li> <a href='#-notmatch'><i>-notmatch</i>: Pass through rows that don't match the pattern</a><li> <a href='#-if'><i>-if</i>: Next N args specify a filter command followed by any change commands followed by an -endif.</a><li> <a href='#-rawlines'><i>-rawlines</i>: </a><li> <a href='#-inputnotcontains'><i>-inputnotcontains</i>: Filter out input lines that contain any of the strings</a><li> <a href='#-min'><i>-min</i>: Only pass thorough lines that have at least this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-max'><i>-max</i>: Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header</a><li> <a href='#-isnumber'><i>-isnumber</i>: The columns must be numbers. Includes NaN</a><li> <a href='#-isnotnumber'><i>-isnotnumber</i>: The columns must not be numbers</a><li> <a href='#-isnan'><i>-isnan</i>: The columns are NaNs</a><li> <a href='#-isnotnan'><i>-isnotnan</i>: The columns are not NaNs</a><li> <a href='#-numcolumns'><i>-numcolumns</i>: Remove or add values so each row has the number of columns</a><li> <a href='#-has'><i>-has</i>: Only pass through anything if the data has the given columns</a><li> <a href='#-ifnumcolumns'><i>-ifnumcolumns</i>: Only pass through rows with number of columns passing the operator</a><li> <a href='#-fuzzypattern'><i>-fuzzypattern</i>: Pass through rows that the columns each fuzzily match the pattern</a><li> <a href='#-lengthgreater'><i>-lengthgreater</i>: Pass through rows that the length of the columns is greater than</a><li> <a href='#-same'><i>-same</i>: Pass through where the 2 columns have the same value</a><li> <a href='#-notsame'><i>-notsame</i>: Pass through where the 2 columns don't have the same value</a><li> <a href='#-unique'><i>-unique</i>: Pass through unique values</a><li> <a href='#-nonunique'><i>-nonunique</i>: Pass through non-unique values</a><li> <a href='#-dups'><i>-dups</i>: Pass through duplicate values</a><li> <a href='#-sample'><i>-sample</i>: Pass through rows based on probablity</a><li> <a href='#-minvalue'><i>-minvalue</i>: Pass through the row that has the min value in the group of columns defined by the key column</a><li> <a href='#-maxvalue'><i>-maxvalue</i>: Pass through the row that has the max value in the group of columns defined by the key column</a><li> <a href='#-eq'><i>-eq</i>: Pass through rows that the column value equals the given value</a><li> <a href='#-ne'><i>-ne</i>: Pass through rows that the column value does not equal the given value</a><li> <a href='#-gt'><i>-gt</i>: Pass through rows that the column value is greater than the given value</a><li> <a href='#-ge'><i>-ge</i>: Pass through rows that the column value is greater than or equals the given value</a><li> <a href='#-lt'><i>-lt</i>: Pass through rows that the column value is less than the given value</a><li> <a href='#-le'><i>-le</i>: Pass through rows that the column value is less than or equals the given value</a><li> <a href='#-between'><i>-between</i>: Extract rows that are within the range</a><li> <a href='#-notbetween'><i>-notbetween</i>: Extract rows that are not within the range</a><li> <a href='#-betweenstring'><i>-betweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-notbetweenstring'><i>-notbetweenstring</i>: Extract rows that are between the given strings</a><li> <a href='#-groupfilter'><i>-groupfilter</i>: One row in each group has to match</a><li> <a href='#-before'><i>-before</i>: Pass through rows whose date is before the given date</a><li> <a href='#-after'><i>-after</i>: Pass through rows whose date is after the given date</a><li> <a href='#-countvalue'><i>-countvalue</i>: No more than count unique values</a><li> <a href='#-decimate'><i>-decimate</i>: only include every <skip factor> row</a><li> <a href='#-ifin'><i>-ifin</i>: Pass through rows that the columns with ID is in given file</a><li> <a href='#-ifnotin'><i>-ifnotin</i>: Pass through rows that the columns with ID is not in given file</a><li> <a href='#-ifmatchesfile'><i>-ifmatchesfile</i>: Pass through rows that the columns with ID begins with something in the given file</a><li> <a href='#-ifnotmatchesfile'><i>-ifnotmatchesfile</i>: Pass through rows that the columns with ID does not begin with something in the given file</a><li> <a href='#-skippattern'><i>-skippattern</i>: Skip any line that matches the pattern</a><li> <a href='#-skiprows'><i>-skiprows</i>: Skip number of processed rows.</a><li> <a href='#-ensurenumeric'><i>-ensurenumeric</i>: Throw error if non-numeric</a></ul></div></div><div class=seesv-item>
 <a class=command-link name='-skiplines'></a><div class=command> <i><a href='#-skiplines'>-skiplines</a></i>  &lt;lines&gt; </div><div class=command-block>Skip number of raw lines.<br class=seesv-hide>
 <ul>
 <li> <i>lines</i>:
@@ -1031,6 +1037,30 @@ are tokenized into columns.
 <ul>
 <li> <i>max # columns</i>:
 <br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-isnumber'></a><div class=command> <i><a href='#-isnumber'>-isnumber</a></i>  &lt;columns&gt; </div><div class=command-block>The columns must be numbers. Includes NaN<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-isnotnumber'></a><div class=command> <i><a href='#-isnotnumber'>-isnotnumber</a></i>  &lt;columns&gt; </div><div class=command-block>The columns must not be numbers<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-isnan'></a><div class=command> <i><a href='#-isnan'>-isnan</a></i>  &lt;columns&gt; </div><div class=command-block>The columns are NaNs<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-isnotnan'></a><div class=command> <i><a href='#-isnotnan'>-isnotnan</a></i>  &lt;columns&gt; </div><div class=command-block>The columns are not NaNs<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+Column indices. Can include ranges, e.g. 0-5<br>
 </ul>
 </div></div><div class=seesv-item>
 <a class=command-link name='-numcolumns'></a><div class=command> <i><a href='#-numcolumns'>-numcolumns</a></i>  &lt;number&gt; </div><div class=command-block>Remove or add values so each row has the number of columns<br class=seesv-hide>
@@ -1811,7 +1841,15 @@ source key columns<br>
 <li> <i>default_value</i>:
 default value - can be a comma separated list of defaults<br>
 </ul>
-</div></div><div class=seesv-item>
+
+If the file you are joining with has multiple key values within a column (e.g., space separated
+IDS) you can specify a split character that is applied to the string in the column.
+Each token that is split is then added as a key.
+:p
+To do this call the -setting command
+<seesv>seesv -setting join.split " " -join key_column value_column file.csv source_key_column default_value</seesv>
+
+<p></div></div><div class=seesv-item>
 <a class=command-link name='-fuzzyjoin'></a><div class=command> <i><a href='#-fuzzyjoin'>-fuzzyjoin</a></i>  &lt;threshold&gt;  &lt;key columns&gt;  &lt;value_columns&gt;  &lt;file&gt;  &lt;source_columns&gt;  &lt;default_value&gt; </div><div class=command-block>Join the 2 files together using fuzzy matching logic<br class=seesv-hide>
 <ul>
 <li> <i>threshold</i>:
@@ -3734,7 +3772,7 @@ url2.html,contents of url2
 
 
 <p></div></div></ul><br class=seesv-hide><div class=seesv-hide><hr><a name='Output'></a><b style='font-size:120%;'>Output</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-print'><i>-print</i>: Print text output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Print with delimited output</a><li> <a href='#-o'><i>-o</i>: Write to the given file (command line only)</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-highlight'><i>-highlight</i>: Highlight the columns</a><li> <a href='#-background'><i>-background</i>: Background the columns</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-script'><i>-script</i>: Generate script</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-togeojson'><i>-togeojson</i>: Generate GeoJSON</a><li> <a href='#-tourl'><i>-tourl</i>: Generate DB publish urls</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-tcl'><i>-tcl</i>: Generate a TCL script</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-chunk'><i>-chunk</i>: Make a number of output files with a max number of rows</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a></a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-typexml'><i>-typexml</i>: Generate the RAMADDA type xml</a></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-print'><i>-print</i>: Print text output</a><li> <a href='#-printdelim'><i>-printdelim</i>: Print with delimited output</a><li> <a href='#-o'><i>-o</i>: Write to the given file (command line only)</a><li> <a href='#-comment'><i>-comment</i>: Add a comment to the output</a><li> <a href='#-outputprefix'><i>-outputprefix</i>: Specify text to add to the beginning of the file</a><li> <a href='#-highlight'><i>-highlight</i>: Highlight the columns</a><li> <a href='#-background'><i>-background</i>: Background the columns</a><li> <a href='#-printheader'><i>-printheader</i>: Print header</a><li> <a href='#-raw'><i>-raw</i>: Print the file raw</a><li> <a href='#-table'><i>-table</i>: Print HTML table and stats</a><li> <a href='#-cols'><i>-cols</i>: Set the width of the columns for output. Use with -p</a><li> <a href='#-stats'><i>-stats</i>: Print summary stats</a><li> <a href='#-torecord'><i>-torecord</i>: Print records</a><li> <a href='#-script'><i>-script</i>: Generate script</a><li> <a href='#-toxml'><i>-toxml</i>: Generate XML</a><li> <a href='#-tojson'><i>-tojson</i>: Generate JSON</a><li> <a href='#-togeojson'><i>-togeojson</i>: Generate GeoJSON</a><li> <a href='#-tourl'><i>-tourl</i>: Generate DB publish urls</a><li> <a href='#-todb'><i>-todb</i>: Write to Database</a><li> <a href='#-template'><i>-template</i>: Apply the template to make the output</a><li> <a href='#-tcl'><i>-tcl</i>: Generate a TCL script</a><li> <a href='#-subd'><i>-subd</i>: Subdivide into different files</a><li> <a href='#-maptiles'><i>-maptiles</i>: Tile the data on lat/lon</a><li> <a href='#-chunk'><i>-chunk</i>: Make a number of output files with a max number of rows</a><li> <a href='#-addheader'><i>-addheader</i>: Add the RAMADDA point properties</a><li> <a href='#-db'><i>-db</i>: Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a></a><li> <a href='#-dbprops'><i>-dbprops</i>: Print to stdout props for db generation</a><li> <a href='#-write'><i>-write</i>: Write the contents of a row to a named file</a><li> <a href='#-fields'><i>-fields</i>: Print the fields</a><li> <a href='#-run'><i>-run</i>: </a><li> <a href='#-progress'><i>-progress</i>: Show progress</a><li> <a href='#-printcolumns'><i>-printcolumns</i>: Print the column values</a><li> <a href='#-debugrows'><i>-debugrows</i>: Debug # rows</a><li> <a href='#-pointheader'><i>-pointheader</i>: Generate the RAMADDA point properties</a><li> <a href='#-args'><i>-args</i>: Generate the CSV file commands</a><li> <a href='#-typexml'><i>-typexml</i>: Generate the RAMADDA type xml</a></div><div class=seesv-item>
 <a class=command-link name='-print'></a><div class=command> <i><a href='#-print'>-print</a></i> </div><div class=command-block>Print text output<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a class=command-link name='-printdelim'></a><div class=command> <i><a href='#-printdelim'>-printdelim</a></i>  &lt;delimiter&gt; </div><div class=command-block>Print with delimited output<br class=seesv-hide>
@@ -4095,6 +4133,20 @@ the type of the columns. Note: any database entry and data that has been loaded 
 How often to print<br>
 </ul>
 </div></div><div class=seesv-item>
+<a class=command-link name='-printcolumns'></a><div class=command> <i><a href='#-printcolumns'>-printcolumns</a></i>  &lt;columns&gt; </div><div class=command-block>Print the column values<br class=seesv-hide>
+<ul>
+<li> <i>columns</i>:
+lat/lon columns to subdivide on<br>
+</ul>
+If you want to highlight the output then set decorate=true, e.g.:
+
+<seesv>seesv  -setting decorate true -printcolumns 0-5</seesv>
+
+If you want to have fixed width columns then do:
+<seesv>seesv   -setting widths "50,15"  -printcolumns 0-5</seesv>
+To right align a column prefix the column width with &gt;
+<seesv>seesv   -setting widths "50,&gt;15"  -printcolumns 0-5</seesv>
+<p></div></div><div class=seesv-item>
 <a class=command-link name='-debugrows'></a><div class=command> <i><a href='#-debugrows'>-debugrows</a></i>  &lt;rows&gt; </div><div class=command-block>Debug # rows<br class=seesv-hide>
 <ul>
 <li> <i>rows</i>:
