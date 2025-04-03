@@ -1009,7 +1009,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'popupSliderStyle', ex:'max-width:300px;overflow-x:auto;',tt:''},	
 	{p:'showRegionSelector',ex:true},
 	{p:'regionSelectorLabel'},	
-	{p:'centerOnFilterChange',d:true,ex:true,tt:'Center map when the data filters change'},
+	{p:'centerOnFilterChange',d:true,ex:false,tt:'Center map when the data filters change'},
 	{p:'centerOnHighlight',ex:true,tt:'Center map when a record is highlighted'},
 	{p:'centerOnMarkersAfterUpdate',ex:true,tt:'Always center on the markers'},	
 	{p:'zoomLevelOnHighlight',ex:16,tt:'Set the zoom level'},
