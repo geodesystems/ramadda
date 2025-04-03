@@ -1693,9 +1693,14 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_MAX,
 		"Only pass through lines that have no more than this number of columns. Specify blank to use the number of columns in the header",
 		new Arg("max # columns", "", ATTR_TYPE, TYPE_NUMBER)),
-        new Cmd(CMD_ISNUMBER, "The columns must be numbers",
+        new Cmd(CMD_ISNUMBER, "The columns must be numbers. Includes NaN",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_ISNOTNUMBER, "The columns must not be numbers",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
+
+        new Cmd(CMD_ISNAN, "The columns are NaNs",
+                new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
+        new Cmd(CMD_ISNOTNAN, "The columns are not NaNs",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),	
 
         new Cmd(CMD_NUMCOLUMNS,
@@ -4943,6 +4948,19 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 	
+
+	defineFunction(CMD_ISNAN, 1,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNan(ctx,getCols(args.get(++i))));
+		return i;
+	    });
+
+
+	defineFunction(CMD_ISNOTNAN, 1,(ctx,args,i) -> {
+		handleFilter(ctx, ctx.getFilterToAddTo(), new Filter.IsNotNan(ctx,getCols(args.get(++i))));
+		return i;
+	    });
+	
+
 
 	defineFunction(CMD_FUZZYPATTERN, 3,(ctx,args,i) -> {
 		handleFilter(ctx, ctx.getFilterToAddTo(),

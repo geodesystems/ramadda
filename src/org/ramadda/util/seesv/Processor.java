@@ -330,14 +330,54 @@ public abstract class Processor extends SeesvOperator {
     public static class PrintColumns extends Processor {
 	Row header;
 	boolean decorate = false;
+	List<Integer> widths;
         public PrintColumns(TextReader ctx, List<String> cols) {
             super(cols);
 	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
+	    String w =(String)ctx.getProperty("widths");
+	    if(w!=null) {
+		widths =new ArrayList<Integer>();
+		for(String tok: Utils.split(w,",",true,true))
+		    if(tok.startsWith(">")) {
+			tok = tok.substring(1);
+			widths.add(-Integer.parseInt(tok));
+		    } else  {
+			widths.add(new Integer(tok));
+		    }
+	    }
         }
+
+
+	private void printWidths(TextReader ctx, Row r) {
+            List<Integer> indices = getIndices(ctx);
+	    int cnt=0;
+	    int lastWidth=10;
+	    for(int idx:indices) {
+		String v = r.indexOk(idx)?r.getString(idx):"";
+		int w=cnt<widths.size()?widths.get(cnt):lastWidth;
+		lastWidth=w;
+		cnt++;
+		if(w<0) {
+		    v = StringUtil.padLeft(v,-w);
+		    w = -w;
+		} else {
+		    v = StringUtil.padRight(v,w);
+		}
+		if(v.length()>w) {
+		    v = v.substring(0,w);
+		}
+		System.err.print(v+" ");
+	    }
+	    System.err.println("");
+	}
 
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    if(widths!=null) {
+		printWidths(ctx,row);
+		return row;
+	    }
 	    if(header==null) {
 		header=row;
 		return row;

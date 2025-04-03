@@ -1,0 +1,10 @@
+If you want to highlight the output then set decorate=true, e.g.:
+
+seesv: seesv  -setting decorate true -printcolumns 0-5
+
+
+If you want to have fixed width columns then do:
+seesv: seesv   -setting widths "50,15"  -printcolumns 0-5
+
+To right align a column prefix the column width with &gt;
+seesv: seesv   -setting widths "50,&gt;15"  -printcolumns 0-5

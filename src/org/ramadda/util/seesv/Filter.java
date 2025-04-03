@@ -523,6 +523,50 @@ public class Filter extends Processor {
 
     }
 
+    public static class IsNan extends Filter {
+
+        public IsNan(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+            for (int idx : getIndices(ctx)) {
+		if(!row.indexOk(idx)) continue;
+		String  s  = row.getString(idx).trim();
+		if(!Double.isNaN(Double.parseDouble(s))) return false;
+	    }
+            return true;
+        }
+
+    }
+
+    public static class IsNotNan extends Filter {
+
+        public IsNotNan(TextReader ctx, List<String> cols) {
+            super(cols);
+        }
+
+        @Override
+        public boolean rowOk(TextReader ctx, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+
+            for (int idx : getIndices(ctx)) {
+		if(!row.indexOk(idx)) continue;
+		String  s  = row.getString(idx).trim();
+		if(Double.isNaN(Double.parseDouble(s))) return false;
+	    }
+            return true;
+        }
+
+    }
+
 
     public static class Has extends Filter {
 	List<String> cols;
