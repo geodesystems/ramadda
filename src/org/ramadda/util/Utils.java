@@ -125,6 +125,23 @@ public class Utils extends IO {
     public static final String ANSI_LIGHTGRAY_BACKGROUND = "\033[48;5;250m";        
 
 
+    public static String[] ANSI_COLOR_ARRAY = {
+	Utils.ANSI_RED_BOLD,
+	Utils.ANSI_ORANGE_BOLD,	    
+	Utils.ANSI_YELLOW_BOLD,
+	Utils.ANSI_BLUE_BOLD,
+	Utils.ANSI_GREEN_BOLD,
+	Utils.ANSI_PURPLE_BOLD,
+	Utils.ANSI_CYAN_BOLD
+    };
+
+    public static String getAnsiColor(int cnt) {
+	int index = cnt% ANSI_COLOR_ARRAY.length;
+	//	System.out.println("CNT:" + cnt +" INDEX:" + index);
+	return ANSI_COLOR_ARRAY[index]; 
+    }
+
+
     private static DecimalFormat[] FORMATS = {
         new DecimalFormat("#0"), new DecimalFormat("#0.0"),
         new DecimalFormat("#0.00"), new DecimalFormat("#0.000"),
