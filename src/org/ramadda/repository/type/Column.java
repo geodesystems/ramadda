@@ -2337,6 +2337,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
+    /** method */
     public String getFormWidget(Request request, Entry entry,
                                 Object[] values, FormInfo formInfo)
 	throws Exception {
@@ -2436,7 +2437,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 			       HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons","width",width));
 
 	    if(showEnumerationPopup) {
-		widget+=getEnumerationPopup(widgetId);
+		widget+=getEnumerationPopup(widgetId,false);
 	    }
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
@@ -2461,7 +2462,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    "  or:  "  +
 		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
 		if(showEnumerationPopup) {
-		    widget+=getEnumerationPopup(widgetId);
+		    widget+=getEnumerationPopup(widgetId,false);
 		}
 
 	    } else {
@@ -2643,8 +2644,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         return enums;
     }
 
-    private String getEnumerationPopup(String widgetId) {
-	String popupArgs = "{icon:true,makeButtons:false,after:true,single:true}";
+    private String getEnumerationPopup(String widgetId,boolean forSearch) {
+	String single = forSearch && searchRows>1?"false":"true";
+	String popupArgs = "{icon:true,makeButtons:false,after:true,single:" + single+"}";
 	return HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 				 HU.quote("#"+widgetId),
 				 popupArgs));
@@ -3112,7 +3114,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 		}
             }
 	    if(showEnumerationPopup) {
-		tmpb.append(getEnumerationPopup(widgetId));
+		tmpb.append(getEnumerationPopup(widgetId,true));
 	    }
 	    widget = tmpb.toString();
 	    if(enumerationSearchMultiples) {
