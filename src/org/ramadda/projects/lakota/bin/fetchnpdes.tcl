@@ -1,6 +1,33 @@
+if {0} {
+    to set this up:
+
+    create a download, processed and echo directory
+    the echo directory should  contain a sdecho.csv which holds the echo facility data:
+    FAC_NAME,FAC_CITY,FAC_STATE,FAC_COUNTY,FAC_LAT,FAC_LONG,NPDES_IDS
+
+    this sources an sdids.tcl which sets a global array to a list of npdes IDS
+    set ::ids 
+    
+    then it runs through each id and downloads the data file if needed from:
+    https://echo.epa.gov/trends/loading-tool/get-data/monitoring-data-download
+
+    It then runs the seesv to strip out extraneous headers and writes the output into the processed directory
+
+    It also combines the parameter_description, statistical_base and outfall_number columns into a single parameter column
+    It then reorders the columns and drops extraneous columns
+    It then runs through all of the processed site csv files and merges them into a single file 
+
+    It then joins this combined file with the ECHO facility data and cleans up a bunch of the fields, etc.
+    to make a epa_joined.csv
+
+    It then creates a epa_npdes_db.xml RAMADDA plugin file which defines a database schema
+
+}
+
+
+
 set ::seesv "$::env(SEESV)"
 set ::echofile echo/sdecho.csv
-
 set ::combined sd_npdes_epa.csv
 set ::joined epa_joined.csv
 set ::plugin epa_npdes_db.xml
@@ -13,24 +40,6 @@ if {$::clean} {
 }
 
 
-if {0} {
-    #grab the html file from the epa that lists the npdes permits-
-    https://www.epa.gov/npdes-permits/south-dakota-npdes-permits
-    
-    #run the seesv script to extract the data from the html
-    #generate a tcl script that we source
-    seesv -htmltable 0 "" "" -tcl site epa.html > epasites.tcl
-
-    #the script below then runs through each site and downloads the data file from:
-    https://echo.epa.gov/trends/loading-tool/get-data/monitoring-data-download
-
-    #It then runs the seesv to strip out extraneous headers and it inserts the location and facility name
-    #It also combines the parameter_description, statistical_base and outfall_number columns into a single parameter column
-    #It then reorders the columns and drops extraneous columns
-
-    #It then runs through all of the processed site csv files and merges them into a single file 
-
-}
 
 
 proc site {id} {
@@ -81,4 +90,4 @@ if {![file exists $::joined]} {
 }
 
 puts stderr "making db schema $:plugin"
-exec sh $::seesv   -setting db.comment "This is a generated plugin file for the EPA NPDES database" -db "file:db.properties" $::joined > $::plugin
+exec sh $::seesv   -setting db.comment "This is a generated plugin file for the EPA NPDES database" -db "file:npdesdb.properties" $::joined > $::plugin
