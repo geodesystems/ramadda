@@ -28,8 +28,8 @@ if {0} {
 
 set ::seesv "$::env(SEESV)"
 set ::echofile echo/sdecho.csv
-set ::combined sd_npdes_epa.csv
-set ::joined epa_joined.csv
+set ::combined tmp_combined.csv
+set ::joined epa_npdes_final.csv
 set ::plugin epa_npdes_db.xml
 
 set ::clean 1
@@ -89,5 +89,5 @@ if {![file exists $::joined]} {
     exec  sh $::seesv  -notmatch 0 SD0020699 -change limit_value Mon NaN -change limit_value Mon NaN  -trim dmr_value -change dmr_value "^\$" NaN  -change dmr_value "E " "" -change dmr_value ".*<.*" 0 -change dmr_value "^NODI:.*$" NaN -change dmr_value ".*(<|>).*" NaN -setting join.split " " -join NPDES_IDS "fac_name,fac_city,fac_state,fac_county,fac_lat,fac_long" "$::echofile" npdes_permit_number ""   -indateformats "MM/dd/yyyy" "UTC" -convertdate "monitoring_period_date" -set fac_name 0 "Facility Name" -set fac_city 0 City -set fac_state 0 State -set fac_county 0 County -set fac_lat 0 latitude -set fac_long 0 longitude  -combine "latitude,longitude" ";" location -drop "latitude,longitude" -firstcolumns "facility_name,npdes_permit_number,city,state,county,location,full_parameter,dmr_value,parameter_code,parameter_description,statistical_base,outfall_number" -p $::combined > $::joined
 }
 
-puts stderr "making db schema $:plugin"
+puts stderr "making db schema $::plugin"
 exec sh $::seesv   -setting db.comment "This is a generated plugin file for the EPA NPDES database" -db "file:npdesdb.properties" $::joined > $::plugin
