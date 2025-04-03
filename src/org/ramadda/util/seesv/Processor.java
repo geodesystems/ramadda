@@ -1910,6 +1910,8 @@ public abstract class Processor extends SeesvOperator {
             String dfltChangeType = getDbProp("table", "changetype", "false");
             String dfltShowMultiples  = getDbProp("table", "showmultiples", null);	    
             String dfltShowEnumerationPopup  = getDbProp("table", "showenumerationpopup", null);
+            String dfltSearchRows  = getDbProp("table", "searchrows", null);	    
+
 	    
 
             String format = getDbProp("table", "format", "yyyy-MM-dd HH:mm");
@@ -2024,7 +2026,7 @@ public abstract class Processor extends SeesvOperator {
                 }
                 type = tmp;
                 String values     = getDbProp(colId, "values", null);
-                String searchRows = getDbProp(colId, "searchrows", "");
+                String searchRows = getDbProp(colId, "searchrows",dfltSearchRows);
                 String defaultsort = getDbProp(colId, "defaultsort",
 					       (String) null);
                 if ((defaultsort != null) && defaultsort.equals("true")) {
@@ -2050,8 +2052,6 @@ public abstract class Processor extends SeesvOperator {
 		if(showPopup!=null) {
 		    attrs.append(XmlUtil.attrs(new String[] {"showenumerationpopup",showPopup}));
 		}
-
-
 
                 canSearch = "true".equals(getDbProp(colId, "cansearch",
 						    canSearch + ""));
@@ -2100,7 +2100,7 @@ public abstract class Processor extends SeesvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "lookupdb",
 							      lookupDB }));
                 }
-                if (searchRows.length() > 0) {
+                if (searchRows!=null && searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
 							      searchRows }));
                 }
