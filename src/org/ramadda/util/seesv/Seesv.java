@@ -782,16 +782,18 @@ public class Seesv implements SeesvCommands {
 			int fileCnt = cnt++;
 			if(multiFiles) {
 			    File newFile;
+			    String source  = new File(input.getName()).getName();
 			    if(Utils.stringDefined(multiFileTemplate)) {
-				String source  = new File(input.getName()).getName();
 				String name  = IOUtil.stripExtension(source);
 				newFile = new File(multiFileTemplate.replace("${file_name}",source).replace("${count}",""+(cnt)).replace("${file_shortname}",name));
 			    } else {
 				newFile = new File(input.getName()+".csv");
 			    }
+			    if(newFile.equals(new File(source))) {
+				throw new IllegalArgumentException("Target file is same as source file:" + newFile);
+			    }
 			    checkOkToWrite(newFile.toString());
 			    myTextReader.setOutputFile(newFile);
-			    //			    System.err.println("new file:" + newFile);
 			}
 			myTextReader.resetProcessors(multiFiles);
 			myTextReader.setInput(input);
@@ -1504,10 +1506,9 @@ public class Seesv implements SeesvCommands {
 	
         /** * Input   * */
         new Category("Input","Specify the input. Default is assumed to be a CSV but can support HTML, JSON, XML, Shapefile, etc."),
+	new Cmd(CMD_INPUTCOMMENT,"Input comment prefix",new Arg("comment")),
         new Cmd(CMD_DELIMITER, "Specify the input delimiter",
                 new Arg("delimiter", "Use 'space' for space, 'tab' for tab,'?' to guess between tab and space",  ATTR_SIZE, "5")),
-	new Cmd(CMD_INPUTCOMMENT,"Input comment",
-		new Arg("comment")),
         new Cmd(CMD_TAB, "Use tabs. A shortcut for -delimiter tab"),
         new Cmd(CMD_WIDTHS, "Columns are fixed widths",
 		new Arg("widths", "w1,w2,...,wN")),
@@ -1520,10 +1521,11 @@ public class Seesv implements SeesvCommands {
                 new Arg("start pattern", "", ATTR_TYPE, TYPE_PATTERN)),
         new Cmd(CMD_STOP, "End at pattern in source file",
                 new Arg("stop pattern", "", ATTR_TYPE, TYPE_PATTERN)),
-
         new Cmd(CMD_TRIMLINE, "Trim the input line"),
-
         new Cmd(CMD_BOM, "Input has a leading byte order mark (BOM) that should be stripped out",ARG_LABEL,"Strip BOM"),
+        new Cmd(CMD_PRUNE, "Prune out the first N bytes",
+                new Arg("bytes", "Number of leading bytes to remove", ATTR_TYPE,
+                        TYPE_NUMBER)),
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
 		new Arg("encoding","File Encoding see https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html",
@@ -1630,9 +1632,7 @@ public class Seesv implements SeesvCommands {
                 new Arg("values","comma separated values"),		
                 new Arg("number_rows","Number of rows",ATTR_TYPE,TYPE_NUMBER)),
 
-        new Cmd(CMD_PRUNE, "Prune out the first N bytes",
-                new Arg("bytes", "Number of leading bytes to remove", ATTR_TYPE,
-                        TYPE_NUMBER)),
+
         new Cmd(CMD_NOHEADER, "Strip off the header"),
         new Cmd(CMD_DEHEADER, "Strip off the RAMADDA point header"),
         new Cmd(CMD_HEADERNAMES, "Make the header proper capitalization",
@@ -2261,7 +2261,7 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMNS,"Columns to change. If none given then add the fake value",ATTR_TYPE,TYPE_COLUMNS)),		
 
         new Cmd(CMD_EDIT, "Hand edit a column (command line only). ESC-stop, BLANK-skip",
-                new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN)),
+                new Arg(ARG_COLUMNS, "key columns", ATTR_TYPE, TYPE_COLUMNS)),
 	/** *  Add values * */
         new Category("Values"),
         new Cmd(CMD_MD, "Make a message digest of the column values",
@@ -3037,6 +3037,10 @@ public class Seesv implements SeesvCommands {
 	    html = html.replace("${header" + i+"}", s);
 	}
 	pw.append(html);
+	pw.append("\n<script  type='text/JavaScript'>try {\nUtils.initCopyable('seesv',{addLink:true,addLinkToParent:false});\n} catch(err){}\n</script>\n");
+
+
+
 	pw.append("</body>\n");
 	pw.append("</html>\n");	
         pw.flush();
@@ -5270,7 +5274,7 @@ public class Seesv implements SeesvCommands {
 
 	defineFunction(CMD_EDIT,1,(ctx,args,i) -> {
 		if(!commandLine) throw new IllegalArgumentException(CMD_EDIT+" only enabled for command line usage");
-		ctx.addProcessor(new Converter.Editor(args.get(++i)));
+		ctx.addProcessor(new Converter.Editor(getCols(args.get(++i))));
 		return i;
 	    });	
 

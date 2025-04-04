@@ -8,7 +8,10 @@ seesv -p test.csv.gz
 </seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
-seesv:seesv -p test.xls
+seesv:seesv -p test.xlsx
+
+If you want to extract the second sheet in the xlsx do;
+seesv:seesv -sheet 2 -p test.xlsx
 
 
 The SeeSV package does have some support for handling multiple input files.
@@ -17,14 +20,19 @@ Note: not all commands work with multiple input files.
 seesv:seesv -p test1.csv test2.csv
 
 Other file types (see below for more details) are handled as:
-
+:p
+Read each <a href="#-lines">line</a> as a single column:
 <seesv>
-#Read each <a href="#-lines">line</a> as a single column<br>
-seesv -lines -p test.txt<br>
-<br>
-#Process <a href="#-xml">xml</a> with the given path <br>
-seesv -xml "path.to.rows" -p test.xml  <br>
-<br>
-#Process <a href="#-json">JSON</a><br>
+seesv -lines -p test.txt
+</seesv>
+
+
+Process <a href="#-xml">xml</a> with the given path:
+<seesv>
+seesv -xml "path.to.rows" -p test.xml 
+</seesv>
+
+Process <a href="#-json">JSON</a>:
+<seesv>
 seesv -json "path.to.array" "object_paths" -p test.json
 </seesv>

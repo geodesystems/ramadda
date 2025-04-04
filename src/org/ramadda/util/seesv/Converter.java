@@ -254,6 +254,7 @@ public abstract class Converter extends Processor {
     }
 
     public static class Editor extends Converter {
+	private static String CLEAR = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
 	private Row header;
 
 	private BufferedReader br;
@@ -262,8 +263,8 @@ public abstract class Converter extends Processor {
 
 	private Hashtable<String,String> seen = new Hashtable<String,String>();
 
-        public Editor(String col) {
-            super(col);
+        public Editor(List<String> cols) {
+            super(cols);
 	    br = new BufferedReader(new InputStreamReader(System.in));
         }
 
@@ -275,34 +276,37 @@ public abstract class Converter extends Processor {
 		return row;
 	    }
 
-            int col  = getIndex(ctx);
-	    if(!header.indexOk(col) || !row.indexOk(col)) return row;
-	    String h = header.getString(col);
-	    String s = row.getString(col);
-	    String clear = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
-	    System.err.print(clear);
-	    String seenIt = seen.get(s);
-	    if(seenIt!=null) {
-		row.set(col,seenIt);
-		return row;
-	    }
-	    while(true) {
-		System.err.print(h+"("+ s+"):");
-		try {
-		    String v= br.readLine();
-		    if(v.length()==0) return row;
-		    if(v.length()==1 && v.charAt(0)==0x1b) {
-			System.err.print(clear);
-			done = true;
-			return row;
+	    for(int col:getIndices(ctx)) {
+		if(!header.indexOk(col) || !row.indexOk(col)) continue;
+		String h = header.getString(col);
+		String s = row.getString(col);
+		System.err.print(CLEAR);
+		String key =col+"_"+s;
+		String seenIt = seen.get(key);
+		if(seenIt!=null) {
+		    row.set(col,seenIt);
+		    continue;
+		}
+		String label = "#" + (rowCnt-1)+" " +h+"("+ s+"):";
+		while(true) {
+		    System.err.print(label);
+		    try {
+			String v= br.readLine();
+			if(v.length()==0) break;
+			if(v.length()==1 && v.charAt(0)==0x1b) {
+			    System.err.print(CLEAR);
+			    done = true;
+			    return row;
+			}
+			row.set(col,v);
+			seen.put(key,v);
+			break;
+		    } catch(Exception exc) {
+			throw new RuntimeException(exc);
 		    }
-		    row.set(col,v);
-		    seen.put(s,v);
-		    return row;
-		} catch(Exception exc) {
-		    throw new RuntimeException(exc);
 		}
 	    }
+	    return row;
         }
     }
 

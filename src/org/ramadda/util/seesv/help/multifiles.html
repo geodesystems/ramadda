@@ -1,0 +1,15 @@
+For example, if you want to process 2 files - input1.csv and input2.csv - and
+write them out as new_input1.csv and new_input2.csv do the following.
+Note: the "\$" is to escape the "$" on the command line.
+
+seesv: seesv -multifiles "new_\${file_shortname}.csv"  -p input1.csv input2.csv
+Results in: new_input1.csv and new_input2.csv
+
+Use full name:
+seesv: seesv -multifiles "new_\${file_name}.csv"  -p input1.csv input2.csv
+Results in: new_input1.csv.csv and new_input2.csv.csv
+
+
+Use file count:
+seesv: seesv -multifiles "filenumber_\${count}.csv"  -p somefile.csv someotherfile.csv
+Results in filenumber_1.csv and filenumber_2.csv

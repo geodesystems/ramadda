@@ -354,6 +354,7 @@ public abstract class Processor extends SeesvOperator {
 	    int cnt=0;
 	    int lastWidth=10;
 	    
+	    sb.append("|");
 	    for(int idx:indices) {
 		String v = r.indexOk(idx)?r.getString(idx):"";
 		int w=cnt<widths.size()?widths.get(cnt):lastWidth;
@@ -370,7 +371,8 @@ public abstract class Processor extends SeesvOperator {
 		}
 		if(decorate)
 		    v = Utils.ansi(Utils.getAnsiColor(cnt-1),v);
-		sb.append(v+" ");
+		sb.append(v+"");
+		sb.append("|");
 	    }
 	    return sb.toString();
 	}
@@ -378,8 +380,14 @@ public abstract class Processor extends SeesvOperator {
 
         @Override
         public Row processRow(TextReader ctx, Row row) {
+	    rowCnt++;
 	    if(widths!=null) {
-		System.out.println(printWidths(ctx,widths,decorate,row));
+		if(header==null) {
+		    header=row;
+		} else if(rowCnt%15==0) {
+		    System.out.println(printWidths(ctx,widths,false,header));
+		}
+		System.out.println(printWidths(ctx,widths,rowCnt!=1 && decorate,row));
 		return row;
 	    }
 	    if(header==null) {
