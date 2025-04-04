@@ -278,6 +278,7 @@ var Utils =  {
 	    title:null,
 	    ack:null,
 	    addLink:false,
+	    addLinkToParent:true,
 	    removeTags:false,
 	    removeNL:false,
 	    downloadFileName:null,
@@ -286,18 +287,18 @@ var Utils =  {
 	    input:null
 	}
 	if(args) $.extend(opts,args);
+
 	$(selector).each(function(){
 	    let title = $(this).attr(ATTR_TITLE);
 	    if(!title)
 		$(this).attr(ATTR_TITLE,opts.title??'Click to copy');
 	    let link = $(this);
 	    if(opts.addLink) {
-		let parent = $(this).parent();
+		let parent = opts.addLinkToParent?$(this).parent():$(this);
 		parent.css('position','relative');
 		let style = HU.css('position','absolute') +(opts.extraStyle??HU.css('top','5px',  'right','5px'));
-		link = $(HU.div([ATTR_CLASS,'ramadda-clickable',
+		link = $(HU.tag('ramadda-copy-link', [ATTR_CLASS,'ramadda-clickable',
 				 ATTR_STYLE,style],
-				
 				HtmlUtils.getIconImage('fa-copy'))).appendTo(parent);
 	    } else {
 		$(this).addClass('ramadda-clickable');
@@ -321,6 +322,7 @@ var Utils =  {
 
 	    link.click(()=>{
 		let text = $(this).attr('data-copy')??$(this).html();
+		text = text.replace(/<ramadda-copy-link.*<\/ramadda-copy-link.*>/,'');
 		if(opts.removeTags) {
 		    text = text.replace(/<br>/g,'\n').replace(/<p>/g,'\n\n').replace(/<[^>]+>/g,'');
 		    text = text.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
