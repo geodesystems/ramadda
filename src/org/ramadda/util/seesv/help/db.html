@@ -6,17 +6,32 @@ The -db command takes the form:
 -db "name value pairs"
 e.g.:
 -db "
-table.id &lt;new id&gt; table.name &lt;new name&gt;
-table.cansearch false table.canlist false
+table.id &lt;new id&gt;
+table.name &lt;new name&gt;
+table.cansearch false 
+table.canlist false
 table.icon &lt;icon&gt;, e.g., /db/database.png
+
 &lt;column&gt;.id &lt;new id for column&gt;
 &lt;column&gt;.label &lt;new label&gt;
-lt;column&gt;.type &lt;string|enumeration|double|int|date&gt;
-&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;
-&lt;column&gt;.canlist false &lt;column&gt;.cansearch false
-install &lt;true|false install the new db table&gt;
-nukedb &lt;true|false&gt; careful! this deletes any prior created dbs
-yesreallynukethewholedb true - this double checks
+
+&lt;column&gt;.type &lt;string|enumeration|enumerationplus|double|int|date&gt;
+&lt;column&gt;.values {value1,value2,value3} #can also use file, e.g.:
+#values="file:/org/ramadda/plugins/archive/resources/periods.txt"
+#but the path must be under a /resources directory
+
+&lt;column&gt;.format &lt;yyyy MM dd HH mm ss&gt; #date format
+
+&lt;column&gt;.canlist false  #should this column be listed in the table view
+&lt;column&gt;.cansearch true #can this column be searched for
+&lt;column&gt;.searchrows 5 #show multiple choices in the search form
+&lt;column&gt;.showenumerationpopup true  #show the menu popup dialog
+
+&lt;column&gt;.isindex true #should a database index be created for this column
+
+install &lt;true|false&gt; # install the new db table
+nukedb &lt;true|false&gt; #careful! this deletes any prior created dbs
+yesreallynukethewholedb true #this double checks
 "
 </pre>
 
@@ -31,6 +46,8 @@ Where the db.properties file looks like:
   table.cansearch=false
   table.canlist=false
   table.icon=/db/database.png
+  &lt;column&gt;.canlist false 
+  &lt;column&gt;.cansearch true
   ...
 </pre>
 
