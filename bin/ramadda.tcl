@@ -1,3 +1,29 @@
+set ::seesv "$::env(SEESV)"
+
+proc  seesvToFile {infile outfile args} {
+    set command "|sh $::seesv "
+    foreach arg $args {
+	append  command " \"$arg\" "
+    }
+    if {$outfile!=""} {
+	append command " -o \"$outfile\" "
+    }
+    append command " \"$infile\" "
+    append command   " 2>@1 "
+    set f [open $command r]
+    fconfigure $f -buffering none -blocking 0 -translation binary
+    while {![eof $f]} {
+	set chunk [read $f 4096]  ;# Read 4 KB chunks at a time
+	if {$chunk ne ""} {
+	    regsub -all {\r} $chunk "" chunk    ;# Remove carriage returns
+	    puts -nonewline $chunk  ;# Print immediately without adding newlines
+	    flush stdout             ;# Ensure immediate display
+	}
+    }
+    close $f
+}
+
+
 
 
 proc toProperCase {input} {
