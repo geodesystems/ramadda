@@ -2728,7 +2728,8 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_ADDHEADER, "Add the RAMADDA point properties",
 		ARG_LABEL,"Add Point Header",
-                new Arg("properties", "name1 value1 ... nameN valueN<br>Set default: default.type double", ATTR_ROWS, "6")),
+                new Arg("properties", 
+			"name1 value1 ... nameN valueN", ATTR_ROWS, "6")),
         new Cmd(CMD_DB, "Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a>",
 		ARG_LABEL,"RAMADDA Database XML",
 		new Arg("properties",

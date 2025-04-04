@@ -4015,11 +4015,12 @@ v1,v2,v3
 ...
 </pre>
 
-The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
+The addheader command is run as below passing in one set of name/value arguments.
+If the value has spaces then group the
 text with {...} brackets.
 <seesv>seesv -addheader "arg1 value1 arg2 {value 2} arg3 value3"</seesv>
-The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
-name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
+The args are typically of the form <i>field_name.some_property</i> where field_name
+is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
 
 
 <p>
@@ -4062,10 +4063,47 @@ Other field properties include:
   10,20,30
 </pre>
 
+
+The type of a field can be defined with:
+<pre>
+&lt;field&gt;.type string|enumeration|enumerationplus|double|int|date
+</pre>
+
+You can specify a unit with:
+<pre>
+&lt;field&gt;.unit mph
+</pre>
+
+You can set the default type  with:
+<pre>
+default.type double
+</pre>  
+
+If the type is an enumeration or enumerationplus you can specify values with:
+<pre>
+&lt;field&gt;.values {value1,value2,value3}
+</pre>  
+
 You can specify the type as "value.*.type integer".
 <p>
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
 <seesv>seesv -addheader "(value.*).*.label {Some label \$1}"</seesv>
+
+In the interactive SeeSV form pressing the Outputs-&gt;Print text output button will list the
+field names, e.g.
+<pre>
+location[label="Location"  type="enumeration" searchable="false" ] 
+parameter[label="Parameter"  type="enumeration" searchable="false" ] 
+npdes_permit_number[label="Npdes Permit Number"  type="enumeration" searchable="false" ] 
+monitoring_period_date[label="Monitoring Period Date"  type="date" format="MM/dd/yyyy"  searchable="false" ] 
+limit_value[label="Limit Value"  type="string" searchable="false" ] 
+limit_value_unit[label="Limit Value Unit"  type="string" searchable="false" ] 
+dmr_value_type[label="Dmr Value Type"  type="string" searchable="false" ] 
+...
+</pre>
+
+Clicking on a field name will popup a menu that allows you to insert the type, label, unit, date format,
+enumeration values, etc.
 
 <p></div></div><div class=seesv-item>
 <a class=command-link name='-db'></a><div class=command> <i><a href='#-db'>-db</a></i>  &lt;properties&gt; </div><div class=command-block>Generate the RAMADDA db xml from the header. See <a class=ramadda-decor target=_help href=https://ramadda.org/repository/userguide/seesv.html#-db>Help</a><br class=seesv-hide>
@@ -4091,17 +4129,32 @@ The -db command takes the form:
 -db "name value pairs"
 e.g.:
 -db "
-table.id &lt;new id&gt; table.name &lt;new name&gt;
-table.cansearch false table.canlist false
+table.id &lt;new id&gt;
+table.name &lt;new name&gt;
+table.cansearch false 
+table.canlist false
 table.icon &lt;icon&gt;, e.g., /db/database.png
+
 &lt;column&gt;.id &lt;new id for column&gt;
 &lt;column&gt;.label &lt;new label&gt;
-lt;column&gt;.type &lt;string|enumeration|double|int|date&gt;
-&lt;column&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;
-&lt;column&gt;.canlist false &lt;column&gt;.cansearch false
-install &lt;true|false install the new db table&gt;
-nukedb &lt;true|false&gt; careful! this deletes any prior created dbs
-yesreallynukethewholedb true - this double checks
+
+&lt;column&gt;.type &lt;string|enumeration|enumerationplus|double|int|date&gt;
+&lt;column&gt;.values {value1,value2,value3} #can also use file, e.g.:
+#values="file:/org/ramadda/plugins/archive/resources/periods.txt"
+#but the path must be under a /resources directory
+
+&lt;column&gt;.format &lt;yyyy MM dd HH mm ss&gt; #date format
+
+&lt;column&gt;.canlist false  #should this column be listed in the table view
+&lt;column&gt;.cansearch true #can this column be searched for
+&lt;column&gt;.searchrows 5 #show multiple choices in the search form
+&lt;column&gt;.showenumerationpopup true  #show the menu popup dialog
+
+&lt;column&gt;.isindex true #should a database index be created for this column
+
+install &lt;true|false&gt; # install the new db table
+nukedb &lt;true|false&gt; #careful! this deletes any prior created dbs
+yesreallynukethewholedb true #this double checks
 "
 </pre>
 
@@ -4116,6 +4169,8 @@ Where the db.properties file looks like:
   table.cansearch=false
   table.canlist=false
   table.icon=/db/database.png
+  &lt;column&gt;.canlist false 
+  &lt;column&gt;.cansearch true
   ...
 </pre>
 

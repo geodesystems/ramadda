@@ -7,12 +7,13 @@ v1,v2,v3
 ...
 </pre>
 
-The addheader command is run as below passing in one set of name/value arguments. If the value has spaces then group the
+The addheader command is run as below passing in one set of name/value arguments.
+If the value has spaces then group the
 text with {...} brackets.
 seesv:-addheader "arg1 value1 arg2 {value 2} arg3 value3"
 
-The args are typically of the form <i>canonical_field_name.some_property</i> where canonical field
-name is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
+The args are typically of the form <i>field_name.some_property</i> where field_name
+is the column header cleaned up - lowercase, spaces converted to "_", strip off non alphanumeric characters.
 
 
 <p>
@@ -58,8 +59,45 @@ Other field properties include:
   10,20,30
 </pre>
 
+
+The type of a field can be defined with:
+<pre>
+&lt;field&gt;.type string|enumeration|enumerationplus|double|int|date
+</pre>
+
+You can specify a unit with:
+<pre>
+&lt;field&gt;.unit mph
+</pre>
+
+You can set the default type  with:
+<pre>
+default.type double
+</pre>  
+
+If the type is an enumeration or enumerationplus you can specify values with:
+<pre>
+&lt;field&gt;.values {value1,value2,value3}
+</pre>  
+
 You can specify the type as "value.*.type integer".
 <p>
 Adding a grouping to the pattern can be used to pull out text from the field name and use it in the value. For example, below would set the label:
 seesv: -addheader "(value.*).*.label {Some label \$1}"
 
+
+In the interactive SeeSV form pressing the Outputs-&gt;Print text output button will list the
+field names, e.g.
+<pre>
+location[label="Location"  type="enumeration" searchable="false" ] 
+parameter[label="Parameter"  type="enumeration" searchable="false" ] 
+npdes_permit_number[label="Npdes Permit Number"  type="enumeration" searchable="false" ] 
+monitoring_period_date[label="Monitoring Period Date"  type="date" format="MM/dd/yyyy"  searchable="false" ] 
+limit_value[label="Limit Value"  type="string" searchable="false" ] 
+limit_value_unit[label="Limit Value Unit"  type="string" searchable="false" ] 
+dmr_value_type[label="Dmr Value Type"  type="string" searchable="false" ] 
+...
+</pre>
+
+Clicking on a field name will popup a menu that allows you to insert the type, label, unit, date format,
+enumeration values, etc.
