@@ -2959,18 +2959,18 @@ public class Seesv implements SeesvCommands {
 	int cnt = 0;
         for (Cmd c : commands) {
 	    if(c.category) {
-		if(open) sb.append("</ul><br class=seesv-hide>");
+		if(open) sb.append("</ul><br class='seesv-hide seesv-item'>");
 		open = true;
 		String extra = IO.readContents("/org/ramadda/util/seesv/help/category_" + Utils.makeID(c.cmd).toLowerCase()+".html",(String) null);
 		if(header.length()>0) header.append(" | ");
 		header.append("<a href='#" + c.cmd +"'>" + c.cmd+"</a>");
-		sb.append("<div class=seesv-hide><hr>");
+		sb.append("<div class='seesv-hide seesv-item'><hr>");
 		sb.append("<a name='" + c.cmd+"'></a>");
 		sb.append("<b style='font-size:120%;'>" + c.cmd+"</b><br>\n");
 		sb.append(c.desc);
 		sb.append("</div>");
 		if(extra!=null) {
-		    sb.append("<div class=seesv-hide>");
+		    sb.append("<div class='seesv-hide seesv-item'>");
 		    sb.append(" ");
 		    processHelpContents(sb, extra);
 		    sb.append("</div>");
