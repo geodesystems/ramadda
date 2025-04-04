@@ -57,7 +57,12 @@ pre {
       max-height: 400px;
       overflow-y:auto;
   }
-  .command {margin-top:10px;border : 1px #ccc solid; padding:4px; background:#E7EFF4;}
+  .command {
+      margin-top:15px;
+      border-bottom : 1px #aaa solid;
+      padding:4px; 
+      background:#eef6fd;
+  }
   .command-block {
       margin-left:20px;
   }
@@ -65,10 +70,12 @@ pre {
       font-style:italic;
   }
   seesv {
+      position:relative;
       font-style:italic;
       display:block;
       border:1px solid #ccc;
       background:rgb(245,245,245);
+      background:#fffeec;
       padding:4px;
       border-radius: 4px;
       margin-bottom:5px;
@@ -289,33 +296,34 @@ seesv -p test.csv.gz
 </seesv>
 
 Likewise, if you have an XLSX file the package will extract the first sheet in the input file:
-<seesv>seesv -p test.xls</seesv>
+<seesv>seesv -p test.xlsx</seesv>
+If you want to extract the second sheet in the xlsx do;
+<seesv>seesv -sheet 2 -p test.xlsx</seesv>
 
 The SeeSV package does have some support for handling multiple input files.
 It is assumed that each file is has the same set of columns.
 Note: not all commands work with multiple input files.
 <seesv>seesv -p test1.csv test2.csv</seesv>
 Other file types (see below for more details) are handled as:
-
+:p
+Read each <a href="#-lines">line</a> as a single column:
 <seesv>
-#Read each <a href="#-lines">line</a> as a single column<br>
-seesv -lines -p test.txt<br>
-<br>
-#Process <a href="#-xml">xml</a> with the given path <br>
-seesv -xml "path.to.rows" -p test.xml  <br>
-<br>
-#Process <a href="#-json">JSON</a><br>
+seesv -lines -p test.txt
+</seesv>
+
+
+Process <a href="#-xml">xml</a> with the given path:
+<seesv>
+seesv -xml "path.to.rows" -p test.xml 
+</seesv>
+
+Process <a href="#-json">JSON</a>:
+<seesv>
 seesv -json "path.to.array" "object_paths" -p test.json
 </seesv>
 
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-delimiter'><i>-delimiter</i>: Specify the input delimiter</a><li> <a href='#-inputcomment'><i>-inputcomment</i>: Input comment</a><li> <a href='#-tab'><i>-tab</i>: Use tabs. A shortcut for -delimiter tab</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-trimline'><i>-trimline</i>: Trim the input line</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-encoding'><i>-encoding</i>: Specify the file encoding</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-unitrow'><i>-unitrow</i>: Second row contains units</a><li> <a href='#-multifiles'><i>-multifiles</i>: Treat input files separately</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-jsonjoin'><i>-jsonjoin</i>: Join different arrays in the input JSON</a><li> <a href='#-jsonvalue'><i>-jsonvalue</i>: Extract a value from a JSON column</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines. Treat each line as one column</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse tables in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-noheader'><i>-noheader</i>: Strip off the header</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Clean up the header names</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-sheet'><i>-sheet</i>: Set XLS sheet #</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename and apply it to the commands</a><li> <a href='#-filenamepattern'><i>-filenamepattern</i>: Extract strings from the file name and add them as new columns</a></ul></div></div><div class=seesv-item>
-<a class=command-link name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify the input delimiter<br class=seesv-hide>
-<ul>
-<li> <i>delimiter</i>:
-Use 'space' for space, 'tab' for tab,'?' to guess between tab and space<br>
-</ul>
-</div></div><div class=seesv-item>
-<a class=command-link name='-inputcomment'></a><div class=command> <i><a href='#-inputcomment'>-inputcomment</a></i>  &lt;comment&gt; </div><div class=command-block>Input comment<br class=seesv-hide>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-inputcomment'><i>-inputcomment</i>: Input comment prefix</a><li> <a href='#-delimiter'><i>-delimiter</i>: Specify the input delimiter</a><li> <a href='#-tab'><i>-tab</i>: Use tabs. A shortcut for -delimiter tab</a><li> <a href='#-widths'><i>-widths</i>: Columns are fixed widths</a><li> <a href='#-quotesnotspecial'><i>-quotesnotspecial</i>: Don't treat quotes as special characters</a><li> <a href='#-cleaninput'><i>-cleaninput</i>: Input is one text line per row. i.e., no new lines in a data row. Setting this can improve performance on large files</a><li> <a href='#-start'><i>-start</i>: Start at pattern in source file</a><li> <a href='#-stop'><i>-stop</i>: End at pattern in source file</a><li> <a href='#-trimline'><i>-trimline</i>: Trim the input line</a><li> <a href='#-bom'><i>-bom</i>: Input has a leading byte order mark (BOM) that should be stripped out</a><li> <a href='#-prune'><i>-prune</i>: Prune out the first N bytes</a><li> <a href='#-encoding'><i>-encoding</i>: Specify the file encoding</a><li> <a href='#-header'><i>-header</i>: Raw header</a><li> <a href='#-unitrow'><i>-unitrow</i>: Second row contains units</a><li> <a href='#-multifiles'><i>-multifiles</i>: Treat input files separately</a><li> <a href='#-json'><i>-json</i>: Parse the input as json</a><li> <a href='#-jsonjoin'><i>-jsonjoin</i>: Join different arrays in the input JSON</a><li> <a href='#-jsonvalue'><i>-jsonvalue</i>: Extract a value from a JSON column</a><li> <a href='#-geojson'><i>-geojson</i>: Parse the input as geojson</a><li> <a href='#-pdf'><i>-pdf</i>: Read input from a PDF file.</a><li> <a href='#-xml'><i>-xml</i>: Parse the input as xml</a><li> <a href='#-shapefile'><i>-shapefile</i>: Parse the input shapefile</a><li> <a href='#-lines'><i>-lines</i>: Parse the input as text lines. Treat each line as one column</a><li> <a href='#-htmltable'><i>-htmltable</i>: Parse tables in the input html file</a><li> <a href='#-htmlpattern'><i>-htmlpattern</i>: Parse the input html file</a><li> <a href='#-harvest'><i>-harvest</i>: Harvest links in web page. This results in a 2 column dataset with fields: label,url</a><li> <a href='#-text'><i>-text</i>: Extract rows from the text</a><li> <a href='#-extractpattern'><i>-extractpattern</i>: Extract rows from the text</a><li> <a href='#-tokenize'><i>-tokenize</i>: Tokenize the input from the pattern</a><li> <a href='#-sql'><i>-sql</i>: Read data from the given database</a><li> <a href='#-synthetic'><i>-synthetic</i>: Generate an empty file with the given number of rows</a><li> <a href='#-noheader'><i>-noheader</i>: Strip off the header</a><li> <a href='#-deheader'><i>-deheader</i>: Strip off the RAMADDA point header</a><li> <a href='#-headernames'><i>-headernames</i>: Make the header proper capitalization</a><li> <a href='#-headerids'><i>-headerids</i>: Clean up the header names</a><li> <a href='#-ids'><i>-ids</i>: Use canonical names</a><li> <a href='#-sheet'><i>-sheet</i>: Set XLS sheet #</a><li> <a href='#-cat'><i>-cat</i>: Concat the columns in one or more csv files</a><li> <a href='#-append'><i>-append</i>: Append the files, skipping the given rows in the latter files</a><li> <a href='#-chop'><i>-chop</i>: Write out last N lines. include the header</a><li> <a href='#-filepattern'><i>-filepattern</i>: Extract a macro value from a filename and apply it to the commands</a><li> <a href='#-filenamepattern'><i>-filenamepattern</i>: Extract strings from the file name and add them as new columns</a></ul></div></div><div class=seesv-item>
+<a class=command-link name='-inputcomment'></a><div class=command> <i><a href='#-inputcomment'>-inputcomment</a></i>  &lt;comment&gt; </div><div class=command-block>Input comment prefix<br class=seesv-hide>
 <ul>
 <li> <i>comment</i>:
 <br>
@@ -332,6 +340,12 @@ You can do:
 
 
 <p></div></div><div class=seesv-item>
+<a class=command-link name='-delimiter'></a><div class=command> <i><a href='#-delimiter'>-delimiter</a></i>  &lt;delimiter&gt; </div><div class=command-block>Specify the input delimiter<br class=seesv-hide>
+<ul>
+<li> <i>delimiter</i>:
+Use 'space' for space, 'tab' for tab,'?' to guess between tab and space<br>
+</ul>
+</div></div><div class=seesv-item>
 <a class=command-link name='-tab'></a><div class=command> <i><a href='#-tab'>-tab</a></i> </div><div class=command-block>Use tabs. A shortcut for -delimiter tab<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a class=command-link name='-widths'></a><div class=command> <i><a href='#-widths'>-widths</a></i>  &lt;widths&gt; </div><div class=command-block>Columns are fixed widths<br class=seesv-hide>
@@ -413,6 +427,12 @@ possible columns: [some_name, 0]
 Then it could be that there is a leading bom character. In that case call:
 <seesv>seesv -bom -columns some_name</seesv>
 <p></div></div><div class=seesv-item>
+<a class=command-link name='-prune'></a><div class=command> <i><a href='#-prune'>-prune</a></i>  &lt;bytes&gt; </div><div class=command-block>Prune out the first N bytes<br class=seesv-hide>
+<ul>
+<li> <i>bytes</i>:
+Number of leading bytes to remove<br>
+</ul>
+</div></div><div class=seesv-item>
 <a class=command-link name='-encoding'></a><div class=command> <i><a href='#-encoding'>-encoding</a></i>  &lt;encoding&gt; </div><div class=command-block>Specify the file encoding<br class=seesv-hide>
 <ul>
 <li> <i>encoding</i>:
@@ -461,7 +481,20 @@ The package can carry process the line with the units with:
 <li> <i>template</i>:
 File template  - ${file_shortname} ${file_name} ${count}<br>
 </ul>
-</div></div><div class=seesv-item>
+For example, if you want to process 2 files - input1.csv and input2.csv - and
+write them out as new_input1.csv and new_input2.csv do the following.
+Note: the "\$" is to escape the "$" on the command line.
+
+<seesv>seesv -multifiles "new_\${file_shortname}.csv"  -p input1.csv input2.csv</seesv>Results in: new_input1.csv and new_input2.csv
+
+Use full name:
+<seesv>seesv -multifiles "new_\${file_name}.csv"  -p input1.csv input2.csv</seesv>Results in: new_input1.csv.csv and new_input2.csv.csv
+
+
+Use file count:
+<seesv>seesv -multifiles "filenumber_\${count}.csv"  -p somefile.csv someotherfile.csv</seesv>Results in filenumber_1.csv and filenumber_2.csv
+
+<p></div></div><div class=seesv-item>
 <a class=command-link name='-json'></a><div class=command> <i><a href='#-json'>-json</a></i>  &lt;arrayPath&gt;  &lt;objectPaths&gt; </div><div class=command-block>Parse the input as json<br class=seesv-hide>
 <ul>
 <li> <i>arrayPath</i>:
@@ -849,12 +882,6 @@ Gives:
 </table><br>
 
 <p></div></div><div class=seesv-item>
-<a class=command-link name='-prune'></a><div class=command> <i><a href='#-prune'>-prune</a></i>  &lt;bytes&gt; </div><div class=command-block>Prune out the first N bytes<br class=seesv-hide>
-<ul>
-<li> <i>bytes</i>:
-Number of leading bytes to remove<br>
-</ul>
-</div></div><div class=seesv-item>
 <a class=command-link name='-noheader'></a><div class=command> <i><a href='#-noheader'>-noheader</a></i> </div><div class=command-block>Strip off the header<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a class=command-link name='-deheader'></a><div class=command> <i><a href='#-deheader'>-deheader</a></i> </div><div class=command-block>Strip off the RAMADDA point header<br class=seesv-hide>
@@ -1011,6 +1038,11 @@ This checks if there is a discharge column. If there is then it calculates a vol
 from the discharge.
 
 <seesv>seesv -if -has discharge -integrate discharge date second volume -endif</seesv>
+Here is an example that checks if a value is NaN and if so it prints the columns
+<seesv>seesv -if  -isnan value -printcolumns 0-5 -endif</seesv>
+Here we do the same but set fixed widths and decorate the output
+<seesv>seesv -if  -isnan value -setting xwidths "50,&gt;15" -setting decorate true -printcolumns 0-5 -endif</seesv>
+
 
 <p></div></div><div class=seesv-item>
 <a class=command-link name='-rawlines'></a><div class=command> <i><a href='#-rawlines'>-rawlines</a></i>  &lt;lines&gt; </div><div class=command-block><ul>
@@ -2533,10 +2565,10 @@ symptoms
 </pre>  
 
 <p></div></div><div class=seesv-item>
-<a class=command-link name='-edit'></a><div class=command> <i><a href='#-edit'>-edit</a></i>  &lt;column&gt; </div><div class=command-block>Hand edit a column (command line only). ESC-stop, BLANK-skip<br class=seesv-hide>
+<a class=command-link name='-edit'></a><div class=command> <i><a href='#-edit'>-edit</a></i>  &lt;columns&gt; </div><div class=command-block>Hand edit a column (command line only). ESC-stop, BLANK-skip<br class=seesv-hide>
 <ul>
-<li> <i>column</i>:
-key column<br>
+<li> <i>columns</i>:
+key columns<br>
 </ul>
 The edit command is used from the command line and will prompt the user for
 a new column value. If the value has already been seen then the prior new value
@@ -3804,7 +3836,7 @@ The text. Use '_nl_' to add a new line. Use '_bom_' to write out the byte order 
 <li> <i>columns</i>:
 Column indices. Can include ranges, e.g. 0-5<br>
 <li> <i>color</i>:
-Color values:red,green,yellow,blue,purple,cyan <br>
+Color values:rainbow,red,green,yellow,blue,purple,cyan <br>
 </ul>
 </div></div><div class=seesv-item>
 <a class=command-link name='-background'></a><div class=command> <i><a href='#-background'>-background</a></i>  &lt;color&gt; </div><div class=command-block>Background the columns<br class=seesv-hide>
@@ -3829,7 +3861,14 @@ Column width<br>
 <a class=command-link name='-stats'></a><div class=command> <i><a href='#-stats'>-stats</a></i> </div><div class=command-block>Print summary stats<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a class=command-link name='-torecord'></a><div class=command> <i><a href='#-torecord'>-torecord</a></i> </div><div class=command-block>Print records<br class=seesv-hide>
-</div></div><div class=seesv-item>
+To decorate the output do:
+
+<seesv>seesv -setting decorate true -record | less -r</seesv>
+
+
+
+
+<p></div></div><div class=seesv-item>
 <a class=command-link name='-script'></a><div class=command> <i><a href='#-script'>-script</a></i> </div><div class=command-block>Generate script<br class=seesv-hide>
 </div></div><div class=seesv-item>
 <a class=command-link name='-toxml'></a><div class=command> <i><a href='#-toxml'>-toxml</a></i>  &lt;outer tag&gt;  &lt;inner tag&gt; </div><div class=command-block>Generate XML<br class=seesv-hide>
@@ -4093,6 +4132,21 @@ yesreallynukethewholedb true - this double checks
 "
 </pre>
 
+You can also specify a .properties file:
+<pre>
+-db "file:db.propertes"  
+</pre>
+Where the db.properties file looks like:
+<pre>
+  table.id=&lt;new id&gt;
+  table.name=&lt;new name&gt;
+  table.cansearch=false
+  table.canlist=false
+  table.icon=/db/database.png
+  ...
+</pre>
+
+
 In the interactive Convert Data SeeSV form if you press "Table" then the schema will be shown. Clicking on the column
 links brings up a popup menu that sets the id, label, type, etc for the column.
 <p>
@@ -4201,6 +4255,11 @@ RAMADDA Home/plugins directory and restart your RAMADDA. The types.xml has a def
 you can change
 
 <p></div></div></ul>
+
+<script  type='text/JavaScript'>try {
+Utils.initCopyable('seesv',{addLink:true,addLinkToParent:false});
+} catch(err){}
+</script>
 </body>
 </html>
 </div>
