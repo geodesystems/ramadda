@@ -1,3 +1,6 @@
+source "$::env(RAMADDA_HOME)/bin/ramadda.tcl"
+
+
 if {0} {
     to set this up:
 
@@ -36,7 +39,7 @@ set ::clean 1
 
 if {$::clean} {
 #    catch {exec rm $::combined}
-    catch {exec rm $::joined}    
+#    catch {exec rm $::joined}    
 }
 
 
@@ -89,5 +92,15 @@ if {![file exists $::joined]} {
     exec  sh $::seesv  -notmatch 0 SD0020699 -change limit_value Mon NaN -change limit_value Mon NaN  -trim dmr_value -change dmr_value "^\$" NaN  -change dmr_value "E " "" -change dmr_value ".*<.*" 0 -change dmr_value "^NODI:.*$" NaN -change dmr_value ".*(<|>).*" NaN -setting join.split " " -join NPDES_IDS "fac_name,fac_city,fac_state,fac_county,fac_lat,fac_long" "$::echofile" npdes_permit_number ""   -indateformats "MM/dd/yyyy" "UTC" -convertdate "monitoring_period_date" -set fac_name 0 "Facility Name" -set fac_city 0 City -set fac_state 0 State -set fac_county 0 County -set fac_lat 0 latitude -set fac_long 0 longitude  -combine "latitude,longitude" ";" location -drop "latitude,longitude" -firstcolumns "facility_name,npdes_permit_number,city,state,county,location,full_parameter,dmr_value,parameter_code,parameter_description,statistical_base,outfall_number" -p $::combined > $::joined
 }
 
+
+
+
+seesvToFile $::joined sample.csv  -progress 10000 -split location ";" "latitude,longitude" -drop location -combine parameter_description,npdes_permit_number "_" param_site  -unique param_site exact -drop param_site 
+
+exit
+
+
 puts stderr "making db schema $::plugin"
 exec sh $::seesv   -setting db.comment "This is a generated plugin file for the EPA NPDES database" -db "file:npdesdb.properties" $::joined > $::plugin
+
+
