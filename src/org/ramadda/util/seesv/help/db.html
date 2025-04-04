@@ -20,6 +20,21 @@ yesreallynukethewholedb true - this double checks
 "
 </pre>
 
+You can also specify a .properties file:
+<pre>
+-db "file:db.propertes"  
+</pre>
+Where the db.properties file looks like:
+<pre>
+  table.id=&lt;new id&gt;
+  table.name=&lt;new name&gt;
+  table.cansearch=false
+  table.canlist=false
+  table.icon=/db/database.png
+  ...
+</pre>
+
+
 In the interactive Convert Data SeeSV form if you press "Table" then the schema will be shown. Clicking on the column
 links brings up a popup menu that sets the id, label, type, etc for the column.
 <p>
