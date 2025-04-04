@@ -192,6 +192,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#width","100px or screenshot",
 					"#src","URL or ::* for thumbnail",
 					"popup","true",
+					"#inDiv","false",
+					"#isHeroImage","true",
 					"#"+ATTR_ALIGN,"left|center|right",
 					"#cropHeight","50px","#position","top or 0 -40px"), 
                             new WikiTag(WIKI_TAG_GALLERY,null,

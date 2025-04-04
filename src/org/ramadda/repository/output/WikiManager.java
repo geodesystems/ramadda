@@ -1018,7 +1018,9 @@ public class WikiManager extends RepositoryManager
     public String getWikiImage(WikiUtil wikiUtil, Request request,
                                String url, Entry entry, Hashtable props)
 	throws Exception {
-        boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
+        boolean       isHero = getProperty(wikiUtil, props, "isHeroImage", false);
+        boolean       inDiv = getProperty(wikiUtil, props, "inDiv", !isHero);
+
         String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
         String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
         boolean       screenshot = getProperty(wikiUtil, props, "screenshot", false);
@@ -1067,6 +1069,8 @@ public class WikiManager extends RepositoryManager
             }
         }
         String style  = getProperty(wikiUtil, props, ATTR_STYLE, "");
+	if(isHero)
+	    style= "width:100%;height:100%;object-fit: cover;   object-position: center;"+style;
         String        maxWidth = getProperty(wikiUtil, props, "maxWidth", null);
 	if (maxWidth != null) {
             style+= "max-width:" + HU.makeDim(maxWidth,"px")+";";
