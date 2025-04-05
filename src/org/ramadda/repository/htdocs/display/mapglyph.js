@@ -3992,7 +3992,7 @@ MapGlyph.prototype = {
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.leftRightTable('',
-					      this.getHelp('mapfiles.html#adding_a_map'));
+					      this.getHelp('mapfiles.html#stylegroups'));
 	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,'100%']);
 	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],
 				       ['Group','Fill','Opacity','Stroke',ATTR_WIDTH,'Pattern','Features']));
