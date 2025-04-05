@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import  org.locationtech.proj4j.*;
 
 /**
  * A set of utility methods for dealing with geographic things
@@ -2012,22 +2013,70 @@ public class GeoUtils {
 
         String utmCode = "EPSG:" + (isNorthernHemisphere ? 326 : 327) + zone;
 
-        org.locationtech.proj4j.CRSFactory crsFactory = new org.locationtech.proj4j.CRSFactory();
-        org.locationtech.proj4j.CoordinateTransformFactory ctFactory = new org.locationtech.proj4j.CoordinateTransformFactory();
+        CRSFactory crsFactory = new CRSFactory();
+        CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
+        CoordinateReferenceSystem crsLatLon = crsFactory.createFromName("EPSG:4326"); // WGS84
+        CoordinateReferenceSystem crsUTM = crsFactory.createFromName(utmCode); // UTM Zone
 
-        org.locationtech.proj4j.CoordinateReferenceSystem crsLatLon = crsFactory.createFromName("EPSG:4326"); // WGS84
-        org.locationtech.proj4j.CoordinateReferenceSystem crsUTM = crsFactory.createFromName(utmCode); // UTM Zone
+        CoordinateTransform transform = ctFactory.createTransform(crsLatLon, crsUTM);
 
-        org.locationtech.proj4j.CoordinateTransform transform = ctFactory.createTransform(crsLatLon, crsUTM);
-
-        org.locationtech.proj4j.ProjCoordinate srcCoord = new org.locationtech.proj4j.ProjCoordinate(longitude, latitude);
-        org.locationtech.proj4j.ProjCoordinate dstCoord = new org.locationtech.proj4j.ProjCoordinate();
-
+        ProjCoordinate srcCoord = new ProjCoordinate(longitude, latitude);
+        ProjCoordinate dstCoord = new ProjCoordinate();
         transform.transform(srcCoord, dstCoord);
 
 	return new UTMInfo(zone+(isNorthernHemisphere?"N":"S"),
 			   utmCode,dstCoord.x,dstCoord.y);
     }
+
+
+    public static String getEPSGFromUTMZone(String utmZone) {
+        if (utmZone == null || utmZone.length() < 2) {
+	    return null;
+        }
+
+        // Extract the zone number and hemisphere letter
+        int zoneNumber = Integer.parseInt(utmZone.substring(0, utmZone.length() - 1));
+        char hemisphere = Character.toUpperCase(utmZone.charAt(utmZone.length() - 1));
+
+        if (zoneNumber < 1 || zoneNumber > 60 || (hemisphere != 'N' && hemisphere != 'S')) {
+	    return null;
+        }
+
+	String z = ""+zoneNumber;
+	if(z.length()<2) z = "0" + z;
+			     
+        return (hemisphere == 'N') ? "326" +  z : "327"+ z;
+    }
+
+
+    public static double[]  UTMToLatLon(String zone, double easting, double northing) {
+	if(!Utils.stringDefined(zone)) return null;
+
+	String utmZone= getEPSGFromUTMZone(zone);
+	if(utmZone==null) return null;
+        utmZone = "EPSG:" + utmZone;
+
+        // Create transformation
+        CRSFactory crsFactory = new CRSFactory();
+        CoordinateReferenceSystem utmCRS = crsFactory.createFromName(utmZone);
+        CoordinateReferenceSystem geoCRS = crsFactory.createFromName("EPSG:4326"); // WGS84
+
+        CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
+        CoordinateTransform transform = ctFactory.createTransform(utmCRS, geoCRS);
+
+        // Create ProjCoordinate for input and output
+        ProjCoordinate utmCoord = new ProjCoordinate(easting, northing);
+        ProjCoordinate latLonCoord = new ProjCoordinate();
+
+        // Transform the coordinates
+        transform.transform(utmCoord, latLonCoord);
+
+	return new double[]{latLonCoord.y, latLonCoord.x};
+
+    }
+
+
+
 
 
     public static void main(String[] args) throws Exception {
