@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Apr  4 20:07:48 MDT 2025";
+var build_date="RAMADDA build date: Sat Apr  5 09:05:23 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -47546,9 +47546,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible',ID_GLYPH_ID,mapGlyph.getId(),
 					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
-	    title+='<br>' +
-		select + visible +
-		this.makeGlyphButtons(mapGlyph,true);
+	    title+=HU.div([], visible +	mapGlyph.makeLegendButtons());
+//		this.makeGlyphButtons(mapGlyph,true);
  	    line += HU.td(['nowrap','',ATTR_STYLE,HU.css('padding','5px')], title);
 	    let col = mapGlyph.getDecoration();
 	    let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType());
@@ -53912,15 +53911,8 @@ MapGlyph.prototype = {
     canEdit: function() {
 	return !this.isEphemeral;
     },
-    getLegendBody:function() {
-	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
-	let inMapLegend='';
-	let body = '';
-	
-	let debug = this.getName()=='Alerts';
-	let buttons = this.display.makeGlyphButtons(this,this.canEdit(),this.getName()=='Alerts');
-
-
+    makeLegendButtons:function() {
+	let buttons = this.display.makeGlyphButtons(this,this.canEdit());
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -53934,7 +53926,21 @@ MapGlyph.prototype = {
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
 	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry',ATTR_TITLE,'View entry',
 											ATTR_CLASS,CLASS_CLICKABLE]) +buttons;
-	}	
+	}
+	return buttons;
+    },
+
+
+
+    getLegendBody:function() {
+	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
+	let inMapLegend='';
+	let body = '';
+	
+	let debug = this.getName()=='Alerts';
+	let buttons = this.makeLegendButtons();
+
+
 	if((!this.display.canEdit() && !this.getProperty('showButtons',true))) {
 	    buttons = '';
 	}
@@ -55723,9 +55729,9 @@ MapGlyph.prototype = {
 
 	let styleGroups =this.getStyleGroups();
 	let styleGroupsUI = HU.leftRightTable('',
-					      this.getHelp('mapfiles.html#adding_a_map'));
+					      this.getHelp('mapfiles.html#stylegroups'));
 	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,'100%']);
-	styleGroupsUI+=HU.tr([],HU.tds([],
+	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],
 				       ['Group','Fill','Opacity','Stroke',ATTR_WIDTH,'Pattern','Features']));
 	for(let i=0;i<20;i++) {
 	    let group = styleGroups[i];
@@ -55740,7 +55746,7 @@ MapGlyph.prototype = {
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag(TAG_TABLE);
-	styleGroupsUI = HU.div([ATTR_STYLE,HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
+	styleGroupsUI = HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto')], styleGroupsUI);
 
 	//Don't add style groups if it is a group, just map glyphs
 	if(!this.isGroup()) {
