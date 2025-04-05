@@ -1,5 +1,5 @@
 /**
-   Copyright (c) 2008-2021 Geode Systems LLC
+   Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
 */
 
@@ -2321,41 +2321,9 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (int i = 0; i < 400; i++) {
             matrix[i] = 1.0f / 400.0f;
         }
-
-        //        BufferedImageOp op = new ConvolveOp( new Kernel(20, 20, matrix), ConvolveOp.EDGE_NO_OP, null );
-        /*
-	  com.jhlabs.image.ConvolveFilter filter = new com.jhlabs.image.ConvolveFilter();
-	  Image filteredImage = filter.filter(ImageUtils.toBufferedImage(newImage), null);
-
-	  ImageUtils.writeImageToFile(filteredImage, imageFile);
-        */
         ImageUtils.writeImageToFile(newImage, imageFile);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        System.err.println("main");
-        float[] matrix = new float[400];
-        for (int i = 0; i < 400; i++) {
-            matrix[i] = 1.0f / 400.0f;
-        }
-
-        //        BufferedImage newImage = ImageUtils.toBufferedImage(ImageUtils.readImage(args[0]));
-        //        System.err.println("filtering");
-        //        com.jhlabs.image.ConvolveFilter filter = new com.jhlabs.image.ConvolveFilter(new Kernel(20, 20, matrix));
-        //        com.jhlabs.image.GaussianFilter filter = new com.jhlabs.image.GaussianFilter(5.0f);
-
-        //        Image filteredImage = filter.filter(newImage, null);
-        //        System.err.println("writing");
-        //        ImageUtils.writeImageToFile(filteredImage, "filtered_" + args[0]);
-    }
 
     /**
      * _more_
