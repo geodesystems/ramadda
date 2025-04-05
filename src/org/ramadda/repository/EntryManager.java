@@ -3476,6 +3476,39 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+    private void checkEntryLocation(Request request, Entry entry) {
+	try {
+	    checkEntryLocationInner(request,entry);
+	} catch(Exception exc) {
+	    getLogManager().logError("checkEntryLocation:" + entry,exc);
+	}
+    }
+
+    private void checkEntryLocationInner(Request request, Entry entry) throws Exception {	
+	Column utmZone = entry.getColumn("utm_zone");
+	if(utmZone==null) return;
+	if(entry.hasLocationDefined(request)) {
+	    double[] latlon = entry.getLocation(request);
+	    if(latlon!=null && latlon[0]!=Entry.NONGEO && latlon[1]!=Entry.NONGEO &&
+	       !Double.isNaN(latlon[0]) && !Double.isNaN(latlon[0])) {
+		GeoUtils.UTMInfo info = GeoUtils.LatLonToUTM(latlon[0],latlon[1]);
+		if(info!=null) {
+		    entry.setValue(utmZone,info.getZone());
+		    Column utmNorthing = entry.getColumn("utm_northing");
+		    if(utmNorthing!=null)
+			entry.setValue(utmNorthing,new Double(info.getNorthing()));
+		    Column utmEasting = entry.getColumn("utm_easting");
+		    if(utmEasting!=null)
+			entry.setValue(utmEasting,new Double(info.getEasting()));
+
+		}
+	    }
+	}
+	
+    }
+
+
+
 
     private void setEntryState(Request request, Entry entry, Entry parent,
                                boolean newEntry)
@@ -3520,7 +3553,7 @@ public class EntryManager extends RepositoryManager {
 						       Entry.NONGEO));
                 entry.setEast(request.getLatOrLonValue(ARG_AREA + "_east",
 						       Entry.NONGEO));
-            }
+	    }
 	    if(entry.hasAreaDefined(request)) {
 		getRepository().getSessionManager().setArea(request,
 							    entry.getNorth(request),
@@ -3528,12 +3561,8 @@ public class EntryManager extends RepositoryManager {
 							    entry.getSouth(request),
 							    entry.getEast(request));
 	    }
-
         }
-
         List<Entry> children       = null;
-
-
         double      altitudeTop    = entry.getAltitudeTop();
         double      altitudeBottom =  entry.getAltitudeBottom();
         if (request.defined(ARG_ALTITUDE)) {
@@ -3550,8 +3579,9 @@ public class EntryManager extends RepositoryManager {
         }
         entry.setAltitudeTop(altitudeTop);
         entry.setAltitudeBottom(altitudeBottom);
-        entry.getTypeHandler().initializeEntryFromForm(request, entry,
+	entry.getTypeHandler().initializeEntryFromForm(request, entry,
 						       parent, newEntry);
+	checkEntryLocation(request,entry);	
     }
 
 
