@@ -3994,7 +3994,7 @@ MapGlyph.prototype = {
 	let styleGroupsUI = HU.leftRightTable('',
 					      this.getHelp('mapfiles.html#adding_a_map'));
 	styleGroupsUI+=HU.openTag(TAG_TABLE,[ATTR_WIDTH,'100%']);
-	styleGroupsUI+=HU.tr([],HU.tds([],
+	styleGroupsUI+=HU.tr([],HU.tds([ATTR_STYLE,'font-weight:bold;'],
 				       ['Group','Fill','Opacity','Stroke',ATTR_WIDTH,'Pattern','Features']));
 	for(let i=0;i<20;i++) {
 	    let group = styleGroups[i];
@@ -4009,7 +4009,7 @@ MapGlyph.prototype = {
 		Utils.join(group?.indices??[],',')]));
 	}
 	styleGroupsUI += HU.closeTag(TAG_TABLE);
-	styleGroupsUI = HU.div([ATTR_STYLE,HU.css('max-height','150px','overflow-y','auto')], styleGroupsUI);
+	styleGroupsUI = HU.div([ATTR_STYLE,HU.css('max-height','300px','overflow-y','auto')], styleGroupsUI);
 
 	//Don't add style groups if it is a group, just map glyphs
 	if(!this.isGroup()) {
