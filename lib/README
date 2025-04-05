@@ -111,6 +111,10 @@ jmapproj.jar:
   is a Java implementation of the proj4 library.  It is used in the
   lidar package for doing coordinate transforms.
 
+proj4j-1.4.0.jar & proj4j-epsg-1.4.0.jar:
+From: https://repo1.maven.org/maven2/org/locationtech/proj4j/proj4j/
+
+
 junit.jar:
 
   https://github.com/KentBeck/junit/downloads This is from junit-4.10.jar
