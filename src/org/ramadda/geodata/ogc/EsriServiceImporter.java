@@ -5,10 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.ogc;
 
-
 import com.jhlabs.map.proj.Projection;
 import com.jhlabs.map.proj.ProjectionFactory;
-
 
 import org.json.*;
 
@@ -32,70 +30,36 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Thu, Jul 31, '14
- * @author         Enter your name here...
- */
 public class EsriServiceImporter extends ImportHandler {
 
-    /** _more_ */
     public static final String TAG_SERVICES = "services";
 
-    /** _more_ */
     public static final String TAG_COPYRIGHT_TEXT = "copyrightText";
 
-    /** _more_ */
     public static final String TAG_FOLDERS = "folders";
 
-    /** _more_ */
     public static final String TAG_URL = "url";
 
-    /** _more_ */
     public static final String TAG_DESCRIPTION = "description";
 
-    /** _more_ */
     public static final String TAG_SERVICEDESCRIPTION = "serviceDescription";
 
-    /** _more_ */
     public static final String TAG_LAYERS = "layers";
 
-    /** _more_ */
     public static final String TAG_FULLEXTENT = "fullExtent";
 
-    /** _more_ */
     public static final String TAG_SPATIALREFERENCE = "spatialReference";
 
-    /** _more_ */
     public static final String TAG_WKID = "wkid";
 
-    /** _more_ */
     public static final String TAG_LATEST_WKID = "latestWkid";
 
-
-    /** _more_ */
     public static final String TYPE_ESRI = "esriservice";
 
-
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     */
     public EsriServiceImporter(Repository repository) {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -104,18 +68,6 @@ public class EsriServiceImporter extends ImportHandler {
                                            TYPE_ESRI));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param theUrl _more_
-     * @param parentEntry _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result handleUrlRequest(final Request request,
                                    Repository repository,
@@ -181,19 +133,8 @@ public class EsriServiceImporter extends ImportHandler {
                                            "Importing the services", "",
                                            parentEntry);
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private JSONTokener getTokenizer(String url) throws Exception {
         url = url + "?f=pjson";
         try {
@@ -209,19 +150,6 @@ public class EsriServiceImporter extends ImportHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param actionId _more_
-     * @param entries _more_
-     * @param baseUrl _more_
-     * @param serviceUrl _more_
-     * @throws Exception _more_
-     */
     private void processServiceList(Request request, Entry parentEntry,
                                     Object actionId, List<Entry> entries,
                                     String baseUrl, String serviceUrl)
@@ -261,7 +189,6 @@ public class EsriServiceImporter extends ImportHandler {
             }
         }
 
-
         if (obj.has(TAG_SERVICES)) {
             JSONArray services = obj.getJSONArray(TAG_SERVICES);
             for (int i = 0; i < services.length(); i++) {
@@ -275,19 +202,6 @@ public class EsriServiceImporter extends ImportHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param type _more_
-     * @param name _more_
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry makeEntry(Request request, Entry parentEntry, String type,
                             String name, String url)
             throws Exception {
@@ -306,15 +220,6 @@ public class EsriServiceImporter extends ImportHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param actionId _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     */
     private boolean okToContinue(Object actionId, List<Entry> entries) {
         if ( !getRepository().getActionManager().getActionOk(actionId)) {
             return false;
@@ -330,34 +235,12 @@ public class EsriServiceImporter extends ImportHandler {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     private String getNameFromId(String id) {
         String[] toks = id.split("/");
 
         return toks[toks.length - 1];
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param actionId _more_
-     * @param entries _more_
-     * @param baseUrl _more_
-     * @param service _more_
-     *
-     * @throws Exception _more_
-     */
     private void processService(Request request, Entry parentEntry,
                                 Object actionId, List<Entry> entries,
                                 String baseUrl, JSONObject service)
@@ -396,11 +279,9 @@ public class EsriServiceImporter extends ImportHandler {
             description.append(obj.getString(TAG_SERVICEDESCRIPTION).trim());
         }
 
-
         if (name.length() > Entry.MAX_NAME_LENGTH) {
             name = name.substring(0, 195) + "...";
         }
-
 
         String entryType = "type_esri_restservice";
         if (type.equals("FeatureServer")) {
@@ -426,7 +307,6 @@ public class EsriServiceImporter extends ImportHandler {
         }
         values[2] = wkid;
 
-
         entries.add(entry);
 
         if (obj.has(TAG_LAYERS)) {
@@ -441,22 +321,8 @@ public class EsriServiceImporter extends ImportHandler {
 
         }
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param actionId _more_
-     * @param entries _more_
-     * @param baseUrl _more_
-     * @param layer _more_
-     *
-     * @throws Exception _more_
-     */
     private void processLayer(Request request, Entry parentEntry,
                               Object actionId, List<Entry> entries,
                               String baseUrl, JSONObject layer)
@@ -493,22 +359,9 @@ public class EsriServiceImporter extends ImportHandler {
             values[3] = sb.toString();
         }
 
-
-
         entries.add(entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param extent _more_
-     * @param wkid _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private double[] getBounds(JSONObject extent, String wkid)
             throws Exception {
         double                         xmin = extent.getDouble("xmin");
@@ -516,7 +369,6 @@ public class EsriServiceImporter extends ImportHandler {
         double                         ymin = extent.getDouble("ymin");
         double                         ymax = extent.getDouble("ymax");
         com.jhlabs.map.proj.Projection proj = null;
-
 
         wkid = wkid.trim();
         if (wkid.equals("4326") || wkid.equals("4269") || wkid.equals("4269")
@@ -566,14 +418,6 @@ public class EsriServiceImporter extends ImportHandler {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         com.jhlabs.map.proj.Projection proj =
             com.jhlabs.map.proj.ProjectionFactory
@@ -591,18 +435,6 @@ public class EsriServiceImporter extends ImportHandler {
         System.err.println("dst:" + dst.getX() + " " + dst.getY());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param obj _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String processBounds(Request request, Entry entry, JSONObject obj)
             throws Exception {
         String wkid = null;
@@ -632,7 +464,5 @@ public class EsriServiceImporter extends ImportHandler {
 
         return wkid;
     }
-
-
 
 }

@@ -4,12 +4,6 @@ SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.ogc;
-
-
-import com.jhlabs.map.proj.Projection;
-import com.jhlabs.map.proj.ProjectionFactory;
-
-
 import org.json.*;
 
 import org.ramadda.repository.*;
@@ -32,27 +26,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Thu, Jul 31, '14
- * @author         Enter your name here...
- */
 public class EsriProcessor {
-
-    /** _more_ */
     private static final String URL =
         "?num=500&start=1&sortField=title&sortOrder=desc&q=group:%22{id}%22&f=json";
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         for (String id : args) {
             JSONTokener tokenizer = getTokenizer(id);
@@ -77,7 +54,6 @@ public class EsriProcessor {
 
 https://nga.maps.arcgis.com/sharing/rest/content/items/5df40867317e442ea886359fdfb67c4a/info/thumbnail/thumbnail.png
 https://nga.maps.arcgis.com/sharing/rest/content/items/5df40867317e442ea886359fdfb67c4a/data
-
 
 {
 "id":"b1417eaaff304d158c18d407715e1cda",
@@ -157,16 +133,6 @@ https://nga.maps.arcgis.com/sharing/rest/content/items/5df40867317e442ea886359fd
 
     */
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static JSONTokener getTokenizer(String id) throws Exception {
         String url  = URL.replace("{id}", id);
         String json = IOUtil.readContents(url.toString(),
@@ -175,8 +141,5 @@ https://nga.maps.arcgis.com/sharing/rest/content/items/5df40867317e442ea886359fd
 
         return tokenizer;
     }
-
-
-
 
 }
