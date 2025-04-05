@@ -56,7 +56,7 @@
 </style>
 
 <h2>RAMADDA SeeSV</h2>
-<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 324 commands for manipulating CSV and other types of files</center>
+<center><a href='#Input'>Input</a> | <a href='#Filter'>Filter</a> | <a href='#Slice and Dice'>Slice and Dice</a> | <a href='#Change'>Change</a> | <a href='#Values'>Values</a> | <a href='#Dates'>Dates</a> | <a href='#Numeric'>Numeric</a> | <a href='#Geospatial'>Geospatial</a> | <a href='#Misc'>Misc</a> | <a href='#Output'>Output</a><br>The RAMADDA SeeSV package provides 326 commands for manipulating CSV and other types of files</center>
 
 :pagesearch selector=.seesv-item hideAll=.seesv-hide linkSelector=.command-link
 
@@ -2740,7 +2740,7 @@ What type of offset, e.g., year, month, day_of_week, etc values:days_in_year, ho
 <li> <i>column</i>:
 <br>
 <li> <i>to</i>:
-seconds|hours|days|weeks|months|years<br>
+seconds,hours,days,weeks,months,years values:seconds,hours,days,weeks,months,years <br>
 </ul>
 </div></div><div class=seesv-item>
 <a class=command-link name='-latest'></a><div class=command> <i><a href='#-latest'>-latest</a></i>  &lt;columns&gt;  &lt;column&gt;  &lt;format&gt; </div><div class=command-block>Pass through rows whose date is the latest in the group of rows defined by the key column<br class=seesv-hide>
@@ -3272,7 +3272,7 @@ Column indices. Can include ranges, e.g. 0-5<br>
 How strict values:strict,ramadda <br>
 </ul>
 </div></div></ul><br class='seesv-hide seesv-item'><div class='seesv-hide seesv-item'><hr><a name='Geospatial'></a><b style='font-size:120%;'>Geospatial</b><br>
-</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-geocode'><i>-geocode</i>: Geocode using given columns</a><li> <a href='#-geocodeifneeded'><i>-geocodeifneeded</i>: Geocode if needed</a><li> <a href='#-geocodeaddressdb'><i>-geocodeaddressdb</i>: Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column</a><li> <a href='#-geocodejoin'><i>-geocodejoin</i>: Geocode with file</a><li> <a href='#-bounds'><i>-bounds</i>: Geocode within bounds</a><li> <a href='#-inbounds'><i>-inbounds</i>: Subset lat/lon bounds</a><li> <a href='#-decodelatlon'><i>-decodelatlon</i>: Decode latlon</a><li> <a href='#-getaddress'><i>-getaddress</i>: Get address from lat/lon</a><li> <a href='#-statename'><i>-statename</i>: Add state name from state ID</a><li> <a href='#-geoname'><i>-geoname</i>: Look up location name</a><li> <a href='#-geocontains'><i>-geocontains</i>: Check for containment</a><li> <a href='#-elevation'><i>-elevation</i>: Look up elevation(using 1/3 arc-second DEM)</a><li> <a href='#-mercator'><i>-mercator</i>: Convert x/y to lon/lat</a><li> <a href='#-region'><i>-region</i>: Add the state's region</a><li> <a href='#-population'><i>-population</i>: Add in population from address</a><li> <a href='#-neighborhood'><i>-neighborhood</i>: Look up neighborhood for a given location</a></ul></div></div><div class=seesv-item>
+</div><div class=header><div class=seesv-hide>Commands:<ul><li> <a href='#-geocode'><i>-geocode</i>: Geocode using given columns</a><li> <a href='#-geocodeifneeded'><i>-geocodeifneeded</i>: Geocode if needed</a><li> <a href='#-geocodeaddressdb'><i>-geocodeaddressdb</i>: Geocode for import into RAMADDA's DB. The lat/lon is one semi-colon delimited column</a><li> <a href='#-geocodejoin'><i>-geocodejoin</i>: Geocode with file</a><li> <a href='#-bounds'><i>-bounds</i>: Geocode within bounds</a><li> <a href='#-inbounds'><i>-inbounds</i>: Subset lat/lon bounds</a><li> <a href='#-decodelatlon'><i>-decodelatlon</i>: Decode latlon</a><li> <a href='#-getaddress'><i>-getaddress</i>: Get address from lat/lon</a><li> <a href='#-statename'><i>-statename</i>: Add state name from state ID</a><li> <a href='#-geoname'><i>-geoname</i>: Look up location name</a><li> <a href='#-geocontains'><i>-geocontains</i>: Check for containment</a><li> <a href='#-elevation'><i>-elevation</i>: Look up elevation(using 1/3 arc-second DEM)</a><li> <a href='#-latlontoutm'><i>-latlontoutm</i>: Convert lat/lon to UTM</a><li> <a href='#-utmtolatlon'><i>-utmtolatlon</i>: Convert UTMto lat/lon</a><li> <a href='#-mercator'><i>-mercator</i>: Convert x/y to lon/lat</a><li> <a href='#-region'><i>-region</i>: Add the state's region</a><li> <a href='#-population'><i>-population</i>: Add in population from address</a><li> <a href='#-neighborhood'><i>-neighborhood</i>: Look up neighborhood for a given location</a></ul></div></div><div class=seesv-item>
 <a class=command-link name='-geocode'></a><div class=command> <i><a href='#-geocode'>-geocode</a></i>  &lt;columns&gt;  &lt;prefix&gt;  &lt;suffix&gt; </div><div class=command-block>Geocode using given columns<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -3529,6 +3529,24 @@ You can add the elevation with:
 
 
 <p></div></div><div class=seesv-item>
+<a class=command-link name='-latlontoutm'></a><div class=command> <i><a href='#-latlontoutm'>-latlontoutm</a></i>  &lt;latitude&gt;  &lt;longitude&gt; </div><div class=command-block>Convert lat/lon to UTM<br class=seesv-hide>
+<ul>
+<li> <i>latitude</i>:
+Latitude column<br>
+<li> <i>longitude</i>:
+Longitude column<br>
+</ul>
+</div></div><div class=seesv-item>
+<a class=command-link name='-utmtolatlon'></a><div class=command> <i><a href='#-utmtolatlon'>-utmtolatlon</a></i>  &lt;utm_zone&gt;  &lt;easting&gt;  &lt;northing&gt; </div><div class=command-block>Convert UTMto lat/lon<br class=seesv-hide>
+<ul>
+<li> <i>utm_zone</i>:
+UTM Zone<br>
+<li> <i>easting</i>:
+Easting column<br>
+<li> <i>northing</i>:
+Northing column<br>
+</ul>
+</div></div><div class=seesv-item>
 <a class=command-link name='-mercator'></a><div class=command> <i><a href='#-mercator'>-mercator</a></i>  &lt;columns&gt; </div><div class=command-block>Convert x/y to lon/lat<br class=seesv-hide>
 <ul>
 <li> <i>columns</i>:
@@ -4004,7 +4022,7 @@ Number of rows in each file<br>
 <a class=command-link name='-addheader'></a><div class=command> <i><a href='#-addheader'>-addheader</a></i>  &lt;properties&gt; </div><div class=command-block>Add the RAMADDA point properties<br class=seesv-hide>
 <ul>
 <li> <i>properties</i>:
-name1 value1 ... nameN valueN<br>Set default: default.type double<br>
+name1 value1 ... nameN valueN<br>
 </ul>
 The -addheader command adds RAMADDA's point data header to the output file.
 The header specifies the canonical field ids and a set of properties for
@@ -4063,6 +4081,7 @@ Other field properties include:
   10,20,30
 </pre>
 
+</ul>
 
 The type of a field can be defined with:
 <pre>
