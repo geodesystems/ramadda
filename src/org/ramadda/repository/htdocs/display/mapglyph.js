@@ -2181,15 +2181,8 @@ MapGlyph.prototype = {
     canEdit: function() {
 	return !this.isEphemeral;
     },
-    getLegendBody:function() {
-	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
-	let inMapLegend='';
-	let body = '';
-	
-	let debug = this.getName()=='Alerts';
-	let buttons = this.display.makeGlyphButtons(this,this.canEdit(),this.getName()=='Alerts');
-
-
+    makeLegendButtons:function() {
+	let buttons = this.display.makeGlyphButtons(this,this.canEdit());
 	if(this.isMap() && this.getProperty('showFeaturesTable',true))  {
 	    this.showFeatureTableId = HU.getUniqueId('btn');
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -2203,7 +2196,21 @@ MapGlyph.prototype = {
 	    url = RamaddaUtils.getEntryUrl(this.attrs.entryId);
 	    buttons = HU.href(url,HU.getIconImage('fas fa-home',[],BUTTON_IMAGE_ATTRS),['target','_entry',ATTR_TITLE,'View entry',
 											ATTR_CLASS,CLASS_CLICKABLE]) +buttons;
-	}	
+	}
+	return buttons;
+    },
+
+
+
+    getLegendBody:function() {
+	let showInMapLegend=this.getProperty('showLegendInMap',false) && !this.display.getShowLegendInMap();
+	let inMapLegend='';
+	let body = '';
+	
+	let debug = this.getName()=='Alerts';
+	let buttons = this.makeLegendButtons();
+
+
 	if((!this.display.canEdit() && !this.getProperty('showButtons',true))) {
 	    buttons = '';
 	}

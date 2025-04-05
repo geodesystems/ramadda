@@ -2368,9 +2368,8 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let visible = HU.checkbox('',[ATTR_STYLE,'margin-right:5px;',ATTR_TITLE,'Visible',ID_GLYPH_ID,mapGlyph.getId(),
 					  ATTR_CLASS,HU.classes(CLASS_CLICKABLE,'imdv-feature-visible')],mapGlyph.getVisible());
 	    let title =  mapGlyph.getLabel();
-	    title+='<br>' +
-		select + visible +
-		this.makeGlyphButtons(mapGlyph,true);
+	    title+=HU.div([], visible +	mapGlyph.makeLegendButtons());
+//		this.makeGlyphButtons(mapGlyph,true);
  	    line += HU.td(['nowrap','',ATTR_STYLE,HU.css('padding','5px')], title);
 	    let col = mapGlyph.getDecoration();
 	    let msg = this.getDistances(mapGlyph.getGeometry(),mapGlyph.getType());
