@@ -305,6 +305,8 @@ public interface SeesvCommands {
     public static final String CMD_GEOCONTAINS="-geocontains";
     public static final String CMD_ELEVATION="-elevation";
     public static final String CMD_MERCATOR="-mercator";
+    public static final String CMD_UTMTOLATLON="-utmtolatlon";
+    public static final String CMD_LATLONTOUTM="-latlontoutm";        
     public static final String CMD_REGION="-region";
     public static final String CMD_POPULATION="-population";
     public static final String CMD_NEIGHBORHOOD="-neighborhood";

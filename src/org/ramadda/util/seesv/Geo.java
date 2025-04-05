@@ -330,6 +330,122 @@ public abstract class Geo extends Processor {
 
     }
 
+    public static class LatLonToUtm extends Geo {
+
+        private String lat;
+
+        private String lon;
+
+        private int latColumn = -1;
+
+        private int lonColumn = -1;
+
+        public LatLonToUtm(String lat, String lon) {
+            super();
+            this.lat = lat;
+            this.lon = lon;
+        }
+	private Row addUndefined(Row row) {
+	    row.add("");
+	    row.add("NaN");		    
+	    row.add("NaN");
+	    return row;
+	}
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                latColumn = getIndex(ctx, lat);
+                lonColumn = getIndex(ctx, lon);
+                row.add("UTM Zone");
+                row.add("UTM Easting");		
+                row.add("UTM Northing");
+                return row;
+            }
+            try {
+		if(!row.indexOk(latColumn) || !row.indexOk(lonColumn))
+		    return addUndefined(row);
+                double latValue =
+                    Double.parseDouble(row.getString(latColumn));
+                double lonValue =
+                    Double.parseDouble(row.getString(lonColumn));
+		if(!GeoUtils.latLonOk(latValue,lonValue)) {
+		    return addUndefined(row);
+		}
+		GeoUtils.UTMInfo info = GeoUtils.LatLonToUTM(latValue, lonValue);
+		if(info==null) {
+		    return addUndefined(row);
+
+		}
+		row.add(info.getZone());
+		row.add(""+info.getEasting());
+		row.add(""+info.getNorthing());		
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+
+    public static class UtmToLatLon extends Geo {
+
+        private String zone;
+        private String easting;
+        private String northing;
+
+        private int zoneColumn = -1;
+        private int eastingColumn = -1;
+        private int northingColumn = -1;
+
+        public UtmToLatLon(String zone, String easting, String northing) {
+            super();
+	    this.zone = zone;
+            this.easting = easting;
+            this.northing = northing;
+        }
+	private Row addUndefined(Row row) {
+	    row.add("NaN");		    
+	    row.add("NaN");
+	    return row;
+	}
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+            if (rowCnt++ == 0) {
+                zoneColumn = getIndex(ctx, zone);
+                northingColumn = getIndex(ctx, northing);
+                eastingColumn = getIndex(ctx, easting);
+                row.add("Latitude");
+                row.add("Longitude");		
+                return row;
+            }
+            try {
+		if(!row.indexOk(zoneColumn) ||
+		   !row.indexOk(eastingColumn) || !row.indexOk(northingColumn))
+		    return addUndefined(row);
+		String zone = row.getString(zoneColumn);
+                double eastingValue =  Seesv.parseDouble(row.getString(eastingColumn));
+                double northingValue = Seesv.parseDouble(row.getString(northingColumn));
+		double[]latlon =  GeoUtils.UTMToLatLon(zone,eastingValue,northingValue);
+		if(latlon==null) {
+		    return addUndefined(row);
+
+		}
+		row.add(""+latlon[0]);
+		row.add(""+latlon[1]);		
+                return row;
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+    }
+
+
+
+
+
     public static class Neighborhood extends Geo {
 
         private int rowIdx = 0;
@@ -362,9 +478,9 @@ public abstract class Geo extends Processor {
             }
             try {
                 double latValue =
-                    Double.parseDouble(row.getString(latColumn));
+                    Seesv.parseDouble(row.getString(latColumn));
                 double lonValue =
-                    Double.parseDouble(row.getString(lonColumn));
+                    Seesv.parseDouble(row.getString(lonColumn));
                 String result = GeoUtils.getNeighborhood(latValue, lonValue);
                 if (result == null) {
                     result = dflt;

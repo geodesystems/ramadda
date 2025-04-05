@@ -2597,6 +2597,17 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_LATITUDE, "Latitude column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
 
+        new Cmd(CMD_LATLONTOUTM, "Convert lat/lon to UTM",
+		ARG_LABEL,"Convert Lat/Lon to UTM Coordinates",
+                new Arg(ARG_LATITUDE, "Latitude column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg(ARG_LONGITUDE, "Longitude column", ATTR_TYPE, TYPE_COLUMN)),	
+
+        new Cmd(CMD_UTMTOLATLON, "Convert UTMto lat/lon",
+		ARG_LABEL,"Convert  UTM Coordinates to Lat/Lon",
+                new Arg("utm_zone", "UTM Zone"),
+                new Arg("easting", "Easting column", ATTR_TYPE, TYPE_COLUMN),
+                new Arg("northing", "Northing column", ATTR_TYPE, TYPE_COLUMN)),	
+	
         new Cmd(CMD_MERCATOR, "Convert x/y to lon/lat",
 		ARG_LABEL,"Convert Mercator",
 		new Arg(ARG_COLUMNS,"x and y columns")),
@@ -3979,6 +3990,15 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Geo.Elevation(args.get(++i),args.get(++i)));
 		return i;
 	    });
+	defineFunction(CMD_LATLONTOUTM,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.LatLonToUtm(args.get(++i),args.get(++i)));
+		return i;
+	    });
+
+	defineFunction(CMD_UTMTOLATLON,3,(ctx,args,i) -> {
+		ctx.addProcessor(new Geo.UtmToLatLon(args.get(++i),args.get(++i),args.get(++i)));
+		return i;
+	    });		
 	defineFunction(CMD_NEIGHBORHOOD,3,(ctx,args,i) -> {
 		ctx.addProcessor(new Geo.Neighborhood(args.get(++i),args.get(++i),args.get(++i)));
 		return i;
