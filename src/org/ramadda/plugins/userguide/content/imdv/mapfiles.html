@@ -81,14 +81,8 @@ some_property.filter.type=enumeration
 </pre>
 
 
-:heading Map Styles
-The <b>Style</b> section of the settings dialog lets you specify the standard set of map styles, e.g.,
-stroke color, stroke width, fill color, etc.
-In our example we've changed the Stroke Color to be gray and the Stroke Width to be 1. 
 <a name=mapstylerules></a>
-:p
-
-
+:heading Style Rules
 The <b>Style Rules</b> section allows you to specify how to style each individual feature based on
 the feature properties.
 
@@ -112,17 +106,26 @@ Mouse over the styles to see the format, e.g.:
   externalGraphic:/repository/map/marker-blue.png
 </pre>
 
-:p
+<a name=stylegroups></a>
+:heading Style Groups
 The <b>Style Groups</b>  section allows you to specify one or more groups and the corresponding styles
 for those groups. This enables you to "paint" specific polygons in the map.
 These groups will show up in the legend. Selecting a group in the legend and then selecting
 a polygon in the map will add that polygon to the group.
 :p
-In our example we've defined a style group called "Closed" with fill color red and diagonal striping.
+In our example we've defined a style group called "Closed" with fill color red and diagonal striping
+and another style group "Wildlife" with fill color "#008000".
 
-[ht::screenshot images/stylegroup.png]
+
+[ht::screenshot images/stylegroups.png]
+
+Once the style groups are defined they will be listed in the legend. When one of the groups are selected this
+enables the user to select individual features in the map to apply the style to.
+
+[ht::screenshot images/stylegroupslegend.png]
 
 
+:heading Labels
 The <b>Labels</b> section allows you to specify a template (similar to the popup text) for a label
 for each polygon. 
 
@@ -144,14 +147,25 @@ for download.
 * First, create a Group using  the New  -&gt; Group menu.
 * Next, draw any number of  Lines, Polylines or Freehand objects in the map
 * Drag and drop the Line/Polyline/Freehand objects in the legend onto the Group
-* Bring up the Settings dialog for the Group
-* Under the "Make Map" tab you can hist "Make Map File". This will generate and download  a GeoJson map file with each of the Lines as separate features
-[ht::screenshot images/makemap.png]
 
+[ht::screenshot images/makemap1.png]
+
+
+Next, bring up the Settings dialog for the Group. 
+Under the "Make Map" tab you can hist "Make Map File". This will generate and download  a GeoJson map file with each of the Lines as separate features
 If you want to merge the Lines into one GeoJson feature, first make sure the Lines are in
 the order they are to be merged. Then in the Map Map dialog select the "Merge Polygons" checkbox
 and press Make Map File. Check the GeoJson map file to ensure that the Lines are in the correct order.
 If not, then drag and drop the Line-s in the Legend under the Group to specify the correct order.
+
+[ht::screenshot images/makemap2.png]
+
+
+:heading Create Route
+You can create a group that contains a number of markers. Then, under the Make Map section of the Settings
+dialog (above) press Create Route. 
+
+
 
 
 
