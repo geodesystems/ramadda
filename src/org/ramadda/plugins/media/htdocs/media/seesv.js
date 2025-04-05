@@ -114,14 +114,14 @@ function  SeesvForm(inputId, entry,params) {
 	    
 
 	    let makeToolbarLink = (v,style) =>{
-		return  HU.span(['title',v[0],ID,this.domId(v[1]),
+		return  HU.span(['title',v[0],ATTR_ID,this.domId(v[1]),
 				 ATTR_STYLE,style??'margin-right:10px;',
 				 'class','ramadda-clickable ramadda-highlightable'],
 				HU.getIconImage(v[2]));
 	    }
 
 	    let searchAll  = makeToolbarLink(['All commands', ID_ALL,ICON_SEARCH],"");
-	    let topLeft = SPACE1+searchAll+ HU.div([ID,this.domId(ID_MENU),ATTR_STYLE,"display:inline-block;"],"");
+	    let topLeft = SPACE1+searchAll+ HU.div([ATTR_ID,this.domId(ID_MENU),ATTR_STYLE,"display:inline-block;"],"");
 	    let topRight = [['Select file entry', ID_SELECTFILE,'fas fa-file-arrow-up'],
 			    ['Settings',ID_SETTINGS,ICON_SETTINGS],
 			    ['Help',ID_HELP,ICON_HELP]].reduce((current,v)=>{
@@ -129,7 +129,7 @@ function  SeesvForm(inputId, entry,params) {
 			    },"");
 	    html += HU.div(["class","ramadda-menubar",ATTR_STYLE,"width:100%;"],HU.leftRightTable(topLeft,topRight));
 
-	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ID,this.domId(ID_INPUT), "rows", "5"], text);	    
+	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ATTR_ID,this.domId(ID_INPUT), "rows", "5"], text);	    
 
 
 	    let height=Utils.getDefined(HU.getUrlArgument('seesv_editor_height'),
@@ -138,26 +138,26 @@ function  SeesvForm(inputId, entry,params) {
 					'200px');
 
 
-	    html+=HU.div([ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
+	    html+=HU.div([ATTR_ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
 
 
 	    let left ='';
-	    left += HtmlUtil.span([ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
-	    left += HtmlUtil.span([ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
-	    left += HtmlUtil.span([ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
 
 
 
 	    let right = "";
-	    right += HtmlUtil.span([ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
-	    right += HtmlUtil.span([ID,this.domId(ID_LIST),CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
-	    right += HtmlUtil.span([ID,this.domId(ID_TRASH),CLASS,"ramadda-clickable", TITLE,"Remove temp files"],HU.getIconImage("fa-trash")) +SPACE2;	    	    
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_LIST),CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_TRASH),CLASS,"ramadda-clickable", TITLE,"Remove temp files"],HU.getIconImage("fa-trash")) +SPACE2;	    	    
 	    left +=SPACE + (this.params.extraButtons||"");
 
 
 	    html += HtmlUtil.leftRightTable(left,right);
-	    html +=  HtmlUtil.div([ID, this.domId(ID_OUTPUT),STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
-	    html += HtmlUtil.div([ID, this.domId(ID_SCRATCH)],"");
+	    html +=  HtmlUtil.div([ATTR_ID, this.domId(ID_OUTPUT),STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
+	    html += HtmlUtil.div([ATTR_ID, this.domId(ID_SCRATCH)],"");
 
 
 	    jqid(this.inputId).addClass("ramadda-seesv");
@@ -227,7 +227,8 @@ function  SeesvForm(inputId, entry,params) {
 	    });
 	    this.jq(ID_SETTINGS).click(function(e){
 		let html ="";
-		html += "Rows: " + HtmlUtil.input("",_this.maxRows,["size","2", ID,_this.domId("maxrows")]) +"<br>";
+		html += "Rows: " + HtmlUtil.input("",_this.maxRows,["size","2", ATTR_ID,
+								    _this.domId("maxrows")]) +"<br>";
 		if(this.canEdit) {
 		    html +=  HtmlUtil.checkbox("",[ATTR_TITLE,"Save the commands every time the table is displayed",
 						   ATTR_ID,_this.domId(ID_SAVE)],_this.save,"Auto save") +"<br>";
@@ -359,7 +360,7 @@ function  SeesvForm(inputId, entry,params) {
 	    menu = HU.div(menuAttrs,menu);
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.div([ATTR_STYLE,'font-size:80%;text-align:center;margin:5px;'],
-			       HU.input("","",['autofocus',null,STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ID,inputId]));
+			       HU.input("","",['autofocus',null,STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ATTR_ID,inputId]));
 	    menu = input+menu;
 	    
 	    if(_this.menuDialog) {
@@ -876,7 +877,7 @@ function  SeesvForm(inputId, entry,params) {
 	    let output = this.jq("output");
 	    let result;
 	    let writePre =contents=>{
-		contents = HU.pre([STYLE,HU.css('position','relative'),ID,this.domId(ID_PRE)],  contents);
+		contents = HU.pre([STYLE,HU.css('position','relative'),ATTR_ID,this.domId(ID_PRE)],  contents);
 		output.html(contents);
 		let msg = $(HU.div([STYLE,HU.css("position","absolute","right","48px","top","5px")], "")).appendTo(this.jq(ID_PRE));
 
@@ -1144,9 +1145,9 @@ function  SeesvForm(inputId, entry,params) {
 			return;
 		    } else if(stats || table) {
 			output.html(result);
-			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ID,this.domId("addfields")],"Add field ids") + SPACE3;
+			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ATTR_ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
-			    toolbar += HU.span([ID,"csv_toggledetails"],"Show summary");
+			    toolbar += HU.span([ATTR_ID,"csv_toggledetails"],"Show summary");
 
 			output.find("#header").html(toolbar);
 			let _this = this;
@@ -1273,7 +1274,7 @@ function  SeesvForm(inputId, entry,params) {
 			}
 			let html = printHeader?result:HU.tag('pre',[], result);
 			if(isDb) {
-			    html+=HU.div([ID,this.domId(ID_POPUP), CLASS,"ramadda-popup"]);
+			    html+=HU.div([ATTR_ID,this.domId(ID_POPUP), CLASS,"ramadda-popup"]);
 			} else if(!printHeader) {
 			    writePre(result);
 			    return;
@@ -1355,7 +1356,7 @@ function  SeesvForm(inputId, entry,params) {
 		    let lines = v.split(delim);
 		    v = lines.join("\n");
 		    let numRows = a.type=="rows"?3:(a.rows||"3");
- 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",numRows,ID,id]),
+ 		    inner+=HU.formEntryTop(label,HU.hbox([HU.textarea("",v,["cols", a.size || "30", "rows",numRows,ATTR_ID,id]),
 				 			  getDesc(a)]));
 		} else	if(a.rows) {
 		    if(a.delimiter) {
@@ -1376,17 +1377,17 @@ function  SeesvForm(inputId, entry,params) {
 			console.log(JSON.stringify(a));
 			value="foo,bar";
 		    }
-		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],values.split(","),v),getDesc(a)]));
+		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ATTR_ID,id],values.split(","),v),getDesc(a)]));
 		} else if(a.type=="boolean") {
-		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ID,id],['true','false'],v),getDesc(a)]));		    
+		    inner+=HU.formEntry(label,HU.hbox([HU.select("",[ATTR_ID,id],['true','false'],v),getDesc(a)]));		    
 		} else if(a.type=="column") {
 		    let size = a.size || 30;
 		    let title = a.tooltip || "";
 		    let input;
 //		    if(this.columnIds) {
-//			input  = HU.select("",[ID,id,TITLE, title],this.columnIds,v);
+//			input  = HU.select("",[ATTR_ID,id,TITLE, title],this.columnIds,v);
 //		    } else {
-			input  = HU.input("",v,[ID,id,"size",size,TITLE, title]);
+			input  = HU.input("",v,[ATTR_ID,id,"size",size,TITLE, title]);
 //		    }
 		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(a,true)]));
 		} else {
@@ -1396,7 +1397,7 @@ function  SeesvForm(inputId, entry,params) {
 		    let title = a.tooltip || "";
 		    if(a.type=="pattern" && !a.placeholder)
 			title = "Escapes- _leftparen_, _rightparen_, _leftbracket_, _rightbracket_, _dot_, _dollar_, _star_, _plus_, _nl_"
-		    let input = HU.input("",v,[ID,id,"size",size,TITLE, title, "placeholder",placeholder]);
+		    let input = HU.input("",v,[ATTR_ID,id,"size",size,TITLE, title, "placeholder",placeholder]);
 		    inner+=HU.formEntry(label,HU.hbox([input, getDesc(a,true)]));
 		}
 	    });
@@ -1404,8 +1405,8 @@ function  SeesvForm(inputId, entry,params) {
 	    let help = ramaddaBaseUrl +'/userguide/seesv.html#' + cmd.command;
 	    help = HU.div([ATTR_STYLE,HU.css('display','inline-block'),'id',this.domId('showhelp')], HU.href(help,"Help",['title','Command Help','target','_help']));
 
-	    let buttons = HU.buttons([HU.div([ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
-				      HU.div([ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
+	    let buttons = HU.buttons([HU.div([ATTR_ID,this.domId(ID_ADDCOMMAND)],opts.add?"Add Command":"Change Command"),
+				      HU.div([ATTR_ID,this.domId(ID_CANCELCOMMAND)],"Cancel"),help]);
 
 	    inner+=buttons;
 	    if(this.addDialog) {
