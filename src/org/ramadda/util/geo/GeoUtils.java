@@ -1971,14 +1971,69 @@ public class GeoUtils {
     }
 	
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
+
+
+    public static class UTMInfo {
+	String zone;
+	String epsg;
+	double easting;
+	double northing;
+	public UTMInfo(String zone, String epsg, double easting, double northing) {
+	    this.zone = zone;
+	    this.epsg = epsg;
+	    this.easting = easting;
+	    this.northing = northing;
+	}
+
+	@Override
+	public String toString() {
+	    return "UTM EPSG: " + epsg +" Zone: " + zone +
+		" Easting: " + easting  +" Northing:" + northing;
+	}
+
+	public String getZone() {
+	    return zone;
+	}
+	public String getEpsg() {
+	    return epsg;
+	}
+	public double getEasting() {
+	    return easting;
+	}
+	public double getNorthing() {
+	    return northing;
+	}
+    }
+
+    public static UTMInfo  LatLonToUTM(double latitude, double longitude) {
+        // Determine UTM zone
+        int zone = (int)Math.floor((longitude + 180) / 6) + 1;
+        boolean isNorthernHemisphere = latitude >= 0;
+
+        String utmCode = "EPSG:" + (isNorthernHemisphere ? 326 : 327) + zone;
+
+        org.locationtech.proj4j.CRSFactory crsFactory = new org.locationtech.proj4j.CRSFactory();
+        org.locationtech.proj4j.CoordinateTransformFactory ctFactory = new org.locationtech.proj4j.CoordinateTransformFactory();
+
+        org.locationtech.proj4j.CoordinateReferenceSystem crsLatLon = crsFactory.createFromName("EPSG:4326"); // WGS84
+        org.locationtech.proj4j.CoordinateReferenceSystem crsUTM = crsFactory.createFromName(utmCode); // UTM Zone
+
+        org.locationtech.proj4j.CoordinateTransform transform = ctFactory.createTransform(crsLatLon, crsUTM);
+
+        org.locationtech.proj4j.ProjCoordinate srcCoord = new org.locationtech.proj4j.ProjCoordinate(longitude, latitude);
+        org.locationtech.proj4j.ProjCoordinate dstCoord = new org.locationtech.proj4j.ProjCoordinate();
+
+        transform.transform(srcCoord, dstCoord);
+
+	return new UTMInfo(zone+(isNorthernHemisphere?"N":"S"),
+			   utmCode,dstCoord.x,dstCoord.y);
+    }
+
+
     public static void main(String[] args) throws Exception {
+	System.err.println("lat:" + 40 +" lon:" + -107 +" " +LatLonToUTM(40,-107));
+	System.err.println("lat:" + -40 +" lon:" + -107 +" " +LatLonToUTM(-40,-107));	
+	if(true) return;
 	int scale = 1000;
 	List<Double> d = Utils.getDoubles("44.992342,-110.65619,44.430205,-88.507752,32.875383,-87.980408,29.874414,-98.351502,33.537222,-110.65619,43.989213,-112.06244");
 	
