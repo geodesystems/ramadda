@@ -1378,6 +1378,7 @@ public class Seesv implements SeesvCommands {
     }
 
     public static class Cmd {
+	boolean interactiveOk = true;
 
         boolean category;
 
@@ -1393,6 +1394,10 @@ public class Seesv implements SeesvCommands {
 	}
 
         public Cmd(String cmd, String desc, Object... args) {
+	    this(true,cmd,desc,args);
+	}
+        public Cmd(boolean interactiveOk, String cmd, String desc, Object... args) {
+	    this.interactiveOk =  interactiveOk;
 	    //	    String _cmd = "CMD_" +cmd.toUpperCase().replace("-","");
 	    //	    String tcl  ="tclsh ~/bin/cvrt.tcl ";
 	    //	    String QT = "\\\"";
@@ -1529,7 +1534,8 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ENCODING,
 		"Specify the file encoding",ARG_LABEL,"File Encoding",
 		new Arg("encoding","File Encoding see https://docs.oracle.com/javase/8/docs/technotes/guides/intl/encoding.doc.html",
-			"type","enumeration","values","UTF-8,UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
+			"type",TYPE_ENUMERATION,
+			ATTR_VALUES,"UTF-8,UTF-16,UTF-16BE,UTF-16LE,UTF-32,UTF-32BE,UTF-32LE,CESU-8,IBM00858,IBM437,IBM775,IBM850,IBM852,IBM855,IBM857,IBM862,IBM866,ISO-8859-1,ISO-8859-13,ISO-8859-15,ISO-8859-2,ISO-8859-4,ISO-8859-5,ISO-8859-7,ISO-8859-9,KOI8-R,KOI8-U,Not available,US-ASCII,windows-1250,windows-1251,windows-1252,windows-1253,windows-1254,windows-1257,x-IBM737,x-IBM874,x-UTF-16LE-BOM,x-UTF-32BE-BOM,x-UTF-32LE-BOM")),			
         new Cmd(CMD_HEADER, "Raw header",ARG_LABEL,"Add Header",
 		new Arg("header", "Column names", ATTR_TYPE, TYPE_LIST)),
 
@@ -1572,7 +1578,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_GEOJSON, "Parse the input as geojson",
 		ARG_LABEL,"Read GeoJSON",
 		new Arg("includePolygon","Include polygon",
-			ATTR_TYPE,"enumeration","values","true,false")),
+			ATTR_TYPE,TYPE_ENUMERATION,ATTR_VALUES,"true,false")),
         new Cmd(CMD_PDF, "Read input from a PDF file.",ARG_LABEL,"Read PDF"),	
         new Cmd(CMD_XML, "Parse the input as xml",
 		ARG_LABEL,"Read XML",
@@ -1622,14 +1628,15 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_SQL, "Read data from the given database",
 		ARG_LABEL,"Read from DB",
                 new Arg("db", "The database id (defined in the environment)",
-			ATTR_TYPE,"enumeration","values","property:seesv_dbs"),
+			ATTR_TYPE,TYPE_ENUMERATION,ATTR_VALUES,"property:seesv_dbs"),
 		new Arg("table", "Comma separate list of tables to select from",ATTR_SIZE,"60"),
 		new Arg(ARG_COLUMNS, "Comma separated list of columns to select"),
-		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike",ATTR_TYPE,TYPE_ROWS,"delimiter",";",ATTR_SIZE,"60"),				
+		new Arg("where", "column1:expr:value;column2:expr:value;...\ne.g.: name:like:joe;age:>:60\nWhere expr is: =|<|>|<>|like|notlike",
+			ATTR_TYPE,TYPE_ROWS,"delimiter",";",ATTR_SIZE,"60"),				
 		new Arg("properties", "name space value properties. e.g., join col1,col2")),
         new Cmd(CMD_SYNTHETIC, "Generate an empty file with the given number of rows",
                 new Arg("header","comma separated header"),
-                new Arg("values","comma separated values"),		
+                new Arg(ATTR_VALUES,"comma separated values"),		
                 new Arg("number_rows","Number of rows",ATTR_TYPE,TYPE_NUMBER)),
 
 
@@ -1732,7 +1739,8 @@ public class Seesv implements SeesvCommands {
                 new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN)),			
         new Cmd(CMD_UNIQUE, "Pass through unique values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS),
-		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values)",ATTR_TYPE,"enumeration","values","exact,clean,fuzzy:threshold")),
+		new Arg("mode","What type of matching is done - exact (exact match) or clean (lower case and remove whitespace) or fuzzy:threshold (do fuzzy matching with threshold from 1: no similarity to 100: exact match. use fuzzy:? to print out values)",ATTR_TYPE,
+			TYPE_ENUMERATION,ATTR_VALUES,"exact,clean,fuzzy:threshold")),
         new Cmd(CMD_NONUNIQUE, "Pass through non-unique values",
 		new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
 
@@ -1796,7 +1804,7 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Group Filter",
                 new Arg(ARG_COLUMN, "key column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("value_column", "Value column", ATTR_TYPE, TYPE_COLUMN),
-                new Arg("operator", "", "values", "=,!=,~,<,<=,>,>="),
+                new Arg("operator", "", ATTR_VALUES, "=,!=,~,<,<=,>,>="),
                 new Arg("value")),
         new Cmd(CMD_BEFORE, "Pass through rows whose date is before the given date",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
@@ -1900,14 +1908,14 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ADD,"Add new columns",
 		ARG_LABEL,"Add Columns",
 		new Arg("names", "Comma separated list of new column names",ATTR_TYPE,TYPE_LIST),		
-		new Arg("values",
+		new Arg(ATTR_VALUES,
 			"Comma separated list of new values", ATTR_TYPE,
 			TYPE_LIST)),
         new Cmd(CMD_INSERT,"Insert new column values",
 		ARG_LABEL,"Insert Columns",
 		new Arg(ARG_COLUMN, "Column to insert before", ATTR_TYPE, TYPE_COLUMN),
 		new Arg(ARG_NAME, "Name of new column"),		
-		new Arg("values",
+		new Arg(ATTR_VALUES,
 			"Value to insert. Use ${row} to add the row index", ATTR_TYPE,
 			TYPE_LIST)),
 	new Cmd(CMD_CONCAT, "Create a new column from the given columns",
@@ -1930,7 +1938,7 @@ public class Seesv implements SeesvCommands {
                 "Apply operators to columns",
                 new Arg(ARG_COLUMNS, "Columns to merge", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg(ARG_NAME, "New column(s) name"),
-                new Arg("operator", "Operator", "values",
+                new Arg("operator", "Operator", ATTR_VALUES,
                         "average,min,max,count")),
         new Cmd(CMD_SPLIT, "Split the column",
                 new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
@@ -1984,8 +1992,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("close")),
         new Cmd(CMD_ROWOP, "Apply an operator to columns and merge rows",
                 new Arg("keys", "Key columns", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("values", "Value columns", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("operator", "Operator", "values",
+                new Arg(ATTR_VALUES, "Value columns", ATTR_TYPE, TYPE_COLUMNS),
+                new Arg("operator", "Operator", ATTR_VALUES,
                         "average,min,max,count")),
         new Cmd(CMD_ROTATE, "Rotate the data"),
         new Cmd(CMD_FLIP, "Reverse the order of the rows except the header"),
@@ -2128,7 +2136,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_CASE, "Change case of column - type:lower,upper,proper,capitalize",
 		ARG_LABEL,"Change Case",
 		new Arg(ARG_COLUMN, "", ATTR_TYPE, TYPE_COLUMN),
-                new Arg("type", "", "values", "lower,upper,proper,capitalize")),
+                new Arg("type", "", ATTR_VALUES, "lower,upper,proper,capitalize")),
         new Cmd(CMD_TOID, "Convert the column(s) into IDS (lowercase, no space, a-z0-9_)",
 		ARG_LABEL,"TOID",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2267,7 +2275,8 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_MD, "Make a message digest of the column values",
 		ARG_LABEL,"Message Digest",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("type", "", ATTR_TYPE,"enumeration","values", "MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512,")),
+                new Arg("type", "", ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES, "MD5,SHA-1,SHA-256,SHA-512,SHA3-256,SHA3-512,")),
         new Cmd(CMD_TOB64, "Base 64 Encode",
 		ARG_LABEL,"Base 64 Encode",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2291,22 +2300,22 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Add Wikipedia Desc.",
                 new Arg(ARG_COLUMNS, "Search string columns", ATTR_TYPE, TYPE_COLUMNS), 
 		new Arg("suffix","Text to add after")),
-        new Cmd(CMD_IMAGE, "Do a Bing image Search for an image",
+        new Cmd(false, CMD_IMAGE, "Do a Bing image Search for an image",
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("suffix","Text to add after")),
-        new Cmd(CMD_EMBED, "Download the URL and embed the image contents",
+        new Cmd(false, CMD_EMBED, "Download the URL and embed the image contents",
                 new Arg("url column")),
-        new Cmd(CMD_FETCH, "Fetch the URL and embed the contents",
+        new Cmd(false, CMD_FETCH, "Fetch the URL and embed the contents",
                 new Arg(ARG_NAME,"Name of new column"),
                 new Arg("ignore_errors","Ignore Errors e.g., true or false",ATTR_TYPE,"boolean"),
 		new Arg("url","URL template, e.g., https://foo.com/${column_name}")),	
-	new Cmd(CMD_IMAGEFILL,
+	new Cmd(false, CMD_IMAGEFILL,
 		"Search for an image with the query column text if the given image column is blank. Add the given suffix to the search. ",
 		ARG_LABEL,"Image Fill",
 		new Arg("querycolumn", "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("suffix"),
 		new Arg("imagecolumn", "", ATTR_TYPE, TYPE_COLUMN)),
-        new Cmd(CMD_DOWNLOAD, "Download the URL",
+        new Cmd(false, CMD_DOWNLOAD, "Download the URL",
                 new Arg(ARG_COLUMN, "Column that holds the URL", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("suffix", "File suffix")),
         new Cmd(CMD_GENDER, "Figure out the gender of the name in the column",
@@ -2336,29 +2345,31 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Clear the date to",
                 new Arg("date_column", "Date Column", ATTR_TYPE, TYPE_COLUMN),
                 new Arg("component", "Date component",
-			ATTR_TYPE,"enumeration",
-			"values","millisecond,second,minute,hour_of_day,day_of_month,month")),	
+			ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES,"millisecond,second,minute,hour_of_day,day_of_month,month")),	
 
         new Cmd(CMD_EXTRACTDATE, "Extract date",
 		ARG_LABEL,"Extract Date",
 		new Arg("date column", "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", "values",
+		new Arg("what", "What to extract, e.g., year, month, day_of_week, etc", ATTR_VALUES,
 			"era,decade,year,month,day_of_month,day_of_week,week_of_month,\nday_of_week_in_month,am_pm,hour,hour_of_day,\nminute,second,millisecond,days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),
         new Cmd(CMD_FORMATDATE, "Format date",
-		ARG_LABEL,"Format Date - use -outdateformat to set the date format",
+		ARG_LABEL,"Format Date",
                 new Arg(ARG_COLUMNS,"",ATTR_TYPE,TYPE_COLUMNS)),
 
         new Cmd(CMD_FORMATDATEOFFSET, "Format the date offset, e.g. the hours in year",
 		ARG_LABEL,"Format Date Offset",
 		new Arg("column", "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("what", "What type of offset, e.g., year, month, day_of_week, etc", "values",
+		new Arg("what", "What type of offset, e.g., year, month, day_of_week, etc", ATTR_VALUES,
 			"days_in_year, hours_in_year, minutes_in_year,seconds_in_year")),	
 
         new Cmd(CMD_ELAPSED, "Calculate elapsed time (ms) between rows",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN)),
         new Cmd(CMD_MSTO, "Convert milliseconds to",
                 new Arg(ARG_COLUMN,"",ATTR_TYPE,TYPE_COLUMN),
-                new Arg("to","seconds|hours|days|weeks|months|years")),	
+                new Arg("to","seconds,hours,days,weeks,months,years",
+			ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES,"seconds,hours,days,weeks,months,years")),	
 
         new Cmd(CMD_LATEST, "Pass through rows whose date is the latest in the group of rows defined by the key column",
                 new Arg(ARG_COLUMNS, "Key columns", ATTR_TYPE, TYPE_COLUMNS),
@@ -2369,12 +2380,15 @@ public class Seesv implements SeesvCommands {
 		ARG_LABEL,"Date Difference",
                 new Arg("column1","Column 1",ATTR_TYPE,TYPE_COLUMN),
                 new Arg("column2","Column 2",ATTR_TYPE,TYPE_COLUMN),
-		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days",ATTR_TYPE,"enumeration","values","milliseconds,seconds,minutes,hours,days")),
+		new Arg("unit","Unit-milliseconds,seconds,minutes,hours,days",
+			ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES,"milliseconds,seconds,minutes,hours,days")),
 	new Cmd(CMD_DATECOMPARE, "add a true/false column comparing the date values",
 		ARG_LABEL,"Date Compare",
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, "enumeration","values","<,<=,=,!=,>=,>")),	
+		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, TYPE_ENUMERATION,
+			ATTR_VALUES,"<,<=,=,!=,>=,>")),	
 
         /** *  Numeric * */
 	new Category("Numeric"),
@@ -2418,7 +2432,8 @@ public class Seesv implements SeesvCommands {
 		new Arg(ARG_COLUMNS,"Rate column",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg(ARG_COLUMN,"Date column",ATTR_TYPE,TYPE_COLUMN),		
 		new Arg("time unit","The time unit",
-			ATTR_TYPE,"enumeration","values","millisecond,second,minute,hour,day,year"),
+			ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES,"millisecond,second,minute,hour,day,year"),
 		new Arg("name","New column name")),		
         new Cmd(CMD_CHANGECOUNTER,
                 "Make counter field that is incremented everytime the value column changes",
@@ -2433,11 +2448,13 @@ public class Seesv implements SeesvCommands {
                 new Arg(ARG_COLUMNS,"Columns",ATTR_TYPE,TYPE_COLUMNS),
 		new Arg("new col name"),
 		new Arg("operator","Operator:+,-,*,/,%,average",
-			ATTR_TYPE,"enumeration","values","+,-,*,/,%,average")),
+			ATTR_TYPE,TYPE_ENUMERATION,
+			ATTR_VALUES,"+,-,*,/,%,average")),
 	new Cmd(CMD_COMPARE, "Add a true/false column comparing the values",
 		new Arg("column1", "", ATTR_TYPE, TYPE_COLUMN),
 		new Arg("column2", "", ATTR_TYPE, TYPE_COLUMN),
-		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, "enumeration","values","<,<=,=,!=,>=,>")),
+		new Arg("operator", "<,<=,=,!=,>=,>", ATTR_TYPE, TYPE_ENUMERATION,
+			ATTR_VALUES,"<,<=,=,!=,>=,>")),
         new Cmd(CMD_ROUND, "Round the values",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_ABS, "Make absolute values",
@@ -2498,7 +2515,7 @@ public class Seesv implements SeesvCommands {
 		new Arg("start", "Numeric start of range"),
 		new Arg("size", "Numeric size of range")),		
         new Cmd(CMD_BYTES, "Convert suffixed values (e.g., 2 MB) into the number",
-                new Arg("unit", "", ATTR_TYPE, "enumeration","values","binary,metric"),
+                new Arg("unit", "", ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"binary,metric"),
                 new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS)),
         new Cmd(CMD_COLUMN_AND, "And values", ARG_LABEL,"Logical And",
 		new Arg(ARG_NAME,"New column name"),
@@ -2513,7 +2530,7 @@ public class Seesv implements SeesvCommands {
 
 	new Cmd(CMD_CHECK, "Check that the values are numbers",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("what", "How strict", ATTR_TYPE, "enumeration","values","strict,ramadda")),
+                new Arg("what", "How strict", ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"strict,ramadda")),
 
         /** * Geocode  * */
         new Category("Geospatial"),
@@ -2603,8 +2620,8 @@ public class Seesv implements SeesvCommands {
 		new Arg("commands", "Commands. Use the macro ${column}. End with -endapply", ATTR_ROWS, "6")),
         new Cmd(CMD_SORTBY, "", ARG_LABEL,"Sort",
                 new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS),
-                new Arg("direction", "Direction - up or down", ATTR_TYPE, "enumeration","values","up,down"),
-		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, "enumeration","values","string,number,length,date,extract")),
+                new Arg("direction", "Direction - up or down", ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"up,down"),
+		new Arg("how", "How to sort - string, length, date, extract (number)", ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"string,number,length,date,extract")),
 
 	/*        new Cmd(CMD_SORT, "Sort",
 		  new Arg(ARG_COLUMNS, "Column to sort on", ATTR_TYPE, TYPE_COLUMNS)),
@@ -2636,7 +2653,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_FLAG,
 		"Be strict on columns. any rows that are not the size of the other rows are shown"),
         new Cmd(CMD_PROP, "Set a property",
-                new Arg("property", "", "values", "position"),
+                new Arg("property", "", ATTR_VALUES, "position"),
                 new Arg("value", "start, end, etc")),
 
         new Cmd(CMD_GOEASY, "Go easy on missing columns"),
@@ -2667,10 +2684,10 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_HIGHLIGHT, "Highlight the columns",
 		new Arg(ARG_COLUMNS, "", ATTR_TYPE, TYPE_COLUMNS),
 		new Arg("color", "Color",
-			ATTR_TYPE, "enumeration","values","rainbow,red,green,yellow,blue,purple,cyan")),
+			ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"rainbow,red,green,yellow,blue,purple,cyan")),
         new Cmd(CMD_BACKGROUND, "Background the columns",
 		new Arg("color", "Color",
-			ATTR_TYPE, "enumeration","values","red,green,yellow,blue,purple,cyan")),	
+			ATTR_TYPE, TYPE_ENUMERATION,ATTR_VALUES,"red,green,yellow,blue,purple,cyan")),	
         new Cmd(CMD_PRINTHEADER, "Print header",
 		ARG_LABEL,"Print Header"),
         new Cmd(CMD_RAW, "Print the file raw"),
@@ -2834,6 +2851,7 @@ public class Seesv implements SeesvCommands {
         boolean matchedCategory = false;
 
 	for (Cmd c : commands) {
+	    if(json && !c.interactiveOk) continue;
 	    String cmd = c.getLine(format,format,json);
             if (match != null) {
                 String text  = c.cmd;
@@ -3009,7 +3027,7 @@ public class Seesv implements SeesvCommands {
 			sb.append(arg.desc.replace("<xbr>"," ").replace("[","\\["));
 		    }
 		    for(int i=0;i<arg.props.length;i+=2) {
-			if(arg.props[i].equals("values"))
+			if(arg.props[i].equals(ATTR_VALUES))
 			    sb.append(" values:" + arg.props[i+1]+" "); 
 		    }
 		    sb.append("<br>\n");
@@ -3228,10 +3246,6 @@ public class Seesv implements SeesvCommands {
 
 
 
-	defineFunction(CMD_IMAGE,2, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
-		return i;
-	    });
 	defineFunction(CMD_APPENDROWS,3, (ctx,args,i) -> {
 		ctx.addProcessor(new Converter.RowAppender(parseInt(args.get(++i)),
 							   parseInt(args.get(++i)),
@@ -3250,23 +3264,39 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new RowCollector.FirstLast(ctx,false,getCols(args.get(++i)), args.get(++i)));
 		return i;
 	    });		
-	defineFunction(CMD_EMBED,1, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Embed(ctx, args.get(++i)));
-		return i;
-	    });
-	defineFunction(CMD_FETCH,3, (ctx,args,i) -> {
-		ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i).equals("true"), args.get(++i)));
-		return i;
-	    });		
+
+	if(!interactive) {
+	    defineFunction(CMD_IMAGE,2, (ctx,args,i) -> {
+		    ctx.addProcessor(new Converter.ImageSearch(ctx, getCols(args.get(++i)), args.get(++i)));
+		    return i;
+		});
+
+	    defineFunction(CMD_IMAGEFILL,3,(ctx,args,i) -> {
+		    ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i),args.get(++i)));
+		    return i;
+		});
+
+	    defineFunction(CMD_EMBED,1, (ctx,args,i) -> {
+		    ctx.addProcessor(new Converter.Embed(ctx, args.get(++i)));
+		    return i;
+		});
+	    defineFunction(CMD_FETCH,3, (ctx,args,i) -> {
+		    ctx.addProcessor(new Converter.Fetch(ctx, args.get(++i), args.get(++i).equals("true"), args.get(++i)));
+		    return i;
+		});		
+
+
+	    defineFunction(CMD_DOWNLOAD,2, (ctx,args,i) -> {
+		    ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
+		    return i;
+		});
+	}
+
 	defineFunction(CMD_COUNTUNIQUE,1, (ctx,args,i) -> {
 		ctx.addProcessor(new RowCollector.CountUnique(ctx, getCols(args.get(++i))));
 		return i;
 	    });
 
-	defineFunction(CMD_DOWNLOAD,2, (ctx,args,i) -> {
-		ctx.addProcessor(new Processor.Downloader(ctx, this, args.get(++i), args.get(++i)));
-		return i;
-	    });	
 
 	defineFunction(CMD_FILENAMEPATTERN,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.FileNamePattern(ctx, args.get(++i),args.get(++i)));
@@ -3912,10 +3942,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	defineFunction(CMD_IMAGEFILL,3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ImageSearch(ctx,getCols(args.get(++i)), args.get(++i),args.get(++i)));
-		return i;
-	    });
 
 	defineFunction(CMD_WIKIDESC,2,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.WikiDescSearch(getCols(args.get(++i)), args.get(++i)));

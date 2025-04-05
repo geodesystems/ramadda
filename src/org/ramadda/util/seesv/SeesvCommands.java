@@ -19,9 +19,11 @@ public interface SeesvCommands {
     public static final String ARG_LATITUDE  ="latitude";
     public static final String ARG_LONGITUDE  ="longitude";
     public static final String ARG_NAME  ="name";        
+    public static final String ATTR_VALUES = "values";
     public static final String ATTR_TYPE = "type";
     public static final String ATTR_SIZE = "size";
     public static final String ATTR_ROWS =  "rows";
+    public static final String TYPE_ENUMERATION = "enumeration";
     public static final String TYPE_COLUMNS = "columns";
     public static final String TYPE_COLUMN = "column";
     public static final String TYPE_LIST = "list";
