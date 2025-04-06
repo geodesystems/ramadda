@@ -2902,6 +2902,12 @@ MapGlyph.prototype = {
 	//And call getBounds so the bounds object gets cached for later use on reload
 	this.getBounds();
     },
+    isPolygon:function() {
+	return this.type==GLYPH_POLYLINE ||
+	    this.type==GLYPH_POLYGON ||
+	    this.type==GLYPH_FREEHAND_CLOSED ||
+	    this.type==GLYPH_FREEHAND;
+    },
     isImage:function() {
 	return this.getType() ==GLYPH_IMAGE;
     },    
