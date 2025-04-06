@@ -3887,7 +3887,10 @@ MapGlyph.prototype = {
 
     getPropertiesComponent: function(content) {
 	if(this.isGroup()) {
-	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
+	    let makeMapHelp = HU.leftRightTable('',
+						this.getHelp('mapfiles.html#drawing_a_map'));
+	    let html = makeMapHelp;
+	    html += HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
 	    html+=SPACE;
 	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
 
@@ -3991,6 +3994,7 @@ MapGlyph.prototype = {
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('mapfiles.html#map_labels'));
+
 	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',[ATTR_ID,'mappoints_template','rows','6','cols','40',ATTR_TITLE,'Map points template, e.g., ${code}']);
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
