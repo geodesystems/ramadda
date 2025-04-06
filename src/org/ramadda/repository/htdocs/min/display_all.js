@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Apr  5 16:33:57 MDT 2025";
+var build_date="RAMADDA build date: Sun Apr  6 07:19:56 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -48325,9 +48325,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    }// else {
 		let r =  this.makeStyleForm(style,mapGlyph);
 		let div =
-		    HU.checkbox(this.domId('styledialogactive'),[ATTR_ID,
-								 this.domId('styledialogactive')], false,
-				'Active') +r.html;
+		    HU.leftRightTable('',
+				      HU.span([ATTR_TITLE,'Apply style actively'],
+					      HU.checkbox(this.domId('styledialogactive'),[ATTR_ID,
+											   this.domId('styledialogactive')], false,
+							  'Active'))) +r.html;
 		content.push({header:"Style",contents:HU.div([ATTR_ID,this.domId('styledialog')],div)});
 		props = r.props;
 //	    }
@@ -51095,6 +51097,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 				      let entryId = this.getProperty('entryId') || this.entryId;
 				      Ramadda.handleDropEvent(event, item, result, entryId,this.getProperty("authToken"),(data,entryid, name,isImage)=>{
 
+
 					  name = name??data.name;
 					  if(MAP_TYPES.includes(data.type)) {
 					      let glyphType = this.getGlyphType(GLYPH_MAP);
@@ -51283,6 +51286,11 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    this.theDisplay.featureChanged();	    
 		    this.theDisplay.clearMessage2(1000);
 		},
+		isShiftKey:function() {
+		    let event = this?.handlers?.drag?.evt;
+		    if(!event) return false;
+		    return event.shiftKey || event.metaKey;
+		},
 		dragVertex: function(vertex, pixel) {
 		    if(Utils.isDefined(this.feature.isDraggable) && !this.feature.isDraggable) return
 		    let mapGlyph = this.feature.mapGlyph;
@@ -51293,18 +51301,17 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    }
 		    this.theDisplay.showDistances(this.feature.geometry,this.feature.type);
 		    if(!this.feature.image &&
-		       this.feature.type!=GLYPH_BOX &&
-		       !this.feature?.mapGlyph.isImage()) {
+		       mapGlyph.getType()!=GLYPH_BOX &&
+		       !mapGlyph.isPolygon() && 
+		       !mapGlyph.isImage()) {
 			OpenLayers.Control.ModifyFeature.prototype.dragVertex.apply(this, arguments);
-			if(this.feature.mapGlyph) {
-			    this.feature.mapGlyph.vertexDragged(this.feature,vertex,pixel);
-			}
+			mapGlyph.vertexDragged(this.feature,vertex,pixel);
 			return;
 		    }
-		    let v  = this.feature.geometry.getVertices();
+		    let vertices  = this.feature.geometry.getVertices();
 		    let p  = vertex.geometry.getVertices()[0];
 		    let index = -1;
-		    v.every((v,idx)=>{
+		    vertices.every((v,idx)=>{
 			if(v.x==p.x && v.y == p.y) {
 			    index = idx;
 			    return false;
@@ -51314,40 +51321,54 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		    
 		    let pos = this.map.getLonLatFromViewPortPx(pixel);
 		    let geom = vertex.geometry;
-		    geom.move(pos.lon - geom.x, pos.lat - geom.y);
+		    let dx = pos.lon - geom.x;
+		    let dy  = pos.lat - geom.y;
+		    geom.move(dx, dy);
 		    p  = vertex.geometry.getVertices()[0];
-		    if(index==0) {
-			//nw
-			v[3].x = p.x;
-			v[1].y = p.y;			    
-		    } else 	if(index==1) {
-			//ne
-			v[2].x = p.x;
-			v[0].y = p.y;
-		    } else 	if(index==2) {
-			//se
-			v[1].x = p.x;
-			v[3].y = p.y;			    
-		    } else 	if(index==3) {
-			//sw
-			v[0].x = p.x;
-			v[2].y = p.y;
+		    if(mapGlyph.isPolygon()) {
+			if(this.isShiftKey()) {
+			    vertices.forEach((v,otherIndex)=>{
+				let abs = Math.abs(otherIndex-index);
+				if(abs<3) {
+				    let percent =(10-abs)/10; 
+				    let ndx = dx*percent;
+				    let ndy = dy*percent;
+				    v.move(ndx,ndy);
+				}
+			    });
+			}
+		    } else {
+			if(index==0) {
+			    //nw
+			    vertices[3].x = p.x;
+			    vertices[1].y = p.y;			    
+			} else 	if(index==1) {
+			    //ne
+			    vertices[2].x = p.x;
+			    vertices[0].y = p.y;
+			} else 	if(index==2) {
+			    //se
+			    vertices[1].x = p.x;
+			    vertices[3].y = p.y;			    
+			} else 	if(index==3) {
+			    //sw
+			    vertices[0].x = p.x;
+			    vertices[2].y = p.y;
+			}
 		    }
 		    this.feature.geometry.clearBounds();
 		    this.layer.drawFeature(this.feature, this.standalone ? undefined :
 					   'select');
 		    this.layer.drawFeature(vertex);
-		    if(this.feature.mapGlyph) {
-			_this.checkSelected(this.feature.mapGlyph);
-			if(this.mode==OpenLayers.Control.ModifyFeature.ROTATE) {
-			    if(this.feature.mapGlyph.isImage()) {
-				this.feature.style={strokeColor:'transparent',fillColor:'transparent'};
-				let rotation = Utils.getRotation(v);
-				this.feature.mapGlyph.style.rotation = rotation.angle;
-			    }
-			} 
-			imageChecker(this.feature);
-		    }
+		    _this.checkSelected(mapGlyph);
+		    if(this.mode==OpenLayers.Control.ModifyFeature.ROTATE) {
+			if(mapGlyph.isImage()) {
+			    this.feature.style={strokeColor:'transparent',fillColor:'transparent'};
+			    let rotation = Utils.getRotation(v);
+			    mapGlyph.style.rotation = rotation.angle;
+			}
+		    } 
+		    imageChecker(this.feature);
 		}
 	    });
 
@@ -51360,7 +51381,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let reshaper = new MyMover(this.myLayer, {
 		theDisplay:this,
 		onDrag: function(feature, pixel) {
-		    imageChecker(feature);},
+		    imageChecker(feature);
+		},
 		createVertices:false,
 		mode:OpenLayers.Control.ModifyFeature.RESHAPE});
 	    let rotator = new MyMover(this.myLayer, {
@@ -54637,6 +54659,12 @@ MapGlyph.prototype = {
 	//And call getBounds so the bounds object gets cached for later use on reload
 	this.getBounds();
     },
+    isPolygon:function() {
+	return this.type==GLYPH_POLYLINE ||
+	    this.type==GLYPH_POLYGON ||
+	    this.type==GLYPH_FREEHAND_CLOSED ||
+	    this.type==GLYPH_FREEHAND;
+    },
     isImage:function() {
 	return this.getType() ==GLYPH_IMAGE;
     },    
@@ -55622,7 +55650,10 @@ MapGlyph.prototype = {
 
     getPropertiesComponent: function(content) {
 	if(this.isGroup()) {
-	    let html = HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
+	    let makeMapHelp = HU.leftRightTable('',
+						this.getHelp('mapfiles.html#drawing_a_map'));
+	    let html = makeMapHelp;
+	    html += HU.div([ATTR_ID,this.domId('makegeojson')],'Make Map File');
 	    html+=SPACE;
 	    html+= HU.checkbox(this.domId('mergepolygons'),[ATTR_ID,this.domId('mergepolygons')],false,'Merge Polygons');
 
@@ -55726,6 +55757,7 @@ MapGlyph.prototype = {
 	let mapPointsRange = HU.leftRightTable(HU.b('Visiblity limit: ') + HU.select('',[ID,'mappoints_range'],this.display.levels,this.getMapPointsRange()??'',null,true) + ' '+
 					       HU.span([ATTR_CLASS,'imdv-currentlevellabel'], '(current level: ' + this.display.getCurrentLevel()+')'),
 					       this.getHelp('mapfiles.html#map_labels'));
+
 	let mapPoints = HU.textarea('',this.getMapLabelsTemplate()??'',[ATTR_ID,'mappoints_template','rows','6','cols','40',ATTR_TITLE,'Map points template, e.g., ${code}']);
 
 	let propsHelp =this.display.makeSideHelp(helpLines,'mappoints_template',{prefix:'${',suffix:'}'});
