@@ -77,7 +77,7 @@ Study Number,,enumerationplus
 Condition,,enumerationplus,values="Good\,Fair\,Poor"
 last_maintenance_date,,date
 Condition Description,,string,size="2000" rows="5" 
-Prep Material,,string,
+preparation_material,,string,rows="5"
 Eminent Figure,,enumerationplus
 Recommended Conservation,,string,size="1000"
 Cataloger,,enumerationplus
@@ -165,10 +165,18 @@ coloration,,string,size="2000" rows="5"
 
 
 
+
+
 ##botany_specimen Botany Specimen
 
+phenological_stage,,enumerationplus, group="Botanical Specimen" cansearch="true"\
+values="Unknown\,Germination\,Vegetative\,Budding\,Flowering\,Fruiting\,Senescence\,Dormancy"
+preparation_type,,enumerationplus,cansearch="true" values="Unknown\,Dried\,Pressed\,Preserved in Alcohol\,Frozen"
+preparation_notes,,string,rows="5"
+specimen_condition,,enumerationplus,values="unknown\,complete\,fragment" cansearch="true"
 
 
+##seed_specimen Seed Specimen
 
 
 
