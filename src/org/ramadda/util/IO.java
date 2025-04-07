@@ -468,10 +468,9 @@ public class IO {
                 connection.addRequestProperty("Accept", "*/*");
                 connection.addRequestProperty("Host", url.getHost());
                 connection.addRequestProperty("User-Agent", "ramadda");
-		if(path.requestArgs!=null) {
-		    for(int i=0;i<path.requestArgs.length;i+=2) {
-			connection.addRequestProperty(path.requestArgs[i],path.requestArgs[i+1]);
-		    }			
+		String[] requestArgs = path.getRequestArgs();
+		for(int i=0;i<requestArgs.length;i+=2) {
+		    connection.addRequestProperty(requestArgs[i],requestArgs[i+1]);
 		}
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection huc = (HttpURLConnection) connection;
@@ -2185,10 +2184,11 @@ public class IO {
 	private String path;
 	private String method;
 	private String body;
-	private String[] requestArgs;
+	private List<String> requestArgs = new ArrayList<String>();
+	
 
 	public Path(Path path) {
-	    this(path.method, path.body,path.requestArgs);
+	    this(path.method, path.body,path.getRequestArgs());
 	}
 
 	public Path(Path path, String newPath) {
@@ -2203,13 +2203,26 @@ public class IO {
 	public Path(String path,String method,String[] args) {
 	    this(path);
 	    this.method = method;
-	    this.requestArgs = args;
+	    if(args!=null) {
+		for(String arg: args) {
+		    addRequestArg(arg);
+		}
+	    }
+
 	}
 
 	public Path(String path,String method,String body,String[] args) {
 	    this(path,method,args);
 	    this.body = body;
 	}
+
+	public void addRequestArg(String arg) {
+	    requestArgs.add(arg);
+	}
+	public void addRequestArg(String arg,String value) {
+	    requestArgs.add(arg);
+	    requestArgs.add(value);	    
+	}	
 
 	public boolean matchesSuffix(String ...patterns) {
 	    for(String pattern: patterns) {
@@ -2293,9 +2306,7 @@ public class IO {
 
 	   @param value The new value for RequestArgs
 	**/
-	public void setRequestArgs (String[] value) {
-	    requestArgs = value;
-	}
+
 
 	/**
 	   Get the RequestArgs property.
@@ -2303,7 +2314,7 @@ public class IO {
 	   @return The RequestArgs
 	**/
 	public String[] getRequestArgs () {
-	    return requestArgs;
+	    return Utils.toStringArray(requestArgs);
 	}
 
 
