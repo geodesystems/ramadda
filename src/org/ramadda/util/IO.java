@@ -2203,17 +2203,20 @@ public class IO {
 	public Path(String path,String method,String[] args) {
 	    this(path);
 	    this.method = method;
-	    if(args!=null) {
-		for(String arg: args) {
-		    addRequestArg(arg);
-		}
-	    }
-
+	    setRequestArgs(args);
 	}
 
 	public Path(String path,String method,String body,String[] args) {
 	    this(path,method,args);
 	    this.body = body;
+	}
+
+	public void setRequestArgs(String[]args) {
+	    if(args!=null) {
+		for(String arg: args) {
+		    addRequestArg(arg);
+		}
+	    }
 	}
 
 	public void addRequestArg(String arg) {
