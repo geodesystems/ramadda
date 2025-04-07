@@ -10,5 +10,6 @@
 <import resource="type_archive_mammalogy_specimen.xml"/>
 <import resource="type_archive_ichthyology_specimen.xml"/>
 <import resource="type_archive_botanical_specimen.xml"/>
+<import resource="type_archive_seed_specimen.xml"/>
 
 </types>

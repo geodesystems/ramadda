@@ -8,6 +8,12 @@ into some types.xml file
  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
  super="type_archive_taxonomy" 
 >
+
+<!-- Columns-->
+<column  name="phenological_stage"  label="Phenological Stage"  type="enumerationplus"  group="Botanical Specimen" cansearch="true" values="Unknown,Germination,Vegetative,Budding,Flowering,Fruiting,Senescence,Dormancy" />
+<column  name="preparation_type"  label="Preparation Type"  type="enumerationplus"  cansearch="true"   values="Unknown,Dried,Pressed,Preserved in Alcohol,Frozen" />
+<column  name="preparation_notes"  label="Preparation Notes"  type="string"  rows="5" />
+<column  name="specimen_condition"  label="Specimen Condition"  type="enumerationplus"  values="unknown,complete,fragment" cansearch="true" />
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/archive/leaf.png" />
