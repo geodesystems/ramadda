@@ -118,6 +118,7 @@ import java.lang.reflect.Constructor;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.HttpURLConnection;
 import java.net.URLConnection;
 
 import java.security.cert.X509Certificate;
@@ -5334,7 +5335,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
     }
 
-    private Result processProxyInner(Request request) throws Exception {
+    private synchronized Result processProxyInner(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String) null);
         if (url != null) {
             if ( !url.startsWith("http:") && !url.startsWith("https:")) {
@@ -5383,12 +5384,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw new IllegalArgumentException("No URL");
         }
 
-        URLConnection connection = new URL(url).openConnection();
-	//Pass through some of the headers
-	for(String hdr:new String[]{"Content-disposition","Content-Type"}) {
-	    String v = connection.getHeaderField(hdr);
-	    if(v!=null)
-		request.setHeader(hdr,v);
+
+        URLConnection connection=null;
+	try {
+	    connection = new URL(url).openConnection();
+	    //Pass through some of the headers
+	    for(String hdr:new String[]{"Content-disposition","Content-Type"}) {
+		String v = connection.getHeaderField(hdr);
+		if(v!=null)
+		    request.setHeader(hdr,v);
+	    }
+	} catch (Throwable exc) {
+	    HttpURLConnection huc = (HttpURLConnection)connection;
+	    if(huc!=null) {
+		System.err.println("\tError reading URL:" + url + "\ncode:"  + huc.getResponseCode());
+		String error = IO.readError(huc);
+		System.err.println("\tError:" + error);
+	    }
+	    throw exc;
 	}
 
         InputStream   is         = connection.getInputStream();
@@ -5413,8 +5426,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               "application/json");
         }
 
-
-        return request.returnStream(is);
+	try {
+	    return request.returnStream(is);
+	} catch (Throwable exc) {
+	    HttpURLConnection huc = (HttpURLConnection)connection;
+	    if(huc!=null) {
+		System.err.println("\tError reading URL:" + url + "\ncode:"  + huc.getResponseCode());
+	    }
+	    throw exc;
+	}
     }
 
 
