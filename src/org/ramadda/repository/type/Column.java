@@ -94,6 +94,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     public static final String ATTR_CHANGETYPE = "changetype";
     public static final String ATTR_SHOWINFORM = "showinform";
     public static final String ATTR_GROUP = "group";
+    public static final String ATTR_SEARCHGROUP = "searchgroup";
     public static final String ATTR_SUBGROUP = "subgroup";    
     public static final String ATTR_UNIT = "unit";
     public static final String ATTR_OLDNAMES = "oldnames";
@@ -152,6 +153,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private String displayGroup;
     private String subGroup;    
     private String editGroup;    
+    private String searchGroup;    
     private List oldNames;
     private String label;
     private Pattern initPattern;
@@ -268,6 +270,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	}
         String group  = XmlUtil.getAttribute(element, "group",(String)null);
         displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
+        searchGroup =  XmlUtil.getAttribute(element, ATTR_SEARCHGROUP, displayGroup);
         editGroup = XmlUtil.getAttribute(element, "editgroup", group);
         subGroup  = XmlUtil.getAttribute(element, "subgroup",(String)null);
         oldNames = Utils.split(XmlUtil.getAttribute(element, ATTR_OLDNAMES,
@@ -687,7 +690,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         return getRepository().getDatabaseManager();
     }
 
-    public String getJson(Request request) throws Exception {
+    public String getJson(Request request,TypeHandler sourceTypeHandler) throws Exception {
 	if(adminOnly &&!request.isAdmin()) return null;
         List<String> col = new ArrayList<String>();
         col.add("name");
@@ -696,6 +699,8 @@ public class Column implements DataTypes, Constants, Cloneable {
         col.add(JsonUtil.quote(getLabel()));
         col.add("searchLabel");
         col.add(JsonUtil.quote(getSearchLabel()));	
+        col.add("searchGroup");
+        col.add(JsonUtil.quote(searchGroup));
         col.add("searchShowCheckboxes");
         col.add(""+enumerationShowCheckboxes);
         col.add("searchMultiples");
@@ -734,7 +739,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             }
 	    if(forSearch) values = null;
             if ((values == null) || (values.size() == 0)) {
-                values = typeHandler.getEnumValues(request, this, null);
+                values = sourceTypeHandler.getEnumValues(request, this, null);
             }
             if (values != null) {
                 for (HtmlUtils.Selector tfo : values) {
@@ -1671,7 +1676,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    }
 	}
 	//	System.out.println("altering table: " + sql);
-        String sql = "alter table " + getTableName() + " add column " + name + " " + type;
+        String sql = getDatabaseManager().getAddColumnSql(getTableName(), name,type);
 	//Always ignore errors here
         SqlUtil.loadSql(sql, statement, true/*ignoreErrors*/, null);
 
