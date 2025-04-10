@@ -69,8 +69,8 @@
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
-     <property name="search.form.area.show" value="false"/>
-     <property name="search.form.date.show" value="false"/>
+     <property name="search.area.show" value="false"/>
+     <property name="search.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="inline.includeinformation" value="true"/>     
 
