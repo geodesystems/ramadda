@@ -1581,7 +1581,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
                 extra += this.addWidget(label, HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()),
-					{toggleClose:this.getProperty('areaToggleClose',toggleClose)});
+					{toggleClose:this.getProperty('areaToggleClose',true)});
             }
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
             if (Utils.stringDefined(this.getMetadataTypes())) {
