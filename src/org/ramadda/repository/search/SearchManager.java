@@ -124,7 +124,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
     public static boolean debugCorpus = false;
     public static boolean debugIndex = false;
-    public static boolean debugSearch = true;
+    public static boolean debugSearch = false;
 
     public static final String SUFFIX_LATITUDE ="_latitude";
     public static final String SUFFIX_LONGITUDE ="_longitude";
