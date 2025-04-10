@@ -50,7 +50,9 @@ import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.DataTypes;
 import org.ramadda.repository.type.GroupTypeHandler;
 import org.ramadda.repository.type.ProcessFileTypeHandler;
+import org.ramadda.repository.type.GenericTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
+
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.util.ServerInfo;
 
@@ -72,6 +74,7 @@ import org.ramadda.util.StreamEater;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
+import java.sql.Connection;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
@@ -1672,7 +1675,50 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	allTypeHandlers = goodOnes;
 
 
+	if(!getProperty("ramadda.entrytype.fix",false)) {
+	    //	    getLogManager().logSpecial("Fixing entry types");
+	    //	    fixEntryTypes();
+	    //	    writeGlobal("ramadda.entrytype.fix","false");
+	}
     }
+
+    private void fixEntryTypes() throws Exception {
+	for(TypeHandler typeHandler: allTypeHandlers) {
+	    String table = typeHandler.getTableName();
+	    if (!Utils.stringDefined(table)) {
+		continue;
+	    }
+	    Request request = getAdminRequest();
+	    Connection connection = getDatabaseManager().getConnection();
+	    try {
+		String what = SqlUtil.comma(GenericTypeHandler.COL_ID,GenericTypeHandler.COL_ENTRY_TYPE);
+		Statement statement = SqlUtil.select(connection, what, Misc.newList(table), null,"",-1,0);
+		ResultSet  results = statement.getResultSet();
+		//		System.out.println(typeHandler.getType() +" " + table);
+		while (results.next()) {
+		    String id  = results.getString(1);
+		    String type = results.getString(2);
+		    if(Utils.stringDefined(type)) continue;
+		    try {
+			Entry entry = getEntryManager().getEntry(request,id);
+			if(entry!=null) {
+			    /*
+			    getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
+							new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
+							new Object[] {entry.getTypeHandler().getType()});
+			    */
+
+			    //			    System.out.println("\tupdated:"  + typeHandler.getType() +": " + entry.getName());
+			}
+		    } catch(Exception ignore1) {
+		    }
+		}
+		statement.close();
+	    } catch(Exception exc) {
+	    }
+	    getDatabaseManager().closeConnection(connection);
+	}
+    }    
 
     private boolean loadTypeHandlers(String file) throws Exception     {
 	file    = getStorageManager().localizePath(file);
@@ -4414,6 +4460,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
             return prop;
         }
+
 
 
 
