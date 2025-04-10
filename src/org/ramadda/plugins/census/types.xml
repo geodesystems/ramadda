@@ -3,11 +3,11 @@
 
   <type name="type_census_acs"  super="type_point"  description="US Census ACS Data" handler="org.ramadda.plugins.census.AcsTypeHandler" >
      <property name="point.initialize" value="false"/>
-     <property name="search.form.area.show" value="false"/>
+     <property name="search.area.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="html.resource.show" value="true"/>
      <property name="form.area.show" value="false"/>
-     <property name="search.form.date.show" value="false"/>
+     <property name="search.date.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.properties.show" value="false"/>
      <property name="icon" value="/census/census.png"/>
@@ -410,10 +410,10 @@ B19113_001E:Median income
 
   <type name="type_urbaninstitute_trend"  super="type_point" foruser="false">
      <property name="point.initialize" value="false"/>
-     <property name="search.form.area.show" value="true"/>
+     <property name="search.area.show" value="true"/>
      <property name="form.resource.show" value="true"/>
      <property name="html.resource.show" value="true"/>
-     <property name="search.form.date.show" value="false"/>
+     <property name="search.date.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.properties.show" value="false"/>
      <property name="icon" value="/census/urbaninstitute.png"/>
