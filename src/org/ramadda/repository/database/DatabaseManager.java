@@ -3372,6 +3372,12 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
     }
 
 
+    public String getAddColumnSql(String table, String column, String type) {
+        return  "alter table " + table + " add column " + column + " " + type;
+    }
+
+
+
     /**
      * _more_
      *
