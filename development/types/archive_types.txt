@@ -43,7 +43,7 @@ form.date.label=Status Date
 form.description.group=Description
 form.area.show=true
 form.geoposition=group:Collection Site
-search.metadatatypes=archive_bio_alternate_name
+##search.metadatatypes=archive_bio_alternate_name
 html.changedate.show=false
 html.createdate.show=false
 form.resource.show=false
@@ -53,10 +53,35 @@ html.owner.show=false
 form.ark.show=false
 form.tags.show=false
 
+#search args:
+<property name="search.args"><![CDATA[
+providers
+showProviders
+entryTypes
+showAncestor
+showProviders
+displayTypes
+orderByTypes
+showDate
+showArea
+searchOpen
+showText
+showName
+showDescription
+showCreateDate
+startDateLabel
+createDateLabel
+areaLabel
+orderByTypes
+metadataTypes
+    orderByLabel_date_descending="Date missing - most recent"                                                                                                 orderByLabel_date_ascending="Date missing - least recent"                                                                                                 orderByLabel_date_of_birth_descending="Date of birth - youngest first"                                                                                    orderByLabel_date_of_birth_ascending="Date of birth - oldest first"                                                                                       orderByLabel_age_missing_ascending="Age missing - youngest first"                                                                                         orderByLabel_age_missing_descending="Age missing - oldest first"                                                                                          orderByLabel_biological_sex_ascending="Biological sex - female first"                                                                                     orderByLabel_biological_sex_descending="Biological sex - male first"                                                                                  
+    ]]></property>
 
-common_name,Common Names,list, rows="5"  size="1000"    cansearch="true" 
+
+
+common_name,Common Names,list, rows="5"  size="1000"    cansearch="true" searchgroup="Taxonomy"
 scientific_name,Scientific Name,string, size="500" cansearch="true" 
-taxon_kingdom,Kingdom,enumerationplus, cansearch="true"
+taxon_kingdom,Kingdom,enumerationplus, cansearch="true" values="Animalia\,Plantae\,Fungi\,Bacteria\,Protista"
 taxon_division,Division,enumerationplus, cansearch="true"
 taxon_class,Class,enumerationplus, cansearch="true"
 taxon_order,Order,enumerationplus, cansearch="true"
@@ -120,7 +145,7 @@ alpha_code_four,4 Digit Alpha Code,enumerationplus,displaygroup="Ornithology" ca
 values="file:/org/ramadda/plugins/archive/resources/birdcodes4.txt"  
 alpha_code_six,6 Digit Alpha Code,enumerationplus, cansearch="true"\n \
 values="file:/org/ramadda/plugins/archive/resources/birdcodes6.txt"  
-specimen_type,Specimen Type,enumerationplus,subgroup="Specimen Details" cansearch="true"\n \
+specimen_type,Specimen Type,enumerationplus,group="Ornithology" subgroup="Specimen Details" cansearch="true"\n \
 values="unknown\,skin\,skeleton\,preserved specimen\,egg\,nest\,feather\,mounted specimen\,other"
 sex,,enumeration,values="unknown\,male\,female" cansearch="true"
 age,,enumerationplus,values="unknown\,adult\,juvenile\,hatchling" cansearch="true"
@@ -177,6 +202,12 @@ specimen_condition,,enumerationplus,values="unknown\,complete\,fragment" cansear
 
 
 ##seed_specimen Seed Specimen
+
+
+##type_archive_insect_specimen
+
+##type_archive_bacteria_specimen
+
 
 
 
