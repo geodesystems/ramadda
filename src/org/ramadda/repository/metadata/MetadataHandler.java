@@ -120,14 +120,14 @@ public class MetadataHandler extends RepositoryManager {
         if (isInternal==EntryManager.INTERNAL.NO) {
             id = XmlUtil.getAttribute(node, "id", id);
         }
-        Metadata metadata = new Metadata(id, entry.getId(), getMetadataManager().findType(type),
+        Metadata metadata = new Metadata(id, entry.getId(), getMetadataManager().findType(type,true),
                                          XmlUtil.getAttribute(node,
                                              ATTR_INHERITED, DFLT_INHERITED));
         String access = XmlUtil.getGrandChildText(node, "access", null);
 	if(access!=null) {
 	    metadata.setAccess(access);
 	}
-	metadata.setMetadataType(getMetadataManager().findType(type));
+	metadata.setMetadataType(getMetadataManager().findType(type,true));
 
         int attrIndex = Metadata.INDEX_BASE - 1;
         while (true) {
@@ -307,10 +307,14 @@ public class MetadataHandler extends RepositoryManager {
 
     
     public MetadataType findType(String stringType) {
+	return findType(stringType,true);
+    }
+
+    public MetadataType findType(String stringType,boolean makeDefault) {	
         MetadataType type  = typeMap.get(stringType);
 	if(type==null) {
 	    //	    System.err.println("Could not find type:" + stringType);
-	    return getMetadataManager().findType(stringType);
+	    return getMetadataManager().findType(stringType,makeDefault);
 	}
 	return type;
     }

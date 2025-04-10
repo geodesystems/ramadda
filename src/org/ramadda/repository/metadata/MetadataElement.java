@@ -1008,7 +1008,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_ENUMERATION)) {
             return HU.select(arg, values, value);
         } else if (dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
-	    MetadataType mtdType = getMetadataManager().findType(metadata.getType());
+	    MetadataType mtdType = getMetadataManager().findType(metadata.getType(),true);
             String[] va = getMetadataManager().getDistinctValues(request,
 								 mtdType.getHandler(), mtdType,index);
 	    
