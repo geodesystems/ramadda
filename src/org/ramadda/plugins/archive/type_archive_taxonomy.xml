@@ -11,9 +11,9 @@ foruser="false"
 >
 
 <!-- Columns-->
-<column  name="common_name"  label="Common Names"  type="list"   rows="5"  size="1000"    cansearch="true" />
+<column  name="common_name"  label="Common Names"  type="list"  rows="5"  size="1000"    cansearch="true"  searchgroup="Taxonomy" />
 <column  name="scientific_name"  label="Scientific Name"  type="string"  size="500" cansearch="true" />
-<column  name="taxon_kingdom"  label="Kingdom"  type="enumerationplus"  cansearch="true" />
+<column  name="taxon_kingdom"  label="Kingdom"  type="enumerationplus"  cansearch="true" values="Animalia,Plantae,Fungi,Bacteria,Protista" />
 <column  name="taxon_division"  label="Division"  type="enumerationplus"  cansearch="true" />
 <column  name="taxon_class"  label="Class"  type="enumerationplus"  cansearch="true" />
 <column  name="taxon_order"  label="Order"  type="enumerationplus"  cansearch="true" />
@@ -46,4 +46,6 @@ foruser="false"
 <property  name="html.owner.show"  value="false" />
 <property  name="form.ark.show"  value="false" />
 <property  name="form.tags.show"  value="false" />
+<property  name="search.date.show"  value="false" />
+<property  name="search.createdate.show"  value="false" />
 </type>

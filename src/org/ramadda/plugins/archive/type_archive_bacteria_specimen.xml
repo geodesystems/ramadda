@@ -1,0 +1,14 @@
+<!-- 
+Since this is for import add a:
+<import resource="type_archive_bacteria_specimen.xml"/>
+into some types.xml file
+-->
+<type  name="type_archive_bacteria_specimen" 
+ description="Bacteria Specimen" 
+ handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+ super="type_archive_taxonomy" 
+>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/archive/bacteria.png" />
+</type>

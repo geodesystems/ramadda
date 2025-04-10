@@ -8,7 +8,7 @@ This is a base entry that provides site information. It is used as a super type 
  description="Archive Site" 
  handler="org.ramadda.repository.type.GenericTypeHandler" 
  supercategory="General" 
- category="Archive Specimens" 
+ category="Natural Science Specimens" 
 foruser="false"
 >
 
@@ -29,6 +29,14 @@ foruser="false"
 <column  name="deposit_environment"  label="Deposit Environment"  type="enumerationplus"  subgroup="Environment" />
 <column  name="habitat_type"  label="Habitat Type"  type="enumerationplus"  cansearch="true"   values="unknown,forest,wetland,grassland,urban area" />
 <column  name="habitat_description"  label="Habitat Description"  type="string"  size="2000" rows="5" />
+<property name="map.popup">
+<![CDATA[                                                                                           
++center                                                                                             
+:b {{typename}}: {{name link=true}}                                                                                 
+-center                                                                                             
+{{information showDetails=false}}                                              
+ ]]>
+</property>
 <!-- Properties-->
 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
 <property  name="icon"  value="/geo/site.png" />

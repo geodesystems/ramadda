@@ -283,7 +283,7 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
     <property name="icon" value="/archive/book.png"/>
     <property name="form.resource.show" value="false"/>
     <property name="form.tags.show" value="false"/>    
-    <property name="search.form.area.show" value="false"/>
+    <property name="search.area.show" value="false"/>
     <property name="form.area.show" value="false"/>    
 
     <property name="form.date.label" value="Publication Date"/>
@@ -341,8 +341,8 @@ headerStyle="font-size:120%;" textStyle="font-size:120%;"  iconWidth="22px"  tog
 
 
 
-    <property name="search.form.orderby" value="name,date,createdate"/>
-    <property name="search.form.args"><![CDATA[
+    <property name="search.orderby" value="name,date,createdate"/>
+    <property name="search.args"><![CDATA[
     tooltip="${display_html}"
     showAncestor=false
     orderByLabel_date_descending="Pub. Date - most recent"
