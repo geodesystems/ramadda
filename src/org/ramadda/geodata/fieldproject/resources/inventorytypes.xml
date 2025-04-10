@@ -128,11 +128,11 @@ showSearchSettings="false"
      <property name="html.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="search.tabs" value="list"/>
-     <property name="search.form.name.show" value="true"/>
-     <property name="search.form.description.show" value="true"/>
+     <property name="search.name.show" value="true"/>
+     <property name="search.description.show" value="true"/>
 
-     <property name="search.form.area.show" value="false"/>
-     <property name="search.form.date.show" value="false"/>
+     <property name="search.area.show" value="false"/>
+     <property name="search.date.show" value="false"/>
      <column name="unit" label="Canonical Unit"  type="enumerationplus"  cansearch="true" />
      <column name="aliases" label="Aliases"  size="2000" rows="5"  cansearch="true" />
      <wiki_inner><![CDATA[
