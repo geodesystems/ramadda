@@ -625,7 +625,10 @@ function EntryTypeColumn(props) {
         },
         getGroup: function() {
             return this.group;
-        },	
+        },
+        getSearchGroup: function() {
+            return this.searchGroup??this.group;
+        },		
         getSearchLabel: function() {
             if (this.searchLabel != null) return this.searchLabel;
 	    return this.getLabel();
