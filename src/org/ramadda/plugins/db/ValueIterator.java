@@ -451,7 +451,7 @@ public abstract class ValueIterator implements DbConstants {
             columns     = db.getColumnsToUse(request, false);
             for (int i = 0; i < columns.size(); i++) {
                 Column c = columns.get(i);
-                columnNames.add(c.getJson(request));
+                columnNames.add(c.getJson(request,db.getTableHandler()));
             }
             Appendable sb = getBuffer();
             sb.append(JsonUtil.MAP_OPEN);
