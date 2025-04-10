@@ -12,15 +12,15 @@ Copy this into your ramadda home/plugins directory and restart RAMADDA
 <property  name="search.searchopen"  value="true" />
 <property  name="form.location.show"  value="true" />
 <property  name="form.area.show"  value="false" />
-<property  name="search.form.area.show"  value="false" />
-<property  name="search.form.description.show"  value="false" />
-<property  name="search.form.name.show"  value="false" />
-<property  name="search.form.providers.show"  value="false" />
-<property  name="search.form.text.show"  value="false" />
-<property  name="search.form.date.show"  value="false" />
-<property  name="search.form.createdate.show"  value="false" />
-<property  name="search.form.providers.show"  value="false" />
-<property  name="search.form.ancestor.show"  value="false" />
+<property  name="search.area.show"  value="false" />
+<property  name="search.description.show"  value="false" />
+<property  name="search.name.show"  value="false" />
+<property  name="search.providers.show"  value="false" />
+<property  name="search.text.show"  value="false" />
+<property  name="search.date.show"  value="false" />
+<property  name="search.createdate.show"  value="false" />
+<property  name="search.providers.show"  value="false" />
+<property  name="search.ancestor.show"  value="false" />
 
 <!-- Columns-->
 <column  name="product"  label="Product"  type="enumerationplus"   cansearch="true" />
