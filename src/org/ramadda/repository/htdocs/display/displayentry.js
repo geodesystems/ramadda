@@ -541,7 +541,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    label = subToks[1];
 			}
 		    }
-		    this.metadataTypeList.push(new MetadataType(type, label, value));
+		    if(label=='null') {
+		    } else {
+			this.metadataTypeList.push(new MetadataType(type, label, value));
+		    }
 		}
 	    }
 	},
@@ -669,6 +672,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	addWidget:function(label,widget,args) {
 	    let opts = {
 		addToggle:true,
+		addSimpleToggle:false,
 		toggleClose:this.getToggleClose()
 	    }
 	    if(args) $.extend(opts,args);
@@ -683,11 +687,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let widgetId = HU.getUniqueId('');
 		if(opts.addToggle) {
 		    label = this.addToggle(label,widgetId,opts.toggleClose);
-		}
+		} 
 
+		//let  w;
 		let w = Utils.stringDefined(label)?
 		    HU.div([ATTR_CLASS,"display-search-label",ATTR_STYLE,HU.css('xmin-width',HU.getDimension(this.getFormWidth()))], label):'';
-		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
+
+		if(opts.addSimpleToggle) {
+		    w  = HU.toggleBlock(HU.b(label),widget);
+		} else {
+		    w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
+		}
 		return HU.div([ATTR_CLASS,"display-search-block"], w);
 	    }
 	    return HU.formEntry("",widget);
@@ -1574,8 +1584,6 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 					{toggleClose:this.getProperty('areaToggleClose',toggleClose)});
             }
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
-
-
             if (Utils.stringDefined(this.getMetadataTypes())) {
 		let metadataBlock = "";
                 for (let i = 0; i < this.metadataTypeList.length; i++) {
@@ -1604,6 +1612,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 }
 		extra += HU.div([ATTR_ID,this.domId(ID_SEARCH_TAGS)], metadataBlock);
             }
+
 
             extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',ATTR_CLASS,'display-search-widget'],
 			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
@@ -1708,6 +1717,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 if (!this.metadataLoading[metadataType.getType()]) {
                     this.metadataLoading[metadataType.getType()] = true;
                     metadata = this.getRamadda().getMetadataCount(metadataType, function(metadataType, metadata) {
+			if(!metadata  || metadata.undefined) return;
                         _this.addMetadata(metadataType, metadata);
                     });
                 }
@@ -2056,7 +2066,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     continue;
                 }
 
-		let group = col.getGroup();
+		let group = col.getSearchGroup();
+
 		if(Utils.stringDefined(group) && group!=lastGroup) {
 		    if(inGroup) extra+='</div></div>';
 		    inGroup=true;
@@ -2169,9 +2180,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 		extra+=this.addWidget(label,widget,{
 		    addToggle:!inGroup,
+		    addSimpleToggle:inGroup,
 		    toggleClose:close
 		});
 	    }
+
 
 	    if(inGroup) extra+='</div></div>';
             this.writeHtml(ID_TYPEFIELDS, extra);
