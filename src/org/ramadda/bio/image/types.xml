@@ -4,7 +4,7 @@
   <type name="bio_dicom"  description="DICOM File"  category="Bio" pattern=".*\.dcm" handler="org.ramadda.bio.image.DicomTypeHandler">
      <property name="icon" value="/dicom/film.png"/>
      <property name="form.area.show" value="false"/>
-     <property name="search.form.area.show" value="false"/>
+     <property name="search.area.show" value="false"/>
      <property name="form.todate.show" value="false"/>
      <property name="form.fromdate.label" value="Date"/>
      <service link="bio_dicom_makethumbnail" id="dicomimage"  target="attachment"/>
