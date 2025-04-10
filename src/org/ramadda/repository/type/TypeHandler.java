@@ -824,7 +824,7 @@ public class TypeHandler extends RepositoryManager {
         List<Column> columns = getColumns();
         if (columns != null) {
             for (Column column : columns) {
-		String json = column.getJson(request);
+		String json = column.getJson(request,this);
 		if(json!=null)
 		    cols.add(json);
             }
@@ -6358,6 +6358,9 @@ public class TypeHandler extends RepositoryManager {
 							? ""
 							: "_" + clause);
         HashSet set = columnEnumValues.get(key);
+	//	boolean debug = column.toString().indexOf("class")>=0;
+	boolean debug = false;
+
         if (set != null) {
             return set;
         }
@@ -6366,6 +6369,12 @@ public class TypeHandler extends RepositoryManager {
         Statement stmt = getRepository().getDatabaseManager().select(
 								     SqlUtil.distinct(column.getName()),
 								     column.getTableName(), clause);
+	if(debug) {
+	    System.err.println(getType() +" column:" + column +" table:" + column.getTableName() + " key:" + key+" clause:" + clause +" set:" + set);
+//	    System.err.println(Utils.getStack(10));
+	}
+
+
         long t2 = System.currentTimeMillis();
         String[] values =
             SqlUtil.readString(
