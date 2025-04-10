@@ -27,7 +27,7 @@
     <property name="form.createdate.label" value="Record Create Date"/>    
     <property name="form.todate.show" value="false"/>
 
-    <property name="search.form.args"><![CDATA[
+    <property name="search.args"><![CDATA[
     tooltip="${display_html}"
     showAncestor=false
     orderByLabel_date_descending="Date missing - most recent"
@@ -40,12 +40,12 @@
     orderByLabel_biological_sex_descending="Biological sex - male first"        
     ]]></property>
 
-    <property name="search.form.name.show" value="true"/>
-    <property name="search.form.description.show" value="true"/>    
-    <property name="search.form.startdate.label" value="Date Missing"/>
-    <property name="search.form.createdate.show" value="false"/>
-    <property name="search.form.area.label" value="Last known location"/>
-    <property name="search.form.orderby" value="name,age_missing,date,date_of_birth,weight,height,biological_sex,createdate"/>
+    <property name="search.name.show" value="true"/>
+    <property name="search.description.show" value="true"/>    
+    <property name="search.startdate.label" value="Date Missing"/>
+    <property name="search.createdate.show" value="false"/>
+    <property name="search.area.label" value="Last known location"/>
+    <property name="search.orderby" value="name,age_missing,date,date_of_birth,weight,height,biological_sex,createdate"/>
 
 
     <property name="date.format" value="yyyy-MM-dd"/>        
