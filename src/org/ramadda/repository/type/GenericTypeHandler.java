@@ -56,6 +56,12 @@ public class GenericTypeHandler extends TypeHandler {
 
     public static final String ATTR_CLASS = "class";
     public static final String COL_ID = "id";
+    public static final String COL_ENTRY_TYPE = "table_entry_type";    
+    //This is where the actual values start, skipping the COL_ID and COL_ENTRY_TYPE
+    public static final int COL_VALUE_OFFSET=2;
+
+
+
     private List<Column> myColumns = new ArrayList<Column>();
     private List<Column> allColumns;
     private Column categoryColumn;
@@ -118,6 +124,7 @@ public class GenericTypeHandler extends TypeHandler {
     private void initColumns(List<Element> columnNodes, boolean ignoreErrors) throws Exception {
         Statement statement = getDatabaseManager().createStatement();
         colNames.add(COL_ID);
+        colNames.add(COL_ENTRY_TYPE);	
         StringBuilder tableDef = new StringBuilder("CREATE TABLE "
 						   + getTableName() + " (\n");
 
@@ -132,16 +139,21 @@ public class GenericTypeHandler extends TypeHandler {
             }
         }
 
-        StringBuilder indexDef = new StringBuilder();
-        indexDef.append("CREATE INDEX " + getTableName() + "_INDEX_" + COL_ID
-                        + "  ON " + getTableName() + " (" + COL_ID + ");\n");
+        String idIndexDef = "CREATE INDEX " + getTableName() + "_INDEX_" + COL_ID
+	    + "  ON " + getTableName() + " (" + COL_ID + ");\n";
 
         try {
-            getDatabaseManager().loadSql(indexDef.toString(), true, false);
-        } catch (Throwable exc) {
-            //TODO:
-            //            throw new WrapperException(exc);
-        }
+            getDatabaseManager().loadSql(idIndexDef, true, false);
+        } catch (Throwable exc) {}
+
+        String sql = getDatabaseManager().getAddColumnSql(getTableName(), COL_ENTRY_TYPE,"varchar(300)");
+        SqlUtil.loadSql(sql, statement, true/*ignoreErrors*/, null);
+        idIndexDef = "CREATE INDEX " + getTableName() + "_INDEX_" + COL_ENTRY_TYPE
+	    + "  ON " + getTableName() + " (" + COL_ENTRY_TYPE + ");\n";
+        try {
+            getDatabaseManager().loadSql(idIndexDef, true, false);
+        } catch (Throwable exc) {}
+
 
         int     valuesOffset = getValuesOffset();
 
@@ -160,7 +172,7 @@ public class GenericTypeHandler extends TypeHandler {
                     Element.class, Integer.TYPE });
             Column column = (Column) ctor.newInstance(new Object[] { this,
                     columnNode,
-                    Integer.valueOf(valuesOffset + colNames.size() - 1) });
+                    Integer.valueOf(valuesOffset + colNames.size() - COL_VALUE_OFFSET) });
             myColumns.add(column);
             column.setColumnIndex(myColumns.size() - 1);
 	    if(debug) System.err.println("column:" +column+" offset:"+ column.getOffset());
@@ -289,13 +301,11 @@ public class GenericTypeHandler extends TypeHandler {
         if ( !haveDatabaseTable()) {
             return 0;
         }
-
-        return colNames.size() - 1;
+        return colNames.size() - COL_VALUE_OFFSET;
     }
 
     public Object[] makeEntryValueArray() {
         int numberOfValues = getTotalNumberOfValues();
-
         return new Object[numberOfValues];
     }
 
@@ -565,6 +575,7 @@ public class GenericTypeHandler extends TypeHandler {
         //        for(Object o: values)   System.err.println("  value::" + o);
         int stmtIdx = 1;
         stmt.setString(stmtIdx++, entry.getId());
+        stmt.setString(stmtIdx++, entry.getTypeHandler().getType());	
         if (values != null) {
             for (Column column : getMyColumns()) {
                 stmtIdx = column.setValues(stmt, values, stmtIdx);
@@ -593,17 +604,18 @@ public class GenericTypeHandler extends TypeHandler {
             throws Exception {
         Clause clause = Clause.eq(COL_ID, entry.getId());
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
-                             getTableName(), clause);
+						     getTableName(), clause);
 
         try {
             ResultSet results2 = stmt.getResultSet();
             if (results2.next()) {
-                //We start at 2, skipping 1, because the first one is the id
-                int valueIdx = 2;
+                //We start at COL_VALUE_OFFSET, because the first two columns are the id and the entry type
+                int valueIdx = COL_VALUE_OFFSET+1;
                 for (Column column : getMyColumns()) {
 		    try {
 			valueIdx = column.readValues(entry, results2, values, valueIdx);
 		    } catch(Exception exc) {
+			exc.printStackTrace();
 			String msg = "Error reading column value:" + column +" for entry: " + entry.getName()+" error:" + exc.getMessage();
 			throw new IllegalStateException(msg);
 		    }
@@ -640,11 +652,10 @@ public class GenericTypeHandler extends TypeHandler {
         try {
             ResultSet results2 = stmt.getResultSet();
             if (results2.next()) {
-                //We start at 2, skipping 1, because the first one is the id
-                int valueIdx = 2;
+                //We start at COL_VALUE_OFFSET, because the first two columns are the id and the entry type
+                int valueIdx = COL_VALUE_OFFSET+1;
                 for (Column column : getMyColumns()) {
-                    valueIdx = column.readValues(entry, results2, values,
-                            valueIdx);
+                    valueIdx = column.readValues(entry, results2, values, valueIdx);
                 }
             }
         } finally {
