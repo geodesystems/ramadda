@@ -625,7 +625,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    addAttr(sb, "orderByTypes",Utils.getProperty(props,"orderByTypes",orderByTypes));
 	    addAttr(sb, "showDate",Utils.getProperty(props,"showDate",
 						     typeHandler.getTypeProperty("search.date.show",showDate)));
-	    addAttr(sb, "showArea",Utils.getProperty(props,"showArea",showArea));
+	    addAttr(sb, "showArea",Utils.getProperty(props,"showArea",
+						     typeHandler.getTypeProperty("search.area.show",showArea)));
 	    addAttr(sb, "searchOpen",Utils.getProperty(props,"searchOpen",searchOpen));
 	    addAttr(sb, "showText",Utils.getProperty(props,"showText",typeHandler.getTypeProperty("search.text.show",showText)));
 	    addAttr(sb, "showName",Utils.getProperty(props,"showName",
