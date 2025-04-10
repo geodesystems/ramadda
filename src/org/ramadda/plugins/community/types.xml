@@ -132,7 +132,7 @@
      <property name="form.datatype.show" value="false"/>
      <property name="form.altitude.show" value="false"/>
      <property name="form.altitude.top.show" value="false"/>
-     <property name="search.form.date.show" value="false"/>
+     <property name="search.date.show" value="false"/>
   </type>
 
 
