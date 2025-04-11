@@ -10,17 +10,17 @@ Storage unit,,enumerationplus,
 
 ##collection site
 
-Locality,,enumerationplus,group="Collection Site" isgeoaccess="true" 
-Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"  
-County,,enumerationplus,values="file:/resources/geo/countylist.txt" 
-State,,enumerationplus, values="file:/resources/geo/statelist.txt" 
+Locality,,enumerationplus,group="Collection Site" isgeoaccess="true"  cansearch="true" 
+Country,,enumerationplus,  default="USA" values="file:/resources/geo/countrylist.txt"   cansearch="true" 
+County,,enumerationplus,values="file:/resources/geo/countylist.txt"  cansearch="true" 
+State,,enumerationplus, values="file:/resources/geo/statelist.txt"  cansearch="true" 
 Waterbody/Drain,,enumerationplus,
 UTM Zone,,enumeration,subgroup="UTM Coordinates" isgeoaccess="true" \nvalues="file:/resources/geo/utmlist.txt"
 UTM Easting,,double,isgeoaccess="true" 
 UTM Northing,,double,isgeoaccess="true" 
-Township,,enumerationplus,subgroup="Legal Land Description" isgeoaccess="true" 
-Range,,enumerationplus, isgeoaccess="true" 
-Section,,enumerationplus, isgeoaccess="true" 
+#Township,,enumerationplus,subgroup="Legal Land Description" isgeoaccess="true" 
+#Range,,enumerationplus, isgeoaccess="true" 
+#Section,,enumerationplus, isgeoaccess="true" 
 Vertical Datum,,enumerationplus,subgroup="Datum"  values="file:/resources/geo/verticaldatums.txt"  
 Datum,,enumerationplus, values="file:/resources/geo/datums.txt"  
 Deposit Environment,,enumerationplus,subgroup="Environment"
