@@ -2011,29 +2011,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     
     public static class Selector {
-
-        
         int margin = 3;
-
-        
         int padding = 20;
-
-        
         String label;
-
-        
         String id;
-
-        
         String icon;
-
-        
         boolean isHeader = false;
-
-        
         private String attr;
-
-        
         private String tooltip;
 
         public Selector(String labelId) {
@@ -2074,9 +2058,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
         }
 
 
-
-
-
 	public static Selector findId(Object id, List l) {
 	    for (int i = 0; i < l.size(); i++) {
 		Selector tfo = (Selector) l.get(i);
@@ -2099,9 +2080,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
 	    }
 	    return false;
 	}
-	
-
-
         
         public void setTooltip(String tooltip) {
             this.tooltip = tooltip;
