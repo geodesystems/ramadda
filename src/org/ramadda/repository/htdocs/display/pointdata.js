@@ -3476,6 +3476,13 @@ RequestMacro.prototype = {
 	return (this.type=='skip' || this.name=='skip');
     },
     initWidget: function(macroChange) {
+	if(this.selectMenuId && this.values && this.values.length>5) {
+	    let widgetId = this.display.getDomId(this.getId());
+	    HU.makeSelectTagPopup(jqid(widgetId),{icon:true,makeButton:false,after:true});
+
+	}
+
+
 	//macroChange: (macro,value,what,force,apply)
 	let _this =this;
 	if(this.isSkip()) {
@@ -3547,7 +3554,9 @@ RequestMacro.prototype = {
 	    label="";
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
-		let attrs = [ATTR_TITLE,title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
+		let widgetId = this.display.getDomId(this.getId());
+		let attrs = [ATTR_TITLE,title??'',ATTR_STYLE, style,
+			     ATTR_ID,widgetId,ATTR_CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -3574,6 +3583,7 @@ RequestMacro.prototype = {
 		}
 		if(debug)
 		    console.log('\tselect: dflt:' + this.dflt +' values:' + this.values);
+		this.selectMenuId = widgetId;
 		widget = HU.select('',attrs,values,v,30);
 	    }
 	} else if(this.type=='numeric' || this.type=='number') {
