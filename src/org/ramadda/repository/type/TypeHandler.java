@@ -4786,6 +4786,10 @@ public class TypeHandler extends RepositoryManager {
         return editorId;
     }
 
+    public boolean haveDatabaseTable() {
+        return false;
+    }
+
     public List<Column> getColumns() {
         return null;
     }
@@ -6234,7 +6238,6 @@ public class TypeHandler extends RepositoryManager {
         HashSet   set  = getEnumValuesInner(request, column,  entry,forSearch|| true);
 	//If we get back null then the column should have values
 	List<HtmlUtils.Selector> columnValues = column.getValues();
-
         List<HtmlUtils.Selector> tfos = new ArrayList<HtmlUtils.Selector>();
 	if(!forSearch && columnValues!=null) {
 	    for(HtmlUtils.Selector sel: columnValues) {
@@ -6260,7 +6263,108 @@ public class TypeHandler extends RepositoryManager {
 	    }
         }
 
+	/*
+	if(column.toString().toLowerCase().indexOf("offense")>=0) {
+	    for(HtmlUtils.Selector sel: tfos)
+		System.out.println(sel.getLabel() +" ");
+	    System.out.println("");
+	}
+	*/
+
         return tfos;
+    }
+
+    private HashSet getEnumValuesInner(Request request, Column column,
+                                       Entry entry, boolean getFromDatabase)
+	throws Exception {
+        Clause clause = getEnumValuesClause(column, entry);
+	boolean hasEnumValuesClause = clause!=null;
+	boolean didClause= false;
+        if (request != null) {
+            List<Clause> ands = new ArrayList<Clause>();
+            for (Column otherCol : getColumns()) {
+                if ( !otherCol.getCanSearch() || !otherCol.isEnumeration()) {
+                    continue;
+                }
+                if (otherCol.equals(column)) {
+                    continue;
+                }
+                String urlId = otherCol.getFullName();
+                if (request.defined(urlId)) {
+                    ands.add(Clause.eq(otherCol.getName(),
+                                       request.getString(urlId, "")));
+                }
+            }
+            if (ands.size() > 0) {
+		didClause = true;
+                if (clause == null) {
+                    clause = Clause.and(ands);
+                } else {
+                    clause = Clause.and(clause, Clause.and(ands));
+                }
+                //                System.err.println("col:" + column + " Clause:" + clause);
+            }
+        }
+
+	//If we have no other clauses and the column has values defined then pass back null
+	//this tells the caller to get the values from the column
+	if(!getFromDatabase && !didClause) {
+	    List<HtmlUtils.Selector> tmp = column.getValues();
+	    if(tmp!=null && tmp.size()>0) {
+		return null;
+	    }
+	}
+	Clause entryTypeClause = Clause.eq(GenericTypeHandler.COL_ENTRY_TYPE,this.getType());
+	if(!hasEnumValuesClause) {
+	    clause = clause==null?entryTypeClause:Clause.and(clause,entryTypeClause);
+	}
+
+        //Use the clause string as part of the key
+        String  key = getEnumValueKey(column, entry) + ((clause == null)
+							? ""
+							: "_" + clause);
+        HashSet set = columnEnumValues.get(key);
+	boolean debug = false;
+	//	debug = column.toString().toLowerCase().indexOf("offense")>=0;
+
+        if (set != null) {
+            return set;
+        }
+
+        long t1 = System.currentTimeMillis();
+        Statement stmt = getRepository().getDatabaseManager().select(
+								     SqlUtil.distinct(column.getName()),
+								     column.getTableName(), clause);
+	if(debug) {
+	    System.err.println(getType() +" column:" + column +" table:" + column.getTableName() +
+			       "\n\tclause:" + clause +" set:" + set);
+	}
+
+
+        long t2 = System.currentTimeMillis();
+        String[] values =
+            SqlUtil.readString(
+			       getRepository().getDatabaseManager().getIterator(stmt), 1);
+        long t3 = System.currentTimeMillis();
+	if(debug)
+	    System.err.println("values:" + Utils.arrayToList(values));
+	//	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
+        set = new HashSet();
+	if(column.isMultiEnumeration())   {
+	    for(String value: values) {
+		set.addAll(Utils.split(value,column.getDelimiter()));
+	    }
+	} else {
+	    set.addAll(Misc.toList(values));
+	}
+        columnEnumValues.put(key, set);
+
+        return set;
+    }
+
+    public Clause getEnumValuesClause(Column column, Entry entry)
+	throws Exception {
+        return null;
     }
 
     public String getFieldHtml(Request request, Entry entry, Hashtable props,
@@ -6313,91 +6417,6 @@ public class TypeHandler extends RepositoryManager {
         return null;
     }
 
-    private HashSet getEnumValuesInner(Request request, Column column,
-                                       Entry entry, boolean getFromDatabase)
-	throws Exception {
-        Clause clause = getEnumValuesClause(column, entry);
-	boolean didClause= false;
-        if (request != null) {
-            List<Clause> ands = new ArrayList<Clause>();
-            for (Column otherCol : getColumns()) {
-                if ( !otherCol.getCanSearch() || !otherCol.isEnumeration()) {
-                    continue;
-                }
-                if (otherCol.equals(column)) {
-                    continue;
-                }
-                String urlId = otherCol.getFullName();
-                if (request.defined(urlId)) {
-                    ands.add(Clause.eq(otherCol.getName(),
-                                       request.getString(urlId, "")));
-                }
-            }
-            if (ands.size() > 0) {
-		didClause = true;
-                if (clause == null) {
-                    clause = Clause.and(ands);
-                } else {
-                    clause = Clause.and(clause, Clause.and(ands));
-                }
-                //                System.err.println("col:" + column + " Clause:" + clause);
-            }
-        }
-
-	//If we have no other clauses and the column has values defined then pass back null
-	//this tells the caller to get the values from the column
-	if(!getFromDatabase && !didClause) {
-	    List<HtmlUtils.Selector> tmp = column.getValues();
-	    if(tmp!=null && tmp.size()>0) {
-		return null;
-	    }
-	}
-
-        //Use the clause string as part of the key
-        String  key = getEnumValueKey(column, entry) + ((clause == null)
-							? ""
-							: "_" + clause);
-        HashSet set = columnEnumValues.get(key);
-	//	boolean debug = column.toString().indexOf("class")>=0;
-	boolean debug = false;
-
-        if (set != null) {
-            return set;
-        }
-
-        long t1 = System.currentTimeMillis();
-        Statement stmt = getRepository().getDatabaseManager().select(
-								     SqlUtil.distinct(column.getName()),
-								     column.getTableName(), clause);
-	if(debug) {
-	    System.err.println(getType() +" column:" + column +" table:" + column.getTableName() + " key:" + key+" clause:" + clause +" set:" + set);
-//	    System.err.println(Utils.getStack(10));
-	}
-
-
-        long t2 = System.currentTimeMillis();
-        String[] values =
-            SqlUtil.readString(
-			       getRepository().getDatabaseManager().getIterator(stmt), 1);
-        long t3 = System.currentTimeMillis();
-	//	Utils.printTimes("enum values:"+ column +" times:",t1,t2,t3);
-        set = new HashSet();
-	if(column.isMultiEnumeration())   {
-	    for(String value: values) {
-		set.addAll(Utils.split(value,column.getDelimiter()));
-	    }
-	} else {
-	    set.addAll(Misc.toList(values));
-	}
-        columnEnumValues.put(key, set);
-
-        return set;
-    }
-
-    public Clause getEnumValuesClause(Column column, Entry entry)
-	throws Exception {
-        return null;
-    }
 
     public void setCategory(String value) {
         this.category = value;
