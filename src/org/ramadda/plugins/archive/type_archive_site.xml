@@ -75,6 +75,9 @@ macros="prop1,prop2" prop1.title="Cultural Uses" prop2.title="Properties"
 :vspace 1em
 -col
 +col-4
+<div>
+{{typesearch_link  type=""   label="${icon} Search for ${type}" }} 
+</div>
 {{new_property fromEntry="true" showToggle="true" class="ramadda-button-small"  addEditPropertiesLink="true"}}
 +center
 {{image  message="" width="90%" style="margin-bottom:10px;"  useThumbnail="true"}}
