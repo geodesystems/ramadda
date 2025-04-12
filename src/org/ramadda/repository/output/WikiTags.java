@@ -344,6 +344,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#topCount","5",
 					"#types","Use * if doing topCount"),
 
+			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LINK,"Type Search Link","#label","${icon} Search for ${type}","#type",""),
+
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH,"Type Search","type","",
 					"showTitle","false",
 					"#displayTypes","list,images,timeline,map,metadata",

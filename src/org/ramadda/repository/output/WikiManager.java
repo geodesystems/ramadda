@@ -2135,6 +2135,28 @@ public class WikiManager extends RepositoryManager
 		sb.append(apply.apply(handlers));
 	    }
 	    return sb.toString();
+	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH_LINK)) {
+	    TypeHandler typeHandler = entry!=null?entry.getTypeHandler():null;
+	    String type = getProperty(wikiUtil,props,"type",null);
+	    if(stringDefined(type)) {
+		typeHandler = getRepository().getTypeHandler(type);
+	    }
+	    if(typeHandler==null) {
+		return  makeErrorMessage(request,wikiUtil,props,theTag, "Could not find type");
+	    }
+	    String label = getProperty(wikiUtil,props,"label","Search for " + typeHandler.getDescription());
+	    label = label.replace("${icon}",HU.getIconImage("fas fa-search"));
+	    label = label.replace("${type}",typeHandler.getDescription());
+	    String searchUrl =
+		HU.href(
+			getSearchManager().URL_SEARCH_TYPE + "/" 
+			+ typeHandler.getType(), label,
+			HU.attrs("class","entry-type-search",
+				 HU.ATTR_TITLE,
+				 "Search for entries of this type"));
+
+	    
+	    return searchUrl;
 	} else if(theTag.equals(WIKI_TAG_TYPE_SEARCH)) {
 	    TypeHandler typeHandler = getRepository().getTypeHandler(getProperty(wikiUtil,props,"type",""));
 	    if(typeHandler==null) {

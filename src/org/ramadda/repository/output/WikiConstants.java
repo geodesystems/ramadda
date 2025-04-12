@@ -476,7 +476,8 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_TYPECOUNT = "typecount";    
 
-    public static final String WIKI_TAG_TYPE_SEARCH = "typesearch";    
+    public static final String WIKI_TAG_TYPE_SEARCH = "typesearch";
+    public static final String WIKI_TAG_TYPE_SEARCH_LINK = "typesearch_link";        
 
     public static final String WIKI_TAG_TYPE_SEARCH_LIST = "typesearchlist";    
 
