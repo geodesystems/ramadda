@@ -90,7 +90,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-	System.err.println(where);
         boolean      doGroupBy = typeHandler.isGroupBy(request);
         List<Column> columns;
         if (doGroupBy) {
