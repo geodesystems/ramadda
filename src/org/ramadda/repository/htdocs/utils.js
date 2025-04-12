@@ -6113,7 +6113,6 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    hide: false,
 	    addBreak:false,
 	    after:false,
-	    tooltip:'Select multiple',
 	    wrap:'${widget}',
 	    makeButton:true,
 	    makeButtons:true
@@ -6122,6 +6121,8 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	if(args.icon && !args.buttonLabel)
 	    args.buttonLabel = HU.getIconImage('fas fa-list-check');
 	$.extend(opts,args);
+	if(!opts.tooltip)
+	    opts.tooltip=opts.single?'Select value':'Select multiple';
 
 	let label = opts.label??'Select';
 	if(opts.hide)
