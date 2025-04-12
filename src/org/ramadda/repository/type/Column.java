@@ -2018,12 +2018,10 @@ public class Column implements DataTypes, Constants, Cloneable {
             Clause tmp;
             if (dateRange[0] != null) {
                 where.add(tmp = Clause.ge(columnName, dateRange[0]));
-                System.err.println("min date:" + dateRange[0] + " " + tmp);
             }
 
             if (dateRange[1] != null) {
                 where.add(tmp = Clause.le(columnName, dateRange[1]));
-                System.err.println("max date:" + dateRange[1] + " " + tmp);
             }
         } else if (isType(DATATYPE_ENTRY)) {
             String value = request.getString(searchArg + "_hidden", "");
