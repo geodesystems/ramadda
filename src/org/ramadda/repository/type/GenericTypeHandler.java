@@ -293,7 +293,8 @@ public class GenericTypeHandler extends TypeHandler {
         return column.convert(value);
     }
 
-    private boolean haveDatabaseTable() {
+    @Override
+    public boolean haveDatabaseTable() {
         return colNames.size() > 0;
     }
 
