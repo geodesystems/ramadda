@@ -383,7 +383,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
 	menuWidth= getAttributeOrTag(element, "menuwidth",null);
 	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
-	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", false);
+	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", true);
 	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
@@ -690,6 +690,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         return getRepository().getDatabaseManager();
     }
 
+    /**
+       method
+     */
     public String getJson(Request request,TypeHandler sourceTypeHandler) throws Exception {
 	if(adminOnly &&!request.isAdmin()) return null;
         List<String> col = new ArrayList<String>();
@@ -741,6 +744,8 @@ public class Column implements DataTypes, Constants, Cloneable {
             if ((values == null) || (values.size() == 0)) {
                 values = sourceTypeHandler.getEnumValues(request, this, null);
             }
+
+
             if (values != null) {
                 for (HtmlUtils.Selector tfo : values) {
                     enums.add(JsonUtil.map(Utils.makeListFromValues("value",
@@ -1015,6 +1020,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 
     /**
        get display value for html
+       method
      */
     public boolean formatValue(Request request, Entry entry,
 			       Appendable result,
@@ -2276,6 +2282,10 @@ public class Column implements DataTypes, Constants, Cloneable {
         return TypeHandler.MATCH_UNKNOWN;
     }
 
+    /**
+       edit form
+       method
+     */
     public void addToEntryForm(Request request, Entry parentEntry,
 			       Entry entry,
                                Appendable formBuffer, Object[] values,
@@ -2285,7 +2295,7 @@ public class Column implements DataTypes, Constants, Cloneable {
         if ( !showInForm) {
             return;
         }
-        String widget = getFormWidget(request, entry, values, formInfo);
+        String widget = getFormWidget(request, entry, sourceTypeHandler, values, formInfo);
         widget = sourceTypeHandler.getFormWidget(request, entry, this, widget);
         if (Utils.stringDefined(help)) {
             formBuffer.append(typeHandler.formEntry(request, "",
@@ -2342,8 +2352,14 @@ public class Column implements DataTypes, Constants, Cloneable {
         return ARG_SEARCH_PREFIX + getFullName();
     }
 
+    private boolean doShowEnumerationPopup(int size) {
+	return showEnumerationPopup && size>5;
+    }
+
+
     /** method */
     public String getFormWidget(Request request, Entry entry,
+				TypeHandler sourceTypeHandler,
                                 Object[] values, FormInfo formInfo)
 	throws Exception {
 
@@ -2433,7 +2449,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	       this.enumValues!=null && this.enumValues.size()>0) {
 		enumValues = this.enumValues;
 	    } else {
-		enumValues = typeHandler.getEnumValues(request, this, null);
+		enumValues = sourceTypeHandler.getEnumValues(request, this, null);
 	    }
 
 	    String widgetId = HU.getUniqueId("widget_");
@@ -2441,7 +2457,7 @@ public class Column implements DataTypes, Constants, Cloneable {
             widget = HU.select(urlArg, enumValues, value,
 			       HU.attrs("id",widgetId,"class","ramadda-pulldown-with-icons","width",width));
 
-	    if(showEnumerationPopup) {
+	    if(doShowEnumerationPopup(enumValues.size())) {
 		widget+=getEnumerationPopup(widgetId,false);
 	    }
 
@@ -2455,7 +2471,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 	    //This is a hack to fix a problem with changing from an enumeration to a string
 	    //If we do this then lucene has a problem with indexing this column
 	    if(showEnumerationMenu) {
-		List enums = getEnumPlusValues(request, entry);
+		List enums = getEnumPlusValues(request, entry,sourceTypeHandler);
 		if(addBlankToEnumerationMenu) {
 		    if(!HtmlUtils.Selector.contains(enums,""))
 			enums.add(0,new HtmlUtils.Selector("&lt;blank&gt;",""));
@@ -2466,7 +2482,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 								  "class","ramadda-pulldown-with-icons")) +
 		    "  or:  "  +
 		    HU.input(urlArg + "_plus", "", HU.attr("size",""+columns));
-		if(showEnumerationPopup) {
+
+		if(doShowEnumerationPopup(enums.size())) {
 		    widget+=getEnumerationPopup(widgetId,false);
 		}
 
@@ -2625,9 +2642,9 @@ public class Column implements DataTypes, Constants, Cloneable {
         return widget;
     }
 
-    private List getEnumPlusValues(Request request, Entry entry)
+    private List getEnumPlusValues(Request request, Entry entry,TypeHandler sourceTypeHandler)
 	throws Exception {
-        List<HtmlUtils.Selector> enums = typeHandler.getEnumValues(request, this,
+        List<HtmlUtils.Selector> enums = sourceTypeHandler.getEnumValues(request, this,
 								   entry);
         //TODO: Check for Strings vs Selector
         if (enumValues != null) {
@@ -2965,6 +2982,10 @@ public class Column implements DataTypes, Constants, Cloneable {
 	addToSearchForm(request, formBuffer, where, entry, searchArg,horizontal);
     }
 
+    /**
+       search form
+       method
+    */
     private void addToSearchForm(Request request, Appendable formBuffer,
 				 List<Clause> where, Entry entry, String searchArg,
 				 boolean...horizontal)
@@ -3118,7 +3139,8 @@ public class Column implements DataTypes, Constants, Cloneable {
 		    if(!enumerationSearchMultiples) break;
 		}
             }
-	    if(showEnumerationPopup) {
+
+	    if(doShowEnumerationPopup(values.size())) {
 		tmpb.append(getEnumerationPopup(widgetId,true));
 	    }
 	    widget = tmpb.toString();
