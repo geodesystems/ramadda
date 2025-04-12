@@ -1557,6 +1557,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 
+	
+	if(!getProperty("ramadda.entrytype.fix",false)) {
+	    getLogManager().logSpecial("Fixing entry types");
+	    fixEntryTypes();
+	    writeGlobal("ramadda.entrytype.fix","true");
+	}
 
 
     }
@@ -1673,50 +1679,63 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    }
 	}
 	allTypeHandlers = goodOnes;
-
-
-	if(!getProperty("ramadda.entrytype.fix",false)) {
-	    //	    getLogManager().logSpecial("Fixing entry types");
-	    //	    fixEntryTypes();
-	    //	    writeGlobal("ramadda.entrytype.fix","false");
-	}
     }
 
+    /**
+       This adds the typehandler type to the extra database tables
+     */
     private void fixEntryTypes() throws Exception {
+	int totalCnt = 0;
+	Request request = getAdminRequest();
 	for(TypeHandler typeHandler: allTypeHandlers) {
+	    //	    System.out.println("type:" + typeHandler  +" " + typeHandler.haveDatabaseTable());
+	    if(!typeHandler.haveDatabaseTable()) {
+		continue;
+	    }
+
 	    String table = typeHandler.getTableName();
 	    if (!Utils.stringDefined(table)) {
 		continue;
 	    }
-	    Request request = getAdminRequest();
+	    int typeCnt = 0;
+	    //	    if(table.toLowerCase().indexOf("taxonomy")<0) continue;
+	    //	    System.err.println("Table:" + table);
 	    Connection connection = getDatabaseManager().getConnection();
 	    try {
-		String what = SqlUtil.comma(GenericTypeHandler.COL_ID,GenericTypeHandler.COL_ENTRY_TYPE);
+		String what = SqlUtil.comma(table+"."+GenericTypeHandler.COL_ID,table+"."+GenericTypeHandler.COL_ENTRY_TYPE);
 		Statement statement = SqlUtil.select(connection, what, Misc.newList(table), null,"",-1,0);
+
 		ResultSet  results = statement.getResultSet();
 		//		System.out.println(typeHandler.getType() +" " + table);
 		while (results.next()) {
 		    String id  = results.getString(1);
 		    String type = results.getString(2);
-		    if(Utils.stringDefined(type)) continue;
+		    //		    if(Utils.stringDefined(type)) continue;
 		    try {
 			Entry entry = getEntryManager().getEntry(request,id);
-			if(entry!=null) {
-			    /*
-			    getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
-							new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
-							new Object[] {entry.getTypeHandler().getType()});
-			    */
-
-			    //			    System.out.println("\tupdated:"  + typeHandler.getType() +": " + entry.getName());
-			}
+			if(entry==null) continue;
+			totalCnt++;
+			typeCnt++;
+			getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
+						    new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
+						    new Object[] {entry.getTypeHandler().getType()});
+			//			if((totalCnt%100)==0)    getLogManager().logSpecial("\tentry type update: #"  + totalCnt);
 		    } catch(Exception ignore1) {
+			getLogManager().logError("Error fixing entry types:" + typeHandler,ignore1);
+			return;
 		    }
 		}
 		statement.close();
 	    } catch(Exception exc) {
+		getLogManager().logSpecial("\tError processing entry type fix:" + typeHandler+" error:" +exc);
 	    }
 	    getDatabaseManager().closeConnection(connection);
+	    if(typeCnt>0) {
+		//getLogManager().logSpecial("\tentry type update: " + typeHandler+" #"  + typeCnt);
+	    }
+	}
+	if(totalCnt>0) {
+	    //	    getLogManager().logSpecial("\tentry type update: total changed="  + totalCnt);
 	}
     }    
 
