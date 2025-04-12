@@ -5,11 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
-
 import org.ramadda.data.point.text.*;
-
-
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointOutputHandler;
@@ -22,12 +18,9 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.*;
 
 import ucar.unidata.util.Misc;
-
-
 import java.io.*;
 
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -37,34 +30,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 
-
-/**
- * Class description
- *
- *
- * @version        $version$, Sat, Dec 8, '18
- * @author         Enter your name here...
- */
 public class DbRecordFile extends CsvFile implements DbConstants {
-
-    /** _more_ */
     private Request request;
-
-    /** _more_ */
     private DbTypeHandler typeHandler;
-
-    /** _more_ */
     private Entry entry;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandler _more_
-     * @param entry _more_
-     *
-     * @throws IOException _more_
-     */
     public DbRecordFile(Request request, DbTypeHandler typeHandler,
                         Entry entry)
             throws IOException {
@@ -73,24 +43,12 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         this.entry       = entry;
     }
 
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     * @param howMany _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
         //noop as the DB call does this
         return true;
     }
-
 
     /*
       @Override
@@ -104,16 +62,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
       return record;
       }*/
 
-
-    /**
-     * _more_
-     *
-     * @param buffered _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public InputStream doMakeInputStream(boolean buffered) throws Exception {
         boolean debug = false;
@@ -142,7 +90,7 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             column.assembleWhereClause(request, where, searchCriteria);
         }
 
-
+	System.err.println(where);
         boolean      doGroupBy = typeHandler.isGroupBy(request);
         List<Column> columns;
         if (doGroupBy) {
@@ -150,7 +98,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         } else {
             columns = typeHandler.getColumnsToUse(request, false);
         }
-
 
         final PipedOutputStream pos = new PipedOutputStream();
         final PipedInputStream  pis = new PipedInputStream(pos);
@@ -172,13 +119,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         return pis;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     private void makeFields(Request request) throws Exception {
         boolean      debug     = false;
         boolean      doGroupBy = typeHandler.isGroupBy(request);
@@ -202,6 +142,9 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 		: column.isDate()
                                  ? RecordField.TYPE_DATE
                                  : RecordField.TYPE_STRING;
+	    if(column.isEnumeration()) {
+		type = RecordField.TYPE_ENUMERATION;
+	    }
             String extra   = "";
             if (column.isNumeric()) {
                 extra += attrChartable();
@@ -248,35 +191,14 @@ public class DbRecordFile extends CsvFile implements DbConstants {
         putProperty(PROP_FIELDS, fields.toString());
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class BridgeIterator extends ValueIterator {
 
-        /** _more_ */
         List<Column> columns;
 
-        /** _more_ */
         OutputStream os;
 
-        /** _more_ */
         PrintWriter pw;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         * @param os _more_
-         * @param columns _more_
-         *
-         * @throws Exception _more_
-         */
         public BridgeIterator(Request request, DbTypeHandler db, Entry entry,
                               OutputStream os, List<Column> columns)
                 throws Exception {
@@ -288,14 +210,6 @@ public class DbRecordFile extends CsvFile implements DbConstants {
 
 	int rowCnt = 0;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             int cnt = 0;
@@ -341,21 +255,11 @@ public class DbRecordFile extends CsvFile implements DbConstants {
             pw.append("\n");
         }
 
-        /**
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             pw.flush();
             os.close();
         }
 
-
-
     }
-
-
 
 }
