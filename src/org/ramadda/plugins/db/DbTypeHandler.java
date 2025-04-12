@@ -12,7 +12,6 @@ import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
@@ -84,145 +83,55 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.zip.*;
 
-
-/**
- *
- */
-
 @SuppressWarnings("unchecked")
 public class DbTypeHandler extends PointTypeHandler implements DbConstants /* BlobTypeHandler*/ {
-
     private static boolean debugQuery  = false;
-
-    /** _more_ */
     public static final boolean debugTimes = false;
-
-
-
     public static final String ARG_SAMPLE = "sample";
-
     public static final String ATTR_SHOWSUMMARY = "search_showsummary";    
-
-
     private static final String ORDER_DESC = "desc";
     private static final String ORDER_ASC = "asc";    
-
-    /** _more_ */
     private Element tableNode;
-
-    /** _more_ */
     private DbInfo dbInfo;
-
-    /** _more_ */
     protected GenericTypeHandler tableHandler;
-
-    /** _more_ */
     protected Entry myEntry;
-
-    /** _more_ */
     private List<String> icons;
-
     private boolean showSummary = true;
-
-    /** _more_ */
     private String tableIcon = "";
-
-    /** _more_ */
     protected List<TwoFacedObject> viewList = new ArrayList<TwoFacedObject>();
-
-    /** _more_ */
     private List<List<String>> dfltOrder;
-
-
-    /** _more_ */
     private List<TwoFacedObject> orderTfos;
-
-    /** _more_ */
     protected int numOrders = 3;
-
-    /** _more_ */
     private String formJS;
-
-    /** _more_ */
     private String defaultView;
-
-    /** _more_ */
     private boolean showEntryCreate = true;
-
-    /** _more_ */
     private boolean showChartView = true;
-
-    /** _more_ */
     private boolean showFeedView = true;
-
-    /** _more_ */
     private boolean showDateView = true;
-
-
-    /** _more_ */
     private DecimalFormat ifmt = new DecimalFormat("#,##0");
-
-    /** _more_ */
     private DecimalFormat dfmt = new DecimalFormat("#,##0.#");
-
-    /** _more_ */
     private DecimalFormat pfmt = new DecimalFormat("0.00");
-
-    /** _more_ */
     XmlEncoder xmlEncoder = new XmlEncoder();
-
-    /** _more_ */
     private String[] namesArray;
-
-
-    /** _more_ */
     private String labelColumnNames;
-
-    /** _more_ */
     private String labelTemplate;
-
-    /** _more_ */
     protected String addressTemplate;
-
-    /** _more_ */
     private String mapLabelTemplate;
-
-    /** _more_ */
     private String mapLabelTemplatePrint;
     private int mapDotLimit=100;
     private boolean mapMarkersShow = true;
     private boolean mapPolygonsShow = true;    
     private  String defaultMapProperties;
-
-    /** _more_ */
     private String searchForLabel = "Search For";
-
     private String htmlHeader = null;
-
-    /** _more_ */
     private List<DbTemplate> templates = new ArrayList<DbTemplate>();
-
-    /** _more_ */
     private List<MacroStatement> macros = new ArrayList<MacroStatement>();
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param tableName _more_
-     * @param tableNode _more_
-     * @param desc _more_
-     *
-     * @throws Exception _more_
-     */
     public DbTypeHandler(Repository repository, String tableName,
                          Element tableNode, String desc)
             throws Exception {
         super(repository, tableName, desc);
-
         this.tableNode = tableNode;
-
         String dfltOrderProp = XmlUtil.getAttribute(tableNode,
                                    "defaultOrder", (String) null);
 
@@ -248,7 +157,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         showFeedView = XmlUtil.getAttribute(tableNode, "showFeedView", true);
         showDateView = XmlUtil.getAttribute(tableNode, "showDateView", true);
-
 
         numOrders = XmlUtil.getAttribute(tableNode, "numberOrderBy",
                                          numOrders);
@@ -279,7 +187,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         XmlUtil.create("action", root, new String[] {"name","dbsearchform","label","Search Form","icon","fas fa-search"});
         XmlUtil.create("action", root, new String[] {"name","dblist","label","DB List","icon","fas fa-list"});	
 
-
         root.setAttribute(ATTR_SUPER, "type_point");
         Element node = XmlUtil.create("column", root, new String[] {
             "name", "contents", Column.ATTR_TYPE, "clob", Column.ATTR_SIZE,
@@ -301,7 +208,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             XmlUtil.getAttribute(propNode, "value"));
             //            System.err.println ("db:" +XmlUtil.getAttribute(propNode,"name") +":" + XmlUtil.getAttribute(propNode,"value"));
         }
-
 
         setCategory(XmlUtil.getAttributeFromTree(tableNode,
                 TypeHandler.ATTR_CATEGORY, "Database"));
@@ -332,12 +238,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private List<TwoFacedObject> getOrderTfos() {
         if (orderTfos == null) {
             orderTfos = new ArrayList<TwoFacedObject>();
@@ -348,22 +248,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return orderTfos;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param template _more_
-     */
     public void addTemplate(DbTemplate template) {
         templates.add(template);
         viewList.add(new TwoFacedObject(template.name, template.id));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public DbInfo getDbInfo() {
         if (dbInfo == null) {
             dbInfo = new DbInfo(this, IDX_MAX_INTERNAL);
@@ -372,24 +261,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return dbInfo;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public GenericTypeHandler getTableHandler() {
         return tableHandler;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param columnNodes _more_
-     *
-     * @throws Exception _more_
-     */
     public void initDbColumns(List<Element> columnNodes) throws Exception {
 
         putProperty("icon", tableIcon);
@@ -484,18 +359,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public int getValuesIndex() {
         return RecordTypeHandler.IDX_PROPERTIES;
     }
 
+    /*
+    @Override
+    public boolean haveDatabaseTable() {
+        return true;
+    }
+    */
 
     /**
      * Called by lucene index to get non file contents
@@ -538,18 +412,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fileWriter _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEntryNode(Request request, Entry entry,
                                final FileWriter fileWriter, Element node,boolean encode)
@@ -575,17 +437,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     * @param files _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeEntryFromXml(Request request, Entry entry,
                                        Element node,
@@ -627,28 +478,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    /***
-    public String getTableName() {
-        return "properties_" + super.getTableName();
-    }
-    */
-
-
-    /**
-     * _more_
-     *
-     * @param newEntry _more_
-     * @param oldEntry _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeCopiedEntry(Entry newEntry, Entry oldEntry)
             throws Exception {
@@ -663,7 +492,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String sql = makeInsertOrUpdateSql(newEntry, null);
         PreparedStatement insertStmt =
             getRepository().getDatabaseManager().getPreparedStatement(sql);
-
 
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
@@ -688,70 +516,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @return _more_
-     */
     public String getTitle(Request request, Entry entry) {
         return entry.getName();
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Column> getDbColumns() {
         return getDbInfo().getColumns();
     }
 
-    /**
-     * _more_
-     *
-     * @param sorted _more_
-     *
-     * @return _more_
-     */
     public List<Column> getDbColumns(boolean sorted) {
         return getDbInfo().getColumns(sorted);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public Column getDbColumn(String name) {
         return getDbInfo().getColumn(name);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected GenericTypeHandler getTableTypeHandler() {
         return tableHandler;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getInlineHtml(Request request, Entry entry)
             throws Exception {
         if ( !getRepository().getAccessManager().canAccessFile(request,
@@ -766,7 +550,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb = new StringBuilder();
         addStyleSheet(request, sb);
         makeTable(request, entry, valueList, false, sb, false, true);
-
 
         /*
           if (showInHeader(VIEW_RSS)) {
@@ -786,15 +569,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return sb.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     protected String getWhatToShow(Request request) {
         String what = request.getString(ARG_WHAT, null);
         if (what != null) {
@@ -811,18 +585,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	return true;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
@@ -844,8 +606,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		return null;
 	    }
 	}
-	
-
 
 	String desc = entry.getDescription();
 	if (stringDefined(desc) && isWikiText(desc) && !desc.trim().equals("<wiki>")) {
@@ -853,8 +613,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		return null;
 	    }
 	}
-
-
 
         Hashtable props = getProperties(entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
@@ -866,9 +624,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return handleForm(request, entry, null, true, doAnonForm);
         }
-
-
-
 
         boolean      canEdit = getAccessManager().canDoEdit(request,
                                    entry);
@@ -886,7 +641,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               true, false);
         }
 
-
         if (request.exists(ARG_DB_NEWFORM) || view.equals(VIEW_NEW)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -896,7 +650,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleForm(request, entry, null, true, false);
         }
 
-
         if (request.exists(ARG_DB_EDITSQL) || view.equals(VIEW_EDIT)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -905,7 +658,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             return handleEdit(request, entry);
         }
-
 
         if (request.exists(ARG_DB_CREATE)) {
             if ( !canEdit) {
@@ -931,7 +683,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleSearchForm(request, entry);
         }
 
-
         if (request.exists(ARG_DB_SEARCH)) {
 	    //        if (request.exists(ARG_DB_SEARCH) || isEmbedded(request) ) {
             return handleSearch(request, entry);
@@ -941,7 +692,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleView(request, entry,
                               request.getString(ARG_DBID, (String) null));
         }
-
 
         String action = "";
         if (request.exists(ARG_DB_DO)) {
@@ -974,17 +724,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return handleSearchForm(request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void addViewFooter(Request request, Entry entry, Appendable sb)
             throws Exception {
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
@@ -993,24 +732,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return;
         }
 
-
         if ( !isEmbedded(request)) {
             getPageHandler().entrySectionClose(request, entry, sb);
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param view _more_
-     * @param extraLinks _more_
-     * @throws Exception _more_
-     */
     public void addViewHeader(Request request, Entry entry, Appendable sb,
                               String view, String extraLinks)
             throws Exception {
@@ -1028,7 +754,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return;
         }
 
-
         Hashtable props = getProperties(entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
@@ -1040,7 +765,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
         addStyleSheet(request,sb);
         boolean embedded = isEmbedded(request);
         if (embedded) {
@@ -1050,9 +774,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if ( !isEmbedded(request)) {
             getPageHandler().entrySectionOpen(request, entry, sb, "");
         }
-
-
-
 
         if (Utils.stringDefined(htmlHeader)) {
 	    sb.append(getWikiManager().wikifyEntry(request, entry,htmlHeader));
@@ -1080,7 +801,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                           HU.cssClass(CSS_DB_HEADER));
         }
 
-
         List<Metadata> savedSearchMetadata =
             getMetadataManager().getMetadata(request,entry, METADATA_SAVEDSEARCH);
         if (savedSearchMetadata.size() > 0) {
@@ -1102,7 +822,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             sb.append(HU.div(StringUtil.join("&nbsp;|&nbsp;",
                     headerToks), HU.cssClass(CSS_DB_HEADER)));
         }
-
 
         if (request.defined(ARG_MESSAGE)) {
             sb.append(
@@ -1132,27 +851,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                       + "</div>");
         }
 
-
-
     }
 
-
-
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param view _more_
-     * @param numValues _more_
-     * @param fromSearch _more_
-     * @param extraLinks _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String addViewHeader(Request request, Entry entry, Appendable sb,
                                 String view, int numValues,
                                 boolean fromSearch, String extraLinks)
@@ -1167,17 +867,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return formId;
     }
 
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String addSearchAgain(Request request, Entry entry, Appendable sb, boolean inToggle)
             throws Exception {
         boolean forPrint = request.get(ARG_FOR_PRINT, false);
@@ -1198,16 +887,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return formId;
     }
 
-
-    /**
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param numValues _more_
-     *
-     * @throws Exception _more_
-     */
     public void addPrevNext(Request request, Entry entry, Appendable sb,
                             int numValues)
             throws Exception {
@@ -1216,7 +895,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	//For now don't add the next/prev links if it is a bot
 	if(request.getIsRobot() || request.getIsGoogleBot()) return;
-
 
         if (numValues > 0) {
             if (isGroupBy(request)) {
@@ -1234,17 +912,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleSearchForm(Request request, Entry entry)
             throws Exception {
         StringBuilder sb = new StringBuilder();
@@ -1255,20 +922,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param headerToks _more_
-     * @param baseUrl _more_
-     * @param addNext _more_
-     *
-     * @throws Exception _more_
-     */
     public void addHeaderItems(Request request, Entry entry, String view,
                                List<String> headerToks, String baseUrl,
                                boolean[] addNext)
@@ -1317,7 +970,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
         if (dbInfo.getCategoryColumns().size() > 0) {
             String theColumn = request.getString(
                                    ARG_DB_COLUMN,
@@ -1335,7 +987,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         }
-
 
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
         boolean canDoNew = getAccessManager().canDoNew(request, entry);
@@ -1356,30 +1007,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     : ""));
         }
 
-
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param view _more_
-     *
-     * @return _more_
-     */
     public boolean showInHeader(String view) {
         return showInHeader(view, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param view _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public boolean showInHeader(String view, boolean dflt) {
         String prop = getTypeProperty("header.show." + view, (String) null);
         //        System.err.println ("show in? header.show." + view +"=" + prop);
@@ -1390,20 +1023,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return dflt;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param clause _more_
-     * @param action _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result handleQuery(Request request, Entry entry, String action,
                                Clause clause, boolean fromSearch)
             throws Exception {
@@ -1590,14 +1209,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     protected boolean isGroupBy(Request request) {
         if (request == null) {
             return false;
@@ -1620,8 +1231,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 				   typeHandler, output,
 				   showDescription, showResource,
 				   linkToDownload, props,seen,forOutput,contents);
-	
-
 
         DbInfo              dbInfo     = getDbInfo();
 	String url =request.getAbsoluteUrl("/db/upload?entryid=" + entry.getId());
@@ -1648,21 +1257,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	return super.processEntryAction(request,entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param action _more_
-     * @param fromSearch _more_
-     * @param valueList _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result makeListResults(Request request, Entry entry, String view,
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
@@ -1689,20 +1283,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return handleListTable(request, entry, valueList, fromSearch, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param action _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ValueIterator makeValueIterator(Request request, Entry entry,
                                            String view, String action,
                                            boolean fromSearch)
@@ -1745,14 +1325,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new ValueIterator.CategoryIterator(request, this, entry);
         }
 
-
         if ( !doGroupBy) {
             if (view.equals(VIEW_TABLE) || view.equals("")) {
                 return new ValueIterator.TableIterator(request, this, entry,
                         fromSearch);
             }
         }
-
 
         /*
         if ( !doGroupBy) {
@@ -1770,37 +1348,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                           fromSearch);
             }
 
-
             if (view.equals(VIEW_CALENDAR)) {
                 return handleListCalendar(request, entry, valueList,
                                           fromSearch);
             }
-
-
 
         }
         */
         return null;
     }
 
-
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formBuffer _more_
-     * @param parentEntry _more_
-     * @param entry _more_
-     * @param formInfo _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEntryForm(Request request, Appendable formBuffer,
                                Entry parentEntry, Entry entry,
@@ -1853,20 +1410,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param formBuffer _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToEditForm(Request request, Entry entry,
                               Appendable formBuffer)
             throws Exception {
         Hashtable props = getProperties(entry);
-
 
         formBuffer.append(
             HU.formEntry(
@@ -1883,16 +1430,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             + msg("What to show the user after they create an item")));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param formBuffer _more_
-     *
-     * @throws Exception _more_
-     */
     private void addEnumerationAttributes(Request request, Entry entry,
                                           Appendable formBuffer)
             throws Exception {
@@ -2014,17 +1551,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param icon _more_
-     *
-     * @return _more_
-     */
     protected String getDbIconUrl(String icon) {
         if (icon.startsWith("http:")) {
             return icon;
@@ -2044,23 +1572,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getRepository().getUrlBase() + path;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
         super.initializeEntryFromForm(request, entry, parent, newEntry);
         Hashtable props = getProperties(entry);
-
 
         props.put(PROP_ANONFORM_ENABLED,
                   request.get(PROP_ANONFORM_ENABLED, false) + "");
@@ -2115,16 +1631,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         setProperties(entry, props);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToProcessingForm(Request request, Entry entry,
                                     Appendable sb)
@@ -2139,16 +1645,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HU.makeShowHideBlock("", inner.toString(), false));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public StringBuilder getSearchForm(Request request, Entry entry)
             throws Exception {
         String formId = HU.getUniqueId("form_");
@@ -2156,17 +1652,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getSearchForm(request, entry, formId);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param formId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public StringBuilder getSearchForm(Request request, Entry entry,
                                        String formId)
             throws Exception {
@@ -2193,7 +1678,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HU.comment("search form close"));
         sb.append(HU.formClose());
 
-
 	if(request.get("showLinks",true)) {
 	    StringBuilder formSB=new StringBuilder();
 	    OutputHandler.addUrlShowingForm(formSB, entry, formId,
@@ -2201,7 +1685,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 					    request.isAnonymous()
 					    ? null
 					    : "DB.addUrlShowingForm");
-	    
+
 	    String links = HU.makeShowHideBlock("Links",formSB.toString(), false);
 	    sb.append(HU.insetDiv(links,0,40,0,0));
 
@@ -2210,18 +1694,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return sb;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param normalForm _more_
-     *
-     * @throws Exception _more_
-     */
     private void getSearchFormInner(Request request, Entry entry,
                                     Appendable sb, boolean normalForm, String formId)
             throws Exception {
@@ -2292,9 +1764,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         //      if(true) return;
-
-
-
 
         List<TwoFacedObject> tfos     = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> aggtfos  = new ArrayList<TwoFacedObject>();
@@ -2434,8 +1903,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             buffer.append(formEntry(request, msgLabel("Order By"), order));
         }
 
-
-
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HU.labeledCheckbox(ARG_DB_SHOW + "toggleall",
@@ -2455,7 +1922,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    buffer.append(HU.script("DB.toggleAllInit("+HU.squote(formId)+");"));
 	else
 	    buffer.append(HU.script("DB.toggleAllInit();"));	
-
 
         StringBuilder uniqueSB = new StringBuilder();
         for (Column column : dbInfo.getColumnsToUse()) {
@@ -2506,7 +1972,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			       ARG_DB_SUBTITLE,
 			       request.getString(ARG_DB_SUBTITLE, ""),
 			       HU.SIZE_50) ));
-	
+
             buffer.append(formEntry(request, msgLabel("Description"),
                                     HU.textArea(ARG_DB_SEARCHDESC,
                                         request.getString(ARG_DB_SEARCHDESC,
@@ -2532,7 +1998,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		HU.space(4) +
 		HU.labeledCheckbox(ARG_TILE_ENTRIES,"true",request.get(ARG_TILE_ENTRIES,false),
 				   "Tile map results");		
-		
+
             if (addressTemplate != null) {
                 print += "<br>" + HU.b("Address label skip: ")
                          + HU
@@ -2557,7 +2023,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	    }
 	}
-
 
         int    cnt         = 0;
         String formSection = request.getString("formsection", null);
@@ -2586,9 +2051,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                    HU.cssClass("ramadda-form-block"));
         }
 
-
         sb.append(HU.script("Utils.initRangeSelect()"));
-
 
         /*
           if (false && request.getUser().getAdmin()) {
@@ -2608,25 +2071,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
           sb.append("</td></tr>");
         */
 
-
-
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleSearch(Request request, Entry entry)
             throws Exception {
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
@@ -2648,7 +2094,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.put(ARG_DB_SEARCHID, metadata.getId());
             getEntryManager().updateEntry(request, entry);
         }
-
 
         if (request.exists(ARG_DB_SEARCHID)) {
             List<Metadata> savedSearchMetadata =
@@ -2679,8 +2124,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         }
-
-
 
         StringBuilder sb             = new StringBuilder();
         Clause        idClause       = null;
@@ -2745,8 +2188,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } else if (allSet) {
                 where.add(new Clause(stmt.trim()));
             }
+
         }
-        //      System.err.println("where:"+ where);
         Clause mainClause = null;
         if (where.size() > 0) {
             if (request.get(ARG_DB_OR, false)) {
@@ -2772,17 +2215,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return result;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void deleteEntireDatabase(Request request, Entry entry)
             throws Exception {
         if ( !getAccessManager().canDoEdit(request, entry)) {
@@ -2802,18 +2234,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleActionConfirm(Request request, Entry entry)
             throws Exception {
         String  action = request.getString(ARG_DB_ACTION, ACTION_DELETE);
@@ -2880,13 +2300,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(url);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
     public void dbChanged(Entry entry) throws Exception {
         getStorageManager().clearCacheGroup(entry.getId());
     }
@@ -2897,19 +2310,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	getEntryManager().updateEntry(request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param action _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleActionAsk(Request request, Entry entry, String action)
             throws Exception {
         StringBuilder sb    = new StringBuilder();
@@ -2965,16 +2365,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param prop _more_
-     * @param values _more_
-     * @param obj _more_
-     *
-     * @throws Exception _more_
-     */
     private void putProp(String prop, Object[] values, Object obj)
             throws Exception {
         Hashtable props = getProps(values);
@@ -2985,17 +2375,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         values[IDX_DBPROPS] = xmlEncoder.toXml(props);
     }
 
-    /**
-     * _more_
-     *
-     * @param prop _more_
-     * @param values _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private double getProp(String prop, Object[] values, double dflt)
             throws Exception {
         Hashtable props = getProps(values);
@@ -3010,19 +2389,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return d.doubleValue();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param prop _more_
-     * @param values _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private int getProp(String prop, Object[] values, int dflt)
             throws Exception {
         Hashtable props = getProps(values);
@@ -3037,15 +2403,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return d.intValue();
     }
 
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Hashtable getProps(Object[] values) throws Exception {
         String value = (String) values[IDX_DBPROPS];
         if ((value == null) || (value.length() == 0)) {
@@ -3055,18 +2412,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return (Hashtable) xmlEncoder.toObject(value);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param source _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result handleBulkUpload(final Request request, final Entry entry,
 				    List<NamedInputStream> sources)
             throws Exception {
@@ -3101,7 +2446,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			Object[] values = tableHandler.makeEntryValueArray();
 			cnt[0]++;
 			initializeValueArray(request, null, values);
-			
 
 			List<String> toks = row.getValues();
 			if (toks.size() != columns.size()) {
@@ -3139,8 +2483,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 							   + "\nError:" + exc, exc);
 			    }
 			}
-
-
 
 			if (dbInfo.getHasLocation()) {
 			    double[] ll  = getLocation(request,values);
@@ -3185,7 +2527,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    }
 		}
 	    };
-	
 
 	for(NamedInputStream input: sources) {
 	    System.err.println("DbTypeHandler.bulkUpload: processing:" + input.getName());
@@ -3241,14 +2582,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result("", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param checkCanList _more_
-     *
-     * @return _more_
-     */
     List<Column> getColumnsToUse(Request request, boolean checkCanList) {
         HashSet only   = null;
         String  select = request.getString("dbSelect");
@@ -3300,15 +2633,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return columnsToUse;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param all _more_
-     *
-     * @return _more_
-     */
     private List<Column> getSelectedColumns(Request request, boolean all) {
         List<Column> columns = new ArrayList<Column>();
         if (all) {
@@ -3322,21 +2646,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return columns;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     * @param fromAnonForm _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleNewOrEdit(Request request, Entry entry, String dbid,
                                   boolean fromAnonForm)
             throws Exception {
@@ -3356,9 +2665,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private Result handleNewOrEditInner(Request request, Entry entry, String dbid,
                                   boolean fromAnonForm)
             throws Exception {
-
-
-
 
         if (request.exists(ARG_DB_COPY)) {
             dbid = null;
@@ -3407,7 +2713,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return handleBulkUpload(request, entry, sources);
         }
 
-
         StringBuilder sb       = new StringBuilder();
         List<String>  colNames = tableHandler.getColumnNames();
         Object[]      values   = getValues(entry, dbid);
@@ -3432,7 +2737,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return new Result("", new StringBuffer(insetHtml(message)));
         }
 
-
         String url =
             HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                           new String[] {
@@ -3443,27 +2747,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(url);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param dbid _more_
-     * @param values _more_
-     */
     protected void initializeValueArray(Request request, String dbid,
                                         Object[] values) {
         initializeValueArray(request, dbid, request.getUser().getId(),
                              values);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param dbid _more_
-     * @param user _more_
-     * @param values _more_
-     */
     protected void initializeValueArray(Request request, String dbid,
                                         String user, Object[] values) {
         //The first entry is the db_id
@@ -3478,15 +2767,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param values _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
     protected void doStore(Entry entry, Object[] values, boolean isNew)
             throws Exception {
         List valueList = new ArrayList<Object[]>();
@@ -3494,15 +2774,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         doStore(entry, valueList, isNew);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param valueList _more_
-     * @param isNew _more_
-     *
-     * @throws Exception _more_
-     */
     protected void doStore(Entry entry, List<Object[]> valueList,
                            boolean isNew)
             throws Exception {
@@ -3541,31 +2812,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	stmt.close();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     */
     public Clause makeClause(Entry entry, String dbid) {
         return Clause.and(Clause.eq(COL_ID, entry.getId()),
                           Clause.eq(COL_DBID, dbid));
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     */
     public String makeInsertOrUpdateSql(Entry entry, String dbid) {
         if (dbid == null) {
             return SqlUtil.makeInsert(
@@ -3582,18 +2834,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleListEmail(Request request, Entry entry,
                                   List<Object[]> valueList)
             throws Exception {
@@ -3619,7 +2859,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String toId = (String) values[IDX_DBID];
             sb.append(HU.hidden(ARG_DBID_SELECTED, toId));
         }
-
 
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(formEntry(request, msgLabel("From name"),
@@ -3650,16 +2889,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param values _more_
-     *
-     * @return _more_
-     */
     protected double[] getLocation(Request request,Object[] values) {
         DbInfo dbInfo = getDbInfo();
         if (dbInfo.getLatLonColumn() != null) {
@@ -3674,18 +2903,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbRowId _more_
-     * @param rowId _more_
-     * @param divId _more_
-     *
-     * @return _more_
-     */
     public String getEventJS(Request request, Entry entry, Object dbRowId,
                              String rowId, String divId) {
         StringBuilder sb = new StringBuilder();
@@ -3701,21 +2918,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return sb.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     * @param showHeaderLinks _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleListTable(Request request, Entry entry,
                                   List<Object[]> valueList,
                                   boolean fromSearch, boolean showHeaderLinks)
@@ -3724,20 +2926,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                showHeaderLinks, new StringBuilder());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     * @param showHeaderLinks _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleListTable(Request request, Entry entry,
                                   List<Object[]> valueList,
                                   boolean fromSearch,
@@ -3769,14 +2957,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     protected void addStyleSheet(Request request, Appendable sb) throws Exception {
 	if(request.getExtraProperty("added dbjs")==null) {
 	    request.putExtraProperty("added dbjs","true");
@@ -3786,15 +2966,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param contents _more_
-     * @param extraAttrs _more_
-     *
-     * @throws Exception _more_
-     */
     protected void makeTableHeader(Appendable sb, String contents,
                                    String... extraAttrs)
             throws Exception {
@@ -3810,19 +2981,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     CSS_DB_TABLEHEADER_INNER)), attrs.toString());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     * @param sb _more_
-     * @param doForm _more_
-     * @param showHeaderLinks _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeTable(Request request, Entry entry,
                           List<Object[]> valueList, boolean fromSearch,
                           Appendable sb, boolean doForm,
@@ -3858,7 +3016,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         (dbInfo.getDfltSortAsc()
                                          ? ORDER_ASC
                                          : ORDER_DESC)).equals(ORDER_ASC);
-
 
         String sortBy = request.getString(ARG_DB_SORTBY1,
                                           ((dbInfo.getDfltSortColumn()
@@ -3954,7 +3111,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             HU.close(tableHeader, "tr");
         }
 
-
         String searchFrom   = request.getString(ARG_SEARCH_FROM, null);
         String searchColumn = null;
         String sourceName   = null;
@@ -3991,8 +3147,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append(HU.space(2) + href + HU.space(2) + clear);
         }
 
-
-
         hb.append(tableHeader);
 
         Hashtable<String, Hashtable<Object, Integer>> uniques =
@@ -4002,7 +3156,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         hb.append(HU.div("",
                                 HU.id(popupId)
                                 + HU.cssClass("ramadda-popup")));
-
 
         double[] sum     = new double[columnsToUse.size()];
         double[] min     = new double[columnsToUse.size()];
@@ -4036,7 +3189,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    if(numberEntries) {
                 HU.td(hb, "#"+(cnt+1),HU.attr("width","10px"));
 	    }
-		
+
             even = !even;
             if ( !forPrint) {
                 HU.open(hb, "td", "width", "10", "style",
@@ -4077,7 +3230,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HU.close(hb, "div", "td");
             }
 
-
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if (column.isNumeric()) {
@@ -4108,7 +3260,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
 
                 HU.open(hb, HU.TAG_DIV, "class", "dbtablecell");
-
 
                 if (column.isEnumeration()) {
                     String value = (String) values[column.getOffset()];
@@ -4158,7 +3309,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         }
                     }
                 }
-
 
                 String label = formatTableValue(request, entry, hb, column,
 						values, sdf, dateTimeSdf,!forPrint);
@@ -4283,17 +3433,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(hb.toString());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param includeAgg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected List<Column> getGroupByColumns(Request request,
                                              boolean includeAgg)
             throws Exception {
@@ -4330,20 +3469,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             c.setOffset(i);
         }
 
-
-
         return groupByColumns;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected List<Column> getAggColumns(Request request) throws Exception {
 
         List<Column> aggColumns = new ArrayList<Column>();
@@ -4382,18 +3510,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return aggColumns;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param sb _more_
-     * @param showHeaderLinks _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeGroupByTable(Request request, Entry entry,
                                  List<Object[]> valueList, Appendable sb,
                                  boolean showHeaderLinks)
@@ -4562,17 +3678,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(hb.toString());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param v _more_
-     * @param round _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected String format(double v, boolean round) throws Exception {
         if (Math.abs(v) > 1000) {
             round = true;
@@ -4587,23 +3692,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return fmt.format(v);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param column _more_
-     * @param values _more_
-     * @param sdf _more_
-     * @param addLink _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public String formatTableValue(Request request, Entry entry,
                                    Appendable sb, Column column,
                                    Object[] values, SimpleDateFormat sdf,
@@ -4663,15 +3751,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return value;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryProps _more_
-     * @param values _more_
-     *
-     * @return _more_
-     */
     public String getIconFor(Request request,Entry entry, Hashtable entryProps,
                              Object[] values) {
         for (Column column : getDbInfo().getEnumColumns()) {
@@ -4685,52 +3764,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryProps _more_
-     * @param column _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public String getIconFor(Request request,Entry entry, Hashtable entryProps,
                              Column column, String value) {
         return getAttributeFor(entry, entryProps, column, value,
                                PROP_CAT_ICON);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryProps _more_
-     * @param column _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     private String getColorFor(Entry entry, Hashtable entryProps,
                                Column column, String value) {
         return getAttributeFor(entry, entryProps, column, value,
                                PROP_CAT_COLOR);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param entryProps _more_
-     * @param column _more_
-     * @param value _more_
-     * @param type _more_
-     *
-     * @return _more_
-     */
     private String getAttributeFor(Entry entry, Hashtable entryProps,
                                    Column column, String value, String type) {
         if ( !column.isEnumeration() || (value == null)) {
@@ -4746,16 +3791,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     */
     protected String getEditUrl(Request request, Entry entry, String dbid) {
         return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                              new String[] {
@@ -4764,15 +3799,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         });
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     */
     protected String getViewUrl(Request request, Entry entry, String dbid) {
         return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                              new String[] {
@@ -4802,18 +3828,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	}		
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleListMap(final Request request, Entry entry,
                                 final List<Object[]> valueList, boolean fromSearch)
             throws Exception {
@@ -4892,7 +3906,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
 	Utils.BiConsumer<Column,Object[]>  getLocation =  new Utils.BiConsumer<Column,Object[]>() {
 		public void accept(Column theColumn, Object[] values){
 		    location.init();
@@ -4920,13 +3933,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    }
 		}
 
-
 	    };
-
-
-
-
-
 
         if ((theColumn == null) && (dbInfo.getLatColumn() == null)
                 && (dbInfo.getLonColumn() == null)) {
@@ -4954,7 +3961,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (request.defined("mapCenter")) {
             props.put("mapCenter", request.getString("mapCenter", ""));
         }
-
 
 	props.put("singlePointZoom", "14");
         boolean makeRectangles = valueList.size() <= 20;
@@ -5054,8 +4060,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    pageCnt[0]++;
 	};
 
-
-
         if ( !isEmbedded(request)) {
 	    if(forPrint) {
 		addStyleSheet(request,sb);
@@ -5067,7 +4071,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		sb.append(header);
 	    }
         }
-	
 
 	MapProperties mapProperties =   new MapProperties(request.getString(ARG_DB_MAPPROPS,defaultMapProperties));
 	for (List listValues : lists) {
@@ -5077,7 +4080,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		//		addViewHeader(request, entry, sb, VIEW_MAP,    valueList.size(), fromSearch, links);
 	    }
 	    listCnt++;
-	    
+
 	    String mapDisplayId = "mapDisplay_" + Utils.getGuid();
 	    props.put("displayDiv", mapDisplayId);
             MapInfo map = getRepository().getMapManager().createMap(request,
@@ -5102,8 +4105,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 		    }
 		}
 	    }
-
-
 
             if ( !forPrint) {
                 sb.append(
@@ -5296,7 +4297,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
                 HU.close(sb, "tr", "table");
 	    }
-	    
+
 	    String js =	map.getVariableName()+  ".highlightMarkers( '#" + listId+"  .db-map-list-entry');";
 	    sb.append(HU.script(JQuery.ready(js)));
 	}
@@ -5308,45 +4309,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addViewFooter(request, entry, sb);
         }
 
-
         return new Result(getTitle(request, entry), sb);
-
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryIcon(Request request, Entry entry) {
         return getRepository().getUrlBase() + tableIcon;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getMapIcon(Request request, Entry entry) {
         return getEntryIcon(request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDefaultDateFormatString() {
         return "yyyy-MM-dd";
     }
@@ -5355,14 +4329,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return "yyyy-MM-dd HH:mm z";
     }    
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public SimpleDateFormat getDateFormat(Request request, Entry entry) {
         return getDateFormat(request,entry, getDefaultDateFormatString());
     }
@@ -5371,48 +4337,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getDateFormat(request,entry, getDefaultDateTimeFormatString());
     }    
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param format _more_
-     *
-     * @return _more_
-     */
     public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
         String           timezone = getEntryUtil().getTimezone(request,entry);
 	return getRepository().getDateHandler().getSDF(format, timezone,false);
 
     }
 
-    
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     */
     public int getDefaultMax(Request request, Entry entry, String tag,
                              Hashtable props) {
         return 1000;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     * @param props _more_
-     * @param displayProps _more_
-     */
     private void addProp(String key, String value, Hashtable props,
                          List<String> displayProps) {
         if ((props.get(key) == null) && !displayProps.contains(key)) {
@@ -5421,17 +4356,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param displayProps _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> displayProps) {
@@ -5457,8 +4381,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
-	if(!Utils.getProperty(props,"addRequestFields",false)) {
+	String requestFields = Utils.getProperty(props,"requestFields",null);
+	if(!stringDefined(requestFields) && !Utils.getProperty(props,"addRequestFields",false)) {
 	    return super.getUrlForWiki(request, entry, tag, props, displayProps);
 	}
 
@@ -5486,7 +4410,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
         }
-
 
         if ((aggBy == null) && (firstColumn != null)) {
             includeNumericAggs = false;
@@ -5517,7 +4440,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addProp(prefix + "group_agg_type.label", JsonUtil.quote("Type"),
                     props, displayProps);
         }
-
 
         Hashtable recordProps = null;
         try {
@@ -5560,7 +4482,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               ? "date"
                               : "string";
 
-
             all = Utils.appendList(all, column.getName());
             addProp(prefix + column.getName() + ".label",
                     JsonUtil.quote(column.getLabel()), props, displayProps);
@@ -5569,20 +4490,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             addProp(prefix + column.getName() + ".type", JsonUtil.quote(type),
                     props, displayProps);
             if (column.isEnumeration()) {
-                String enums = "_all_:All";
+                StringBuilder enums = new StringBuilder("_all_:All");
                 List<HtmlUtils.Selector> tfos = getEnumValues(request, entry,
                                                 column);
                 for (HtmlUtils.Selector tfo : tfos) {
                     if (enums != null) {
-                        enums += ",";
+                        enums.append(",");
                     } else {
-                        enums = "";
+			//                        enums = "";
                     }
-                    enums += tfo.getId() + ":" + tfo.getLabel();
+                    enums.append(tfo.getId().replace(",","\\,"));
+		    if(!tfo.getId().equals(tfo.getLabel())) {
+			enums.append(":");
+			enums.append(tfo.getLabel().replace(",","\\"));
+		    }
                 }
                 if (enums != null) {
                     addProp(prefix + column.getName() + ".values",
-                            JsonUtil.quote(enums), props, displayProps);
+                            JsonUtil.quote(enums.toString()), props, displayProps);
                     addProp(prefix + column.getName() + ".default",
                             JsonUtil.quote("_all_"), props, displayProps);
                 }
@@ -5596,22 +4521,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
@@ -5652,7 +4561,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 newRequest.put("mapCenter", mapCenter);
             }
 
-
             String layer = (String) props.get("layer");
             if (layer != null) {
                 newRequest.put("mapLayer", layer);
@@ -5671,7 +4579,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             }
 
-
 	    Result result = handleSearch(newRequest, entry);
 	    sb.append(result.getStringContent());
 
@@ -5684,28 +4591,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
     public String getSearchUrlArgument(Column column) {
         return tableHandler.getTableName() + "." + column.getName();
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     *
-     * @return _more_
-     */
     protected List<HtmlUtils.Selector> getEnumValues(Request request,
             Entry entry, Column column) {
         try {
@@ -5725,62 +4614,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param label _more_
-     *
-     * @return _more_
-     */
     public String getHref(Request request, Entry entry, String view,
                           String label) {
         return HU.href(getUrl(request, entry, view), label);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param label _more_
-     * @param suffix _more_
-     *
-     * @return _more_
-     */
     public String getHref(Request request, Entry entry, String view,
                           String label, String suffix) {
         return HU.href(getUrl(request, entry, view, suffix), label);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     *
-     * @return _more_
-     */
     public String getUrl(Request request, Entry entry, String view) {
         return getUrl(request, entry, view, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param view _more_
-     * @param suffix _more_
-     *
-     * @return _more_
-     */
     public String getUrl(Request request, Entry entry, String view,
                          String suffix) {
         return HU.url(request.makeUrl(getRepository().URL_ENTRY_SHOW)
@@ -5788,14 +4635,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 entry.getId(), ARG_DB_VIEW, view });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param column _more_
-     *
-     * @return _more_
-     */
     private boolean isDataColumn(Column column) {
 	if(column.isSynthetic())  {
 	    return false;
@@ -5811,20 +4650,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return true;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param valueList _more_
-     * @param fromSearch _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleListCalendar(Request request, Entry entry,
                                      List<Object[]> valueList,
                                      boolean fromSearch)
@@ -5837,13 +4662,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         addViewHeader(request, entry, sb, VIEW_CALENDAR, valueList.size(),
                       fromSearch, links);
 
-
-
         CalendarOutputHandler calendarOutputHandler =
             (CalendarOutputHandler) getRepository().getOutputHandler(
                 CalendarOutputHandler.OUTPUT_CALENDAR);
-
-
 
         List<CalendarOutputHandler.CalendarEntry> calEntries =
             new ArrayList<CalendarOutputHandler.CalendarEntry>();
@@ -5896,20 +4717,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param clause _more_
-     * @param iterator _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Object[]> readValues(Request request, Entry entry,
                                      Clause clause, ValueIterator iterator)
             throws Exception {
@@ -5926,8 +4733,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return result;
         }
 
-
-
         List<String> colNames = tableHandler.getColumnNames();
 
         if ((dbInfo.getDfltSortColumn() != null)
@@ -5937,7 +4742,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                          ? ORDER_ASC
                                          : ORDER_DESC);
         }
-
 
         String  order     = "";
         String  extra     = "";
@@ -5975,54 +4779,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return readValues(request, clause, extra, max, null, iterator);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     protected int getMax(Request request) {
         return request.get(ARG_MAX, DEFAULT_MAX);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param clause _more_
-     * @param limitString _more_
-     * @param max _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Object[]> readValues(Request request, Clause clause,
                                       String limitString, int max)
             throws Exception {
         return readValues(request, clause, limitString, max, null, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param clause _more_
-     * @param limitString _more_
-     * @param max _more_
-     * @param pw _more_
-     * @param iterator _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Object[]> readValues(Request request, Clause clause,
                                       String limitString, int max,
                                       PrintWriter pw, ValueIterator iterator)
@@ -6030,7 +4796,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 	boolean myDebug = isType("campaign_donors");
 	myDebug = false;
-
 
         //For now don't check for isPostgres which is used below for making unique requests
         boolean isPostgres = getDatabaseManager().isDatabasePostgres();
@@ -6052,7 +4817,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (iterator != null) {
             iterator.initialize(request, doGroupBy);
         }
-
 
         if (doGroupBy) {
             colNames       = new ArrayList<String>();
@@ -6207,7 +4971,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 	    */
 	}
 
-
         Statement stmt = null;
         extra += limitString;
         try {
@@ -6299,13 +5062,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 			values = tableHandler.makeEntryValueArray();
                     }
 
-                    /**
-		       if (isPostgres && (uniqueCols != null)) {
-                        //If we are running on postgres and one or more unique columns was selected
-                        //then there is a distinct(concat(...)) column to start so we bump up the valueIdx here
-                        valueIdx++;
-                    }
-		    */
                     for (Column column : selectedColumns) {
                         valueIdx = column.readValues(myEntry, results,
                                 values, valueIdx);
@@ -6362,19 +5118,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param statement _more_
-     * @param id _more_
-     * @param parent _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void deleteEntry(Request request, Statement statement, String id,
                             Entry parent, Object[] values)
@@ -6386,17 +5129,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         statement.execute(query);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     */
     public String makeForm(Request request, Entry entry, Appendable sb) {
         String formId  = HU.getUniqueId("entryform_");
         String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
@@ -6405,22 +5137,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return formId;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     * @param forEdit _more_
-     * @param doAnonForm _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleForm(Request request, Entry entry, String dbid,
                              boolean forEdit, boolean doAnonForm)
             throws Exception {
@@ -6464,8 +5180,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             buttons.append(HU.buttonSpace());
         }
 
-
-
         formBuffer.append(buttons);
         formBuffer.append(HU.formTable());
         FormInfo formInfo = new FormInfo(formId);
@@ -6497,17 +5211,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleEdit(Request request, Entry entry) throws Exception {
 	try {
 	    return handleEditInner(request, entry);
@@ -6615,7 +5318,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-
         sb.append(HU.formTable());
         if (showApply) {
             sb.append(
@@ -6649,7 +5351,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         sb.append(HU.formTableClose());
         sb.append(HU.formClose());
 
-
         if (values != null) {
             makeTable(request, entry, values, false, sb, false, true);
         }
@@ -6660,19 +5361,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Object[] getValues(Entry entry, String dbid) throws Exception {
         Object[] values = ((dbid != null)
                            ? tableHandler.getValues(myEntry,
@@ -6682,14 +5370,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return values;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param formBuffer _more_
-     */
     public void createBulkForm(Request request, Entry entry, Appendable sb,
                                Appendable formBuffer) {
         DbInfo        dbInfo = getDbInfo();
@@ -6761,31 +5441,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         Utils.append(sb, contents);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param html _more_
-     *
-     * @return _more_
-     */
     private String insetHtml(Object html) {
         return HU.insetDiv(html.toString(), 0, 10, 0, 10);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleView(Request request, Entry entry, String dbid)
             throws Exception {
         boolean       asXml = request.getString("result", "").equals("xml");
@@ -6794,7 +5453,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if ( !asXml && !plain) {
             addViewHeader(request, entry, sb, "", null);
         }
-
 
         Object[] values = getValues(entry, dbid);
         getHtml(request, sb, entry, values, asXml,plain);
@@ -6814,17 +5472,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return new Result(getTitle(request, entry), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param asXml _more_
-     *
-     * @throws Exception _more_
-     */
     public void getHtml(Request request, StringBuilder sb, Entry entry,
                         Object[] values, boolean asXml,boolean plain)
             throws Exception {
@@ -6858,19 +5505,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param sdf _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getLabel(Request request, Entry entry, Object[] values,
                            SimpleDateFormat sdf,String...prefix)
             throws Exception {
@@ -6879,27 +5513,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             lbl = "---";
         }
 
-
 	if(prefix.length>0 && prefix[0]!=null) 
 	    lbl = prefix[0]+lbl;
         return lbl;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param sdf _more_
-     * @param forPrint _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getMapLabel(Request request, Entry entry, Object[] values,
                               SimpleDateFormat sdf, boolean forPrint,String prefix)
             throws Exception {
@@ -6915,39 +5533,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getLabel(request, entry, values, sdf,prefix);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param sdf _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getCalendarLabel(Request request, Entry entry,
                                    Object[] values, SimpleDateFormat sdf)
             throws Exception {
         return getLabel(request, entry, values, sdf);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param sdf _more_
-     * @param template _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String applyTemplate(Request request, Entry entry,
                                 Object[] values, SimpleDateFormat sdf,
                                 String template,String...prefix)
@@ -6966,20 +5557,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return label;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param values _more_
-     * @param sdf _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getLabelInner(Request request, Entry entry,
                                 Object[] values, SimpleDateFormat sdf)
             throws Exception {
@@ -6988,7 +5565,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             return applyTemplate(request, entry, values, sdf, labelTemplate);
         }
         StringBuilder sb = new StringBuilder();
-
 
         if (dbInfo.getLabelColumns() != null) {
             for (Column labelColumn : dbInfo.getLabelColumns()) {
@@ -7022,21 +5598,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param dbid _more_
-     * @param columns _more_
-     * @param values _more_
-     * @param sdf _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected String getHtml(Request request, Entry entry, String dbid,
                              List<Column> columns, Object[] values,
                              SimpleDateFormat sdf,SimpleDateFormat dateTimeSdf,
@@ -7070,20 +5631,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return sb.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param requestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -7091,6 +5638,5 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         return new DbRecordFile(request, this, entry);
     }
-
 
 }
