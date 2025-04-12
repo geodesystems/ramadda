@@ -3386,7 +3386,7 @@ function RequestMacro(display, macro) {
 	    includeAll = true;
 	}
 	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
-	    values.push(["","None"]);
+	    values.push([VALUE_NONE,"None"]);
 	}
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
