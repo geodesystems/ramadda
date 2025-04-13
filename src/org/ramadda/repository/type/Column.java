@@ -381,21 +381,25 @@ public class Column implements DataTypes, Constants, Cloneable {
         doInlineEdit    = getAttributeOrTag(element, "doinlineedit", false);
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
-	menuWidth= getAttributeOrTag(element, "menuwidth",null);
-	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
-	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", true);
-	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
+
+
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
         canSort    = getAttributeOrTag(element, ATTR_CANSORT, false);
-        searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
+
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,canSearch);
+
+        searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
 	enumerationSearchMultiples = getAttributeOrTag(element,"enumeration_search_multiples",
-						       getAttributeOrTag(element,"enumeration_multiples",false));
-	enumerationSearchMultiples=true;
+						       getAttributeOrTag(element,"enumeration_multiples",true));
 	enumerationShowCheckboxes = getAttributeOrTag(element,"enumeration_show_checkboxes",false);	
+
+	showEnumerationMenu= getAttributeOrTag(element, "showenumerationmenu", true);
+	menuWidth= getAttributeOrTag(element, "menuwidth",null);
+	showEnumerationPopup= getAttributeOrTag(element, "showenumerationpopup", true);
+	addBlankToEnumerationMenu=getAttributeOrTag(element, "addblanktoenumerationmenu", true);
 
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
