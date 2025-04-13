@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Apr  7 08:10:29 MDT 2025";
+var build_date="RAMADDA build date: Sun Apr 13 16:32:57 EDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5861,17 +5861,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'remote',tt:'URL to an external RAMADDA entry',ex:''},
 	{p:'request.startdate',tt:'Start date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
 	{p:'request.enddate',tt:'End date of data',ex:'yyyy-MM-dd or relative:-1 week|-6 months|-2 years|etc'},
-	{p:'requestFields',tt:'Comma separated list of fields for querying server side data'},
-	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
+	{p:'requestFields',ex:'date,stride,skip,limit,bounds,db columns...',
+	 tt:'Comma separated list of fields for querying server side data'},
 	{p:'requestFieldsDefault',d:true,tt:'Use the default date,stride,skip,limit fields'},
+	{p:'requestFieldsShow',d:true,ex:'false',tt:'Show the request fields'},
 	{p:'requestPrefix',ex:'search.', tt:'Prefix to prepend to the url argument'},
 	{p:'requestFieldsLive',d:true,tt:'Is the request applied when a widget changes'},
 	{p:'requestFieldsToggle',d:false,tt:'Put the request fields in a toggle'},
 	{p:'requestFieldsToggleOpen',d:true,tt:'And leave the toggle open'},
 
-	{p:'request.&lt;request field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
+	{p:'extraFields1',tt:'Extra request fields to show before',ex:'bounds'},
+	{p:'extraFields2',tt:'Extra request fields to show after',ex:'bounds'},	
+	{p:'request.&lt;field&gt;.multiple',ex:'true',tt:'Support multiple enumerated selections'},
 	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},
-	{p:'request.&lt;field&gt;.type',tt:'date,number,enumeration'},			
 	{p:'request.&lt;field&gt;.values',tt:'Comma separated list of enum values',
 	 d:'0:None,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50,75,100'},
 	{p:'request.&lt;field&gt;.visible',d:true},
@@ -17751,7 +17753,7 @@ function RequestMacro(display, macro) {
 	    includeAll = true;
 	}
 	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
-	    values.push(["","None"]);
+	    values.push([VALUE_NONE,"None"]);
 	}
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
@@ -17841,6 +17843,13 @@ RequestMacro.prototype = {
 	return (this.type=='skip' || this.name=='skip');
     },
     initWidget: function(macroChange) {
+	if(this.selectMenuId && this.values && this.values.length>5) {
+	    let widgetId = this.display.getDomId(this.getId());
+	    HU.makeSelectTagPopup(jqid(widgetId),{icon:true,makeButton:false,after:true});
+
+	}
+
+
 	//macroChange: (macro,value,what,force,apply)
 	let _this =this;
 	if(this.isSkip()) {
@@ -17912,7 +17921,9 @@ RequestMacro.prototype = {
 	    label="";
 	} else if(this.type=='enumeration') {
  	    if(this.values && this.values.length>0) {
-		let attrs = [ATTR_TITLE,title??'',STYLE, style, ID,this.display.getDomId(this.getId()),CLASS,'display-filter-input'];
+		let widgetId = this.display.getDomId(this.getId());
+		let attrs = [ATTR_TITLE,title??'',ATTR_STYLE, style,
+			     ATTR_ID,widgetId,ATTR_CLASS,'display-filter-input'];
 		let values = this.values;
 		if(this.dflt) {
 		    let first = [];
@@ -17939,6 +17950,7 @@ RequestMacro.prototype = {
 		}
 		if(debug)
 		    console.log('\tselect: dflt:' + this.dflt +' values:' + this.values);
+		this.selectMenuId = widgetId;
 		widget = HU.select('',attrs,values,v,30);
 	    }
 	} else if(this.type=='numeric' || this.type=='number') {
@@ -34099,7 +34111,10 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 			    label = subToks[1];
 			}
 		    }
-		    this.metadataTypeList.push(new MetadataType(type, label, value));
+		    if(label=='null') {
+		    } else {
+			this.metadataTypeList.push(new MetadataType(type, label, value));
+		    }
 		}
 	    }
 	},
@@ -34227,6 +34242,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 	addWidget:function(label,widget,args) {
 	    let opts = {
 		addToggle:true,
+		addSimpleToggle:false,
 		toggleClose:this.getToggleClose()
 	    }
 	    if(args) $.extend(opts,args);
@@ -34241,11 +34257,17 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let widgetId = HU.getUniqueId('');
 		if(opts.addToggle) {
 		    label = this.addToggle(label,widgetId,opts.toggleClose);
-		}
+		} 
 
+		//let  w;
 		let w = Utils.stringDefined(label)?
 		    HU.div([ATTR_CLASS,"display-search-label",ATTR_STYLE,HU.css('xmin-width',HU.getDimension(this.getFormWidth()))], label):'';
-		w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
+
+		if(opts.addSimpleToggle) {
+		    w  = HU.toggleBlock(HU.b(label),widget);
+		} else {
+		    w=w+HU.span([ATTR_ID,widgetId,ATTR_STYLE,HU.css('width','95%','display',opts.toggleClose?'none':'inline-block')],widget);
+		}
 		return HU.div([ATTR_CLASS,"display-search-block"], w);
 	    }
 	    return HU.formEntry("",widget);
@@ -35129,11 +35151,9 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 		let areaWidget =new AreaWidget(this);
                 this.addAreaWidget(areaWidget) 
                 extra += this.addWidget(label, HU.div([ID,this.domId(ID_SEARCH_AREA)], areaWidget.getHtml()),
-					{toggleClose:this.getProperty('areaToggleClose',toggleClose)});
+					{toggleClose:this.getProperty('areaToggleClose',true)});
             }
             extra += HU.div([ATTR_ID, this.getDomId(ID_TYPEFIELDS)], "");
-
-
             if (Utils.stringDefined(this.getMetadataTypes())) {
 		let metadataBlock = "";
                 for (let i = 0; i < this.metadataTypeList.length; i++) {
@@ -35162,6 +35182,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 }
 		extra += HU.div([ATTR_ID,this.domId(ID_SEARCH_TAGS)], metadataBlock);
             }
+
 
             extra +=HU.div([ATTR_STYLE,'margin-top:1em;border-top:var(--basic-border);',ATTR_CLASS,'display-search-widget'],
 			   HU.b('# Records:') +' '+	HU.input("",  DEFAULT_MAX, [ATTR_CLASS,'display-simplesearch-input',
@@ -35266,6 +35287,7 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                 if (!this.metadataLoading[metadataType.getType()]) {
                     this.metadataLoading[metadataType.getType()] = true;
                     metadata = this.getRamadda().getMetadataCount(metadataType, function(metadataType, metadata) {
+			if(!metadata  || metadata.undefined) return;
                         _this.addMetadata(metadataType, metadata);
                     });
                 }
@@ -35614,7 +35636,8 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
                     continue;
                 }
 
-		let group = col.getGroup();
+		let group = col.getSearchGroup();
+
 		if(Utils.stringDefined(group) && group!=lastGroup) {
 		    if(inGroup) extra+='</div></div>';
 		    inGroup=true;
@@ -35727,9 +35750,11 @@ function RamaddaSearcherDisplay(displayManager, id,  type, properties) {
 
 		extra+=this.addWidget(label,widget,{
 		    addToggle:!inGroup,
+		    addSimpleToggle:inGroup,
 		    toggleClose:close
 		});
 	    }
+
 
 	    if(inGroup) extra+='</div></div>';
             this.writeHtml(ID_TYPEFIELDS, extra);
@@ -38445,6 +38470,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkFeature',ex:'geoid',tt:'The field in the map to match with the data field, e.g., geoid'},
 	{p:'debugFeatureLinking',tt:'Debug feature linking',ex:true},
 	{p:'pruneFeatures',ex:true,tt:'Hide any features in the map that don\'t have a corresponding record'},
+	{p:'showHighlight',ex:'true',tt:'Show popup when point is moused over'},
+	{p:'highlightTemplate',ex:'Some text ${field1}',tt:'Template for mousing over points'},
+
+	{p:'highlightWidth',d:200,tt:'Width of highlight popup'},
+	{p:'highlightHeight',ex:200,tt:'Height of highlight popup'},	
+
 	{p:'polygonField',tt:'Field that contains a polygon'},		
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
@@ -39961,7 +39992,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    });
 
-	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fff");
+	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fffeec");
 	    if(this.getProperty("addEntryMarkers")) {
 		this.map.setDoPopup(true);
 	    } else {
@@ -42945,23 +42976,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let tooltip = this.getTooltip('${default}');
 	    let haveTooltip = Utils.stringDefined(tooltip);
-	    let highlight = this.getProperty("highlight");
-	    let highlightTemplate = this.getProperty("highlightTemplate");
+	    let highlight = this.getShowHighlight(this.getProperty("highlight"));
+	    let highlightTemplate = this.getHighlightTemplate();
 	    if(highlightTemplate)
 		highlight=true;
 	    
-	    let highlightWidth = this.getProperty("highlightWidth",200);
-	    let highlightHeight = this.getProperty("highlightHeight",-1);
+	    let highlightWidth = this.getHighlightWidth(300);
+	    let highlightHeight = this.getHighlightHeight(-1);
 	    let highlightSize = null;
 	    if(highlightHeight>0) {
 	    	highlightSize = MapUtils.createSize(highlightWidth,highlightHeight);
 	    }
-
 	    let addedPoints = [];
 	    let textGetter = this.getTextGetter(fields);
 
 	    let highlightGetter = f=>{
 		if(f.record) {
+                    return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
                     return   HU.div([ATTR_STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;
