@@ -118,6 +118,7 @@ var DB =  {
 			$("<span>&nbsp;</span>").appendTo(container);			
 			newWidget.change(changeFunc);
 			HU.initSelect(newWidget);
+			HU.makeSelectTagPopup(newWidget,{icon:true,single:true,after:true});
 		    }
 		}
 		$(this).change(changeFunc);
