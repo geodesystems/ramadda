@@ -1559,8 +1559,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 	
 	if(!getProperty("ramadda.entrytype.fix",false)) {
-	    getLogManager().logSpecial("Fixing entry types");
-	    fixEntryTypes();
+	    getLogManager().logSpecial("Adding entry types to tables");
+	    try {
+		fixEntryTypes();
+	    } catch(Exception exc) {
+		getLogManager().logError("Error fixing entry types",exc);
+	    }
 	    writeGlobal("ramadda.entrytype.fix","true");
 	}
 
@@ -1719,7 +1723,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
 						    new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
 						    new Object[] {entry.getTypeHandler().getType()});
-			//			if((totalCnt%100)==0)    getLogManager().logSpecial("\tentry type update: #"  + totalCnt);
 		    } catch(Exception ignore1) {
 			getLogManager().logError("Error fixing entry types:" + typeHandler,ignore1);
 			return;
@@ -1727,15 +1730,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		}
 		statement.close();
 	    } catch(Exception exc) {
-		getLogManager().logSpecial("\tError processing entry type fix:" + typeHandler+" error:" +exc);
+		getLogManager().logSpecial("Error processing entry type fix:" + typeHandler+" error:" +exc);
 	    }
 	    getDatabaseManager().closeConnection(connection);
 	    if(typeCnt>0) {
-		//getLogManager().logSpecial("\tentry type update: " + typeHandler+" #"  + typeCnt);
+		getLogManager().logSpecial("entry type update: " + typeHandler+" #"  + typeCnt);
 	    }
 	}
 	if(totalCnt>0) {
-	    //	    getLogManager().logSpecial("\tentry type update: total changed="  + totalCnt);
+	    getLogManager().logSpecial("entry type update: total changed="  + totalCnt);
 	}
     }    
 
