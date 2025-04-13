@@ -87,6 +87,12 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 	{p:'linkFeature',ex:'geoid',tt:'The field in the map to match with the data field, e.g., geoid'},
 	{p:'debugFeatureLinking',tt:'Debug feature linking',ex:true},
 	{p:'pruneFeatures',ex:true,tt:'Hide any features in the map that don\'t have a corresponding record'},
+	{p:'showHighlight',ex:'true',tt:'Show popup when point is moused over'},
+	{p:'highlightTemplate',ex:'Some text ${field1}',tt:'Template for mousing over points'},
+
+	{p:'highlightWidth',d:200,tt:'Width of highlight popup'},
+	{p:'highlightHeight',ex:200,tt:'Height of highlight popup'},	
+
 	{p:'polygonField',tt:'Field that contains a polygon'},		
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
@@ -1603,7 +1609,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    });
 
-	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fff");
+	    this.map.highlightBackgroundColor=this.getProperty("highlighBackgroundColor","#fffeec");
 	    if(this.getProperty("addEntryMarkers")) {
 		this.map.setDoPopup(true);
 	    } else {
@@ -4587,23 +4593,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    let tooltip = this.getTooltip('${default}');
 	    let haveTooltip = Utils.stringDefined(tooltip);
-	    let highlight = this.getProperty("highlight");
-	    let highlightTemplate = this.getProperty("highlightTemplate");
+	    let highlight = this.getShowHighlight(this.getProperty("highlight"));
+	    let highlightTemplate = this.getHighlightTemplate();
 	    if(highlightTemplate)
 		highlight=true;
 	    
-	    let highlightWidth = this.getProperty("highlightWidth",200);
-	    let highlightHeight = this.getProperty("highlightHeight",-1);
+	    let highlightWidth = this.getHighlightWidth(300);
+	    let highlightHeight = this.getHighlightHeight(-1);
 	    let highlightSize = null;
 	    if(highlightHeight>0) {
 	    	highlightSize = MapUtils.createSize(highlightWidth,highlightHeight);
 	    }
-
 	    let addedPoints = [];
 	    let textGetter = this.getTextGetter(fields);
 
 	    let highlightGetter = f=>{
 		if(f.record) {
+                    return   HU.div([],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
                     return   HU.div([ATTR_STYLE,HU.css('background','#fff')],this.getRecordHtml(f.record, fields, highlightTemplate|| tooltip));
 		}
 		return null;

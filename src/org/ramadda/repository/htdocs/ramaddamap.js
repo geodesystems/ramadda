@@ -1138,17 +1138,15 @@ RepositoryMap.prototype = {
 		    if (!Utils.stringDefined(text))  {text = feature.text;}
 		    if (Utils.stringDefined(text)) {
 			let projPoint = this.transformLLPoint(location);
-			text =HtmlUtils.div([ATTR_STYLE,"padding:2px;"],text);
 			this.highlightPopup = new OpenLayers.Popup("popup",
 								   projPoint,
 								   feature.highlightSize,
 								   text,
 								   false);
-			this.highlightPopup.backgroundColor=this.highlightBackgroundColor||"#ffffcc";
-			this.highlightPopup.autoSize=true;
+			this.highlightPopup.backgroundColor=feature.highlightBackgroundColor??this.highlightBackgroundColor??"#fffeec";
+			this.highlightPopup.autoSize=(feature.highlightSize==null);
 			this.highlightPopup.keepInMap=true;
 			this.highlightPopup.padding=0;
-
 			this.addPopup(this.highlightPopup);
 		    }
 		}
