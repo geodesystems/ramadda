@@ -1726,21 +1726,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		while (results.next()) {
 		    String id  = results.getString(1);
 		    String type = results.getString(2);
-		    //		    if(Utils.stringDefined(type)) continue;
-		    try {
-			String fullType = idToFullType.get(id);
-			if(fullType==null) continue;
-			totalCnt++;
-			typeCnt++;
-			typeUpdate.setString(1,fullType);			
-			typeUpdate.setString(2,id);
-			typeUpdate.addBatch();
-			if((totalCnt%1000)==0)
-			    getLogManager().logSpecial("cnt:" + totalCnt);
-		    } catch(Exception ignore1) {
-			getLogManager().logError("Error fixing entry types:" + typeHandler,ignore1);
-			return;
-		    }
+		    String fullType = idToFullType.get(id);
+		    if(fullType==null) continue;
+		    totalCnt++;
+		    typeCnt++;
+		    typeUpdate.setString(1,fullType);			
+		    typeUpdate.setString(2,id);
+		    typeUpdate.addBatch();
+		    if((totalCnt%1000)==0)
+			getLogManager().logSpecial("cnt:" + totalCnt);
 		}
 		statement.close();
 		typeUpdate.executeBatch();		
