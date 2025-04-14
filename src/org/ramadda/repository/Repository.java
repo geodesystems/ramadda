@@ -129,6 +129,7 @@ import javax.net.ssl.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 import java.text.SimpleDateFormat;
 
@@ -1691,7 +1692,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void fixEntryTypes() throws Exception {
 	int totalCnt = 0;
 	Request request = getAdminRequest();
-	getLogManager().logSpecial("collecting all entry types");
+	//	getLogManager().logSpecial("collecting all entry types");
 	Hashtable<String,String> idToFullType = new Hashtable<String,String>();
 	Statement statement1 =  getDatabaseManager().select(SqlUtil.comma(Tables.ENTRIES.COL_ID,Tables.ENTRIES.COL_TYPE),
 							    Tables.ENTRIES.NAME,
@@ -1701,7 +1702,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    idToFullType.put(results1.getString(1),results1.getString(2));
 	}
 	statement1.close();
-	getLogManager().logSpecial("done collecting all entry types");
+	//	getLogManager().logSpecial("done collecting all entry types");
+	Connection readConnection = getDatabaseManager().getConnection();
 	for(TypeHandler typeHandler: allTypeHandlers) {
 	    //	    System.out.println("type:" + typeHandler  +" " + typeHandler.haveDatabaseTable());
 	    if(!typeHandler.haveDatabaseTable()) {
@@ -1712,13 +1714,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		continue;
 	    }
 
-	    int typeCnt = 0;
-	    Connection connection = getDatabaseManager().getConnection();
+	    Connection updateConnection = getDatabaseManager().getConnection();
+	    String update = SqlUtil.makeUpdate(table, GenericTypeHandler.COL_ID,new String[]{GenericTypeHandler.COL_ENTRY_TYPE});
+	    PreparedStatement typeUpdate =updateConnection.prepareStatement(update);
+	    updateConnection.setAutoCommit(false);
 	    try {
 		String what = SqlUtil.comma(table+"."+GenericTypeHandler.COL_ID,table+"."+GenericTypeHandler.COL_ENTRY_TYPE);
-		Statement statement = SqlUtil.select(connection, what, Misc.newList(table), null,"",-1,0);
+		Statement statement = SqlUtil.select(readConnection, what, Misc.newList(table), null,"",-1,0);
 		ResultSet  results = statement.getResultSet();
-		//		System.out.println(typeHandler.getType() +" " + table);
+		int typeCnt = 0;
 		while (results.next()) {
 		    String id  = results.getString(1);
 		    String type = results.getString(2);
@@ -1728,10 +1732,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 			if(fullType==null) continue;
 			totalCnt++;
 			typeCnt++;
-			//			System.out.println("partial:" + typeHandler.getType() +" full:" +fullType);
-			getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
-						    new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
-						    new Object[] {fullType});
+			typeUpdate.setString(1,fullType);			
+			typeUpdate.setString(2,id);
+			typeUpdate.addBatch();
 			if((totalCnt%1000)==0)
 			    getLogManager().logSpecial("cnt:" + totalCnt);
 		    } catch(Exception ignore1) {
@@ -1740,14 +1743,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    }
 		}
 		statement.close();
+		typeUpdate.executeBatch();		
+		updateConnection.commit();
+		updateConnection.setAutoCommit(true);
+		getDatabaseManager().closeConnection(updateConnection);
+		if(typeCnt>0) {
+		    getLogManager().logSpecial("entry type update: " + typeHandler+" #"  + typeCnt);
+		}
 	    } catch(Exception exc) {
 		getLogManager().logSpecial("Error processing entry type fix:" + typeHandler+" error:" +exc);
 	    }
-	    getDatabaseManager().closeConnection(connection);
-	    if(typeCnt>0) {
-		getLogManager().logSpecial("entry type update: " + typeHandler+" #"  + typeCnt);
-	    }
 	}
+	getDatabaseManager().closeConnection(readConnection);
 	if(totalCnt>0) {
 	    getLogManager().logSpecial("entry type update: total changed="  + totalCnt);
 	}
