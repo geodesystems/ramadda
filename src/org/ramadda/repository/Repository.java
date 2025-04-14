@@ -1558,7 +1558,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 	
-	if(!getProperty("ramadda.entrytype.fix",false)) {
+	if(true || !getProperty("ramadda.entrytype.fix",false)) {
 	    getLogManager().logSpecial("Adding entry types to tables");
 	    try {
 		fixEntryTypes();
@@ -1691,24 +1691,32 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private void fixEntryTypes() throws Exception {
 	int totalCnt = 0;
 	Request request = getAdminRequest();
+	getLogManager().logSpecial("collecting all entry types");
+	Hashtable<String,String> idToFullType = new Hashtable<String,String>();
+	Statement statement1 =  getDatabaseManager().select(SqlUtil.comma(Tables.ENTRIES.COL_ID,Tables.ENTRIES.COL_TYPE),
+							    Tables.ENTRIES.NAME,
+							    (Clause)null);
+	ResultSet  results1 = statement1.getResultSet();
+	while (results1.next()) {
+	    idToFullType.put(results1.getString(1),results1.getString(2));
+	}
+	statement1.close();
+	getLogManager().logSpecial("done collecting all entry types");
 	for(TypeHandler typeHandler: allTypeHandlers) {
 	    //	    System.out.println("type:" + typeHandler  +" " + typeHandler.haveDatabaseTable());
 	    if(!typeHandler.haveDatabaseTable()) {
 		continue;
 	    }
-
 	    String table = typeHandler.getTableName();
 	    if (!Utils.stringDefined(table)) {
 		continue;
 	    }
+
 	    int typeCnt = 0;
-	    //	    if(table.toLowerCase().indexOf("taxonomy")<0) continue;
-	    //	    System.err.println("Table:" + table);
 	    Connection connection = getDatabaseManager().getConnection();
 	    try {
 		String what = SqlUtil.comma(table+"."+GenericTypeHandler.COL_ID,table+"."+GenericTypeHandler.COL_ENTRY_TYPE);
 		Statement statement = SqlUtil.select(connection, what, Misc.newList(table), null,"",-1,0);
-
 		ResultSet  results = statement.getResultSet();
 		//		System.out.println(typeHandler.getType() +" " + table);
 		while (results.next()) {
@@ -1716,13 +1724,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    String type = results.getString(2);
 		    //		    if(Utils.stringDefined(type)) continue;
 		    try {
-			Entry entry = getEntryManager().getEntry(request,id);
-			if(entry==null) continue;
+			String fullType = idToFullType.get(id);
+			if(fullType==null) continue;
 			totalCnt++;
 			typeCnt++;
+			//			System.out.println("partial:" + typeHandler.getType() +" full:" +fullType);
 			getDatabaseManager().update(table,GenericTypeHandler.COL_ID,id,
 						    new String[]{GenericTypeHandler.COL_ENTRY_TYPE},
-						    new Object[] {entry.getTypeHandler().getType()});
+						    new Object[] {fullType});
+			if((totalCnt%1000)==0)
+			    getLogManager().logSpecial("cnt:" + totalCnt);
 		    } catch(Exception ignore1) {
 			getLogManager().logError("Error fixing entry types:" + typeHandler,ignore1);
 			return;
