@@ -70,6 +70,7 @@ public interface SeesvCommands {
     public static final String CMD_SQL="-sql";
     public static final String CMD_SYNTHETIC="-synthetic";
     public static final String CMD_PRUNE="-prune";
+    public static final String CMD_RENAME="-rename";
     public static final String CMD_NOHEADER="-noheader";
     public static final String CMD_DEHEADER="-deheader";
     public static final String CMD_HEADERNAMES="-headernames";

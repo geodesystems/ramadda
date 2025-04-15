@@ -1541,6 +1541,10 @@ public class Seesv implements SeesvCommands {
 
         new Cmd(CMD_UNITROW, "Second row contains units"),
 
+        new Cmd(CMD_RENAME, "Rename header fields",ARG_LABEL,"Rename Header",
+		new Arg("header", "Column names", ATTR_TYPE, TYPE_COLUMNS),
+		new Arg("names", "Comma separated list of new names",
+			ARG_LABEL,"New names",ATTR_TYPE, TYPE_COLUMNS)),		
         new Cmd(CMD_MULTIFILES, "Treat input files separately",ARG_LABEL,"Multi-files",
 		new Arg("template", "File template  - ${file_shortname} ${file_name} ${count}")),
 
@@ -5186,6 +5190,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.HeaderNames());
 		return i;
 	    });
+	defineFunction(CMD_RENAME,2,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.Renamer(getCols(args.get(++i)),
+						       Utils.split(args.get(++i),",")));
+		return i;
+	    });	
 
 	defineFunction(CMD_HEADERIDS,0,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.HeaderIds());

@@ -127,6 +127,32 @@ public abstract class Converter extends Processor {
         }
     }
 
+    public static class Renamer extends Converter {
+	List<String> names;
+
+        public Renamer(List<String> cols,List<String> names) {
+            super(cols);
+	    this.names = names;
+        }
+
+        @Override
+        public Row processRow(TextReader ctx, Row row) {
+	    if(rowCnt++==0) {
+		List<Integer> indices = getIndices(ctx);
+		for(int i=0;i<indices.size();i++) {
+		    int index = indices.get(i);
+		    if(row.indexOk(i)) {
+			String name = i<names.size()?names.get(i):names.get(names.size()-1);
+			row.set(index,name);
+		    }
+		}
+		
+	    }
+	    return row;
+	}
+    }
+
+
     public static class Roller extends Converter {
 
         public Roller(TextReader ctx, List<String> cols) {
