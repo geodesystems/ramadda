@@ -1559,7 +1559,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
 	
-	if(true || !getProperty("ramadda.entrytype.fix",false)) {
+	if(!getProperty("ramadda.entrytype.fix",false)) {
 	    getLogManager().logSpecial("Adding entry types to tables");
 	    try {
 		fixEntryTypes();
