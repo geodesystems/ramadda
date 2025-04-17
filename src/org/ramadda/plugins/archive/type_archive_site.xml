@@ -49,6 +49,7 @@ foruser="false"
 <property  name="html.tabs"  value="true" />
 <property  name="form.tabs"  value="true" />
 <property  name="column.showenumerationpopup"  value="true" />
+<property  name="enumerations.specific"  value="false" />
 
 <!-- Wiki text-->
 <wiki><![CDATA[

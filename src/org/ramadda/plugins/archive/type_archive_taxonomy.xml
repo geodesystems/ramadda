@@ -48,4 +48,5 @@ foruser="false"
 <property  name="form.tags.show"  value="false" />
 <property  name="search.date.show"  value="false" />
 <property  name="search.createdate.show"  value="false" />
+<property  name="enumerations.specific"  value="false" />
 </type>
