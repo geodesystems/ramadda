@@ -1,3 +1,4 @@
+
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
@@ -1075,15 +1076,17 @@ public class EntryManager extends RepositoryManager {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
 		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
-		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td></tr>");
+		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td><td class=ramadda-table-heading>Parent Type</td></tr>");
 		for (TypeHandler typeHandler : typeHandlers) {
 		    String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
 		    String url = getRepository().getUrlPath("/entry/types.html?type="  + typeHandler.getType());
 		    String category = typeHandler.getSuperCategory();
 		    if(typeHandler.getCategory()!=null)category += " - " + typeHandler.getCategory();
+		    TypeHandler parent  = typeHandler.getParent();
 		    sb.append(HU.tr(HU.td(HU.href(url,icon+" "+  typeHandler.getDescription()))+
 				    HU.td(HU.span(typeHandler.getType(),HU.attr("class","ramadda-type-id")))+
-				    HU.td(category),
+				    HU.td(category)+
+				    (parent==null?"":HU.td(HU.span(parent.getType(),HU.attr("class","ramadda-type-id")))),
 				    HU.attr("class","ramadda-type")));
 		}
 		sb.append("</table>");
@@ -4251,38 +4254,51 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public List<SuperType> getCats(boolean anyOk) throws Exception {
-	List<SuperType> superTypes = new ArrayList<SuperType>();
+    private List<SuperType> superTypes;
+    private List<Types> types;
+    private Hashtable<String,Types> typesMap;
+
+    public synchronized Types getTypesFromCategory(String cat) throws Exception {
+	getCats();
+	return typesMap.get(cat);
+    }
+
+    public synchronized List<SuperType> getCats() throws Exception {
+	if(superTypes!=null) return superTypes;
+	List<SuperType> tmpSuperTypes = new ArrayList<SuperType>();
+	Hashtable<String,Types> tmpTypesMap = new Hashtable<String,Types>();
 	Hashtable<String,SuperType> superMap = new Hashtable<String,SuperType>();
-	Hashtable<String,Types> typesMap = new Hashtable<String,Types>();
+
 
         for (String superCat : PRELOAD_CATEGORIES) {
 	    SuperType superType  = new SuperType(superCat);
-	    superTypes.add(superType);
+	    tmpSuperTypes.add(superType);
 	    superMap.put(superCat, superType);
 	}
 
-        List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(anyOk);
+        List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(false);
 
         for (TypeHandler typeHandler : typeHandlers) {
             String superCat = typeHandler.getSuperCategory();
 	    SuperType superType  = superMap.get(superCat);
 	    if(superType == null) {
 		superType  = new SuperType(superCat);
-		superTypes.add(superType);
+		tmpSuperTypes.add(superType);
 		superMap.put(superCat, superType);
 		//		System.err.println("new super:" + superType);
 	    }
 	    String key = superCat+"-"+typeHandler.getCategory();
-	    Types types = typesMap.get(key);
+	    Types types = tmpTypesMap.get(key);
 	    if(types == null) {
 		types = new Types(typeHandler.getCategory());
 		superType.add(types);
-		typesMap.put(key,types);
+		tmpTypesMap.put(key,types);
 		//		System.err.println("\tnew sub:" + types);
 	    }
 	    types.add(typeHandler);
 	}
+	superTypes = tmpSuperTypes;
+	typesMap= tmpTypesMap;
 	return superTypes;
     }
 
@@ -4298,7 +4314,7 @@ public class EntryManager extends RepositoryManager {
 	sb.append("<center>");
 	HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type')");
 	sb.append("</center>");
-	for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
+	for(EntryManager.SuperType superType:getEntryManager().getCats()) {
 	    boolean didSuper = false;
 	    for(EntryManager.Types types: superType.getList()) {
 		boolean didSub = false;
