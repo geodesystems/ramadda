@@ -1543,11 +1543,15 @@ public class TypeHandler extends RepositoryManager {
     }
 
     public String getProperty(Entry entry, String name, String dflt) {
+	return getProperty(entry, name,dflt,true);
+    }
+
+    public String getProperty(Entry entry, String name, String dflt,boolean checkParent) {	
         String result = (String) properties.get(name);
         if (result != null) {
             return result;
         }
-        if (parent != null) {
+        if (checkParent && parent != null) {
             return parent.getProperty(entry, name, dflt);
         }
 
@@ -6314,11 +6318,11 @@ public class TypeHandler extends RepositoryManager {
 		return null;
 	    }
 	}
-	Clause entryTypeClause = Clause.eq(GenericTypeHandler.COL_ENTRY_TYPE,this.getType());
+	boolean enumerationsSpecific = getProperty(null,"enumerations.specific","true",false).equals("true");
+	Clause entryTypeClause = enumerationsSpecific?Clause.eq(GenericTypeHandler.COL_ENTRY_TYPE,this.getType()):null;
 	if(!hasEnumValuesClause) {
-	    clause = clause==null?entryTypeClause:Clause.and(clause,entryTypeClause);
+	    clause = entryTypeClause==null?clause:(clause==null?entryTypeClause:Clause.and(clause,entryTypeClause));
 	}
-
         //Use the clause string as part of the key
         String  key = getEnumValueKey(column, entry) + ((clause == null)
 							? ""
