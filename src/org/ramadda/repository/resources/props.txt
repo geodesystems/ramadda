@@ -176,6 +176,9 @@ search.form.providers.show=false
 search.form.orderby=relevant,name,createdate,date,size
 search.form.startdate.label=Date Missing
 
+#is this a super type where we search on enumerations
+enumerations.specific=false
+
 #Do the search when  form is displayed
 search.initsearch=true
 search.searchopen=true
