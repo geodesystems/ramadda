@@ -1527,7 +1527,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    entryDocsWriter.flush();
 	    PrintWriter pw = entryDocsWriter;
 	    Request request = getAdminRequest();
-	    for(EntryManager.SuperType superType:getEntryManager().getCats(false)) {
+	    for(EntryManager.SuperType superType:getEntryManager().getCats()) {
 		boolean didSuper = false;
 		for(EntryManager.Types types: superType.getList()) {
 		    boolean didSub = false;
