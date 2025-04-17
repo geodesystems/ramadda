@@ -231,7 +231,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     @Override
     public void initAttributes() {
         super.initAttributes();
-        debugSearch = getRepository().getProperty("ramadda.search.debug",false);
+        debugSearch = getRepository().getProperty("ramadda.search.debug",debugSearch);
         showMetadata = getRepository().getProperty(PROP_SEARCH_SHOW_METADATA, true);
 	tesseractPath = getRepository().getScriptPath("ramadda.tesseract");
 	indexImages = getRepository().getProperty("ramadda.indeximages",false);
@@ -425,6 +425,15 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	return FIELD_METADATA+"_"+ type;
     }
 
+    
+    public String getPropertyField(TypeHandler  handler,Column column) {
+	//We used to use the main type handler to get the field name
+	//return   = getPropertyField(handler,column.getName());
+	//but now we use the type handler of the column
+	return  getPropertyField(column.getTypeHandler(),column.getName());		    
+    }
+
+
     public String getPropertyField(TypeHandler  handler,String  type) {
 	return FIELD_PROPERTY+"_"+ handler.getType()+"_"+type;
     }    
@@ -539,11 +548,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    if(values!=null) {
 		for (Column column : columns) {
 		    if (!column.getCanSearch()) continue;
-		    String field  = getPropertyField(entry.getTypeHandler(),column.getName());
+		    String field  = getPropertyField(entry.getTypeHandler(),column);
 		    Object v= entry.getValue(request,column);
 		    if(v==null) continue;
 		    //TODO handle latlonbox
-		    if(debugIndex) System.err.println("\tindexing column:" + column);
+		    if(debugIndex) System.err.println("\tindexing column:" + column +" field:"  + field);
 		    if(column.isLatLon()) {
 			double[] latlon = column.getLatLon(request,values);
 			doc.add(new DoublePoint(field+SUFFIX_LATITUDE, latlon[0]));
@@ -1412,7 +1421,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 		    }
 		    String       searchArg = column.getSearchArg();
 		    Query term=null;
-		    String field = getPropertyField(typeHandler,column.getName());
+		    String field = getPropertyField(typeHandler,column);
 		    if(column.isEnumeration()) {
 			List<String> values = (List<String>) request.get(searchArg,new ArrayList<String>());
 			List<Query> ors = new ArrayList<Query>();
@@ -2302,7 +2311,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	sb.append(HU.open("div","id",uid));
 	sb.append("\n");
         for (EntryManager.SuperType superType :
-		 getEntryManager().getCats(false)) {
+		 getEntryManager().getCats()) {
 	    if(supers!=null && !supers.contains(superType.getName())) continue;
             boolean didSuper = false;
             for (EntryManager.Types typeList : superType.getList()) {
