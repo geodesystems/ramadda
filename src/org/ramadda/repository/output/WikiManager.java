@@ -3516,6 +3516,25 @@ public class WikiManager extends RepositoryManager
                 }
 	    }
 
+	    String entryTypes= getProperty(wikiUtil,props,"entryTypes",null);
+	    if(entryTypes!=null) {
+		List<String> types =new ArrayList<String>();
+		for(String type: Utils.split(entryTypes,",",true,true)) {
+		    if(type.startsWith("super:")) {
+			type = type.substring("super:".length()).trim();
+			TypeHandler typeHandler = getRepository().getTypeHandler(type);
+			if(typeHandler!=null) {
+			    List<String> childTypes= new ArrayList<String>();
+			    typeHandler.getChildTypes(childTypes);
+			    types.addAll(childTypes);
+			}
+		    } else {
+
+			types.add(type);
+		    }
+		}
+		props.put("entryTypes",Utils.join(types,","));
+	    }
             String tooltip = getProperty(wikiUtil, props, "tooltip",null);
 	    if(tooltip!=null) {
 		tooltip = tooltip.replace("${entryid}",entry.getId()).replace("${entryname}",entry.getName());
@@ -8369,7 +8388,7 @@ public class WikiManager extends RepositoryManager
         makeHelp.accept("/userguide/wiki/wikientries.html#entries",
                         "Specifying multiple entries");
         makeHelp.accept("/search/providers", "Search Providers");
-        makeHelp.accept("/search/info#entrytypes", "Entry Types");
+        makeHelp.accept("/entry/types.html", "Entry Types");
         makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
         makeHelp.accept("/colortables", "Color Tables");
         makeHelp.accept("/icons.html", "Icons");	
