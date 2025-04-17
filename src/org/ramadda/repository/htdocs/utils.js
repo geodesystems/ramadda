@@ -84,6 +84,7 @@ var TAG_INPUT = "input";
 var TAG_LI = "li";
 var TAG_SELECT = "select";
 var TAG_OPTION = "option";
+var TAG_FORM = "form";
 var TAG_TABLE = "table";
 var TAG_TR = "tr";
 var TAG_TD = "td";
@@ -6262,7 +6263,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
 
     select: function(name, attrs,list, selected,maxWidth,debug) {
-        var select = this.openTag("select", attrs);
+       var select = this.openTag("select", attrs);
         select+=HU.makeOptions(list,selected,maxWidth,debug);
         select+=this.closeTag("select");
         return select;
