@@ -2461,7 +2461,6 @@ public abstract class Processor extends SeesvOperator {
         public Prettifier(TextReader ctx) {
 	    bold = Misc.equals(ctx.getProperty("label.bold"),"true");
 	    decorate = Misc.equals("true",ctx.getProperty("decorate"));
-	    System.err.println("D:" + decorate);
 	}
 
         @Override
@@ -2519,25 +2518,15 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class Joiner extends Processor {
-
 	private static String  KEY_DELIM = "_";
-
         private List<String> keys1;
-
         private List<String> values1;
-
         private List<String> keys2;
-
         private String file;
-
         private Hashtable<String, Row> map;
-
         private Row headerRow1;
-
         private List<Integer> values1Indices;
-
         private Row headerRow2;
-
         private String dflt;
         private List<String> dflts;	
 
@@ -2576,11 +2565,13 @@ public abstract class Processor extends SeesvOperator {
 	    String split = (String) ctx.getProperty("join.split");
             String delimiter = null;
 	    //	    System.err.println("join-processing file");
-            while (true) {
+	    int cnt=0;
+	    while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;
                 }
+		//		System.err.println((++cnt)+" line:" + line.substring(0,20));
                 line = line.trim();
                 if (line.length() == 0) {
                     continue;
@@ -2592,6 +2583,7 @@ public abstract class Processor extends SeesvOperator {
                         delimiter = ",";
                     }
                 }
+		
                 List<String> cols = Utils.tokenizeColumns(line, delimiter);
                 if (operator == null) {
                     operator = new SeesvOperator();
@@ -2618,7 +2610,6 @@ public abstract class Processor extends SeesvOperator {
 			for(String tok:Utils.split(keyValue,split,true,true)) {
 			    String key = tok+KEY_DELIM;
 			    map.put(key, row);
-			    //			    System.out.println(key);
 			}
 		    }
 		} else {
