@@ -1043,6 +1043,7 @@ function  SeesvForm(inputId, entry,params) {
                                     "<br>";
 				html +=
                                     _this.makeDbMenu(field+".cansearch")+space +
+                                    _this.makeDbMenu(field+".isindex","true")+space +
                                     _this.makeDbMenu(field+".cansearch","true","true")+space +
                                     _this.makeDbMenu(field+".cansearch","false","false")+
                                     "<br>";
