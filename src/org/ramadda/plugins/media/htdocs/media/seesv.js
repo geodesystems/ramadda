@@ -129,7 +129,7 @@ function  SeesvForm(inputId, entry,params) {
 			    },"");
 	    html += HU.div(["class","ramadda-menubar",ATTR_STYLE,"width:100%;"],HU.leftRightTable(topLeft,topRight));
 
-	    let input = HtmlUtil.div([STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ATTR_ID,this.domId(ID_INPUT), "rows", "5"], text);	    
+	    let input = HtmlUtil.div([ATTR_STYLE,"height:100%;top:0px;right:0px;left:0px;bottom:0px;position:absolute;width:100%;", ATTR_ID,this.domId(ID_INPUT), "rows", "5"], text);	    
 
 
 	    let height=Utils.getDefined(HU.getUrlArgument('seesv_editor_height'),
@@ -138,28 +138,26 @@ function  SeesvForm(inputId, entry,params) {
 					'200px');
 
 
-	    html+=HU.div([ATTR_ID,this.domId('resize'),STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
+	    html+=HU.div([ATTR_ID,this.domId('resize'),ATTR_STYLE,HU.css('margin-bottom','5px','height', HtmlUtils.getDimension(height),'position','relative')],input);
 
 
 	    let left ='';
-	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_OUTPUTS),CLASS,"convert_button"], "Outputs") +" ";
-	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_TABLE),CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
-	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_PROCESS),CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_OUTPUTS),ATTR_CLASS,"convert_button"], "Outputs") +" ";
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_TABLE),ATTR_CLASS,"convert_button", TITLE,"Display table (ctrl-t)"],"Table")+" ";
+	    left += HtmlUtil.span([ATTR_ID,this.domId(ID_PROCESS),ATTR_CLASS,"convert_button", TITLE,"Process entire file"],"Process")+" ";	    
 
 
 
 	    let right = "";
-	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_CLEAR),CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
-	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_LIST),CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
-	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_TRASH),CLASS,"ramadda-clickable", TITLE,"Remove temp files"],HU.getIconImage("fa-trash")) +SPACE2;	    	    
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_CLEAR),ATTR_CLASS,"ramadda-clickable", TITLE,"Clear output"],HU.getIconImage("fa-eraser")) +SPACE2;
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_LIST),ATTR_CLASS,"ramadda-clickable", TITLE,"List temp files"],HU.getIconImage("fa-list")) +SPACE2;
+	    right += HtmlUtil.span([ATTR_ID,this.domId(ID_TRASH),ATTR_CLASS,"ramadda-clickable", TITLE,"Remove temp files"],HU.getIconImage("fa-trash")) +SPACE2;	    	    
 	    left +=SPACE + (this.params.extraButtons||"");
 
 
 	    html += HtmlUtil.leftRightTable(left,right);
-	    html +=  HtmlUtil.div([ATTR_ID, this.domId(ID_OUTPUT),STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
+	    html +=  HtmlUtil.div([ATTR_ID, this.domId(ID_OUTPUT),ATTR_STYLE,HU.css("margin-top","5px", "max-height","500px","overflow-y","auto")],"");
 	    html += HtmlUtil.div([ATTR_ID, this.domId(ID_SCRATCH)],"");
-
-
 	    jqid(this.inputId).addClass("ramadda-seesv");
 	    jqid(this.inputId).html(html);
 
@@ -174,8 +172,6 @@ function  SeesvForm(inputId, entry,params) {
 		},
 	    });
 	    this.makeEditor();
-
-
 
 	    this.jq(ID_TRASH).click(()=>{
 		this.call('',{clearOutput:true});
@@ -200,7 +196,7 @@ function  SeesvForm(inputId, entry,params) {
 		let html = _this.outputCommands.reduce((acc,cmd)=>{
 		    if(cmd.command=="-table") return acc;
 		    if(cmd.command=="-stats") return acc;		    
-		    acc+=HU.div([CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
+		    acc+=HU.div([ATTR_CLASS,"ramadda-clickable","command",cmd.command,TITLE,cmd.command],cmd.description);
 		    return acc;
 		},"");
 		html = HU.div([ATTR_STYLE,HU.css("margin","10px")],html);
@@ -327,7 +323,7 @@ function  SeesvForm(inputId, entry,params) {
 			corpus = corpus.replace(/[\n\"\']/g," ");
 			let label = cmd.label ||  Utils.camelCase(cmd.command.replace("-",""));
 			this.commandsMap[command] = cmd;
-			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,ATTR_STYLE,HU.css('margin','1px','border','1px solid transparent'),CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
+			let menuItem = HU.div(['data-corpus',corpus,TITLE,(desc||"")+"<br>"+cmd.command,ATTR_STYLE,HU.css('margin','1px','border','1px solid transparent'),ATTR_CLASS, "ramadda-hoverable ramadda-clickable","command",command],label);
 			menuItems.push(menuItem);
 			this.allMenuItems.push(menuItem);
 		    });
@@ -360,7 +356,7 @@ function  SeesvForm(inputId, entry,params) {
 	    menu = HU.div(menuAttrs,menu);
 	    let inputId = HU.getUniqueId("input_");
 	    let input = HU.div([ATTR_STYLE,'font-size:80%;text-align:center;margin:5px;'],
-			       HU.input("","",['autofocus',null,STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ATTR_ID,inputId]));
+			       HU.input("","",['autofocus',null,ATTR_STYLE,HU.css("width","150px"), 'placeholder','Search Commands',ATTR_ID,inputId]));
 	    menu = input+menu;
 	    
 	    if(_this.menuDialog) {
@@ -738,10 +734,13 @@ function  SeesvForm(inputId, entry,params) {
 	    return url;
 	},
 	makeDbMenu:function(field,value,label) {
-	    return HtmlUtil.span([CLASS,"ramadda-clickable","field",field,"value",value],(label||field));
+	    if(!label) {
+		label = field.replace(/^.*?\./,'');
+	    }
+	    return HtmlUtil.span([ATTR_CLASS,"ramadda-clickable","field",field,"value",value],label);
 	},
 	makeHeaderMenu: function(field,value,label) {
-	    return HtmlUtil.span(["field",field,"value",value,CLASS,"ramadda-menuitem-link ramadda-clickable"],(label||field));
+	    return HtmlUtil.span(["field",field,"value",value,ATTR_CLASS,"ramadda-menuitem-link ramadda-clickable"],(label||field));
 	},
 	insertHeader:function(field,value) {
 	    if(this.headerInput && $("#" + this.headerInput).length>0) {
@@ -762,8 +761,8 @@ function  SeesvForm(inputId, entry,params) {
 	    this.insertCommand(field +value);
 	},
 	insertDb:function(field,value) {
-	    if(this.dbDialog) this.dbDialog.remove();
-	    this.dbDialog = null;
+//	    if(this.dbDialog) this.dbDialog.remove();
+//	    this.dbDialog = null;
 	    if(!value) value = " ";
 	    if(value!="true" && value!="false") {
 		if(value.indexOf(" ")>=0) 
@@ -877,11 +876,11 @@ function  SeesvForm(inputId, entry,params) {
 	    let output = this.jq("output");
 	    let result;
 	    let writePre =contents=>{
-		contents = HU.pre([STYLE,HU.css('position','relative'),ATTR_ID,this.domId(ID_PRE)],  contents);
+		contents = HU.pre([ATTR_STYLE,HU.css('position','relative'),ATTR_ID,this.domId(ID_PRE)],  contents);
 		output.html(contents);
-		let msg = $(HU.div([STYLE,HU.css("position","absolute","right","48px","top","5px")], "")).appendTo(this.jq(ID_PRE));
+		let msg = $(HU.div([ATTR_STYLE,HU.css("position","absolute","right","48px","top","5px")], "")).appendTo(this.jq(ID_PRE));
 
-		let copy = $(HU.div([TITLE,"Copy to clipboard", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right","10px","top","5px")], HU.getIconImage("fas fa-clipboard"))).appendTo(this.jq(ID_PRE));
+		let copy = $(HU.div([TITLE,"Copy to clipboard", ATTR_CLASS,"ramadda-clickable", ATTR_STYLE,HU.css("position","absolute","right","10px","top","5px")], HU.getIconImage("fas fa-clipboard"))).appendTo(this.jq(ID_PRE));
 		copy.click(()=>{
 		    Utils.copyToClipboard(result);
 		    msg.html("OK, result is copied");
@@ -890,7 +889,7 @@ function  SeesvForm(inputId, entry,params) {
 		    },2000);
 		});
 		if(filename) {
-		    let file = $(HU.div([TITLE,"Download file", CLASS,"ramadda-clickable", STYLE,HU.css("position","absolute","right","32px","top","5px")], HU.getIconImage("fas fa-file-download"))).appendTo(this.jq(ID_PRE));
+		    let file = $(HU.div([TITLE,"Download file", ATTR_CLASS,"ramadda-clickable", ATTR_STYLE,HU.css("position","absolute","right","32px","top","5px")], HU.getIconImage("fas fa-file-download"))).appendTo(this.jq(ID_PRE));
 		    file.click(()=>{
 			msg.html("");
 			Utils.makeDownloadFile(filename,result);
@@ -1013,14 +1012,21 @@ function  SeesvForm(inputId, entry,params) {
 			db = db.replace(/column:[ \t]+/g,"column: ");			
 			writePre(db);
 			output.find(".csv_db_field").click(function(event) {
-                            let space = "&nbsp;"
+                            let space = "&nbsp;&nbsp;"
                             event.preventDefault();
                             let pos=$(this).offset();
                             let h=$(this).height();
                             let w=$(this).width();
                             let field  = $(this).attr("field");
                             let html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
-			    html+="<b>Add arguments to -db tag</b><div style='margin-left:5px;'>";
+			    let title = "Add arguments to -db tag";
+                            if(field  != "table") {
+				title+=" for field: " + field;
+			    } else {
+				title+=" for the table";
+			    }
+
+			    html+="<div style='margin-left:5px;'>";
                             if(field  == "table") {
 				html +=_this.makeDbMenu(field+".name")+"<br>";
 				html +=_this.makeDbMenu(field+".label")+"<br>";
@@ -1029,7 +1035,7 @@ function  SeesvForm(inputId, entry,params) {
 				html +=_this.makeDbMenu("install","true")+"<br>";
 				html +=_this.makeDbMenu("nukedb","true")+"<br>";								
                             } else {
-				html +=_this.makeDbMenu(field+".id")+"<br>";
+				html +=_this.makeDbMenu(field+".id")+space;
 				html +=_this.makeDbMenu(field+".label")+"<br>";
 				html +=
                                     _this.makeDbMenu(field+".type")+space +
@@ -1038,26 +1044,35 @@ function  SeesvForm(inputId, entry,params) {
                                     _this.makeDbMenu(field+".type","int","int")+space +
                                     _this.makeDbMenu(field+".type","enumeration","enumeration")+space +
                                     _this.makeDbMenu(field+".type","enumerationplus","enumeration+")+space +
-                                    _this.makeDbMenu(field+".type","multienumeration","multienumeration+")+space +				    
-                                    _this.makeDbMenu(field+".type","date","date")+space +				    
+                                    _this.makeDbMenu(field+".type","multienumeration","multienumeration+")+space +
+                                    _this.makeDbMenu(field+".type","date","date")+space +
+                                    _this.makeDbMenu(field+".type","url","url")+space +				    				    
                                     "<br>";
 				html +=
                                     _this.makeDbMenu(field+".cansearch")+space +
                                     _this.makeDbMenu(field+".isindex","true")+space +
                                     _this.makeDbMenu(field+".cansearch","true","true")+space +
-                                    _this.makeDbMenu(field+".cansearch","false","false")+
+                                    _this.makeDbMenu(field+".cansearch","false","false")+space+
+                                    _this.makeDbMenu(field+".addnot","true")+space +
                                     "<br>";
 				html +=
                                     _this.makeDbMenu(field+".canlist")+space +
                                     _this.makeDbMenu(field+".canlist","true","true")+space+
                                     _this.makeDbMenu(field+".canlist","false","false")+
                                     "<br>";
+				html +=
+                                    _this.makeDbMenu(field+".size","1000")+space+
+                                    _this.makeDbMenu(field+".changetype","true") +
+                                    "<br>";
+				html +=
+                                    _this.makeDbMenu(field+".unit","kg")+space+
+                                    _this.makeDbMenu(field+".suffix","")+space+
+                                    _this.makeDbMenu(field+".help","")+space+				    			                                    "<br>";								
                             }
                             html+="</div></div>";
-			    _this.dbDialog=HU.makeDialog({content:html,anchor:$(this)});
+			    _this.dbDialog=HU.makeDialog({title:title,content:html,anchor:$(this),header:true,draggable:true});
 			    _this.dbDialog.find(".ramadda-clickable").click(function() {
 				_this.insertDb($(this).attr('field'),$(this).attr('value'));
-				
 
 			    });
 			})
@@ -1148,7 +1163,7 @@ function  SeesvForm(inputId, entry,params) {
 			return;
 		    } else if(stats || table) {
 			output.html(result);
-			let toolbar = HU.span([TITLE,"Insert field names", CLASS,"ramadda-clickable", ATTR_ID,this.domId("addfields")],"Add field ids") + SPACE3;
+			let toolbar = HU.span([TITLE,"Insert field names", ATTR_CLASS,"ramadda-clickable", ATTR_ID,this.domId("addfields")],"Add field ids") + SPACE3;
 			if(table)
 			    toolbar += HU.span([ATTR_ID,"csv_toggledetails"],"Show summary");
 
@@ -1204,7 +1219,7 @@ function  SeesvForm(inputId, entry,params) {
 			});
 
 			output.find(".csv_header_field").click(function(event) {
-			    $(this).attr(STYLE,"color:black;");
+			    $(this).attr(ATTR_STYLE,"color:black;");
 			    let label = $(this).attr("label");
 			    if(!label) {
 				let index = $(this).attr("index");
@@ -1277,7 +1292,7 @@ function  SeesvForm(inputId, entry,params) {
 			}
 			let html = printHeader?result:HU.tag('pre',[], result);
 			if(isDb) {
-			    html+=HU.div([ATTR_ID,this.domId(ID_POPUP), CLASS,"ramadda-popup"]);
+			    html+=HU.div([ATTR_ID,this.domId(ID_POPUP), ATTR_CLASS,"ramadda-popup"]);
 			} else if(!printHeader) {
 			    writePre(result);
 			    return;
@@ -1326,7 +1341,7 @@ function  SeesvForm(inputId, entry,params) {
 		desc = desc.trim().replace(/\n/g,"<br>");		
 		let getExtra = (arg,desc)=>{
 		    if((arg.type=='column' || arg.type=='columns') && this.allColumnIds.length>0) {
-			return HU.span(['inputid',id,TITLE,'Add column',CLASS,'ramadda-clickable seesv-column-button','columnid',id],HU.getIconImage('fa-plus') + ' ' +desc);
+			return HU.span(['inputid',id,TITLE,'Add column',ATTR_CLASS,'ramadda-clickable seesv-column-button','columnid',id],HU.getIconImage('fa-plus') + ' ' +desc);
 
 		    }
 		    return '';
@@ -1344,7 +1359,7 @@ function  SeesvForm(inputId, entry,params) {
 			help="<br>"+HU.href(ramaddaBaseUrl +'/userguide/seesv.html#help_columns',HtmlUtils.getIconImage(ICON_HELP),
 					    ['target','_help','title','Columns Help']);
 		    desc+=help;
-		    return   HU.div([STYLE,HU.css('max-width','300px','vertical-align','top','max-height','200px','overflow-y','auto')],desc);
+		    return   HU.div([ATTR_STYLE,HU.css('max-width','300px','vertical-align','top','max-height','200px','overflow-y','auto')],desc);
 		}
 
 
@@ -1422,7 +1437,7 @@ function  SeesvForm(inputId, entry,params) {
 		at = "left " + "top+" + (opts.event.offsetY+10);
 		target = $(opts.event.target);
 	    }
-	    inner = HU.div([STYLE,HU.css('margin','5px')], inner);
+	    inner = HU.div([ATTR_STYLE,HU.css('margin','5px')], inner);
 	    let dialog =   HU.makeDialog({content:inner,my:"left top",at:at,anchor:target,draggable:true,header:true,inPlace:false});
 
 	    dialog.find("add").addClass('ramadda-clickable').click(function() {
