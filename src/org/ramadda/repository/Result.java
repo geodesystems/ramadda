@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
-
 
 import java.io.InputStream;
 
@@ -17,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * A class to hold a Result
@@ -90,7 +87,6 @@ public class Result {
     /** last modified date */
     private Date lastModified;
 
-
     /** default response code */
     private int responseCode = RESPONSE_OK;
 
@@ -99,7 +95,6 @@ public class Result {
 
     /** need to write flag */
     private boolean needToWrite = true;
-
 
     /** authorization method */
     private AuthorizationMethod authorizationMethod;
@@ -112,7 +107,6 @@ public class Result {
      */
     public Result() {}
 
-
     /**
      * Create a Result with the specified Authorization Method
      *
@@ -121,7 +115,6 @@ public class Result {
     public Result(AuthorizationMethod authorizationMethod) {
         this.authorizationMethod = authorizationMethod;
     }
-
 
     /**
      * Create a result with a redirection
@@ -132,7 +125,6 @@ public class Result {
         this(redirectUrl.toString());
     }
 
-
     /**
      * Create a Result with a redirection url
      *
@@ -142,7 +134,6 @@ public class Result {
         this.redirectUrl    = redirectUrl;
         this.shouldDecorate = false;
     }
-
 
     /**
      * Create a Result
@@ -175,7 +166,6 @@ public class Result {
         stringContent = content.toString();
     }
 
-
     /**
      * Create a Result with the content and mimetype
      *
@@ -198,7 +188,6 @@ public class Result {
         this(title, (byte[]) null, mimeType);
         stringContent = content.toString();
     }
-
 
     /**
      * _more_
@@ -248,7 +237,6 @@ public class Result {
         this.shouldDecorate = false;
     }
 
-
     /**
      * Create a result from the content
      *
@@ -264,7 +252,6 @@ public class Result {
         this.mimeType       = mimeType;
         this.shouldDecorate = shouldDecorate;
     }
-
 
     /**
      *  Set the OkToAddCookies property.
@@ -284,7 +271,6 @@ public class Result {
         return okToAddCookies;
     }
 
-
     /**
      * Make a NO-OP result
      *
@@ -296,7 +282,6 @@ public class Result {
 
         return result;
     }
-
 
     /**
      * Set the NeedToWrite property.
@@ -315,7 +300,6 @@ public class Result {
     public boolean getNeedToWrite() {
         return needToWrite;
     }
-
 
     /**
      * Put a property for this result
@@ -373,7 +357,6 @@ public class Result {
         return mimeType.equals(TYPE_XML);
     }
 
-
     /**
      * Is this an CSV result?
      *
@@ -382,7 +365,6 @@ public class Result {
     public boolean isCsv() {
         return mimeType.equals(TYPE_CSV);
     }
-
 
     /**
      * Set the Content property.
@@ -404,7 +386,6 @@ public class Result {
         byteContent   = null;
     }
 
-
     /**
      * Get the Content property.
      *
@@ -417,7 +398,6 @@ public class Result {
 
         return byteContent;
     }
-
 
     /**
      * _more_
@@ -467,8 +447,6 @@ public class Result {
     public String getMimeType() {
         return mimeType;
     }
-
-
 
     /**
      * Set the ShouldDecorate property.
@@ -565,7 +543,6 @@ public class Result {
         return responseCode;
     }
 
-
     /**
      * Set the return filename for this Result
      *
@@ -591,7 +568,6 @@ public class Result {
 
     }
 
-
     /**
      * Add an HTTP header the the list of header args
      *
@@ -605,7 +581,6 @@ public class Result {
         httpHeaderArgs.add(name);
         httpHeaderArgs.add(value);
     }
-
 
     /**
      * Set the HttpHeaderArgs property.
@@ -624,7 +599,6 @@ public class Result {
     public List<String> getHttpHeaderArgs() {
         return httpHeaderArgs;
     }
-
 
     /**
      * Set the AuthorizationMethod property.
@@ -661,7 +635,5 @@ public class Result {
     public Date getLastModified() {
         return this.lastModified;
     }
-
-
 
 }

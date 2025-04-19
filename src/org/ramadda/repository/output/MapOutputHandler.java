@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 
@@ -14,11 +13,9 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -28,15 +25,11 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
-
     /** Map output type */
     public static final OutputType OUTPUT_MAP =
         new OutputType("Map", "map.map",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_MAP);
-
-
-
 
     /**
      * Create a MapOutputHandler
@@ -51,7 +44,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         super(repository, element);
         addType(OUTPUT_MAP);
     }
-
 
     /**
      * Get the entry links
@@ -83,8 +75,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
             links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
         }
     }
-
-
 
     /**
      * Output the entry
@@ -127,8 +117,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         return makeLinksResult(request, msg("Map") + " - " + entry.getName(),
                                sb, new State(entry));
     }
-
-
 
     /**
      * Output a group
@@ -178,7 +166,6 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
 	    props.put("canMove","true");
 	}
 
-
         MapInfo map = getMapManager().getMap(request, group, children, sb,
                                              "100%", "500", null, props);
 
@@ -189,8 +176,5 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         return makeLinksResult(request, msg("Map") + " - " + group.getName(),
                                sb, new State(group, children));
     }
-
-
-
 
 }

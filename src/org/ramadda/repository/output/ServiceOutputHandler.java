@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
-
 
 import org.ramadda.service.OutputDefinition;
 import org.ramadda.service.Service;
@@ -29,14 +27,11 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 import java.io.File;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 public class ServiceOutputHandler extends OutputHandler {
 
@@ -52,23 +47,18 @@ public class ServiceOutputHandler extends OutputHandler {
     private OutputType groupOutputType;
     private Service service;
 
-    
     public ServiceOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         init(element);
     }
 
-
-    
     public ServiceOutputHandler(Repository repository, Service service)
             throws Exception {
         super(repository, "");
         this.service = service;
     }
 
-
-    
     private void init(Element element) throws Exception {
         String serviceId = XmlUtil.getAttribute(element, "serviceId",
                                (String) null);
@@ -94,7 +84,6 @@ public class ServiceOutputHandler extends OutputHandler {
             service = getRepository().makeService(serviceNode, true);
         }
 
-
         if (service == null) {
             getLogManager().logError(
                 "ServiceOutputHandler: could not find service:"
@@ -118,23 +107,18 @@ public class ServiceOutputHandler extends OutputHandler {
                                 .getIcon()));
         addType(groupOutputType);
 
-
     }
 
-    
     public boolean isEnabled() {
         return (service != null) && service.isEnabled();
     }
 
-    
     public Service getService() {
         return service;
     }
 
-    
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-
 
         if ( !isEnabled()) {
             return;
@@ -169,13 +153,6 @@ public class ServiceOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
-
-
-
-    
     @Override
     public Result outputEntry(final Request request, OutputType outputType,
                               final Entry entry)
@@ -186,10 +163,6 @@ public class ServiceOutputHandler extends OutputHandler {
         return handleRequest(request, entry, entries);
     }
 
-
-
-
-    
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -197,16 +170,12 @@ public class ServiceOutputHandler extends OutputHandler {
         return handleRequest(request, group, children);
     }
 
-
-
-    
     public Result handleRequest(Request request, Entry entry,
                                 List<Entry> entries)
             throws Exception {
         if ( !isEnabled()) {
             return null;
         }
-
 
         if ( !request.defined(ARG_EXECUTE)) {
             StringBuffer sb = new StringBuffer();
@@ -221,17 +190,12 @@ public class ServiceOutputHandler extends OutputHandler {
                                outputType, entry, entries, service, "");
     }
 
-
-
-    
     public boolean doExecute(Request request) {
         return request.defined(ARG_EXECUTE)
                || ( !request.isAnonymous()
                     && request.defined(ARG_SHOWCOMMAND));
     }
 
-
-    
     public Result evaluateService(final Request request,
                                   RequestUrl requestUrl,
                                   OutputType outputType,
@@ -253,7 +217,6 @@ public class ServiceOutputHandler extends OutputHandler {
                             : "Run service";
         File   workDir    = getCurrentProcessingDir(request, false);
 
-
         if (request.get(ARG_NEWDIRECTORY, false) || (workDir == null)
                 || !workDir.exists()) {
             workDir = getStorageManager().createProcessDir();
@@ -263,8 +226,6 @@ public class ServiceOutputHandler extends OutputHandler {
 
         final String processDirUrl =
             getStorageManager().getProcessDirEntryUrl(request, workDir);
-
-
 
         final List<ServiceInput> serviceInputs =
             new ArrayList<ServiceInput>();
@@ -306,9 +267,6 @@ public class ServiceOutputHandler extends OutputHandler {
             serviceInput.setForDisplay(forDisplay);
             serviceInputs.add(serviceInput);
         }
-
-
-
 
         if (asynchronous) {
             ActionManager.Action action = new ActionManager.Action() {
@@ -358,7 +316,6 @@ public class ServiceOutputHandler extends OutputHandler {
                     "");
         }
 
-
         StringBuffer        sb            = new StringBuffer();
         List<Entry>         outputEntries = new ArrayList<Entry>();
         List<ServiceOutput> outputs       = new ArrayList<ServiceOutput>();
@@ -398,7 +355,6 @@ public class ServiceOutputHandler extends OutputHandler {
             return new Result("", xml, "text/xml");
         }
 
-
         if (forDisplay) {
             StringBuffer commands = new StringBuffer();
             getPageHandler().entrySectionOpen(request, baseEntry, commands,
@@ -415,16 +371,13 @@ public class ServiceOutputHandler extends OutputHandler {
             return new Result(actionName, commands);
         }
 
-
         writeProcessEntryXml(request, service, workDir, sb.toString());
-
 
         if (doingPublish(request) && (outputEntries.size() > 0)) {
             return new Result(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, outputEntries.get(0)));
         }
-
 
         //Redirect to the products dir entry 
         if (request.get(ARG_GOTOPRODUCTS, false) && !forDisplay) {
@@ -446,7 +399,6 @@ public class ServiceOutputHandler extends OutputHandler {
             return new Result(getStorageManager().getFileInputStream(file),
                               "");
         }
-
 
         if ((outputs.size() > 0) && !outputs.get(0).getResultsShownAsText()) {
             sb.append("Error: no output files<br>");
@@ -477,11 +429,8 @@ public class ServiceOutputHandler extends OutputHandler {
 
         return new Result(actionName, results);
 
-
     }
 
-
-    
     private ServiceOutput evaluateService(Request request, Object actionID, Service service,
                                           ServiceInput serviceInput)
             throws Exception {
@@ -505,7 +454,7 @@ public class ServiceOutputHandler extends OutputHandler {
         }
 
     }
-    
+
     public void makeForm(Request request, Service service, Entry baseEntry,
                          List<Entry> entries, OutputType outputType,
                          Appendable sb)
@@ -535,7 +484,6 @@ public class ServiceOutputHandler extends OutputHandler {
         if (extraForm != null) {
             sb.append(extraForm);
         }
-
 
         boolean                haveAnyOutputs = false;
         List<OutputDefinition> outputs = new ArrayList<OutputDefinition>();
@@ -591,7 +539,6 @@ public class ServiceOutputHandler extends OutputHandler {
 	    entries.add(baseEntry);
 	}
 
-
         service.addToForm(request, (entries != null && entries.size()>0)
                                    ? new ServiceInput(null, entries, true)
                                    : new ServiceInput(), sb, null, null);
@@ -617,11 +564,8 @@ public class ServiceOutputHandler extends OutputHandler {
 
         }
 
-
-
         etc.append(StringUtil.join("&nbsp; <br> ", extraSubmit));
         etc.append(HU.p());
-
 
         addUrlShowingForm(etc, formId, null);
 	buttons.append("<br>");
@@ -637,7 +581,7 @@ public class ServiceOutputHandler extends OutputHandler {
         sb.append("\n");
 
     }
-    
+
     private void writeWorkflow(Request request, ServiceInput serviceInput)
             throws Exception {
         if (request.get(ARG_WRITEWORKFLOW, false)) {
@@ -683,6 +627,5 @@ public class ServiceOutputHandler extends OutputHandler {
         IOUtil.writeFile(new File(IOUtil.joinDir(processDir,
                 ".this.ramadda.xml")), xml.toString());
     }
-
 
 }

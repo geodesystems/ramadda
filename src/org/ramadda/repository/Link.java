@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
 
@@ -16,8 +15,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class Link implements Constants {
     String url;
     String label;
@@ -27,11 +24,10 @@ public class Link implements Constants {
     OutputType outputType;
     String category;
     String tooltip;
-    
+
     public Link(boolean hr) {
         this.hr = hr;
     }
-
 
     public Link(String url, String icon, String label, int type) {
         this(url, icon, label, null, type);
@@ -41,12 +37,11 @@ public class Link implements Constants {
         this(url, icon, label, (OutputType)null);
     }
 
-
     public Link(String url, String icon, String label,String tt) {
         this(url, icon, label, (OutputType)null);
 	tooltip = tt;
     }
-    
+
     public Link(String url, String icon, String label,
                 OutputType outputType) {
         this(url, icon, label, outputType, getLinkType(outputType));
@@ -107,7 +102,6 @@ public class Link implements Constants {
         url = value;
     }
 
-
     public String getUrl() {
         return url;
     }
@@ -124,20 +118,16 @@ public class Link implements Constants {
         icon = value;
     }
 
-
     public String getIcon() {
         return icon;
     }
-
 
     public void setTooltip (String value) {
 	tooltip = value;
     }
 
-
     public String getTooltip () {
 	return tooltip;
     }
-
 
 }

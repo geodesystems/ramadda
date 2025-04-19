@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.apache.logging.log4j.Logger;
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.log4j.Logger;
-
 
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.TypeHandler;
@@ -44,8 +42,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.text.StrTokenizer;
 import org.apache.commons.text.StringTokenizer;
-
-
 
 @SuppressWarnings("unchecked")
 public class LogManager extends RepositoryManager {
@@ -91,10 +87,8 @@ public class LogManager extends RepositoryManager {
     /** quote */
     public static final String QUOTE = "\"";
 
-
     /** the log directory property */
     public static final String PROP_LOGDIR = "ramadda.storage.logdir";
-
 
     /** _more_ */
     public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
@@ -106,8 +100,6 @@ public class LogManager extends RepositoryManager {
                                               + LOG_MACRO_USERAGENT + QUOTE
                                               + " " + LOG_MACRO_RESPONSE
                                               + " " + LOG_MACRO_SIZE;
-
-
 
     public static final String PROP_USELOG4J = "ramadda.logging.uselog4j";
     private boolean LOGGER_OK = true;
@@ -137,13 +129,11 @@ public class LogManager extends RepositoryManager {
     private int requestCount = 0;
     private SimpleDateFormat sdf;
 
-
     public LogManager(Repository repository) {
         super(repository);
         LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
         sdf = RepositoryUtil.makeDateFormat(DateHandler.DEFAULT_TIME_FORMAT);
     }
-
 
     @Override
     public void initAttributes() {
@@ -153,7 +143,6 @@ public class LogManager extends RepositoryManager {
 
     public void init() {}
 
-    
     public void initLogs() throws Exception {
         String testLog = getRepository().getProperty("ramadda.log.test",
                              (String) null);
@@ -163,8 +152,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-    
     public void writeTestLog(Request request) {
         if ((testLogWriter != null) && !request.isPost()
                 && !request.getIsRobot() && request.isAnonymous()) {
@@ -174,9 +161,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-
-    
     public void logRequest(Request request, int response) {
         int count = 0;
         requestCount++;
@@ -187,7 +171,6 @@ public class LogManager extends RepositoryManager {
             }
             log.add(new LogEntry(request));
         }
-
 
         String ip        = request.getIp();
         String uri       = request.getRequestPath();
@@ -228,8 +211,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-
     /**
      * Create if needed and return the logger
      *
@@ -239,47 +220,34 @@ public class LogManager extends RepositoryManager {
         return getLogger(REPOSITORY_LOG_ID);
     }
 
-
-    
     public MyLogger getAccessLogger() {
         return getLogger(REPOSITORY_ACCESS_LOG_ID);
     }
 
-    
     public MyLogger getEntryActivityLogger() {
         return getLogger(REPOSITORY_ACTIVITY_LOG_ID);
     }
 
-
-    
     public MyLogger getSpecialLogger() {
         return getLogger(REPOSITORY_SPECIAL_LOG_ID);
     }
 
-    
     public MyLogger getMonitorLogger() {
         return getLogger(REPOSITORY_MONITOR_LOG_ID);
     }        
 
-
-    
     public MyLogger getRegistryLogger() {
         return getLogger(REPOSITORY_REGISTRY_LOG_ID);
     }    
-    
 
-    
     public MyLogger getLicenseLogger() {
         return getLogger(REPOSITORY_LICENSE_LOG_ID);
     }    
-    
 
-    
     public MyLogger getLogger(LogId logId) {
         return getLogger(logId.getId());
     }
 
-    
     public MyLogger getLogger(String logId) {
         if (getRepository().getParentRepository() != null) {
             return getRepository().getParentRepository().getLogManager()
@@ -308,7 +276,6 @@ public class LogManager extends RepositoryManager {
 
         }
 
-
         try {
             //            logger = Logger.getLogger(logId.getId());
             long t1 = System.currentTimeMillis();
@@ -333,20 +300,14 @@ public class LogManager extends RepositoryManager {
         return logger;
     }
 
-
-    
     public boolean isLoggingEnabled() {
         return LOGGER_OK && (getRepository().getParentRepository() == null);
     }
 
-
-
-    
     public void debug(String message) {
         debug(getLogger(), message);
     }
 
-    
     public void debug(MyLogger logger, String message) {
         if (logger != null) {
             logger.debug(message);
@@ -355,54 +316,37 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-    
     public List<LogEntry> getLog() {
         synchronized (log) {
             return new ArrayList<LogEntry>(log);
         }
     }
 
-    
     public int getRequestCount() {
         return requestCount;
     }
 
-
-
-    
     public void log(Request request, String message) {
         logInfo("user:" + request.getUser() + " -- " + message);
     }
 
-
-    
     public void logInfoAndPrint(String message) {
         logInfo(message);
         System.err.println(message);
     }
 
-
-    
     public void logInfo(String message) {
         logInfo(getLogger(), message);
     }
 
-    
     public void logInfo(LogId logId, String message) {
         logInfo(getLogger(logId), message);
     }
 
-
-    
     public void logInfo(String logId, String message) {
         logInfo(getLogger(logId), message);
     }
 
-
-
-
-    
     public void logInfo(MyLogger logger, String message) {
         if (logger != null) {
             logger.info(message);
@@ -411,8 +355,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-    
     public void logActivity(Request request, Entry entry, String activity)
             throws Exception {
         MyLogger logger = getEntryActivityLogger();
@@ -431,7 +373,6 @@ public class LogManager extends RepositoryManager {
             System.err.println("no entry activity logger:" + message);
         }
     }
-
 
     public void logSpecial(String message) {
 	try {
@@ -457,7 +398,6 @@ public class LogManager extends RepositoryManager {
 	logError(getMonitorLogger(),message, thr.length>0?thr[0]:null);
     }
 
-
     public void logMonitor(String message) {
 	try {
 	    message= encode(message);
@@ -468,8 +408,6 @@ public class LogManager extends RepositoryManager {
 	    exc.printStackTrace();
 	}
     }
-
-
 
     public void logRegistry(String message,Throwable thr) {
 	logError(getRegistryLogger(),message,thr);
@@ -489,7 +427,7 @@ public class LogManager extends RepositoryManager {
 	    exc.printStackTrace();
 	}
     }
-    
+
     public void logLicense(String message) {
 	try {
 	    MyLogger logger = getLicenseLogger();
@@ -503,14 +441,11 @@ public class LogManager extends RepositoryManager {
 	    exc.printStackTrace();
 	}
     }
-    
 
-    
     public void logError(String message) {
         logError(getLogger(), message);
     }
 
-    
     public void logError(MyLogger logger, String message) {
         if (logger != null) {
             logger.error(message);
@@ -518,15 +453,12 @@ public class LogManager extends RepositoryManager {
         System.err.println("RAMADDA ERROR:" + message);
     }
 
-
-    
     public void logWarning(String message) {
         MyLogger logger = getLogger();
         logWarning(logger, message);
 
     }
 
-    
     public void logWarning(MyLogger logger, String message) {
         if (logger != null) {
             logger.warn(message);
@@ -535,17 +467,14 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-    
     public void logError(LogId logId, String message, Throwable exc) {
         logError(getLogger(logId), message, exc);
     }
 
-    
     public void logError(String message, Throwable exc) {
         logError(getLogger(), message, exc);
     }
 
-    
     public void logError(MyLogger log, String message, Throwable exc) {
         message = encode(message);
         Throwable thr = null;
@@ -603,9 +532,6 @@ public class LogManager extends RepositoryManager {
 
     }
 
-
-
-    
     private String encode(String s) {
         //If we do an entityEncode then the log can only be shown through the web
         s = s.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
@@ -615,29 +541,20 @@ public class LogManager extends RepositoryManager {
         return s;
     }
 
-
-    
     public class LogEntry {
 
-        
         User user;
 
-        
         Date date;
 
-        
         String path;
 
-        
         String ip;
 
-        
         String userAgent;
 
-        
         String url;
 
-        
         public LogEntry(Request request) {
             this.user = request.getUser();
             this.path = request.getRequestPath();
@@ -657,67 +574,51 @@ public class LogManager extends RepositoryManager {
             this.userAgent = request.getUserAgent();
         }
 
-
-        
         public void setIp(String value) {
             ip = value;
         }
 
-        
         public String getIp() {
             return ip;
         }
 
-        
         public String getUrl() {
             return url;
         }
 
-        
         public void setUserAgent(String value) {
             userAgent = value;
         }
 
-        
         public String getUserAgent() {
             return userAgent;
         }
 
-
-
-
-        
         public void setUser(User value) {
             user = value;
         }
 
-        
         public User getUser() {
             return user;
         }
 
-        
         public void setDate(Date value) {
             date = value;
         }
 
-        
         public Date getDate() {
             return date;
         }
 
-        
         public void setPath(String value) {
             path = value;
         }
 
-        
         public String getPath() {
             return path;
         }
     }
 
-    
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
         List<String> header   = new ArrayList();
@@ -773,7 +674,6 @@ public class LogManager extends RepositoryManager {
         }
 	*/
 
-
 	for (File logFile : logFiles) {
             String name  = logFile.getName();
             if (log.equals(name)) {
@@ -800,8 +700,6 @@ public class LogManager extends RepositoryManager {
 			     HU.attrs("style","margin-bottom:5px;","class","ramadda-button")));
 	    sb.append(HU.br());
 	}
-
-
 
         if (log.equals("access")) {
             getAccessLog(request, sb);
@@ -885,7 +783,6 @@ public class LogManager extends RepositoryManager {
 		return new Result("", csv,"text/csv");
 	    }
 	}
-
 
 	getPageHandler().sectionClose(request,sb);
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
@@ -977,7 +874,6 @@ public class LogManager extends RepositoryManager {
 	    "ip,client,entryid,name,action,date",
 	    "-match", "action", "view"};
 
-
 	long t1 = System.currentTimeMillis();
 	Seesv seesv = new Seesv(args,suffix);
 	seesv.setExternalAccess(false);
@@ -1039,7 +935,6 @@ public class LogManager extends RepositoryManager {
 				   HU.attrs("target","logsearch","title","View log file"));
 		}
 
-
 		key = HU.href(getEntryManager().getEntryUrl(request, id),key,HU.attrs("target","_entry"));
 		sb.append("<tr><td align=right width=10%>");
 		sb.append(HU.div(""+c,HU.style("margin-right:8px;")));
@@ -1061,9 +956,6 @@ public class LogManager extends RepositoryManager {
 
     }
 
-
-
-    
     public File getLogDir() {
         if (logDir != null) {
             return logDir;
@@ -1074,7 +966,6 @@ public class LogManager extends RepositoryManager {
             if (logDir != null) {
                 return logDir;
             }
-
 
             File tmpLogDir =
                 getStorageManager().getFileFromProperty(PROP_LOGDIR);
@@ -1128,10 +1019,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-
-
-
-
     private void getErrorLog(Request request, StringBuffer sb, File logFile)
             throws Exception {
 	if(logFile==null) {
@@ -1174,13 +1061,11 @@ public class LogManager extends RepositoryManager {
 
         sb.append(HU.formClose());
 
-
         try(InputStream fis1 = getStorageManager().getFileInputStream(logFile)) {
 	    InputStream fis = fis1;
 	    if (logFile.getName().toLowerCase().endsWith(".gz")) {
 		fis = new GZIPInputStream(fis1);
 	    }
-	    
 
             String log      = request.getString(ARG_LOG, "error");
             if (numBytes < 0) {
@@ -1215,8 +1100,6 @@ public class LogManager extends RepositoryManager {
 		if(showSummary) maxLines = 100000;
 		else maxLines = 10000;
 	    }
-
-
 
             sb.append(HtmlUtils.br());
             boolean      didOne       = false;
@@ -1265,7 +1148,6 @@ public class LogManager extends RepositoryManager {
 		    counts.put(key,count.intValue()+1);
 		    continue;
 		}
-
 
                 if (line.startsWith("</stack>") && (stackSB != null)) {
                     sb.append(
@@ -1333,11 +1215,8 @@ public class LogManager extends RepositoryManager {
 	    sb.append("</table>");
 	}
 
-
     }
 
-
-    
     private void getAccessLog(Request request, StringBuffer sb)
             throws Exception {
 
@@ -1396,59 +1275,45 @@ public class LogManager extends RepositoryManager {
 
     }
 
-    
     public static class LogId {
 
-        
         private String id;
 
-        
         public LogId(String id) {
             this.id = id;
         }
 
-        
         public String getId() {
             return id;
         }
 
-        
         @Override
         public int hashCode() {
             return id.hashCode();
         }
 
-        
         public boolean equals(Object that) {
             return id.equals(that);
         }
 
     }
 
-
-    
     private static class MyLogger {
 
-        
         Logger logger;
 
-        
         PrintWriter pw;
 
-        
         MyLogger(Logger logger) {
             this.logger = logger;
         }
 
-        
         MyLogger(PrintWriter pw) {
             this.pw = pw;
         }
 
-        
         MyLogger() {}
 
-        
         public void info(String message) {
             if (logger != null) {
                 logger.info(message);
@@ -1462,7 +1327,6 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        
         public void debug(String message) {
             if (logger != null) {
                 logger.debug(message);
@@ -1474,7 +1338,6 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        
         public void warn(String message) {
             if (logger != null) {
                 logger.warn(message);
@@ -1486,7 +1349,6 @@ public class LogManager extends RepositoryManager {
             }
         }
 
-        
         public void error(String message) {
             if (logger != null) {
                 logger.error(message);
@@ -1497,7 +1359,6 @@ public class LogManager extends RepositoryManager {
                 System.err.println(message);
             }
         }
-
 
     }
 

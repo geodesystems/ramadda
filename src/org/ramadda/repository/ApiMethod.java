@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.*;
 
 import ucar.unidata.util.Counter;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  */
@@ -31,7 +29,6 @@ public class ApiMethod {
 
     /** _more_ */
     public static final String TAG_PROPERTY = "property";
-
 
     /** _more_ */
     public static final String ATTR_REQUEST = "request";
@@ -60,7 +57,6 @@ public class ApiMethod {
     /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-
     /** _more_ */
     public static final String ATTR_ID = "id";
 
@@ -81,7 +77,6 @@ public class ApiMethod {
 
     /** _more_ */
     public static final String ATTR_REQUIRESAUTHTOKEN = "requires_auth_token";
-
 
     /** _more_ */
     public static final String ATTR_ISHOME = "ishome";
@@ -143,7 +138,6 @@ public class ApiMethod {
     /** _more_ */
     private Counter numberOfCalls = new Counter();
 
-
     /**
      * _more_
      *
@@ -184,7 +178,6 @@ public class ApiMethod {
         this.icon              = icon;
     }
 
-
     /**
      * _more_
      *
@@ -193,7 +186,6 @@ public class ApiMethod {
     public boolean isWildcard() {
         return request.endsWith("/*");
     }
-
 
     /**
      * _more_
@@ -213,7 +205,6 @@ public class ApiMethod {
                 return false;
             }
         }
-
 
         if (mustBeAdmin) {
             if (repository.isReadOnly()) {
@@ -237,7 +228,6 @@ public class ApiMethod {
 
         return true;
     }
-
 
     /**
      * _more_
@@ -280,7 +270,6 @@ public class ApiMethod {
         return (Result) getMethod().invoke(requestHandler,
                                            new Object[] { request });
     }
-
 
     /**
      * _more_
@@ -328,7 +317,6 @@ public class ApiMethod {
         return wildcardPath1;
     }
 
-
     /**
      * _more_
      *
@@ -341,8 +329,6 @@ public class ApiMethod {
 
         return wildcardPath2;
     }
-
-
 
     /**
      * _more_
@@ -374,10 +360,6 @@ public class ApiMethod {
     public Method getMethod() {
         return method;
     }
-
-
-
-
 
     /**
      * Set the Name property.
@@ -451,10 +433,6 @@ public class ApiMethod {
         return requiresAuthToken;
     }
 
-
-
-
-
     /**
      * Set the Actions property.
      *
@@ -472,7 +450,6 @@ public class ApiMethod {
     public List getActions() {
         return actions;
     }
-
 
     /**
      * Set the NeedsSsl property.
@@ -561,8 +538,5 @@ public class ApiMethod {
     public String getIcon() {
         return icon;
     }
-
-
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.auth.*;
@@ -21,16 +20,13 @@ import org.ramadda.util.ImageUtils;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.ui.AnimatedGifEncoder;
 
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -53,9 +49,7 @@ import java.io.*;
 
 import java.io.File;
 
-
 import java.net.*;
-
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -69,16 +63,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
 
-
 import javax.imageio.*;
 import javax.imageio.stream.ImageOutputStream;
-
 
 /**
  *
@@ -133,7 +123,6 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_TRANSPARENT =
         "image.edit.transparent";
 
-
     /** _more_ */
     public static final String ARG_IMAGE_CROPX1 = "image.edit.cropx1";
 
@@ -166,7 +155,6 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_X =
         "image.edit.rotate.right.x";
 
-
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_Y =
         "image.edit.rotate.right.y";
@@ -174,7 +162,6 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String CHANGE_RESIZE = "resize";
     public static final String CHANGE_GRAYSCALE = "grayscale";
     public static final String CHANGE_THUMBNAIL = "thumbnail";		
-
 
     /** _more_ */
     public static final OutputType OUTPUT_GALLERY = new OutputType("Gallery",
@@ -208,12 +195,10 @@ public class ImageOutputHandler extends OutputHandler {
         new OutputType("Make Animated Gif", "image.animatedgif",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-
     /** _more_ */
     public static final OutputType OUTPUT_B64 =
         new OutputType("Base64 Image", "image.b64", OutputType.TYPE_FILE, "",
                        ICON_IMAGES);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_VIDEO =
@@ -229,7 +214,6 @@ public class ImageOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_SLIDESHOW =
         new OutputType("Slideshow", "image.slideshow", OutputType.TYPE_VIEW,
                        "", ICON_IMAGES);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_EDIT = new OutputType("Edit Image",
@@ -248,16 +232,13 @@ public class ImageOutputHandler extends OutputHandler {
         new OutputType("Caption Image", "image.caption",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-
     /** _more_ */
     public static final OutputType OUTPUT_STREETVIEW =
         new OutputType("Caption Image", "streetview",
                        OutputType.TYPE_INTERNAL, "", ICON_IMAGES);
 
-
     /** _more_ */
     private String streetviewKey;
-
 
     /**
      * _more_
@@ -286,7 +267,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         addType(OUTPUT_STREETVIEW);
     }
-
 
     /**
      * _more_
@@ -336,7 +316,6 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
-
         List<Entry> entries = state.getAllEntries();
         if (entries.size() == 0) {
             return;
@@ -378,9 +357,6 @@ public class ImageOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
     /** _more_ */
     private Hashtable<String, Image> imageCache = new Hashtable<String,
                                                       Image>();
@@ -416,9 +392,6 @@ public class ImageOutputHandler extends OutputHandler {
         imageCache.put(entry.getId(), image);
     }
 
-
-
-
     /**
      * _more_
      *
@@ -446,7 +419,6 @@ public class ImageOutputHandler extends OutputHandler {
 
             return makeLabels(request, entry, entries);
         }
-
 
         if (outputType.equals(OUTPUT_STREETVIEW)) {
             return outputEntryStreetview(request, entry);
@@ -481,14 +453,12 @@ public class ImageOutputHandler extends OutputHandler {
             return processChange(request, entry);
         }
 
-
         //        if (true || output.equals(OUTPUT_GALLERY)) {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
 
         return makeResult(request, entry, entries);
         //  }
-
 
         //        return new Result("", new StringBuilder("NA"));
     }
@@ -502,8 +472,6 @@ public class ImageOutputHandler extends OutputHandler {
 
 	String theFile = entry.getResource().getPath();
 	Image image = ImageUtils.readImage(theFile);
-
-
 
 	if(request.exists(CHANGE_RESIZE)) {
 	    sb.append(messageNote("Image resized"));
@@ -664,11 +632,8 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
-
-
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
-
 
         int versions = 0;
         String extension =
@@ -697,7 +662,6 @@ public class ImageOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.leftRight(save, undo));
         }
 
-
         String url = getImageUrl(request, entry, true);
         sb.append(
             HtmlUtils.formPost(
@@ -724,7 +688,6 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(template);
         sb.append(HtmlUtils.formClose());
 
-
         getPageHandler().entrySectionClose(request, entry, sb);
         Result result = new Result("", sb);
         getEntryManager().addEntryHeader(request, entry, result);
@@ -732,9 +695,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
 
     }
-
-
-
 
     /**
      * _more_
@@ -767,7 +727,6 @@ public class ImageOutputHandler extends OutputHandler {
         return new Result("Image Caption", sb);
     }
 
-
     /**
      * _more_
      *
@@ -799,7 +758,6 @@ public class ImageOutputHandler extends OutputHandler {
         return new Result("", new StringBuffer("Streetview not enabled"));
     }
 
-
     /**
      * _more_
      *
@@ -813,7 +771,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         return streetviewKey.length() > 0;
     }
-
 
     /**
      * _more_
@@ -954,10 +911,6 @@ public class ImageOutputHandler extends OutputHandler {
         return super.getMimeType(output);
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -1017,7 +970,6 @@ public class ImageOutputHandler extends OutputHandler {
             return makeAnimatedGif(request, group, entries);
         }
 
-
         String playerVar    = "";
         int    col          = 0;
         String firstImage   = "";
@@ -1063,13 +1015,11 @@ public class ImageOutputHandler extends OutputHandler {
                 repository.getResource(
                     "/org/ramadda/repository/resources/web/slideshow.html");
 
-
             template = template.replace("${imagelist}", sb.toString());
             template = StringUtil.replace(template, "${root}",
                                           repository.getUrlBase());
             sb = new StringBuilder(template);
         }
-
 
         StringBuilder finalSB = new StringBuilder();
         showNext(request, entries, finalSB);
@@ -1105,7 +1055,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         return makeCollageForm(request, entry, entries, null);
     }
-
 
     /**
      * _more_
@@ -1264,9 +1213,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-
-
-
     /**
      * _more_
      *
@@ -1341,8 +1287,6 @@ public class ImageOutputHandler extends OutputHandler {
                 }
             }
         }
-
-	
 
         final int[]   done       = { 0 };
         final Image[] imageArray = new Image[selected.size()];
@@ -1424,7 +1368,6 @@ public class ImageOutputHandler extends OutputHandler {
                     "Unable to read the images from:<br>" + sb, false));
         }
 
-
         List<Image>  images = new ArrayList<Image>();
         List<String> labels = new ArrayList<String>();
         for (int i = 0; i < selected.size(); i++) {
@@ -1434,7 +1377,6 @@ public class ImageOutputHandler extends OutputHandler {
                 labels.add(child.getName());
             }
         }
-
 
         int scaledWidth = width / columns;
 
@@ -1459,7 +1401,6 @@ public class ImageOutputHandler extends OutputHandler {
                 labels.add((String) pair[1]);
             }
         }
-
 
         int[] rowMax     = new int[images.size() / columns + 1];
         int[] maxHeights = new int[columns];
@@ -1644,7 +1585,6 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("", new StringBuilder("No image files"));
         }
 
-
         OutputStream os         = null;
         FileWriter   fileWriter = null;
         for (int i = 0; i < entries.size(); i++) {
@@ -1683,8 +1623,6 @@ public class ImageOutputHandler extends OutputHandler {
             Graphics2D g1 = dummy.createGraphics();
             g1.setFont(labelFont);
             FontMetrics fm   = g1.getFontMetrics();
-
-
 
             Rectangle2D rect = fm.getStringBounds(label, g1);
             int         pad  = 5;
@@ -1739,7 +1677,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -1774,9 +1711,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
     }
 
-
-
-
     /**
      * _more_
      *
@@ -1797,7 +1731,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         return makeAnimatedGifForm(request, entry, entries, null);
     }
-
 
     /**
      * _more_
@@ -1938,7 +1871,6 @@ public class ImageOutputHandler extends OutputHandler {
             Misc.sleep(500);
         }
 
-
         boolean       anyBad = false;
         StringBuilder sb     = new StringBuilder();
         for (int i = 0; i < imageArray.length; i++) {
@@ -1987,8 +1919,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
 
     /**
      * _more_
@@ -2125,7 +2055,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -2180,7 +2109,6 @@ public class ImageOutputHandler extends OutputHandler {
                 }
             }
 
-
             if (url == null) {
                 continue;
             }
@@ -2191,7 +2119,7 @@ public class ImageOutputHandler extends OutputHandler {
             }
 	    String label = getEntryManager().getEntryDisplayName(entry);
 	    if(labelTemplate!=null) label = labelTemplate.replace("${name}",label);
-							    
+
 	    String entryUrl  =  HU.href(getEntryManager().getEntryURL(request, entry), label);
 	    if(dateFormat!=null) {
 		sdf = new SimpleDateFormat(dateFormat);
@@ -2217,11 +2145,8 @@ public class ImageOutputHandler extends OutputHandler {
         playerTemplate = playerTemplate.replace("${imagePlayerVar}", playerVar);
         playerTemplate = playerTemplate.replace("${imagePlayerId}", playerId);
 
-
         List<String> playerArgs = new ArrayList<String>();
 	Utils.add(playerArgs,"id",JsonUtil.quote(playerId));
-
-
 
         if (request.get("loopdelay", 0) > 0) {
             Utils.add(playerArgs,"delay", request.getString("loopdelay", "0"));
@@ -2267,11 +2192,10 @@ public class ImageOutputHandler extends OutputHandler {
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
                 JsonUtil.map(playerArgs));
 
-
         String width     = Utils.getProperty(props,"width",request.getString(ARG_WIDTH, ""));
 	String imageHtml = HU.div("",HU.attr("id",playerId+"animation") +
 				  HU.cssClass("imageplayer-image"));
-				  
+
         String tmp = playerTemplate.replace("${imagehtml}", imageHtml);
         tmp = StringUtil.replace(tmp, "${root}", repository.getUrlBase());
 	if(stringDefined(width))
@@ -2308,7 +2232,5 @@ public class ImageOutputHandler extends OutputHandler {
                                             : endPause
                                             * 1000), useGlobalPaletteValue);
     }
-
-
 
 }

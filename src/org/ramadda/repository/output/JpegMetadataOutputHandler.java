@@ -5,43 +5,33 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import com.drew.imaging.jpeg.*;
 import com.drew.lang.*;
-
-
 
 import com.drew.metadata.*;
 import com.drew.metadata.exif.*;
 
 import org.ramadda.repository.*;
 
-
 import org.ramadda.util.HtmlUtils;
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 
 import java.awt.Image;
 import java.awt.image.*;
 
-
 import java.io.*;
 
 import java.io.File;
-
 
 import java.net.*;
 
 import java.util.Iterator;
 import java.util.List;
-
-
 
 /**
  *
@@ -49,7 +39,6 @@ import java.util.List;
  * @author RAMADDA Development Team
  */
 public class JpegMetadataOutputHandler extends OutputHandler {
-
 
     /** _more_ */
     public static final OutputType OUTPUT_JPEG_METADATA =
@@ -69,7 +58,6 @@ public class JpegMetadataOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_JPEG_METADATA);
     }
-
 
     /**
      * _more_
@@ -94,7 +82,6 @@ public class JpegMetadataOutputHandler extends OutputHandler {
                                OUTPUT_JPEG_METADATA));
         }
     }
-
 
     /**
      * _more_

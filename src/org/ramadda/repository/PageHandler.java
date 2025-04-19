@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.SessionManager;
@@ -34,13 +33,11 @@ import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.GeoUtils;
 
-
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -60,7 +57,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
-
 
 /**
  * The main class.
@@ -174,9 +170,6 @@ public class PageHandler extends RepositoryManager {
                                    HtmlUtils.cssClass("ramadda-popup-link"));
     }
 
-
-
-    
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -216,8 +209,6 @@ public class PageHandler extends RepositoryManager {
         initWebResources();
     }
 
-
-    
     public List<String[]> readWebResources(String resource) throws Exception {
         List<String[]> result = new ArrayList<String[]>();
         List<String> files =
@@ -285,7 +276,6 @@ public class PageHandler extends RepositoryManager {
         return result;
     }
 
-    
     public void addDisplayImports(Request request, Appendable sb)
 	throws Exception {
 	addDisplayImports(request, sb, true);
@@ -302,10 +292,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-
-
-    
     public String makeDisplayImports() {
         try {
             Appendable sb = Utils.makeAppendable();
@@ -372,10 +358,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-
-
-    
     public void addJSImports(Appendable sb, String resourcePath)
             throws Exception {
         for (String[] file : readWebResources(resourcePath)) {
@@ -385,7 +367,7 @@ public class PageHandler extends RepositoryManager {
             sb.append("\n");
         }
     }
-    
+
     private void initWebResources() {
         try {
 
@@ -411,9 +393,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public String getHeaderIcon() {
         if (headerIcon == null) {
             headerIcon = getIconUrl(ICON_HEADER);
@@ -422,14 +401,11 @@ public class PageHandler extends RepositoryManager {
         return headerIcon;
     }
 
-    
     public String getEntryTooltip(Entry entry) {
         return noMsg(entry.getName()) + HU.NL + " - "
 	    + msg(entry.getTypeHandler().getLabel());
     }
 
-
-    
     public void decorateResult(Request request, Result result)
             throws Exception {
         String html = decorateResult(request, result, true, true);
@@ -438,8 +414,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-    
     public String decorateResult(Request request, Result result,
                                  boolean prefix, boolean suffix)
             throws Exception {
@@ -454,7 +428,7 @@ public class PageHandler extends RepositoryManager {
     private String wrapPageLink(String s) {
         return  "<span class=ramadda-page-link>" + s + "</span>";
     }
-    
+
     public boolean decorateResult(Request request, Result result,
                                   Appendable sb, boolean prefix,
                                   boolean suffix)
@@ -481,7 +455,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-
         HtmlTemplate htmlTemplate = parentTemplate;
 
         if ( !fullTemplate) {
@@ -491,8 +464,6 @@ public class PageHandler extends RepositoryManager {
                 htmlTemplate = htmlTemplate.getSuffix();
             }
         }
-
-
 
         String template = htmlTemplate.getTemplate();
 
@@ -519,7 +490,6 @@ public class PageHandler extends RepositoryManager {
 	    }
 	}
 
-
 	String headFinal = "";
 	if(prefix) {
 	    String  headContent = request.getHeadContent();
@@ -531,8 +501,6 @@ public class PageHandler extends RepositoryManager {
 	if(googleTagContent!=null) {
 	    headFinal+=googleTagContent;
 	}
-
-
 
         Appendable contents      = new StringBuilder();
 
@@ -547,8 +515,6 @@ public class PageHandler extends RepositoryManager {
         if ((extraMessage != null) && hasContents) {
             contents.append(extraMessage);
         }
-
-
 
         String jsContent = getTemplateJavascriptContent();
         String bottom    = null;
@@ -565,7 +531,6 @@ public class PageHandler extends RepositoryManager {
         String        content = (contents != null)
                                 ? contents.toString()
                                 : null;
-
 
         StringBuilder head    = new StringBuilder();
         if (request.getHead0() != null) {
@@ -601,10 +566,6 @@ public class PageHandler extends RepositoryManager {
 
         }
 
-
-
-
-
         String imports   = head.toString();
         String logoImage = getLogoImage(result);
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
@@ -620,7 +581,6 @@ public class PageHandler extends RepositoryManager {
         }
         logoUrl = applyBaseMacros(logoUrl);
 
-
         String pageTitle = (String) result.getProperty(PROP_REPOSITORY_NAME);
         if (pageTitle == null) {
             pageTitle = repository.getRepositoryName();
@@ -629,7 +589,6 @@ public class PageHandler extends RepositoryManager {
         if (pageTitle.equals("none")) {
             pageTitle = "";
         }
-
 
         for (PageDecorator pageDecorator :
                 repository.getPluginManager().getPageDecorators()) {
@@ -666,7 +625,6 @@ public class PageHandler extends RepositoryManager {
 
 	List<String> pageLinks = new ArrayList<String>();
 
-
         if (showSearch) {
 	    pageLinks.add(wrapPageLink(
 				       HU.mouseClickHref("Utils.searchPopup('searchlink','popupanchor');", searchImg, "")+
@@ -676,10 +634,6 @@ public class PageHandler extends RepositoryManager {
 	pageLinks.add(HU.span("",HU.attrs("style","display:block;","id","ramadda_links_prefix")));
         StringBuilder theFooter = new StringBuilder(footer);
 	if(extraFooter!=null) theFooter.append(extraFooter);
-
-
-	
-
 
         if (suffix && thisEntry != null) {
 	    String footerScript = "ramaddaThisEntry='" + thisEntry.getId() + "';\n";
@@ -711,7 +665,6 @@ public class PageHandler extends RepositoryManager {
 		HU.div(theFooter,headerSB.toString(),HU.clazz("ramadda-header-floating"));
 	    }
 
-
 	}
 
 	if(suffix || fullTemplate) {
@@ -721,13 +674,12 @@ public class PageHandler extends RepositoryManager {
 		if(messages==null) messages=new ArrayList();
 		messages.add(0,tmpMessage.toString());
 	    }
-	    
+
 	    if(messages!=null && messages.size()>0) {
 		getSessionManager().clearSessionMessages(request);
 		HU.div(theFooter,Utils.join(messages,"<br>"),HU.clazz("ramadda-header-floating ramadda-session-error"));
 	    }
 	}
-
 
 	if(showLogin) {
 	    List<Link> links = new ArrayList<Link>();
@@ -741,7 +693,6 @@ public class PageHandler extends RepositoryManager {
 	    }
 	}
 
-
 	pageLinks.add(wrapPageLink(HU.makePopup(null, popupImage, menuHtml,
 				   arg("my", "right top"),
 				   arg("at", "left bottom"),
@@ -750,7 +701,6 @@ public class PageHandler extends RepositoryManager {
 	    pageLinks.add(wrapPageLink(extra.toString()));
 	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
         menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
-
 
         String[] macros = new String[] {
 	    MACRO_PAGEHEADER,pageHeader,
@@ -785,7 +735,6 @@ public class PageHandler extends RepositoryManager {
                        getRepository().getProperty(property, ""));
         }
 
-
         //Toks are [html,macro,html,macro,...,html]
         List<String> templateToks;
         if (htmlTemplate.getWikify()) {
@@ -815,8 +764,6 @@ public class PageHandler extends RepositoryManager {
         return true;
     }
 
-
-    
     public String getLogoImage(Result result) {
         String logoImage = null;
         if (result != null) {
@@ -832,12 +779,6 @@ public class PageHandler extends RepositoryManager {
         return logoImage;
     }
 
-
-
-    
-
-
-    
     public String getTemplateJavascriptContent() {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
@@ -863,10 +804,6 @@ public class PageHandler extends RepositoryManager {
         return templateJavascriptContent;
     }
 
-
-
-
-    
     public String processTemplate(String template, boolean ignoreErrors) {
         List<Utils.Macro>  toks   = Utils.splitMacros(template);
         StringBuilder result = new StringBuilder();
@@ -897,11 +834,6 @@ public class PageHandler extends RepositoryManager {
         return result.toString();
     }
 
-
-
-
-
-    
     private static String replaceMsgNew(String s, Properties map) {
         StringBuilder stripped     = new StringBuilder();
         int           prefixLength = MSG_PREFIX.length();
@@ -971,9 +903,6 @@ public class PageHandler extends RepositoryManager {
         return stripped.toString();
     }
 
-
-
-    
     private Object[] parsePhrases(String file, String content) {
         List<String> lines   = Utils.split(content, "\n", true, true);
         StringBuilder   phrases = new StringBuilder();
@@ -1018,8 +947,6 @@ public class PageHandler extends RepositoryManager {
         return new Object[] { type, name, phrases };
     }
 
-
-    
     public List<TwoFacedObject> getLanguages() {
         return languages;
     }
@@ -1029,7 +956,7 @@ public class PageHandler extends RepositoryManager {
 	    List<String> l =new ArrayList<String>();
 	    l.add(JsonUtil.map("id",JsonUtil.quote("en"),
 			       "label",JsonUtil.quote("English")));
-		
+
 	    for(TwoFacedObject tfo: getLanguages()) {
 		l.add(JsonUtil.map("id",JsonUtil.quote(tfo.getId()),
 				   "label",JsonUtil.quote(tfo.getLabel())));
@@ -1039,19 +966,15 @@ public class PageHandler extends RepositoryManager {
 	return languagesJson;
     }
 
-    
     public HtmlTemplate getMobileTemplate() {
         return getTemplateMap().get(ID_TEMPLATE_MOBILE);
     }
 
-
-    
     public String makeHtdocsUrl(String url) {
         return getRepository().getUrlBase() + "/"
                + RepositoryUtil.getHtdocsVersion() + url;
     }
 
-    
     private String concatFiles(List<String> files) throws Exception {
         StringBuilder sb     = new StringBuilder();
         String        prefix = "/org/ramadda/repository/htdocs";
@@ -1071,8 +994,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-
     private Hashtable<String, HtmlTemplate> getTemplateMap() {
 	try {
 	    return  checkTemplates();
@@ -1081,7 +1002,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    
     public List<HtmlTemplate> getTemplates() {
         try {
 	    if(debugTemplates)
@@ -1105,7 +1025,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    
     private synchronized Hashtable<String, HtmlTemplate> checkTemplates()
             throws Exception {
 	Hashtable<String,HtmlTemplate> tmp_templateMap  = templateMap;
@@ -1148,8 +1067,6 @@ public class PageHandler extends RepositoryManager {
 	    templatePaths.add(path);
 	}
 
-
-
 	for (String path : templatePaths) {
 	    try {
 		//Skip resources called template.html that might be for other things
@@ -1184,7 +1101,6 @@ public class PageHandler extends RepositoryManager {
 											 + "${content}".length())));
 		}
 
-
 		template.setTemplate(applyBaseMacros(template.getTemplate()));
 		if (template.getPrefix() != null) {
 		    template.getPrefix().setTemplate(
@@ -1196,7 +1112,6 @@ public class PageHandler extends RepositoryManager {
 						     applyBaseMacros(
 								     template.getSuffix().getTemplate()));
 		}
-
 
 		//Check if we got some other ...template.html file from a plugin
 		if (template.getId() == null) {
@@ -1275,8 +1190,6 @@ public class PageHandler extends RepositoryManager {
 	return tmp_templateMap;
     }
 
-
-    
     public String processTemplate(String html) throws Exception {
         StringBuilder template = new StringBuilder();
         while (true) {
@@ -1312,11 +1225,6 @@ public class PageHandler extends RepositoryManager {
         return html;
     }
 
-
-
-
-
-    
     protected void loadLanguagePacks() throws Exception {
 	languageMap = new Hashtable<String,StringBuilder>();
 	HashSet<String> seenPack = new HashSet<String>();
@@ -1375,14 +1283,10 @@ public class PageHandler extends RepositoryManager {
 	return 	languageMap.get(lang);
     }
 
-    
-
-    
     public List<MapRegion> getMapRegions() {
         return getMapRegions(null);
     }
 
-    
     public List<MapRegion> getMapRegions(String group) {
         if (group == null) {
             return mapRegions;
@@ -1397,15 +1301,12 @@ public class PageHandler extends RepositoryManager {
         return regions;
     }
 
-    
     public String getMapRegionSelector(Request request, String inputArgBase) {
         StringBuilder sb = new StringBuilder();
 
         return sb.toString();
     }
 
-
-    
     protected void loadMapRegions() throws Exception {
         List<String> mapRegionFiles = new ArrayList<String>();
         List<String> allFiles       = getPluginManager().getAllFiles();
@@ -1446,7 +1347,6 @@ public class PageHandler extends RepositoryManager {
                             + line + "\nFile:" + path);
                 }
 
-
                 String name = toks.get(0);
                 if (seen.contains(name)) {
                     continue;
@@ -1468,16 +1368,11 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public String getTemplateProperty(Request request, String name,
                                       String dflt) {
         return getTemplate(request).getTemplateProperty(name, dflt);
     }
 
-
-    
     public List<TwoFacedObject> getTemplateSelectList() {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("-default-", ""));
@@ -1498,9 +1393,6 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-
-
-    
     public HtmlTemplate getTemplate(Request request) {
         Entry currentEntry = null;
         if (request != null) {
@@ -1513,7 +1405,6 @@ public class PageHandler extends RepositoryManager {
 
         return getTemplate(request, currentEntry);
     }
-
 
     /**
      * Find the html template for the given request
@@ -1621,8 +1512,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-
-
 	HtmlTemplate template = templateMap.get(ID_TEMPLATE_DEFAULT);
 	if(template==null) {
 	    //	    System.err.println("\tgetTemplate: using default:" + templateMap);
@@ -1631,16 +1520,11 @@ public class PageHandler extends RepositoryManager {
 	return template;
     }
 
-
-
-
     public static String noMsg(String msg) {
 	String s =  HU.span(msg,HU.clazz("ramadda-notranslate"));
 	return s;
     }
 
-
-    
     public static String msg(String msg) {
         //for now no translation
         if (true) {
@@ -1660,7 +1544,6 @@ public class PageHandler extends RepositoryManager {
         return Utils.concatString(MSG_PREFIX, msg, MSG_SUFFIX);
     }
 
-    
     public static String msgLabel(String msg) {
         if (msg == null) {
             return null;
@@ -1672,7 +1555,6 @@ public class PageHandler extends RepositoryManager {
         return Utils.concatString(msg(msg), ":", HU.SPACE);
     }
 
-    
     public static String msgHeader(String h) {
         return HU.div(
             msg(h),
@@ -1680,9 +1562,6 @@ public class PageHandler extends RepositoryManager {
                 "ramadda-page-heading-bg" /*CSS_CLASS_HEADING_1*/));
     }
 
-
-
-    
     public static String makeOkCancelForm(Request request, RequestUrl url,
                                           String okArg, String extra) {
         StringBuilder fb = new StringBuilder();
@@ -1696,9 +1575,6 @@ public class PageHandler extends RepositoryManager {
 
         return fb.toString();
     }
-
-
-
 
     private void getUserLoginLinks(Request request, List<Link> _links, StringBuilder prefix,boolean makePopup)  throws Exception  {
 	User user = request.getUser();
@@ -1770,14 +1646,13 @@ public class PageHandler extends RepositoryManager {
                                       boolean makePopup) throws Exception {
         User user   = request.getUser();
 	List<Link> _links = new ArrayList<Link>();
-	
+
         List urls   = new ArrayList();
         List labels = new ArrayList();
         List tips   = new ArrayList();
 	if(!showLogin) {
 	    getUserLoginLinks(request,_links,prefix,makePopup);
 	}
-	
 
         if (showHelp
                 && (getRepository().getPluginManager().getDocUrls().size()
@@ -1813,7 +1688,6 @@ public class PageHandler extends RepositoryManager {
             links.add(link);
         }
 
-
         return links;
     }
 
@@ -1844,7 +1718,6 @@ public class PageHandler extends RepositoryManager {
                 label = getIconImage(icon) + " " + label;
             }
 
-
             html = html.replace("${tooltip}", apiMethod.getName());
             html = html.replace("${url}", url);
             html = html.replace("${label}", label);
@@ -1855,8 +1728,6 @@ public class PageHandler extends RepositoryManager {
         return links;
     }
 
-
-    
     public void makeLinksHeader(Request request, Appendable sb,
                                 List<RequestUrl> urls, String arg)
             throws Exception {
@@ -1890,48 +1761,36 @@ public class PageHandler extends RepositoryManager {
                          header.toString()));
     }
 
-
-
-    
     public String showDialogNote(String h, String... extra) {
         return getDialog(h, extra, ICON_DIALOG_INFO, false);
     }
 
-    
     public String showDialogBlank(String h, String... extra) {
         return getDialog(h, extra, null, false);
     }
 
-    
     public String showAccessRestricted(Entry entry) {
         return showDialogWarning("Access to " + entry.getName()
                                  + " is restricted");
     }
 
-    
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
     }
 
-
-    
     public String showDialogWarning(String h, String... extra) {
         return getDialog(h, extra, Constants.ICON_DIALOG_WARNING, false);
     }
 
-
-    
     public String showDialogQuestion(String h, String buttons) {
         return getDialog(h, new String[] { buttons },
                          Constants.ICON_DIALOG_QUESTION, false);
     }
 
-    
     public String showDialogError(String h, String... extra) {
         return showDialogError(h, true, extra);
     }
 
-    
     public String showDialogError(String h, boolean cleanString,
                                   String... extra) {
         if (h == null) {
@@ -1944,8 +1803,6 @@ public class PageHandler extends RepositoryManager {
         return getDialog(h, extra, Constants.ICON_DIALOG_ERROR, false);
     }
 
-
-    
     public static String getDialogString(String s) {
 	//Remove url args
 	s = s.replaceAll("\\?[^ \"]+","---");
@@ -1965,8 +1822,6 @@ public class PageHandler extends RepositoryManager {
         return s;
     }
 
-
-    
     public String getDialog(String msg, String[] extra, String icon,
                             boolean showClose) {
         msg = msg.replaceAll("\n", "<br>").replaceAll("&#10;", "<br>");
@@ -1978,7 +1833,6 @@ public class PageHandler extends RepositoryManager {
             }
             msg += HU.div(tmp,HU.cssClass("ramadda-message-extra"));
         }
-
 
         String html = showClose
                       ? HU.jsLink(HU.onMouseClick("hide('messageblock')"),
@@ -2024,9 +1878,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-
-    
     public String getMessage(String h, String icon, boolean showClose) {
         h = h.replaceAll("\n", "<br>");
         h = h.replaceAll("&#10;", "<br>");
@@ -2059,8 +1910,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-    
     public PageStyle doMakePageStyle(Request request, Entry entry) {
         try {
             PageStyle pageStyle = new PageStyle();
@@ -2151,32 +2000,22 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-    
     public String getConfirmBreadCrumbs(Request request, Entry entry)
             throws Exception {
-	
+
         return getEntryIconImage(request,entry)+ " "  + getBreadCrumbs(request, entry);
     }
 
-
-
-
-    
     public String getBreadCrumbs(Request request, Entry entry)
             throws Exception {
         return getBreadCrumbs(request, entry, null, null, 80,-1);
     }
 
-
-    
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt)
             throws Exception {
         return getBreadCrumbs(request, entry, stopAt, null, 80,-1);
     }
 
-
-    
     public String getBreadCrumbs(Request request, Entry entry, Entry stopAt,
                                  RequestUrl requestUrl, int lengthLimit,int maxCount)
             throws Exception {
@@ -2218,8 +2057,6 @@ public class PageHandler extends RepositoryManager {
                               ? HU.attr(HU.ATTR_TARGET, target)
                               : "");
 
-
-
         for (Entry ancestor : parents) {
 
             if (length > lengthLimit) {
@@ -2233,7 +2070,6 @@ public class PageHandler extends RepositoryManager {
             }
             length += name.length();
 
-
             if (target != null) {
                 String url = getEntryManager().getEntryUrl(request, ancestor);
                 breadcrumbs.add(0, HU.href(url,
@@ -2246,7 +2082,6 @@ public class PageHandler extends RepositoryManager {
             }
         }
         String lastLink = null;
-
 
         if (target != null) {
             lastLink = HU.href(getEntryManager().getEntryUrl(request, entry),
@@ -2270,9 +2105,6 @@ public class PageHandler extends RepositoryManager {
         return StringUtil.join(BREADCRUMB_SEPARATOR_PAD, breadcrumbs);
     }
 
-
-
-    
     public String getEntryHeader(Request request, Entry entry,
                                  Appendable title,Appendable entryMenu)
             throws Exception {
@@ -2288,7 +2120,6 @@ public class PageHandler extends RepositoryManager {
         OutputType   output       = OutputHandler.OUTPUT_HTML;
         int          length       = 0;
 
-
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
         String headerLabel =
             HU.href(getEntryManager().getEntryUrl(request, entry),
@@ -2296,14 +2127,10 @@ public class PageHandler extends RepositoryManager {
 		    + " "
                     + getEntryDisplayName(entry));
 
-
         String printLink =
             HU.href(HU.url(getEntryManager().getEntryUrl(request, entry),ARG_TEMPLATE,"empty"),
 		    HU.img("fas fa-print"),
 		    HU.attrs("title","Display with no template"));
-
-	
-
 
         String        menuId = HU.getUniqueId("menulink");
         String menuLinkImg =      HU.img("fas fa-caret-down");
@@ -2380,10 +2207,8 @@ public class PageHandler extends RepositoryManager {
 
         return header;
 
-
     }
 
-    
     public String getEntryToolbar(Request request, Entry entry)
             throws Exception {
         List<Link>    links  = getEntryManager().getEntryLinks(request,
@@ -2412,12 +2237,8 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-
-    
     public String getEntryMenubar(Request request, Entry entry)
             throws Exception {
-
 
         List<Link> links = getEntryManager().getEntryLinks(request, entry);
 
@@ -2436,7 +2257,6 @@ public class PageHandler extends RepositoryManager {
         List<String> menuItems    = new ArrayList<String>();
         String sep = HU.div("", HU.cssClass(CSS_CLASS_MENUBUTTON_SEPARATOR));
 
-
         NamedValue linkAttr = arg("linkAttributes",
                                   HU.cssClass(CSS_CLASS_MENUBUTTON));
         for (Link link : links) {
@@ -2452,8 +2272,6 @@ public class PageHandler extends RepositoryManager {
                 break;
             }
         }
-
-
 
         PageStyle pageStyle = request.getPageStyle(entry);
 
@@ -2521,8 +2339,6 @@ public class PageHandler extends RepositoryManager {
         return leftTable;
     }
 
-
-    
     public List<String> makeBreadcrumbList(Request request,
                                            List<Entry> parents,
                                            List<String> titleList)
@@ -2542,7 +2358,6 @@ public class PageHandler extends RepositoryManager {
                 titleList.add(0, name);
             }
 
-
             String url  = getEntryManager().getEntryUrl(request, ancestor);
             String link = HU.href(url, linkLabel);
             breadcrumbs.add(0, link);
@@ -2552,9 +2367,6 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-
-
-    
     public void makeBreadcrumbs(Request request, List<String> breadcrumbs,
                                 Appendable sb)
             throws Exception {
@@ -2575,14 +2387,11 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-
-    
     public void loadResources() throws Exception {
         loadLanguagePacks();
         loadMapRegions();
     }
 
-    
     private String getIconUrlInner(Request request, Entry entry)
             throws Exception {
 
@@ -2596,13 +2405,9 @@ public class PageHandler extends RepositoryManager {
             return getIconUrl(request.getString(ARG_ICON, ""));
         }
 
-
         return entry.getTypeHandler().getEntryIconUrl(request, entry);
     }
 
-
-
-    
     public String getIconUrl(Request request, Entry entry) throws Exception {
         String iconPath = getIconUrlInner(request, entry);
 
@@ -2617,7 +2422,6 @@ public class PageHandler extends RepositoryManager {
     public String getEntryIconImage(Request request, Entry entry) throws Exception {
 	return HU.img(getIconUrl(request, entry),"",HU.attr("width",ICON_WIDTH));
     }
-
 
     /**
      * Function to get share button, ratings and also Numbers of Comments and comments icon getComments(request, entry);
@@ -2640,8 +2444,6 @@ public class PageHandler extends RepositoryManager {
         String entryUrl =
             HU.url(request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
                    ARG_ENTRYID, entry.getId());
-
-
 
         //Table to enclose this toolbar
         sb.append("<table width=\"100%\"><tr><td>");
@@ -2678,7 +2480,6 @@ public class PageHandler extends RepositoryManager {
             + title
             + "')\"><img src=\"http://s7.addthis.com/static/btn/lg-share-en.gif\" width=\"125\" height=\"16\" alt=\"Bookmark and Share\" style=\"border:0\"/></a><script type=\"text/javascript\" src=\"http://s7.addthis.com/js/200/addthis_widget.js\"></script>";
 
-
         sb.append(share);
         */
 
@@ -2687,10 +2488,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-
-
-    
     public String getCommentHtml(Request request, Entry entry)
             throws Exception {
         boolean       canEdit = getAccessManager().canDoEdit(request, entry);
@@ -2707,7 +2504,6 @@ public class PageHandler extends RepositoryManager {
                         getRepository().URL_COMMENTS_ADD,
                         entry), "Add Comment"));
         }
-
 
         if (comments.size() == 0) {
             sb.append("<br>");
@@ -2732,7 +2528,6 @@ public class PageHandler extends RepositoryManager {
                 //                sb.append(HU.formEntry(BLANK, deleteLink));
             }
             //            sb.append(HU.formEntry("Subject:", comment.getSubject()));
-
 
             String theClass = HU.cssClass("listrow" + rowNum);
             theClass = HU.cssClass(CSS_CLASS_COMMENT_BLOCK);
@@ -2768,9 +2563,6 @@ public class PageHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-
-    
     @Override
     public void clearCache() {
         super.clearCache();
@@ -2780,8 +2572,6 @@ public class PageHandler extends RepositoryManager {
         typeToWikiTemplate        = new Hashtable<String, String>();
     }
 
-
-    
     public String getWikiTemplate(Request request, Entry entry,
                                   String templateType)
             throws Exception {
@@ -2815,8 +2605,6 @@ public class PageHandler extends RepositoryManager {
         return wiki;
     }
 
-
-    
     public void doTableLayout(Request request, Appendable sb,
                               CategoryBuffer cb) {
 
@@ -2855,14 +2643,10 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-
-    
     public String getCreatedDisplayMode() {
         return createdDisplayMode;
     }
 
-
-    
     public boolean showEntryTableCreateDate() {
         return showCreateDate;
     }
@@ -2882,9 +2666,6 @@ public class PageHandler extends RepositoryManager {
         return mapLayers;
     }
 
-
-
-    
     public void addToMap(Request request, MapInfo mapInfo) {
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
@@ -2926,8 +2707,6 @@ public class PageHandler extends RepositoryManager {
                                           arg("sticky", true)));
     }
 
-
-    
     public String makeFileTypeSelector(Request request,
                                        TypeHandler typeHandler,
                                        boolean includeNonFiles)
@@ -2963,14 +2742,12 @@ public class PageHandler extends RepositoryManager {
 	entrySectionClose(request, entry, sb);
     }
 
-    
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title)
             throws Exception {
         entrySectionOpen(request, entry, sb, title, false);
     }
 
-    
     public StringBuilder makeEntryPage(Request request, Entry entry,
                                        String title, String s)
             throws Exception {
@@ -2990,8 +2767,6 @@ public class PageHandler extends RepositoryManager {
         return sb;
     }
 
-
-    
     public Result makeEntryHeaderResult(Request request, Entry entry,
                                         String title, String text)
             throws Exception {
@@ -3003,7 +2778,6 @@ public class PageHandler extends RepositoryManager {
         return new Result("", sb);
     }
 
-    
     public void sectionOpen(Request request, Appendable sb, String title,
                             boolean showLine) {
 
@@ -3017,7 +2791,6 @@ public class PageHandler extends RepositoryManager {
 	}
     }
 
-    
     public void sectionClose(Request request, Appendable sb)  {
 	try {
 	    sb.append(HU.sectionClose());
@@ -3027,14 +2800,11 @@ public class PageHandler extends RepositoryManager {
 
     }
 
-
-    
     public void entrySectionOpen(Request request, Entry entry, Appendable sb,
                                  String title, boolean force)
             throws Exception {
         entrySectionOpen(request, entry, null, sb, title, force);
     }
-
 
     public void entrySectionOpen(Request request, Entry entry,
                                  String entryLabel, Appendable sb,
@@ -3065,7 +2835,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    
     public void entrySectionClose(Request request, Entry entry, Appendable sb)
             throws Exception {
 	entrySectionClose(request, entry, sb, false);
@@ -3079,8 +2848,6 @@ public class PageHandler extends RepositoryManager {
         sb.append(HU.sectionClose());
     }
 
-
-    
     public void addGoogleJSImport(Request request, Appendable sb)
             throws Exception {
         if (request.getExtraProperty("googlejsapi") == null) {
@@ -3091,7 +2858,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-        
     private String getAckMessage() {
         if (ackMessage == null) {
             ackMessage = applyBaseMacros(ACK_MESSAGE);
@@ -3100,8 +2866,6 @@ public class PageHandler extends RepositoryManager {
         return ackMessage;
     }
 
-
-    
     public String applyBaseMacros(String s) {
         String dotmini = getRepository().getMinifiedOk()
                          ? ".min"
@@ -3120,7 +2884,6 @@ public class PageHandler extends RepositoryManager {
             libpath = getRepository().getUrlBase() + "/"
                       + RepositoryUtil.getHtdocsVersion();
         }
-
 
         String root       = getRepository().getUrlBase();
         String htdocsBase = makeHtdocsUrl("");
@@ -3149,7 +2912,6 @@ public class PageHandler extends RepositoryManager {
 	    HU.script("Utils.initCopyable('#"+id+"');");
     }
 
-    
     public String getCdnPath(String path) {
 	return getCdnPath(path,path);
     }
@@ -3168,7 +2930,7 @@ public class PageHandler extends RepositoryManager {
 	getCdn();
 	return CDNROOT;
     }
-    
+
     private String getCdn() {
         if (CDNHTDOCS == null) {
             CDNROOT = "https://cdn.jsdelivr.net/gh/geodesystems/ramadda@"  + RepositoryUtil.getVersion();
@@ -3180,8 +2942,6 @@ public class PageHandler extends RepositoryManager {
         return CDNHTDOCS;
     }
 
-
-    
     public void addEntrySelect(Request request, Entry entry, String selectId,
                                Appendable sb, String label, String extra)
             throws Exception {
@@ -3198,8 +2958,6 @@ public class PageHandler extends RepositoryManager {
 						       : "")) + HU.space(2) + baseSelect + extra));
     }
 
-
-    
     public String getEntryHref(Request request, Entry entry, String... args)
             throws Exception {
 	String url = getEntryManager().getEntryUrl(request, entry);

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.admin.Admin;
 import org.ramadda.repository.auth.SessionManager;
 import org.ramadda.repository.auth.User;
@@ -14,9 +13,7 @@ import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.util.HtmlUtils;
 
-
 import org.ramadda.util.MyTrace;
-
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
@@ -26,7 +23,6 @@ import ucar.unidata.util.IOUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -44,13 +40,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.TimeZone;
 
-
-
-
 /**
  */
 public class LocalRepositoryManager extends RepositoryManager {
-
 
     /** _more_ */
     public static final String PROP_MASTER_ENABLED = "ramadda.master.enabled";
@@ -76,7 +68,6 @@ public class LocalRepositoryManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_LOCAL_CHANGE = "local.change";
 
-
     /** _more_ */
     public static final String STATUS_ACTIVE = "active";
 
@@ -95,7 +86,6 @@ public class LocalRepositoryManager extends RepositoryManager {
     /** _more_ */
     public static final String ARG_LOCAL_START = "local_start";
 
-
     /*
      * Holds the currently running repositories
      */
@@ -106,7 +96,6 @@ public class LocalRepositoryManager extends RepositoryManager {
 
     /** _more_ */
     private List<String> childrenIds = new ArrayList<String>();
-
 
     /**
      * _more_
@@ -134,8 +123,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         }
         children = null;
     }
-
-
 
     /**
      * _more_
@@ -194,7 +181,6 @@ public class LocalRepositoryManager extends RepositoryManager {
 						  Tables.LOCALREPOSITORIES.COL_ID,otherServer);
     }
 
-
     /**
      * _more_
      *
@@ -228,7 +214,6 @@ public class LocalRepositoryManager extends RepositoryManager {
             return;
         }
 
-
         String     name       = request.getString(ARG_LOCAL_NAME, "");
         String     contact = request.getString(ARG_LOCAL_CONTACT, "").trim();
         Properties properties = new Properties();
@@ -251,7 +236,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         childRepository.writeGlobal(
             PROP_ADMIN_EMAIL,
             getRepository().getProperty(PROP_ADMIN_EMAIL, ""));
-
 
         StringBuffer msg            = new StringBuffer();
         String       childUrlPrefix = getChildUrlBase(repositoryId);
@@ -282,7 +266,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         if (msg.length() > 0) {
             sb.append(getPageHandler().showDialogNote(msg.toString()));
         }
-
 
         getDatabaseManager().executeInsert(Tables.LOCALREPOSITORIES.INSERT,
                                            new Object[] { repositoryId,
@@ -443,7 +426,6 @@ public class LocalRepositoryManager extends RepositoryManager {
             }
         }
 
-
         StringBuffer sb = new StringBuffer();
         sb.append(
             getPageHandler().showDialogWarning(
@@ -481,7 +463,6 @@ public class LocalRepositoryManager extends RepositoryManager {
             }
         }
 
-
         if (request.defined(ARG_LOCAL_CHANGE)) {
             getAuthManager().ensureAuthToken(request);
             processLocalChange(request, sb);
@@ -510,7 +491,6 @@ public class LocalRepositoryManager extends RepositoryManager {
             statusSB.append(HtmlUtils.hidden(ARG_LOCAL_ID, local.id));
             statusSB.append(HtmlUtils.hidden(ARG_LOCAL_CHANGE, "true"));
 
-
             if (local.status.equals(STATUS_ACTIVE)) {
                 statusSB.append(HtmlUtils.submit("Stop Repository",
                         ARG_LOCAL_STOP));
@@ -518,7 +498,6 @@ public class LocalRepositoryManager extends RepositoryManager {
                 statusSB.append(HtmlUtils.submit("Start Repository",
                         ARG_LOCAL_START));
             }
-
 
             if (local.status.equals(STATUS_STOPPED)) {
                 statusSB.append(HtmlUtils.space(1));
@@ -577,7 +556,6 @@ public class LocalRepositoryManager extends RepositoryManager {
                                       HtmlUtils.checkbox(ARG_LOCAL_SURE,
                                           "true", false) + " "
                                               + msg("I'm sure")));
-
 
         sb.append(
             HtmlUtils.formEntry(
@@ -680,7 +658,6 @@ public class LocalRepositoryManager extends RepositoryManager {
 
     }
 
-
     /**
      * Class description
      *
@@ -712,6 +689,5 @@ public class LocalRepositoryManager extends RepositoryManager {
             this.status  = status;
         }
     }
-
 
 }

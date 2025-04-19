@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.output.CalendarOutputHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -15,7 +14,6 @@ import ucar.unidata.util.DateUtil;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
-
 /**
  * The main class.
  *
@@ -37,7 +34,6 @@ public class DateHandler extends RepositoryManager {
 
     public static final long NULL_DATE=-9999999L;
     public static final String NULL_DATE_LABEL="NA";
-
 
     /** _more_ */
     public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
@@ -49,17 +45,14 @@ public class DateHandler extends RepositoryManager {
     public static final String DEFAULT_TIME_THISYEARFORMAT =
         "yyyy/MM/dd HH:mm z";
 
-
     /** _more_ */
     private static TimeZone displayTimeZone;
-
 
     /** _more_ */
     private SimpleDateFormat displaySdf;
 
     /** _more_ */
     private SimpleDateFormat yyyymmddSdf;
-
 
     /** _more_ */
     private SimpleDateFormat dateSdf =
@@ -76,10 +69,8 @@ public class DateHandler extends RepositoryManager {
     private static Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
 
-
     /** _more_ */
     protected static List<SimpleDateFormat> parseFormats;
-
 
     /**
      * _more_
@@ -89,7 +80,6 @@ public class DateHandler extends RepositoryManager {
     public DateHandler(Repository repository) {
         super(repository);
     }
-
 
     /**
      * _more_
@@ -112,9 +102,6 @@ public class DateHandler extends RepositoryManager {
         yyyymmddSdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
     }
-
-
-
 
     public Result processDateTest(Request request) throws Exception {
 	StringBuilder sb =new StringBuilder();
@@ -147,9 +134,6 @@ public class DateHandler extends RepositoryManager {
 
     }
 
-
-
-
     /**
      * _more_
      *
@@ -163,7 +147,6 @@ public class DateHandler extends RepositoryManager {
     public void createMonthNav(Appendable sb, Date date, String url,
                                Hashtable dayLinks)
             throws Exception {
-
 
         GregorianCalendar cal =
             new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
@@ -283,8 +266,6 @@ public class DateHandler extends RepositoryManager {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -400,7 +381,6 @@ public class DateHandler extends RepositoryManager {
                           + HU.id(inputId) + HU.title(dateHelp)) + extra;
     }
 
-
     /**
      * _more_
      *
@@ -419,8 +399,6 @@ public class DateHandler extends RepositoryManager {
         return displayTimeZone;
     }
 
-
-
     /**
      * _more_
      *
@@ -430,7 +408,6 @@ public class DateHandler extends RepositoryManager {
         return getRepository().getProperty(PROP_DATE_FORMAT,
                                            DEFAULT_TIME_FORMAT);
     }
-
 
     /**
      * _more_
@@ -457,7 +434,6 @@ public class DateHandler extends RepositoryManager {
         }
 
     }
-
 
     public static int getYearsBetween(Date d1,Date d2) {
 	LocalDate localDate1 = d1.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
@@ -492,8 +468,6 @@ public class DateHandler extends RepositoryManager {
 	return false;
     }        
 
-
-
     /**
      * _more_
      *
@@ -526,7 +500,6 @@ public class DateHandler extends RepositoryManager {
         return formatDate(request,entry, new Date(d), macro.getProperty("format",null));
     }
 
-
     /**
      * _more_
      *
@@ -540,7 +513,6 @@ public class DateHandler extends RepositoryManager {
         return formatDate(request,entry, d, null);
     }
 
-
     /**
      * _more_
      *
@@ -552,11 +524,9 @@ public class DateHandler extends RepositoryManager {
         return getSDF(format, null);
     }
 
-
     public SimpleDateFormat getSDF(String format, String timezone) {
 	return getSDF(format, timezone, true);
     }
-
 
     /**
      * _more_
@@ -595,9 +565,6 @@ public class DateHandler extends RepositoryManager {
         return sdf;
     }
 
-
-
-
     /**
      * _more_
      *
@@ -634,8 +601,6 @@ public class DateHandler extends RepositoryManager {
         }
     }
 
-
-
     /**
      * _more_
      *
@@ -662,7 +627,6 @@ public class DateHandler extends RepositoryManager {
         return doFormat(d, dateFormat);
     }
 
-
     /**
      * _more_
      *
@@ -674,7 +638,6 @@ public class DateHandler extends RepositoryManager {
     public String formatDate(Request request, long ms) {
         return formatDate(new Date(ms));
     }
-
 
     /**
      * _more_
@@ -700,7 +663,6 @@ public class DateHandler extends RepositoryManager {
     public String formatDate(Request request, Date d) {
         return formatDate(d);
     }
-
 
     /**
      * _more_
@@ -772,7 +734,6 @@ public class DateHandler extends RepositoryManager {
             return NULL_DATE_LABEL;
         }
 
-
         SimpleDateFormat sdf      = getSDF(getShortDateFormat(), timezone);
 
         Date             now      = new Date();
@@ -803,15 +764,10 @@ public class DateHandler extends RepositoryManager {
             result = doFormat(d, sdf);
         }
 
-
         return HU.span(result,
                        HU.cssClass(CSS_CLASS_DATETIME)
                        + HU.attr(HU.ATTR_TITLE, fullDate + extraAlt));
     }
-
-
-
-
 
     /**
      * _more_
@@ -835,9 +791,8 @@ public class DateHandler extends RepositoryManager {
             tmp.add(RepositoryUtil.makeDateFormat("yyyy-MM"));
             tmp.add(RepositoryUtil.makeDateFormat("yyyy"));	    
             parseFormats = tmp;
-	    
-        }
 
+        }
 
         for (SimpleDateFormat fmt : parseFormats) {
             try {
@@ -849,6 +804,5 @@ public class DateHandler extends RepositoryManager {
 
         throw new IllegalArgumentException("Unable to parse date:" + dttm);
     }
-
 
 }

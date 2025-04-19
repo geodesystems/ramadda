@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import java.util.List;
-
 
 /**
  * Interface description
@@ -41,7 +39,6 @@ public interface EntryChecker {
      * @param ids _more_
      */
     public void entriesDeleted(List<String> ids);
-
 
     /**
      * _more_

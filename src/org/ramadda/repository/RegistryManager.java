@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.database.*;
-
 
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
@@ -18,7 +16,6 @@ import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
@@ -26,13 +23,11 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.lang.reflect.*;
 
 import java.net.*;
-
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -52,9 +47,6 @@ import java.util.TimeZone;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
-
-
 /**
  *
  *
@@ -65,7 +57,6 @@ import java.util.zip.*;
 public class RegistryManager extends RepositoryManager {
 
     private static final XmlUtil XU=null;
-
 
     /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
@@ -78,14 +69,11 @@ public class RegistryManager extends RepositoryManager {
     public static final String PROP_REGISTRY_PASSWORD =
         "ramadda_registry_password";
 
-
     /** _more_ */
     public static final String PROP_REGISTRY_SERVERS =
         "ramadda.registry.servers";
 
     //    public static final String PROP_CLEARINGHOUSE_ENABLED = "ramadda.clearinghouse.enabled";
-
-
 
     /** _more_ */
     public final RequestUrl URL_REGISTRY_ADD = new RequestUrl(this,
@@ -101,7 +89,6 @@ public class RegistryManager extends RepositoryManager {
     /** _more_ */
     public RequestUrl URL_REGISTRY_REMOTESERVERS =
         new RequestUrl(this, "/admin/remoteservers", "Remote Servers");
-
 
     /** _more_ */
     private Object REMOTE_MUTEX = new Object();
@@ -142,17 +129,11 @@ public class RegistryManager extends RepositoryManager {
 
     public static final String ARG_REGISTRY_SLUG="slug";
 
-
-
-
-
     /** _more_ */
     private List<ServerInfo> remoteServers;
 
-
     /** _more_ */
     private Hashtable<String, ServerInfo> remoteServerMap;
-
 
     /**
      * _more_
@@ -185,8 +166,6 @@ public class RegistryManager extends RepositoryManager {
 	getLogManager().logRegistry(msg,thr);
     }    
 
-
-
     /**
      * _more_
      *
@@ -198,7 +177,7 @@ public class RegistryManager extends RepositoryManager {
      */
     public Result processAdminRemoteServers(Request request)
             throws Exception {
-	
+
 	if ( !request.isAdmin()) {
 	    throw new IllegalArgumentException("No access");
 	}
@@ -385,7 +364,6 @@ public class RegistryManager extends RepositoryManager {
 				     HU.insetDiv(HU.input(urlFldId,serverInfo.getUrl(), HU.SIZE_30),5,10, 5, 10),
 				     HU.insetDiv(HU.input(rootFldId,serverInfo.getSearchRoot(),HU.attr("title","Entry ID to search under") + HU.SIZE_20+HU.attr("placeholder","entry id")),5, 10, 5, 10))));
 
-
         }
 
         sb.append(HU.close(HU.TAG_TABLE));
@@ -414,12 +392,9 @@ public class RegistryManager extends RepositoryManager {
             });
         }
 
-
-
 	Misc.run(new Runnable() {public void run() {runRegistrationLoop();}});
 
     }
-
 
     /**
      * _more_
@@ -437,11 +412,6 @@ public class RegistryManager extends RepositoryManager {
 	}
     }
 
-
-
-
-
-
     /**
      * _more_
      */
@@ -458,11 +428,7 @@ public class RegistryManager extends RepositoryManager {
             log("cleanUpServers:", exc);
         }
 
-
     }
-
-
-
 
     /**
      * _more_
@@ -477,7 +443,6 @@ public class RegistryManager extends RepositoryManager {
         }
 
     }
-
 
     /**
      * _more_
@@ -500,7 +465,7 @@ public class RegistryManager extends RepositoryManager {
 
 	HU.formEntry(csb,"",helpLink);
 	String passwordInput  = HU.input(PROP_REGISTRY_PASSWORD,getRegistryPassword(),HU.SIZE_60+HU.attr("placeholder","password1,password2,..."));
-	
+
 	HU.formEntry(csb,  "",
 			    HU.labeledCheckbox(
 					       PROP_REGISTRY_ENABLED, "true", 
@@ -521,8 +486,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -536,7 +499,6 @@ public class RegistryManager extends RepositoryManager {
             Utils.split(request.getUnsafeString(PROP_REGISTRY_SERVERS, ""),
                         "\n", true, true);
 
-
         getRepository().writeGlobal(PROP_REGISTRY_SERVERS,
                                     StringUtil.join("\n", newList));
         getRepository().writeGlobal(PROP_REGISTRY_ENABLED,
@@ -547,7 +509,6 @@ public class RegistryManager extends RepositoryManager {
         checkApi();
     }
 
-
     /**
      * _more_
      *
@@ -557,9 +518,6 @@ public class RegistryManager extends RepositoryManager {
         return getRepository().getProperty(PROP_REGISTRY_ENABLED, false);
     }
 
-
-
-
     /**
      * _more_
      */
@@ -568,8 +526,6 @@ public class RegistryManager extends RepositoryManager {
         remoteServerMap      = null;
         getSearchManager().clearSearchProviders();
     }
-
-
 
     /**
      * _more_
@@ -591,7 +547,6 @@ public class RegistryManager extends RepositoryManager {
         return getRemoteServerMap().get(id);
     }
 
-
     /**
      * _more_
      *
@@ -608,7 +563,6 @@ public class RegistryManager extends RepositoryManager {
         }
         return selected;
     }
-
 
     /**
      * _more_
@@ -627,8 +581,6 @@ public class RegistryManager extends RepositoryManager {
 
         return map;
     }
-
-
 
     /**
      * _more_
@@ -700,7 +652,6 @@ public class RegistryManager extends RepositoryManager {
         return servers;
     }
 
-
     /**
      * _more_
      *
@@ -719,7 +670,6 @@ public class RegistryManager extends RepositoryManager {
         return urls;
     }
 
-
     /**
      * _more_
      *
@@ -731,7 +681,6 @@ public class RegistryManager extends RepositoryManager {
             registerWithServer(tuple);
         }
     }
-
 
     /**
      * _more_
@@ -761,7 +710,6 @@ public class RegistryManager extends RepositoryManager {
         }
     }
 
-
     /**
      * _more_
      *
@@ -776,7 +724,6 @@ public class RegistryManager extends RepositoryManager {
     public String getResponse(Element root) {
 	return  (String)Utils.getNonNull(XmlUtil.getChildText(root),"");
     }    
-
 
     private Result makeErrorResult(String msg) throws Exception {
 	return new Result(XU.tag(TAG_RESPONSE, XU.attr(ATTR_CODE, CODE_ERROR),msg), MIME_XML);	
@@ -815,7 +762,6 @@ public class RegistryManager extends RepositoryManager {
 	log("registerWithServer: Failed to verify client:" + serverInfo);
 	return makeErrorResult("failed");
     }
-
 
     /**
      * _more_
@@ -860,9 +806,6 @@ public class RegistryManager extends RepositoryManager {
             addRemoteServer(serverInfo, false);
         }
     }
-
-
-
 
     /**
      * _more_
@@ -940,7 +883,6 @@ public class RegistryManager extends RepositoryManager {
         return null;
     }
 
-
     private Result returnRegistryXml(Request request) throws Exception {
         List<ServerInfo>    servers     = getEnabledRemoteServers();
 	//Add myself to the list
@@ -948,7 +890,7 @@ public class RegistryManager extends RepositoryManager {
 	Document resultDoc = XU.makeDocument();
 	Element resultRoot = XU.create(resultDoc, TAG_RESPONSE,
 				       null, new String[] { ATTR_CODE, CODE_OK });
-	
+
 	for (ServerInfo serverInfo : servers) {
 	    resultRoot.appendChild(serverInfo.toXml(getRepository(),
 						    resultDoc));

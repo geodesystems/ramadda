@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.util.HtmlUtils;
-
 
 /**
  *
@@ -122,7 +120,5 @@ public class EntryLink {
     public String getFolderClickUrl () {
 	return folderClickUrl;
     }
-
-
 
 }

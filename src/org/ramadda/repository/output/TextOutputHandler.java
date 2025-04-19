@@ -5,14 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
@@ -29,12 +27,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -43,8 +38,6 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 public class TextOutputHandler extends OutputHandler {
-
-
 
     /** _more_ */
     public static final OutputType OUTPUT_TEXT =
@@ -61,7 +54,6 @@ public class TextOutputHandler extends OutputHandler {
         new OutputType("Pretty Print", "pretty", OutputType.TYPE_VIEW, "",
                        ICON_TEXT);
 
-
     /**
      * _more_
      *
@@ -77,8 +69,6 @@ public class TextOutputHandler extends OutputHandler {
         addType(OUTPUT_WORDCLOUD);
         addType(OUTPUT_PRETTY);
     }
-
-
 
     /**
      * _more_
@@ -125,7 +115,6 @@ public class TextOutputHandler extends OutputHandler {
             }
         }
 
-
         for (int i = 0; i < suffixes.length; i++) {
             if (path.endsWith(suffixes[i])) {
                 links.add(makeLink(request, state.entry, OUTPUT_TEXT));
@@ -134,10 +123,6 @@ public class TextOutputHandler extends OutputHandler {
                 return;
             }
         }
-
-
-
-
 
         String suffix = IO.getFileExtension(path);
         String type   = getRepository().getMimeTypeFromSuffix(suffix);
@@ -148,8 +133,6 @@ public class TextOutputHandler extends OutputHandler {
         }
 
     }
-
-
 
     /**
      * _more_
@@ -174,11 +157,9 @@ public class TextOutputHandler extends OutputHandler {
             return outputWordCloud(request, entry);
         }
 
-
         if (outputType.equals(OUTPUT_PRETTY)) {
             return outputPretty(request, entry);
         }
-
 
         String contents =
             getStorageManager().readSystemResource(entry.getFile());
@@ -202,7 +183,6 @@ public class TextOutputHandler extends OutputHandler {
 
         return makeLinksResult(request, msg("Text"), sb, new State(entry));
     }
-
 
     /**
      * _more_
@@ -262,9 +242,6 @@ public class TextOutputHandler extends OutputHandler {
         return result;
     }
 
-
-
-
     /**
      * _more_
      *
@@ -293,7 +270,6 @@ public class TextOutputHandler extends OutputHandler {
             HtmlUtils.cssLink(
                 getRepository().getHtdocsUrl("/lib/prettify/prettify.css")));
 
-
         sb.append(head);
         sb.append("<pre class=\"prettyprint\">\n");
 
@@ -316,7 +292,5 @@ public class TextOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
 
 }

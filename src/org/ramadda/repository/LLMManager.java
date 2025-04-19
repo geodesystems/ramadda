@@ -3,7 +3,6 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-
 package org.ramadda.repository;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.admin.*;
@@ -45,7 +44,6 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String PROP_OPENAI_KEY = "openai.api.key";
     public static final String PROP_GEMINI_KEY = "gemini.api.key";
     public static final String PROP_CLAUDE_KEY = "claude.api.key";	    
-    
 
     public static final int TOKEN_LIMIT_UNDEFINED = -1;
     public static final int TOKEN_LIMIT_GEMINI_PRO = 30000;
@@ -78,15 +76,12 @@ public class LLMManager extends  AdminHandlerImpl {
     public static final String ARG_EXTRACT_LOCATIONS = "extract_locations";
     public static final String ARG_EXTRACT_LATLON = "extract_latlon";
 
-
     public static final String URL_OPENAI_TRANSCRIPTION = "https://api.openai.com/v1/audio/transcriptions";
     public static final String URL_OPENAI_COMPLETION =  "https://api.openai.com/v1/chat/completions";
     public static final String URL_GEMINI_PRO="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
     public static final String URL_GEMINI_FLASH="https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";    
 
     public static final String URL_CLAUDE="https://api.anthropic.com/v1/messages";
-
-
 
     private JobManager openAIJobManager;
     private JobManager geminiJobManager;
@@ -106,8 +101,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	//	geminiJobManager.setDebug(true);	
     }
 
-
-
     public void debug(String msg) {
 	if(debug) System.err.println("LLMManager:" + msg);
     }
@@ -116,11 +109,9 @@ public class LLMManager extends  AdminHandlerImpl {
         return "llmmanager";
     }
 
-
     public JobManager getOpenAIJobManager (){
 	return  openAIJobManager;
     }
-
 
     private List<String> openAIKeys;
     private int openAIKeyIdx=0;
@@ -138,7 +129,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	return openAIKeys.get(openAIKeyIdx);
     }
 
-
     private boolean isGeminiEnabled() {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_GEMINI_KEY));
     }
@@ -146,21 +136,17 @@ public class LLMManager extends  AdminHandlerImpl {
 	return  Utils.stringDefined(getRepository().getProperty(PROP_CLAUDE_KEY));
     }    
 
-
     public boolean isOpenAIEnabled() {
 	return Utils.stringDefined(getRepository().getProperty(PROP_OPENAI_KEY));
     }
-
 
     public boolean isGPT4Enabled() {
 	return getRepository().getProperty("openai.gpt4.enabled",false);
     }    
 
-    
     public boolean isLLMEnabled() {
 	return isGeminiEnabled() || isOpenAIEnabled() || isClaudeEnabled();
     }
-
 
     public void processArgs(Request request, String...args) {
 	for(String a:args) {
@@ -181,13 +167,11 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
-
     public void setModel(Request request, String model) {
 	if(model.equals("gpt3.5")) model=MODEL_GPT_3_5;
 	else if(model.equals("gpt4")) model=MODEL_GPT_4;
 	request.put(ARG_MODEL,model);
     }
-
 
     public Result applyLLM(Request request, Entry entry) throws Exception  {
         StringBuilder sb      = new StringBuilder();
@@ -228,7 +212,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
-
     private List<HtmlUtils.Selector> getAvailableModels() {
 	List<HtmlUtils.Selector> models = new ArrayList<HtmlUtils.Selector>();
 	if(isOpenAIEnabled()) {
@@ -246,7 +229,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	}	
 	return models;
     }
-
 
     public String getNewEntryExtract(Request request) {
 	if(!isLLMEnabled()) return "";
@@ -282,8 +264,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	return sb.toString();
     }
 
-
-
     public Result processLLM(Request request)  throws Exception {
 	try {
 	    if(request.isAnonymous()) {
@@ -301,9 +281,8 @@ public class LLMManager extends  AdminHandlerImpl {
 	} catch(Throwable exc) {
 	    throw new RuntimeException(exc);
 	}
-	
-    }
 
+    }
 
     public String applyPromptToDocument(Request request, Entry entry, boolean document, String prompt,PromptInfo info)
 	throws Exception {
@@ -314,7 +293,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		corpus = entry.getTypeHandler().getCorpus(request, entry,CorpusType.LLM);
 	    } else {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append("The below text is JSON describing a " + entry.getTypeHandler().getDescription()+"\n");
 		String typePrompt = entry.getTypeHandler().getTypeProperty("llm.prompt",(String) null);
 		if(typePrompt!=null) {
@@ -340,13 +319,10 @@ public class LLMManager extends  AdminHandlerImpl {
 
     }
 
-
     private Result makeJsonErrorResult(String error) {
 	String json = JsonUtil.map(Utils.makeListFromValues("error", JsonUtil.quote(error)));
 	return new Result("", new StringBuilder(json), "text/json");
     }
-
-
 
     public IO.Result call(JobManager jobManager, final URL url, final String body, final String...args) 
 	throws Exception {
@@ -368,7 +344,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 	return theResult[0];
     }
-
 
     public IO.Result  callGemini(String model, String gptText) throws Exception {
 	synchronized(MUTEX_GEMINI) {
@@ -406,8 +381,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	    System.err.println(gptText);
 	    */
 
-
-
 	    String claudeKey = getRepository().getProperty(PROP_CLAUDE_KEY);	
 	    String messages = JU.list(JU.map("role",JU.quote("user"),"content",JU.quote(gptText)));
 	    String body = JU.map("model",JU.quote("claude-3-sonnet-20240229"),
@@ -421,8 +394,6 @@ public class LLMManager extends  AdminHandlerImpl {
 			"Content-Type","application/json");
 	}
     }	
-    
-
 
     private  IO.Result  callOpenAI(Request request, String model,
 				   int maxReturnTokens,
@@ -461,9 +432,6 @@ public class LLMManager extends  AdminHandlerImpl {
 
 	return result;
     }
-
-
-
 
     private String callLLM(Request request,
 			   String prompt1,
@@ -702,7 +670,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
     }
 
-
     private Result processTranscribeInner(Request request)  throws Throwable {	
 	boolean debug = request.get("debug",this.debug);
 	if(request.isAnonymous()) {
@@ -741,7 +708,6 @@ public class LLMManager extends  AdminHandlerImpl {
 		getEntryManager().processEntryAddFile(request, file,fileName,text);
 	    }
 
-
 	    StringBuilder sb = new StringBuilder(JsonUtil.map(Utils.makeListFromValues("results", JsonUtil.quote(text))));
 	    return new Result("", sb, "text/json");
 	}
@@ -751,7 +717,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	}
 	return makeJsonErrorResult("An error occurred:" + results);
     }
-
 
     public boolean applyEntryExtract(final Request request, final Entry entry, final String llmCorpus)
 	throws Exception {
@@ -768,7 +733,7 @@ public class LLMManager extends  AdminHandlerImpl {
 		getEntryManager().clearEntryState(entry,"message");
 	    }
 	}
-	    
+
 	//for testing:
 	/*
 	for(int i=0;i<40;i++) {
@@ -786,7 +751,6 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
     public boolean applyEntryExtractInner(final Request request, final Entry entry, final String llmCorpus) throws Throwable {	
-
 
 	boolean entryChanged = false;
 	PromptInfo info = new PromptInfo();
@@ -956,8 +920,6 @@ public class LLMManager extends  AdminHandlerImpl {
 
     }
 
-
-
     public Result processDocumentChat(Request request, Entry entry,boolean document)
 	throws Exception {	
 	String pageUrl =request.toString();
@@ -1035,7 +997,6 @@ public class LLMManager extends  AdminHandlerImpl {
 	for(HtmlUtils.Selector sel:getAvailableModels()) {
 	    models.add(JsonUtil.map("value",JsonUtil.quote(sel.getId()),"label",JsonUtil.quote(sel.getLabel())));
 	}
-	
 
 	HU.script(sb, HU.call("new DocumentChat", HU.squote(id),HU.squote(entry.getId()),
 			      JU.quote(document?"documentchat":"entryllm"),
@@ -1045,13 +1006,10 @@ public class LLMManager extends  AdminHandlerImpl {
 						new Result(title, sb));
     }
 
-
     private Result makeJsonError(String msg) {
 	String s =  JsonUtil.mapAndQuote(Utils.makeListFromValues("error", msg));
 	return  new Result("", new StringBuilder(s), JsonUtil.MIMETYPE);
     }
-
-
 
     private static class WordCount {
 	int count=0;
@@ -1091,5 +1049,4 @@ public class LLMManager extends  AdminHandlerImpl {
     }
 
 }
-
 

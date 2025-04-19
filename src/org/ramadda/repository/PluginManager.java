@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.importer.*;
@@ -21,13 +20,10 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.seesv.SeesvPlugin;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
-
 
 import ucar.unidata.util.PluginClassLoader;
 
@@ -35,20 +31,14 @@ import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
 
-
-
 import java.io.*;
 
 import java.io.File;
 import java.io.InputStream;
 
-
-
 import java.lang.reflect.*;
 
 import java.net.*;
-
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +54,6 @@ import java.util.jar.*;
 
 import java.util.regex.*;
 import java.util.zip.*;
-
 
 /**
  * This class loads and manages the plugins
@@ -90,19 +79,15 @@ public class PluginManager extends RepositoryManager {
     public static final String PLUGIN_BIO =
         "/org/ramadda/repository/resources/plugins/bioplugins.jar";
 
-
     /** _more_ */
     public static final String PLUGIN_MISC =
         "/org/ramadda/repository/resources/plugins/miscplugins.jar";
-
 
     //This should be a properties file but...
 
     /** _more_ */
     public static final String[] PLUGINS = { PLUGIN_CORE, PLUGIN_GEO,
                                              PLUGIN_MISC, PLUGIN_BIO };
-
-
 
     /** _more_ */
     private StringBuffer pluginFilesList = new StringBuffer();
@@ -141,13 +126,11 @@ public class PluginManager extends RepositoryManager {
     /** _more_ */
     private List<String> allFiles = new ArrayList<String>();
 
-
     /** _more_ */
     private List<String> metadataDefFiles = new ArrayList<String>();
 
     /** _more_ */
     private List<String> typeDefFiles = new ArrayList<String>();
-
 
     /** _more_ */
     private List<String> apiDefFiles = new ArrayList<String>();
@@ -155,16 +138,11 @@ public class PluginManager extends RepositoryManager {
     /** _more_ */
     private List<String> outputDefFiles = new ArrayList<String>();
 
-
     /** _more_ */
     private List<String> classDefFiles = new ArrayList<String>();
 
-
     /** _more_ */
     private List<String> pythonLibs = new ArrayList<String>();
-
-
-
 
     /** _more_ */
     private Hashtable<String, String> htdocsMap = new Hashtable<String,
@@ -181,7 +159,6 @@ public class PluginManager extends RepositoryManager {
 
     /** _more_ */
     private List<Class> specialClasses = new ArrayList<Class>();
-
 
     /** _more_ */
     private List<PageDecorator> pageDecorators =
@@ -219,7 +196,6 @@ public class PluginManager extends RepositoryManager {
         super.shutdown();
     }
 
-
     /**
      *
      * @return _more_
@@ -227,9 +203,6 @@ public class PluginManager extends RepositoryManager {
     public List<Class> getSeesvClasses() {
         return seesvClasses;
     }
-
-
-
 
     /**
      * _more_
@@ -267,7 +240,6 @@ public class PluginManager extends RepositoryManager {
 
         return contains;
     }
-
 
     /**
      * _more_
@@ -315,7 +287,6 @@ public class PluginManager extends RepositoryManager {
         metadataDefFiles.addAll(
             0, getRepository().getResourcePaths(PROP_METADATA));
     }
-
 
     /**
      * _more_
@@ -448,7 +419,6 @@ public class PluginManager extends RepositoryManager {
             }
         }
 
-
     }
 
     /**
@@ -464,8 +434,6 @@ public class PluginManager extends RepositoryManager {
             getRepository().loadProperties(properties, f);
         }
     }
-
-
 
     /**
      * _more_
@@ -526,7 +494,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-
     /**
      * _more_
      *
@@ -543,7 +510,6 @@ public class PluginManager extends RepositoryManager {
 
         return contains;
     }
-
 
     /**
      * _more_
@@ -568,7 +534,6 @@ public class PluginManager extends RepositoryManager {
         pluginsList.append("<tr><td></td><td><b>" + desc + "</b></td><td><i>"
                            + what + "</i></td></tr>");
     }
-
 
     /**
      * _more_
@@ -597,7 +562,6 @@ public class PluginManager extends RepositoryManager {
                 new StringBuffer("Plugin installed"));
         }
     }
-
 
     /**
      * _more_
@@ -646,8 +610,6 @@ public class PluginManager extends RepositoryManager {
         return false;
     }
 
-
-
     /**
      * _more_
      *
@@ -670,7 +632,6 @@ public class PluginManager extends RepositoryManager {
 
         return newPluginFile;
     }
-
 
     /**
      * _more_
@@ -699,7 +660,6 @@ public class PluginManager extends RepositoryManager {
         formBuffer.append(HtmlUtils.table(pluginsList.toString()));
         sb.append(formBuffer.toString());
     }
-
 
     /**
      * _more_
@@ -801,11 +761,6 @@ public class PluginManager extends RepositoryManager {
         return true;
     }
 
-
-
-
-
-
     /**
      * Class MyClassLoader provides a hook into the MultiJarClassLoader routines
      *
@@ -825,7 +780,6 @@ public class PluginManager extends RepositoryManager {
         public MyClassLoader(ClassLoader parent) throws Exception {
             super(parent);
         }
-
 
         /**
          * _more_
@@ -856,15 +810,12 @@ public class PluginManager extends RepositoryManager {
             }
         }
 
-
         /*
         public void checkClass(Class c) throws Exception {
             this.checkSpecialClass(c,null);
             super.checkClass(c);
         }
         */
-
-
 
         /**
          * Check if this class is one of the special classes, e.g., ImportHandler, PageDecorator, etc.
@@ -886,14 +837,11 @@ public class PluginManager extends RepositoryManager {
             }
             seenClasses.add(key);
 
-
-
             if (SeesvPlugin.class.isAssignableFrom(c)) {
                 pluginStat("SEESV Class", c.getName());
                 seesvClasses.add(c);
                 return;
             }
-
 
 	    if(importHandlers.size()==0) {
 		importHandlers.add(new CsvImporter(getRepository()));
@@ -977,7 +925,6 @@ public class PluginManager extends RepositoryManager {
             }
         }
 
-
         /**
          * _more_
          *
@@ -993,9 +940,6 @@ public class PluginManager extends RepositoryManager {
                 throws Exception {
             String path = super.defineResource(jarFilePath, jarEntry);
             checkFile(path, true);
-
-
-
 
             String entryName = jarEntry.getName();
             int    idx       = entryName.indexOf("htdocs/");
@@ -1037,7 +981,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-
     /**
      * _more_
      *
@@ -1055,7 +998,6 @@ public class PluginManager extends RepositoryManager {
     public List<String> getMetadataDefFiles() {
         return metadataDefFiles;
     }
-
 
     /**
      * Get the TypeDefFiles property.
@@ -1075,7 +1017,6 @@ public class PluginManager extends RepositoryManager {
         return allFiles;
     }
 
-
     /**
      * Get the ApiDefFiles property.
      *
@@ -1084,8 +1025,6 @@ public class PluginManager extends RepositoryManager {
     public List<String> getApiDefFiles() {
         return apiDefFiles;
     }
-
-
 
     /**
      * Get the OutputDefFiles property.
@@ -1130,7 +1069,6 @@ public class PluginManager extends RepositoryManager {
         return licenseFiles;
     }
 
-
     /**
      * _more_
      *
@@ -1149,7 +1087,6 @@ public class PluginManager extends RepositoryManager {
         return importHandlers;
     }
 
-
     /**
      * _more_
      *
@@ -1167,8 +1104,6 @@ public class PluginManager extends RepositoryManager {
     public List<String> getTemplateFiles() {
         return templateFiles;
     }
-
-
 
     /**
      * _more_

@@ -5,10 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  *
@@ -47,7 +45,6 @@ public class RequestUrl {
         this(repositorySource, path, false);
     }
 
-
     /**
      * _more_
      *
@@ -83,8 +80,6 @@ public class RequestUrl {
 	for(String alias:aliases) this.aliases.add(alias);
     }
 
-
-
     public boolean matches(Request request) {
 	String path = request.getRequestPath();
 	if(path.endsWith(getPath())) return true;
@@ -92,8 +87,6 @@ public class RequestUrl {
 	    if(path.endsWith(alias)) return true;
 	return false;
     }
-
-
 
     /**
      * Create a list of RequestUrl's from the array
@@ -110,8 +103,6 @@ public class RequestUrl {
 
         return l;
     }
-
-
 
     /**
      * _more_
@@ -144,7 +135,6 @@ public class RequestUrl {
         return getFullUrl("");
     }
 
-
     /**
      * _more_
      *
@@ -175,8 +165,6 @@ public class RequestUrl {
         return getHttpsUrl("");
     }
 
-
-
     /**
      * _more_
      *
@@ -201,7 +189,6 @@ public class RequestUrl {
         }
     }
 
-
     /** _more_ */
     private String myString;
 
@@ -219,7 +206,6 @@ public class RequestUrl {
         return myString;
     }
 
-
     /**
      * _more_
      *
@@ -230,8 +216,6 @@ public class RequestUrl {
     public String getUrl(String collectionPath) {
         return getRepositoryBase().getUrlBase() + "/" + collectionPath + path;
     }
-
-
 
     /**
      * _more_
@@ -250,7 +234,6 @@ public class RequestUrl {
     public String getBasePath() {
         return basePath;
     }
-
 
     /**
      * _more_
@@ -294,7 +277,5 @@ public class RequestUrl {
     public boolean getNeedsSsl() {
         return this.needsSsl;
     }
-
-
 
 }

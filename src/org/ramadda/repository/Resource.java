@@ -34,17 +34,12 @@ public class Resource {
         path = "";
     }
 
-
-    
     public Resource(File file, String type) {
         this.file = file;
         this.path = file.toString();
         this.type = type;
     }
 
-
-
-    
     public Resource(String path) {
         this.path = path;
         if (new File(path).exists()) {
@@ -57,15 +52,11 @@ public class Resource {
         }
     }
 
-
-    
     public Resource(URL url) {
         type = TYPE_URL;
         path = url.toString();
     }
 
-
-    
     public Resource(String path, String type) {
         this(path, type, null, -1);
     }
@@ -74,8 +65,6 @@ public class Resource {
 	this(path,type,null,fileSize);
     }
 
-
-    
     public Resource(String path, String type, String md5, long fileSize) {
         this.path     = path;
         this.type     = type;
@@ -86,7 +75,6 @@ public class Resource {
         }
     }
 
-    
     public Resource(Resource that) {
         this.path     = that.path;
         this.type     = that.type;
@@ -98,23 +86,18 @@ public class Resource {
 	path = HtmlUtils.strictSanitizeString(path);
     }
 
-
-    
     public boolean isDefined() {
         return (path != null) && (path.length() > 0);
     }
 
-    
     public boolean isImage() {
         return isImage(path);
     }
 
-    
     public static boolean isImage(String path) {
         return Utils.isImage(path);
     }
 
-    
     public boolean isEditableImage() {
         if (path == null) {
             return false;
@@ -125,7 +108,6 @@ public class Resource {
                || file.endsWith(".gif") || file.endsWith(".png");
     }
 
-    
     public File getTheFile() {
         if (file == null) {
             file = new File(path);
@@ -134,8 +116,6 @@ public class Resource {
         return file;
     }
 
-
-    
     public long getFileSize() {
 	return getFileSize(false);
     }
@@ -152,23 +132,18 @@ public class Resource {
         return fileSize;
     }
 
-
-    
     public long getFileSizeRaw() {
         return fileSize;
     }
 
-    
     public boolean hasResource() {
         return isFile() || isUrl();
     }
-
 
     public boolean isS3() {
 	return type.equals(TYPE_S3);
     }
 
-    
     public boolean isFile() {
         if (type.equals(TYPE_REMOTE_FILE)) {
             return true;
@@ -187,12 +162,10 @@ public class Resource {
         return false;
     }
 
-    
     public boolean isUnknown() {
         return type.equals(TYPE_UNKNOWN);
     }
 
-    
     public boolean fileExists() {
         if (type.equals(TYPE_FILE) || type.equals(TYPE_STOREDFILE)
                 || type.equals(TYPE_LOCAL_FILE)
@@ -203,7 +176,6 @@ public class Resource {
         return false;
     }
 
-    
     public boolean isFileType() {
         if (isS3() || type.equals(TYPE_FILE) || type.equals(TYPE_STOREDFILE)
                 || type.equals(TYPE_LOCAL_FILE)) {
@@ -213,48 +185,37 @@ public class Resource {
         return false;
     }
 
-
-    
     public boolean isServerSideFile() {
         return type.equals(TYPE_LOCAL_FILE);
     }
 
-
-    
     public boolean isStoredFile() {
         return type.equals(TYPE_STOREDFILE);
     }
 
-    
     public boolean isUrl() {
         return type.equals(TYPE_URL);
     }
 
-    
     public boolean isRemoteFile() {
         return type.equals(TYPE_REMOTE_FILE);
     }
 
-    
     public String toString() {
         return path;
     }
 
-    
     public void setPath(String value) {
         path = value;
         file = null;
     }
 
-    
     public void setFile(File file, String type) {
 	fileSize= file.length();
         setPath(file.toString());
         this.type = type;
     }
 
-
-    
     public String getPath() {
         return path;
     }
@@ -263,33 +224,22 @@ public class Resource {
 	return new File(path).getName();
     }
 
-
-    
     public void setType(String value) {
         type = value;
     }
 
-    
     public String getType() {
         return type;
     }
 
-
-
-
-
-    
     public void setFileSize(long value) {
         this.fileSize = value;
     }
 
-
-    
     public void setMd5(String value) {
         md5 = value;
     }
 
-    
     public String getMd5() {
         if (md5 == null) {
             //For now don't do this because big files take a long time
@@ -301,8 +251,5 @@ public class Resource {
 
         return md5;
     }
-
-
-
 
 }

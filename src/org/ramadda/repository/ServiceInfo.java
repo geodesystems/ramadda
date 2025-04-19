@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 /**
  *
  *
@@ -22,7 +21,6 @@ public class ServiceInfo {
 
     /** _more_ */
     public static final String TYPE_GRID = "grid";
-
 
     /** _more_ */
     public static final String TYPE_NA = "na";
@@ -41,7 +39,6 @@ public class ServiceInfo {
 
     /** _more_ */
     private String mimeType;
-
 
     /**
      * _more_
@@ -84,7 +81,6 @@ public class ServiceInfo {
         this.mimeType = mimeType;
     }
 
-
     /**
      *
      * @return _more_
@@ -121,7 +117,6 @@ public class ServiceInfo {
         return this.url.equals(that.url);
     }
 
-
     /**
      *
      * @return _more_
@@ -130,7 +125,6 @@ public class ServiceInfo {
     public int hashCode() {
         return url.hashCode();
     }
-
 
     /**
      *  Set the Type property.
@@ -186,7 +180,6 @@ public class ServiceInfo {
         return this.url;
     }
 
-
     /**
      *  Set the Icon property.
      *
@@ -222,6 +215,5 @@ public class ServiceInfo {
     public String getMimeType() {
         return mimeType;
     }
-
 
 }

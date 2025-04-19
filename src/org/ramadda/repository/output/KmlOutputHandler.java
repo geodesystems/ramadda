@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.JpegMetadataHandler;
@@ -30,8 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 /**
  *
  *
@@ -45,7 +42,6 @@ public class KmlOutputHandler extends OutputHandler {
     public static final String MIME_KML =
         "application/vnd.google-earth.kml+xml";
 
-
     /** _more_ */
     public static final String KML_ATTRS =
         "  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
@@ -54,8 +50,6 @@ public class KmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_KML =
         new OutputType("Google Earth KML", "kml", OutputType.TYPE_FEEDS, "",
                        ICON_KML);
-
-
 
     /**
      * _more_
@@ -69,7 +63,6 @@ public class KmlOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_KML);
     }
-
 
     /**
      * _more_
@@ -99,7 +92,6 @@ public class KmlOutputHandler extends OutputHandler {
         }
     }
 
-
     /**
      * _more_
      *
@@ -110,7 +102,6 @@ public class KmlOutputHandler extends OutputHandler {
     public String getMimeType(OutputType output) {
         return repository.getMimeTypeFromSuffix(".kml");
     }
-
 
     /**
      * _more_
@@ -157,7 +148,6 @@ public class KmlOutputHandler extends OutputHandler {
 
         boolean justOneEntry = group.isDummy() && (children.size() == 1);
 
-
         String  title = (justOneEntry
                          ? children.get(0).getName()
                          : group.getFullName());
@@ -167,8 +157,6 @@ public class KmlOutputHandler extends OutputHandler {
                                                      Element>();
 
         Element document      = KmlUtil.document(root, title, true);
-
-
 
         Element defaultFolder = document;
         //        Element folder = KmlUtil.folder(document, title,
@@ -203,7 +191,6 @@ public class KmlOutputHandler extends OutputHandler {
             }
         }
 
-
         for (Entry entry : children) {
             String category = entry.getTypeHandler().getCategory(request,
 								 entry,"type").getLabel().toString();
@@ -218,7 +205,6 @@ public class KmlOutputHandler extends OutputHandler {
                     catToFolder.put(category, parentFolder);
                 }
             }
-
 
             if (isLatLonImage(entry)) {
                 String fileTail = getStorageManager().getFileTail(entry);
@@ -274,7 +260,6 @@ public class KmlOutputHandler extends OutputHandler {
                                           entry)), entry.getName());
                 String desc = link + entry.getDescription();
 
-
 		StringBuilder tb  = new StringBuilder();
 		entry.getTypeHandler().getEntryContent(request, entry,true, false, null,false,tb);
 		String content =tb.toString();
@@ -282,8 +267,6 @@ public class KmlOutputHandler extends OutputHandler {
                                           "style=\" font-weight: bold;\"");
                 content = content.replace("cellpadding=\"0\"",
                                           " cellpadding=\"5\" ");
-
-
 
                 content = content.replace(
                     "class=\"formgroupheader\"",
@@ -341,7 +324,6 @@ public class KmlOutputHandler extends OutputHandler {
 
                 }
 
-
             }
         }
 
@@ -351,8 +333,6 @@ public class KmlOutputHandler extends OutputHandler {
         return new Result(title, sb, MIME_KML);
 
     }
-
-
 
     /**
      * _more_
@@ -388,8 +368,6 @@ public class KmlOutputHandler extends OutputHandler {
 
         return node;
     }
-
-
 
     /**
      * _more_
@@ -427,7 +405,6 @@ public class KmlOutputHandler extends OutputHandler {
         return null;
     }
 
-
     /**
      * _more_
      *
@@ -462,7 +439,6 @@ public class KmlOutputHandler extends OutputHandler {
         return dflt;
     }
 
-
     /**
      * _more_
      *
@@ -474,7 +450,6 @@ public class KmlOutputHandler extends OutputHandler {
         return entry.getType().equals("latlonimage")
                && entry.getResource().isImage();
     }
-
 
     /**
      * _more_

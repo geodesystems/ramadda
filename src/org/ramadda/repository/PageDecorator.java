@@ -5,14 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapLayer;
 import org.ramadda.util.WikiUtil;
 
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -28,7 +26,6 @@ public class PageDecorator extends RepositoryManager {
         super(null);
     }
 
-
     /**
      * _more_
      *
@@ -38,7 +35,6 @@ public class PageDecorator extends RepositoryManager {
         super(repository);
 
     }
-
 
     /**
      * _more_
@@ -70,7 +66,6 @@ public class PageDecorator extends RepositoryManager {
         return null;
     }
 
-
     /**
      * _more_
      *
@@ -78,7 +73,6 @@ public class PageDecorator extends RepositoryManager {
      * @param mapInfo _more_
      */
     public void addToMap(Request request, MapInfo mapInfo) {}
-
 
     /**
      * _more_
@@ -97,6 +91,5 @@ public class PageDecorator extends RepositoryManager {
                                  String tag, Hashtable props) {
         return null;
     }
-
 
 }

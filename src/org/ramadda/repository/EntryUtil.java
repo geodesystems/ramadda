@@ -5,17 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.database.*;
-
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.SelectionRectangle;
-
-
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
@@ -30,7 +26,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import java.awt.geom.Rectangle2D;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +42,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * This class does most of the work of managing repository content
  */
@@ -62,8 +56,6 @@ public class EntryUtil extends RepositoryManager {
     private TTLObject<Hashtable<String, Integer>> typeCache =
         new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,
                       "Entry Type Count Cache");
-
-
 
     /**
      * _more_
@@ -84,8 +76,6 @@ public class EntryUtil extends RepositoryManager {
         return new EntryUtil(repository);
     }
 
-
-
     /**
      * _more_
      */
@@ -94,7 +84,6 @@ public class EntryUtil extends RepositoryManager {
             typeCache.clearCache();
         }
     }
-
 
     public static List<File> getFiles(Request request,List<Entry> entries) throws Exception {
 	List<File> files = new ArrayList<File>();
@@ -139,7 +128,6 @@ public class EntryUtil extends RepositoryManager {
         return nongroups;
     }
 
-
     public static List<Entry> applySkip(List<Entry> entries, int skip) {
 	if(skip>=1) {
 	    List<Entry> skipped = new ArrayList<Entry>();
@@ -155,7 +143,7 @@ public class EntryUtil extends RepositoryManager {
 	}
 	return entries;
     }
-	
+
     public static List<Entry> applySample(List<Entry> entries, double prob) {
 	if(prob>0) {
 	    List<Entry> skipped = new ArrayList<Entry>();
@@ -169,8 +157,6 @@ public class EntryUtil extends RepositoryManager {
 	return entries;
     }
 
-
-
     /*
       the metadata needs to be the sort order metadata
      */
@@ -179,7 +165,6 @@ public class EntryUtil extends RepositoryManager {
 	boolean descending=!metadata.getAttr2().equals("true");
 	return 	sortEntriesOn(entries,by, descending);
     }
-
 
     /**
      * _more_
@@ -275,7 +260,6 @@ public class EntryUtil extends RepositoryManager {
         return result;
     }
 
-
     /**
      *
      * @param entry _more_
@@ -332,7 +316,6 @@ public class EntryUtil extends RepositoryManager {
                    ? first.get(0)
                    : null;
         }
-
 
         Entry parent = entry.getParentEntry();
         if (parent == null) {
@@ -403,8 +386,6 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-
-
     /**
      *
      * @param entry _more_
@@ -449,8 +430,6 @@ public class EntryUtil extends RepositoryManager {
 
         return null;
     }
-
-
 
     /**
      * _more_
@@ -532,7 +511,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-
     /**
      * _more_
      *
@@ -575,7 +553,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-
     /**
      * _more_
      *
@@ -614,7 +591,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-
     /**
      * _more_
      *
@@ -652,7 +628,6 @@ public class EntryUtil extends RepositoryManager {
 
         return (List<Entry>) Misc.toList(array);
     }
-
 
     /**
      * _more_
@@ -729,7 +704,6 @@ public class EntryUtil extends RepositoryManager {
 
         return (List<Entry>) Misc.toList(array);
     }
-
 
     private static int compare(Date d1, Date d2) {
 	if(d1==null && d2==null) return 0;
@@ -857,7 +831,6 @@ public class EntryUtil extends RepositoryManager {
     }
     private static boolean didit = false;
 
-
     public  List<Entry> sortEntriesOn(List<Entry> entries, String ons,
                                             boolean descending) {
         return sortEntriesOn(entries, Utils.split(ons, ",", true, true),
@@ -871,7 +844,6 @@ public class EntryUtil extends RepositoryManager {
 	if(ons.size()==1 && ons.get(0).equals("none")) return entries;
 	return sortEntriesCompareOn(entries,makeCompareOn(ons,entries), descending);
     }
-
 
     private List<CompareOn> makeCompareOn(List<String> ons,List<Entry> entries){
 	List<CompareOn> compareOns = new ArrayList<CompareOn>();
@@ -890,8 +862,6 @@ public class EntryUtil extends RepositoryManager {
     private  List<Entry> sortEntriesCompareOn(List<Entry> entries,
 						    final List<CompareOn> ons,
 						    final boolean descending) {
-	
-
 
 	final Request request = getAdminRequest();
         Comparator comp = new Comparator() {
@@ -923,8 +893,6 @@ public class EntryUtil extends RepositoryManager {
         return entries;
     }
 
-
-
     /**
      * _more_
      *
@@ -944,7 +912,6 @@ public class EntryUtil extends RepositoryManager {
         return sortEntriesOn(entries, Utils.split(sorts, ",", true, true),
                              descending);
     }
-
 
     /**
      *
@@ -1016,8 +983,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-
-
     /**
      * _more_
      *
@@ -1044,7 +1009,6 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-
     /**
      * _more_
      *
@@ -1057,8 +1021,6 @@ public class EntryUtil extends RepositoryManager {
         return getDateHandler().formatDate(request, entry.getStartDate(),
                                            getTimezone(request,entry));
     }
-
-
 
     /**
      * _more_
@@ -1078,7 +1040,6 @@ public class EntryUtil extends RepositoryManager {
 
         return results;
     }
-
 
     /**
      * _more_
@@ -1147,8 +1108,6 @@ public class EntryUtil extends RepositoryManager {
         return rect;
     }
 
-
-
     /**
      *
      * @param bbox _more_
@@ -1182,7 +1141,6 @@ public class EntryUtil extends RepositoryManager {
 
     }
 
-
     /**
      *  trim and remove the delimiter character
      *
@@ -1199,9 +1157,6 @@ public class EntryUtil extends RepositoryManager {
         return name;
     }
 
-
-
-
     /**
      * _more_
      *
@@ -1210,8 +1165,6 @@ public class EntryUtil extends RepositoryManager {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {}
-
-
 
     public static class Excluder {
 	List<String> patterns;
@@ -1243,14 +1196,12 @@ public class EntryUtil extends RepositoryManager {
 		}
 	    }
 
-
 	    if(sizeLimit>=0 && entry.isFile()) {
 		if(entry.getResource().getFileSize()>sizeLimit) {
 		    //		    System.err.println("Size Exclude:" + entry +" size:" + entry.getResource().getFileSize());
 		    return false;
 		}
 	    }
-
 
 	    if(patterns!=null) {
 		for(String exclude: patterns) {
@@ -1265,7 +1216,6 @@ public class EntryUtil extends RepositoryManager {
 	    return true;
 	}
     }
-	
 
     public static class CompareOn {
 	String on;
@@ -1278,6 +1228,5 @@ public class EntryUtil extends RepositoryManager {
 	    return this.on.equals(on);
 	}
     }
-
 
 }

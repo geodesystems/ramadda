@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
@@ -15,20 +14,15 @@ import org.ramadda.repository.auth.AuthorizationMethod;
 import org.ramadda.repository.harvester.Harvester;
 import org.ramadda.repository.util.SelectInfo;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
-
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-
 
 /**
  * Produces a shell script to download files
@@ -40,7 +34,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class BulkDownloadOutputHandler extends OutputHandler {
 
-
     /** The  output type */
     public static final OutputType OUTPUT_CURL =
         new OutputType("Bulk Download Script", "bulk.curl",
@@ -50,7 +43,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_WGET =
         new OutputType("Wget Download Script", "bulk.wget",
                        OutputType.TYPE_OTHER, "", ICON_FETCH);
-
 
     /** _more_ */
     public static final String ARG_RECURSE = "recurse";
@@ -75,7 +67,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
     private static String downloadsh;
 
-
     /**
      * Create a wget output handler
      *
@@ -90,7 +81,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         addType(OUTPUT_WGET);
 	downloadsh = getStorageManager().readUncheckedSystemResource("/org/ramadda/repository/resources/download.sh");
     }
-
 
     /**
      * Get the authorization method
@@ -133,7 +123,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 }
             }
 
-
             if (ok) {
                 //Maybe don't put this for the top level entries. 
                 //Somebody will invariably come along and try to fetch everything
@@ -154,9 +143,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
         }
     }
-
-
-
 
     /**
      * Output the entry
@@ -180,7 +166,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return outputGroup(request, outputType, null,
                            (List<Entry>) Utils.makeListFromValues(entry));
     }
-
 
     /**
      * Output a group of entries
@@ -218,7 +203,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return new Result("", sb, getMimeType(OUTPUT_CURL));
     }
 
-
     /**
      * _more_
      *
@@ -237,7 +221,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                         List<Entry> entries, boolean recurse,
                         boolean overwrite, HashSet<String> seen, boolean wget)
             throws Exception {
-
 
         List<List<String>> outputPairs         =
             new ArrayList<List<String>>();
@@ -268,11 +251,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
     }
 
-
     private String sanitize(String s) {
 	return s.replace("$","_dollar_");
     }
-
 
     /**
      * _more_
@@ -396,7 +377,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                                  destOutputFile, extraUrl,-1);
             }
 
-
         }
 
     }
@@ -455,7 +435,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
         }
     }
-
 
     /**
      * _more_
@@ -528,7 +507,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     private static String mkdir(String dir) {
         return cmd("makedir " + qt(dir));
     }
-
 
     /**
      * Get the MIME type for this output handler
@@ -613,9 +591,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                           + qt(url)+" " + size));
         }
 
-
     }
-
 
     /**
      * _more_
@@ -626,6 +602,5 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     public int getMaxEntryCount() {
         return 20000;
     }
-
 
 }

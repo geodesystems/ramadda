@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.database.Tables;
-
 
 import org.ramadda.repository.output.OutputHandler;
 
@@ -15,8 +13,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
-
-
 
 import ucar.unidata.util.DateUtil;
 
@@ -31,12 +27,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  * Handles entry comments
  */
 public class CommentManager extends RepositoryManager {
-
 
     /**
      * ctor
@@ -98,10 +92,6 @@ public class CommentManager extends RepositoryManager {
                                         HtmlUtils.ATTR_WIDTH, "100%")));
         }
 
-
-
-
-
         if ( !doRatings) {
             sb.append(HtmlUtils.p());
         }
@@ -115,8 +105,6 @@ public class CommentManager extends RepositoryManager {
                                       msg("Comments"), sb,
                                       new OutputHandler.State(entry)));
     }
-
-
 
     /**
      * _more_
@@ -169,10 +157,6 @@ public class CommentManager extends RepositoryManager {
         return comments;
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -199,8 +183,6 @@ public class CommentManager extends RepositoryManager {
 					  "Comment deleted"));
     }
 
-
-
     /**
      * _more_
      *
@@ -221,7 +203,6 @@ public class CommentManager extends RepositoryManager {
 
         StringBuffer sb = new StringBuffer();
         request.appendMessage(sb);
-
 
         String subject = BLANK;
         String comment = BLANK;
@@ -251,7 +232,6 @@ public class CommentManager extends RepositoryManager {
                         entry.getId(), ARG_MESSAGE,
 			"Comment added")));
         }
-
 
         sb.append(msgLabel("Add comment for")
                   + getEntryManager().getEntryLink(request, entry, ""));
@@ -283,7 +263,5 @@ public class CommentManager extends RepositoryManager {
                                       msg("Comments"), sb,
                                       new OutputHandler.State(entry)));
     }
-
-
 
 }

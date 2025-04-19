@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
@@ -17,25 +16,18 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.StringBufferCollection;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.io.File;
 
-
-
 import java.net.*;
-
-
 
 import java.text.SimpleDateFormat;
 
@@ -46,12 +38,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -62,13 +51,8 @@ import java.util.zip.*;
  */
 public class RssOutputHandler extends OutputHandler {
 
-
-
-
-
     /** _more_ */
     public static String MIME_RSS = "application/rss+xml";
-
 
     /** _more_ */
     private SimpleDateFormat rssSdf =
@@ -85,7 +69,6 @@ public class RssOutputHandler extends OutputHandler {
         new OutputType("RSS Feed", "rss.summary", OutputType.TYPE_FEEDS, "",
                        ICON_RSS);
 
-
     /**
      * _more_
      *
@@ -99,9 +82,6 @@ public class RssOutputHandler extends OutputHandler {
         addType(OUTPUT_RSS_FULL);
         addType(OUTPUT_RSS_SUMMARY);
     }
-
-
-
 
     /**
      * _more_
@@ -130,10 +110,6 @@ public class RssOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -149,7 +125,6 @@ public class RssOutputHandler extends OutputHandler {
             return super.getMimeType(output);
         }
     }
-
 
     /**
      * _more_
@@ -170,8 +145,6 @@ public class RssOutputHandler extends OutputHandler {
         return outputEntries(request, group, children);
     }
 
-
-
     /**
      * _more_
      *
@@ -191,7 +164,6 @@ public class RssOutputHandler extends OutputHandler {
 
         return outputEntries(request, entry, entries);
     }
-
 
     /**
      * _more_
@@ -283,7 +255,6 @@ public class RssOutputHandler extends OutputHandler {
                                       + entry.getEast(request)));
             }
 
-
             sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
 
@@ -293,12 +264,8 @@ public class RssOutputHandler extends OutputHandler {
         Result result = new Result("Query Results", sb,
                                    getMimeType(OUTPUT_RSS_SUMMARY));
 
-
-
-
         return result;
 
     }
-
 
 }

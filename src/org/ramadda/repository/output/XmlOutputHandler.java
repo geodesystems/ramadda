@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Repository;
@@ -20,7 +19,6 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipOutputStream;
@@ -33,12 +31,10 @@ public class XmlOutputHandler extends OutputHandler {
                                                     OutputType.TYPE_FEEDS,
                                                     "", ICON_XML);
 
-
     /** XML Entry output type */
     public static final OutputType OUTPUT_XMLENTRY =
         new OutputType("RAMADDA XML Entry Export", "xml.xmlentry", OutputType.TYPE_FEEDS,
                        "", ICON_XML);
-
 
     /**
      * Create an XML output handler
@@ -54,7 +50,6 @@ public class XmlOutputHandler extends OutputHandler {
         addType(OUTPUT_XMLENTRY);
     }
 
-
     /**
      * Get the MIME type for the output type
      *
@@ -69,7 +64,6 @@ public class XmlOutputHandler extends OutputHandler {
 
         return super.getMimeType(output);
     }
-
 
     /**
      * Output the entry
@@ -89,7 +83,6 @@ public class XmlOutputHandler extends OutputHandler {
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
-
     /**
      * _more_
      *
@@ -107,8 +100,6 @@ public class XmlOutputHandler extends OutputHandler {
 
         return XmlUtil.toString(root);
     }
-
-
 
     /**
      * Output a group of entries
@@ -151,8 +142,6 @@ public class XmlOutputHandler extends OutputHandler {
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
-
-
     /**
      * Get the entry element as XML
      *
@@ -193,7 +182,6 @@ public class XmlOutputHandler extends OutputHandler {
             ATTR_PATH, entry.getFullName(false), ATTR_ENTRYORDER,
             "" + entry.getEntryOrder()
         });
-
 
         if (entry.hasAltitude()) {
             node.setAttribute(ATTR_ALTITUDE, "" + entry.getAltitude());
@@ -265,7 +253,6 @@ public class XmlOutputHandler extends OutputHandler {
             }
         }
 
-
         if (Utils.stringDefined(entry.getDescription())) {
             Element descNode = XmlUtil.create(doc, TAG_DESCRIPTION, node);
             descNode.setAttribute("encoded", encode?"true":"false");
@@ -280,7 +267,6 @@ public class XmlOutputHandler extends OutputHandler {
 	getAccessManager().addEntryXml(entry, doc, node);
         return node;
     }
-
 
     /**
      * Get the tag for the group
@@ -308,6 +294,5 @@ public class XmlOutputHandler extends OutputHandler {
         return node;
 
     }
-
 
 }

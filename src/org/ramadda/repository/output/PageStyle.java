@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
 import java.util.HashSet;
-
 
 /**
  *
@@ -138,7 +136,6 @@ public class PageStyle {
         return showMenubar;
     }
 
-
     /**
      *  Set the ShowToolbar property.
      *
@@ -160,7 +157,6 @@ public class PageStyle {
         return showToolbar;
     }
 
-
     /**
      *  Set the ShowLayoutToolbar property.
      *
@@ -181,7 +177,6 @@ public class PageStyle {
         //        if(true) return false;
         return showLayoutToolbar;
     }
-
 
     /**
      *  Set the ShowEntryHeader property.
@@ -223,7 +218,5 @@ public class PageStyle {
         //        if(true) return false;
         return showBreadcrumbs;
     }
-
-
 
 }

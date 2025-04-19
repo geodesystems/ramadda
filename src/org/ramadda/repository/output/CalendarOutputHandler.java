@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
@@ -15,12 +14,10 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -30,14 +27,11 @@ import java.io.*;
 
 import java.io.File;
 
-
-
 import java.net.*;
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-
 
 import java.util.TimeZone;
 import java.util.Calendar;
@@ -49,12 +43,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -65,7 +56,6 @@ import java.util.zip.*;
  */
 @SuppressWarnings("unchecked")
 public class CalendarOutputHandler extends OutputHandler {
-
 
     /** _more_ */
     public static final String TAG_DATA = "data";
@@ -85,7 +75,6 @@ public class CalendarOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-
     /** _more_ */
     public static final String ATTR_END = "end";
 
@@ -104,8 +93,6 @@ public class CalendarOutputHandler extends OutputHandler {
     /** _more_ */
     public static final String ATTR_COLOR = "color";
 
-
-
     /** _more_ */
     public static final OutputType OUTPUT_DATE_GRID =
         new OutputType("Date Grid", "calendar.grid", OutputType.TYPE_VIEW,
@@ -117,13 +104,10 @@ public class CalendarOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_CALENDAR);
 
-
-
     /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline", OutputType.TYPE_VIEW,
                        "", ICON_TIMELINE);
-
 
     /**
      * _more_
@@ -139,11 +123,6 @@ public class CalendarOutputHandler extends OutputHandler {
         addType(OUTPUT_TIMELINE);
         addType(OUTPUT_DATE_GRID);
     }
-
-
-
-
-
 
     /**
      * _more_
@@ -171,7 +150,6 @@ public class CalendarOutputHandler extends OutputHandler {
         }
     }
 
-
     /**
      * _more_
      *
@@ -192,7 +170,6 @@ public class CalendarOutputHandler extends OutputHandler {
 
         return null;
     }
-
 
     /**
      * _more_
@@ -250,7 +227,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return result;
     }
 
-
     /**
      * _more_
      *
@@ -268,7 +244,6 @@ public class CalendarOutputHandler extends OutputHandler {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         StringBuffer     sb  = new StringBuffer();
         sb.append(XmlUtil.openTag(TAG_DATA));
-
 
         for (Entry entry : allEntries) {
             String icon = getPageHandler().getIconUrl(request, entry);
@@ -432,10 +407,6 @@ public class CalendarOutputHandler extends OutputHandler {
         sb.append(timelineTemplate);
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -543,7 +514,6 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         sb.append("</table>");
 
-
     }
 
     /**
@@ -605,7 +575,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return cal;
     }
 
-
     /** _more_ */
     private static final int IDX_DAY = 0;
 
@@ -614,7 +583,6 @@ public class CalendarOutputHandler extends OutputHandler {
 
     /** _more_ */
     private static final int IDX_YEAR = 2;
-
 
     /**
      * _more_
@@ -626,7 +594,6 @@ public class CalendarOutputHandler extends OutputHandler {
     public static String getUrlArgs(GregorianCalendar cal) {
         return getUrlArgs(getDayMonthYear(cal));
     }
-
 
     /**
      * _more_
@@ -640,10 +607,6 @@ public class CalendarOutputHandler extends OutputHandler {
                + "=" + dayMonthYear[IDX_MONTH] + "&" + ARG_DAY + "="
                + dayMonthYear[IDX_DAY];
     }
-
-
-
-
 
     /**
      * _more_
@@ -671,7 +634,6 @@ public class CalendarOutputHandler extends OutputHandler {
 
         return new Result(msg("Calendar"), sb);
     }
-
 
     /**
      * _more_
@@ -705,14 +667,11 @@ public class CalendarOutputHandler extends OutputHandler {
 						      label, null, false, false).toString());
 	    url = getEntryManager().getPopupLink(request, entry, label);
 
-	    
-
             calEntries.add(new CalendarEntry(entryDate, url, entry));
         }
 
         return calEntries;
     }
-
 
     /**
      * Class description
@@ -746,7 +705,6 @@ public class CalendarOutputHandler extends OutputHandler {
         }
     }
 
-
     /**
      * _more_
      *
@@ -773,7 +731,6 @@ public class CalendarOutputHandler extends OutputHandler {
                                      request.get(ARG_MONTH, today[IDX_MONTH]),
                                      request.get(ARG_YEAR, today[IDX_YEAR]) };
 
-
         int[] prev = (doDay
                       ? getDayMonthYear(add(getCalendar(selected),
                                             Calendar.DAY_OF_MONTH, -1))
@@ -797,7 +754,6 @@ public class CalendarOutputHandler extends OutputHandler {
                               Calendar.YEAR, 1)));
 
         int[]                   someDate = null;
-
 
         List                    dayItems = null;
         Hashtable               dates    = new Hashtable();
@@ -847,7 +803,6 @@ public class CalendarOutputHandler extends OutputHandler {
                 didone = true;
             }
 
-
             if (didone || hadDateArgs) {
                 break;
             }
@@ -876,7 +831,6 @@ public class CalendarOutputHandler extends OutputHandler {
             }
         }
 
-
         String[] navIconolds = { "/icons/prevprev.gif", "/icons/prev.gif",
                                  "/icons/today.gif", "/icons/next.gif",
                                  "/icons/nextnext.gif" };
@@ -885,12 +839,10 @@ public class CalendarOutputHandler extends OutputHandler {
                               "fas fa-stop", "fas fa-step-forward",
                               "fas fa-forward" };
 
-
         String[]          navLabels;
         SimpleDateFormat  headerSdf;
         GregorianCalendar cal;
         List<String>      navUrls = new ArrayList<String>();
-
 
         if (doDay) {
             headerSdf = new SimpleDateFormat("MMMMM, dd yyyy");
@@ -905,14 +857,12 @@ public class CalendarOutputHandler extends OutputHandler {
             cal = getCalendar(1, selected[IDX_MONTH], selected[IDX_YEAR]);
         }
 
-
         request.put(ARG_YEAR, "" + (prevprev[IDX_YEAR]));
         request.put(ARG_MONTH, "" + (prevprev[IDX_MONTH]));
         if (doDay) {
             request.put(ARG_DAY, "" + (prevprev[IDX_DAY]));
         }
         navUrls.add(request.getUrl());
-
 
         request.put(ARG_YEAR, "" + (prev[IDX_YEAR]));
         request.put(ARG_MONTH, "" + (prev[IDX_MONTH]));
@@ -921,14 +871,12 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         navUrls.add(request.getUrl());
 
-
         request.put(ARG_YEAR, "" + (today[IDX_YEAR]));
         request.put(ARG_MONTH, "" + (today[IDX_MONTH]));
         if (doDay) {
             request.put(ARG_DAY, "" + (today[IDX_DAY]));
         }
         navUrls.add(request.getUrl());
-
 
         request.put(ARG_YEAR, "" + next[IDX_YEAR]);
         request.put(ARG_MONTH, "" + next[IDX_MONTH]);
@@ -952,14 +900,13 @@ public class CalendarOutputHandler extends OutputHandler {
                                            navLabels[i], " border=\"0\"")));
         }
 
-
         if (doDay) {
             StringBuffer tmp  = new StringBuffer();
             String       link = "";
             if (dayItems.size() > 0) {
                 if (dayItems.get(0) instanceof Entry) {
 		    Hashtable props = Utils.makeMap("columns","name,time","showTime","true","showForm","false");
-		    
+
                     link = getWikiManager().makeTableTree(request, null,
 							  props, dayItems);
                 } else {
@@ -1060,7 +1007,6 @@ public class CalendarOutputHandler extends OutputHandler {
                         HtmlUtils.cssClass("cal-day-link")) + HtmlUtils.div(
                             dayContents, HtmlUtils.cssClass("cal-day"));
 
-
                     sb.append("<td width=15% class=\"calentry\" " + bg + " >"
                               + content + "</td>");
                     cal.add(cal.DAY_OF_MONTH, 1);
@@ -1080,7 +1026,5 @@ public class CalendarOutputHandler extends OutputHandler {
 
         //        return new Result(msg("Calendar"), sb);
     }
-
-
 
 }

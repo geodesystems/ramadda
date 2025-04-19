@@ -64,8 +64,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-
-
 /**
  * This class handles the extended entry edit functions
  */
@@ -113,7 +111,6 @@ public class ExtEditor extends RepositoryManager {
         super(repository);
     }
 
-    
     public Result processEntryExtEditEntries(Request request) throws Exception {
 	List<Entry> entries = new ArrayList<Entry>();
 	for(Object id: request.get(ARG_ENTRYID, new ArrayList<String>())) {
@@ -124,14 +121,13 @@ public class ExtEditor extends RepositoryManager {
 	return processEntryExtEdit(request, group,entries);
     }
 
-
     public Result processEntryExtEdit(final Request request)
 	throws Exception {
         Entry              entry        = getEntryManager().getEntry(request);
 	return processEntryExtEdit(request, entry,null);
 
     }
-    
+
     private void visit(Entry entry,List<Entry> extEntries, EntryVisitor visitor) throws Exception {
 	if(extEntries!=null)
 	    visitor.walk(extEntries);
@@ -223,8 +219,6 @@ public class ExtEditor extends RepositoryManager {
 					entry.getTypeHandler().addInitialMetadata(request, entry,true);
 					changed = true;
 				    }
-
-
 
 				    if (doSpatial) {
 					Rectangle2D.Double rect = getEntryUtil().getBounds(request,children);
@@ -345,7 +339,6 @@ public class ExtEditor extends RepositoryManager {
 		    list.append("</tr>");		    
 		    continue;
 		}
-
 
 		if(selected && confirmed) {
 		    cnt++;
@@ -547,8 +540,6 @@ public class ExtEditor extends RepositoryManager {
 						    entry.setEndDate(wrapper.endDate);
 						}
 
-
-
 						if(changed) {
 						    getEntryManager().removeFromCache(entry);
 						    if(!haveReset) {
@@ -687,12 +678,10 @@ public class ExtEditor extends RepositoryManager {
 	    what = new String[]{ARG_EXTEDIT_REPORT};
         }
 
-
 	String help = HU.href(getRepository().getUrlBase()+
 			      "/userguide/extendededit.html", "Help",
 			      HU.attrs("target","_help","class","ramadda-clickable"));
         getPageHandler().entrySectionOpen(request, entry, sb, "Extended Edit - " + help);
-
 
 	sb.append(prefix);
 	if(actionId!=null) {
@@ -707,13 +696,9 @@ public class ExtEditor extends RepositoryManager {
 	    HU.script(sb,"Utils.handleActionResults('" + actionId +"','" + url+"',"+ canCancel+");\n");
 	}
 
-
-
 	final StringBuilder[] buff={null};
 	List<String> titles=  new ArrayList<String>();
 	List<StringBuilder> contents=  new ArrayList<StringBuilder>();	
-	
-
 
 	Consumer<String> opener = label->{
 	    titles.add(label);
@@ -725,10 +710,9 @@ public class ExtEditor extends RepositoryManager {
 		request.formPostWithAuthToken(buff[0], getRepository().URL_ENTRY_EXTEDIT,HU.attr("name", "entryform"));
 	    }
 
-
 	    buff[0].append(HU.hidden(ARG_ENTRYID, finalEntry.getId()));	    
 	    buff[0].append(extraFormArgs);
-   
+
 	    buff[0].append(HU.openInset(5, 30, 20, 0));
 	};
         Utils.VarArgsConsumer<String> closer= (args) -> {
@@ -741,12 +725,10 @@ public class ExtEditor extends RepositoryManager {
 	    buff[0].append(HU.closeInset());
 	};
 
-
 	List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,true, true, entry);
 	tfos.add(0,new HtmlUtils.Selector("Select one","",""));
 
 	String popupArgs = "{label:'Select entry type',makeButtons:false,after:true,single:true}";
-		
 
 	for(String form: what) {
 	    if(form.equals(ARG_EXTEDIT_EDIT)) {
@@ -784,13 +766,11 @@ public class ExtEditor extends RepositoryManager {
 		buff[0].append(HU.b("Template") +": "+
 			       HU.input(ARG_EXTEDIT_ADDALIAS_TEMPLATE,request.getString(ARG_EXTEDIT_ADDALIAS_TEMPLATE,"${name}"),
 					HU.attr("size","40")) +" e.g., somealias_${name}");
-		
 
 		if(request.exists(ARG_EXTEDIT_ADDALIAS) || request.exists(ARG_EXTEDIT_ADDALIAS_CONFIRM)) 
 		    closer.accept(ARG_EXTEDIT_ADDALIAS,"Test aliases",
 				  ARG_EXTEDIT_ADDALIAS_CONFIRM,"Add aliases to selected entries");				
 
-	
 		else
 		    closer.accept(ARG_EXTEDIT_ADDALIAS,"Test aliases");
 	    }  else if(form.equals(ARG_EXTEDIT_CHANGETYPE)){
@@ -840,7 +820,6 @@ public class ExtEditor extends RepositoryManager {
 		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 						 HU.quote("#"+id2),
 						 popupArgs)));		
-
 
 		HU.formEntry(buff[0], "",
 			     HU.labeledCheckbox(ARG_EXTEDIT_CHANGETYPE_RECURSE_CONFIRM, "true",
@@ -895,7 +874,7 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400)</span>\n<span>entry.grayscaleImage()</span>\n" +
 		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
 		    "</div>";
-		    
+
 		String llm =
 		    "<div class=exteg>" +
 		    "//Set the LLM to be used for subsequent calls\n" +
@@ -934,7 +913,6 @@ public class ExtEditor extends RepositoryManager {
 		HU.makeTabs(helpSB,helpTitles,helpTabs);
 		helpSB.append(HU.script("Utils.initCopyable('.exteg span',{addNL:true,textArea:'" +ARG_EXTEDIT_SOURCE+"'});"));
 
-
 		String ex =  (String) getSessionManager().getSessionProperty(request,"extedit");
 		if(ex==null)
 		    ex = "//Include any javascript here\n" +
@@ -946,7 +924,7 @@ public class ExtEditor extends RepositoryManager {
 		HU.formEntry(buff[0],  HU.table(HU.rowTop(HU.cols(HU.textArea(ARG_EXTEDIT_SOURCE, ex,10,60,HU.attr("id",ARG_EXTEDIT_SOURCE)) +
 								  exclude,
 								  helpSB.toString()))));
-		
+
 		buff[0].append(HU.formTableClose());
 		buff[0].append("<br>");
 		closer.accept(form,"Apply Javascript");
@@ -954,7 +932,6 @@ public class ExtEditor extends RepositoryManager {
 	    buff[0].append(HU.formClose());
 	}
 
-	
 	if(titles.size()==1) {
 	    String label = titles.get(0);
 	    sb.append(formHeader(HU.span(label,HU.style("font-size:120%;"))));
@@ -963,15 +940,11 @@ public class ExtEditor extends RepositoryManager {
 	    HU.makeAccordion(sb,titles,contents);
 	}
 
-
 	sb.append(suffix);
-
 
         return getEntryManager().makeEntryEditResult(request, entry, "Extended Edit", sb);
     }
 
-
-    
     public List<HtmlUtils.Selector> getTypeHandlerSelectors(Request request,
 							    boolean fileType, boolean nonFileType, Entry entry)
 	throws Exception {
@@ -991,8 +964,6 @@ public class ExtEditor extends RepositoryManager {
         for (String preload : EntryManager.PRELOAD_CATEGORIES) {
             cats.get(preload);
         }
-
-
 
         List<TypeHandler> typeHandlers = getRepository().getTypeHandlersForDisplay(true);
 
@@ -1089,10 +1060,6 @@ public class ExtEditor extends RepositoryManager {
       }
     */
 
-
-
-
-    
     public Result processEntryTypeChange(Request request) throws Exception {
 
         Entry parent = getEntryManager().getEntryFromRequest(request, ARG_ENTRYID,
@@ -1116,7 +1083,6 @@ public class ExtEditor extends RepositoryManager {
             entries.add(entry);
         }
 
-
         if (entries.size() == 0) {
 	    return new Result("",getPageHandler().makeEntryPage(request, parent,"Entry Type Change",
 								getPageHandler().showDialogError("No entries specified")));
@@ -1127,7 +1093,6 @@ public class ExtEditor extends RepositoryManager {
 			      request.entryUrl(
 					       getRepository().URL_ENTRY_SHOW, parent!=null?parent:entries.get(0)));
         }
-
 
         StringBuffer sb = new StringBuffer();
         if (request.exists(ARG_CONFIRM)) {
@@ -1158,8 +1123,6 @@ public class ExtEditor extends RepositoryManager {
             return new Result("", getPageHandler().makeEntryPage(request, parent,"Entry Type Change",sb.toString()));
         }
 
-
-
         List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,
 								true, true, null);
 
@@ -1169,7 +1132,7 @@ public class ExtEditor extends RepositoryManager {
 	if(parent!=null)
 	    sb.append(HU.hidden(ARG_ENTRYID, parent.getId()));
         sb.append(HU.p());
-	
+
         StringBuffer inner = new StringBuffer();
         inner.append(msg("Are you sure you want to change the entry types?"));
         inner.append(HU.p());
@@ -1206,9 +1169,6 @@ public class ExtEditor extends RepositoryManager {
 	return new Result("", getPageHandler().makeEntryPage(request, parent,"Entry Type Change",sb.toString()));
     }
 
-
-
-    
     private Entry changeType(Request request, Entry entry,
                              TypeHandler newTypeHandler)
 	throws Exception {
@@ -1229,7 +1189,6 @@ public class ExtEditor extends RepositoryManager {
             getDatabaseManager().closeConnection(connection);
         }
 
-
         getDatabaseManager().update(Tables.ENTRIES.NAME,
                                     Tables.ENTRIES.COL_ID, entry.getId(),
                                     new String[] { Tables.ENTRIES.COL_TYPE },
@@ -1247,10 +1206,6 @@ public class ExtEditor extends RepositoryManager {
         return entry;
     }
 
-
-
-
-    
     public Result changeType(Request request, List<Entry> groups,
                              List<Entry> entries)
 	throws Exception {
@@ -1260,7 +1215,6 @@ public class ExtEditor extends RepositoryManager {
 	  }
 	  TypeHandler typeHandler =
 	  getRepository().getTypeHandler(TypeHandler.TYPE_HOMEPAGE);
-
 
 	  List<Entry> changedEntries = new ArrayList<Entry>();
 
@@ -1276,9 +1230,6 @@ public class ExtEditor extends RepositoryManager {
         return new Result("Metadata", new StringBuilder("OK"));
     }
 
-
-
-    
     public boolean setTimeFromChildren(Request request, Entry entry,
                                        List<Entry> children)
 	throws Exception {
@@ -1308,9 +1259,6 @@ public class ExtEditor extends RepositoryManager {
         return changed;
     }
 
-
-
-    
     public void setBoundsFromChildren(Request request, Entry entry)
 	throws Exception {
         if (entry == null) {
@@ -1322,7 +1270,6 @@ public class ExtEditor extends RepositoryManager {
             getEntryManager().updateEntry(request, entry);
         }
     }
-
 
     public static class EntryWrapper {
 	private Entry entry;
@@ -1338,7 +1285,6 @@ public class ExtEditor extends RepositoryManager {
 	String url;
 	List<EntryWrapper> children;
 	JsContext ctx;
-
 
 	public EntryWrapper(Request request, Repository repository, JsContext ctx, Entry entry) {
 	    this.repository = repository;
@@ -1375,7 +1321,6 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-
 	public void setOwner(String userID) throws Exception {
 	    User user = repository.getUserManager().findUser(userID);
 	    if(user==null) throw new IllegalArgumentException("Could not find user:" + userID);
@@ -1393,9 +1338,6 @@ public class ExtEditor extends RepositoryManager {
 	    ctx.print("Image changed:" + entry.getName());
 	}
 
-
-
-
 	public void resizeImage(int width) throws Exception {
 	    if(!isImage()) throw new IllegalArgumentException("Not an image:" + entry.getName());
 	    String theFile = entry.getResource().getPath();
@@ -1406,7 +1348,6 @@ public class ExtEditor extends RepositoryManager {
 			  image.getWidth(null));
 		return;
 	    }
-
 
 	    image = ImageUtils.resize(image, width, -1);
 	    ImageUtils.waitOnImage(image);
@@ -1430,7 +1371,6 @@ public class ExtEditor extends RepositoryManager {
 	    repository.getSearchManager().entriesModified(request, entries);
 	}
 
-
 	public boolean hasMetadata(String type,String...values) throws Exception {
 	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
 
@@ -1450,8 +1390,6 @@ public class ExtEditor extends RepositoryManager {
 	    return true;
 	}
 
-
-
 	public boolean matchMetadata(String match,String value) throws Exception {
 	    boolean regexp = StringUtil.containsRegExp(match);
 	    if(regexp) {
@@ -1461,13 +1399,11 @@ public class ExtEditor extends RepositoryManager {
 	    return value.indexOf(_match)>0;
 	}
 
-
 	public void addMetadata(String type,String...values) throws Exception {
 	    repository.getMetadataManager().addMetadata(request,entry,  type, true,values);
 	    ctx.print("Added metadata to:" + entry.getName());
 	    changed=true;
 	}
-
 
 	public void listMetadata(String type,String match) throws Exception {
 	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
@@ -1503,7 +1439,7 @@ public class ExtEditor extends RepositoryManager {
 		}
 	    }
 	}
-	
+
 	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
 		Column column = entry.getTypeHandler().getColumn(type);
@@ -1515,12 +1451,11 @@ public class ExtEditor extends RepositoryManager {
 			return;
 		    }
 		}
-		    
+
 		String r = repository.getLLMManager().applyPromptToDocument(request,
 									    entry,
 									    true,
 									    prompt,null);
-
 
 		if(r!=null && column!=null) {
 		    entry.setValue(column,r);
@@ -1626,7 +1561,6 @@ public class ExtEditor extends RepositoryManager {
 	    request.put(ARG_DOOCR,true);
 	}
 
-
 	public void setLocation(double lat,double lon) {
 	    entry.setLocation(lat,lon);
 	    changed=true;
@@ -1636,7 +1570,6 @@ public class ExtEditor extends RepositoryManager {
 	    entry.setAltitude(alt);
 	    changed=true;
 	}		
-
 
 	public void setLocationFromParent() {
 	    Entry parent = entry.getParentEntry();
@@ -1657,12 +1590,11 @@ public class ExtEditor extends RepositoryManager {
 	    return entry.getDescription();
 	}
 
-
 	public String getCorpus() throws Exception {
 	    String corpus =  entry.getTypeHandler().getDescriptionCorpus(entry);
 	    return corpus;
 	}
-	
+
 	public String getFullCorpus() throws Exception {
 	    StringBuilder sb = new StringBuilder();
 	    entry.getTypeHandler().getTextCorpus(entry, sb, true,true);
@@ -1712,11 +1644,11 @@ public class ExtEditor extends RepositoryManager {
 	    else this.endDate = Utils.parseDate(date);
 	    endDateChanged = true;
 	}	
-	
+
 	public String toString() {
 	    return getName();
 	}
-	
+
     }
 
     public static class JsContext {
@@ -1755,14 +1687,14 @@ public class ExtEditor extends RepositoryManager {
 
 	public void warning(Object msg) {
 	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-warning")));
-						  
+
 	}	
 
 	public void error(Object msg) {
 	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-error")));
-						  
+
 	}	
-	
+
 	public int log(int cnt,Object msg) {
 	    if((count++%cnt)==0) {
 		String s = msg.toString();
@@ -1773,7 +1705,6 @@ public class ExtEditor extends RepositoryManager {
 	    return count;
 	}	
     }
-
 
     public static final String ARG_TYPEID = "typeid";
     public static final String ARG_TYPENAME = "typename";    
@@ -1787,11 +1718,9 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_SAVE = "save";        
     public static final String ARG_COMMENT = "comment";
 
-
     public boolean createTypeOK(Request request) {
 	return !request.isAnonymous();
     }
-
 
     /**
        this is the main entry point
@@ -1803,7 +1732,6 @@ public class ExtEditor extends RepositoryManager {
 	if(!getAccessManager().canDoEdit(request, entry)) {
 	    throw new AccessException("You do not have access to Create Type for this entry", request);
 	}
-
 
 	if(request.exists(ARG_CREATE)|| request.exists(ARG_SAVE) || request.exists(ARG_INSTALL)) {
 	    StringBuilder sb = new StringBuilder();
@@ -1834,9 +1762,6 @@ public class ExtEditor extends RepositoryManager {
 	callout+="\n-note";
 	sb.append(getWikiManager().wikify(request,callout));
 		  //	getWikiManager().makeCallout(sb,request,callout);
-
-
-
 
 	sb.append(HU.importJS(getHtdocsUrl("/createtype.js")));
 	if(msg!=null) sb.append(msg);
@@ -1870,8 +1795,6 @@ public class ExtEditor extends RepositoryManager {
 	    typesSel.add(new HtmlUtils.Selector(tuple));
 	}
 
-
-	
 	String extraType = request.getString(ARG_HANDLER_EXTRA,"");
         main.append(HU.formEntry(msgLabel("Java Handler"),
 				 HU.select(ARG_HANDLER,typesSel,
@@ -1918,15 +1841,11 @@ public class ExtEditor extends RepositoryManager {
 	HU.formEntry(extra,"Extra XML:",
 		     HU.textArea("extraxml",request.getString("extraxml",""),4,50));
 
-
 	HU.formEntry(extra,"",HU.div("Wiki text for map popup",HU.clazz("ramadda-form-help")));
 	HU.formEntry(extra,"Map Popup:",
 		     HU.textArea("mappopup",request.getString("mappopup",""),4,50));
 
-
-
         extra.append(HU.formTableClose());	
-	
 
 	StringBuilder cols = new StringBuilder();
 	cols.append(HU.span("",HU.attrs("id","colbuttons")));
@@ -1945,7 +1864,6 @@ public class ExtEditor extends RepositoryManager {
 	js.append("}\n");
 	js.append("Utils.initCopyable('.props_colattributes .prop',{input:'.typecreate-column-extra'});");
 
-
 	String ex = "e.g. -  size=\"500\" values=\"v1,v2,v3\" ";
 	cols.append(HU.tr(HU.td("<b>Name</b>")+HU.td("<b>Label</b>")+HU.td("<b>Type</b>")
 			  //+HU.td("<b  title='Size for strings'>Size</b>")+HU.td("<b>Enum Values</b>")
@@ -1953,10 +1871,10 @@ public class ExtEditor extends RepositoryManager {
 	String w1  =HU.attr("width","20%");
 	String w2  =HU.attr("width","50%");
 	String inputSize  =HU.style("width:98%;");
-	
+
 	List<String> types =
 	    Utils.split("string,enumeration,enumerationplus,multienumeration,double,int,boolean,datetime,date,list,password,clob,url,latlon,email",",");
-					 
+
 	types.add(0,"");
 	for(int i=0;i<50;i++) {
 	    cols.append(HU.tr(HU.td(HU.input("column_name_" +i,request.getString("column_name_"+i,""),
@@ -1966,19 +1884,15 @@ public class ExtEditor extends RepositoryManager {
 			      HU.td(HU.textArea("column_extra_" +i,request.getString("column_extra_"+i,""),1,50,
 						inputSize+HU.clazz("typecreate-column-extra")),w2),"valign=top"));
 	}
-	
+
         cols.append("</table>\n");
         cols.append(HU.formTable());	
 
 	cols.append(HU.script(js.toString()));
 
-
-
-
 	StringBuilder admin = new StringBuilder();
 	Utils.append(admin,HU.div(HU.b("Comment:")),
 		     HU.textArea(ARG_COMMENT,request.getString(ARG_COMMENT,""),4,50));
-
 
 	HU.div(admin, "If For Import is checked then the generated file will not end in \"types.xml\" so it can be included in a plugin and be imported by some other types.xml",HU.clazz("ramadda-form-help"));
 	admin.append(HU.insetDiv(HU.labeledCheckbox(ARG_FORIMPORT,"true",request.get(ARG_FORIMPORT,false),"For Import"),
@@ -1996,7 +1910,6 @@ public class ExtEditor extends RepositoryManager {
 					 "Advanced Configuration","Columns"},
 	    new Object[]{main,admin,properties,extra,cols});
 	sb.append(HtmlUtils.formClose());
-	
 
 	List<Metadata> metadataList =
 	    getMetadataManager().findMetadata(request, entry,
@@ -2007,7 +1920,6 @@ public class ExtEditor extends RepositoryManager {
 	    jsonMetadata = metadataList.get(0);
 	}
 
-
 	sb.append(HU.script("var entryTypeCreateJson = null;\n"));
 	if(jsonMetadata!=null) {
 	    String json = jsonMetadata.getAttr1();
@@ -2017,14 +1929,11 @@ public class ExtEditor extends RepositoryManager {
 	} 
 
 	sb.append(HU.script(HU.call("CreateType.init",HU.squote(formId),HU.squote(entry.getId()),"entryTypeCreateJson")));
-	
-	
+
 	getPageHandler().entrySectionClose(request, entry, sb);
 	Result result =  new Result("Create Type - " + entry.getName(),sb);
         return getEntryManager().addEntryHeader(request, entry, result);
     }
-
-
 
     private StringBuilder addTypeProps(Request request, String resource, String arg,int rows) throws Exception {
 	StringBuilder dfltProps = processTypeProps(request, resource,arg,rows);
@@ -2037,7 +1946,6 @@ public class ExtEditor extends RepositoryManager {
 	propsSection.append(HU.script("Utils.initCopyable('." + clazz+" .prop',{addNL:true,textArea:'" +arg+"'});"));
 	return propsSection;
     }
-
 
     private StringBuilder processTypeProps(Request request, String resource,String arg,int rows)
 	throws Exception {
@@ -2085,7 +1993,6 @@ public class ExtEditor extends RepositoryManager {
 	    getMetadataManager().findMetadata(request, entry,
 					      new String[]{AdminMetadataHandler.TYPE_ENTRY_TYPE},false);
 
-
 	if(metadataList!=null && metadataList.size()>0) {
 	    return metadataList.get(0);
 	}
@@ -2115,9 +2022,8 @@ public class ExtEditor extends RepositoryManager {
 	    return outputCreateType(request,  entry,getPageHandler().showDialogError("Bad format for type ID"));
 	}
 
-
 	sb = new StringBuilder();
-	
+
 	String name = request.getString(ARG_TYPENAME,"");
 	if(!Utils.stringDefined(name)) name = Utils.makeLabel(id);
 	String handler = request.getString(ARG_HANDLER,"").trim();
@@ -2141,7 +2047,7 @@ public class ExtEditor extends RepositoryManager {
 	    entry.setMetadataChanged(true);
 	    getEntryManager().updateEntry(null, entry);
 	}
-	
+
 	String filename;
 	if(request.get(ARG_FORIMPORT,false)) {
 	    filename = id+".xml";
@@ -2149,7 +2055,6 @@ public class ExtEditor extends RepositoryManager {
 	    filename = id+"_types.xml";
 	}
 	String comment;
-	
 
 	if(request.get(ARG_FORIMPORT,false)) {
 	    comment ="\nSince this is for import add a:\n<import resource=\"" + filename+"\"/>\ninto some types.xml file\n"; 
@@ -2172,7 +2077,7 @@ public class ExtEditor extends RepositoryManager {
 		colSB.append("\n");
 		colSB.append(XU.comment("Columns"));
 	    }
-	    
+
 	    String label = request.getString("column_label_"+i,"");
 	    if(!Utils.stringDefined(label)) label  = Utils.makeLabel(cname);
 	    String type = request.getString("column_type_"+i,"");
@@ -2184,8 +2089,6 @@ public class ExtEditor extends RepositoryManager {
 	    if(request.defined("column_help_"+i)) {
 		attrs+=XU.attrs("help",request.getString("column_help_"+i,""));
 	    }
-
-	    
 
 	    if(Utils.stringDefined(size)) 
 		attrs+=XU.attr("size",size);
@@ -2206,7 +2109,6 @@ public class ExtEditor extends RepositoryManager {
 	if(columnCnt>0 && handler.equals("org.ramadda.repository.type.TypeHandler")) {
 	    handler = "org.ramadda.repository.type.GenericTypeHandler";
 	}
-
 
 	sb.append(XmlUtil.comment(comment));
 	sb.append("<type ");
@@ -2245,15 +2147,12 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(">\n");	
 	sb.append(colSB);
 
-
 	String mappopup = request.getString("mappopup","");
 	if(Utils.stringDefined(mappopup)) {
 	    sb.append("<property name=\"map.popup\">\n<![CDATA[");
 	    sb.append(mappopup);
 	    sb.append("]]></property>\n");
 	}
-
-
 
 	String extra = request.getString("extraxml","");
 	if(Utils.stringDefined(extra)) {
@@ -2276,8 +2175,6 @@ public class ExtEditor extends RepositoryManager {
 	    sb.append("\n");
 	}
 
-	
-	
 	String seesv = (String)entry.getValue(request, "convert_commands");
 	if(Utils.stringDefined(seesv)) {
 	    seesv+="\n-args";
@@ -2287,10 +2184,9 @@ public class ExtEditor extends RepositoryManager {
 		sb.append("\n");
 		sb.append(XU.comment("SeeSV commands"));
 		sb.append(XU.tag("property",XU.attr("name","record.properties"),XU.getCdata("\n"+csvCommands+"\n")));
-		
+
 	    }
 	}
-
 
 	String desc = entry.getDescription();
 	if (Utils.stringDefined(desc) && entry.getTypeHandler().isWikiText(desc)) {
@@ -2300,11 +2196,10 @@ public class ExtEditor extends RepositoryManager {
 	    desc=desc.replaceAll("^<wiki>","");
 	    desc = desc.replace("\r\n","\n");	    
 	    sb.append(XU.tag("wiki","",XU.getCdata(desc)));
-	    
+
 	}
 
 	sb.append("</type>\n");
-
 
 	Element root =null;
 	String xml = sb.toString();
@@ -2368,7 +2263,6 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-
 	if(request.isAdmin() && request.get(ARG_DROPTABLE,false)) {
 	    StringBuilder buff = new StringBuilder();
 	    if(!getAuthManager().verify(request,buff, true)) {
@@ -2401,19 +2295,14 @@ public class ExtEditor extends RepositoryManager {
 	    return  outputCreateType(request, entry,theMessage);
 	}
 
-
 	if(!create) {
 	    return outputCreateType(request,  entry,"");
 	}
-	
+
 	request.setReturnFilename(filename, false);	    
 
 	return new Result("", sb, MIME_XML);
     }
-    
-
-
-
 
 }
 

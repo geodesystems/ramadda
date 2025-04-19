@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.IO;
-
 
 import org.w3c.dom.*;
 import java.io.*;
@@ -26,7 +24,6 @@ import java.util.Properties;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
 /**
  *
  *
@@ -36,14 +33,11 @@ import java.util.zip.*;
  */
 public class IcalOutputHandler extends OutputHandler {
 
-
-
     /** _more_ */
     public static final OutputType OUTPUT_ICAL = new OutputType("ICAL",
                                                      "ical",
                                                      OutputType.TYPE_FEEDS,
                                                      "", ICON_CALENDAR);
-
 
     /** _more_ */
     private SimpleDateFormat sdf;
@@ -60,9 +54,6 @@ public class IcalOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_ICAL);
     }
-
-
-
 
     /**
      * _more_
@@ -85,10 +76,6 @@ public class IcalOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -103,7 +90,6 @@ public class IcalOutputHandler extends OutputHandler {
             return super.getMimeType(output);
         }
     }
-
 
     /**
      * _more_
@@ -137,7 +123,6 @@ public class IcalOutputHandler extends OutputHandler {
 
         return sdf.format(new Date(t)) + "Z";
     }
-
 
     /**
      * _more_
@@ -195,13 +180,11 @@ public class IcalOutputHandler extends OutputHandler {
         request.put(ARG_OUTPUT, output);
         sb.append("END:VCALENDAR\n");
 
-
         Result result = new Result("Query Results", sb,
                                    getMimeType(OUTPUT_ICAL));
 
         return result;
 
     }
-
 
 }

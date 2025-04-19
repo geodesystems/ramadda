@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.util.RequestArgument;
-
 
 /**
  *
@@ -21,7 +19,6 @@ public interface Constants {
 
     public static final String MESSAGE_ACCESS="You do not have access to this entry";
 
-
     /** _more_ */
     public static final String RESOURCE_ALLCSS = "allcss.css";
 
@@ -31,10 +28,8 @@ public interface Constants {
     /** _more_ */
     public static final String WIKI_PREFIX = "<wiki>";
 
-
     /** _more_ */
     public static final String ICON_ACCESS = "fas fa-lock";
-
 
     /** _more_ */
     public static final String ICON_ROTATE =
@@ -127,7 +122,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_ENTRY_UPLOAD = "/icons/flaggedentry.png";
-
 
     /** _more_ */
     public static final String ICON_FAVORITE = "fas fa-star";
@@ -238,8 +232,6 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_METADATA_EDIT = "fas fa-database";
 
-
-
     /** _more_ */
     public static final String ICON_MOVE = "fas fa-copy";
 
@@ -249,7 +241,6 @@ public interface Constants {
     /** _more_ */
     //    public static final String ICON_PLUS = "fas fa-plus-square";
     public static final String ICON_PLUS = "fa-regular fa-square-plus" ;    
-
 
     /** _more_ */
     public static final String ICON_MINUS = "fa-regular fa-square-minus";
@@ -305,7 +296,6 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_UPLOAD = "/icons/add.png";
 
-
     /**  */
     public static final String ICON_DIALOG_QUESTION = "fas fa-question";
 
@@ -338,8 +328,6 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_ZIPTREE = "fas fa-file-archive";
 
-
-
     //j++
 
     /** _more_ */
@@ -348,26 +336,20 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_AGREE = "agree";
 
-
     /** _more_ */
     public static final String ATTR_ADDMETADATA = "addmetadata";
 
     /** _more_ */
     public static final String ATTR_FILESIZE = "filesize";
 
-
-
-
     /** _more_ */
     public static final String ARG_SERVICEID = "serviceid";
-
 
     public static final String ARG_SHALLOW = "shallow";
 
     /** _more_ */
     public static final String PROP_INSTALL_PASSWORD =
         "ramadda.install.password";
-
 
     /** _more_ */
     public static final String PROP_MAKESNAPSHOT = "makesnapshot";
@@ -510,7 +492,6 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_RESOURCE_TYPE = "resource_type";
 
-
     /** _more_ */
     public static final String ATTR_SERVER = "server";
 
@@ -544,7 +525,6 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-
     /** _more_ */
     public static final String ATTR_ISGROUP = "isgroup";
 
@@ -569,7 +549,6 @@ public interface Constants {
     /** _more_ */
     public static final String ATTR_ALTITUDE_BOTTOM = "altitudebottom";
 
-
     /** _more_ */
     public static final String ARG_DISPLAY = "display";
 
@@ -590,7 +569,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_FULLURL = "fullurl";
-
 
     /** _more_ */
     public static final String ARG_ACTION = "action";
@@ -615,7 +593,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_ADMIN = "admin";
-
 
     /** _more_ */
     public static final String ARG_ADMIN_WHAT = "what";
@@ -648,7 +625,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_LOCATION_LONGITUDE = "location.longitude";
 
-
     /** _more_ */
     public static final String ARG_LATITUDE = "latitude";
 
@@ -673,7 +649,6 @@ public interface Constants {
     /** _more_ */
     public static final String VALUE_AREA_OVERLAPS = "overlaps";
 
-
     /** _more_ */
     public static final String ARG_AREA_EAST = ARG_AREA + "_east";
 
@@ -692,7 +667,6 @@ public interface Constants {
 
     public static final String DIR_UP = "up";
     public static final String DIR_DOWN = "down";
-
 
     /** _more_ */
     public static final String ARG_ASSOCIATION = "association";
@@ -726,9 +700,7 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_CANCEL_DELETE = "canceldelete";
 
-
     public static final String ARG_DO_CHILDREN = "dochildren";
-
 
     /** _more_ */
     public static final String ARG_CHANGE = "change";
@@ -755,7 +727,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_ENTRYORDER = "entryorder";
-
 
     /** _more_ */
     public static final String ARG_CREATEDATE = "createdate";
@@ -796,9 +767,6 @@ public interface Constants {
     /** _more_ */
     public static final String VALUE_NODATAMODE_INCLUDE = "include";
 
-
-
-
     /** _more_ */
     public static final String DATE_SEARCHMODE_OVERLAPS = "overlaps";
 
@@ -811,7 +779,6 @@ public interface Constants {
     /** _more_ */
     public static final String DATE_SEARCHMODE_DEFAULT =
         DATE_SEARCHMODE_OVERLAPS;
-
 
     /** _more_ */
     public static final String ARG_DATE_PATTERN = "date.pattern";
@@ -848,7 +815,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_ENTRYID = "entryid";
-
 
     /** _more_ */
     public static final String ARG_SELENTRY = "selentry";
@@ -905,10 +871,8 @@ public interface Constants {
     public static final String ARG_FILE_PRESERVEDIRECTORY =
         "file.preservedirectoryfile";
 
-
     /** _more_ */
     public static final String ARG_FORMAT = "format";
-
 
     /** _more_ */
     public static final String ARG_FORM_ADVANCED = "form.advanced";
@@ -928,7 +892,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_FROMDATE_TIME = ARG_FROMDATE + ".time";
 
-
     /** _more_ */
     public static final String ARG_DATA_DATE = "datadate";
 
@@ -937,9 +900,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_CHANGE_DATE = "changedate";
-
-
-
 
     /** _more_ */
     public static final String ARG_FROMLOGIN = "user.fromlogin";
@@ -1023,7 +983,6 @@ public interface Constants {
     public static final String ARG_MARKER = "marker";
     public static final String ARG_PREVMARKERS = "prevmarkers";
 
-
     /** _more_ */
     public static final String ARG_LAST = "last";
 
@@ -1047,22 +1006,14 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_MINLONGITUDE = "minlongitude";
 
-
     /** _more_ */
     public static final String ARG_MESSAGE = "message";
-
 
     /** _more_ */
     public static final String ARG_METADATA_ADD = "metadata.add";
 
-
-
-    
     /** _more_ */
     public static final String ARG_FROMHARVESTER = "fromharvester";
-
-
-
 
     /** _more_ */
     public static final String ARG_METADATA_ADDSHORT = "metadata.addshort";
@@ -1081,7 +1032,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_METADATA_ATTR = "metadata_attr";
-
 
     /** _more_ */
     public static final String ARG_METADATA_ATTR1 = "metadata_attr1";
@@ -1116,20 +1066,16 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_SYSTEM_MESSAGE = "system.message";
 
-
     /** _more_ */
     public static final String PROP_ENTRY_TABLE_SHOW_CREATEDATE =
         "ramadda.entry.table.show.createdate";
-
 
     /** _more_ */
     public static final String PROP_CREATED_DISPLAY_MODE =
         "ramadda.created.display";
 
-
     /** _more_ */
     public static final String PROP_PASSPHRASE = "ramadda.passphrase";
-
 
     /** _more_ */
     public static final String PROP_MONITOR_ENABLE_EXEC =
@@ -1159,12 +1105,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_SHOW_CART = "ramadda.html.show.cart";
 
-
-
-
-
-
-
     /** _more_ */
     public static final String ARG_MONTH = "month";
 
@@ -1173,7 +1113,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String ARG_NAME = "name";
-
 
     public static final String ARG_BULKUPLOAD = "bulkupload";
 
@@ -1202,7 +1141,6 @@ public interface Constants {
     public static final String ARG_USER_ID = "user_id";
     public static final String ARG_EDITUSER_ID = "edituser_id";    
 
-
     /** _more_ */
     public static final String ARG_USER_SENDMAIL = "usersendmail";
 
@@ -1218,7 +1156,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ALTITUDE_BOTTOM = "altitude.bottom";
 
-
     public static final String ARG_SIZE_MIN = "sizemin";
     public static final String ARG_SIZE_MAX = "sizemax";    
 
@@ -1228,7 +1165,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SETFROMCHILDREN_RECURSE =
         "setfromchildren.recurse";
-
 
     public static final String ARG_SEARCH_POLYGON = "search_polygon";
 
@@ -1250,7 +1186,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_AGG = "group_agg";
 
-
     /** _more_ */
     public static final String ARG_AGG_TYPE = "group_agg_type";
 
@@ -1271,7 +1206,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_PUBLISH = "publish";
 
-
     /** _more_ */
     public static final String ARG_SNAPSHOT_TYPE = "snapshottype";
 
@@ -1283,7 +1217,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String SNAPSHOT_EXPORT = "snapshotexport";
-
 
     /** _more_ */
 
@@ -1298,9 +1231,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_PUBLISH_DESCRIPTION =
         "publish.description";
-
-
-
 
     /** _more_ */
     public static final String ARG_JUSTPUBLISH = "justpublish";
@@ -1354,7 +1284,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String SEARCH_TYPE_ADVANCED = "search.type.advanced";
-
 
     /** _more_ */
     public static final String ARG_SELECTTYPE = "selecttype";
@@ -1486,8 +1415,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_USER = "user";
 
-
-
     /** _more_ */
     public static final String ARG_PASSWORD = "password";
 
@@ -1524,11 +1451,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_WIDTH = "width";
 
-
     /** _more_ */
     public static final String ARG_YEAR = "year";
-
-
 
     /** _more_ */
     public static final String TAG_ASSOCIATION = "association";
@@ -1560,10 +1484,8 @@ public interface Constants {
     /** _more_ */
     public static final String TAG_GROUPS = "groups";
 
-
     /** _more_ */
     public static final String TAG_METADATA = "metadata";
-
 
     /** _more_ */
     public static final String TAG_METADATAHANDLER = "metadatahandler";
@@ -1589,7 +1511,6 @@ public interface Constants {
     /** _more_ */
     public static final String TAG_TYPES = "types";
 
-
     /** _more_ */
     public static final String PROP_FTP_PORT = "ramadda.ftp.port";
 
@@ -1603,7 +1524,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_NOSTYLE = "nostyle";
 
-
     /** _more_ */
     public static final String PROP_SEARCH_LUCENE_ENABLED =
         "ramadda.search.lucene.enabled";
@@ -1614,7 +1534,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_PROPERTIES = "ramadda.properties";
-
 
     /** _more_ */
     public static final String PROP_BUILD_VERSION = "ramadda.build.version";
@@ -1656,7 +1575,6 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_SHUTDOWN_CONFIRM = "shutdown.confirm";
 
-
     /** _more_ */
     public static final String ARG_MAP_ICONSONLY = "iconsonly";
 
@@ -1667,8 +1585,6 @@ public interface Constants {
     public static final String ARG_COPY_SIZE_LIMIT = "sizelimit";
     public static final String ARG_EXCLUDES = "excludes";    
     public static final String ARG_COPY_DO_METADATA = "dometadata";
-
-
 
     /** _more_ */
     public static final String PROP_ADMIN_EMAIL = "ramadda.admin.email";
@@ -1681,7 +1597,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_REGISTER_KEY = "ramadda.register.key";
-
 
     /** _more_ */
     public static final String PROP_SMTP_USER = "ramadda.admin.smtp.user";
@@ -1718,10 +1633,8 @@ public interface Constants {
     public static final String PROP_DB_POOL_TIMEUNTILCLOSED =
         "ramadda.db.pool.timeuntilclosed";
 
-
     /** _more_ */
     public static final String PROP_DB_DERBY_HOME = "ramadda.db.derby.home";
-
 
     /** _more_ */
     public static final String PROP_DEBUG = "ramadda.debug";
@@ -1745,7 +1658,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ENTRY_TOP = "ramadda.entry.top";
 
-
     /** _more_ */
     public static final String PROP_ENTRY_HEADER = "ramadda.entryheader";
 
@@ -1755,7 +1667,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_ENTRY_FOOTER = "ramadda.entryfooter";
-
 
     /** _more_ */
     public static final String PROP_ENTRY_BREADCRUMBS =
@@ -1774,7 +1685,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HARVESTERS = "ramadda.harvesters";
 
-
     /** _more_ */
     public static final String PROP_ALWAYS_HTTPS = "ramadda.always_https";
 
@@ -1787,8 +1697,6 @@ public interface Constants {
 
     /** the logo image property */
     public static final String PROP_LOGO_IMAGE = "ramadda.logo.image";
-
-
 
     /** The map layers property */
     public static final String PROP_MAP_LAYERS = "ramadda.map.layers";
@@ -1803,11 +1711,9 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HTML_FOOTER = "ramadda.html.footer";
 
-
     /** _more_ */
     public static final String PROP_HTML_MIMEPROPERTIES =
         "ramadda.html.mimeproperties";
-
 
     /** _more_ */
     public static final String PROP_HTML_TEMPLATE = "ramadda.html.template";
@@ -1822,16 +1728,12 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_HTML_URLBASE = "ramadda.html.urlbase";
 
-
-
     /** _more_ */
     public static final String PROP_LANGUAGE = "ramadda.language";
 
     /** _more_ */
     public static final String PROP_LANGUAGE_DEFAULT =
         "ramadda.language.default";
-
-
 
     /** _more_ */
     public static final String PROP_LOCALFILEPATHS = "ramadda.localfilepaths";
@@ -1851,7 +1753,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_PORT = "ramadda.port";
 
-
     /** _more_ */
     public static final String PROP_USE_FIXED_HOSTNAME =
         "ramadda.usefixedhostname";
@@ -1859,14 +1760,12 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_CORS_OK = "ramadda.cors.ok";
 
-
     /** _more_ */
     public static final String PROP_RATINGS_ENABLE = "ramadda.ratings.enable";
 
     /** _more_ */
     public static final String PROP_REPOSITORY_HOME = "ramadda_home";
     public static final String PROP_REPOSITORY_HOME_UPPER = "RAMADDA_HOME";    
-
 
     /** _more_ */
     public static final String PROP_REPOSITORY_NAME =
@@ -1905,9 +1804,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_SSL_CERTALIAS = "ramadda.ssl.certalias";
 
-
-
-
     /** _more_ */
     public static final String PROP_TYPES = "ramadda.types";
 
@@ -1917,7 +1813,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_CACHE_TTL = "ramadda.cache.ttl";
-
 
     /** _more_ */
     public static final String PROP_CACHE_MAXSIZEGB =
@@ -1930,9 +1825,6 @@ public interface Constants {
     /** _more_ */
     public static final String PROP_ZIPOUTPUT_ANONYMOUS_MAXSIZEMB =
         "ramadda.zip.anonymous.maxsizemb";
-
-
-
 
     /** _more_ */
     public static final String PROP_USER_RESET_ID_SUBJECT =
@@ -1962,13 +1854,11 @@ public interface Constants {
     /**  */
     public static final String PROP_VERSION_PATCH = "ramadda.version.patch";
 
-
     /** _more_ */
     public static final String TYPE_ANY = "any";
 
     /** _more_ */
     public static final String TYPE_ASSOCIATION = "association";
-
 
     /** _more_ */
     public static final String TYPE_FILE = "file";
@@ -1976,11 +1866,8 @@ public interface Constants {
     /** _more_ */
     public static final String TYPE_GROUP = "group";
 
-
-
     /** _more_ */
     public static final String ACTION_ADD = "action.add";
-
 
     /** _more_ */
     public static final String ACTION_CLEAR = "action.clear";
@@ -2012,7 +1899,6 @@ public interface Constants {
     /** _more_ */
     public static final String ACTION_STOP = "action.stop";
 
-
     /** _more_ */
     public static final String ACTION_PASSWORDS_CLEAR =
         "action.passwords.clear";
@@ -2030,10 +1916,6 @@ public interface Constants {
     public static  final boolean ARG_ADDPATH_DFLT = false;
     public static  final boolean ARG_ADDPATH_TRUE = true;
     public static  final boolean ARG_ADDPATH_FALSE = false;    
-
-
-
-
 
     /** _more_ */
     public static final String WHAT_ENTRIES = "entries";
@@ -2053,9 +1935,6 @@ public interface Constants {
     /** _more_ */
     public static final String WHAT_USER = "user";
 
-
-
-
     /** _more_ */
     public static final int DB_MAX_ROWS = 1000;
 
@@ -2065,14 +1944,11 @@ public interface Constants {
     /** _more_ */
     public static final int VIEW_MAX_ROWS = DB_VIEW_ROWS;
 
-
-
     /** _more_ */
     public static final String NODETYPE_ENTRY = "entry";
 
     /** _more_ */
     public static final String NODETYPE_GROUP = "group";
-
 
     /** _more_ */
     public static final String RESPONSE_XML = "xml";
@@ -2101,26 +1977,21 @@ public interface Constants {
     /** _more_ */
     public static final String BLANK = "";
 
-
     /** _more_ */
     public static final String MIME_XML = "text/xml";
 
     /** _more_ */
     public static final String MIME_TEXT = "text/plain";
 
-
     /** _more_ */
     public static final boolean DFLT_INHERITED = false;
 
     public static final String DEFAULT_SEARCH_SIZE = "100";
 
-
     /** _more_ */
     public static final String ID_PREFIX_SYNTH = "synth:";
 
-
     //j++
-
 
     /** _more_ */
     public static final String MSG_ACCESS_CHANGED = "Permissions Changed";
@@ -2129,13 +2000,11 @@ public interface Constants {
     public static final String MSG_ASSOCIATION_ADDED =
         "The association has been added";
 
-
     /** _more_ */
     public static final String SERVICE_OPENDAP = "opendap";
 
     /** _more_ */
     public static final String SERVICE_FILE = "file";
-
 
     /** _more_ */
     public static long MEGA = 1000000;
@@ -2143,13 +2012,11 @@ public interface Constants {
     /** _more_ */
     public static long GIGA = MEGA * 1000;
 
-
     /** _more_ */
     public static final String PROP_PROXY_USER = "ramadda.proxy.user";
 
     /** _more_ */
     public static final String PROP_PROXY_PASSWORD = "ramadda.proxy.password";
-
 
     /** _more_ */
     public static final String PROP_PROXY_HOST = "ramadda.proxy.host";
@@ -2166,7 +2033,6 @@ public interface Constants {
 
     public static final String PROP_AWS_KEY = "ramadda.aws.key";
 
-
     /** _more_ */
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 
@@ -2174,11 +2040,8 @@ public interface Constants {
     public static final String BREADCRUMB_SEPARATOR_PAD =
         "&nbsp;&raquo;&nbsp;";
 
-
-
     /** _more_ */
     public static final String CSS_CLASS_ENTRY_TREE_ROW = "entry-tree-row";
-
 
     /** _more_ */
     public static final String CSS_CLASS_ENTRY_LIST_ROW = "entry-list-row";
@@ -2219,7 +2082,6 @@ public interface Constants {
     /** _more_ */
     public static final String CSS_CLASS_DATETIME = "ramadda-datetime";
 
-
     /** _more_ */
     public static final String CSS_CLASS_MENUITEM_LINK =
         "ramadda-menuitem-link";
@@ -2252,7 +2114,6 @@ public interface Constants {
 
     /** _more_ */
     public static final String CSS_CLASS_POPUP = "ramadda-popup";
-
 
     /** _more_ */
     public static final String CSS_CLASS_REQUIRED = "ramadda-required";
@@ -2306,11 +2167,8 @@ public interface Constants {
     /** _more_ */
     public static final String CSS_CLASS_USER_FIELD = "ramadda-user-field";
 
-
     /** _more_ */
     public static final String CSS_CLASS_SEPARATOR = "ramadda-separator";
-
-
 
     /** text position attribute */
     public static final String ATTR_TEXTPOSITION = "textposition";
@@ -2329,7 +2187,6 @@ public interface Constants {
 
     /** position none (hide) id */
     public static final String POS_NONE = "none";
-
 
     /** attribute in import tag */
     public static final String ATTR_WIDTH = "width";
@@ -2389,15 +2246,10 @@ public interface Constants {
     /** _more_ */
     public static final String FILTER_ID = "id:";
 
-
-
     public static final String ORDERBY_NONE = "none";
 
     /** _more_ */
     public static final String ORDERBY_DATE = "date";
-
-
-
 
     /** _more_ */
     public static final String ORDERBY_FROMDATE = "fromdate";
@@ -2429,10 +2281,8 @@ public interface Constants {
     /**  */
     public static final String ORDERBY_NUMBER = "number";
 
-
     /** _more_ */
     public static final String ORDERBY_MIXED = "mixed";
-
 
     /** _more_ */
     public static final String MACRO_ROOT = "root";
@@ -2460,7 +2310,6 @@ public interface Constants {
     /** _more_ */
     public static final RequestArgument REQUESTARG_LONGITUDE =
         new RequestArgument("ramadda.arg.longitude");
-
 
     public static final String LABEL_CANCEL = "Cancel";
     public static final String LABEL_OK = "OK";    

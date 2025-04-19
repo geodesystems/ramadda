@@ -5,7 +5,6 @@
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -24,7 +23,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.WrapperException;
 
-
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,11 +39,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 /**
  *
@@ -64,7 +60,6 @@ public class Request implements Constants, Cloneable {
 
     /** _more_ */
     public int count = COUNTER++;
-
 
     /** _more_ */
     private Hashtable fileUploads;
@@ -116,7 +111,6 @@ public class Request implements Constants, Cloneable {
     /** _more_ */
     private HttpServlet httpServlet;
 
-
     /** _more_ */
     private StringBuilder prefixHtml = new StringBuilder();
 
@@ -140,7 +134,6 @@ public class Request implements Constants, Cloneable {
     private boolean isRobot = false;
 
     private boolean isGoogleBot = false;
-    
 
     /** _more_ */
     private boolean makeAbsoluteUrls = false;
@@ -166,7 +159,6 @@ public class Request implements Constants, Cloneable {
     /**  */
     private boolean embedded = false;
 
-
     /**
      * ctor
      *
@@ -179,7 +171,6 @@ public class Request implements Constants, Cloneable {
         this.urlPath    = "";
         this.parameters = new Hashtable();
     }
-
 
     /**
      * ctor
@@ -194,7 +185,6 @@ public class Request implements Constants, Cloneable {
         this.urlPath    = path;
         this.parameters = new Hashtable();
     }
-
 
     /**
      * ctor
@@ -218,7 +208,6 @@ public class Request implements Constants, Cloneable {
         this.httpHeaderArgs      = that.httpHeaderArgs;
     }
 
-
     /**
      * ctor
      *
@@ -234,8 +223,6 @@ public class Request implements Constants, Cloneable {
         this.originalParameters = new Hashtable();
         originalParameters.putAll(parameters);
     }
-
-
 
     /**
      * _more_
@@ -258,7 +245,6 @@ public class Request implements Constants, Cloneable {
         this.httpServlet         = httpServlet;
     }
 
-
     /**
      * _more_
      *
@@ -267,8 +253,6 @@ public class Request implements Constants, Cloneable {
     public Request cloneMe() {
         return cloneMe(null);
     }
-
-
 
     /**
      * _more_
@@ -327,12 +311,10 @@ public class Request implements Constants, Cloneable {
 	return true;
     }
 
-
     public double filterGeo(Entry entry, double v) {
 	if(!geoOk(entry)) return Double.NaN;
 	return v;
     }
-
 
     /**
      * _more_
@@ -370,7 +352,6 @@ public class Request implements Constants, Cloneable {
         return getSession(sessionPrefix + key, dflt);
     }
 
-
     /**
      * _more_
      *
@@ -402,9 +383,6 @@ public class Request implements Constants, Cloneable {
 	return isEntryShow;
     }
 
-
-
-
     public boolean hasMessage() {
 	return defined(ARG_MESSAGE);
     }
@@ -412,7 +390,6 @@ public class Request implements Constants, Cloneable {
     public String getMessage() {
 	return getStrictSanitizedString(ARG_MESSAGE, "");
     }    
-
 
     /**
      * _more_
@@ -428,7 +405,6 @@ public class Request implements Constants, Cloneable {
             throw new RuntimeException(exc);
         }
     }
-
 
     /**
      * _more_
@@ -452,8 +428,6 @@ public class Request implements Constants, Cloneable {
         return true;
     }
 
-
-
     /**
      * _more_
      *
@@ -462,7 +436,6 @@ public class Request implements Constants, Cloneable {
     public boolean useFullUrl() {
         return get(ARG_FULLURL, false);
     }
-
 
     /**
      * _more_
@@ -479,7 +452,6 @@ public class Request implements Constants, Cloneable {
         return url;
     }
 
-
     /**
      * _more_
      *
@@ -492,7 +464,6 @@ public class Request implements Constants, Cloneable {
 
         return httpServletRequest.getMethod().equals("POST");
     }
-
 
     /**
      * _more_
@@ -509,7 +480,6 @@ public class Request implements Constants, Cloneable {
 
         return referer;
     }
-
 
     /**
      * _more_
@@ -551,8 +521,6 @@ public class Request implements Constants, Cloneable {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -583,10 +551,6 @@ public class Request implements Constants, Cloneable {
         return checkUrl(url);
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -601,7 +565,6 @@ public class Request implements Constants, Cloneable {
                                   String... args) {
         return entryUrl(theUrl, entry, arg, false, args);
     }
-
 
     /**
      * _more_
@@ -658,8 +621,6 @@ public class Request implements Constants, Cloneable {
         return url;
     }
 
-
-
     /**
      * _more_
      *
@@ -671,7 +632,6 @@ public class Request implements Constants, Cloneable {
     public String makeUrl(RequestUrl theUrl, String... args) {
         return HtmlUtils.url(makeUrlPath(theUrl), args);
     }
-
 
     /**
      * _more_
@@ -688,7 +648,6 @@ public class Request implements Constants, Cloneable {
         return getRepository().getUrlPath(this, theUrl);
     }
 
-
     /**
      * _more_
      *
@@ -699,7 +658,6 @@ public class Request implements Constants, Cloneable {
     public String form(RequestUrl theUrl) {
         return HtmlUtils.form(makeUrl(theUrl));
     }
-
 
     /**
      * _more_
@@ -712,7 +670,6 @@ public class Request implements Constants, Cloneable {
         return HtmlUtils.formPost(makeUrl(theUrl));
     }
 
-
     /**
      * _more_
      *
@@ -724,7 +681,6 @@ public class Request implements Constants, Cloneable {
     public String formPost(RequestUrl theUrl, String extra) {
         return HtmlUtils.formPost(makeUrl(theUrl), extra);
     }
-
 
     /**
      * _more_
@@ -748,7 +704,6 @@ public class Request implements Constants, Cloneable {
         Utils.append(sb, formPost(theUrl, extra));
         getRepository().getAuthManager().addAuthToken(this, sb);
     }
-
 
     /**
      * _more_
@@ -778,9 +733,6 @@ public class Request implements Constants, Cloneable {
         getRepository().getAuthManager().addAuthToken(this, sb);
     }
 
-
-
-
     /**
      * _more_
      *
@@ -804,7 +756,6 @@ public class Request implements Constants, Cloneable {
         return uploadForm(theUrl, "");
     }
 
-
     /**
      * _more_
      *
@@ -816,9 +767,6 @@ public class Request implements Constants, Cloneable {
     public String uploadForm(RequestUrl theUrl, String extra) {
         return HtmlUtils.uploadForm(makeUrl(theUrl), extra);
     }
-
-
-
 
     /**
      *  Set the OutputStream property.
@@ -838,8 +786,6 @@ public class Request implements Constants, Cloneable {
         return outputStream;
     }
 
-
-
     /**
      * _more_
      *
@@ -848,7 +794,6 @@ public class Request implements Constants, Cloneable {
     public void setFileUploads(Hashtable uploads) {
         fileUploads = uploads;
     }
-
 
     /**
      * _more_
@@ -871,13 +816,11 @@ public class Request implements Constants, Cloneable {
 	return files;
     }
 
-
     public String getUploadedFile(String arg, boolean andClear) {	
 	List<String> files = getUploadedFiles(arg,andClear);
 	if(files==null || files.size()==0) return null;
 	return files.get(0);
     }
-
 
     /**
      * _more_
@@ -887,7 +830,6 @@ public class Request implements Constants, Cloneable {
     public String getUrl() {
         return checkUrl(getRequestPath() + "?" + getUrlArgs());
     }
-
 
     /**
      * _more_
@@ -922,7 +864,6 @@ public class Request implements Constants, Cloneable {
     public String getAbsoluteUrl() {
         return getAbsoluteUrl(getUrl());
     }
-
 
     /**
      * _more_
@@ -982,7 +923,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -993,7 +933,6 @@ public class Request implements Constants, Cloneable {
     public String getUrl(String except) {
         return getRequestPath() + "?" + getUrlArgs(except);
     }
-
 
     /**
      * _more_
@@ -1018,7 +957,6 @@ public class Request implements Constants, Cloneable {
         return getUrlArgs(tmp);
     }
 
-
     /**
      * _more_
      *
@@ -1030,7 +968,6 @@ public class Request implements Constants, Cloneable {
     public String getUrlArgs(HashSet<String> exceptArgs) {
         return getUrlArgs(exceptArgs, null);
     }
-
 
     /**
      * _more_
@@ -1045,8 +982,6 @@ public class Request implements Constants, Cloneable {
         return getUrlArgs(exceptArgs, exceptValues, null);
     }
 
-
-
     /**
      * _more_
      *
@@ -1059,7 +994,6 @@ public class Request implements Constants, Cloneable {
     public String getUrlArgs(HashSet<String> exceptArgs,
                              HashSet<String> exceptValues,
                              String exceptArgsPattern) {
-
 
         //      System.err.println("getUrlArgs");
         if (exceptArgs == null) {
@@ -1136,8 +1070,6 @@ public class Request implements Constants, Cloneable {
         return HtmlUtils.sanitizeString(s);
     }
 
-
-
     /**
      *
      * @param sb _more_
@@ -1190,9 +1122,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
-
-
     /**
      * _more_
      *
@@ -1244,7 +1173,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -1267,7 +1195,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -1289,7 +1216,6 @@ public class Request implements Constants, Cloneable {
         }
 
     }
-
 
     /**
      * _more_
@@ -1321,7 +1247,6 @@ public class Request implements Constants, Cloneable {
         return null;
     }
 
-
     /**
      * _more_
      *
@@ -1348,7 +1273,6 @@ public class Request implements Constants, Cloneable {
 
         return props;
     }
-
 
     /**
      * _more_
@@ -1377,7 +1301,6 @@ public class Request implements Constants, Cloneable {
 	    && this.originalParameters.equals(that.originalParameters);
     }
 
-
     /**
      * _more_
      *
@@ -1398,7 +1321,6 @@ public class Request implements Constants, Cloneable {
     public boolean hasParameter(String key) {
         return parameters.containsKey(key);
     }
-
 
     /**
      * _more_
@@ -1425,7 +1347,6 @@ public class Request implements Constants, Cloneable {
         parameters.putAll(props);
     }
 
-
     /**
      *
      * @param key _more_
@@ -1436,7 +1357,6 @@ public class Request implements Constants, Cloneable {
             put(key, value);
         }
     }
-
 
     /**
      * _more_
@@ -1477,7 +1397,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -1498,7 +1417,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -1518,7 +1436,6 @@ public class Request implements Constants, Cloneable {
 	}
 	return false;
     }
-
 
     /**
      * _more_
@@ -1552,7 +1469,6 @@ public class Request implements Constants, Cloneable {
         return true;
     }
 
-
     /**
      * _more_
      *
@@ -1568,9 +1484,6 @@ public class Request implements Constants, Cloneable {
 
         return (result instanceof List);
     }
-
-
-
 
     /**
      * _more_
@@ -1596,7 +1509,6 @@ public class Request implements Constants, Cloneable {
         return tmp;
     }
 
-
     /**
      * _more_
      *
@@ -1614,8 +1526,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-
-
     /** _more_ */
     private static Pattern checker;
 
@@ -1632,7 +1542,6 @@ public class Request implements Constants, Cloneable {
                                    String patternString) {
         return getCheckedString(key, dflt, Pattern.compile(patternString));
     }
-
 
     /**
      * _more_
@@ -1652,7 +1561,6 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-
     /**
      * _more_
      *
@@ -1668,9 +1576,6 @@ public class Request implements Constants, Cloneable {
 
         return getEncodedString(key, dflt);
     }
-
-
-
 
     /**
      * _more_
@@ -1693,7 +1598,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      *  @return _more_
      */
@@ -1709,7 +1613,6 @@ public class Request implements Constants, Cloneable {
     public void setEmbedded(boolean value) {
         embedded = value;
     }
-
 
     /**
      * _more_
@@ -1738,8 +1641,6 @@ public class Request implements Constants, Cloneable {
         return canStreamResult;
     }
 
-
-
     /**
      * _more_
      */
@@ -1751,8 +1652,6 @@ public class Request implements Constants, Cloneable {
 	}
     }
 
-
-
     /**
      * _more_
      *
@@ -1763,7 +1662,6 @@ public class Request implements Constants, Cloneable {
         return user==null?false:getUser().getAdmin();
     }
 
-
     /**
      * _more_
      */
@@ -1772,7 +1670,6 @@ public class Request implements Constants, Cloneable {
             throw new IllegalArgumentException("Need to be an administrator");
         }
     }
-
 
     /**
      * _more_
@@ -1826,7 +1723,6 @@ public class Request implements Constants, Cloneable {
         return getUnsafeString(key, "");
     }    
 
-
     /**
      * _more_
      *
@@ -1846,7 +1742,6 @@ public class Request implements Constants, Cloneable {
         return dflt;
     }
 
-
     /**
      * _more_
      *
@@ -1865,7 +1760,6 @@ public class Request implements Constants, Cloneable {
         return getCheckedString(key, dflt, checker);
     }
 
-
     /**
      *
      * @param key _more_
@@ -1880,7 +1774,6 @@ public class Request implements Constants, Cloneable {
 
         return new String(Utils.decodeBase64(raw));
     }
-
 
     /**
      * _more_
@@ -1925,7 +1818,6 @@ public class Request implements Constants, Cloneable {
 	return s;
     }
 
-
     /**
      * Get rid of badness in request strings
      *
@@ -1944,7 +1836,6 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-
     /**
      *
      * @param s _more_
@@ -1959,9 +1850,6 @@ public class Request implements Constants, Cloneable {
 
         return s;
     }
-
-
-
 
     /**
      * _more_
@@ -1983,7 +1871,6 @@ public class Request implements Constants, Cloneable {
             v = cleanupInput(v);
         }
 
-
         if (pattern != null) {
             Matcher matcher = pattern.matcher(v);
             if ( !matcher.find()) {
@@ -1994,7 +1881,6 @@ public class Request implements Constants, Cloneable {
 
         return v;
     }
-
 
     /**
      * _more_
@@ -2014,17 +1900,12 @@ public class Request implements Constants, Cloneable {
         return dflt;
     }
 
-
-
-
     /**
      * _more_
      */
     public void clearUrlArgs() {
         parameters = new Hashtable();
     }
-
-
 
     public boolean onlyHasEntryId() {
 	if(parameters==null) return true;
@@ -2054,7 +1935,6 @@ public class Request implements Constants, Cloneable {
 
         return result;
     }
-
 
     /**
      * _more_
@@ -2101,7 +1981,6 @@ public class Request implements Constants, Cloneable {
         return getOutput(OutputHandler.OUTPUT_HTML.getId());
     }
 
-
     /**
      * _more_
      *
@@ -2124,7 +2003,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-
     /**
      * _more_
      *
@@ -2142,7 +2020,6 @@ public class Request implements Constants, Cloneable {
         return new OutputType(typeId, OutputType.TYPE_FEEDS);
     }
 
-
     /**
      * _more_
      *
@@ -2154,7 +2031,6 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_ENTRYID, dflt);
     }
 
-
     /**
      * _more_
      *
@@ -2165,7 +2041,6 @@ public class Request implements Constants, Cloneable {
     public String getIds(String dflt) {
         return getString(ARG_ENTRYIDS, dflt);
     }
-
 
     /**
      * _more_
@@ -2210,8 +2085,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-
-
     /**
      * Get the value for a latitude or longitude property
      *
@@ -2239,7 +2112,6 @@ public class Request implements Constants, Cloneable {
         //        System.err.println("\tdecoded value:" + result);
         return result;
     }
-
 
     /**
      * _more_
@@ -2278,7 +2150,6 @@ public class Request implements Constants, Cloneable {
         return Integer.parseInt(result.trim());
     }
 
-
     /**
      * _more_
      *
@@ -2312,7 +2183,6 @@ public class Request implements Constants, Cloneable {
 
         return Double.parseDouble(result);
     }
-
 
     /**
      * _more_
@@ -2351,7 +2221,6 @@ public class Request implements Constants, Cloneable {
 
         return repository.getDateHandler().parseDate(dateString);
     }
-
 
     /**
      * _more_
@@ -2414,7 +2283,6 @@ public class Request implements Constants, Cloneable {
         return range;
     }
 
-
     /**
      * _more_
      *
@@ -2437,7 +2305,6 @@ public class Request implements Constants, Cloneable {
         return list.contains(value);
     }
 
-
     /**
      * _more_
      *
@@ -2454,7 +2321,6 @@ public class Request implements Constants, Cloneable {
 
         return Boolean.parseBoolean(result);
     }
-
 
     /**
      * _more_
@@ -2474,7 +2340,6 @@ public class Request implements Constants, Cloneable {
         urlPath = value;
     }
 
-
     /**
      * _more_
      *
@@ -2492,8 +2357,6 @@ public class Request implements Constants, Cloneable {
     public String getRequestPath() {
         return urlPath;
     }
-
-
 
     /**
      * Class BadInputException On badness
@@ -2564,7 +2427,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-
     /**
      * _more_
      *
@@ -2584,7 +2446,6 @@ public class Request implements Constants, Cloneable {
         return arg;
     }
 
-
     public String format() {
 	StringBuilder sb = new StringBuilder(urlPath+"\n");
 	for (Enumeration keys =
@@ -2594,7 +2455,6 @@ public class Request implements Constants, Cloneable {
 	}
 	return sb.toString();
     }
-
 
     /**
      * _more_
@@ -2609,7 +2469,6 @@ public class Request implements Constants, Cloneable {
             return urlPath;
         }
     }
-
 
     /**
      * _more_
@@ -2644,10 +2503,6 @@ public class Request implements Constants, Cloneable {
         return sb.toString();
     }
 
-
-
-
-
     /**
      * Set the SessionId property.
      *
@@ -2671,7 +2526,6 @@ public class Request implements Constants, Cloneable {
         return sessionIdWasSet;
     }
 
-
     /**
      * Get the SessionId property.
      *
@@ -2692,9 +2546,6 @@ public class Request implements Constants, Cloneable {
 
         return "";
     }
-
-
-
 
     /**
      * Set the User property.
@@ -2732,7 +2583,6 @@ public class Request implements Constants, Cloneable {
 	return user.equals(entry.getUser());
     }
 
-
     /**
      * Set the Ip property.
      *
@@ -2764,7 +2614,6 @@ public class Request implements Constants, Cloneable {
         return ip;
     }
 
-
     /**
      * _more_
      *
@@ -2773,7 +2622,6 @@ public class Request implements Constants, Cloneable {
     public String getUserAgent() {
         return getUserAgent(null);
     }
-
 
     /**
      * _more_
@@ -2823,7 +2671,6 @@ public class Request implements Constants, Cloneable {
         return httpServletResponse != null;
     }
 
-
     /**
      * _more_
      *
@@ -2833,7 +2680,6 @@ public class Request implements Constants, Cloneable {
         String userAgent = getUserAgent();
 	return checkForRobot(userAgent);
     }
-
 
     public  boolean checkForRobot(String userAgent) {
         if (userAgent == null) {
@@ -2866,8 +2712,6 @@ public class Request implements Constants, Cloneable {
 			     "spider")>=0;
     }
 
-
-
     /**
      * _more_
      *
@@ -2880,7 +2724,6 @@ public class Request implements Constants, Cloneable {
 
         return false;
     }
-
 
     /**
      * _more_
@@ -2898,7 +2741,6 @@ public class Request implements Constants, Cloneable {
 
         return serverName;
     }
-
 
     /**
      * _more_
@@ -2920,7 +2762,6 @@ public class Request implements Constants, Cloneable {
         return serverName;
     }
 
-
     /**
      * _more_
      *
@@ -2937,7 +2778,6 @@ public class Request implements Constants, Cloneable {
 
         return repository.getPort();
     }
-
 
     /**
      *  Get the HttpServletRequest property.
@@ -2956,8 +2796,6 @@ public class Request implements Constants, Cloneable {
     public HttpServletResponse getHttpServletResponse() {
         return httpServletResponse;
     }
-
-
 
     /**
      * _more_
@@ -3004,7 +2842,6 @@ public class Request implements Constants, Cloneable {
         return suffixHtml.toString();
     }
 
-
     /**
      * _more_
      *
@@ -3033,7 +2870,6 @@ public class Request implements Constants, Cloneable {
 
         return prefix + base;
     }
-
 
     /**
      * _more_
@@ -3070,7 +2906,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      */
     public void clearHead0() {
@@ -3093,7 +2928,6 @@ public class Request implements Constants, Cloneable {
     public void setPrintWriter(PrintWriter pw) {
         printWriter = pw;
     }
-
 
     /**
      * _more_
@@ -3129,7 +2963,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-
     /**
      * _more_
      *
@@ -3138,9 +2971,6 @@ public class Request implements Constants, Cloneable {
     public void removeExtraProperty(Object key) {
         extraProperties.remove(key);
     }
-
-
-
 
     public void clearExtraProperties() {
 	extraProperties = new Hashtable();
@@ -3171,8 +3001,6 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-
-
     /**
      * Get the Protocol property.
      *
@@ -3181,8 +3009,6 @@ public class Request implements Constants, Cloneable {
     public String getProtocol() {
         return httpServletRequest.getProtocol();
     }
-
-
 
     /**
      * Get the Secure property.
@@ -3257,7 +3083,6 @@ public class Request implements Constants, Cloneable {
         return responseAsJson() || responseAsXml() || responseAsText();
     }
 
-
     /**
      * _more_
      *
@@ -3288,7 +3113,6 @@ public class Request implements Constants, Cloneable {
 
         return getString(ARG_TEMPLATE, (String) null);
     }
-
 
     /**
      * _more_
@@ -3355,7 +3179,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-
     /**
      *
      * @param filename _more_
@@ -3373,7 +3196,6 @@ public class Request implements Constants, Cloneable {
 
         return returnStream(is);
     }
-
 
     /**
      * _more_
@@ -3393,7 +3215,6 @@ public class Request implements Constants, Cloneable {
         IO.close(is);
         return result;
     }
-
 
     public void setMimeType(String mimeType) {
         getHttpServletResponse().setContentType(mimeType);
@@ -3427,7 +3248,6 @@ public class Request implements Constants, Cloneable {
 
     /**  */
     boolean cookieWasAdded = false;
-
 
     /**
      *  @return _more_
@@ -3476,7 +3296,6 @@ public class Request implements Constants, Cloneable {
         return makeAbsoluteUrls;
     }
 
-
     /**
      *  Set the SessionHasBeenHandled property.
      *
@@ -3517,8 +3336,6 @@ public class Request implements Constants, Cloneable {
         return rootEntry;
     }
 
-
-
     /**
      *  Set the CurrentEntry property.
      *
@@ -3536,7 +3353,6 @@ public class Request implements Constants, Cloneable {
     public Entry getCurrentEntry() {
         return currentEntry;
     }
-
 
     /**  */
     private static final String[] argPrefixes = { ARG_AREA, ARG_BBOX };
@@ -3571,8 +3387,6 @@ public class Request implements Constants, Cloneable {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -3600,7 +3414,6 @@ public class Request implements Constants, Cloneable {
 	return  get(arg,get(arg+"_hidden",dflt));
     }
 
-
     /**
        adds a _hidden value to set the default value for the cbx
      */
@@ -3609,7 +3422,6 @@ public class Request implements Constants, Cloneable {
 	sb.append(HtmlUtils.hidden(arg+"_hidden","false"));
 	return HtmlUtils.labeledCheckbox(arg, "true", v,label);
     }
-
 
     /**
      * _more_
@@ -3627,8 +3439,5 @@ public class Request implements Constants, Cloneable {
             System.err.println("value:" + s + " cleaned:" + cleanupInput(s));
         }
     }
-
-
-
 
 }

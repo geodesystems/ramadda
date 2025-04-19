@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.map.*;
@@ -23,7 +22,6 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.XmlUtils;
-
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -57,7 +55,6 @@ import java.util.function.Function;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
 /**
  *
  *
@@ -70,7 +67,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     /** _more_ */
     public static final String PROP_PROCESSDIR = "processdir";
-
 
     /** _more_ */
     public static final String WIDTH_DATE = "120";
@@ -96,7 +92,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_HOME);
 
-
     /** name */
     private String name;
 
@@ -106,7 +101,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     /** hash of name to output type */
     private Hashtable<String, OutputType> typeMap = new Hashtable<String,
                                                         OutputType>();
-
 
     /** default max connnections */
     private int maxConnections = -1;
@@ -142,8 +136,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-
-
     /**
      * Construct an OutputHandler
      *
@@ -158,9 +150,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         maxConnections = XmlUtil.getAttribute(element, ATTR_MAXCONNECTIONS,
                 maxConnections);
 
-
     }
-
 
     /**
      *
@@ -174,7 +164,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return true;
     }
 
-
     /**
      * _more_
      *
@@ -183,7 +172,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public String toString() {
         return name;
     }
-
 
     /**
      * Shutdown
@@ -215,7 +203,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public void init() {}
 
-
     /**
      * Clear the cache
      */
@@ -232,7 +219,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public void addToEntryNode(Request request, Entry entry, Element node)
             throws Exception {}
-
 
     /**
      * Add an OutputType to this handler
@@ -265,7 +251,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         name = value;
     }
 
-
     /**
      *  Get the Name property.
      *
@@ -278,8 +263,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         return name;
     }
-
-
 
     /**
      * Are we showing all
@@ -298,8 +281,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         return true;
     }
-
-
 
     /**
      * Get the AuthorizationMethod
@@ -343,13 +324,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         showNext(request, cnt, max,  sb, message);
     }
 
-
     public boolean shouldShowPaging(Request request, int cnt, int max) {
 	return Utils.stringDefined((String)request.getPropertyOrArg(ARG_MARKER)) ||
 	    Utils.stringDefined((String)request.getPropertyOrArg(ARG_PREVMARKERS)) ||
 	    max>0;
     }
-
 
     /**
      *
@@ -388,7 +367,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 		request.addFormHiddenArguments(sb, exclude);
 		System.err.println("FORM PREV:\n\tprev:"+
 				   Utils.join(Utils.Y(prevList),",") +"\n\tmarker:" +Utils.X(lastMarker));
-		
+
 		sb.append(HU.hidden(ARG_PREVMARKERS, Utils.join(prevList,",")));
 		sb.append(HU.hidden(ARG_MARKER, lastMarker));		
 		toks.add(HU.div("Previous",
@@ -402,7 +381,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 		System.err.println("FORM NEXT:\n\tprev:"+
 				   tmp +"\n\tmarker:" +Utils.X(marker));
 
-		
 		sb.append(HU.hidden(ARG_PREVMARKERS, fullPrev));
 		sb.append(HU.hidden(ARG_MARKER, marker));		
 		toks.add(HU.div("Next",
@@ -435,7 +413,7 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 					//HU.faIcon("fa-caret-left", "title", "View previous")
 					));
 	    }
-	
+
             //      if (cnt >= max) {
 	    toks.add(HU.href(
 				    request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
@@ -473,9 +451,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
 
     }
-
-
-
 
     /**
      * Can we handle the OutputType?
@@ -517,8 +492,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
     }
 
-
-
     /**
      * Class to hold State
      *
@@ -540,7 +513,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         /** the parent group */
         public Entry group;
-
 
         /** the entries */
         public List<Entry> entries;
@@ -564,7 +536,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             }
 
         }
-
 
         /**
          * Create some State for the entries  and group
@@ -637,7 +608,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-
     /**
      * Make the links result
      *
@@ -675,9 +645,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             return;
         }
     }
-
-
-
 
     /**
      * _more_
@@ -743,9 +710,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return wikiTemplate;
     }
 
-
-
-
     /**
      * Get the services
      *
@@ -755,7 +719,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {}
-
 
     /**
      * Get the Entry links
@@ -768,8 +731,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {}
-
-
 
     /**
      * Make a link for the OutputType
@@ -820,7 +781,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-
     /**
      * Add an OutputLink
      *
@@ -840,7 +800,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                                 type.getLabel(), type));
 
     }
-
 
     /**
      * A not implemented result
@@ -874,7 +833,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                            getEntryManager().getDummyGroup(), entries);
     }
 
-
     /**
      *
      * @param request _more_
@@ -892,8 +850,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                               + getClass().getName());
     }
 
-
-
     /**
      * _more_
      *
@@ -909,7 +865,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return null;
     }
 
-
     /**
      * _more_
      *
@@ -920,9 +875,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public String getMimeType(OutputType output) {
         return null;
     }
-
-
-
 
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
@@ -968,7 +920,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return getSelect(request, elementId, "Select", false, "");
     }
 
-
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
                                    String selectType,String...entryType)
@@ -976,7 +927,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         return getSelect(request, elementId, label, allEntries, selectType, null,entryType);
     }
-
 
     public static String getSelect(Request request, String elementId,
                                    String label, boolean allEntries,
@@ -1013,7 +963,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                                        + HU.id(selectorId + "_selectlink"));
 
 	}
-
 
         if (addClear) {
             String clearEvent = HU.call("RamaddaUtils.clearSelect", HU.squote(selectorId));
@@ -1096,9 +1045,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       + HU.SIZE_40 + HU.id(arg)), HU.attr("onClick", event));
     }
 
-
-
-
     /**
      * _more_
      *
@@ -1180,7 +1126,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         boolean isImage   = entry.isImage();
 
         name = name.replace("'", "\\'");
-	
 
 	List attrs = Utils.makeListFromValues(
                                 "entryType",
@@ -1211,13 +1156,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	    Utils.add(attrs,"thumbnailUrl", JsonUtil.quote(urls.get(0)));
 	}
 
-
 	String mapGlyphs = entry.getTypeHandler().getProperty(entry,"mapglyphs",null);
 	if(mapGlyphs!=null) {
             Utils.add(attrs,  "mapglyphs", JsonUtil.quote(mapGlyphs));
 	    //"base64:" + Utils.encodeBase64(mapGlyphs));		      
 	}
-
 
         sb.append(HU.mouseClickHref(HU.call(
 					    "RamaddaUtils.selectClick",
@@ -1237,7 +1180,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return sb.toString();
     }
 
-
     /**
      * _more_
      *
@@ -1256,7 +1198,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         return new Result("", xml, "text/xml");
     }
-
 
     /**
      * _more_
@@ -1293,8 +1234,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return links;
     }
 
-
-
     /**
      * _more_
      *
@@ -1313,11 +1252,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      */
     public void applySettings(Request request) throws Exception {}
 
-
     /** _more_ */
     public static int entryCnt = 0;
-
-
 
     /**
      * _more_
@@ -1344,7 +1280,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         htmlSB.append(link + "<br>");
 
     }
-
 
     /**
      *     _more_
@@ -1402,8 +1337,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return items;
     }
 
-
-
     /**
      * _more_
      *
@@ -1419,10 +1352,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return notImplemented("listTypes");
     }
 
-
-
-
-
     /**
      * protected Result listTags(Request request, List<Tag> tags)
      *       throws Exception {
@@ -1435,8 +1364,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      *
      * @throws Exception _more_
      */
-
-
 
     /**
      * _more_
@@ -1451,24 +1378,17 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return notImplemented("listAssociations");
     }
 
-
-
-
-
     /** _more_ */
     public static final String RESOURCE_ENTRYTEMPLATE = "entrytemplate.txt";
 
     /** _more_ */
     public static final String RESOURCE_GROUPTEMPLATE = "grouptemplate.txt";
 
-
     /** _more_ */
     public static final String PROP_ENTRY = "entry";
 
     /** _more_ */
     public static final String PROP_REQUEST = "request";
-
-
 
     /**
      * _more_
@@ -1484,7 +1404,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public String getImageUrl(Request request, Entry entry) throws Exception {
         return getImageUrl(request, entry, false);
     }
-
 
     /** _more_ */
     private static int imageVersionCnt = 0;
@@ -1510,7 +1429,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             return null;
         }
 
-
         String url = entry.getResource().getPath();
         if (entry.getResource().isUrl()) {
             return entry.getTypeHandler().getPathForEntry(request, entry,false);
@@ -1521,7 +1439,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             }
         }
 
-
 	String name = HU.urlEncode(getStorageManager().getFileTail(entry));
 	url =  HU.url(request.makeUrl(repository.URL_ENTRY_GET) + "/"
 		      + (addVersion
@@ -1529,7 +1446,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 			 : "") + name, ARG_ENTRYID, entry.getId());
 	return url;
     }
-
 
     /**
      * _more_
@@ -1559,7 +1475,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-
     /**
      * _more_
      *
@@ -1577,7 +1492,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public void setMaxConnections(int value) {
         this.maxConnections = value;
     }
-
 
     /**
      *  Get the MaxConnections property.
@@ -1614,8 +1528,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         totalCalls++;
     }
 
-
-
     /**
      * _more_
      */
@@ -1634,7 +1546,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     /** _more_ */
     private static int tabCnt = 0;
-
 
     /**
      * Make tabs
@@ -1705,8 +1616,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return tabHtml.toString();
     }
 
-
-
     /**
      * _more_
      *
@@ -1722,7 +1631,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return HU.input(arg, request.getString(arg, dflt),
                         HU.attr(HU.ATTR_SIZE, "" + width));
     }
-
 
     /**
      * _more_
@@ -1750,7 +1658,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public boolean canAddTo(Request request, Entry parent) throws Exception {
         return getEntryManager().canAddTo(request, parent);
     }
-
 
     public boolean  isHtml() {
 	return false;
@@ -1836,7 +1743,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         String select = OutputHandler.getSelect(request, ARG_PUBLISH_ENTRY,
 						"Select folder", false, null, entry);
 
-
         String addMetadata = !addMetadataField
                              ? ""
                              : HU.labeledCheckbox(
@@ -1890,8 +1796,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
             title, new StringBuilder(getPageHandler().showDialogError(msg)));
     }
 
-
-
     /**
      * _more_
      *
@@ -1901,10 +1805,8 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return "products";
     }
 
-
     /** _more_ */
     private TempDir productDir;
-
 
     /**
      * _more_
@@ -1934,7 +1836,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return 24 * 7;
     }
 
-
     /**
      * _more_
      *
@@ -1955,7 +1856,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return theProductDir;
     }
 
-
     /**
      * _more_
      *
@@ -1966,7 +1866,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public String getServiceFilename(Entry entry) {
         return entry.getName().replace(" ", "_").replace(":", "_");
     }
-
 
     /**
      * _more_
@@ -1980,8 +1879,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public String getEntryLink(Request request, Entry entry) {
         return getEntryManager().getEntryLink(request, entry, "");
     }
-
-
 
     /**
      * _more_
@@ -2008,7 +1905,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     public void clearCurrentProcessingDir(Request request) throws Exception {
         getSessionManager().removeSessionProperty(request, PROP_PROCESSDIR);
     }
-
 
     /**
      * _more_
@@ -2049,7 +1945,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return f;
     }
 
-
     /**
      * Class description
      *
@@ -2082,7 +1977,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
         /**  */
         private OutputHandler outputHandler;
-
 
         /**
          *
@@ -2157,10 +2051,5 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
 
     }
-
-
-
-
-
 
 }

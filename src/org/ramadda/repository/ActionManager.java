@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 
@@ -29,28 +28,17 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 public class ActionManager extends RepositoryManager {
 
-
-    
     public RequestUrl URL_STATUS = new RequestUrl(this, "/status");
 
-
-    
     private Hashtable<Object, ActionInfo> actions = new Hashtable<Object,
                                                         ActionInfo>();
 
-
-    
     public ActionManager(Repository repository) {
         super(repository);
     }
 
-
-
-    
     public void setContinueHtml(Object actionId, String html) {
         if (actionId == null) {
             return;
@@ -61,8 +49,6 @@ public class ActionManager extends RepositoryManager {
         }
     }
 
-
-    
     public Result makeResult(Request request, String title, String status,
                              StringBuffer sb, boolean json)
             throws Exception {
@@ -77,7 +63,6 @@ public class ActionManager extends RepositoryManager {
         return new Result(title, sb);
     }
 
-    
     public Result processStatus(Request request) throws Exception {
         boolean      json   = request.getString("output", "").equals("json");
         String       status = "";
@@ -179,12 +164,6 @@ public class ActionManager extends RepositoryManager {
         return result;
     }
 
-
-
-
-
-
-    
     protected ActionInfo getAction(Object id) {
         if (id == null) {
             return null;
@@ -193,8 +172,6 @@ public class ActionManager extends RepositoryManager {
         return actions.get(id);
     }
 
-
-    
     public boolean getActionOk(Object id) {
         if (id == null) {
             return true;
@@ -207,8 +184,6 @@ public class ActionManager extends RepositoryManager {
         return action.getRunning();
     }
 
-
-    
     public void setActionMessage(Object id, String msg) {
         ActionInfo action = getAction(id);
         if (action == null) {
@@ -217,8 +192,6 @@ public class ActionManager extends RepositoryManager {
         action.setMessage(msg);
     }
 
-
-    
     public void actionComplete(Object id) {
         ActionInfo action = getAction(id);
         if (action == null) {
@@ -227,7 +200,6 @@ public class ActionManager extends RepositoryManager {
         action.setRunning(false);
     }
 
-    
     public void handleError(Object actionId, Exception exc) {
         ActionInfo action = getAction(actionId);
         if (action == null) {
@@ -259,8 +231,6 @@ public class ActionManager extends RepositoryManager {
                                           "" + actionId));
     }
 
-
-    
     public Result doJsonAction(Request request, final Action runnable,
                                String name, String continueHtml,
                                Entry entry) {
@@ -271,14 +241,11 @@ public class ActionManager extends RepositoryManager {
         return new Result(json, Result.TYPE_JSON);
     }
 
-
-    
     public Object runAction(final Action runnable, String name,
                             String continueHtml) {
         return runAction(runnable, name, continueHtml, null);
     }
 
-    
     public Object runAction(final Action runnable, String name,
                             String continueHtml, Entry entry) {
         final Object actionId = addAction(name, continueHtml, entry,runnable);
@@ -308,45 +275,32 @@ public class ActionManager extends RepositoryManager {
             this.returnJson = returnJson;
         }
 
-
         public abstract void run(Object actionId) throws Exception;
 
 	public void setRunning(boolean value) {}
 	public String getRedirectUrl() {return null;}
     }
 
-
     public class ActionInfo {
 
 	private Action action;
 
-        
         private String id;
 
-        
         private String name;
 
-        
         private boolean running = true;
 
-        
         private String message = "";
 
-        
         private String continueHtml;
 
-        
         private String error = null;
 
-
-        
         private String extraHtml;
 
-        
         private Entry entry;
 
-
-        
         public ActionInfo(String name, String continueHtml, Entry entry,Action action) {
             this.name         = name;
             this.continueHtml = continueHtml;
@@ -355,38 +309,31 @@ public class ActionManager extends RepositoryManager {
 	    this.action = action;
         }
 
-
         public ActionInfo(String name, String continueHtml, Entry entry) {
 	    this(name, continueHtml, entry,null);
 	}
-        
+
         public void setId(String value) {
             id = value;
         }
 
-        
         public String getId() {
             return id;
         }
 
-
-
-        
         public void setName(String value) {
             name = value;
         }
 
-        
         public String getName() {
             return name;
         }
 
-        
 	public String getRedirectUrl() {
 	    if(action!=null) return action.getRedirectUrl();
 	    return null;
 	}
-	
+
         public void setRunning(boolean value) {
             running = value;
 	    if(action!=null) {
@@ -394,65 +341,46 @@ public class ActionManager extends RepositoryManager {
 	    }
         }
 
-        
         public boolean getRunning() {
             return running;
         }
 
-
-
-        
         public void setMessage(String value) {
             message = value;
         }
 
-        
         public String getMessage() {
             return message;
         }
 
-
-        
         public void setExtraHtml(String value) {
             extraHtml = value;
         }
 
-        
         public String getExtraHtml() {
             return extraHtml;
         }
 
-
-        
         public void setContinueHtml(String value) {
             continueHtml = value;
         }
 
-        
         public String getContinueHtml() {
             return continueHtml;
         }
 
-        
         public Entry getEntry() {
             return entry;
         }
 
-        
         public void setError(String value) {
             error = value;
         }
 
-        
         public String getError() {
             return error;
         }
 
-
-
-
     }
-
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -16,7 +15,6 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.UUID;
 
-
 /**
  *
  *
@@ -25,11 +23,9 @@ import java.util.UUID;
  */
 public class RepositoryBase implements Constants, RepositorySource {
 
-
     /** _more_ */
     public static final HtmlUtils HU = null;
     public static final XmlUtil XU = null;    
-
 
     /** _more_ */
     public final RequestUrl URL_HELP = new RequestUrl(this, "/docs");
@@ -40,7 +36,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_CLEARSTATE = new RequestUrl(this,
                                                  "/clearstate");
-
 
     /** _more_ */
     public final RequestUrl URL_SSLREDIRECT = new RequestUrl(this,
@@ -58,10 +53,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_INSTALL = new RequestUrl(this, "/install");
 
-
-
-
-
     /** _more_ */
     public final RequestUrl URL_COMMENTS_SHOW = new RequestUrl(this,
                                                     "/entry/comments/show");
@@ -74,11 +65,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_COMMENTS_EDIT = new RequestUrl(this,
                                                     "/entry/comments/edit");
 
-
     /** _more_ */
     public final RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
                                                       "/entry/xmlcreate");
-
 
     /** _more_ */
     public final RequestUrl URL_ENTRY_IMPORT = new RequestUrl(this,
@@ -92,7 +81,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
-
     /** _more_ */
     public final RequestUrl URL_ENTRY_PUBLISH = new RequestUrl(this,
                                                     "/entry/publish");
@@ -100,7 +88,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_ENTRY_LINKS = new RequestUrl(this,
                                                   "/entry/links");
-
 
     /** _more_ */
     public final RequestUrl URL_ASSOCIATION_ADD = new RequestUrl(this,
@@ -147,7 +134,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_TYPECHANGE = new RequestUrl(this,
                                                        "/entry/typechange");
 
-
     /** _more_ */
     public final RequestUrl URL_ENTRY_DELETE = new RequestUrl(this,
                                                    "/entry/delete", "Delete");
@@ -156,11 +142,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_DELETELIST = new RequestUrl(this,
                                                        "/entry/deletelist");
 
-
     /** _more_ */
     public final RequestUrl URL_ACCESS_FORM = new RequestUrl(this,
                                                   "/access/form", "Permissions");
-
 
     /** _more_ */
     public final RequestUrl URL_ACCESS_CHANGE = new RequestUrl(this,
@@ -190,7 +174,6 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                    "/entry/access",
                                                    "Edit " + LABEL_ENTRY);
 
-
     /** _more_ */
     public final RequestUrl URL_ENTRY_NEW = new RequestUrl(this,
                                                 "/entry/new",
@@ -201,7 +184,6 @@ public class RepositoryBase implements Constants, RepositorySource {
                                                    "/entry/upload",
                                                    "Upload a file");
 
-
     /** _more_ */
     public final RequestUrl URL_ENTRY_GETENTRIES = new RequestUrl(this,
                                                        "/entry/getentries");
@@ -210,16 +192,13 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_GET = new RequestUrl(this,
                                                 "/entry/get");
 
-
     /** _more_ */
     public final RequestUrl URL_USER_LOGIN = new RequestUrl(this,
                                                  "/user/login", true);
 
-
     /** _more_ */
     public final RequestUrl URL_USER_REGISTER = new RequestUrl(this,
                                                     "/user/register", true);
-
 
     /** _more_ */
     public final RequestUrl URL_USER_FAVORITE = new RequestUrl(this,
@@ -237,11 +216,9 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_USER_FINDUSERID = new RequestUrl(this,
                                                       "/user/finduserid");
 
-
     /** _more_ */
     public final RequestUrl URL_USER_LOGOUT = new RequestUrl(this,
                                                   "/user/logout");
-
 
     /** _more_ */
     public final RequestUrl URL_USER_HOME = new RequestUrl(this,
@@ -269,7 +246,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public final RequestUrl URL_USER_CHANGE_PASSWORD = new RequestUrl(this,
 								      "/user/changepassword");
-    
 
     /** _more_ */
     public final RequestUrl URL_USER_CART = new RequestUrl(this,
@@ -289,19 +265,15 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
-
-
     /** _more_ */
     public static final GregorianCalendar calendar =
         new GregorianCalendar(TIMEZONE_UTC);
-
 
     /** _more_ */
     private String urlBase = "/repository";
 
     /**  */
     protected boolean alwaysHttps = false;
-
 
     /** _more_ */
     private boolean isMinified;
@@ -372,7 +344,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         }
     }
 
-
     /**
      * _more_
      *
@@ -400,7 +371,6 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public void initRequestUrl(RequestUrl requestUrl) {}
 
-
     /**
      * _more_
      *
@@ -410,7 +380,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return httpsPort;
     }
 
-
     /**
      * _more_
      *
@@ -419,7 +388,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public void setHttpsPort(int port) {
         httpsPort = port;
     }
-
 
     /**
      * _more_
@@ -442,7 +410,6 @@ public class RepositoryBase implements Constants, RepositorySource {
             return "https://" + hostname + ":" + port + url;
         }
     }
-
 
     /**
      * _more_
@@ -531,7 +498,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return httpPort;
     }
 
-
     /**
      * _more_
      *
@@ -542,7 +508,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
     }
-
 
     /**
      * _more_
@@ -570,8 +535,6 @@ public class RepositoryBase implements Constants, RepositorySource {
                + "</div></td></tr></table>\n";
     }
 
-
-
     /**
      * _more_
      *
@@ -586,7 +549,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getUrl(String f) {
         return Utils.concatString(urlBase, f);
     }
-
 
     /**
      * _more_
@@ -614,7 +576,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return urlBase + f;
     }
 
-
     /**
      * _more_
      *
@@ -630,9 +591,6 @@ public class RepositoryBase implements Constants, RepositorySource {
             return HU.image(getIconUrl(url), args);
         }
     }
-
-
-
 
     /**
      * Set the UrlBase property.
@@ -651,7 +609,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getUrlBase() {
         return urlBase;
     }
-
 
     /**
      * Set the IsMinified property.

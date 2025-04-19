@@ -5,20 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
-
-
-
 
 import java.io.*;
 
@@ -31,8 +26,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
@@ -40,7 +33,6 @@ import java.util.zip.*;
 import java.util.zip.*;
 
 import javax.servlet.http.*;
-
 
 /**
  *
@@ -50,15 +42,10 @@ import javax.servlet.http.*;
  */
 public class ZipFileOutputHandler extends OutputHandler {
 
-
-
     /** _more_ */
     public static final OutputType OUTPUT_LIST =
         new OutputType("Zip File Listing", "zipfile.list",
                        OutputType.TYPE_FILE, "", ICON_ZIP);
-
-
-
 
     /**
      * _more_
@@ -78,8 +65,6 @@ public class ZipFileOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
     }
-
-
 
     /**
      * _more_
@@ -113,8 +98,6 @@ public class ZipFileOutputHandler extends OutputHandler {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -147,7 +130,6 @@ public class ZipFileOutputHandler extends OutputHandler {
                                new State(entry));
 
     }
-
 
     /**
      *

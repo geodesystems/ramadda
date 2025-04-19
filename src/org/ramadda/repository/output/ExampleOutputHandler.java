@@ -5,24 +5,19 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 /**
  * This is an example of an outputhandler. To show this in RAMADDA uncomment the
@@ -51,7 +46,6 @@ public class ExampleOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_EXAMPLE3 =
         new OutputType("Example 3", "example.example3", OutputType.TYPE_VIEW);
 
-
     /**
      * Constructor
      *
@@ -68,15 +62,11 @@ public class ExampleOutputHandler extends OutputHandler {
         addType(OUTPUT_EXAMPLE3);
     }
 
-
-
     /*
       getEntryLinks is the boiler plate code that is called
       by the repository and is used to determine what if any outputtypes are applicable
       to the given content.
     */
-
-
 
     /**
      * This method gets called to add in to the types list the OutputTypes that are applicable
@@ -108,16 +98,11 @@ public class ExampleOutputHandler extends OutputHandler {
               }
             */
 
-
             links.add(makeLink(request, state.entry, OUTPUT_EXAMPLE2));
             links.add(makeLink(request, state.entry, OUTPUT_EXAMPLE3));
         }
 
-
-
-
     }
-
 
     /**
      * Output a group. We break apart the children groups from the children entries
@@ -155,7 +140,6 @@ public class ExampleOutputHandler extends OutputHandler {
             }
         }
 
-
         //All content gets passed back through a Result object.
         //Here we make one with the "Example 1" title and the stringbuffer which assumes it is html
         Result result = new Result("Example 1", sb);
@@ -165,8 +149,6 @@ public class ExampleOutputHandler extends OutputHandler {
 
         return result;
     }
-
-
 
     /**
      * _more_
@@ -206,10 +188,8 @@ public class ExampleOutputHandler extends OutputHandler {
            boolean booleanValue = request.getString("argname", boolean dflt)
          */
 
-
         //Now, we just append html to the sb
         sb.append("Example 2 content");
-
 
         /*
           Returning a result
@@ -228,7 +208,6 @@ public class ExampleOutputHandler extends OutputHandler {
 
         */
 
-
         Result result = new Result("Example 2", sb);
 
         //This adds the navigation links to other output handlers that are applicable to this content
@@ -237,8 +216,6 @@ public class ExampleOutputHandler extends OutputHandler {
         return result;
 
     }
-
-
 
     /**
      * _more_
@@ -269,7 +246,5 @@ public class ExampleOutputHandler extends OutputHandler {
         return result;
 
     }
-
-
 
 }

@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import java.io.File;
-
 
 /**
  *
@@ -35,6 +33,5 @@ public abstract class EntryInitializer {
     public File getMetadataFile(Entry entry, String fileArg) {
         return null;
     }
-
 
 }

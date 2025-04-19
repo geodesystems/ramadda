@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -17,10 +16,7 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.*;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
-
 
 import org.w3c.dom.*;
 
@@ -34,9 +30,6 @@ import java.net.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -45,12 +38,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -67,8 +57,6 @@ public class GraphOutputHandler extends OutputHandler {
                                                       OutputType.TYPE_VIEW,
                                                       "", ICON_GRAPH);
 
-
-
     /**
      * _more_
      *
@@ -81,11 +69,6 @@ public class GraphOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_GRAPH);
     }
-
-
-
-
-
 
     /**
      * _more_
@@ -102,8 +85,6 @@ public class GraphOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_GRAPH));
         }
     }
-
-
 
     /** _more_ */
     static long cnt = System.currentTimeMillis();
@@ -170,7 +151,6 @@ public class GraphOutputHandler extends OutputHandler {
                 entry.getName(), ATTR_NODEID, entry.getId(), ATTR_URL,
                 entryUrl, ATTR_GRAPHURL, url, ATTR_ICON, getIconUrl)));
     }
-
 
     /**
      * _more_
@@ -239,7 +219,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -270,7 +249,6 @@ public class GraphOutputHandler extends OutputHandler {
 
         addSuffixHtml(sb, js, id, nodes, links, width, height);
     }
-
 
     /** _more_ */
     private int graphCnt = 0;
@@ -331,7 +309,6 @@ public class GraphOutputHandler extends OutputHandler {
         sb.append(HU.script(js.toString()));
     }
 
-
     /**
      * _more_
      *
@@ -352,7 +329,6 @@ public class GraphOutputHandler extends OutputHandler {
 
         return outputGraphEntries(request, group, children);
     }
-
 
     /**
      * _more_
@@ -411,8 +387,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -465,7 +439,6 @@ public class GraphOutputHandler extends OutputHandler {
         sb.append("\n");
 
     }
-
 
     /**
      * _more_
@@ -540,9 +513,7 @@ public class GraphOutputHandler extends OutputHandler {
             addLink(request, entry, e, "", links);
         }
 
-
         getAssociations(request, entry, nodes, links, seen);
-
 
         js.append("{\n");
         js.append("\"nodes\":[\n");
@@ -554,14 +525,12 @@ public class GraphOutputHandler extends OutputHandler {
         js.append("]\n");
         js.append("}\n");
 
-
         System.err.println(js);
 
         return new Result(BLANK, js,
                           getRepository().getMimeTypeFromSuffix(".json"));
 
     }
-
 
     /**
      * _more_
@@ -598,8 +567,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-
-
     /**
      * _more_
      *
@@ -614,7 +581,6 @@ public class GraphOutputHandler extends OutputHandler {
 
         return s;
     }
-
 
     /**
      * _more_
@@ -634,9 +600,5 @@ public class GraphOutputHandler extends OutputHandler {
 
         return desc;
     }
-
-
-
-
 
 }

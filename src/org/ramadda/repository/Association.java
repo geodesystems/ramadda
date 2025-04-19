@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.database.*;
 
 import ucar.unidata.util.DateUtil;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * Class Entry _more_
@@ -35,17 +33,14 @@ public class Association {
     /** _more_ */
     private String name;
 
-
     /** _more_ */
     private String type;
-
 
     /** _more_ */
     private String fromId;
 
     /** _more_ */
     private String toId;
-
 
     /**
      * _more_
@@ -68,8 +63,6 @@ public class Association {
         this.fromId = fromId;
         this.toId   = toId;
     }
-
-
 
     /**
      * Set the Id property.
@@ -119,7 +112,6 @@ public class Association {
 
         return name;
     }
-
 
     /**
      * _more_
@@ -204,7 +196,5 @@ public class Association {
     public String getType() {
         return type;
     }
-
-
 
 }

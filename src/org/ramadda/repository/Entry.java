@@ -5,7 +5,6 @@
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.Permission;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
@@ -34,7 +33,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  * The class to hold Entry information
  */
@@ -51,7 +49,6 @@ public class Entry implements Cloneable {
 
     /** non-geo identifier */
     public static final double NONGEO = -999999;
-
 
     //New installs will use a clob for the description
     //    public static final int MAX_DESCRIPTION_LENGTH = Integer.MAX_VALUE;
@@ -73,7 +70,6 @@ public class Entry implements Cloneable {
 
     /** List of associations */
     List<Association> associations;
-
 
     /** Entry metadata */
     List<Metadata> metadata;
@@ -101,7 +97,6 @@ public class Entry implements Cloneable {
 
     /** the tree id */
     private String treeId;
-
 
     private boolean metadataChanged = false;
 
@@ -166,7 +161,6 @@ public class Entry implements Cloneable {
     /** is this a local file */
     private boolean isLocalFile = false;
 
-
     /** _more_ */
     private ServerInfo remoteServer;
 
@@ -187,10 +181,8 @@ public class Entry implements Cloneable {
     /** transient properties */
     private Hashtable transientProperties = new Hashtable();
 
-
     /** the group property */
     private boolean isGroup = false;
-
 
     /** the chillens ids */
     private List<String> childIds;
@@ -216,7 +208,6 @@ public class Entry implements Cloneable {
         initWith(that, true);
     }
 
-
     /**
      * Create an Entry with the id
      *
@@ -225,7 +216,6 @@ public class Entry implements Cloneable {
     public Entry(String id) {
         setId(id);
     }
-
 
     /**
      * Create a new Entry with the type and dummy flag
@@ -236,7 +226,6 @@ public class Entry implements Cloneable {
     public Entry(TypeHandler handler, boolean isDummy) {
         this(handler, isDummy, "Listing");
     }
-
 
     /**
      * Create a new Entry with the type and dummy flag
@@ -276,7 +265,6 @@ public class Entry implements Cloneable {
         this.isGroup     = isGroup;
     }
 
-
     public void sanitize() {
 	setName(HU.strictSanitizeString(getName()));
 	setDescription(HU.strictSanitizeString(getDescription()));	
@@ -298,7 +286,6 @@ public class Entry implements Cloneable {
 	    }		
 	}
     }
-
 
     /**
      * Create a generated Entry
@@ -329,8 +316,6 @@ public class Entry implements Cloneable {
     public List<String> getChildIds() {
         return childIds;
     }
-
-
 
     /**
      * Clone this Entry
@@ -379,7 +364,6 @@ public class Entry implements Cloneable {
         return name;
     }
 
-
     /**
      * Encode the name
      *
@@ -424,7 +408,6 @@ public class Entry implements Cloneable {
 	return getTypeHandler().getPathForEntry( request, this,true);
     }    
 
-
     /**
      * _more_
      *
@@ -433,7 +416,6 @@ public class Entry implements Cloneable {
     public void initWith(Entry template) {
         initWith(template, false);
     }
-
 
     /**
      *  Initialize the Entry with the template
@@ -464,7 +446,6 @@ public class Entry implements Cloneable {
             setMetadata(thisMetadata);
 	    setMetadataChanged(true);
         }
-
 
         if (template.hasCreateDate()) {
             setCreateDate(template.getCreateDate());
@@ -517,7 +498,7 @@ public class Entry implements Cloneable {
     public String getBoundsString(Request request) {
 	return getBoundsString(request, false);
     }
-	
+
     public String getBoundsString(Request request,boolean addLabel) {	
         if ( !hasAreaDefined(request)) {
             return null;
@@ -538,7 +519,6 @@ public class Entry implements Cloneable {
                                       cleanLat(getNorth(request)) - cleanLat(getSouth(request)));
     }
 
-
     /**
      * Set the geographic bounds
      *
@@ -550,7 +530,6 @@ public class Entry implements Cloneable {
         setEast(cleanLon(west + rect.getWidth()));
         setNorth(cleanLat(south + rect.getHeight()));
     }
-
 
     /**
      * Initialize the Entry with these values
@@ -581,7 +560,6 @@ public class Entry implements Cloneable {
         setCreateDate(createDate);
         setChangeDate(changeDate);
 
-
         this.resource = resource;
         this.category = category;
         if ((category == null) || (category.length() == 0)) {
@@ -597,7 +575,6 @@ public class Entry implements Cloneable {
         if (typeHandler != null) {
             typeHandler.initEntryHasBeenCalled(this);
         }
-
 
     }
 
@@ -619,8 +596,6 @@ public class Entry implements Cloneable {
 	return metadataChanged;
     }
 
-
-
     /**
      * Is this a File
      *
@@ -639,7 +614,6 @@ public class Entry implements Cloneable {
         return getTypeHandler().isImage(this);
     }
 
-
     /**
      * _more_
      *
@@ -648,7 +622,6 @@ public class Entry implements Cloneable {
     public boolean isFileType() {
         return (resource != null) && resource.isFileType();
     }
-
 
     /**
      * _more_
@@ -689,13 +662,9 @@ public class Entry implements Cloneable {
         setEndDate(value);
     }
 
-
-
-
     public void clearDate() {
 	setStartAndEndDate(DateHandler.NULL_DATE);
     }
-
 
     /**
      * Set the StartDate property.
@@ -769,7 +738,6 @@ public class Entry implements Cloneable {
         return endDate;
     }
 
-
     /**
      * Is this the top (first) entry?
      *
@@ -805,7 +773,6 @@ public class Entry implements Cloneable {
     public boolean isTopGroup() {
         return isTopEntry();
     }
-
 
     /**
      * Is this a Group?
@@ -863,7 +830,6 @@ public class Entry implements Cloneable {
         return getTypeHandler();
     }
 
-
     /**
      * Get the type
      *
@@ -872,7 +838,6 @@ public class Entry implements Cloneable {
     public String getType() {
         return typeHandler.getType();
     }
-
 
     /**
      * Get the Type property.
@@ -883,8 +848,6 @@ public class Entry implements Cloneable {
 	if(typeHandler!=null) return typeHandler.getRepository().getTypeHandler(typeHandler);
         return null;
     }
-
-
 
     /**
      * Set the Values property.
@@ -919,7 +882,6 @@ public class Entry implements Cloneable {
         return newValues;
     }
 
-
     public int getColumnIndex(String name) {
         if (name == null) {
             return -1;
@@ -933,14 +895,12 @@ public class Entry implements Cloneable {
         return c.getOffset();
     }
 
-
     public Column getColumn(int index) {
 	return getTypeHandler().findColumn(index);
     }
     public Column getColumn(String col) {
 	return getTypeHandler().findColumn(col);
     }    
-
 
     public Object getValue(Request request,Column column,boolean useDefault) {
 	if(column == null) {
@@ -951,7 +911,6 @@ public class Entry implements Cloneable {
 	    value = column.getDflt();
 	return value;
     }
-
 
     public Object getValue(Request request,Column column) {
 	return getValue(request, column, false);
@@ -983,7 +942,7 @@ public class Entry implements Cloneable {
         Object  value = getValue(request, col);
 	if(value==null) return dflt;
 	return value.toString();
-	
+
     }
 
     public String getStringValue(Request request,String col,String dflt) {
@@ -1014,7 +973,6 @@ public class Entry implements Cloneable {
         return retval;
     }
 
-
     public double getDoubleValue(Request request, int index, double dflt) {
 	return getDoubleValue(request, getColumn(index), dflt);
     }
@@ -1043,14 +1001,12 @@ public class Entry implements Cloneable {
         return retval;
     }
 
-
     public int getIntValue(Request request, int index, int dflt) {
 	return getIntValue(request,getColumn(index),dflt);
     }
     public int getIntValue(Request request, String index, int dflt) {
 	return getIntValue(request,getColumn(index),dflt);
     }    
-
 
     public boolean getBooleanValue(Request request,Column col,boolean dflt) {
         Object  value = getValue(request, col);
@@ -1071,7 +1027,6 @@ public class Entry implements Cloneable {
         }
         return retval;
     }
-
 
     public boolean getBooleanValue(Request request,int index, boolean dflt) {
 	return getBooleanValue(request, getColumn(index), dflt);
@@ -1110,7 +1065,6 @@ public class Entry implements Cloneable {
         values[idx] = v;
     }
 
-
     /**
      * Return a String representation of this Object
      *
@@ -1133,7 +1087,6 @@ public class Entry implements Cloneable {
         }
 
     }
-
 
     /**
      * _more_
@@ -1209,7 +1162,6 @@ public class Entry implements Cloneable {
     public double getLongitude(Request request) {
         return getEast(request);
     }
-
 
     /**
      * Get the center of the location
@@ -1298,7 +1250,6 @@ public class Entry implements Cloneable {
         south = north = east = west = NONGEO;
     }
 
-
     /**
      * Get the label for this Entry
      *
@@ -1329,8 +1280,6 @@ public class Entry implements Cloneable {
 
     }
 
-
-
     /**
      * Set the location from the other Entry
      *
@@ -1344,7 +1293,6 @@ public class Entry implements Cloneable {
         this.altitudeTop    = that.altitudeTop;
         this.altitudeBottom = that.altitudeBottom;
     }
-
 
     /**
      * Set the location
@@ -1371,7 +1319,6 @@ public class Entry implements Cloneable {
         this.altitudeTop    = alt;
         this.altitudeBottom = alt;
     }
-
 
     /**
      * Set the South property.
@@ -1408,9 +1355,6 @@ public class Entry implements Cloneable {
         }
     }
 
-
-
-
     /**
      * Set the North property.
      *
@@ -1424,7 +1368,6 @@ public class Entry implements Cloneable {
 	if(request==null) return v;
 	return request.filterGeo(this,v);
     }
-
 
     /**
      * Get the North property.
@@ -1512,7 +1455,6 @@ public class Entry implements Cloneable {
         return altitudeTop;
     }
 
-
     /**
      * Does this have a top altitude?
      *
@@ -1521,7 +1463,6 @@ public class Entry implements Cloneable {
     public boolean hasAltitudeTop() {
         return (altitudeTop == altitudeTop) && (altitudeTop != NONGEO);
     }
-
 
     /**
      * Does this have a bottom altitude
@@ -1533,7 +1474,6 @@ public class Entry implements Cloneable {
 	    && (altitudeBottom != NONGEO);
     }
 
-
     /**
      * Does this have an altitude defined?
      *
@@ -1543,7 +1483,6 @@ public class Entry implements Cloneable {
         return hasAltitudeTop() && hasAltitudeBottom()
 	    && (altitudeBottom == altitudeTop);
     }
-
 
     /**
      * Does this have a north defined?
@@ -1580,7 +1519,6 @@ public class Entry implements Cloneable {
     public boolean hasWest() {
         return (west == west) && (west != NONGEO);
     }
-
 
     /**
      * Set the East property.
@@ -1621,8 +1559,6 @@ public class Entry implements Cloneable {
 				  ? west
 				  : NONGEO));
     }
-
-
 
     /**
      * Set the Category property.
@@ -1677,7 +1613,6 @@ public class Entry implements Cloneable {
     public String getIcon() {
         return icon;
     }
-
 
     /**
      * Get the IsRemoteEntry property.
@@ -1741,9 +1676,6 @@ public class Entry implements Cloneable {
     public String getRemoteId() {
         return remoteId;
     }
-
-
-
 
     /**
      * _more_
@@ -1817,7 +1749,6 @@ public class Entry implements Cloneable {
         return properties.get(key);
     }
 
-
     /**
      *  Get the Properties property.
      *
@@ -1828,7 +1759,6 @@ public class Entry implements Cloneable {
     public Hashtable getProperties() throws Exception {
         return getProperties(false);
     }
-
 
     /**
      * Get the Properties property
@@ -1854,7 +1784,6 @@ public class Entry implements Cloneable {
         return this.properties;
     }
 
-
     /**
      *  Get the PropertiesString property.
      *
@@ -1869,7 +1798,6 @@ public class Entry implements Cloneable {
 
         return null;
     }
-
 
     /**
      * Initialize the Entry with these values
@@ -1890,7 +1818,6 @@ public class Entry implements Cloneable {
         setCreateDate(createDate);
         setChangeDate(changeDate);
     }
-
 
     /**
      * Is this equal to the other Object?
@@ -1917,7 +1844,6 @@ public class Entry implements Cloneable {
         return id.hashCode();
     }
 
-
     /**
      * _more_
      *
@@ -1932,7 +1858,6 @@ public class Entry implements Cloneable {
 
         return Misc.equals(this.id, that.id);
     }
-
 
     /**
      * _more_
@@ -1961,8 +1886,6 @@ public class Entry implements Cloneable {
         return entryOrder;
     }
 
-
-
     /**
      * Set the CreateDate property.
      *
@@ -1980,8 +1903,6 @@ public class Entry implements Cloneable {
     public long getCreateDate() {
         return createDate;
     }
-
-
 
     /**
      * Set the ChangeDate property.
@@ -2018,8 +1939,6 @@ public class Entry implements Cloneable {
         }
     }
 
-
-
     /**
      * Get the parent Entry
      *
@@ -2028,7 +1947,6 @@ public class Entry implements Cloneable {
     public Entry getParentEntry() {
         return parentEntry;
     }
-
 
     /**
      * _more_
@@ -2048,8 +1966,6 @@ public class Entry implements Cloneable {
         return null;
     }
 
-
-
     /**
      * Set the ParentGroupId property.
      *
@@ -2068,7 +1984,6 @@ public class Entry implements Cloneable {
         parentEntryId = value;
     }
 
-
     /**
      * Get the ParenEntryId
      *
@@ -2079,9 +1994,6 @@ public class Entry implements Cloneable {
                 ? parentEntry.getId()
                 : parentEntryId);
     }
-
-
-
 
     /**
      * Set the Name property.
@@ -2107,8 +2019,6 @@ public class Entry implements Cloneable {
 
         return name;
     }
-
-
 
     /**
      * Set the Description property.
@@ -2152,9 +2062,6 @@ public class Entry implements Cloneable {
     public String getSnippet() {
         return snippet;
     }
-
-
-
 
     /**
      * Set the Id property.
@@ -2205,14 +2112,12 @@ public class Entry implements Cloneable {
         return user.getId();
     }
 
-
     /**
      * Clear the metadata
      */
     public void clearMetadata() {
         metadata = null;
     }
-
 
     /**
      * Does this have any metaddata like value
@@ -2248,8 +2153,6 @@ public class Entry implements Cloneable {
 
         return false;
     }
-
-
 
     /**
      * Set the Metadata property.
@@ -2293,15 +2196,12 @@ public class Entry implements Cloneable {
         return metadata;
     }
 
-
-
     /**
      * _more_
      */
     public void clearAssociations() {
         associations = null;
     }
-
 
     /**
      * Set the Associations property.
@@ -2321,7 +2221,6 @@ public class Entry implements Cloneable {
         return associations;
     }
 
-
     /**
      * _more_
      *
@@ -2334,7 +2233,6 @@ public class Entry implements Cloneable {
         associations.add(value);
 
     }
-
 
     /**
      * Set the Comments property.
@@ -2367,8 +2265,6 @@ public class Entry implements Cloneable {
 
     }
 
-
-
     /**
      * Set the Permissions property.
      *
@@ -2378,7 +2274,6 @@ public class Entry implements Cloneable {
         permissions = value;
     }
 
-
     /**
      * Get the Permissions property.
      *
@@ -2387,9 +2282,6 @@ public class Entry implements Cloneable {
     public List<Permission> getPermissions() {
         return permissions;
     }
-
-
-
 
     /**
      * _more_
@@ -2404,7 +2296,6 @@ public class Entry implements Cloneable {
 
     }
 
-
     /**
      * _more_
      *
@@ -2413,7 +2304,6 @@ public class Entry implements Cloneable {
     public boolean isDummy() {
         return isDummy;
     }
-
 
     /**
      *  Set the Children property.
@@ -2432,7 +2322,6 @@ public class Entry implements Cloneable {
     public List<Entry> getChildren() {
         return children;
     }
-
 
     /**
      *  Set the XmlNode property.
@@ -2469,7 +2358,6 @@ public class Entry implements Cloneable {
     public boolean getCacheOk () {
 	return cacheOk;
     }
-
 
     /**
        Set the CacheActiveLimit property.

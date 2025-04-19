@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
@@ -18,19 +17,15 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
-
 
 import java.io.*;
 
@@ -41,9 +36,6 @@ import java.net.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -52,12 +44,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -67,7 +56,6 @@ import java.util.zip.*;
  * @version $Revision: 1.3 $
  */
 public class CsvOutputHandler extends OutputHandler {
-
 
     public static final String ARG_WHAT = "what";
     public static final String WHAT_IDS = "ids";
@@ -88,12 +76,10 @@ public class CsvOutputHandler extends OutputHandler {
 							       OutputType.TYPE_FORSEARCH,
 							       "", ICON_CSV);    
 
-
     /** _more_ */
     public static final OutputType OUTPUT_ENTRYCSV =
         new OutputType("Entry CSV", "entry.csv", OutputType.TYPE_FEEDS, "",
                        ICON_CSV);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_WRAPPER_MATLAB = new OutputType("Matlab Wrapper",
@@ -109,7 +95,6 @@ public class CsvOutputHandler extends OutputHandler {
 									  "wrapper_python",
 									  OutputType.TYPE_OTHER,
 									  "", "/icons/python.png");
-
 
     /**
      * _more_
@@ -128,8 +113,6 @@ public class CsvOutputHandler extends OutputHandler {
 	addType(OUTPUT_WRAPPER_R);
 	addType(OUTPUT_WRAPPER_PYTHON);		
     }
-
-
 
     /**
      * _more_
@@ -154,7 +137,6 @@ public class CsvOutputHandler extends OutputHandler {
 	}
     }
 
-
     /** _more_ */
     public static final String ARG_FIELDS = "fields";
 
@@ -166,8 +148,6 @@ public class CsvOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final String ARG_FULLHEADER = "fullheader";
-
-
 
     private Result makeStream(Request request, InputStream is) throws Exception {
 	return request.returnStream("entries.csv",  getMimeType(OUTPUT_CSV),is);	    
@@ -218,7 +198,6 @@ public class CsvOutputHandler extends OutputHandler {
 	boolean isMatlab =      what.equals(WHAT_WRAPPER_MATLAB);
 	boolean isR =      what.equals(WHAT_WRAPPER_R);
 	boolean isPython =      what.equals(WHAT_WRAPPER_PYTHON);		
-
 
 	for(Entry entry: entries) {
 	    if(what.equals(WHAT_IDS)) {
@@ -314,11 +293,9 @@ public class CsvOutputHandler extends OutputHandler {
 	    sb  = new StringBuilder(template);	    
 	}
 
-
         return new Result("", sb, mime);
-	
-    }
 
+    }
 
     public Result listEntries(Request request, List<Entry> entries)
             throws Exception {
@@ -334,12 +311,9 @@ public class CsvOutputHandler extends OutputHandler {
 		}});
 	return  makeStream(request, is);
     }
-    
-
 
     public void listEntries(Request request, Appendable sb,List<Entry> entries)
 	throws Exception {	
-
 
         String  delimiter      = request.getString(ARG_DELIMITER, ",");
         boolean fixedWidth     = request.get(ARG_FIXEDWIDTH, false);
@@ -405,7 +379,6 @@ public class CsvOutputHandler extends OutputHandler {
 			  showFullHeader);
             }
         }
-
 
         int[] maxStringSize = null;
         for (Entry entry : entries) {
@@ -605,7 +578,6 @@ public class CsvOutputHandler extends OutputHandler {
             sb.append("\n");
         }
 
-
     }
 
     /**
@@ -669,7 +641,6 @@ public class CsvOutputHandler extends OutputHandler {
         return s;
     }
 
-
     /**
      * _more_
      *
@@ -691,10 +662,6 @@ public class CsvOutputHandler extends OutputHandler {
 
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
-
-
-
-
 
     /**
      * _more_
@@ -745,7 +712,6 @@ public class CsvOutputHandler extends OutputHandler {
 	    request.put(ARG_WHAT, what);
 	}
 
-
         if (!what.equals("csv") && OUTPUT_IDS.equals(outputType)) {
 
             return listIds(request, group, children);
@@ -764,7 +730,5 @@ public class CsvOutputHandler extends OutputHandler {
 
         return listEntries(request, children);
     }
-
-
 
 }

@@ -12,7 +12,6 @@ import org.ramadda.repository.search.SpecialSearch;
 import org.ramadda.util.Utils;
 import ucar.unidata.util.StringUtil;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,7 +104,6 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#target","link target"),
                             new WikiTag(WIKI_TAG_LIST),
 			    new WikiTag(WIKI_TAG_NAMELIST,null,"showToggleAll","true"),
-			    
 
                             new WikiTag(WIKI_TAG_ENTRIES_TEMPLATE,null,"template","${name link=true}","before","",
 					"after",""), 			    
@@ -370,7 +368,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"#formHeight","70vh",
 					"#entriesHeight","70vh"),
 			    new WikiTag(WIKI_TAG_TYPE_SEARCH_LIST,"Type Search List",
-					
+
 					"showHeader","true",
 					"showSearchField","true",
 					"#providers","this,type:ramadda",
@@ -398,8 +396,6 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
     private static void attr(StringBuilder sb, String name, String value) {
         Utils.append(sb, " ", name, "=", "&quote;", value, "&quote;", " ");
     }    
-
-
 
     public static class WikiTag {
         String label;
@@ -431,7 +427,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                         sb.append("_newline_");
                         cnt = 0;
                     }
-		    
+
 		    if(attrs[i]!=null && attrs[i].equals(ATTR_TT)) {
 			tt = attrs[i+1];
 			if(debug) System.err.println("TT:" + tt);
@@ -449,7 +445,6 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 
     }
 
-
     public static class WikiTagCategory {
         String category;
         WikiTag[] tags;
@@ -458,6 +453,5 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
             tags = tagArgs;
         }
     }
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -20,9 +19,7 @@ import org.ramadda.util.geo.GeoUtils;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -40,12 +37,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  * Provides ATOM xml representation
@@ -58,7 +52,6 @@ public class AtomOutputHandler extends OutputHandler {
     /** mime type */
     public static final String MIME_ATOM = "application/atom+xml";
 
-
     /** _more_ */
     SimpleDateFormat sdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
@@ -68,8 +61,6 @@ public class AtomOutputHandler extends OutputHandler {
                                                      "atom",
                                                      OutputType.TYPE_FEEDS,
                                                      "", ICON_ATOM);
-
-
 
     /**
      * _more_
@@ -83,9 +74,6 @@ public class AtomOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_ATOM);
     }
-
-
-
 
     /**
      * _more_
@@ -126,7 +114,6 @@ public class AtomOutputHandler extends OutputHandler {
         return outputEntries(request, group, children);
     }
 
-
     /**
      * _more_
      *
@@ -146,7 +133,6 @@ public class AtomOutputHandler extends OutputHandler {
 
         return outputEntries(request, entry, entries);
     }
-
 
     /**
      * _more_
@@ -277,7 +263,6 @@ public class AtomOutputHandler extends OutputHandler {
                             metadataHandlers);
             }
 
-
             if (entry.hasAreaDefined(request)) {
                 extra.append("<georss:box>" + entry.getSouth(request) + " "
                              + entry.getWest(request) + " " + entry.getNorth(request) + " "
@@ -330,7 +315,6 @@ public class AtomOutputHandler extends OutputHandler {
             return;
         }
 
-
         if ( !metadataHandler.addMetadataToXml(request, "atom", entry,
                 metadata, doc, root)) {
             //            logInfo("addMetadata:" + metadata + " no mapping to atom");
@@ -341,7 +325,5 @@ public class AtomOutputHandler extends OutputHandler {
 
         }
     }
-
-
 
 }

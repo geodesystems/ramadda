@@ -5,15 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 
 import ucar.unidata.util.Counter;
 import ucar.unidata.util.Misc;
 
 import java.util.List;
-
-
 
 public class OutputType {
 
@@ -69,7 +66,6 @@ public class OutputType {
     public static final int TYPE_MENU = TYPE_VIEW | TYPE_FILE | TYPE_EDIT
                                         | TYPE_OTHER | TYPE_CHILDREN;
 
-
     /** _more_ */
     public static String ICON_NULL = null;
 
@@ -94,8 +90,6 @@ public class OutputType {
     /** _more_ */
     private String category = "";
 
-
-
     /** _more_ */
     private String icon;
 
@@ -104,7 +98,6 @@ public class OutputType {
 
     /** _more_ */
     private Counter numberOfCalls = new Counter();
-
 
     /** _more_ */
     private boolean okToUse = true;
@@ -119,8 +112,6 @@ public class OutputType {
         this(id, id, type);
     }
 
-
-
     /**
      * _more_
      *
@@ -131,7 +122,6 @@ public class OutputType {
     public OutputType(String label, String id, int type) {
         this(label, id, type, SUFFIX_NONE, ICON_NULL);
     }
-
 
     /**
      * _more_
@@ -166,9 +156,6 @@ public class OutputType {
         this.icon     = icon;
         this.category = category;
     }
-
-
-
 
     /**
      * _more_
@@ -212,8 +199,6 @@ public class OutputType {
         return okToUse;
     }
 
-
-
     /**
      * _more_
      *
@@ -246,7 +231,6 @@ public class OutputType {
 
         return type;
     }
-
 
     /**
      * _more_
@@ -287,7 +271,6 @@ public class OutputType {
                + request.getUrlArgs();
     }
 
-
     /**
      * Set the Suffix property.
      *
@@ -306,7 +289,6 @@ public class OutputType {
         return suffix;
     }
 
-
     /**
      * String representation of this object.
      * @return toString() method of label.
@@ -314,7 +296,6 @@ public class OutputType {
     public String toString() {
         return id;
     }
-
 
     /**
      * _more_
@@ -350,7 +331,6 @@ public class OutputType {
         return forUser;
     }
 
-
     /**
      * Set the GroupName property.
      *
@@ -369,7 +349,6 @@ public class OutputType {
         return groupName;
     }
 
-
     /**
      * _more_
      *
@@ -378,7 +357,6 @@ public class OutputType {
     public String getCategory() {
         return category;
     }
-
 
     /**
      * _more_
@@ -409,7 +387,6 @@ public class OutputType {
         return isType(TYPE_VIEW);
     }
 
-
     /**
      *
      *  @return The IsHtml
@@ -426,7 +403,6 @@ public class OutputType {
     public boolean getIsAction() {
         return isType(TYPE_ACTION);
     }
-
 
     /**
      * _more_
@@ -479,8 +455,5 @@ public class OutputType {
     public void incrNumberOfCalls() {
         numberOfCalls.incr();
     }
-
-
-
 
 }

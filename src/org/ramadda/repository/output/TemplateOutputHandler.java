@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
@@ -13,7 +12,6 @@ import ucar.unidata.xml.XmlUtil;
 import org.w3c.dom.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class TemplateOutputHandler extends OutputHandler {
 
@@ -56,13 +54,11 @@ public class TemplateOutputHandler extends OutputHandler {
     /** _more_ */
     private String fileWikiTemplate;
 
-
     /** _more_ */
     private OutputType outputType;
 
     /** _more_ */
     private boolean embed;
-
 
     /**
      * _more_
@@ -88,9 +84,6 @@ public class TemplateOutputHandler extends OutputHandler {
 				    icon!=null?icon:"/icons/page.png");
         addType(outputType);
     }
-
-
-
 
     /**
      * _more_
@@ -155,9 +148,6 @@ public class TemplateOutputHandler extends OutputHandler {
         }
     }
 
-
-
-
     /**
      * _more_
      *
@@ -188,7 +178,6 @@ public class TemplateOutputHandler extends OutputHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -214,8 +203,5 @@ public class TemplateOutputHandler extends OutputHandler {
 
         return new Result("", new StringBuffer(wiki));
     }
-
-
-
 
 }

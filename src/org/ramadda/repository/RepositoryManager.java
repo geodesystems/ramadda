@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.DatabaseManager;
@@ -30,7 +29,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-
 @SuppressWarnings("unchecked")
 public class RepositoryManager implements RepositorySource, Constants, RequestHandler {
     public static final String HELP_ROOT =    "https://ramadda.org/repository";
@@ -39,7 +37,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     public static final JsonUtil JU = null;    
     public static final XmlUtil XU = null;    
 
-
     public RepositoryManager(Repository repository) {
         this.repository = repository;
         if (this.repository != null) {
@@ -47,45 +44,32 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-
-    
     public void shutdown() throws Exception {}
 
-
-
-    
     public void addAdminSettings(Request request, StringBuffer sb)
             throws Exception {}
 
-    
     public void applyAdminSettings(Request request) throws Exception {}
 
-
-    
     public static boolean getArg(Hashtable args, String arg, boolean dflt) {
         return Utils.getProperty(args, arg, dflt);
     }
 
-    
     public static String getArg(Hashtable args, String arg, String dflt) {
         return Utils.getProperty(args, arg, dflt);
     }
 
-    
     public static Hashtable makeArgs(Object... args) {
         return Utils.makeMap(args);
     }
 
-    
     public Repository getRepository() {
         return repository;
     }
 
-    
     public void setRepository(Repository repository) {
         this.repository = repository;
     }
-
 
     public void linkJS(Request request, StringBuilder sb, String js) {
         if (request.getExtraProperty(js) == null) {
@@ -94,22 +78,17 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	}
     }
 
-
     public void linkCSS(Request request, StringBuilder sb, String css) {
         if (request.getExtraProperty(css) == null) {
             request.putExtraProperty(css, "true");
 	    sb.append(HU.cssLink(css));
 	}
     }
-    
 
-
-    
     public String makeSnippet(String snippet) {
         return makeSnippet(snippet, false);
     }
 
-    
     public String makeSnippet(String snippet, boolean stripTags) {
         if (stripTags) {
             snippet = Utils.stripTags(snippet);
@@ -118,11 +97,9 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return "<snippet>" + snippet + "</snippet>";
     }
 
-    
     public RepositoryBase getRepositoryBase() {
         return repository;
     }
-
 
     public String formPropValue(Request request, String prop,String dflt) {
 	return request.getString(prop,getRepository().getProperty(prop,dflt));
@@ -132,9 +109,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	return request.get(prop,getRepository().getProperty(prop,dflt));
     }    
 
-
-
-    
     public String formEntry(Request request, String label, String contents) {
         if (request.isMobile()) {
             return "<tr><td><div class=\"formlabel\">" + label + "</div>"
@@ -146,7 +120,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    
     public void formEntry(Appendable sb, Request request, String label,
                           String contents)
             throws Exception {
@@ -161,17 +134,11 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-
-
-    
     public String formEntry(Request request, String label) {
         return "<tr><td colspan=2 class=ramadda-form-header><div style='font-weight:bold;margin-left:10px;'>"
                + label + "</b></td></tr>";
     }
 
-
-
-    
     public static String formEntryTop(Request request, String label,
                                       String contents) {
         if (request.isMobile()) {
@@ -186,13 +153,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    
     public NamedValue arg(String name, Object value) {
         return new NamedValue(name, value);
     }
 
-
-    
     public boolean getActive() {
         if ((repository == null) || !repository.getActive()) {
             return false;
@@ -201,25 +165,20 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return true;
     }
 
-
-    
     public Result addHeaderToAncillaryPage(Request request, Result result) {
         return result;
         //        return getEntryManager().addEntryHeader(request, null, result);
 
     }
 
-    
     public void fatalError(Request request, String message) {
         throw new IllegalArgumentException(message);
     }
-
 
     public boolean stringDefined(Object s) {
 	return Utils.stringDefined(s);
     }
 
-    
     public static String formatFileLength(double bytes, boolean decorate) {
         String s = formatFileLength(bytes);
         if (decorate && (s.length() > 0)) {
@@ -229,7 +188,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return s;
     }
 
-    
     public static String formatFileLength(double bytes) {
         if (bytes < 0) {
             return "";
@@ -248,16 +206,13 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return bytes + " MB";
     }
 
-    
     public String getFileUrl(String url) {
         return getRepository().getFileUrl(url);
     }
 
-    
     public String getHtdocsUrl(String url) {
         return getRepository().getHtdocsUrl(url);
     }
-
 
     /*
       If just one arg then return the PageHandler.getCdnPath
@@ -269,14 +224,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	//	return getPageHandler().makeHtdocsUrl(path);
     }
 
-
-
-    
     public String getIconUrl(String url) {
         return getRepository().getIconUrl(url);
     }
 
-    
     public String getIconImage(String url, String... args) {
         if (HU.isFontAwesome(url)) {
             return HU.faIcon(url, args);
@@ -285,8 +236,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-
-    
     public void addCriteria(Request request, Appendable sb, String label,
                             Object value) {
         try {
@@ -309,7 +258,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
     }
 
-    
     public static String msg(String msg) {
         return PageHandler.msg(msg);
     }
@@ -318,49 +266,35 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return PageHandler.noMsg(msg);
     }    
 
-    
     public static String boldMsg(String msg) {
         return HtmlUtils.b(msg(msg));
     }
 
-
-    
     public static String msgLabel(String msg) {
         return Repository.msgLabel(msg);
     }
 
-    
     public static String msgHeader(String h) {
         return Repository.msgHeader(h);
     }
 
-
-
-    
     public static String tableSubHeader(String s) {
         return HtmlUtils.row(HtmlUtils.colspan(subHeader(s), 2));
     }
 
-    
     public static String subHeader(String s) {
         return HtmlUtils.div(s, HtmlUtils.cssClass(CSS_CLASS_HEADING_2));
     }
 
-
-    
     public static String formHeader(String s) {
         return HtmlUtils.div(s, HtmlUtils.cssClass("formgroupheader"));
     }
 
-
-    
     public String subHeaderLink(String url, String label) {
         return HtmlUtils.href(url, label,
                               HtmlUtils.cssClass(CSS_CLASS_HEADING_2_LINK));
     }
 
-
-    
     public String subHeaderLink(String url, String label, boolean toggle) {
         //        if(true) return "x";
         String img = HtmlUtils.img(getIconUrl(toggle
@@ -375,46 +309,31 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         //return "<table border=1><tr valign=bottom><td>" + html +"</table>";
     }
 
-
-
-    
     public String formatDate(Request request, Date d) {
         return getDateHandler().formatDate(request, d);
     }
 
-    
     public String formatDate(Request request, Date d, Entry entry) {
         return getDateHandler().formatDate(request, d,
                                            getEntryUtil().getTimezone(request,entry));
     }
 
-
-
-    
     public DatabaseManager getDatabaseManager() {
         return repository.getDatabaseManager();
     }
 
-
-    
     public RegistryManager getRegistryManager() {
         return repository.getRegistryManager();
     }
 
-
-    
     public String getPropertyFromTree(String name, String dflt) {
         return repository.getPropertyFromTree(name, dflt);
     }
 
-
-
-    
     public String header(String h) {
         return RepositoryUtil.header(h);
     }
 
-    
     public Admin getAdmin() {
         return repository.getAdmin();
     }
@@ -423,12 +342,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 	return getRepository().getAdminRequest();
     }
 
-    
     public MailManager getMailManager() {
         return repository.getMailManager();
     }
 
-    
     public UserManager getUserManager() {
         return repository.getUserManager();
     }
@@ -437,48 +354,38 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         return repository.getAuthManager();
     }    
 
-    
     public SessionManager getSessionManager() {
         return repository.getSessionManager();
     }
 
-    
     public LogManager getLogManager() {
         return repository.getLogManager();
     }
 
-    
     public ActionManager getActionManager() {
         return repository.getActionManager();
     }
 
-    
     public AccessManager getAccessManager() {
         return repository.getAccessManager();
     }
 
-    
     public EntryManager getEntryManager() {
         return repository.getEntryManager();
     }
 
-    
     public EntryUtil getEntryUtil() {
         return repository.getEntryUtil();
     }
 
-
-    
     public PageHandler getPageHandler() {
         return repository.getPageHandler();
     }
 
-    
     public DateHandler getDateHandler() {
         return repository.getDateHandler();
     }
 
-    
     public SearchManager getSearchManager() {
         return repository.getSearchManager();
     }
@@ -486,82 +393,57 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
     public LLMManager getLLMManager() {
         return repository.getLLMManager();
     }
-					
 
-
-    
     public AssociationManager getAssociationManager() {
         return repository.getAssociationManager();
     }
 
-    
     public MetadataManager getMetadataManager() {
         return repository.getMetadataManager();
     }
 
-    
     public WikiManager getWikiManager() {
         return repository.getWikiManager();
     }
 
-
-    
     public HarvesterManager getHarvesterManager() {
         return repository.getHarvesterManager();
     }
 
-
-    
     public StorageManager getStorageManager() {
         return repository.getStorageManager();
     }
 
-    
     public PluginManager getPluginManager() {
         return repository.getPluginManager();
     }
-
-    
 
     public MapManager getMapManager() {
         return repository.getMapManager();
     }
 
-
-    
     protected void log(Request request, String message) {
         getRepository().getLogManager().log(request, message);
 
     }
 
-
-
-    
     public void logException(String message, Throwable exc) {
         getRepository().getLogManager().logError(message, exc);
     }
 
-
-    
     public void logError(String message, Throwable exc) {
         getRepository().getLogManager().logError(message, exc);
     }
 
-
-    
     public void logInfo(String message) {
         System.err.println(message);
         getRepository().getLogManager().logInfo(message);
     }
 
-    
     public void adminSettingsChanged() {}
 
-
-    
     private static int dialogCnt = 0;
 
-    
     public String makeFormSubmitDialog(Appendable sb, String message) {
         String id = "dialog-message" + (dialogCnt++);
         String onSubmit = " onsubmit=\"return Utils.submitEntryForm('#" + id
@@ -576,8 +458,6 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
     }
 
-
-    
     public String makeButtonSubmitDialog(Appendable sb, String message) {
         String id = HtmlUtils.getUniqueId("dialog-message");
         String onSubmit = " onclick=\"return Utils.submitEntryForm('#" + id
@@ -592,12 +472,10 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
     }
 
-    
     public String getEntryDisplayName(Entry entry) {
         return getEntryDisplayName(entry, null);
     }
 
-    
     public String getEntryDisplayName(Entry entry, String template) {
         String name = entry.getTypeHandler().getEntryName(entry);
         if ( !Utils.stringDefined(name)) {
@@ -617,11 +495,11 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
         return name;
     }
-    
+
     public void clearCache() {}
-    
+
     public void initAttributes() {}
-    
+
     public static boolean getShouldButtonBeSelected(Request request,
             String requestArg, String buttonValue, boolean dflt) {
         if (request.defined(requestArg)) {
@@ -630,14 +508,14 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
 
         return dflt;
     }
-    
+
     private HashSet<String> textSuffixes;
 
     public boolean isTextFile(Entry entry, String file) {
 	if(entry.getTypeHandler().isType("type_file_text")) return true;
 	return isTextFile(file);
     }
-    
+
     public boolean isTextFile(String file) {
         String suffix = IO.getFileExtension(file);
         suffix = suffix.replace(".", "");
@@ -651,19 +529,19 @@ public class RepositoryManager implements RepositorySource, Constants, RequestHa
         }
         return textSuffixes.contains(suffix.toLowerCase());
     }
-    
+
     public String messageNote(String msg) {
         return getPageHandler().showDialogNote(msg);
     }
-   
+
     public String messageBlank(String msg) {
         return getPageHandler().showDialogBlank(msg);
     }
-    
+
     public String messageQuestion(String msg, String buttons) {
         return getPageHandler().showDialogQuestion(msg, buttons);
     }
-    
+
     public String messageWarning(String msg) {
         return getPageHandler().showDialogWarning(msg);
     }

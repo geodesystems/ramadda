@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.repository.auth.*;
-
 
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
@@ -35,12 +32,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
 
 /**
  *
@@ -59,26 +53,21 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
-
-
     /** _more_ */
     public static final OutputType OUTPUT_ZIP =
         new OutputType("Zip and Download File", "zip.zip",
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_THUMBNAILS =
         new OutputType("Zip thumbnails", "zip.thumbnails",
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
 
-
     /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
                        OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "",
                        ICON_ZIP);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_ZIPGROUP =
@@ -102,7 +91,6 @@ public class ZipOutputHandler extends OutputHandler {
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
                        "fa-file-export");    
 
-
     /**
      * _more_
      *
@@ -122,7 +110,6 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_EXPORT_SHALLOW);	
     }
 
-
     /**
      * _more_
      *
@@ -133,7 +120,6 @@ public class ZipOutputHandler extends OutputHandler {
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         return AuthorizationMethod.AUTH_HTTP;
     }
-
 
     /**
      * _more_
@@ -147,8 +133,6 @@ public class ZipOutputHandler extends OutputHandler {
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
-
-
         if (state.entry != null) {
             if (getAccessManager().canDownload(request, state.entry)
                     && getAccessManager().canDoExport(request, state.entry)) {
@@ -161,15 +145,12 @@ public class ZipOutputHandler extends OutputHandler {
             return;
         }
 
-
-
         if ((state.group != null) && state.group.isDummy()) {
             if ( !request.isAnonymous()) {
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));		
             }
         }
-
 
         boolean hasFile  = false;
         boolean hasGroup = false;
@@ -183,7 +164,6 @@ public class ZipOutputHandler extends OutputHandler {
                 hasGroup = true;
             }
         }
-
 
         if (hasFile) {
             if (state.group != null) {
@@ -204,9 +184,6 @@ public class ZipOutputHandler extends OutputHandler {
 	}
 
     }
-
-
-
 
     /**
      * _more_
@@ -231,11 +208,8 @@ public class ZipOutputHandler extends OutputHandler {
             return toCorpus(request, entry.getName(), children);
 	}
 
-
-
         return toZip(request, entry.getName(), entries, false, false,false);
     }
-
 
     /**
      * _more_
@@ -276,8 +250,6 @@ public class ZipOutputHandler extends OutputHandler {
         }
     }
 
-
-
     /**
      * _more_
      *
@@ -292,10 +264,6 @@ public class ZipOutputHandler extends OutputHandler {
             return super.getMimeType(output);
         }
     }
-
-
-
-
 
     /**
      * _more_
@@ -343,7 +311,6 @@ public class ZipOutputHandler extends OutputHandler {
 
         Result     result         = new Result();
         FileWriter fileWriter     = null;
-
 
         boolean    writeToDisk    = request.get(ARG_WRITETODISK, false);
         File       writeToDiskDir = null;
@@ -418,7 +385,6 @@ public class ZipOutputHandler extends OutputHandler {
 
         return result;
 
-
     }
 
     public Result toCorpus(final Request request, String prefix, final List<Entry> entries)
@@ -457,9 +423,6 @@ public class ZipOutputHandler extends OutputHandler {
 	request.setReturnFilename(prefix+".txt",false);
 	return request.returnStream("corpus.txt", "text/plain",is);
     }
-
-
-
 
     /**
      * _more_
@@ -522,7 +485,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             counter[0]++;
             //Don't get big files
-	    
+
             if (!thumbnails && request.defined(ARG_MAXFILESIZE) && entry.isFile()) {
 		long length = getStorageManager().getEntryFileLength(entry);
                 if (length   >= request.get(ARG_MAXFILESIZE, 0)) {
@@ -556,7 +519,6 @@ public class ZipOutputHandler extends OutputHandler {
                                             sizeProcessed + sizeSoFar,
                                             counter, forExport, thumbnails,entriesRoot);
             }
-
 
             if (!thumbnails &&  !getAccessManager().canDownload(request, entry,debug)) {
 		if(debug)

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -28,7 +27,6 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Cache;
@@ -39,14 +37,11 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
 
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 
 import ucar.unidata.xml.XmlUtil;
-
-
 
 import java.io.*;
 
@@ -56,7 +51,6 @@ import java.io.InputStream;
 import java.lang.reflect.*;
 
 import java.net.*;
-
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -74,12 +68,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
-
 import java.util.regex.*;
 import java.util.zip.*;
-
-
-
 
 /**
  * The main class.
@@ -107,9 +97,6 @@ public class ApiManager extends RepositoryManager {
     /** _more_ */
     ArrayList<ApiMethod> topLevelMethods = new ArrayList();
 
-
-
-
     /**
      * ctor
      *
@@ -118,8 +105,6 @@ public class ApiManager extends RepositoryManager {
     public ApiManager(Repository repository) {
         super(repository);
     }
-
-
 
     /**
      * _more_
@@ -157,13 +142,11 @@ public class ApiManager extends RepositoryManager {
                                  Misc.getProperty(props,
                                      ApiMethod.ATTR_ISUSER, false));
 
-
         boolean requiresAuthToken = XmlUtil.getAttributeFromTree(node,
                                         ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                         Misc.getProperty(props,
                                             ApiMethod.ATTR_REQUIRESAUTHTOKEN,
                                             false));
-
 
         String handlerName = XmlUtil.getAttributeFromTree(node,
                                  ApiMethod.ATTR_HANDLER,
@@ -261,13 +244,11 @@ public class ApiManager extends RepositoryManager {
             handlers.put(handlerId, handler);
         }
 
-
         String    url       = request;
         ApiMethod oldMethod = requestMap.get(url);
         if (oldMethod != null) {
             requestMap.remove(url);
         }
-
 
         Class[] paramTypes = new Class[] { Request.class };
         Method method = Misc.findMethod(handler.getClass(), methodName,
@@ -277,7 +258,6 @@ public class ApiManager extends RepositoryManager {
                     + methodName + " in class:"
                     + handler.getClass().getName());
         }
-
 
         String icon = XmlUtil.getAttribute(node, ApiMethod.ATTR_ICON,
                                            (String) null);
@@ -322,10 +302,6 @@ public class ApiManager extends RepositoryManager {
         }
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -347,9 +323,6 @@ public class ApiManager extends RepositoryManager {
             }
         }
     }
-
-
-
 
     /**
      * _more_
@@ -380,7 +353,6 @@ public class ApiManager extends RepositoryManager {
         return apiHandlers.get(id);
     }
 
-
     /**
      * _more_
      *
@@ -389,9 +361,6 @@ public class ApiManager extends RepositoryManager {
     public List<ApiMethod> getApiMethods() {
         return apiMethods;
     }
-
-
-
 
     /**
      * _more_
@@ -429,7 +398,6 @@ public class ApiManager extends RepositoryManager {
         }
     }
 
-
     /**
      * _more_
      *
@@ -462,7 +430,6 @@ public class ApiManager extends RepositoryManager {
         if (incoming.length() == 0) {
             return homeApi;
         }
-
 
         ApiMethod apiMethod = (ApiMethod) requestMap.get(incoming);
         if (apiMethod == null) {
@@ -497,8 +464,5 @@ public class ApiManager extends RepositoryManager {
     public ApiMethod getApiMethod(String path) {
         return requestMap.get(path);
     }
-
-
-
 
 }

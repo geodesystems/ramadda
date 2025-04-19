@@ -5,16 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.*;
-
 
 import ucar.unidata.util.Misc;
 
-
 import java.util.Date;
-
-
 
 /**
  *
@@ -42,7 +37,6 @@ public class Comment {
     /** _more_ */
     private Entry entry;
 
-
     /**
      * _more_
      *
@@ -63,8 +57,6 @@ public class Comment {
         this.comment = comment;
         this.date    = date;
     }
-
-
 
     /**
      * Set the Id property.
@@ -156,11 +148,6 @@ public class Comment {
         return date;
     }
 
-
-
-
-
-
     /**
      * _more_
      *
@@ -169,6 +156,5 @@ public class Comment {
     public String toString() {
         return subject;
     }
-
 
 }

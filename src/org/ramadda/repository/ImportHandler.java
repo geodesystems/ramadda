@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.TwoFacedObject;
-
 
 import java.io.InputStream;
 
@@ -20,7 +18,6 @@ public abstract class ImportHandler extends RepositoryManager {
     public ImportHandler() {
         super(null);
     }
-
 
     public ImportHandler(Repository repository) {
         super(repository);

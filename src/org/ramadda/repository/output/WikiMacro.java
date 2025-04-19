@@ -11,7 +11,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 import ucar.unidata.xml.XmlUtil;
 
-
 public class WikiMacro {
     private String name;
     private String label;
@@ -102,7 +101,5 @@ public class WikiMacro {
     public String toString() {
 	return name;
     }
-
-
 
 }

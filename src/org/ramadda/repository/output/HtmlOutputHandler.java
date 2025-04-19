@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -18,7 +17,6 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.SortableObject;
 import org.ramadda.util.TTLCache;
-
 
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.SqlUtil;
@@ -49,7 +47,6 @@ import java.util.function.Supplier;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
 /**
  *
  *
@@ -66,7 +63,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_DATA);
 
-
     /** _more_ */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid", OutputType.TYPE_VIEW, "",
@@ -81,7 +77,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_INFO =
         new OutputType("Information", "html.info", OutputType.TYPE_VIEW, "",
                        ICON_INFORMATION);
-
 
     /** _more_ */
     public static final OutputType OUTPUT_GRAPH = new OutputType("Graph",
@@ -112,7 +107,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_SELECTXML =
         new OutputType("selectxml", OutputType.TYPE_INTERNAL);
 
-
     /** _more_ */
     public static final OutputType OUTPUT_METADATAXML =
         new OutputType("metadataxml", OutputType.TYPE_INTERNAL);
@@ -121,20 +115,14 @@ public class HtmlOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_LINKSXML =
         new OutputType("linksxml", OutputType.TYPE_INTERNAL);
 
-
     /** _more_ */
     public static final String ATTR_WIKI_SECTION = "wiki-section";
 
     /** _more_ */
     public static final String ATTR_WIKI_URL = "wiki-url";
 
-
-
     /** _more_ */
     public static final String ASSOCIATION_LABEL = "Connections";
-
-
-
 
     /**
      * _more_
@@ -160,7 +148,6 @@ public class HtmlOutputHandler extends OutputHandler {
         //        addType(OUTPUT_TEST);
     }
 
-
     /**
      * _more_
      *
@@ -175,7 +162,6 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
     }
-
 
     @Override
     public boolean  isHtml() {
@@ -226,7 +212,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return makeHtmlHeader(request, entry, "");
     }
 
-
     /**
      * _more_
      *
@@ -273,7 +258,6 @@ public class HtmlOutputHandler extends OutputHandler {
                + sb.toString() + "</td></tr></table>";
     }
 
-
     /**
      * _more_
      *
@@ -300,8 +284,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-
-
     /**
      * _more_
      *
@@ -315,7 +297,6 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result getMapInfo(Request request, Entry entry) throws Exception {
         return getMapInfo(request, entry, true);
     }
-
 
     /**
      * _more_
@@ -363,7 +344,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-
     /**
      * _more_
      *
@@ -403,7 +383,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -431,7 +410,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return new Result("", sb, "text/xml");
     }
 
-
     private void addToSelectMenu(Request request, Entry entry, StringBuilder sb) throws Exception {
 	if (entry.isImage()) {
 	    String url = getImageUrl(request, entry, true);
@@ -443,7 +421,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	if (urls.size() > 0) {
 	    sb.append(HU.img(urls.get(0),"",HU.attr("width","200px")));
 	}
-
 
     }
 
@@ -513,7 +490,6 @@ public class HtmlOutputHandler extends OutputHandler {
                              !outputType.equals(OUTPUT_INFO));
     }
 
-
     /**
      * _more_
      *
@@ -530,7 +506,6 @@ public class HtmlOutputHandler extends OutputHandler {
             throws Exception {
         return getHtmlResult(request, outputType, entry, true);
     }
-
 
     /**
      * _more_
@@ -578,7 +553,6 @@ public class HtmlOutputHandler extends OutputHandler {
         //        return makeLinksResult(request, entry.getName(), sb, new State(entry));
     }
 
-
     /**
      * _more_
      *
@@ -601,7 +575,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (innerContent == null) {
             innerContent = entry.getTypeHandler().getWikiTemplateInner();
         }
-
 
         if (wikiTemplate == null) {
             wikiTemplate = getPageHandler().getWikiTemplate(request, entry,
@@ -635,7 +608,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 true));
     }
 
-
     /**
      * _more_
      *
@@ -660,10 +632,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return "";
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -683,10 +651,6 @@ public class HtmlOutputHandler extends OutputHandler {
             return super.getMimeType(output);
         }
     }
-
-
-
-
 
     /**
      * _more_
@@ -721,7 +685,6 @@ public class HtmlOutputHandler extends OutputHandler {
             return result;
         }
 
-
         Hashtable      catMap  = new Hashtable();
         List<SortableObject<String>> cats =
             new ArrayList<SortableObject<String>>();
@@ -729,7 +692,6 @@ public class HtmlOutputHandler extends OutputHandler {
             getMetadataManager().getMetadataHandlers();
 
         boolean canEdit = getAccessManager().canDoEdit(request, entry);
-
 
         boolean smallDisplay = request.getString(ARG_DISPLAY,
                                    "").equals(DISPLAY_SMALL);
@@ -749,7 +711,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(!type.getCanDisplay()) {
 		continue;
 	    }
-	    
 
             MetadataHandler metadataHandler = type.getHandler();
             String[] html = metadataHandler.getHtml(request, entry, metadata);
@@ -782,7 +743,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		 : "metadata-row-" + (even
 				      ? "even"
 				      : "odd"));
-
 
             boolean first    = list.size() == 0;
             String  label    = html[0];
@@ -880,7 +840,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return result;
     }
 
-
     /**
      * _more_
      *
@@ -903,8 +862,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
         return new Result("", xml, "text/xml");
     }
-
-
 
     /**
      * _more_
@@ -938,7 +895,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    if(inline!=null) sb.append(inline);
 	}
 
-
         if ( !showingAll(request, children)) {
             sb.append(msgLabel("Showing") + " 1.." + (children.size()));
             sb.append(HU.space(2));
@@ -958,7 +914,6 @@ public class HtmlOutputHandler extends OutputHandler {
             addEntryTableRow(request, subGroup, sb, jsSB, showDetails,
                              showIcon);
         }
-
 
 	//Only add the info when there are no children and we haven't included the info above
         if (cnt == 0 && !showInfo) {
@@ -984,7 +939,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
         return new Result("", xml, "text/xml");
     }
-
 
     /**
      * _more_
@@ -1120,7 +1074,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    }
 	}
 
-
 	if (localeEntry != null) {
 	    if (true || target.endsWith("_fieldname")) {
 		sb.append(getSelectLink(request, localeEntry, seen,
@@ -1145,7 +1098,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		sb.append(sectionDivider);
 	    }
 	}
-
 
         if (request.get("firstclick", false)) {
             firstCall = true;
@@ -1191,7 +1143,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		sb.append(sectionDivider);
 	    }
 
-
             List<FavoriteEntry> favoritesList =
                 getUserManager().getFavorites(request, request.getUser());
             if (favoritesList.size() > 0) {
@@ -1218,7 +1169,6 @@ public class HtmlOutputHandler extends OutputHandler {
             }
         }
 
-
         Entry parent = group.getParentEntry();
         if (parent != null) {
             sb.append(getSelectLink(request, parent, seen, target, "../"));
@@ -1241,8 +1191,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
         return makeAjaxResult(request,s);
     }
-
-
 
     /**
      * _more_
@@ -1296,7 +1244,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	}
     }
 
-
     public String getInformationTabs(Request request, Entry entry,
                                      boolean includeSnippet,
 				     List<LabeledObject>extras,
@@ -1322,7 +1269,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    }
 	}
 
-
         request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         entry.getTypeHandler().getEntryContent(request, entry,
 					       false, showResource, props,
@@ -1338,7 +1284,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	    tabContents.add(HU.div(dd,HU.style("min-height:200px;")));
 	}
 
-
         for (TwoFacedObject tfo :
 		 getMetadataHtml(request, entry, null, true, null,
 				 false, true,false,props)) {
@@ -1348,7 +1293,6 @@ public class HtmlOutputHandler extends OutputHandler {
         entry.getTypeHandler().addToInformationTabs(request, entry,
                 tabTitles, tabContents);
 
-
         StringBuilder comments = getCommentBlock(request, entry, true);
         if (comments.length() > 0) {
             tabTitles.add(msg("Comments"));
@@ -1356,7 +1300,6 @@ public class HtmlOutputHandler extends OutputHandler {
             tabContents.add(comments);
         }
 
-	
         String attachments = getAttachmentsHtml(request, entry);
         if (attachments.length() > 0) {
             tabTitles.add(msg("Attachments"));
@@ -1382,20 +1325,12 @@ public class HtmlOutputHandler extends OutputHandler {
 	    }
 	}
 
-
         if (tabContents.size() == 1) {
             return tabContents.get(0).toString();
         }
 
-
         return OutputHandler.makeTabs(tabTitles, tabContents, true);
     }
-
-
-
-
-
-
 
     /**
      * _more_
@@ -1417,7 +1352,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, children));
     }
-
 
     /**
      * _more_
@@ -1442,7 +1376,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                new State(group, children));
     }
 
-
     /**
      * _more_
      *
@@ -1463,7 +1396,6 @@ public class HtmlOutputHandler extends OutputHandler {
     /** _more_ */
     private TTLCache<String, StringBuffer> testCache =
         new TTLCache<String, StringBuffer>(60 * 60 * 1000, -1, "HTML Test");
-
 
     /**
      * _more_
@@ -1546,10 +1478,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return new Result("test", sb);
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -1572,7 +1500,6 @@ public class HtmlOutputHandler extends OutputHandler {
             getPageHandler().entrySectionOpen(request, group, sb, "Table");
         }
 
-
         makeTable(request, children, sb, null);
         if (prefix == null) {
             getPageHandler().entrySectionClose(request, group, sb);
@@ -1581,8 +1508,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, children));
     }
-
-
 
     /**
      * _more_
@@ -1653,8 +1578,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         sb.append("</table>");
     }
-
-
 
     /**
      * _more_
@@ -1784,9 +1707,7 @@ public class HtmlOutputHandler extends OutputHandler {
 			      HU.jsMakeArgs(true,containerId, viewId,
 					    template==null? "empty":template)));
 
-
     }
-
 
     /**
      * _more_
@@ -1802,11 +1723,10 @@ public class HtmlOutputHandler extends OutputHandler {
                           Appendable sb, Hashtable props)
             throws Exception {
 
-
 	boolean doInlineEdit = false;
 
 	String NA = "---";
-	
+
         if (props == null) {
             props = new Hashtable();
         }
@@ -1827,7 +1747,7 @@ public class HtmlOutputHandler extends OutputHandler {
 	    displayColumns = new ArrayList<String>();
 	    for(String col: Utils.split(tmpColumns,",",true,true)) {
 		if(!col.startsWith("#")) displayColumns.add(col);
-		
+
 	    }
 	}
         boolean showColumns = Utils.getProperty(props, "showColumns", true);
@@ -1859,7 +1779,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
 
-
             if ( !showCategories) {
                 type = "entries";
             }
@@ -1888,7 +1807,6 @@ public class HtmlOutputHandler extends OutputHandler {
             String       typeLabel   = type.equals("File")
                                        ? "File"
                                        : typeHandler.getLabel();
-
 
             StringBuffer tableSB     = new StringBuffer();
             tableSB.append("<div class=\"entry-table-wrapper\">");
@@ -1961,7 +1879,6 @@ public class HtmlOutputHandler extends OutputHandler {
 		}
 	    }
 
-
 	    if(showMetadata!=null) {
 		for(MetadataType mtd: showMetadata) {
 		    headers.add(mtd.getName());
@@ -2005,8 +1922,6 @@ public class HtmlOutputHandler extends OutputHandler {
 				     "data-title",entry.getName(),
 				     "data-url",entryLink.getFolderClickUrl()));
 		}
-
-
 
                 HU.open(tableSB, "tr",
 			HU.attrs(new String[] { "class", odd
@@ -2097,7 +2012,7 @@ public class HtmlOutputHandler extends OutputHandler {
 									       request, entry), HU.img(
 												       getIconUrl(ICON_DOWNLOAD), msg("Download"),
 												       ""));
-			
+
 			if (entry.isFile()) {
 			    HU.col(tableSB,formatFileLength(entry.getResource().getFileSize()) + " "
 				   + downloadLink, " align=right nowrap ");
@@ -2105,7 +2020,7 @@ public class HtmlOutputHandler extends OutputHandler {
 			    HU.col(tableSB, NA, " align=right nowrap ");
 			}
 		    }
-		    
+
 		    if (columns != null) {
 			for (Column column : columns) {
 			    if (column.getCanShow() && (column.getRows() <= 1)) {
@@ -2118,7 +2033,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 				    if(canEdit && column.getDoInlineEdit()) {
 					doInlineEdit = true;
-					
+
 					if(column.isBoolean()) {
 					    List values = Utils.add(null,"true","false");
 					    s = HU.select("",values,s,
@@ -2198,10 +2113,7 @@ public class HtmlOutputHandler extends OutputHandler {
 					HU.squote("#" + guid +" .ramadda-entry-inlineedit"))));
 	}
 
-
-
     }
-
 
     /**
      * _more_
@@ -2220,7 +2132,6 @@ public class HtmlOutputHandler extends OutputHandler {
                               final OutputType outputType, final Entry group,
                               final List<Entry> children)
             throws Exception {
-
 
         final boolean[] haveCalled = { false };
         TypeHandler.Entries getChildren = () -> {
@@ -2243,7 +2154,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
             return timelineResult;
         }
-
 
         boolean isSearchResults = group.isDummy();
         TypeHandler typeHandler =
@@ -2296,7 +2206,6 @@ public class HtmlOutputHandler extends OutputHandler {
         if (outputType.equals(OUTPUT_TABLE)) {
             return outputTable(request, group, getChildren.get());
         }
-
 
         boolean doSimpleListing = !request.exists(ARG_OUTPUT);
         boolean doingInfo       = outputType.equals(OUTPUT_INFO);
@@ -2388,7 +2297,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return resultHandler.getResult();
     }
 
-
     /**
      * _more_
      *
@@ -2431,10 +2339,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -2467,8 +2371,5 @@ public class HtmlOutputHandler extends OutputHandler {
 
         return text;
     }
-
-
-
 
 }

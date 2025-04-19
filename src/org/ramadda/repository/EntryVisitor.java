@@ -54,7 +54,6 @@ public abstract class EntryVisitor implements Constants {
         sb.append(object);
     }
 
-    
     public void incrementProcessedCnt(int by) {
         processedCnt += by;
     }
@@ -63,7 +62,6 @@ public abstract class EntryVisitor implements Constants {
 	return processedCnt;
     }
 
-    
     public boolean isRunning() {
         if (actionId == null) {
             return true;
@@ -72,7 +70,6 @@ public abstract class EntryVisitor implements Constants {
         return getRepository().getActionManager().getActionOk(actionId);
     }
 
-    
     public boolean entryOk(Entry entry) {
         if (//entry.getTypeHandler().isSynthType()|| 
 	    getRepository().getEntryManager().isSynthEntry(
@@ -83,8 +80,6 @@ public abstract class EntryVisitor implements Constants {
         return true;
     }
 
-    
-    
     public void updateMessage() {
         if (actionId != null) {
             getRepository().getActionManager().setActionMessage(actionId,
@@ -93,12 +88,9 @@ public abstract class EntryVisitor implements Constants {
         }
     }
 
-    
     public Object getActionId() {
         return actionId;
     }
-
-    
 
     public boolean walk(List<Entry> entries) throws Exception {
 	boolean ok = true;
@@ -118,11 +110,8 @@ public abstract class EntryVisitor implements Constants {
         }
     }
 
-    
     public void finished() {}
 
-
-    
     private boolean walkInner(Entry entry, int level) throws Exception {
 	if(maxDepth>=0 && level>maxDepth) {
 	    return true;
@@ -164,7 +153,6 @@ public abstract class EntryVisitor implements Constants {
         return true;
     }
 
-    
     public abstract boolean processEntry(Entry entry, List<Entry> children)
      throws Exception;
 

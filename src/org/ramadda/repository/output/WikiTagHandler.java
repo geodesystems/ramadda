@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Request;
 
@@ -13,7 +12,6 @@ import org.ramadda.util.WikiUtil;
 
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * Provides wiki text processing services
@@ -54,7 +52,5 @@ public interface WikiTagHandler {
                             Entry originalEntry, Entry entry, String theTag,
                             Hashtable props, String remainder)
      throws Exception;
-
-
 
 }

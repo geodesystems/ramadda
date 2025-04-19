@@ -5,17 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.output;
 
-
 import org.ramadda.repository.Constants;
-
 
 /**
  */
 public interface WikiConstants {
 
     public static final String ARG_REMOTE = "remote";
-
-
 
     /** _more_ */
     public static final String ID_ROOT = "root";
@@ -38,21 +34,17 @@ public interface WikiConstants {
     public static final String ID_SIBLINGS = "siblings";
     public static final String PREFIX_SIBLINGS= ID_SIBLINGS+":";    
 
-
     public static final String ID_CHILD= "child";
     public static final String PREFIX_CHILD= ID_CHILD+":";
 
     public static final String ID_CHILDREN = "children";    
     public static final String PREFIX_CHILDREN= ID_CHILDREN+":";    
 
-
     public static final String ID_PARENT = "parent";
     public static final String PREFIX_PARENT = ID_PARENT+":";
 
-
     public static final String ID_GRANDPARENT = "grandparent";
     public static final String PREFIX_GRANDPARENT= ID_GRANDPARENT+":";
-
 
     public static final String ID_GRANDCHILDREN = "grandchildren";
     public static final String PREFIX_GRANDCHILDREN= ID_GRANDCHILDREN+":";    
@@ -64,14 +56,11 @@ public interface WikiConstants {
     public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
     public static final String PREFIX_GREATGRANDCHILDREN = ID_GREATGRANDCHILDREN+":";    
 
-
     /** _more_ */
     public static final String ID_REMOTE = "remote:";
 
-
     /** _more_ */
     public static final String ID_SEARCH = "search";
-
 
     public static final String PREFIX_ALIAS= "alias:";
     public static final String PREFIX_SEARCH= "search:";
@@ -80,10 +69,8 @@ public interface WikiConstants {
     public static final String PREFIX_DESCENDENT = "descendent:";
     public static final String PREFIX_ASCENDING = "ascending:";
 
-
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
-
 
     /** _more_ */
     public static final String ATTR_ALIGN = "align";
@@ -111,7 +98,6 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_ROW_LABEL = "row.label";
 
-
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
@@ -124,7 +110,6 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_PADDING = "padding";
 
-
     /** _more_ */
     public static final String ATTR_MARGIN = "margin";
 
@@ -133,8 +118,6 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String ATTR_INNERCLASS = "innerClass";
-
-
 
     /** _more_ */
     public static final String ATTR_COLORS = "colors";
@@ -156,8 +139,6 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String ATTR_FORCE = "force";
-
-
 
     /** maximum attribute */
     public static final String ATTR_MAX = "max";
@@ -201,25 +182,20 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_LIST_SUFFIX = "listSuffix";
 
-
     /** _more_ */
     public static final String ATTR_PREFIX = "prefix";
 
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
-
     /** _more_ */
     public static final String ATTR_IF = "if";
-
-
 
     /**  */
     public static final String ATTR_SHOWICON = "showIcon";
 
     /** _more_ */
     public static final String ATTR_SHOWDESCRIPTION = "showdescription";
-
 
     /** _more_ */
     public static final String ATTR_ICON = "icon";
@@ -260,7 +236,6 @@ public interface WikiConstants {
     /** sort order attribute */
     public static final String ATTR_SORT_DIR = "sortdir";
 
-
     /** the message attribute */
     public static final String ATTR_MESSAGE = "message";
 
@@ -297,11 +272,8 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_FOLDERS = "folders";
 
-
     /** images only attribute */
     public static final String ATTR_IMAGES = "images";
-
-
 
     /** thumbnail attribute */
     public static final String ATTR_USE_THUMBNAIL = "useThumbnail";
@@ -318,13 +290,11 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_TAG = "tag";
 
-
     /** attribute in import tag */
     public static final String ATTR_TAGOPEN = "tagopen";
 
     /** attribute in import tag */
     public static final String ATTR_TAGCLOSE = "tagclose";
-
 
     /** attribute in import tag */
     public static final String ATTR_LAYOUT = "layout";
@@ -377,11 +347,8 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
 
-
     /** _more_ */
     public static final String WIKI_TAG_GROUP_OLD = "displaygroup";
-
-
 
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
@@ -402,7 +369,6 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
-
 
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
@@ -466,10 +432,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_MENU = "menu";
 
-
     /**  */
     public static final String WIKI_TAG_MENUTREE = "menutree";
-
 
     /** _more_ */
     public static final String WIKI_TAG_SEARCH = "search";
@@ -496,19 +460,14 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_FRAMES = "frames";
 
-
     /**  */
     public static final String WIKI_TAG_CAPTION = "caption";
-
 
     /** the table property */
     public static final String WIKI_TAG_TABLE = "table";
 
-
     /** wiki import */
     public static final String WIKI_TAG_COMMENTS = "comments";
-
-
 
     /** _more_ */
     public static final String WIKI_TAG_TAGCLOUD = "tagcloud";
@@ -522,7 +481,6 @@ public interface WikiConstants {
 
     /**  */
     public static final String WIKI_TAG_ZIPFILE = "zipfile";
-
 
     /** the image player property */
     public static final String WIKI_TAG_PLAYER = "imageplayer";
@@ -559,8 +517,6 @@ public interface WikiConstants {
     public static final String WIKI_TAG_DISPLAYPROPERTIES =
         "displayProperties";
 
-
-
     /** _more_ */
     public static final String WIKI_TAG_MULTI = "multi";
 
@@ -594,7 +550,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_TAGS = "tags";
 
-
     /** wiki import */
     public static final String WIKI_TAG_GRID = "grid";
 
@@ -619,7 +574,6 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_USER = "user";
 
-
     /**  */
     public static final String WIKI_TAG_PREV = "prev";
 
@@ -631,7 +585,6 @@ public interface WikiConstants {
 
     /**  */
     public static final String WIKI_TAG_PREVNEXT = "prevnext";
-
 
     /** _more_ */
     public static final String WIKI_TAG_DOWNLOAD = "download";
@@ -645,7 +598,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_IMAGE2 = "image2";
 
-
     /** _more_ */
     public static final String WIKI_TAG_STREETVIEW = "streetview";
 
@@ -657,10 +609,8 @@ public interface WikiConstants {
     public static final String WIKI_TAG_ARK = "ark";
     public static final String WIKI_TAG_DISPLAY_IMPORTS = "displayImports";
 
-
     /** wiki import */
     public static final String WIKI_TAG_MAP = "map";
-
 
     /** wiki import */
     public static final String WIKI_TAG_EARTH = "earth";
@@ -678,8 +628,6 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String WIKI_TAG_SIMPLE = "simple";
-
-    
 
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
@@ -700,9 +648,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_LABEL = "label";
 
-
     public static final String WIKI_TAG_ASSOCIATIONS = "associations";
-
 
     /** wiki import */
     public static final String WIKI_TAG_LINKS = "links";
@@ -716,7 +662,6 @@ public interface WikiConstants {
     public static final String WIKI_TAG_NAMELIST="namelist";
 
     public static final String WIKI_TAG_NAVBAR  = "navbar";    
-
 
    /** wiki import */
     public static final String WIKI_TAG_ENTRYID = "entryid";
@@ -753,12 +698,10 @@ public interface WikiConstants {
     /** Upload property */
     public static final String WIKI_TAG_UPLOAD = "upload";
 
-
     public static final String WIKI_TAG_MAPPOPUP = "mappopup";
 
     public static final String WIKI_TAG_QRCODE = "qrcode";
     public static final String WIKI_TAG_BARCODE = "barcode";    
-
 
     /** property delimiter */
     public static final String PROP_DELIM = ":";
@@ -796,11 +739,9 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_LAYOUTHERE = "layoutHere";
 
-
     //    public static final String ATTR_SEARCH_PARENT = PREFIX_SEARCH +"parent";
 
     /** default label */
     public static final String LABEL_LINKS = "Actions";
-
 
 }

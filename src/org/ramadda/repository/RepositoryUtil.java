@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -31,7 +29,6 @@ import java.util.List;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.TimeZone;
-
 
 /**
  *
@@ -60,14 +57,12 @@ public class RepositoryUtil {
     /** _more_ */
     private static String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
-
     /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
         TimeZone.getTimeZone("UTC");
-
 
     /** the file separator id */
     public static final String FILE_SEPARATOR = "_file_";
@@ -89,7 +84,6 @@ public class RepositoryUtil {
         HTDOCS_VERSION = "htdocs_v" + VERSION_FULL.replaceAll("\\.", "_");
         HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
     }
-
 
     /**
       * @return _more_
@@ -125,10 +119,6 @@ public class RepositoryUtil {
         return HTDOCS_VERSION_SLASH;
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -154,13 +144,6 @@ public class RepositoryUtil {
             throw new IllegalStateException(uee.getMessage());
         }
     }
-
-
-
-
-
-
-
 
     /**
      * Make a date format from the format string
@@ -193,7 +176,6 @@ public class RepositoryUtil {
         return dateFormat;
     }
 
-
     /**
      * This will prune out any leading &lt;unique id&gt;_file_&lt;actual file name&gt;
      *
@@ -204,7 +186,6 @@ public class RepositoryUtil {
     public static String getFileTail(String fileName) {
         return Utils.getFileTail(fileName);
     }
-
 
     /**
      * MissingEntry Exception
@@ -223,7 +204,6 @@ public class RepositoryUtil {
         }
     }
 
-
     /**
      * Make a header from the String
      *
@@ -236,14 +216,6 @@ public class RepositoryUtil {
             h, HtmlUtils.cssClass(
                 "ramadda-page-heading ramadda-page-heading-left"));
     }
-
-
-
-
-
-
-
-
 
     /**
      * Make a hash of the plain text password
@@ -266,7 +238,6 @@ public class RepositoryUtil {
             throw new IllegalStateException(uee.getMessage());
         }
     }
-
 
     /**
      * This is a routine created by Matias Bonet to handle pre-existing passwords that
@@ -299,8 +270,6 @@ public class RepositoryUtil {
         }
     }
 
-
-
     /**
      * _more_
      *
@@ -309,7 +278,5 @@ public class RepositoryUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {}
-
-
 
 }

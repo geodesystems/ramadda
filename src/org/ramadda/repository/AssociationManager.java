@@ -5,23 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository;
 
-
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
-
-
-
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
-
-
 
 import org.w3c.dom.*;
 
@@ -30,8 +24,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
-
 import java.io.*;
 
 import java.net.*;
@@ -39,18 +31,12 @@ import java.net.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
-
-
-
-
 
 /**
  *
@@ -96,9 +82,6 @@ public class AssociationManager extends RepositoryManager {
                 "Could not find entry:" + request.getString(ARG_TO, BLANK));
         }
 
-
-
-
         String name = request.getString(ARG_NAME, (String) null);
         if (name != null) {
             String type = request.getString(ARG_TYPE_FREEFORM, "").trim();
@@ -115,7 +98,6 @@ public class AssociationManager extends RepositoryManager {
                     ARG_MESSAGE,
 		    MSG_ASSOCIATION_ADDED));
         }
-
 
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, fromEntry, sb,msg("Add Link"));
@@ -153,9 +135,7 @@ public class AssociationManager extends RepositoryManager {
         return getEntryManager().addEntryHeader(request, fromEntry,
                 new Result("Add Link", sb));
 
-
     }
-
 
     /**
      * _more_
@@ -186,7 +166,6 @@ public class AssociationManager extends RepositoryManager {
             return new Result(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, fromEntry));
         }
-
 
         if (request.exists(ARG_DELETE_CONFIRM)) {
             getAuthManager().ensureAuthToken(request);
@@ -222,9 +201,6 @@ public class AssociationManager extends RepositoryManager {
 
         return new Result(msg("Delete Links"), sb);
     }
-
-
-
 
     /**
      * _more_
@@ -267,8 +243,6 @@ public class AssociationManager extends RepositoryManager {
                               XmlUtil.getAttribute(node, ATTR_TYPE, ""));
     }
 
-
-
     /**
      * Add an association between the two entries
      *
@@ -305,7 +279,6 @@ public class AssociationManager extends RepositoryManager {
         return result;
     }
 
-
     /**
      * _more_
      *
@@ -329,8 +302,6 @@ public class AssociationManager extends RepositoryManager {
         return id;
     }
 
-
-
     /**
      * _more_
      *
@@ -352,9 +323,6 @@ public class AssociationManager extends RepositoryManager {
 
         return new ArrayList<String>(types);
     }
-
-
-
 
     /**
      * _more_
@@ -379,7 +347,6 @@ public class AssociationManager extends RepositoryManager {
         }
 
     }
-
 
     /**
      * _more_
@@ -424,7 +391,6 @@ public class AssociationManager extends RepositoryManager {
         return search;
     }
 
-
     /**
      * _more_
      *
@@ -442,7 +408,6 @@ public class AssociationManager extends RepositoryManager {
         return getAssociationsWithType(getAssociations(request,
                 entry.getId()), type);
     }
-
 
     /**
      * _more_
@@ -529,8 +494,6 @@ public class AssociationManager extends RepositoryManager {
         return results;
     }
 
-
-
     /**
      * _more_
      *
@@ -553,7 +516,6 @@ public class AssociationManager extends RepositoryManager {
 
         return getAssociations(request, entry);
     }
-
 
     /**
      * _more_
@@ -587,7 +549,6 @@ public class AssociationManager extends RepositoryManager {
 
         return associations;
     }
-
 
     /**
      * _more_
@@ -632,10 +593,6 @@ public class AssociationManager extends RepositoryManager {
         return associations;
     }
 
-
-
-
-
     /**
      * _more_
      *
@@ -661,8 +618,6 @@ public class AssociationManager extends RepositoryManager {
                     request, SqlUtil.distinct(Tables.ASSOCIATIONS.COL_NAME),
                     where, "")), 1);
     }
-
-
 
     /**
      * _more_
@@ -736,7 +691,6 @@ public class AssociationManager extends RepositoryManager {
                 toEntry = entry;
                 cols    = cols2;
             }
-
 
             if (fromEntry == null) {
                 if ((entry != null) && fromId.equals(entry.getId())) {
@@ -821,7 +775,6 @@ public class AssociationManager extends RepositoryManager {
 			   + HU.attr(HU.ATTR_CELLPADDING, "3")));
     }
 
-
     /**
      * _more_
      *
@@ -879,7 +832,6 @@ public class AssociationManager extends RepositoryManager {
                                              sb);
     }
 
-
     /**
      * _more_
      *
@@ -898,8 +850,6 @@ public class AssociationManager extends RepositoryManager {
         return getSearchManager().makeResult(request, msg("Search Links"),
                                              sb);
     }
-
-
 
     /**
      * _more_
@@ -930,7 +880,6 @@ public class AssociationManager extends RepositoryManager {
                                         request.getSanitizedString(ARG_NAME,
                                             ""), HU.SIZE_40) + searchExact));
 
-
         List types = getAssociationManager().getTypes();
         types.add(0, new TwoFacedObject(msg("None"), ""));
         if (types.size() > 1) {
@@ -941,7 +890,6 @@ public class AssociationManager extends RepositoryManager {
                         ARG_TYPE, types,
                         request.getSanitizedString(ARG_TYPE, ""))));
         }
-
 
         sb.append(HU.formTableClose());
 
@@ -954,8 +902,6 @@ public class AssociationManager extends RepositoryManager {
         sb.append(HU.sectionClose());
 
     }
-
-
 
     /**
      * _more_
@@ -982,7 +928,5 @@ public class AssociationManager extends RepositoryManager {
 
         return getEntryManager().getEntry(request, id);
     }
-
-
 
 }
