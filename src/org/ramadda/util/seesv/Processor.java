@@ -1711,13 +1711,9 @@ public abstract class Processor extends SeesvOperator {
     }
 
     public static class DbXml extends Processor {
-
         private Dictionary<String, String> props;
-
         private List<String[]> patternProps = new ArrayList<String[]>();
-
         private Row row1;
-
         private String tableId;
 
         public DbXml(TextReader ctx, Dictionary<String, String> props) {
