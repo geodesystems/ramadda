@@ -996,6 +996,11 @@ public class Utils extends IO {
         return true;
     }
 
+    public static Pattern compilePattern(String pattern) {
+	if(!stringDefined(pattern)) return null;
+	return Pattern.compile(pattern);
+    }
+
     public static String[] findPatterns(String s, String regexp) {
         Pattern pattern = Pattern.compile(regexp);
         Matcher matcher = pattern.matcher(s);
