@@ -141,8 +141,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     private SimpleDateFormat displayFormat = null;
     private SimpleDateFormat dateParser = null;
     private boolean importDateIsEpoch = false;
-
-    /** Lat/Lon format */
     private DecimalFormat latLonFormat = new DecimalFormat("##0.00");
     private DecimalFormat numberFormat;
     private DecimalFormat intFormat = new DecimalFormat("#0");
@@ -171,7 +169,6 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean changeType = false;
     private String dropColumnVersion;
     private boolean showEmpty = true;
-
     private boolean addNot = false;
     private boolean doPolygonSearch  = false;
     private boolean addFileToSearch = false;
@@ -212,9 +209,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private List<HtmlUtils.Selector> enumValues;
     private List<String> icons;
     private List<TwoFacedObject> jsonValues;
-    private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,
-	String>();
-
+    private LinkedHashMap<String, String> enumMap = new LinkedHashMap<String,String>();
     private List<Display> displays = new ArrayList<Display>();
     private String alias;
     private String dflt;
@@ -237,10 +232,7 @@ public class Column implements DataTypes, Constants, Cloneable {
     private boolean canExport = true;
     private boolean showInForm = true;
     private String lookupDB;
-
-    private Hashtable<String, String> properties = new Hashtable<String,
-	String>();
-
+    private Hashtable<String, String> properties = new Hashtable<String,String>();
     private List<Column> groupedColumns;
 
     public Column(TypeHandler typeHandler, String name, String type,
@@ -258,16 +250,11 @@ public class Column implements DataTypes, Constants, Cloneable {
         this.xmlElement  = element;
         this.typeHandler = typeHandler;
         this.offset      = offset;
-
-	//	TypeHandler.printAttrs(element,false);
-
         name             = XmlUtil.getAttribute(element, ATTR_NAME);
 	delimiter= XmlUtil.getAttribute(element, "delimiter",",");
 	addRawInput= XmlUtil.getAttribute(element, "addrawinput",false);
-        String sinitPattern = XmlUtil.getAttribute(element, "initpattern",(String)null);
-	if(sinitPattern!=null) {
-	    initPattern  = Pattern.compile(sinitPattern);
-	}
+	initPattern = Utils.compilePattern(XmlUtil.getAttribute(element, "initpattern",(String)null));
+
         String group  = XmlUtil.getAttribute(element, "group",(String)null);
         displayGroup =  XmlUtil.getAttribute(element, "displaygroup", group);
         searchGroup =  XmlUtil.getAttribute(element, ATTR_SEARCHGROUP, displayGroup);
@@ -381,8 +368,6 @@ public class Column implements DataTypes, Constants, Cloneable {
         doInlineEdit    = getAttributeOrTag(element, "doinlineedit", false);
         addBulkUpload    = getAttributeOrTag(element, "addbulkupload", false);
         bulkUploadHelp    = getAttributeOrTag(element, "bulkuploadhelp", "Upload file");
-
-
 
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
@@ -748,7 +733,6 @@ public class Column implements DataTypes, Constants, Cloneable {
             if ((values == null) || (values.size() == 0)) {
                 values = sourceTypeHandler.getEnumValues(request, this, null);
             }
-
 
             if (values != null) {
                 for (HtmlUtils.Selector tfo : values) {
@@ -2358,7 +2342,6 @@ public class Column implements DataTypes, Constants, Cloneable {
 	return showEnumerationPopup && size>5;
     }
 
-
     /** method */
     public String getFormWidget(Request request, Entry entry,
 				TypeHandler sourceTypeHandler,
@@ -2993,9 +2976,7 @@ public class Column implements DataTypes, Constants, Cloneable {
 				 boolean...horizontal)
 	throws Exception {	
 	boolean vertical = horizontal.length>0?!horizontal[0]:true;
-
         String       columnName = getFullName();
-
         List<Clause> tmp        = (where != null)
 	    ? new ArrayList<Clause>(where)
 	    : null;
@@ -3364,9 +3345,7 @@ public class Column implements DataTypes, Constants, Cloneable {
                 desc = desc.replace("${value}", value);
             }
         }
-
         return desc;
-
     }
 
     public String getFullName() {

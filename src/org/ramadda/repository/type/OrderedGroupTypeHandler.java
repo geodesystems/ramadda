@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
@@ -22,7 +21,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.util.ArrayList;
@@ -33,61 +31,21 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-/**
- */
 public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler {
-
-
-    /** _more_ */
     public static final String ARG_MOVE_UP = "move.up";
-
-    /** _more_ */
     public static final String ARG_MOVE_DOWN = "move.down";
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception on badness
-     */
     public OrderedGroupTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public abstract String getChildType();
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getListTitle() {
         return "Entries";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public List<Entry> postProcessEntries(Request request,
                                           List<Entry> entries)
@@ -99,31 +57,13 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
         return sorted;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getSortIndex() {
         return 0;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param entries _more_
-     * @param sb _more_
-     *
-     *
-     * @throws Exception on badness
-     */
     public void addListForm(Request request, Entry parent,
                             List<Entry> entries, Appendable sb)
             throws Exception {
-
 
         sb.append(request.form(getRepository().URL_ENTRY_ACCESS));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, parent.getId()));
@@ -166,16 +106,6 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
         sb.append(HtmlUtils.formClose());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param link _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void addListLink(Request request, Entry entry, EntryLink link,
                             Appendable sb)
             throws Exception {
@@ -183,28 +113,9 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
         sb.append(link.getFolderBlock());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param buttons _more_
-     */
     public void addEntryButtons(Request request, Entry entry,
                                 List<String> buttons) {}
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     public List<Entry> getChildrenEntries(Request request, Entry entry)
             throws Exception {
         return getEntryUtil().getEntriesWithType(
@@ -213,21 +124,9 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
     @Override
     public Result processEntryAccess(Request request, Entry entry)
             throws Exception {
-
 
         if ( !getEntryManager().canAddTo(request, entry)) {
             return null;
@@ -271,13 +170,9 @@ public abstract class OrderedGroupTypeHandler extends ExtensibleGroupTypeHandler
             getEntryManager().updateEntries(request, children);
         }
 
-
         String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
 
         return new Result(url);
     }
-
-
-
 
 }

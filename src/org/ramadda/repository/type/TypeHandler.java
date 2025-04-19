@@ -223,7 +223,6 @@ public class TypeHandler extends RepositoryManager {
      *   to use for a file
      */
     private String filePattern;
-
     private String fileNotPattern;    
     private String geoPosition;
     private List<MetadataPattern> metadataPatterns;
@@ -259,6 +258,9 @@ public class TypeHandler extends RepositoryManager {
 
     /** Default metadata types to show in Edit->Add Property menu */
     private List<String> metadataTypes=new ArrayList<String>();
+
+    /** This holds this types plus the parent types */
+    private List<String> allMetadataTypes;
 
     /** The default child entry types to show in the File->New menu */
     private List<String> childTypes;
@@ -707,7 +709,7 @@ public class TypeHandler extends RepositoryManager {
 			   + ContentMetadataHandler.TYPE_ALIAS,",");
     }
 
-    List<String> allMetadataTypes;
+
     public List<String> getMetadataTypes() {
 	if(allMetadataTypes==null) {
 	    allMetadataTypes = new ArrayList<String>();

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
@@ -14,7 +13,6 @@ import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
@@ -25,8 +23,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
 /**
  * Class TypeHandler _more_
  *
@@ -35,7 +31,6 @@ import java.util.List;
  * @version $Revision: 1.3 $
  */
 public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
-
 
     private boolean debug  =false;
     /** 5 minute cache */
@@ -55,7 +50,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         super(repository, entryNode);
     }
-
 
     /**
      * _more_
@@ -104,7 +98,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
-
     /**
      * _more_
      *
@@ -119,7 +112,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	String debugLine = s.replace("\\"," ").replaceAll("(\n|\r)"," ");
 	return  Utils.clip(debugLine,50,"...");
     }
-
 
     @Override
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
@@ -144,7 +136,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 	if (orderBy == null) {
 	    orderBy = ORDERBY_FROMDATE;
 	}
-
 
 	String cacheKey = idString +"_" + orderBy +"_" + descending;
         List<String> fromCache = cachedIds.get(cacheKey);
@@ -171,11 +162,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 							      mainEntry, mainEntry, idString, props,
 							      false, "");
 
-
 	    if(debug)
 		getLogManager().logSpecial("\tcreating entries:"  + mainEntry.getId() +" " + entries.size()+" ID:" +debugLine(idString));
-
-
 
 	    entries = getEntryManager().getEntryUtil().sortEntries(entries, orderBy,descending);
             for (Entry entry : entries) {
@@ -187,7 +175,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         mainEntry.setChildIds(ids);
         return ids;
     }
-
 
     /**
      * _more_
@@ -205,7 +192,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         return getEntryManager().getEntry(request, id);
     }
-
 
     /**
      * _more_
@@ -247,7 +233,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
-
         for (Entry child : children) {
             if (topEntryName.matches(child.getName())) {
                 entryNames.remove(0);
@@ -257,10 +242,8 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
-
         return null;
     }
-
 
     /**
      * _more_
@@ -274,7 +257,5 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         //Make the top level entry act like a group
         return new Entry(id, this, true);
     }
-
-
 
 }
