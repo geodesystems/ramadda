@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -18,7 +17,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import org.json.*;
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
@@ -31,26 +29,16 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.ChunkedAppendable;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.FileInfo;
-
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.net.*;
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -60,187 +48,67 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
-/**
- */
 @SuppressWarnings("unchecked")
 public class CommandHarvester extends Harvester {
-
-
-    /** _more_ */
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
-
-    /** _more_ */
     public static final String ATTR_TOKENS = "tokens";
-
-    /** _more_ */
     public static final String ATTR_WEBHOOK = "webhook";
-
-
-    /** _more_ */
     public static final String ATTR_ALLOW_CREATE = "allow_create";
-
-    /** _more_ */
     public static final String ATTR_APITOKEN = "apitoken";
-
-
-
-    /** _more_ */
     public static final String[] CMDS_SEARCH = { "search", "find" };
-
-    /** _more_ */
     public static final String[] CMDS_PWD = { "pwd", "dir", "info" };
-
-    /** _more_ */
     public static final String[] CMDS_CLEAR = { "clear" };
-
-    /** _more_ */
     public static final String[] CMDS_HELP = { "help", "?" };
-
-
-    /** _more_ */
     public static final String[] CMDS_DESC = { "desc" };
-
-    /** _more_ */
     public static final String[] CMDS_APPEND = { "append" };
-
-    /** _more_ */
     public static final String[] CMDS_LS = { "ls", "dir" };
-
-    /** _more_ */
     public static final String[] CMDS_CD = { "cd", "go" };
-
-    /** _more_ */
     public static final String[] CMDS_NEW = { "new", "create" };
-
-    /** _more_ */
     public static final String[] CMDS_GET = { "get", "file" };
-
-    /** _more_ */
     public static final String[] CMDS_VIEW = { "view" };
-
-
-    /** _more_ */
     public static final String ARG_KEY = "ramadda_key";
-
-
     /** plain old command is a slack argument so we use ramadda_command */
     public static final String ARG_COMMAND = "ramadda_command";
-
-    /** _more_ */
     public static final String ARG_TYPE = "ramadda_type";
-
-    /** _more_ */
     private String tokens;
-
-    /** _more_ */
     private String webHook;
-
-    /** _more_ */
     private boolean allowCreate = false;
-
-
-    /** _more_ */
     private String apiToken;
 
-
-    /** _more_ */
     private Hashtable<String, CommandState> commandStates =
         new Hashtable<String, CommandState>();
 
-
-
-    /** _more_ */
     public static final String[] ARGS_SINGLE = { "-help" };
-
-    /** _more_ */
     public static final String[] ARGS_PAIR = { "-entry", "-provider" };
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandHarvester(Repository repository, String id)
             throws Exception {
         super(repository, id);
         setActiveOnStart(true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandHarvester(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getCommandTypeName() {
         return "Command";
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getMessageLimit() {
         return 100000;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getNoop(CommandRequest request) throws Exception {
         return new Result("", Constants.MIME_TEXT);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDescription() {
         return "Command Harvester";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result getUsage(CommandRequest request, String msg)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -250,14 +118,6 @@ public class CommandHarvester extends Harvester {
         return message(msg);
     }
 
-    /**
-     * _more_
-     *
-     * @param title _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public String encodeWarning(String title, String s) {
         if (Utils.stringDefined(title)) {
             return title + "\n" + s;
@@ -266,15 +126,6 @@ public class CommandHarvester extends Harvester {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param title _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public String encodeInfo(String title, String s) {
         if (Utils.stringDefined(title)) {
             return title + "\n" + s;
@@ -283,17 +134,6 @@ public class CommandHarvester extends Harvester {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param line _more_
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public void formatCommandHelp(CommandRequest request, Appendable sb,
                                   String line, String... args)
             throws Exception {
@@ -306,7 +146,6 @@ public class CommandHarvester extends Harvester {
             }
             tmp.append(args[i]);
         }
-
 
         StringBuilder lineSB = new StringBuilder();
         String        cmd    = request.getCommand();
@@ -322,7 +161,6 @@ public class CommandHarvester extends Harvester {
 
         sb.append("<tr>");
 
-
         sb.append("<td>");
         sb.append(lineSB);
         sb.append("</td>");
@@ -335,29 +173,12 @@ public class CommandHarvester extends Harvester {
         sb.append("</tr>");
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHelpUrl() {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception On badness
-     */
     public void appendUsageMessage(CommandRequest request, Appendable sb)
             throws Exception {
-
 
         String user = (request.getFrom() != null)
                       ? request.getFrom()
@@ -419,37 +240,16 @@ public class CommandHarvester extends Harvester {
         sb.append("</table>");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean getDefaultActiveOnStart() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean showWidget(String arg) {
         return arg.equals(ATTR_ACTIVEONSTART);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param command _more_
-     * @param commands _more_
-     *
-     * @return _more_
-     */
     public boolean isCommand(String command, String[] commands) {
         if (command == null) {
             return false;
@@ -463,23 +263,10 @@ public class CommandHarvester extends Harvester {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     */
     public void debug(String msg) {
         //        System.err.println("CommandHarvester: " + msg);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception On badness
-     */
     protected void init(Element element) throws Exception {
         super.init(element);
         tokens      = Utils.getAttributeOrTag(element, ATTR_TOKENS, tokens);
@@ -488,17 +275,6 @@ public class CommandHarvester extends Harvester {
         apiToken    = XmlUtil.getAttribute(element, ATTR_APITOKEN, apiToken);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception On badness
-     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         if (tokens != null) {
@@ -517,14 +293,6 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception On badness
-     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
         tokens      = request.getString(ATTR_TOKENS, tokens);
@@ -533,15 +301,6 @@ public class CommandHarvester extends Harvester {
         apiToken    = request.getString(ATTR_APITOKEN, apiToken);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception On badness
-     */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         super.createEditForm(request, sb);
@@ -560,15 +319,12 @@ public class CommandHarvester extends Harvester {
                                           ? ""
                                           : webHook, HtmlUtils.SIZE_70)));
 
-
         sb.append(HtmlUtils.formEntry(msgLabel("API Token"),
                                       HtmlUtils.password(ATTR_APITOKEN,
                                           (getApiToken() == null)
                                           ? ""
                                           : getApiToken(), HtmlUtils
                                           .SIZE_70)));
-
-
 
         sb.append(
             HtmlUtils.formEntry(
@@ -580,85 +336,28 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getAuthToken(CommandRequest request) throws Exception {
         return request.getRequest().getString(ARG_KEY, (String) null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getText(CommandRequest request) throws Exception {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getChannelId(CommandRequest request) throws Exception {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result handleRequest(Request request) throws Exception {
         CommandRequest cmdRequest = doMakeCommandRequest(request);
 
         return handleRequest(cmdRequest);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public boolean isEnabled() throws Exception {
         return Utils.stringDefined(getWebHook());
     }
 
-    /**
-     * _more_
-     *
-     * @param cmdRequest _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public boolean canHandle(CommandRequest cmdRequest) throws Exception {
         if ( !isEnabled()) {
             return false;
@@ -694,16 +393,6 @@ public class CommandHarvester extends Harvester {
         return ok;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param cmdRequest _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result handleRequest(CommandRequest cmdRequest) throws Exception {
         if ( !canHandle(cmdRequest)) {
             return null;
@@ -749,8 +438,6 @@ public class CommandHarvester extends Harvester {
                 }
             }
 
-
-
             //            debug("checking command:" + cmd);
             if (isCommand(cmd, CMDS_SEARCH)) {
                 result = processSearch(cmdRequest, text);
@@ -793,49 +480,18 @@ public class CommandHarvester extends Harvester {
 
         return getUsage(cmdRequest, "Unknown command: " + textFromRequest);
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result message(String msg) throws Exception {
         msg = encodeMessage(msg);
 
         return new Result(msg, Constants.MIME_TEXT);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param msg _more_
-     *
-     * @return _more_
-     */
     public String encodeMessage(String msg) {
         return msg;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param cmdRequest _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processSearch(CommandRequest cmdRequest, String text)
             throws Exception {
         CommandHarvester.Args args = parseArgs(cmdRequest, text);
@@ -869,7 +525,6 @@ public class CommandHarvester extends Harvester {
         request.put(ARG_TEXT, args.getText());
 
         StringBuilder message = new StringBuilder("Search results");
-
 
         String providerId = Utils.getArg("-provider", args.getArgs(), null);
         if (providerId != null) {
@@ -912,7 +567,6 @@ public class CommandHarvester extends Harvester {
 
         request.put(ARG_MAX, cmdRequest.getSearchLimit());
 
-
         request.put("command.args", args.getArgs());
 
         List<Entry> entries = getSearchManager().doSearch(request, new SelectInfo(request));
@@ -926,43 +580,16 @@ public class CommandHarvester extends Harvester {
 
         //        System.err.println("CommandHarvester: processSearch:" + pair[0]);
 
-
         return makeEntryResult(getRepository(), cmdRequest,
                                message.toString(), entries, getWebHook(),
                                false);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param url _more_
-     * @param label _more_
-     *
-     * @return _more_
-     */
     public String makeLink(CommandRequest request, String url, String label) {
         return HtmlUtils.href(request.getRequest().getAbsoluteUrl(url),
                               label);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param request _more_
-     * @param message _more_
-     * @param entries _more_
-     * @param webHook _more_
-     * @param showChildren _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result makeEntryResult(Repository repository,
                                   CommandRequest request, String message,
                                   List<Entry> entries, String webHook,
@@ -971,17 +598,6 @@ public class CommandHarvester extends Harvester {
         return message("TBD");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandHarvester.Args parseArgs(CommandRequest request,
                                            String text)
             throws Exception {
@@ -1028,17 +644,6 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processDesc(CommandRequest request, String text)
             throws Exception {
         CommandHarvester.Args args  = parseArgs(request, text);
@@ -1056,17 +661,6 @@ public class CommandHarvester extends Harvester {
                                getWebHook(), false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processGet(CommandRequest request, String text)
             throws Exception {
         CommandHarvester.Args args  = parseArgs(request, text);
@@ -1088,20 +682,6 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processView(final CommandRequest request, String text)
             throws Exception {
 
@@ -1147,7 +727,6 @@ public class CommandHarvester extends Harvester {
             return getNoop(request);
         }
 
-
         if (true) {
             return getNoop(request);
         }
@@ -1184,30 +763,10 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     * @param cnt _more_
-     *
-     * @return _more_
-     */
     private String pad(String s, int cnt) {
         return StringUtil.padLeft(s, cnt);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processAppend(CommandRequest request, String text)
             throws Exception {
         Entry entry = getCurrentEntry(request);
@@ -1221,43 +780,14 @@ public class CommandHarvester extends Harvester {
                                null, getWebHook(), false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception On badness
-     */
     public void clearState(CommandRequest request) throws Exception {
         commandStates.remove(getStateKey(request));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandState getState(CommandRequest request) throws Exception {
         return getState(request, null, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param theEntry _more_
-     * @param createIfNeeded _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandState getState(CommandRequest request, Entry theEntry,
                                  boolean createIfNeeded)
             throws Exception {
@@ -1273,16 +803,6 @@ public class CommandHarvester extends Harvester {
         return state;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Entry getCurrentEntry(CommandRequest request) throws Exception {
         CommandState state = getState(request);
         if ((state != null) && (state.entry != null)) {
@@ -1292,15 +812,6 @@ public class CommandHarvester extends Harvester {
         return getBaseGroup();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private List<String> getCurrentList(CommandRequest request)
             throws Exception {
         CommandState state = getState(request);
@@ -1311,27 +822,10 @@ public class CommandHarvester extends Harvester {
         return state.list;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public String getStateKey(CommandRequest request) {
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processLs(CommandRequest request, String text)
             throws Exception {
         CommandHarvester.Args args   = parseArgs(request, text);
@@ -1347,18 +841,6 @@ public class CommandHarvester extends Harvester {
                                getWebHook(), false);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Entry getEntryFromInput(CommandRequest request, String text)
             throws Exception {
 
@@ -1376,13 +858,11 @@ public class CommandHarvester extends Harvester {
             }
         }
 
-
         //Check for an ID
         Entry entry = getEntryManager().getEntry(request.getRequest(), text);
         if (entry != null) {
             return entry;
         }
-
 
         entry = getEntryManager().getRelativeEntry(request.getRequest(),
                 getBaseGroup(), currentEntry, text);
@@ -1403,18 +883,6 @@ public class CommandHarvester extends Harvester {
         return currentEntry;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processCd(CommandRequest request, String text)
             throws Exception {
         if (text.indexOf("-help") >= 0) {
@@ -1452,18 +920,6 @@ public class CommandHarvester extends Harvester {
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processPwd(CommandRequest request, String text)
             throws Exception {
         Entry entry = getCurrentEntry(request);
@@ -1472,17 +928,6 @@ public class CommandHarvester extends Harvester {
                                toList(entry), getWebHook(), true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processClear(CommandRequest request, String text)
             throws Exception {
         clearState(request);
@@ -1490,16 +935,6 @@ public class CommandHarvester extends Harvester {
         return processCd(request, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param text _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Result processNew(CommandRequest request, String text)
             throws Exception {
         Entry        parent = getCurrentEntry(request);
@@ -1546,8 +981,6 @@ public class CommandHarvester extends Harvester {
                             "new <folder|post|wiki|note> name;description");
         }
 
-
-
         StringBuffer msg = new StringBuffer();
         Entry entry      = addEntry(request, parent, theType, name, desc,
                                     msg);
@@ -1560,24 +993,6 @@ public class CommandHarvester extends Harvester {
                                toList(entry), getWebHook(), true);
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param type _more_
-     * @param name _more_
-     * @param desc _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     private Entry addEntry(CommandRequest request, Entry parent, String type,
                            String name, String desc, Appendable msg)
             throws Exception {
@@ -1609,31 +1024,11 @@ public class CommandHarvester extends Harvester {
         return entry;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getEntryUrl(Request request, Entry entry) throws Exception {
         return request.getAbsoluteUrl(
             request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private List<Entry> toList(Entry entry) {
         List<Entry> l = new ArrayList<Entry>();
         l.add(entry);
@@ -1641,126 +1036,48 @@ public class CommandHarvester extends Harvester {
         return l;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public CommandRequest doMakeCommandRequest(Request request)
             throws Exception {
         return new CommandRequest(request);
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Apr 3, '15
-     * @author         Enter your name here...
-     */
     public static class CommandRequest {
 
-        /** _more_ */
         Request request;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         */
         public CommandRequest(Request request) {
             this.request = request;
         }
 
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getCommand() {
             return "/ramadda";
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public Request getRequest() {
             return request;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public int getSearchLimit() {
             return 100;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getFrom() {
             return null;
         }
 
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, May 2, '15
-     * @author         Enter your name here...
-     */
     public static class CommandState {
 
-        /** _more_ */
         private Entry entry;
 
-        /** _more_ */
         private List<String> list;
 
-
-        /**
-         * _more_
-         *
-         * @param entry _more_
-         */
         public CommandState(Entry entry) {
             this.entry = entry;
         }
     }
 
-
-
-
-    /**
-     * Send the file
-     *
-     *
-     * @param cmdRequest _more_
-     * @param entry _more_
-     * @param file _more_
-     * @param channel _more_
-     * @param title _more_
-     * @param desc _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result sendFile(CommandRequest cmdRequest, Entry entry, File file,
                            String channel, String title, String desc)
             throws Exception {
@@ -1769,12 +1086,6 @@ public class CommandHarvester extends Harvester {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getWebHook() {
         if ( !Utils.stringDefined(webHook)) {
             return null;
@@ -1787,13 +1098,6 @@ public class CommandHarvester extends Harvester {
         return webHook;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getApiToken() {
         if ( !Utils.stringDefined(apiToken)) {
             return null;
@@ -1808,111 +1112,45 @@ public class CommandHarvester extends Harvester {
 
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Sat, May 2, '15
-     * @author         Enter your name here...
-     */
     public static class Args {
 
-        /** _more_ */
         private List<String> args;
 
-
-        /** _more_ */
         private Entry entry;
 
-        /** _more_ */
         private String text;
 
-
-
-        /**
-         * _more_
-         *
-         *
-         * @param args _more_
-         * @param entry _more_
-         */
         public Args(List<String> args, Entry entry) {
             this.args  = args;
             this.entry = entry;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public boolean isHelp() {
             return args.contains("-help") || args.contains("?");
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public List<String> getArgs() {
             return args;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public Entry getEntry() {
             return entry;
         }
 
-        /**
-         * _more_
-         *
-         * @param entry _more_
-         */
         public void setEntry(Entry entry) {
             this.entry = entry;
         }
 
-
-
-        /**
-         * Set the Text property.
-         *
-         * @param value The new value for Text
-         */
         public void setText(String value) {
             text = value;
         }
 
-        /**
-         * Get the Text property.
-         *
-         * @return The Text
-         */
         public String getText() {
             return text;
         }
 
-
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryHeader(CommandRequest request, Entry entry)
             throws Exception {
         String icon = request.getRequest().getAbsoluteUrl(
@@ -1927,19 +1165,6 @@ public class CommandHarvester extends Harvester {
                     entry.getName())), HtmlUtils.br());
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param args _more_
-     * @param files _more_
-     * @param rows _more_
-     *
-     * @throws Exception _more_
-     */
     public void displayTabularData(CommandRequest request, Entry entry,
                                    List<String> args, List<FileInfo> files,
                                    List<List<Object>> rows)
@@ -1983,21 +1208,10 @@ public class CommandHarvester extends Harvester {
         postMessage(html.toString());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param message _more_
-     *
-     * @throws Exception _more_
-     */
     public void postMessage(String message) throws Exception {
         //noop
         throw new IllegalStateException(
             "CommandHarvester.postMessage not implemented");
     }
-
-
-
 
 }

@@ -5,115 +5,51 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.sql.SqlUtil;
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.File;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
 
-
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class DirectoryHarvester extends Harvester {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public DirectoryHarvester(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     *
-     * @throws Exception _more_
-     */
     public DirectoryHarvester(Repository repository, String id)
             throws Exception {
         super(repository, id);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public DirectoryHarvester(Repository repository, Element element)
             throws Exception {
         super(repository, element);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDescription() {
         return "Make folders from directory tree";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
@@ -134,8 +70,6 @@ public class DirectoryHarvester extends Harvester {
                                                     + "(" + msg("minutes")
                                                         + ")"));
 
-
-
         List<FileWrapper>   rootDirs   = getRootDirs();
 
         String       extraLabel = "";
@@ -151,7 +85,6 @@ public class DirectoryHarvester extends Harvester {
             }
         }
 
-
         sb.append(
             RepositoryManager.tableSubHeader("Walk the directory tree"));
         sb.append(HtmlUtils.formEntry(msgLabel("Under directory"),
@@ -164,14 +97,6 @@ public class DirectoryHarvester extends Harvester {
         addBaseGroupSelect(ATTR_BASEGROUP, sb);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param timestamp _more_
-     * @throws Exception _more_
-     */
     protected void runInner(int timestamp) throws Exception {
         if ( !canContinueRunning(timestamp)) {
             return;
@@ -186,16 +111,6 @@ public class DirectoryHarvester extends Harvester {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dir _more_
-     * @param parentGroup _more_
-     * @param entriesMap _more_
-     *
-     * @throws Exception _more_
-     */
     protected void walkTree(FileWrapper dir, Entry parentGroup,
                             Hashtable<String, Entry> entriesMap)
             throws Exception {

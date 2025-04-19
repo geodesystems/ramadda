@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -15,114 +14,45 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
 
-
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class WebHarvester extends Harvester {
-
-    /** _more_ */
     public static final String TAG_URLS = "urls";
-
-    /** _more_ */
     public static final String ATTR_URLS = "urls";
-
-
-    /** _more_ */
     private List<String> patternNames = new ArrayList<String>();
-
-
-    /** _more_ */
     private List<HarvesterEntry> urlEntries = new ArrayList<HarvesterEntry>();
-
-    /** _more_ */
     User user;
-
-
-    /** _more_ */
     List<String> statusMessages = new ArrayList<String>();
-
-    /** _more_ */
     private int entryCnt = 0;
-
-    /** _more_ */
     private int newEntryCnt = 0;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     *
-     * @throws Exception _more_
-     */
     public WebHarvester(Repository repository, String id) throws Exception {
         super(repository, id);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public WebHarvester(Repository repository, Element element)
             throws Exception {
         super(repository, element);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     protected void init(Element element) throws Exception {
         super.init(element);
         List children = XmlUtil.findChildren(element,
@@ -134,23 +64,10 @@ public class WebHarvester extends Harvester {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDescription() {
         return "URL";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected User getUser() throws Exception {
         if (user == null) {
             user = repository.getUserManager().getDefaultUser();
@@ -159,13 +76,6 @@ public class WebHarvester extends Harvester {
         return user;
     }
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         for (HarvesterEntry urlEntry : urlEntries) {
@@ -173,15 +83,6 @@ public class WebHarvester extends Harvester {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
         StringBuffer sb  = new StringBuffer();
@@ -218,27 +119,9 @@ public class WebHarvester extends Harvester {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param superSB _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToEditForm(Request request, StringBuffer superSB)
             throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formSB _more_
-     *
-     * @throws Exception _more_
-     */
     public void createEditForm(Request request, StringBuffer formSB)
             throws Exception {
 
@@ -255,18 +138,13 @@ public class WebHarvester extends Harvester {
                     request, false, getTypeHandler().getType(), false,
                     null)));
 
-
         superSB.append(HU.formEntry(msgLabel("User"),
                                            HU.input(ATTR_USER,
                                                (getUserName() != null)
                 ? getUserName().trim()
                 : "", HU.SIZE_30)));
 
-
-
-
         addToEditForm(request, superSB);
-
 
         superSB.append(HU.formTableClose());
         formSB.append(HU.makeShowHideBlock("Basic Information",
@@ -274,7 +152,6 @@ public class WebHarvester extends Harvester {
 
         sb.append(HU.hr());
         sb.append("Enter urls and the folders to add them to.");
-
 
         int          cnt = 1;
 
@@ -335,7 +212,6 @@ public class WebHarvester extends Harvester {
         sb.append(HU.makeShowHideBlock("New URL", entrySB.toString(),
                 true));
 
-
         sb.append(HU.p());
 
         formSB.append(sb);
@@ -343,23 +219,9 @@ public class WebHarvester extends Harvester {
 
     }
 
-
-    /** _more_ */
     public static final String templateHelp =
         "Use macros: ${filename}, ${fromdate}, ${todate}, etc.";
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entrySB _more_
-     * @param urlEntry _more_
-     * @param cnt _more_
-     *
-     * @throws Exception _more_
-     */
     protected void addEntryToForm(Request request, StringBuffer entrySB,
                                   HarvesterEntry urlEntry, int cnt)
             throws Exception {
@@ -393,17 +255,6 @@ public class WebHarvester extends Harvester {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entrySB _more_
-     * @param urlEntry _more_
-     * @param cnt _more_
-     *
-     * @throws Exception _more_
-     */
     protected void addBaseFolderToForm(Request request, StringBuffer entrySB,
                                        HarvesterEntry urlEntry, int cnt)
             throws Exception {
@@ -428,19 +279,6 @@ public class WebHarvester extends Harvester {
 
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getExtraInfo() throws Exception {
         String messages = StringUtil.join("", statusMessages);
 
@@ -450,15 +288,6 @@ public class WebHarvester extends Harvester {
                                     messages, false));
     }
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param timestamp _more_
-     * @throws Exception _more_
-     */
     protected void runInner(int timestamp) throws Exception {
         if ( !canContinueRunning(timestamp)) {
             return;
@@ -494,17 +323,6 @@ public class WebHarvester extends Harvester {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param firstTime _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     private void collectEntries(boolean firstTime) throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         for (HarvesterEntry urlEntry : urlEntries) {
@@ -521,17 +339,6 @@ public class WebHarvester extends Harvester {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param urlEntry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected boolean processEntry(HarvesterEntry urlEntry,
                                    List<Entry> entries)
             throws Exception {
@@ -559,26 +366,9 @@ public class WebHarvester extends Harvester {
         return true;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param desc _more_
-     * @param baseGroup _more_
-     * @param groupName _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry processUrl(String url, String name, String desc,
                              Entry baseGroup, String groupName)
             throws Exception {
-
 
         String fileName = url;
         String tail     = IO.getFileTail(url);
@@ -606,10 +396,8 @@ public class WebHarvester extends Harvester {
 
         //        groupName = groupName.replace("${dirgroup}", dirGroup);
 
-
         groupName = applyMacros(groupName, createDate, fromDate, toDate,
                                 fileName);
-
 
         Entry group = ((baseGroup != null)
                        ? getEntryManager().findGroupUnder(getRequest(),
@@ -645,7 +433,5 @@ public class WebHarvester extends Harvester {
 	getEntryManager().parentageChanged(group,true);
         return entry;
     }
-
-
 
 }

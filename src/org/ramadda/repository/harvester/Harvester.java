@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
@@ -18,38 +16,24 @@ import org.ramadda.util.PatternHolder;
 import org.ramadda.util.Utils;
 import org.ramadda.util.geo.*;
 
-
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
-
-
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 //Use myxmlutil as it fixes how attributes are encoded
 //import ucar.unidata.xml.XmlUtil;
 import org.ramadda.util.MyXmlUtil;
-
 import java.io.ByteArrayInputStream;
-
 import java.io.File;
 import java.io.InputStream;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -57,9 +41,6 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
 
 @SuppressWarnings("unchecked")
@@ -138,7 +119,7 @@ public abstract class Harvester extends RepositoryManager {
     private boolean testMode = false;
     private int testCount = 100;
     protected String printTab = "";
-    
+
     public Harvester(Repository repository) {
         super(repository);
         this.id = repository.getGUID();
@@ -167,7 +148,6 @@ public abstract class Harvester extends RepositoryManager {
 	return Utils.getProperty(extra,key,dflt);
     }    
 
-
     public String getDefaultTypeHandler() throws Exception {
 	return TypeHandler.TYPE_FILE;
     }
@@ -175,7 +155,7 @@ public abstract class Harvester extends RepositoryManager {
     public TypeHandler getTypeHandler() throws Exception {
 	return  getTypeHandler(getDefaultTypeHandler());
     }
-    
+
     public TypeHandler getTypeHandler(String dflt) throws Exception {
         if (typeHandler == null) {
             this.typeHandler =
@@ -183,7 +163,7 @@ public abstract class Harvester extends RepositoryManager {
         }
         return typeHandler;
     }
-    
+
     public Harvester(Repository repository, Element element)
             throws Exception {
         this(repository);
@@ -194,7 +174,7 @@ public abstract class Harvester extends RepositoryManager {
     }
 
     public abstract String getDescription();
-    
+
     public String applyMacros(String s, Date createDate, Date fromDate,
                               Date toDate, String filename) {
         if (fromDate == null) {
@@ -216,7 +196,6 @@ public abstract class Harvester extends RepositoryManager {
         return s;
     }
 
-    
     protected User getUser() throws Exception {
         if (user != null) {
             return user;
@@ -232,14 +211,8 @@ public abstract class Harvester extends RepositoryManager {
         return user;
     }
 
-
-
-
-    
     private Request request;
 
-
-    
     protected Request getRequest() throws Exception {
         if (request == null) {
             request = new Request(getRepository(), getUser());
@@ -250,7 +223,6 @@ public abstract class Harvester extends RepositoryManager {
         return request;
     }
 
-    
     public Entry getBaseGroup() throws Exception {
         if (!Utils.stringDefined(baseGroupId)) {
             return null;
@@ -264,9 +236,6 @@ public abstract class Harvester extends RepositoryManager {
 	return null;
     }
 
-
-
-    
     protected void addBaseGroupSelect(String selectId, StringBuffer sb)
             throws Exception {
         Entry  baseGroup = getBaseGroup();
@@ -282,8 +251,6 @@ public abstract class Harvester extends RepositoryManager {
                 baseGroup, ATTR_BASEGROUP, sb, "Base Group", extra);
     }
 
-
-    
     protected void init(Element element) throws Exception {
         rootDirs = new ArrayList<FileWrapper>();
         for (String dir :
@@ -299,7 +266,7 @@ public abstract class Harvester extends RepositoryManager {
 	this.typePatterns= MyXmlUtil.getAttribute(element,ATTR_TYPEPATTERNS, "");
         aliases = MyXmlUtil.getAttribute(element, ATTR_ALIASES, aliases);
         cleanName = MyXmlUtil.getAttribute(element, ATTR_CLEANNAME, cleanName);		
-	
+
         groupTemplate = MyXmlUtil.getAttribute(element, ATTR_GROUPTEMPLATE,
                                              groupTemplate);
 
@@ -326,11 +293,8 @@ public abstract class Harvester extends RepositoryManager {
         tagTemplate = MyXmlUtil.getAttribute(element, ATTR_TAGTEMPLATE,
                                            tagTemplate);
 
-
-
         this.name     = MyXmlUtil.getAttribute(element, ATTR_NAME, "");
         this.monitor = MyXmlUtil.getAttribute(element, ATTR_MONITOR, monitor);
-
 
         this.addMetadata = MyXmlUtil.getAttribute(element, ATTR_ADDMETADATA,
                 addMetadata);
@@ -353,12 +317,10 @@ public abstract class Harvester extends RepositoryManager {
 
     }
 
-    
     public boolean getDefaultActiveOnStart() {
         return false;
     }
 
-    
     public String getRunLink(Request request, boolean redirectToEdit) {
         if (getActive()) {
             return HtmlUtils
@@ -379,8 +341,6 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-
-
     public void addAliasesEditForm(Request request, Appendable sb) throws Exception {
 	HU.formEntry(sb, msgLabel("Clean name"),
 			       HtmlUtils.labeledCheckbox(ATTR_CLEANNAME, "true",
@@ -390,8 +350,6 @@ public abstract class Harvester extends RepositoryManager {
 						      aliases,
 						      10,60)," Format:<pre>name:Name to use\ne.g.:\nco:Colorado</pre>")));
     }
-
-
 
     public String getName(String name, boolean isDir) {
 	name = getAlias(name,name);
@@ -424,8 +382,6 @@ public abstract class Harvester extends RepositoryManager {
 	return alias;
     }
 
-
-    
     public void applyEditForm(Request request) throws Exception {
         this.request = null;
         getEntryManager().clearSeenResources();
@@ -476,7 +432,6 @@ public abstract class Harvester extends RepositoryManager {
 
     }
 
-    
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
         sb.append(HtmlUtils.formEntry(msgLabel("Harvester name"),
@@ -487,11 +442,6 @@ public abstract class Harvester extends RepositoryManager {
 
     }
 
-
-
-
-
-    
     public void makeRunSettings(Request request, StringBuffer sb) {
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject(msg("Absolute (minutes)"),
@@ -499,7 +449,6 @@ public abstract class Harvester extends RepositoryManager {
         tfos.add(new TwoFacedObject(msg("Minutes"), UNIT_MINUTE));
         tfos.add(new TwoFacedObject(msg("Hourly"), UNIT_HOUR));
         //        tfos.add(new TwoFacedObject("Daily",UNIT_DAY));
-
 
         String minutes = "" + sleepMinutes;
         if (sleepUnit.equals(UNIT_HOUR)) {
@@ -569,13 +518,10 @@ public abstract class Harvester extends RepositoryManager {
         sb.append(HtmlUtils.formEntryTop("", widgetText));
     }
 
-
-    
     public boolean showWidget(String arg) {
         return true;
     }
 
-    
     public boolean equals(Object o) {
         if ( !getClass().equals(o.getClass())) {
             return false;
@@ -584,9 +530,6 @@ public abstract class Harvester extends RepositoryManager {
         return this.id.equals(((Harvester) o).id);
     }
 
-
-
-    
     public void applyState(Element element) throws Exception {
         element.setAttribute(ATTR_CLASS, getClass().getName());
         element.setAttribute(ATTR_NAME, name);
@@ -626,10 +569,8 @@ public abstract class Harvester extends RepositoryManager {
 
 	}
 
-
     }
 
-    
     public String getContent() throws Exception {
         Document doc  = MyXmlUtil.makeDocument();
         Element  root = doc.createElement(TAG_HARVESTER);
@@ -638,7 +579,6 @@ public abstract class Harvester extends RepositoryManager {
 	return xml;
     }
 
-    
     public void initFromContent(String content) throws Exception {
         if ((content == null) || (content.trim().length() == 0)) {
             return;
@@ -653,26 +593,19 @@ public abstract class Harvester extends RepositoryManager {
         init(root);
     }
 
-
-    
     public Entry processFile(TypeHandler type, String filepath)
             throws Exception {
         return null;
     }
 
-
-    
     public String getId() {
         return id;
     }
 
-    
     public void setId(String id) {
         this.id = id;
     }
 
-
-    
     public static List<Harvester> createHarvesters(Repository repository,
             Element root)
             throws Exception {
@@ -695,33 +628,24 @@ public abstract class Harvester extends RepositoryManager {
         return harvesters;
     }
 
-
-
-    
     public List<FileWrapper> getRootDirs() {
         return rootDirs;
     }
 
-
-    
     public boolean canContinueRunning(int timestamp) {
         return getRepository().getActive() && getActive()
                && (timestamp == getCurrentTimestamp());
     }
 
-    
     public int getCurrentTimestamp() {
         return timestamp;
     }
 
-    
     public void logStatus(String msg) {
         status.append("[<i>" + getDateHandler().formatDate(new Date())
                       + "</i>]: " + msg + "<br>");
     }
 
-
-    
     public final void run() throws Exception {
         try {
             if (active) {
@@ -749,8 +673,6 @@ public abstract class Harvester extends RepositoryManager {
 						       LogUtil.getInnerException(exc)).trim(), false);
     }
 
-
-    
     public void logHarvesterError(String message, Throwable exc) {
         System.err.println("ERROR:" + getName() + " " + message);
         exc.printStackTrace();
@@ -759,8 +681,6 @@ public abstract class Harvester extends RepositoryManager {
         appendError(message);
     }
 
-
-    
     public void logHarvesterInfo(String message) {
         if (PRINT_DEBUG) {
             System.err.println(printTab + message);
@@ -768,19 +688,12 @@ public abstract class Harvester extends RepositoryManager {
         getLogManager().logInfo(LOGID, getName() + ": " + printTab + message);
     }
 
-
-
-
-    
     public void clearCache() {}
 
-
-    
     public StringBuffer getError() {
         return error;
     }
 
-    
     public void appendError(String e) {
         if (this.error == null) {
             this.error = new StringBuffer();
@@ -789,21 +702,16 @@ public abstract class Harvester extends RepositoryManager {
         this.error.append("<br>");
     }
 
-
-    
     public String getExtraInfo() throws Exception {
         return currentStatus + "<br>" + status;
     }
 
-    
     public void resetStatus() {
         status        = new StringBuffer();
 	otherMsgs = new ArrayList<String>();
         currentStatus = "";
     }
 
-
-    
     protected void runInner(int timestamp) throws Exception {
         while (canContinueRunning(timestamp)) {
             try {
@@ -833,14 +741,10 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-    
     protected void runHarvester() throws Exception {
         //noop
     }
 
-
-
-    
     protected void doPause() {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
@@ -851,51 +755,38 @@ public abstract class Harvester extends RepositoryManager {
         Utils.pauseEvery((int) minutes,status);
     }
 
-    
     public void setActive(boolean value) {
         active = value;
     }
 
-    
     public boolean getActive() {
         return active;
     }
 
-
-
-    
     public void setMonitor(boolean value) {
         monitor = value;
     }
 
-    
     public boolean getMonitor() {
         return monitor;
     }
 
-    
     public void setAddMetadata(boolean value) {
         addMetadata = value;
     }
 
-    
     public boolean getAddMetadata() {
         return addMetadata;
     }
 
-
-    
     public void setAddShortMetadata(boolean value) {
         addShortMetadata = value;
     }
 
-    
     public boolean getAddShortMetadata() {
         return addShortMetadata;
     }
 
-
-    
     public void setUser(User user) {
         if (user != null) {
             userName = user.getId();
@@ -904,51 +795,38 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-    
     public void setUserName(String value) {
         this.userName = value;
     }
 
-    
     public String getUserName() {
         return this.userName;
     }
 
-
-
-
-    
     public void setSleepMinutes(double value) {
         sleepMinutes = value;
     }
 
-    
     public double getSleepMinutes() {
         return sleepMinutes;
     }
 
-    
     public void setName(String value) {
         name = value;
     }
 
-    
     public String getName() {
         return name;
     }
 
-    
     public void setIsEditable(boolean value) {
         isEditable = value;
     }
 
-    
     public boolean getIsEditable() {
         return isEditable;
     }
 
-
-    
     public List<String> split(Element element, String attr) {
         if ( !MyXmlUtil.hasAttribute(element, attr)) {
             return new ArrayList<String>();
@@ -958,33 +836,22 @@ public abstract class Harvester extends RepositoryManager {
                            true);
     }
 
-
-
-    
     public void setActiveOnStart(boolean value) {
         activeOnStart = value;
     }
 
-    
     public boolean getActiveOnStart() {
         return activeOnStart;
     }
 
-
-    
     public void setGenerateMd5(boolean value) {
         generateMd5 = value;
     }
 
-    
     public boolean getGenerateMd5() {
         return generateMd5;
     }
 
-
-
-
-    
     public void debug(String msg) {
         if (debug || getTestMode()) {
 	    if(debug) System.err.println(msg);
@@ -996,29 +863,22 @@ public abstract class Harvester extends RepositoryManager {
         }
     }
 
-
-    
     public void setTestMode(boolean value) {
         testMode = value;
     }
 
-    
     public boolean getTestMode() {
         return testMode;
     }
 
-
-    
     public void setTestCount(int value) {
         testCount = value;
     }
 
-    
     public int getTestCount() {
         return testCount;
     }
 
-    
     public boolean defined(String s) {
         if ((s != null) && (s.length() > 0)) {
             return true;
@@ -1027,7 +887,6 @@ public abstract class Harvester extends RepositoryManager {
         return false;
     }
 
-    
     public String toString() {
         return "harvester:" + getName();
     }

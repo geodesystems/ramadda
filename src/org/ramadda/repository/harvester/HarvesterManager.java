@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -14,33 +12,18 @@ import org.ramadda.repository.type.*;
 
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.sql.Clause;
-
 import org.ramadda.util.sql.SqlUtil;
-
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
-
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.File;
-
 import java.lang.reflect.*;
-
 import java.sql.ResultSet;
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -48,54 +31,26 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
-/**
- *
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class HarvesterManager extends RepositoryManager {
-
-
-    /** _more_ */
     public RequestUrl URL_HARVESTERS_LIST = new RequestUrl(this,
                                                 "/harvester/list",
                                                 "Harvesters");
-
-    /** _more_ */
     public RequestUrl URL_HARVESTERS_NEW = new RequestUrl(this,
                                                "/harvester/new");
 
-
-    /** _more_ */
     public RequestUrl URL_HARVESTERS_FORM = new RequestUrl(this,
                                                 "/harvester/form");
 
-    /** _more_ */
     public RequestUrl URL_HARVESTERS_CHANGE = new RequestUrl(this,
                                                   "/harvester/change");
 
-
-    /** _more_ */
     private List<Harvester> harvesters = new ArrayList();
-
-    /** _more_ */
     private Hashtable harvesterMap = new Hashtable();
-
-    /** _more_ */
     List<TwoFacedObject> harvesterTypes = new ArrayList<TwoFacedObject>();
 
     private boolean haveInited= false;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public HarvesterManager(Repository repository) {
         super(repository);
         addHarvesterType(PatternHarvester.class);
@@ -104,12 +59,6 @@ public class HarvesterManager extends RepositoryManager {
         addHarvesterType(MonitorHarvester.class);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param c _more_
-     */
     public void addHarvesterType(Class c) {
         try {
             Constructor ctor = Misc.findConstructor(c,
@@ -130,18 +79,6 @@ public class HarvesterManager extends RepositoryManager {
         }
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     protected Harvester findHarvester(String id) {
         if (id == null) {
             return null;
@@ -155,25 +92,10 @@ public class HarvesterManager extends RepositoryManager {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Harvester> getHarvesters() {
         return harvesters;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @return _more_
-     */
     public List getHarvesters(Class c) {
         List<Harvester> harvesters = new ArrayList<Harvester>();
         for (Harvester harvester : getHarvesters()) {
@@ -186,8 +108,6 @@ public class HarvesterManager extends RepositoryManager {
 
         return harvesters;
     }
-
-
 
     /**
      * This starts up the harvesters in a thread
@@ -202,11 +122,6 @@ public class HarvesterManager extends RepositoryManager {
         Misc.run(this, "initHarvestersInThread");
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void initHarvestersInThread() throws Exception {
 	//Sleep a bit before we start up
 	Misc.sleepSeconds(5);
@@ -216,7 +131,6 @@ public class HarvesterManager extends RepositoryManager {
             getRepository().getProperty(PROP_HARVESTERS_ACTIVE, true);
 
         harvesters = new ArrayList<Harvester>();
-
 
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(
                                     getDatabaseManager().select(
@@ -268,13 +182,10 @@ public class HarvesterManager extends RepositoryManager {
                                       getRepository(),
                                       id });
 
-
             harvester.initFromContent(content);
             harvesters.add(harvester);
             harvesterMap.put(harvester.getId(), harvester);
         }
-
-
 
         try {
             for (String file : harvesterFiles) {
@@ -297,7 +208,6 @@ public class HarvesterManager extends RepositoryManager {
             logError("Error loading harvester file", exc);
         }
 
-
         for (Harvester harvester : harvesters) {
             for (FileWrapper rootDir : harvester.getRootDirs()) {
                 getStorageManager().addOkToReadFromDirectory(rootDir.getFile());
@@ -313,16 +223,6 @@ public class HarvesterManager extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processNew(Request request) throws Exception {
 
         StringBuffer sb = new StringBuffer();
@@ -367,7 +267,6 @@ public class HarvesterManager extends RepositoryManager {
             harvestersBeingCreated.add(harvester);
         }
 
-
         if (harvestersBeingCreated.size() > 0) {
             for (Harvester harvester : harvestersBeingCreated) {
                 harvester.setIsEditable(true);
@@ -383,8 +282,6 @@ public class HarvesterManager extends RepositoryManager {
             return new Result(request.makeUrl(URL_HARVESTERS_FORM,
                     ARG_HARVESTER_ID, harvestersBeingCreated.get(0).getId()));
         }
-
-
 
         sb.append(HtmlUtils.sectionOpen(null, false));
         sb.append(HtmlUtils.h2("Create new harvester"));
@@ -426,22 +323,10 @@ public class HarvesterManager extends RepositoryManager {
 
         sb.append(HtmlUtils.sectionClose());
 
-
-
-
         return getAdmin().makeResult(request, msg("New Harvester"), sb);
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processForm(Request request) throws Exception {
 
         StringBuffer sb = new StringBuffer();
@@ -490,8 +375,6 @@ public class HarvesterManager extends RepositoryManager {
 	    + space
 	    + HtmlUtils.submit(LABEL_CANCEL, ARG_CANCEL);
 
-
-
         sb.append(buttons);
         sb.append(space);
 	sb.append(harvester.getRunLink(request,false));
@@ -510,23 +393,12 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(space);
         sb.append(xmlLink);
 
-
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.sectionClose());
 
         return getAdmin().makeResult(request, msg("Edit Harvester"), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processChange(Request request) throws Exception {
         Harvester harvester =
             findHarvester(request.getString(ARG_HARVESTER_ID));
@@ -582,14 +454,6 @@ public class HarvesterManager extends RepositoryManager {
                                           harvester.getId()));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param harvester _more_
-     * @param sb _more_
-     */
     private void makeFormHeader(Request request, Harvester harvester,
                                 StringBuffer sb) {
         sb.append(HtmlUtils.sectionOpen(null, false));
@@ -599,15 +463,6 @@ public class HarvesterManager extends RepositoryManager {
         sb.append(HtmlUtils.hidden(ARG_HARVESTER_ID, harvester.getId()));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processList(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if (request.defined(ARG_ACTION)) {
@@ -648,9 +503,6 @@ public class HarvesterManager extends RepositoryManager {
                         msg), MIME_XML);
             }
 
-
-
-
             if (request.get(ARG_HARVESTER_REDIRECTTOEDIT, false)) {
                 return new Result(request.makeUrl(URL_HARVESTERS_FORM,
                         ARG_HARVESTER_ID, harvester.getId()));
@@ -685,16 +537,6 @@ public class HarvesterManager extends RepositoryManager {
 						    "Harvest Log"));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param harvesters _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void makeHarvestersList(Request request,
                                     List<Harvester> harvesters,
                                     StringBuffer sb)
@@ -724,7 +566,7 @@ public class HarvesterManager extends RepositoryManager {
 							  ARG_HARVESTER_ID,
 							  harvester.getId()),"Edit",
 					  HU.cssClass("ramadda-clickable")),									
-			 
+
 			   HU.cssClass("ramadda-button")); 
 					  //getIconImage(ICON_EDIT, "title", msg("Edit")));
             }
@@ -732,11 +574,9 @@ public class HarvesterManager extends RepositoryManager {
             String rowAttributes = HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
                                        HtmlUtils.VALUE_TOP);
 
-
             rowAttributes += HtmlUtils.cssClass(harvester.getActive()
                     ? "harvester-row harvester-active"
                     : "harvester-row");
-
 
             StringBuffer info  = new StringBuffer();
             StringBuffer error = harvester.getError();
@@ -757,21 +597,8 @@ public class HarvesterManager extends RepositoryManager {
         }
         sb.append(HtmlUtils.formTableClose());
 
-
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processFile(Request request) throws Exception {
         List<Harvester> harvesters  = getHarvesters();
         TypeHandler     typeHandler = getRepository().getTypeHandler(request);
@@ -796,10 +623,5 @@ public class HarvesterManager extends RepositoryManager {
         return new Result(BLANK, new StringBuffer("Could not create entry"),
                           "text/plain");
     }
-
-
-
-
-
 
 }

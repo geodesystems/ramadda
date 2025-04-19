@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -15,126 +14,51 @@ import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.Utils;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
-
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.lang.reflect.*;
-
-
-
 import java.net.*;
-
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-
-
 import java.util.regex.*;
 
-
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
 public class MonitorHarvester extends Harvester {
-
-    /** _more_ */
     public static final String ATTR_URL = "url";
-
-    /** _more_ */
     public static final String ATTR_EMAILS = "emails";
-
-    /** _more_ */
     public static final String ATTR_FAILURES = "failures";
-
-    /** _more_ */
     public static final String ATTR_MINUTES = "minutes";
-
-    /** _more_ */
     public static final String ATTR_MESSAGE = "message";
-
-    /** _more_ */
     private List<String> patternNames = new ArrayList<String>();
-
-
-    /** _more_ */
     private String url = "";
-
-    /** _more_ */
     private String emails = "";
-
-    /** _more_ */
-
     private int failures = 2;
-
-    /** _more_ */
     private int minutes = 1;
+    private String message =      "The server at the following URL did not respond\n${url}";
 
-    /** _more_ */
-    private String message =
-        "The server at the following URL did not respond\n${url}";
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     *
-     * @throws Exception _more_
-     */
     public MonitorHarvester(Repository repository, String id)
             throws Exception {
         super(repository, id);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public MonitorHarvester(Repository repository, Element element)
             throws Exception {
         super(repository, element);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     protected void init(Element element) throws Exception {
         super.init(element);
@@ -145,25 +69,11 @@ public class MonitorHarvester extends Harvester {
         minutes  = XmlUtil.getAttribute(element, ATTR_MINUTES, minutes);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getDescription() {
         return "Web Site Monitor";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void applyState(Element element) throws Exception {
         super.applyState(element);
@@ -174,15 +84,6 @@ public class MonitorHarvester extends Harvester {
         element.setAttribute(ATTR_MINUTES, "" + minutes);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
@@ -193,16 +94,6 @@ public class MonitorHarvester extends Harvester {
         minutes  = request.get(ATTR_MINUTES, minutes);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void createEditForm(Request request, StringBuffer sb)
             throws Exception {
@@ -224,7 +115,6 @@ public class MonitorHarvester extends Harvester {
                                       HtmlUtils.input(ATTR_MINUTES,
                                           "" + minutes)));
 
-
         sb.append(HtmlUtils.formEntry("",
                                       "Then send a message to these emails"));
 
@@ -236,23 +126,10 @@ public class MonitorHarvester extends Harvester {
                                           message, 5, 60)));
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getExtraInfo() throws Exception {
         return status.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     protected void runHarvester() throws Exception {
         resetStatus();
@@ -297,16 +174,8 @@ public class MonitorHarvester extends Harvester {
             }
         }
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @throws Exception _more_
-     */
     private void checkUrl(URL url) throws Exception {
         URLConnection connection = null;
         try {
@@ -328,6 +197,5 @@ public class MonitorHarvester extends Harvester {
             throw new IOException(msg);
         }
     }
-
 
 }

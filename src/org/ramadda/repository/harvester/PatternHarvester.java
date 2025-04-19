@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.harvester;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -29,13 +28,9 @@ import ucar.unidata.util.LogUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
-
 import java.lang.reflect.*;
-
 import java.net.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -46,7 +41,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.*;
 
-
 /**
  * A harvester that looks at the local server file system
  *
@@ -55,145 +49,51 @@ import java.util.regex.*;
  */
 @SuppressWarnings("unchecked")
 public class PatternHarvester extends Harvester /*implements EntryInitializer*/ {
-
-
-
-    /** attribute id */
     public static final String ATTR_TYPE = "type";
-
     public static final String ATTR_LASTGROUPTYPE = "lastgrouptype";    
-
-
-    /** attribute id */
     public static final String ATTR_DATEFORMAT = "dateformat";
-
-    /** _more_ */
     public static final String ATTR_IGNORE_ERRORS = "ignore_errors";
-
-    /** attribute id */
     public static final String ATTR_FILEPATTERN = "filepattern";
-
-    /** attribute id */
     public static final String ATTR_NOTREE = "notree";
-
-    /** _more_ */
     public static final String ATTR_TOPPATTERN = "toppattern";
-
-    /** attribute id */
     public static final String ATTR_NOTFILEPATTERN = "notfilepattern";
     public static final String ATTR_SKIPTIMECHECK = "skiptimecheck";    
-
     public static final String ATTR_SIZELIMIT = "sizelimit";
     public static final String ATTR_MAXLEVEL = "maxlevel";
-
-    /** attribute id */
     public static final String ATTR_MOVETOSTORAGE = "movetostorage";
-
     public static final String ATTR_DELETE_WHEN_FILE_SIZE_DIFFERS = "delete_when_file_size_differs";
-
-
     public static final String ATTR_PUSHGEO = "pushgeo";    
-
-    /** _more_ */
     private static final int FILE_CHANGED_TIME_THRESHOLD_MS = 30 * 1000;
-
-    /** _more_ */
     private String dateFormat = "yyyyMMdd_HHmm";
-
-    /** _more_ */
     private List<SimpleDateFormat> sdf;
-    //SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmm");
-
-
-    /** _more_ */
     private List<String> patternNames = new ArrayList<String>();
-
-
-    /** _more_ */
     private String filePatternString = ".*";
-
-    /** _more_ */
     private String topPatternString = "";
-
-
     private String lastGroupType = "";
-
-    /** _more_ */
     private boolean ignoreErrors = false;
-
-    /** _more_ */
     private boolean noTree = false;
-
-
-    /** _more_ */
     private List<PatternHolder> filePattern;
-
-    /** _more_ */
     private Pattern topPattern;
-
-    /** _more_ */
     private String notfilePatternString = "";
-
     private boolean skipTimeCheck = false;
-
-
-    /** _more_ */
     private List<PatternHolder> notfilePattern;
-
-
     private double sizeLimit = -1;
-
     private int maxLevel = -1;
-
     private boolean pushGeo = false;
-
     private boolean makeThumbnails = true;
-
-    /** _more_ */
     private boolean moveToStorage = false;
-
-    /** _more_ */
     private boolean deleteWhenFileSizeDiffers = false;
-
-    /** _more_ */
     private List<HarvesterFile> dirs;
-
-    /** _more_ */
     private HashSet<FileWrapper> dirMap = new HashSet<FileWrapper>();
-
-    /** _more_ */
     private HashSet seenFiles = new HashSet();
-
-    /** _more_ */
     private List<String[]> idList;
-
-    /** _more_ */
     private int entryCnt = 0;
-
     private int nonUniqueCnt = 0;    
-
     private int skipCnt = 0;
-
-
-    /** _more_ */
     private int newEntryCnt = 0;
-
     private int totalAddedEntries = 0;    
-
-
-
-
-    /** _more_ */
     private long lastRunTime = 0;
 
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     * @param id harvester id
-     *
-     * @throws Exception _more_
-     */
     public PatternHarvester(Repository repository, String id)
 	throws Exception {
         super(repository, id);
@@ -202,14 +102,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public PatternHarvester(Repository repository, Element element)
 	throws Exception {
         super(repository, element);
@@ -219,15 +111,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         init();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     private boolean haveProcessedFile(String f) {
         if (seenFiles.contains(f)) {
             return true;
@@ -236,11 +119,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     private void putProcessedFile(String f) {
         //Limit the size to 10000
         if (seenFiles.size() > 10000) {
@@ -249,13 +127,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         seenFiles.add(f);
     }
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     protected void init(Element element) throws Exception {
         super.init(element);
 
@@ -275,7 +146,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         lastGroupType = XmlUtil.getAttribute(element, ATTR_LASTGROUPTYPE,
 					     lastGroupType);	
 
-    
         notfilePatternString = XmlUtil.getAttribute(element,
 						    ATTR_NOTFILEPATTERN, notfilePatternString);
         skipTimeCheck = XmlUtil.getAttribute(element,
@@ -299,23 +169,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDescription() {
         return "Server File System";
     }
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyState(Element element) throws Exception {
         super.applyState(element);
         element.setAttribute(ATTR_FILEPATTERN, filePatternString);
@@ -341,14 +198,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	return TypeHandler.TYPE_FINDMATCH;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyEditForm(Request request) throws Exception {
         super.applyEditForm(request);
 
@@ -383,11 +232,9 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         pushGeo = request.get(ATTR_PUSHGEO, false);
         makeThumbnails = request.get(ATTR_MAKETHUMBNAILS, false);	
 
-
         sdf            = null;
         init();
         dateFormat = request.getUnsafeString(ATTR_DATEFORMAT, dateFormat);
-
 
         if (request.exists(ATTR_MOVETOSTORAGE)) {
             moveToStorage = request.get(ATTR_MOVETOSTORAGE, moveToStorage);
@@ -401,17 +248,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             deleteWhenFileSizeDiffers = false;
         }
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void createEditForm(Request request, StringBuffer sb)
 	throws Exception {
 
@@ -474,7 +312,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					   ATTR_ROOTDIR, inputText.toString(), 5, 60,
 					   fileFieldExtra.toString()) + extraLabel));
 
-
         sb.append(HU.formEntry("","Only harvest the top-level files that match this pattern"));
         sb.append(HU.formEntry(msgLabel("Top directory pattern"),
 			       HU.input(ATTR_TOPPATTERN,
@@ -486,7 +323,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 				  HU.textArea(ATTR_FILEPATTERN,
 					      filePatternString,
 					      3,60)));
-				  
 
         sb.append(HU.formEntry("","Skip any file that matches any of these patterns"));
         sb.append(HU.formEntryTop(msgLabel("Exclude files that match"),
@@ -516,7 +352,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                     HU.href(getPageHandler().makeHtdocsUrl("/userguide/harvesters.html#entry"),
 			    msg("Help"), " target=_HELP");
 
-
         sb.append(HU.formEntry(msgLabel("Folder template"),
 			       HU.input(ATTR_GROUPTEMPLATE,
 					groupTemplate, HU.SIZE_60) +HU.space(2) + folderHelp));
@@ -542,14 +377,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 							      request, ATTR_LASTGROUPTYPE,HU.style("max-width:200px;"),false, lastGroupType,
 							      false, null,true)));
 
-
 	getEntryManager().makeTypePatternsInput(request, ATTR_TYPEPATTERNS,sb,typePatterns);
-
 
         sb.append(HU.formEntry(msgLabel("Date format"),
 			       HU.input(ATTR_DATEFORMAT,
 					dateFormat, HU.SIZE_60)));
-
 
         String moveNote =HU.div("Note: This will move the files from their current location to RAMADDA's storage directory",
 				HU.cssClass("ramadda-callout ramadda-callout-info"));
@@ -567,8 +399,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						  "true",
 						  deleteWhenFileSizeDiffers,"Delete matching entry and re-add when file size differs")));
 
-
-
 	List<String> mtds = new ArrayList<String>();
 	mtds.add(HU.labeledCheckbox(ATTR_ADDMETADATA, "true",getAddMetadata(),"Add full"));
 	mtds.add(HU.labeledCheckbox(ATTR_ADDSHORTMETADATA, "true", getAddShortMetadata(), "Just spatial/temporal"));
@@ -585,10 +415,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	HU.formEntry(sb, msgLabel("Metadata"),  Utils.join(mtds, HU.space(4)));
 	HU.formEntry(sb, msgLabel("Images"),  Utils.join(images, HU.space(4)));	
 
-
 	addAliasesEditForm(request, sb);
-
-
 
         sb.append(HU.formEntry(msgLabel("Owner"),
 			       HU.input(ATTR_USER,
@@ -596,19 +423,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 					? getUserName().trim()
 					: "", HU.SIZE_30)));
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String makeEntryTypeSelector(Request request,
                                         TypeHandler typeHandler)
 	throws Exception {
@@ -616,13 +432,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 						     false);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private List<SimpleDateFormat> getSDF() {
         if (sdf == null) {
             sdf = new ArrayList<SimpleDateFormat>();
@@ -644,10 +453,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     }
 
-
-    /**
-     * _more_
-     */
     private void init() {
 
         if ((notfilePattern == null) && (notfilePatternString.length() > 0)) {
@@ -668,17 +473,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getExtraInfo() throws Exception {
         String dirMsg = "";
         if (dirs != null) {
@@ -734,15 +528,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             entryMsg.add(msg);
 	}
 
-
 	if(totalAddedEntries>0) {
 	    entryMsg.add("Created " + totalAddedEntries +(totalAddedEntries==1?" new entry":" new entries"));
 	}
 	entryMsg.addAll(otherMsgs);
 
-
         List<FileWrapper> rootDirs = getRootDirs();
-
 
 	String cs = "";
 	if(getActive()) {
@@ -756,29 +547,15 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    }
 	}
 
-
         return "Directory:" + Utils.join( rootDirs,"<br>") + "<br>"
 	    + dirMsg + Utils.join(entryMsg,"<br>") + HU.div(status.toString()) + cs;
     }
 
-    /**
-     * _more_
-     *
-     * @param dir _more_
-     */
     private void removeDir(HarvesterFile dir) {
         dirs.remove(dir);
         dirMap.remove(dir.getFile());
     }
 
-    /**
-     * _more_
-     *
-     * @param dir _more_
-     * @param rootDir _more_
-     *
-     * @return _more_
-     */
     private HarvesterFile addDir(FileWrapper dir, FileWrapper rootDir) {
         HarvesterFile fileInfo = new HarvesterFile(dir, rootDir, true);
         dirs.add(fileInfo);
@@ -786,27 +563,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return fileInfo;
     }
 
-    /**
-     * _more_
-     *
-     * @param dir _more_
-     *
-     * @return _more_
-     */
     private boolean hasDir(FileWrapper dir) {
         return dirMap.contains(dir);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param timestamp _more_
-     * @throws Exception _more_
-     */
     @Override
     protected void runInner(int timestamp) throws Exception {
         logHarvesterInfo("******************* Starting ****************");
@@ -829,7 +589,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         //Call init so we get the filePattern, etc.
         init();
 
-
         Hashtable<String, Entry> entriesMap = new Hashtable<String, Entry>();
         Entry  baseGroup = getBaseGroup();
 	if(baseGroup!=null) entriesMap.put("*",baseGroup);
@@ -848,7 +607,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
         }
 
-
         logHarvesterInfo("Found " + dirs.size()
                          + " directories under top-level dir");
 
@@ -862,7 +620,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
 
         int cnt = 0;
-
 
         while (canContinueRunning(timestamp)) {
             long t1 = System.currentTimeMillis();
@@ -891,21 +648,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         logHarvesterInfo("***********  Done running **************");
     }
 
-
-	
-
-
-    /**
-     * _more_
-     *
-     * @param rootDir _more_
-     * @param topDirPattern _more_
-     * @param timestamp _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<HarvesterFile> collectDirs(final FileWrapper rootDir,
                                            final Pattern topDirPattern,
                                            final int timestamp)
@@ -955,16 +697,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return dirs;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean okToRecurse(FileWrapper f) throws Exception {
         if (topPattern != null) {
             List<FileWrapper> rootDirs   = getRootDirs();
@@ -987,7 +719,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return HarvesterFile.okToRecurse(f, this);
     }
 
-
     @Override
     protected Request getRequest() throws Exception {
 	Request request = super.getRequest();
@@ -996,17 +727,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	return request;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param firstTime _more_
-     * @param timestamp _more_
-     * @param entriesMap _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     private void harvestEntries(boolean firstTime, int timestamp,
                                 Hashtable<String, Entry> entriesMap)
 	throws Exception {
@@ -1070,7 +790,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    //		    continue;
 		}
 
-		
                 if (f.isDirectory()) {
 		    continue;
 		    /*
@@ -1128,7 +847,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 		    //                    logHarvesterInfo("No entry created for file: " + f);
                     continue;
                 }
-
 
                 entryCnt++;
 		//		System.err.println(entryCnt +" " + f);
@@ -1202,8 +920,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             return;
         }
 
-
-
         currentStatus = "Done processing.";
 	if(idList.size()>0) {
 	    currentStatus+=" Calling convertIdsFromImport on " + idList.size()+" new entries";
@@ -1223,16 +939,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param timestamp _more_
-     * @param entriesMap _more_
-     *
-     * @throws Exception _more_
-     */
     private void addEntries(List<Entry> entries, int timestamp,
                             Hashtable<String, Entry> entriesMap)
 	throws Exception {
@@ -1312,14 +1018,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                       + " entries";
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     */
     public void initEntry(Entry entry) {
 	try {
 	    if (getAddMetadata() || getAddShortMetadata()) {
@@ -1354,7 +1052,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	}
     }
 
-
     private EntryInitializer groupInitializer;
     private EntryInitializer getGroupInitializer() {
 	final PatternHarvester theHarvester = this;
@@ -1384,20 +1081,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	return filesMap;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parentFile _more_
-     * @param parentGroup _more_
-     * @param dirToks _more_
-     * @param makeGroup _more_
-     * @param entriesMap _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getDirNames(FileWrapper parentFile, Entry parentGroup,
                                List<String> dirToks, boolean makeGroup,
                                Hashtable<String, Entry> entriesMap)
@@ -1448,10 +1131,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 				theHarvester.initEntry(entry);
 			    }
 
-			    /**
-			     *  This returns the file for the metadata attachment for the entry
-			     *  Look for .<attachment file name>
-			     */
 			    @Override
 			    public File getMetadataFile(Entry entry,
 							String fileArg) {
@@ -1464,7 +1143,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
                     group = getEntryManager().makeNewGroup(request,parentGroup, name,
 							   getUser(), template, groupType, initializer);
-
 
                     String originalId = null;
                     if (template != null) {
@@ -1492,16 +1170,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return Utils.join(names,Entry.PATHDELIMITER);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Date parseDate(String value) throws Exception {
         Exception lastException = null;
         for (SimpleDateFormat sdf : getSDF()) {
@@ -1518,29 +1186,10 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
 
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param fileInfo _more_
-     * @param f _more_
-     * @param entriesMap _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry processFile(HarvesterFile fileInfo, FileWrapper f,
                              Hashtable<String, Entry> entriesMap)
 	throws Exception {
@@ -1549,7 +1198,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         Matcher matcher = null;
         return harvestFile(fileInfo, f, matcher, entriesMap);
     }
-
 
     private boolean isFileOk(FileWrapper f) {
         String filePath = f.toString();
@@ -1584,7 +1232,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    }
 	}
 
-
         if (notfilePattern != null && notfilePattern.size()>0) {
 	    if(PatternHolder.checkPatterns(notfilePattern,filePath)) {
 		logHarvesterInfo("excluding file because it matches the NOT pattern:"
@@ -1597,31 +1244,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param fileName _more_
-     *
-     * @return _more_
-     */
     private boolean isEntryXml(String fileName) {
         return fileName.endsWith(".entry.xml")
 	    || fileName.endsWith(".ramadda.xml");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param fileInfo _more_
-     * @param f _more_
-     * @param matcher _more_
-     * @param entriesMap _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry harvestFile(HarvesterFile fileInfo, FileWrapper fileWrapper,
                              Matcher matcher,
                              Hashtable<String, Entry> entriesMap)
@@ -1656,7 +1283,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         if (typeHandlerToUse == null) {
 	    typeHandlerToUse = getEntryManager().findTypeFromPatterns(typePatterns, filePath);
 	}
-
 
         if ((typeHandlerToUse == null)
 	    && typeHandler.getType().equals(TypeHandler.TYPE_FINDMATCH)) {
@@ -1693,7 +1319,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             dirGroup = dirGroup.replace("\\", "/");
 	    if(debug)    System.err.println("\tdirGroup:" + dirGroup);
         }
-
 
         Hashtable entryValues       = new Hashtable();
         Date      fromDate  = null;
@@ -1842,14 +1467,12 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             return null;
         }
 
-
         if (tmpName.startsWith("thumb_")) {
 	    return null;
 	}
         if (tmpName.endsWith(".thm")) {
             return null;
         }
-
 
         //        System.err.println("Harvested file:" + f);
         Entry entry = templateEntry;
@@ -1927,7 +1550,6 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 	    }
 	}
 
-
         entry.setParentEntry(group);
 
         //If it is an image then we create a thumbnail for it in the JpegMetadataHandler
@@ -1937,16 +1559,11 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             File tmp;
 	    File dir = theFile;
 
-
 	    String noExtension = IO.stripExtension(resource.getPath());
 	    String noExtensionName = IOUtil.getFileTail(noExtension);
 	    String extensionName = IOUtil.getFileTail(resource.getPath());
 	    String imageName=null;
-	    /**
-	       look for:
-	       <file>.thm
-	       thumb_<file>.(jpeg|jpg|png)
-	     */
+
 	    //Check for mac .thm files
             tmp = new File(noExtension + ".thm");
             if (tmp.exists()) {
@@ -1978,10 +1595,8 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 			break;
 		    }
 
-
 		}
 	    }
-
 
 	    //	    System.err.println("thumbnail:" + thumbnail);
 	    //	    System.err.println("imageName:" + imageName);	    
@@ -2003,38 +1618,19 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
 
     }
 
-    /**
-     * _more_
-     *
-     * @param fileInfo _more_
-     * @param originalFile _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public Entry initializeNewEntry(HarvesterFile fileInfo,
                                     FileWrapper originalFile, Entry entry) {
         return entry;
     }
 
-    /**
-     * _more_
-     */
     public void clearCache() {
         lastRunTime = 0;
         super.clearCache();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLastGroupType() {
 	return lastGroupType;
     }
 
 }
-    
+

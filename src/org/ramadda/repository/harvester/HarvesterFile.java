@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.harvester;
 
-
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FileWrapper;
 import org.ramadda.util.Utils;
@@ -15,7 +14,6 @@ import org.ramadda.util.IO;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -24,69 +22,31 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.*;
 
-
 /**
  * Class FileInfo holds information about a file or directory
- *
  *
  */
 @SuppressWarnings("unchecked")
 public class HarvesterFile extends FileInfo {
-
-    /** _more_ */
     private FileWrapper rootDir;
-
-
-    /** _more_ */
     private List addedFiles;
 
-
-    /**
-     * ctor
-     *
-     * @param f the file
-     */
     public HarvesterFile(FileWrapper f) {
         super(f);
     }
 
-    /**
-     
-     *
-     * @param f _more_
-     * @param rootDir _more_
-     * @param isDir _more_
-     */
     public HarvesterFile(File f, File rootDir, boolean isDir) {
         this(new FileWrapper.File(f), new FileWrapper.File(rootDir), isDir);
     }
 
-
-    /**
-     * ctor
-     *
-     * @param f the file
-     * @param rootDir _more_
-     * @param isDir is file a directory
-     */
     public HarvesterFile(FileWrapper f, FileWrapper rootDir, boolean isDir) {
         super(f, isDir);
         this.rootDir = rootDir;
     }
-
-
-    /**
-     * _more_
-     */
     public void clearAddedFiles() {
         addedFiles = null;
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     public void addFile(Object f) {
         if (addedFiles == null) {
             addedFiles = new ArrayList();
@@ -94,11 +54,6 @@ public class HarvesterFile extends FileInfo {
         addedFiles.add(f);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         String s   = getFile().toString();
         List   tmp = addedFiles;
@@ -116,17 +71,6 @@ public class HarvesterFile extends FileInfo {
         return s;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param dir _more_
-     * @param harvester _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static boolean okToRecurse(FileWrapper dir, Harvester harvester)
             throws Exception {
         //check for a ramadda.properties file. 
@@ -151,23 +95,10 @@ public class HarvesterFile extends FileInfo {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public FileWrapper getRootDir() {
         return rootDir;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         FileWrapper.File rootDir = new FileWrapper.File(".");
         if ( !rootDir.exists()) {
@@ -213,7 +144,6 @@ public class HarvesterFile extends FileInfo {
                         }
 
                     }
-
 
                 }
             }
