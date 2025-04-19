@@ -1024,6 +1024,8 @@ function  SeesvForm(inputId, entry,params) {
                             if(field  == "table") {
 				html +=_this.makeDbMenu(field+".name")+"<br>";
 				html +=_this.makeDbMenu(field+".label")+"<br>";
+				html +=_this.makeDbMenu(field+".cansearch","false")+"<br>";
+				html +=_this.makeDbMenu(field+".canlist","false")+"<br>";
 				html +=_this.makeDbMenu("install","true")+"<br>";
 				html +=_this.makeDbMenu("nukedb","true")+"<br>";								
                             } else {
