@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.search;
 
-
 import org.json.*;
 
 import org.ramadda.repository.*;
@@ -16,45 +15,28 @@ import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
-
 import java.net.URL;
 import java.net.URLConnection;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * Proxy that searches google
- *
  */
 public class OpenSearchProvider extends SearchProvider {
-
-    /** _more_ */
     private String baseUrl;
-
-    /** _more_ */
     private String icon;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param args _more_
-     */
     public OpenSearchProvider(Repository repository, List<String> args) {
         super(repository, args.get(0), args.get(2));
         baseUrl = args.get(1);
@@ -63,16 +45,6 @@ public class OpenSearchProvider extends SearchProvider {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param id _more_
-     * @param url _more_
-     * @param name _more_
-     * @param icon _more_
-     */
     public OpenSearchProvider(Repository repository, String id, String url,
                               String name, String icon) {
         super(repository, id, name);
@@ -80,40 +52,16 @@ public class OpenSearchProvider extends SearchProvider {
         this.icon    = icon;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getCategory() {
         return CATEGORY_SCIENCE;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getSearchProviderIconUrl() {
         return "${root}/favicon.png";
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param searchInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public List<Entry> getEntries(Request request, org.ramadda.repository.util.SelectInfo searchInfo)
             throws Exception {
@@ -150,7 +98,6 @@ public class OpenSearchProvider extends SearchProvider {
                    toDate   = null;
             String dateString;
 
-
             dateString = XmlUtil.getGrandChildText(item, "dc:date",
                     (String) null);
             if (Utils.stringDefined(dateString)) {
@@ -163,7 +110,6 @@ public class OpenSearchProvider extends SearchProvider {
                 }
             }
 
-
             if (fromDate == null) {
                 dateString = XmlUtil.getGrandChildText(item,
                         AtomUtil.TAG_TIME_START, (String) null);
@@ -171,7 +117,6 @@ public class OpenSearchProvider extends SearchProvider {
                     fromDate = Utils.parseDate(dateString);
                 }
             }
-
 
             if (toDate == null) {
                 dateString = XmlUtil.getGrandChildText(item,
@@ -206,10 +151,7 @@ public class OpenSearchProvider extends SearchProvider {
                                dttm.getTime(), fromDate.getTime(),
                                toDate.getTime(), null);
 
-
             initOpenSearchEntry(request, newEntry, item);
-
-
 
             getEntryManager().cacheSynthEntry(newEntry);
         }
@@ -217,19 +159,8 @@ public class OpenSearchProvider extends SearchProvider {
         return entries;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param item _more_
-     *
-     * @throws Exception _more_
-     */
     public void initOpenSearchEntry(Request request, Entry entry,
                                     Element item)
             throws Exception {}
-
 
 }

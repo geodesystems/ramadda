@@ -5,162 +5,70 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.search;
 
-
-
 import org.ramadda.repository.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
 import org.ramadda.repository.util.DateArgument;
-
 import org.ramadda.repository.util.SelectInfo;
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 import java.awt.geom.Rectangle2D;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
-
 import java.util.List;
 
-
-/**
- *
- *
- * @author jeff mcwhirter
- * @version $Revision: 1.3 $
- */
 @SuppressWarnings("unchecked")
 public class SpecialSearch extends RepositoryManager implements RequestHandler {
-
-    /** _more_ */
     public static final String ARG_FIELDS = "fields";
-
-    /** _more_ */
     public static final String ARG_METADATA = "metadata";
-
-    /** _more_ */
     public static final String ATTR_TABS = "tabs";
-
-    /** _more_ */
     public static final String TAB_LIST = "list";
-
-    /** _more_ */
     public static final String TAB_MAP = "map";
-
-
-    /** _more_ */
     public static final String TAB_TIMELINE = "timeline";
-
-
-    /** _more_ */
     private RequestUrl URL_SEARCH;
-
-    /** _more_ */
     public static final String ARG_SEARCH_SUBMIT = "search.submit";
-
-    /** _more_ */
     public static final String ARG_SEARCH_REFINE = "search.refine";
-
-    /** _more_ */
     public static final String ARG_SEARCH_CLEAR = "search.clear";
-
     private boolean newWay = true;
-
-
-    /** _more_ */
     private String theType;
-
-    /** _more_ */
     private TypeHandler typeHandler;
-
-
-
-    /** _more_ */
     private String searchUrl;
-
-    /** _more_ */
     private boolean searchOpen = true;
-
-    /** _more_ */
     private boolean doSearchInitially = true;
-
-    /** _more_ */
     private boolean showText = true;
     private boolean showAncestor = true;
     private boolean showProviders = true;
-
-    /** _more_ */
     private boolean showName = true;
-
-    /** _more_ */
     private boolean showDescription = false;
-
-    /** _more_ */
     private boolean showArea = true;
-
-    /** _more_ */
     private boolean showDate = true;
-
     private String orderByTypes;
-
-    /** _more_ */
     private String label;
-
-    /** _more_ */
     private List<String> metadataTypes = new ArrayList<String>();
-
-    /** _more_ */
     private List<String> tabs = new ArrayList<String>();
-
-    /** _more_ */
     private List<SyntheticField> syntheticFields =
         new ArrayList<SyntheticField>();
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public SpecialSearch(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param node _more_
-     * @param props _more_
-     *
-     * @throws Exception _more_
-     */
     public SpecialSearch(Repository repository, Element node, Hashtable props)
             throws Exception {
         super(repository);
         init(node, props);
     }
 
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     */
     public SpecialSearch(TypeHandler typeHandler) {
         super(typeHandler.getRepository());
         this.typeHandler = typeHandler;
@@ -225,15 +133,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         theType = typeHandler.getType();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param props _more_
-     *
-     * @throws Exception _more_
-     */
     public void init(Element node, Hashtable props) throws Exception {
         String types = (String) props.get("metadatatypes");
         if (types != null) {
@@ -249,7 +148,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             tabs.add(TAB_MAP);
             tabs.add(TAB_TIMELINE);
         }
-
 
         searchOpen        = Misc.getProperty(props, "searchopen", true);
         doSearchInitially = Misc.getProperty(props, "initsearch", true);
@@ -269,22 +167,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
 
-
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processCapabilitiesRequest(Request request)
             throws Exception {
         request.put(ARG_OUTPUT, "atom");
@@ -296,26 +180,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeHeader(Request request, Appendable sb) throws Exception {}
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processSearchRequest(Request request) throws Exception {
 
         StringBuilder sb     = new StringBuilder();
@@ -329,17 +195,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 request.getRootEntry(), result);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processSearchRequest(Request request, Appendable sb,Hashtable props)
             throws Exception {
         int contentsWidth  = 750;
@@ -351,7 +206,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             request.put(ARG_MAX, DEFAULT_SEARCH_SIZE);
         }
 
-
         List<String> tabsToUse = tabs;
         String tabsProp = request.getString("search.tabs",
                                             request.getString("tabs",
@@ -360,7 +214,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (tabsProp != null) {
             tabsToUse = Utils.split(tabsProp, ",", true, true);
         }
-
 
         makeHeader(request, sb);
 	//        sb.append(HU.sectionOpen());
@@ -374,7 +227,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    return null;
 	}
 
-
         int     cnt      = getEntryUtil().getEntryCount(typeHandler);
         boolean doSearch = (refinement
                             ? false
@@ -384,7 +236,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         if (request.defined(ARG_SEARCH_SUBMIT)) {
             doSearch = true;
         }
-
 
 	request.put("forsearch","true");
         List<Entry> allEntries =  getSearchManager().doSearch(request, new SelectInfo(request));
@@ -400,11 +251,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             return getRepository().getCalendarOutputHandler()
                 .outputTimelineXml(request, group, allEntries);
         }
-
-
-
-	
-
 
 	StringBuffer formSB = new StringBuffer();	
 	makeSearchForm(request, formSB,tabsToUse,props);
@@ -472,7 +318,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         }
 	tabs = HU.div(tabs,   HU.cssClass("ramadda-search-results"));
 
-
         StringBuffer rightSide = new StringBuffer();
         getRepository().getHtmlOutputHandler().showNext(request,
                 allEntries.size(), rightSide);
@@ -497,8 +342,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
     }
 
-
-
     private StringBuilder  makeMap(Request request,List<Entry> allEntries,int contentsWidth, int contentsHeight)  throws Exception {
 	//Clone and clear in case a .css file gets added into the map bubbles
 	request= request.cloneMe();
@@ -507,13 +350,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                           null, "" + contentsWidth, "" + contentsHeight,
                           true, null);
 
-
         getMapManager().addToMap(request, map, allEntries,
                                  Utils.makeMap(MapManager.PROP_DETAILED,
                                      "false", MapManager.PROP_SCREENBIGRECTS,
                                      "true"));
         Rectangle2D.Double bounds = getEntryUtil().getBounds(request,allEntries);
-
 
         //shrink the bounds down
         if ((bounds != null) && (bounds.getWidth() > 180)) {
@@ -559,21 +400,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	sb.append("\n");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param formSB _more_
-     *
-     * @throws Exception _more_
-     */
     private void makeSearchForm(Request request, Appendable formSB,List<String> tabs,Hashtable props)
             throws Exception {
 
         if (URL_SEARCH == null) {
             URL_SEARCH = new RequestUrl(this, searchUrl);
         }
-
 
 	if(newWay) {
 	    StringBuilder sb = new StringBuilder();
@@ -591,7 +423,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 		addAttr(sb, "providers",providers);
 		addAttr(sb, "showProviders","true");
 	    }
-
 
 	    for(String prop:new String[]{"tooltip",
 					 "formHeight",
@@ -649,8 +480,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 						     t.getTypeProperty("search.area.label",null)));
 	    addAttr(sb,"orderByTypes",Utils.getProperty(props,"orderByTypes",
 							t.getTypeProperty("search.orderby",null)));
-	    	    	    
-
 
 	    if(metadataTypes.size()>0) {
 		StringBuilder types=new StringBuilder();
@@ -672,8 +501,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 	    return;
 
 	}
-
-
 
         boolean      showDefault        = true;
         List<String> metadataTypesToUse = metadataTypes;
@@ -723,7 +550,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 						      false),""));
 	}
 
-
         if (showDefault && showText) {
 	    formSB.append(vspace);
 	    formSB.append(HU.input(ARG_TEXT,  request.getSanitizedString(ARG_TEXT, ""),
@@ -748,7 +574,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         HU.SIZE_15 + " autofocus "+
 			HU.attr("placeholder","Description")));
         }
-
 
         formSB.append(HU.formTable());
 
@@ -784,7 +609,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             HU.formEntry(formSB,HU.b(msgLabel(label))+ HU.br()+mapSelector);
         }
 
-
         if (showDefault) {
             for (SyntheticField field : syntheticFields) {
                 String id = field.id;
@@ -797,7 +621,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 
         typeHandler.addToSpecialSearchForm(request, formSB, fieldsToShow);
 
-
         for (String type : metadataTypesToUse) {
             MetadataType metadataType =
                 getRepository().getMetadataManager().findType(type);
@@ -808,8 +631,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                 formSB.append(tmpsb);
             }
         }
-
-
 
 	HU.formEntry(formSB,"<div class=ramadda-thin-hr></div>");
         HU.formEntry(formSB,HU.b("Order By:")+HU.br()+
@@ -852,7 +673,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                     links.toString(), false));
         }
 
-
         if (request.exists(ARG_USER_ID)) {
             formSB.append(HU.formEntry(msgLabel("User"),
                     HU.input(ARG_USER_ID,
@@ -864,7 +684,6 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         formSB.append(HU.formTableClose());
         formSB.append(HU.formClose());
         formSB.append("</div>");
-
 
     }
 
@@ -887,37 +706,19 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
 							 sb, props);
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Aug 23, '13
-     * @author         Enter your name here...
-     */
     private static class SyntheticField {
 
-        /** _more_ */
         String label;
 
-        /** _more_ */
         String id;
 
-        /** _more_ */
         List<String> fields = new ArrayList<String>();
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         * @param fields _more_
-         */
         public SyntheticField(String id, String label, List<String> fields) {
             this.id     = id;
             this.label  = label;
             this.fields = fields;
         }
     }
-
 
 }
