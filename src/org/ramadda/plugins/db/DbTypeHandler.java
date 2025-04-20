@@ -2180,7 +2180,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             if (macro.type.equals(macro.TYPE_NOTIN)) {
                 if (ands.size() > 0) {
-                    System.err.println(macro.name + " clause:" + ands);
+		    //                    System.err.println(macro.name + " clause:" + ands);
                     where.add(Clause.notin(macro.column, macro.column,
                                            tableHandler.getTableName(),
                                            Clause.and(ands)));

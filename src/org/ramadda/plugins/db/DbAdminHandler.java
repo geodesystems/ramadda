@@ -5,7 +5,6 @@
 
 package org.ramadda.plugins.db;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 import org.ramadda.repository.auth.*;
@@ -17,7 +16,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
@@ -32,91 +30,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 
-
-/**
- *
- */
-
 @SuppressWarnings("unchecked")
-public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
-								DbConstants {
+public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler, DbConstants {
 
-    /** _more_ */
     public static final String TAG_TABLES = "tables";
-
-    /** _more_ */
     public static final String TAG_TABLE = "table";
-
-    /** _more_ */
     public static final String TAG_TEMPLATE = "template";
-
-    /** _more_ */
     public static final String TAG_COLUMN = "column";
-
-    /** _more_ */
     public static final String TAG_PROPERTY = "property";
-
-    /** _more_ */
     public static final String ATTR_HANDLER = "handler";
-
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
-
-    /** _more_ */
     public static final String ATTR_ID = "id";
-
-
-    /** _more_ */
     public static final String ATTR_NAME = "name";
-
-    /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
-
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
-
-    /** _more_ */
     public static final String ATTR_TYPE = "type";
-
-    /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
-
-    /** _more_ */
     public static final String ATTR_VALUES = "values";
-
-    /** _more_ */
     public static final String ATTR_VALUE = "value";
-
-    /** _more_ */
     public static final String ATTR_ROWS = "rows";
-
-    /** _more_ */
     public static final String ATTR_SIZE = "size";
 
-
-
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param repository _more_
-     * @throws Exception _more_
-     */
     public DbAdminHandler(Repository repository) throws Exception {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param pluginFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean loadPluginFile(String pluginFile) throws Exception {
         if ( !pluginFile.endsWith("db.xml")) {
             return false;
@@ -149,19 +87,16 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
                 continue;
             }
 
-
             DbTypeHandler typeHandler =
                 (DbTypeHandler) ctor.newInstance(new Object[] {
 			getRepository(),
 			tableId, tableNode,
 			XmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
-
             TypeHandler baseTypeHandler =
                 getRepository().getTypeHandler("type_db_base");
             typeHandler.setParentTypeHandler(baseTypeHandler);
             baseTypeHandler.addChildTypeHandler(typeHandler);
-
 
             List<Element> columnNodes =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
@@ -195,14 +130,10 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 						   Column.ATTR_CANLIST, "false",Column.ATTR_CANSEARCH,"false"
 					       });
 
-
             columnNodes.add(0, propsNode);
             columnNodes.add(0, createDateNode);
             columnNodes.add(0, userNode);
             columnNodes.add(0, idNode);
-
-
-
 
             List<Element> templates =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
@@ -226,7 +157,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         return true;
     }
 
-
     private Result handleApiError(Request request, String msg, String...args) throws Exception {
 	StringBuilder sb = new StringBuilder();
 	List<String> values = new ArrayList<String>();
@@ -242,7 +172,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         result.setResponseCode(Result.RESPONSE_BADRREQUEST);
 	return result;
     }
-
 
     public Result processUploadData(Request request) throws Exception {
 	String id  = request.getString("instrument_id",null);
@@ -285,7 +214,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	    return handleApiError(request,"Incorrect access");
 	}
 
-
 	DbTypeHandler dbt = (DbTypeHandler) entry.getTypeHandler();
         Object[]      values   = dbt.getValues(entry, (String)null);
         dbt.initializeValueArray(request, null, values);
@@ -310,7 +238,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 	    return handleApiError(request,"No parameters provider",
 				  "parameters", params.toString());
 	}
-
 
 	Date date =null;
 	for(Object o:values) {
@@ -366,14 +293,6 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
 
     }
 
-    /**
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processList(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         getPageHandler().sectionOpen(request, sb, "Select Database", false);
@@ -412,24 +331,10 @@ public class DbAdminHandler extends AdminHandlerImpl implements RequestHandler,
         return new Result("", sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public String getTableName(String type) {
         return "db_" + type;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getId() {
         return "dbadmin";
     }

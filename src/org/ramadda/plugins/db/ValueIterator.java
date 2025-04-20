@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
-
 import org.ramadda.data.point.text.*;
 
 import org.ramadda.repository.*;
@@ -23,9 +22,6 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
 
-
-
-import org.w3c.dom.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -58,83 +54,29 @@ import java.util.List;
 
 import java.util.function.*;
 
-/**
- * Class description
- *
- *
- * @version        $version$, Tue, Nov 2, '21
- * @author         Enter your name here...    
- */
 @SuppressWarnings("unchecked")
 public abstract class ValueIterator implements DbConstants {
-
-    /** _more_          */
     public static final HtmlUtils HU = null;
-
-
-    /** _more_          */
     Request request;
-
-    /** _more_          */
     DbTypeHandler db;
-
-    /** _more_          */
     Result result;
-
-    /** _more_          */
     Entry entry;
-
-    /** _more_          */
     PrintWriter printWriter;
-
-    /** _more_          */
     Appendable buffer;
-
     StringBuilder  sb;
-
     protected boolean addedHeader =false;
-
-    /** _more_          */
     boolean doGroupBy;
-
-    /** _more_          */
     boolean forPrint;
-
     boolean embedded;
-
-    /** _more_          */
     boolean canEdit;
-
-    /** _more_          */
     List<String> columnNames = null;
-
-    /** _more_          */
     List<Column> columns = null;
-
-    /** _more_          */
     int rowCnt = 0;
-
-    /** _more_          */
     DbInfo dbInfo;
-
-    /** _more_          */
     SimpleDateFormat dateSdf;
-
     SimpleDateFormat dateTimeSdf;    
-
-
-    /** _more_          */
     boolean fromSearch = true;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param db _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     public ValueIterator(Request request, DbTypeHandler db, Entry entry)
             throws Exception {
         this.request = request;
@@ -171,27 +113,10 @@ public abstract class ValueIterator implements DbConstants {
 	}
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getRepository() {
         return db.getRepository();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param suffix _more_
-     * @param mimeType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected void makeResult(String suffix, String mimeType)
             throws Exception {
         if (result == null) {
@@ -210,22 +135,10 @@ public abstract class ValueIterator implements DbConstants {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Result getResult() {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected Appendable getBuffer() throws Exception {
         if (buffer == null) {
 	    if(embedded) {
@@ -238,39 +151,14 @@ public abstract class ValueIterator implements DbConstants {
         return buffer;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param doGroupBy _more_
-     *
-     * @throws Exception _more_
-     */
     public void initialize(Request request, boolean doGroupBy)
             throws Exception {
         this.doGroupBy = doGroupBy;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param values _more_
-     *
-     * @throws Exception _more_
-     */
     public abstract void processRow(Request request, Object[] values)
      throws Exception;
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void finish(Request request) throws Exception {
 	if(viewHeaderId!=null) {
 	    StringBuilder tmp = new StringBuilder();
@@ -289,40 +177,15 @@ public abstract class ValueIterator implements DbConstants {
 	    result =  new Result("",sb);
 	}
 
-
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class CsvIterator extends ValueIterator {
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public CsvIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -349,7 +212,6 @@ public abstract class ValueIterator implements DbConstants {
             }
         }
 
-	
 	@Override
 	public void setLabels(List<String> labels) throws Exception {
 	    Appendable sb = getBuffer();
@@ -357,15 +219,6 @@ public abstract class ValueIterator implements DbConstants {
 	    sb.append("\n");
 	}
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -412,37 +265,13 @@ public abstract class ValueIterator implements DbConstants {
         }
     }
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class JsonIterator extends ValueIterator {
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public JsonIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -466,15 +295,6 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(JsonUtil.LIST_OPEN);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -494,13 +314,6 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(JsonUtil.map(attrs));
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             sb.append(JsonUtil.LIST_CLOSE);
@@ -508,51 +321,18 @@ public abstract class ValueIterator implements DbConstants {
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class RssIterator extends ValueIterator {
 
-        /** _more_ */
         SimpleDateFormat rssSdf =
             new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss z");
 
-
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public RssIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -568,15 +348,6 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", entry.getName()));
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -597,13 +368,11 @@ public abstract class ValueIterator implements DbConstants {
                                   rssSdf.format(date)));
             sb.append(XmlUtil.tag(RssUtil.TAG_TITLE, "", label));
 
-
             String url = db.getViewUrl(request, entry,
                                        "" + values[IDX_DBID]);
             url = request.getAbsoluteUrl(url);
             sb.append(XmlUtil.tag(RssUtil.TAG_LINK, "",
                                   XmlUtil.getCdata(url)));
-
 
             sb.append(XmlUtil.tag(RssUtil.TAG_GUID, "",
                                   XmlUtil.getCdata(url)));
@@ -618,17 +387,6 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(XmlUtil.closeTag(RssUtil.TAG_ITEM));
         }
 
-
-
-
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             sb.append(XmlUtil.closeTag(RssUtil.TAG_CHANNEL));
@@ -637,39 +395,13 @@ public abstract class ValueIterator implements DbConstants {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class XxxIterator extends ValueIterator {
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public XxxIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -682,75 +414,29 @@ public abstract class ValueIterator implements DbConstants {
             Appendable sb = getBuffer();
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
 	    rowCnt++;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             super.finish(request);
         }
 
-
-
-
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public abstract static class HtmlIterator extends ValueIterator {
 
 	String header;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         * @param fromSearch _more_
-         *
-         * @throws Exception _more_
-         */
         public HtmlIterator(Request request, DbTypeHandler db, Entry entry, boolean fromSearch)
                 throws Exception {
             super(request, db, entry);
 	    this.fromSearch = fromSearch;
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -771,14 +457,6 @@ public abstract class ValueIterator implements DbConstants {
 	    }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable    sb = getBuffer();
 	    if(rowCnt==0) {
@@ -804,100 +482,53 @@ public abstract class ValueIterator implements DbConstants {
             super.finish(request);
         }
 
-
     }
 
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class TableIterator extends HtmlIterator {
 
-
-
-        /** _more_          */
         String tableId = Utils.getGuid();
 
-
-        /** _more_          */
         int lineCnt = 0;
 
-        /** _more_          */
         String editUrl;
 
-        /** _more_          */
         String viewUrl;
 
-        /** _more_          */
         String editImg;
 
-        /** _more_          */
         String viewImg;
 
-
-        /** _more_          */
         boolean doForm = true;
 
-        /** _more_          */
         boolean showHeaderLinks = true;
 
-        /** _more_          */
         int entriesPerPage;
 
 	boolean numberEntries = false;
-	
-        /** _more_          */
+
         String searchColumn;
 
-        /** _more_          */
         String sourceName;
 
-        /** _more_          */
         String sourceColumn;
 
-        /** _more_          */
         String searchFrom;
 
-        /** _more_          */
         StringBuilder tableHeader = new StringBuilder();
 
-        /** _more_          */
         Hashtable entryProps;
 
-        /** _more_          */
         double[] sum;
 
-        /** _more_          */
         double[] min;
 
-        /** _more_          */
         double[] max;
 
-        /** _more_          */
         List<String> extraCols;
 
-        /** _more_          */
         Hashtable<String, Hashtable<Object, Integer>> uniques =
             new Hashtable<String, Hashtable<Object, Integer>>();
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         * @param fromSearch _more_
-         *
-         * @throws Exception _more_
-         */
         public TableIterator(Request request, DbTypeHandler db, Entry entry,
                              boolean fromSearch)
                 throws Exception {
@@ -911,14 +542,6 @@ public abstract class ValueIterator implements DbConstants {
                               + "/db/database_go.png", "View entry");
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -930,13 +553,6 @@ public abstract class ValueIterator implements DbConstants {
             columnNames = Column.getNames(columns);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         private void initializeTable(Request request) throws Exception {
 	    if(!addedHeader) {
 		addViewHeader(request, entry, VIEW_TABLE,null,false);
@@ -989,7 +605,7 @@ public abstract class ValueIterator implements DbConstants {
                     sb.append(HU.select(ARG_DB_ACTION, actions));
                 }
             }
-	    
+
             HU.open(tableHeader, "table", "entryid", entry.getId(),
                            "id", tableId, "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0", "width",
@@ -1051,13 +667,10 @@ public abstract class ValueIterator implements DbConstants {
                 db.makeTableHeader(tableHeader, link);
             }
 
-
             for (String col : extraCols) {
                 db.makeTableHeader(tableHeader, col);
             }
             HU.close(tableHeader, "tr");
-
-
 
             searchFrom   = request.getString(ARG_SEARCH_FROM, null);
             searchColumn = null;
@@ -1095,8 +708,6 @@ public abstract class ValueIterator implements DbConstants {
                 sb.append(HU.space(2) + href + HU.space(2) + clear);
             }
 
-
-
             sb.append(tableHeader);
 
             Hashtable<String, Hashtable<Object, Integer>> uniques =
@@ -1112,16 +723,6 @@ public abstract class ValueIterator implements DbConstants {
 
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
 
@@ -1177,7 +778,6 @@ public abstract class ValueIterator implements DbConstants {
                                viewImg);
                 HU.close(sb, "div", "td");
             }
-
 
             for (int i = 0; i < columns.size(); i++) {
                 //              if(true) continue;
@@ -1304,22 +904,10 @@ public abstract class ValueIterator implements DbConstants {
                 }
             }
 
-
-
             sb.append("</tr>");
-
-
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
 	    if(!addedHeader) {
 		addViewHeader(request, entry, VIEW_TABLE,null,rowCnt==0);
@@ -1391,35 +979,12 @@ public abstract class ValueIterator implements DbConstants {
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class TemplateIterator extends ValueIterator {
 
-        /** _more_          */
         DbTemplate template;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         * @param template _more_
-         *
-         * @throws Exception _more_
-         */
         public TemplateIterator(Request request, DbTypeHandler db,
                                 Entry entry,
                                 DbTemplate template)
@@ -1428,14 +993,6 @@ public abstract class ValueIterator implements DbConstants {
             this.template = template;
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -1446,15 +1003,6 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(template.prefix);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable    sb  = getBuffer();
@@ -1470,67 +1018,24 @@ public abstract class ValueIterator implements DbConstants {
             sb.append(t);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             sb.append(template.suffix);
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-
-
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class IcalIterator extends ValueIterator {
 
-        /** _more_          */
         SimpleDateFormat sdf =
             RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public IcalIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -1546,15 +1051,6 @@ public abstract class ValueIterator implements DbConstants {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb   = getBuffer();
@@ -1585,92 +1081,35 @@ public abstract class ValueIterator implements DbConstants {
             sb.append("END:VEVENT\n");
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             sb.append("END:VCALENDAR\n");
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class KmlIterator extends ValueIterator {
 
-        /** _more_          */
         Element root;
 
-        /** _more_          */
         Element folder;
 
-        /** _more_          */
         Column theColumn;
 
-        /** _more_          */
         boolean bbox = true;
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public KmlIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param request _more_
-         * @param entry _more_
-         * @param values _more_
-         * @param sdf _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public String getKmlLabel(Request request, Entry entry,
                                   Object[] values, SimpleDateFormat sdf)
                 throws Exception {
             return db.getLabel(request, entry, values, sdf);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -1702,15 +1141,6 @@ public abstract class ValueIterator implements DbConstants {
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb   = getBuffer();
@@ -1750,34 +1180,14 @@ public abstract class ValueIterator implements DbConstants {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
             sb.append(XmlUtil.toString(root));
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class LabelsIterator extends ValueIterator {
         BiConsumer<Appendable,String> printer;
 
@@ -1786,20 +1196,10 @@ public abstract class ValueIterator implements DbConstants {
         boolean[]  putBreak     = { false };
         boolean[]  putPageBreak = { false };
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public LabelsIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry);
 	    skip         = request.get("addresslabelskip", 0);
-
 
 	    printer = (buffer,label) ->{
 	    try {
@@ -1828,18 +1228,8 @@ public abstract class ValueIterator implements DbConstants {
 	    }
         };
 
-
-
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -1863,15 +1253,6 @@ public abstract class ValueIterator implements DbConstants {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -1892,61 +1273,24 @@ public abstract class ValueIterator implements DbConstants {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
 
             super.finish(request);
         }
 
-
-
-
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class GridIterator extends HtmlIterator {
 
         Column           gridColumn = null;
 	List<HtmlUtils.Selector> enumValues;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public GridIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry,true);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -1993,15 +1337,6 @@ public abstract class ValueIterator implements DbConstants {
 	    }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] values)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -2034,14 +1369,6 @@ public abstract class ValueIterator implements DbConstants {
             }
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
 	    HU.close(sb, "table");
@@ -2049,15 +1376,6 @@ public abstract class ValueIterator implements DbConstants {
         }
     }
 
-
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Tue, Nov 2, '21
-     * @author         Enter your name here...    
-     */
     public static class CategoryIterator extends HtmlIterator {
 
         Column           gridColumn = null;
@@ -2065,28 +1383,11 @@ public abstract class ValueIterator implements DbConstants {
 	    StringBuilder>();
 	List<String> rowValues = new ArrayList<String>();
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param db _more_
-         * @param entry _more_
-         *
-         * @throws Exception _more_
-         */
         public CategoryIterator(Request request, DbTypeHandler db, Entry entry)
                 throws Exception {
             super(request, db, entry, true);
         }
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param doGroupBy _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Request request, boolean doGroupBy)
                 throws Exception {
             super.initialize(request, doGroupBy);
@@ -2107,15 +1408,6 @@ public abstract class ValueIterator implements DbConstants {
 	    addViewHeader(request, entry,   VIEW_CATEGORY + gridColumn.getName(),links,false);
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param values _more_
-         *
-         * @throws Exception _more_
-         */
         public void processRow(Request request, Object[] valuesArray)
                 throws Exception {
             Appendable sb = getBuffer();
@@ -2144,19 +1436,11 @@ public abstract class ValueIterator implements DbConstants {
                                         + HU.id(rowId) + event));
         }
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws Exception _more_
-         */
         public void finish(Request request) throws Exception {
             Appendable sb = getBuffer();
 	    List<String> titles = new ArrayList<String>();
 	    List<String> tabs   = new ArrayList<String>();
-	    
+
 	    for (String rowValue : rowValues) {
 		titles.add(rowValue);
 		tabs.add(HU.insetDiv(map.get(rowValue).toString(), 0, 20,
@@ -2166,7 +1450,5 @@ public abstract class ValueIterator implements DbConstants {
             super.finish(request);
         }
     }
-    
-
 
 }

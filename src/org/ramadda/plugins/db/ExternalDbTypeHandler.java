@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.db;
 
-
 import org.ramadda.data.docs.*;
 
 import org.ramadda.data.point.RowRecord;
@@ -46,58 +45,22 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
 
-
-/**
- *
- *
- */
 @SuppressWarnings("unchecked")
 public class ExternalDbTypeHandler extends PointTypeHandler {
-
-    /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
     public static final int IDX_DBID = IDX++;
-
-    /** _more_ */
     public static final int IDX_TABLE = IDX++;
-
-    /** _more_ */
     public static final int IDX_TABLE2 = IDX++;
-
-    /** _more_ */
     public static final int IDX_JOIN1 = IDX++;
-
-    /** _more_ */
     public static final int IDX_JOIN2 = IDX++;
-
-
-    /** _more_ */
     private Hashtable<String, List<TableInfo>> dbToTables =
         new Hashtable<String, List<TableInfo>>();
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ExternalDbTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     *
-     * @param entry _more_
-     * @param name _more_
-     *
-     * @return _more_
-     */
     private List<String> getEnums(Request request,Entry entry, String name) {
         try {
             List<String> enums =
@@ -127,65 +90,25 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean adminOnly() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
             throws Exception {
         //Don't do this since we don't have the table set yet
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Connection getConnection(Request request,Entry entry) throws Exception {
         return getConnection(entry.getStringValue(request,IDX_DBID, (String) null));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param connection _more_
-     *
-     * @throws Exception _more_
-     */
     private void closeConnection(Connection connection) throws Exception {
         connection.close();
     }
 
-    /**
-     *
-     *
-     * @param dbid _more_
-     * @return _more_
-     * @throws Exception _more_
-     */
     private Connection getConnection(String dbid) throws Exception {
         if (dbid == null) {
             return null;
@@ -196,28 +119,11 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return connection;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public int getValuesIndex() {
         return PointTypeHandler.IDX_LAST + 1;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     * @param displayProps _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props, List<String> displayProps) {
@@ -284,13 +190,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return super.getUrlForWiki(request, entry, tag, props, displayProps);
     }
 
-
-    /**
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private String getWhat(Request request,Entry entry) {
         Hashtable recordProps =
             Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES, (String) ""));
@@ -298,12 +197,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return Utils.getProperty(recordProps, "what", "*");
     }
 
-    /**
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private List getTableList(Request request,Entry entry) {
         String table = entry.getStringValue(request,IDX_TABLE, (String) null);
         if ( !Utils.stringDefined(table)) {
@@ -323,13 +216,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return tableList;
     }
 
-
-    /**
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private List<Clause> getInitialClauses(Request request,Entry entry) {
         List<Clause> andClauses = new ArrayList<Clause>();
 
@@ -350,14 +236,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return andClauses;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private List<String[]> getFieldList(Request request,Entry entry) {
         List<String[]> fieldList =
             (List<String[]>) entry.getTransientProperty("db.fieldlist");
@@ -393,20 +271,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return fieldList;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param properties _more_
-     * @param equestProperties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -415,46 +279,19 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return new DbRecordFile(request, entry);
     }
 
-
-    /**
-     * Class description
-     *
-     * @version        $version$, Sat, Dec 8, '18
-     * @author         Enter your name here...
-     */
     public class DbRecordFile extends RecordFile {
 
-        /** _more_ */
         private Request request;
 
-        /** _more_ */
         private Entry entry;
 
-        /** _more_ */
         List<RecordField> fields;
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param entry _more_
-         *
-         * @throws IOException _more_
-         */
         public DbRecordFile(Request request, Entry entry) throws IOException {
             this.request = request;
             this.entry   = entry;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         */
         @Override
         public BaseRecord doMakeRecord(VisitInfo visitInfo) {
             try {
@@ -467,16 +304,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param connection _more_
-         * @param iter _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public MyRecord doMakeRecord(Connection connection,
                                      SqlUtil.Iterator iter)
                 throws Exception {
@@ -484,17 +311,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         * @param buffered _more_
-         *
-         * @return _more_
-         *
-         * @throws IOException _more_
-         */
         public RecordIO doMakeInputIO(VisitInfo visitInfo, boolean buffered)
                 throws IOException {
             try {
@@ -504,27 +320,11 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             return super.prepareToVisit(visitInfo);
         }
 
-        /**
-         * _more_
-         *
-         * @param failureOk _more_
-         *
-         * @return _more_
-         */
         public List<RecordField> doMakeFields(boolean failureOk) {
             if (fields == null) {
                 getFieldList(request,entry);
@@ -535,17 +335,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             return fields;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param connection _more_
-         * @param visitInfo _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         private SqlUtil.Iterator makeIterator(Connection connection,
                 VisitInfo visitInfo)
                 throws Exception {
@@ -670,18 +459,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
 
         }
 
-
-        /**
-         * _more_
-         *
-         * @param visitInfo _more_
-         * @param record _more_
-         * @param howMany _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         @Override
         public boolean skip(VisitInfo visitInfo, BaseRecord record,
                             int howMany)
@@ -690,48 +467,23 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
             return true;
         }
 
-
-        /**
-         * Class description
-         *
-         *
-         * @version        $version$, Mon, Feb 17, '20
-         * @author         Enter your name here...
-         */
         private class MyRecord extends RowRecord {
 
-            /** _more_ */
             private MyDateFormat sdf =
                 makeDateFormat("yyyyMMdd'T'HHmmss");
 
-            /** _more_ */
             Connection connection;
 
-            /** _more_ */
             List<String[]> fieldList;
 
-
-            /** _more_ */
             SqlUtil.Iterator iter;
 
-            /** _more_ */
             ResultSetMetaData rsmd;
 
-            /** _more_ */
             ResultSet results;
 
-            /** _more_ */
             DbRecordFile recordFile;
 
-            /**
-             * _more_
-             *
-             * @param file _more_
-             * @param connection _more_
-             * @param iter _more_
-             *
-             * @throws Exception _more_
-             */
             MyRecord(DbRecordFile file, Connection connection,
                      SqlUtil.Iterator iter)
                     throws Exception {
@@ -742,11 +494,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 makeFields();
             }
 
-            /**
-             * _more_
-             *
-             * @throws Exception _more_
-             */
             private void makeFields() throws Exception {
                 Hashtable recordProps =
                     Utils.getProperties(entry.getStringValue(request,IDX_PROPERTIES,
@@ -811,15 +558,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                 entry.putTransientProperty("db.fields", fields);
             }
 
-            /**
-             * _more_
-             *
-             * @param recordIO _more_
-             *
-             * @return _more_
-             *
-             * @throws Exception _more_
-             */
             public Row readNextRow(RecordIO recordIO) throws Exception {
                 if (results == null) {
                     results = iter.getNext();
@@ -863,23 +601,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param formBuffer _more_
-     * @param values _more_
-     * @param state _more_
-     * @param formInfo _more_
-     * @param baseTypeHandler _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addColumnToEntryForm(Request request, Entry parentEntry,
 				     Entry entry,
@@ -926,15 +647,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
                                    values, state, formInfo, baseTypeHandler);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<String> getTableNames(Request request,Entry entry) throws Exception {
         if (entry == null) {
             return null;
@@ -947,15 +659,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return TableInfo.getTableNames(tableInfos);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TableInfo getTableInfo(Request request,Entry entry) throws Exception {
         List<TableInfo> tableInfos = getTableInfos(request,entry);
         if (tableInfos == null) {
@@ -976,17 +679,6 @@ public class ExternalDbTypeHandler extends PointTypeHandler {
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<TableInfo> getTableInfos(Request request,Entry entry) throws Exception {
         String dbid = entry.getStringValue(request,IDX_DBID, (String) null);
         if ( !Utils.stringDefined(dbid)) {

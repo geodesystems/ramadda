@@ -147,4 +147,30 @@ a site_id property.
 </table>
 -xml
 
+:heading Macros
+You can define sub-querys that allow you to specify a "not in" logic with the macro specification.
+
++xml
+<table ... >
+<macro name="Label to show in form" column="the not in column name"
+       columns="comma separated list of query columns. can be column1:label1,column2,column3:label3">
+<description><![CDATA[html to show in form]></description>
+</macro>
+...
+</table>
+-xml
+
+For example, in a campaign contribution database the below macro allows the user to
+search where the full_name does not show up in any query on election_year, candidate or committee
++xml
+<table  id="campaign_contributions"  name="Campaign Contributions" >
+<macro name="But not donations that..." column="full_name"
+       columns="election_year:Donation in year,candidate:Donation to,committee:Donation to committee">
+<description><![CDATA[                                                                                                                             
+<center><div class="ramadda-note">Don't select donations that match this criteria</div></center>]]></description>
+</macro>
+...
+</table>
+-xml
+
 -section
