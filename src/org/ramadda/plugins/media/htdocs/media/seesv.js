@@ -994,6 +994,8 @@ function  SeesvForm(inputId, entry,params) {
 			return;
 		    } else if(isDb) {
 			let db = result.replace(/<tables>[ \n]/,"Database:");
+//			let doc = (new DOMParser()).parseFromString(result, "application/xml");
+//			let table = doc.getElementsByTagName('table')[0];
 			db = db.replace(/<property[^>]+>/g,"");
 			db = db.replace(/> *<\/column>/g,"/>");
 			db = db.replace(/\n *\n/g,"\n");
@@ -1028,17 +1030,22 @@ function  SeesvForm(inputId, entry,params) {
 
 			    html+="<div style='margin-left:5px;'>";
                             if(field  == "table") {
-				html +=_this.makeDbMenu(field+".name")+"<br>";
-				html +=_this.makeDbMenu(field+".label")+"<br>";
-				html +=_this.makeDbMenu(field+".cansearch","false")+"<br>";
-				html +=_this.makeDbMenu(field+".canlist","false")+"<br>";
-				html +=_this.makeDbMenu("install","true")+"<br>";
-				html +=_this.makeDbMenu("nukedb","true")+"<br>";								
+				html+=HU.b("Basic")+"<br>";
+				html +=_this.makeDbMenu(field+".name")+space+
+				    _this.makeDbMenu(field+".label")+"<br>";
+				html+=  HU.b("Defaults")+"<br>" +
+				    _this.makeDbMenu(field+".cansearch","false")+space+
+				    _this.makeDbMenu(field+".canlist","false")+"<br>";
+				html+= HU.b("Install")+"<br>"+
+				    _this.makeDbMenu("install","true")+space+
+				    _this.makeDbMenu("nukedb","true")+"<br>";
+				
                             } else {
+				html+=HU.b("Basic")+"<br>";
 				html +=_this.makeDbMenu(field+".id")+space;
 				html +=_this.makeDbMenu(field+".label")+"<br>";
 				html +=
-                                    _this.makeDbMenu(field+".type")+space +
+				    HU.b("Type")+"<br>"+
                                     _this.makeDbMenu(field+".type","string","string")+space +
                                     _this.makeDbMenu(field+".type","double","double")+space +
                                     _this.makeDbMenu(field+".type","int","int")+space +
@@ -1046,28 +1053,22 @@ function  SeesvForm(inputId, entry,params) {
                                     _this.makeDbMenu(field+".type","enumerationplus","enumeration+")+space +
                                     _this.makeDbMenu(field+".type","multienumeration","multienumeration+")+space +
                                     _this.makeDbMenu(field+".type","date","date")+space +
-                                    _this.makeDbMenu(field+".type","url","url")+space +				    				    
+                                    _this.makeDbMenu(field+".type","url","url")+space +
                                     "<br>";
 				html +=
-                                    _this.makeDbMenu(field+".cansearch")+space +
+				    HU.b("Search")+"<br>"+
+                                    _this.makeDbMenu(field+".cansearch","true")+space +
                                     _this.makeDbMenu(field+".isindex","true")+space +
-                                    _this.makeDbMenu(field+".cansearch","true","true")+space +
-                                    _this.makeDbMenu(field+".cansearch","false","false")+space+
                                     _this.makeDbMenu(field+".addnot","true")+space +
+                                    _this.makeDbMenu(field+".canlist","true")+
                                     "<br>";
 				html +=
-                                    _this.makeDbMenu(field+".canlist")+space +
-                                    _this.makeDbMenu(field+".canlist","true","true")+space+
-                                    _this.makeDbMenu(field+".canlist","false","false")+
-                                    "<br>";
-				html +=
+				    HU.b("Misc")+"<br>"+
                                     _this.makeDbMenu(field+".size","1000")+space+
-                                    _this.makeDbMenu(field+".changetype","true") +
-                                    "<br>";
-				html +=
+                                    _this.makeDbMenu(field+".changetype","true") + space +
                                     _this.makeDbMenu(field+".unit","kg")+space+
                                     _this.makeDbMenu(field+".suffix","")+space+
-                                    _this.makeDbMenu(field+".help","")+space+				    			                                    "<br>";								
+                                    _this.makeDbMenu(field+".help","")+space;
                             }
                             html+="</div></div>";
 			    _this.dbDialog=HU.makeDialog({title:title,content:html,anchor:$(this),header:true,draggable:true});
