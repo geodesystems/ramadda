@@ -1038,7 +1038,10 @@ function  SeesvForm(inputId, entry,params) {
 				    _this.makeDbMenu(field+".canlist","false")+"<br>";
 				html+= HU.b("Install")+"<br>"+
 				    _this.makeDbMenu("install","true")+space+
-				    _this.makeDbMenu("nukedb","true")+"<br>";
+				    _this.makeDbMenu("nukedb","true")+"<br>"
+				html +=_this.makeDbMenu(field+".category")+space+
+				    _this.makeDbMenu(field+".superCategory")+"<br>";	
+				html +=_this.makeDbMenu(field+".icon","/icon/icon.png")+space;
 				
                             } else {
 				html+=HU.b("Basic")+"<br>";
