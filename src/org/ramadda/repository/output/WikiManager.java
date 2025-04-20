@@ -1870,15 +1870,24 @@ public class WikiManager extends RepositoryManager
 	    return tmp;
 
         } else if (theTag.equals(WIKI_TAG_CAPTION)
-                   || theTag.equals(WIKI_TAG_IMAGE2)) {}
-        else if (theTag.equals(WIKI_TAG_TAGCLOUD)) {
+                   || theTag.equals(WIKI_TAG_IMAGE2)) {
+	}  else if (theTag.equals(WIKI_TAG_TAGCLOUD)) {
             StringBuilder tagCloud = new StringBuilder();
             int threshold = getProperty(wikiUtil, props, "threshold", 0);
             getMetadataManager().doMakeTagCloudOrList(request,
 						      getProperty(wikiUtil, props, "type", ""), tagCloud, true,
-						      threshold);
+						      threshold,-1);
 
             return tagCloud.toString();
+	}  else if (theTag.equals(WIKI_TAG_PROPERTYLIST)) {
+            int threshold = getProperty(wikiUtil, props, "threshold", 0);
+            int maxRows = getProperty(wikiUtil, props, "maxRows", 30);	    
+            getMetadataManager().doMakeTagCloudOrList(request,
+						      getProperty(wikiUtil, props, "type", ""), sb, false,
+						      threshold,maxRows);
+
+            return sb.toString();
+
 	} else if(theTag.equals(WIKI_TAG_EDITBUTTON)) {
 	    if(getAccessManager().canDoEdit(request, entry)) {
 		String url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
@@ -8086,9 +8095,9 @@ public class WikiManager extends RepositoryManager
                         "Specifying the entry");
         makeHelp.accept("/userguide/wiki/wikientries.html#entries",
                         "Specifying multiple entries");
-        makeHelp.accept("/search/providers", "Search Providers");
         makeHelp.accept("/entry/types.html", "Entry Types");
-        makeHelp.accept("/search/info#metadatatypes", "Metadata Types");
+        makeHelp.accept("/metadata/types.html", "Metadata Types");
+        makeHelp.accept("/search/providers", "Search Providers");
         makeHelp.accept("/colortables", "Color Tables");
         makeHelp.accept("/icons.html", "Icons");	
 

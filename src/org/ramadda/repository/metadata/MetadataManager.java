@@ -1404,7 +1404,7 @@ public class MetadataManager extends RepositoryManager {
                             .URL_METADATA_LIST, ARG_METADATA_TYPE,
                                 type.toString()), type.getLabel());
 
-            rows.add("<li>" + link);
+            rows.add("<li class=ramadda-metadata-type>" + link+"</li>");
             //            type.getHandler().addToBrowseSearchForm(request, tmp, type, titles, contents);
         }
         List<List> lists = Utils.splitList(rows, 8);
@@ -1412,6 +1412,10 @@ public class MetadataManager extends RepositoryManager {
         for (List list : lists) {
             cols.add("<ul>" + Utils.join(list, "") + "</ul>");
         }
+	sb.append("<center>");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-type',null,'Find Metadata Type')");
+	sb.append("</center>");
+
         HU.centerBlock(sb, HU.hrow(cols));
         //        HU.makeAccordion(sb, titles, contents);
 
@@ -1422,7 +1426,7 @@ public class MetadataManager extends RepositoryManager {
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request, sb,"Metadata Types",false);
 	sb.append(HU.center("Click on a button to copy the metadata ID"));
-	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
+	HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type','.ramadda-metadata-category','Find Type',true)");
 	Hashtable<String,NamedBuffer> map = new Hashtable<String,NamedBuffer>();
 	List<NamedBuffer> contents = new ArrayList<NamedBuffer>();
         for (MetadataType type : metadataTypes) {
@@ -1438,8 +1442,11 @@ public class MetadataManager extends RepositoryManager {
 							  "style","margin:4px;","class","ramadda-button ramadda-type-id ramadda-type")));
 	}
 	for(NamedBuffer buffer: contents) {
+	    HU.open(sb,"div",HU.attrs("class","ramadda-metadata-category"));
 	    HU.div(sb,buffer.getName(),HU.clazz("ramadda-form-header"));
 	    sb.append(buffer.getBuffer().toString());
+	    HU.close(sb,"div");
+	    sb.append("<p>");
 	}
 	HU.script(sb,"Utils.initCopyable('.ramadda-type-id');");
 	getPageHandler().sectionClose(request, sb);
@@ -1638,9 +1645,11 @@ public class MetadataManager extends RepositoryManager {
 	if(type==null) {
 	    if (request.responseAsJson()) {
 		sb.append("{\"undefined\":true}");
+	    } else {
+		sb.append(getPageHandler().showDialogError("Could not find metadata type:" +metadataType));
 	    }
 	} else {
-	    doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0);
+	    doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0,15);
 	}
         if (request.responseAsJson()) {
             request.setCORSHeaderOnResponse();
@@ -1680,8 +1689,9 @@ public class MetadataManager extends RepositoryManager {
 
     public void doMakeTagCloudOrList(Request request, String metadataType,
                                      Appendable sb, boolean doCloud,
-                                     int threshold)
+                                     int threshold,int maxRows)
             throws Exception {
+	if(maxRows<=0) maxRows= 15;
 
         boolean         doJson  = request.responseAsJson();
         MetadataHandler handler = findMetadataHandler(metadataType);
@@ -1690,17 +1700,25 @@ public class MetadataManager extends RepositoryManager {
             if (doJson) {
                 sb.append(JsonUtil.list(new ArrayList<String>()));
             }
+	    sb.append(getPageHandler().showDialogError("Could not find metadata type:" +type));
             return;
         }
 	List<MetadataElement> searchableElements = getSearchableElements(type);
 	List<String> jsonItems = new ArrayList<String>();
+
+
+	if(!doJson) {
+	    sb.append("<center>");
+	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-item','.formtable','Find',true)");
+	    sb.append("</center>");
+	}
 
 	for(MetadataElement element:searchableElements) {
 	    if(!element.isEnumeration()) {
 		if(doJson) {
 		    jsonItems.add(makeElementJson(element,null));
 		}
-		continue;
+		//		continue;
 	    }
 	    List<HtmlUtils.Selector>      enumValues = element.getValues();
 	    Hashtable<String, String> labels     = new Hashtable<String,  String>();
@@ -1767,7 +1785,7 @@ public class MetadataManager extends RepositoryManager {
 			    label = "----";
 			}
 			StringBuilder row = new StringBuilder();
-			row.append("<tr><td>");
+			row.append("<tr class=ramadda-metadata-item><td>");
 			row.append(tuple[0].toString());
 			row.append("</td><td>");
 			row.append(HU.href(handler.getSearchUrl(request,
@@ -1776,13 +1794,12 @@ public class MetadataManager extends RepositoryManager {
 			rows.add(row);
 		    }
 		    List       cols  = new ArrayList();
-		    List<List> lists = Utils.splitList(rows, 15);
+		    List<List> lists = Utils.splitList(rows, maxRows);
 		    for (List row : lists) {
 			cols.add(HU.formTable()
-				 + HU
-				 .row(HU.cols(HU.b("# entries"),
-					      HU.b(type
-						   .getLabel())), "class=ramadda-table-header") + Utils
+				 + HU.row(HU.cols(HU.b("# entries"),
+						  HU.b(type
+						       .getLabel())), "class=ramadda-table-header-plain") + Utils
 				 .join(row, "") + HU.formTableClose());
 		    }
 		    sb.append(

@@ -3120,7 +3120,16 @@ table.dataTable tbody td {
     border-collapse:unset;
 }
 
-
+.ramadda-table-header-plain {
+    background:#fff;
+    font-weight:bold;
+    border-bottom : 1px solid #ccc;
+    margin-top: 4px;
+    padding:0px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-left: 8px;    
+}
 
 .entry-list-noheader {
     border-bottom : 1px #d8d8d8 solid;

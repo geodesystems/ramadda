@@ -472,6 +472,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_TAGCLOUD = "tagcloud";
 
+    public static final String WIKI_TAG_PROPERTYLIST = "propertylist";    
+
     /** wiki import */
     public static final String WIKI_TAG_RECENT = "recent";
 

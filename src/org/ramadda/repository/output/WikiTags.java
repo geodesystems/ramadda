@@ -283,6 +283,8 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_ZIPFILE, null,"#height",""),
                             new WikiTag(WIKI_TAG_USER, null, "users","user1,user2","delimiter"," ","style","","showAvatar","true","showEmail","true"),
                             new WikiTag(WIKI_TAG_COMMENTS),
+                            new WikiTag(WIKI_TAG_PROPERTYLIST, null, "type", "property type", "maxRows","30",
+					"threshold","0"), 
                             new WikiTag(WIKI_TAG_TAGCLOUD, null, "#type", "", "threshold","0"), 
                             new WikiTag(WIKI_TAG_PROPERTIES, null,
 					"message","",
