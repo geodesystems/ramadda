@@ -1816,6 +1816,7 @@ public abstract class Processor extends SeesvOperator {
             }
 
             for (String prop : new String[] {
+		    "category","superCategory",
 		    "defaultView", "mapProperties",
 		    "defaultOrder", "icon", "showEntryCreate",
 		    "showFeedView", "showDateView", "showChartView",
