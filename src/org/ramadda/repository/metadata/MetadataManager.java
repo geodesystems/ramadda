@@ -1853,7 +1853,7 @@ public class MetadataManager extends RepositoryManager {
 					 "id",targetId)));
 	    List<String> opts = new ArrayList<String>();
 	    Utils.add(opts,"headerId",JU.quote(headerId));
-	    for(String prop:new String[]{"colorTable","color","shape"}) {
+	    for(String prop:new String[]{"colorTable","color","shape","delay"}) {
 		String v = Utils.getProperty(props,prop,null);
 		if(v!=null) Utils.add(opts,prop,JU.quote(v));
 	    }
