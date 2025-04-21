@@ -1632,8 +1632,6 @@ public class MetadataManager extends RepositoryManager {
                              CSS_CLASS_SEPARATOR)) + HU.href(
                                  request.getUrl(), msg("Cloud"));
         }
-        //Don't do cloud
-        header = "";
         String metadataType     = request.getString(ARG_METADATA_TYPE, "");
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType,false);
@@ -1649,7 +1647,7 @@ public class MetadataManager extends RepositoryManager {
 		sb.append(getPageHandler().showDialogError("Could not find metadata type:" +metadataType));
 	    }
 	} else {
-	    doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0,15);
+	    doMakeTagCloudOrList(request, metadataType, sb, doCloud, 0,15,null);
 	}
         if (request.responseAsJson()) {
             request.setCORSHeaderOnResponse();
@@ -1689,7 +1687,7 @@ public class MetadataManager extends RepositoryManager {
 
     public void doMakeTagCloudOrList(Request request, String metadataType,
                                      Appendable sb, boolean doCloud,
-                                     int threshold,int maxRows)
+                                     int threshold,int maxRows,Hashtable props)
             throws Exception {
 	if(maxRows<=0) maxRows= 15;
 
@@ -1707,10 +1705,19 @@ public class MetadataManager extends RepositoryManager {
 	List<String> jsonItems = new ArrayList<String>();
 
 
-	if(!doJson) {
+	if(!doJson && !doCloud) {
 	    sb.append("<center>");
 	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-item','.formtable','Find',true)");
 	    sb.append("</center>");
+	}
+
+	String sourceId  = HU.getUniqueId("words_source");
+	if(doCloud) {
+	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/jqcloud.min.css"));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/jqcloud.min.js")));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/colortables.js")));	    
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/wordcloud.js")));	    
+	    HU.open(sb,"div",HU.attrs("id",sourceId,"style","display:none;"));
 	}
 
 	for(MetadataElement element:searchableElements) {
@@ -1748,6 +1755,7 @@ public class MetadataManager extends RepositoryManager {
 		min    = Math.min(cnt[i], min);
 		getDatabaseManager().closeAndReleaseConnection(stmt);
 	    }
+
 	    int    diff         = max - min;
 	    double distribution = diff / 5.0;
 	    if ( !doCloud) {
@@ -1815,23 +1823,12 @@ public class MetadataManager extends RepositoryManager {
 			continue;
 		    }
 		    double percent = cnt[i] / distribution;
-		    int    bin     = (int) (percent * 5);
-		    String css     = "font-size:" + (12 + bin * 2);
 		    String value   = values[i];
-		    String ttValue = value.replace("\"", "'");
-		    if (value.length() > 30) {
-			value = value.substring(0, 29) + "...";
-		    }
-		    sb.append("<span style=\"" + css + "\">");
-		    String extra = XmlUtil.attrs("alt",
-						 "Count:" + cnt[i] + " "
-						 + ttValue, "title",
-                                                 "Count:" + cnt[i] + " "
-                                                 + ttValue);
-		    sb.append(HU.href(handler.getSearchUrl(request, type,
-							   values[i]), value, extra));
-		    sb.append("</span>");
-		    sb.append(" &nbsp; ");
+		    String url = handler.getSearchUrl(request,  type, value);
+		    sb.append(HU.div(value,HU.attrs("class","ramadda-word",
+						    "word-title","Count: " + cnt[i]+ " " + "Click to search",
+						    "word-url",url,
+						    "word-weight",""+percent)));
 		}
 	    }
 	}
@@ -1842,6 +1839,30 @@ public class MetadataManager extends RepositoryManager {
 	    Utils.add(obj,"elements",JsonUtil.list(jsonItems));
 	    sb.append(JsonUtil.map(obj));
 	}
+	if(doCloud) {
+	    HU.close(sb,"div");
+	    String headerId  = HU.getUniqueId("words_header");
+	    String targetId  = HU.getUniqueId("words_target");
+
+	    String width = Utils.getProperty(props,"width","100%");
+	    String height = Utils.getProperty(props,"height","400px");	    
+	    sb.append(HU.center(HU.div("",HU.attrs("id",headerId))));
+	    String style = Utils.getProperty(props,"style","");
+	    style = HU.css("width",width,"height",height) + style;
+	    sb.append(HU.div("",HU.attrs("style",style,
+					 "id",targetId)));
+	    List<String> opts = new ArrayList<String>();
+	    Utils.add(opts,"headerId",JU.quote(headerId));
+	    for(String prop:new String[]{"colorTable","color","shape"}) {
+		String v = Utils.getProperty(props,prop,null);
+		if(v!=null) Utils.add(opts,prop,JU.quote(v));
+	    }
+	    HU.script(sb, HU.call("ramaddaWordCloud",
+				  HU.squote(sourceId),
+				  HU.squote(targetId),
+				  JU.map(opts)));
+	}
+
     }
 
     public Result processMetadataView(Request request) throws Exception {

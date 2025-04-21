@@ -1876,7 +1876,7 @@ public class WikiManager extends RepositoryManager
             int threshold = getProperty(wikiUtil, props, "threshold", 0);
             getMetadataManager().doMakeTagCloudOrList(request,
 						      getProperty(wikiUtil, props, "type", ""), tagCloud, true,
-						      threshold,-1);
+						      threshold,-1,props);
 
             return tagCloud.toString();
 	}  else if (theTag.equals(WIKI_TAG_PROPERTYLIST)) {
@@ -1884,7 +1884,7 @@ public class WikiManager extends RepositoryManager
             int maxRows = getProperty(wikiUtil, props, "maxRows", 30);	    
             getMetadataManager().doMakeTagCloudOrList(request,
 						      getProperty(wikiUtil, props, "type", ""), sb, false,
-						      threshold,maxRows);
+						      threshold,maxRows,props);
 
             return sb.toString();
 
