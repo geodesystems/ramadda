@@ -84,8 +84,8 @@ ramaddaWordCloud.prototype = {
 		    return true;
 		});
 	    }
-	    if(element==null) {
-		jqid(this.target).html('No metadata available');
+	    if(element==null || element.values.length==0) {
+		jqid(this.target).html(HU.center('No metadata available'));
 		return
 	    }
 	    element.values.forEach(v=>{
