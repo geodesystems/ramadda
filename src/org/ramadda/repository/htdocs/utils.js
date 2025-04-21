@@ -3998,6 +3998,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     doPageSearch:function(value,select,parentSelect,hideAll,args) {
 	args = args??{}
+	if(args.handler) {
+	    args.handler(value,args);
+	    return
+	}
+
 	let linksDiv;
 	let linkNames=[];
 	if(args.linksDivId) {
@@ -4100,7 +4105,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    });
 	}
 
-
+	if(args.callback) {
+	    args.callback();
+	}
     
     },				  
     initScreenshot: function(img) {
