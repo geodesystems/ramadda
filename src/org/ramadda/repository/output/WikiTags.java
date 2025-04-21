@@ -289,6 +289,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
 					"type", "metadata type",
 					"width","100%","height","400px",
 					"threshold","0",
+					"#types","type1,type2,....",
 					"#color","#ccc",
 					"#colorTable","blues",
 					"#style","background:#efefef;border:1px solid #ccc;",

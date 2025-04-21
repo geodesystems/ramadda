@@ -1692,6 +1692,55 @@ public class MetadataManager extends RepositoryManager {
 	if(maxRows<=0) maxRows= 15;
 
         boolean         doJson  = request.responseAsJson();
+	if(doJson) doCloud=false;
+
+	if(doCloud) {
+	    String sourceId  = HU.getUniqueId("words_source");
+	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/jqcloud.min.css"));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/jqcloud.min.js")));
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/colortables.js")));	    
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/wordcloud.js")));	    
+	    HU.open(sb,"div",HU.attrs("id",sourceId,"style","display:none;"));
+	    HU.close(sb,"div");
+	    String headerId  = HU.getUniqueId("words_header");
+	    String targetId  = HU.getUniqueId("words_target");
+	    String width = Utils.getProperty(props,"width","100%");
+	    String height = Utils.getProperty(props,"height","400px");	    
+	    sb.append(HU.center(HU.div("",HU.attrs("id",headerId))));
+	    String style = Utils.getProperty(props,"style","");
+	    style = HU.css("width",width,"height",height) + style;
+	    sb.append(HU.div("",HU.attrs("style",style,
+					 "id",targetId)));
+	    List<String> opts = new ArrayList<String>();
+	    Utils.add(opts,"headerId",JU.quote(headerId));
+	    Utils.add(opts,"type",JU.quote(metadataType));
+	    String types = Utils.getProperty(props,"types",null);
+	    if(types!=null) {
+		List<String> tmp = new ArrayList<String>();
+		for(String t:Utils.split(types,",",true,true)) {
+		    MetadataHandler handler = findMetadataHandler(t);
+		    if(handler==null) continue;
+		    MetadataType    type    = handler.findType(t,false);
+		    if(type==null) continue;
+		    tmp.add(t+":"+type.getLabel());
+		    
+		}
+		props.put("types",Utils.join(tmp,","));
+	    }
+
+	    for(String prop:new String[]{"types","colorTable","color","shape","delay"}) {
+		String v = Utils.getProperty(props,prop,null);
+		if(v!=null) Utils.add(opts,prop,JU.quote(v));
+	    }
+	    HU.script(sb, HU.call("new ramaddaWordCloud",
+				  HU.squote(sourceId),
+				  HU.squote(targetId),
+				  JU.map(opts)));
+	    return;
+	}
+
+
+
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
         if ((type == null) || (type.getChildren() == null)) {
@@ -1701,6 +1750,10 @@ public class MetadataManager extends RepositoryManager {
 	    sb.append(getPageHandler().showDialogError("Could not find metadata type:" +type));
             return;
         }
+
+
+
+
 	List<MetadataElement> searchableElements = getSearchableElements(type);
 	List<String> jsonItems = new ArrayList<String>();
 
@@ -1711,14 +1764,6 @@ public class MetadataManager extends RepositoryManager {
 	    sb.append("</center>");
 	}
 
-	String sourceId  = HU.getUniqueId("words_source");
-	if(doCloud) {
-	    HU.cssLink(sb,getRepository().getHtdocsUrl("/lib/jqcloud.min.css"));
-	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/lib/jqcloud.min.js")));
-	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/colortables.js")));	    
-	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/wordcloud.js")));	    
-	    HU.open(sb,"div",HU.attrs("id",sourceId,"style","display:none;"));
-	}
 
 	for(MetadataElement element:searchableElements) {
 	    if(!element.isEnumeration()) {
@@ -1838,29 +1883,6 @@ public class MetadataManager extends RepositoryManager {
 	    Utils.add(obj,"addNot",""+type.getAddNot());
 	    Utils.add(obj,"elements",JsonUtil.list(jsonItems));
 	    sb.append(JsonUtil.map(obj));
-	}
-	if(doCloud) {
-	    HU.close(sb,"div");
-	    String headerId  = HU.getUniqueId("words_header");
-	    String targetId  = HU.getUniqueId("words_target");
-
-	    String width = Utils.getProperty(props,"width","100%");
-	    String height = Utils.getProperty(props,"height","400px");	    
-	    sb.append(HU.center(HU.div("",HU.attrs("id",headerId))));
-	    String style = Utils.getProperty(props,"style","");
-	    style = HU.css("width",width,"height",height) + style;
-	    sb.append(HU.div("",HU.attrs("style",style,
-					 "id",targetId)));
-	    List<String> opts = new ArrayList<String>();
-	    Utils.add(opts,"headerId",JU.quote(headerId));
-	    for(String prop:new String[]{"colorTable","color","shape","delay"}) {
-		String v = Utils.getProperty(props,prop,null);
-		if(v!=null) Utils.add(opts,prop,JU.quote(v));
-	    }
-	    HU.script(sb, HU.call("ramaddaWordCloud",
-				  HU.squote(sourceId),
-				  HU.squote(targetId),
-				  JU.map(opts)));
 	}
 
     }
