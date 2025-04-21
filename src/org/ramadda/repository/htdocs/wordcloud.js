@@ -57,6 +57,9 @@ function ramaddaWordCloud(source,target,args) {
 
 ramaddaWordCloud.prototype = {
     loadJson:function() {
+	let icon = RamaddaUtils.getUrl('/icons/mapprogress.gif');
+	jqid(this.target).html(HU.center(HU.image(icon,[ATTR_STYLE,HU.css('margin-top','50px'),
+							ATTR_WIDTH,'150px'])));
 	let jsonUrl = RamaddaUtils.getUrl('/metadata/list?response=json&metadata_type=' + this.opts.type);
 	$.getJSON(jsonUrl, data=>{
 	    this.metadata = data;
