@@ -1179,27 +1179,34 @@ WikiEditor.prototype = {
 	    if(inPlace) {
 		this.jq(this.ID_WIKI_PREVIEW_INNER).html(html);
 	    } else {
+		let close  = HU.span([ATTR_CLASS, "ramadda-button " +CLASS_CLICKABLE,
+				      ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)],
+				     "Close");
 		let left = Utils.join([
+		    close,
 		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,
 			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_OPEN)], HtmlUtils.getIconImage('fa-sync',[ATTR_TITLE,'Preview Again'])),
 		    HU.checkbox('',[ATTR_TITLE,'Live Preview',
 				    ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_LIVE)],this.previewLive,'Live')+SPACE4,
 		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,
-			     ATTR_TITLE,'Wordcount',
+			     ATTR_TITLE,'Word count',
 			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_WORDCOUNT)], HtmlUtils.getIconImage('fa-calculator')),
 
+/*
 		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,ATTR_TITLE,'Copy',
 			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_COPY)], HtmlUtils.getIconImage('fa-copy')),
 		    HU.span([ATTR_CLASS, CLASS_CLICKABLE,TITLE,'Download',
-			     ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),		    
+		    ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_DOWNLOAD)], HtmlUtils.getIconImage('fa-download')),
+		    */
 		],SPACE2);
 
 		let right  = HU.span([ATTR_CLASS, CLASS_CLICKABLE,
 				      ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_CLOSE)],
 				     HtmlUtils.getIconImage('fa-window-close',[ATTR_TITLE,'Close Preview']));
 
+		right="";
 		let bar = HtmlUtils.div([ATTR_CLASS,'ramadda-menubar',
-					 ATTR_STYLE,'xtext-align:center;width:100%;border:1px solid #ccc'],
+					 ATTR_STYLE,'padding:5px;xtext-align:center;width:100%;border:1px solid #ccc'],
 					HU.leftRight(left,right));
 
 		html = HtmlUtils.div([ATTR_ID,this.domId(this.ID_WIKI_PREVIEW_INNER),
@@ -1211,6 +1218,8 @@ WikiEditor.prototype = {
 		} catch(err) {
 		    preview.html(HU.getErrorDialog("An error occurred:" + err));
 		}
+
+
 		preview.draggable();
 		preview.resizable({handles: 'ne,nw'});	    
 		this.jq(this.ID_WIKI_PREVIEW_WORDCOUNT).click(function() {
@@ -1232,7 +1241,7 @@ WikiEditor.prototype = {
 		this.jq(this.ID_WIKI_PREVIEW_OPEN).click(() =>{
 		    this.doPreview(entry,true);
 		});
-		$("#" + this.domId(this.ID_WIKI_PREVIEW_CLOSE)).click(() =>{
+		$("#" + this.domId(this.ID_WIKI_PREVIEW_CLOSE)).button().click(() =>{
 		    this.previewShown = false;
 		    $("#"+ this.domId(this.ID_WIKI_PREVIEW)).hide();
 		});		
