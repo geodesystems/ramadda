@@ -51,31 +51,20 @@ import java.util.zip.*;
  */
 public class RssOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static String MIME_RSS = "application/rss+xml";
 
-    /** _more_ */
     private SimpleDateFormat rssSdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
-    /** _more_ */
     public static final OutputType OUTPUT_RSS_FULL =
         new OutputType("RSS Feed - Full", "rss.full", OutputType.TYPE_FEEDS |
 		       OutputType.TYPE_FORSEARCH,
                        "", ICON_RSS);
 
-    /** _more_ */
     public static final OutputType OUTPUT_RSS_SUMMARY =
         new OutputType("RSS Feed", "rss.summary", OutputType.TYPE_FEEDS, "",
                        ICON_RSS);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public RssOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -83,15 +72,6 @@ public class RssOutputHandler extends OutputHandler {
         addType(OUTPUT_RSS_SUMMARY);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
@@ -110,13 +90,6 @@ public class RssOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_RSS_FULL)
                 || output.equals(OUTPUT_RSS_SUMMARY)) {
@@ -126,18 +99,6 @@ public class RssOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -145,17 +106,6 @@ public class RssOutputHandler extends OutputHandler {
         return outputEntries(request, group, children);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -165,17 +115,6 @@ public class RssOutputHandler extends OutputHandler {
         return outputEntries(request, entry, entries);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputEntries(Request request, Entry parentEntry,
                                  List<Entry> entries)
             throws Exception {

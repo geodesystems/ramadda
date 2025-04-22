@@ -15,58 +15,36 @@ import java.util.List;
 
 public class TemplateOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_ */
     public static final String ATTR_EMBED = "embed";
 
-    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_ */
     public static final String ATTR_TYPES = "types";
 
-    /** _more_ */
     public static final String TAG_WIKI = "wiki";
 
-    /** _more_ */
     public static final String TAG_WIKI_FOLDER = "wiki.folder";
 
-    /** _more_ */
     public static final String TAG_WIKI_FILE = "wiki.file";
 
-    /** _more_ */
     private boolean forGroups = false;
 
-    /** _more_ */
     private boolean forFiles = false;
 
-    /** _more_ */
     private List<String> types;
 
-    /** _more_ */
     private String folderWikiTemplate;
 
-    /** _more_ */
     private String fileWikiTemplate;
 
-    /** _more_ */
     private OutputType outputType;
 
-    /** _more_ */
     private boolean embed;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public TemplateOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -85,13 +63,6 @@ public class TemplateOutputHandler extends OutputHandler {
         addType(outputType);
     }
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @throws Exception _more_
-     */
     private void init(Element element) throws Exception {
         embed = XmlUtil.getAttribute(element, ATTR_EMBED, false);
         String id = XmlUtil.getAttribute(element, ATTR_ID);
@@ -148,18 +119,6 @@ public class TemplateOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -178,17 +137,6 @@ public class TemplateOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)

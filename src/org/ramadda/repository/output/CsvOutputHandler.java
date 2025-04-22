@@ -65,7 +65,6 @@ public class CsvOutputHandler extends OutputHandler {
     public static final String WHAT_WRAPPER_PYTHON= "wrapper_python";
     public static final String WHAT_WRAPPER_MATLAB= "wrapper_matlab";        
 
-    /** _more_ */
     public static final OutputType OUTPUT_CSV = new OutputType("CSV Listing",
                                                     "default.csv",
                                                     OutputType.TYPE_FEEDS|
@@ -76,12 +75,10 @@ public class CsvOutputHandler extends OutputHandler {
 							       OutputType.TYPE_FORSEARCH,
 							       "", ICON_CSV);    
 
-    /** _more_ */
     public static final OutputType OUTPUT_ENTRYCSV =
         new OutputType("Entry CSV", "entry.csv", OutputType.TYPE_FEEDS, "",
                        ICON_CSV);
 
-    /** _more_ */
     public static final OutputType OUTPUT_WRAPPER_MATLAB = new OutputType("Matlab Wrapper",
 									  "wrapper_matlab",
 									  OutputType.TYPE_OTHER,
@@ -96,13 +93,6 @@ public class CsvOutputHandler extends OutputHandler {
 									  OutputType.TYPE_OTHER,
 									  "", "/icons/python.png");
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public CsvOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -114,15 +104,6 @@ public class CsvOutputHandler extends OutputHandler {
 	addType(OUTPUT_WRAPPER_PYTHON);		
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
@@ -137,16 +118,12 @@ public class CsvOutputHandler extends OutputHandler {
 	}
     }
 
-    /** _more_ */
     public static final String ARG_FIELDS = "fields";
 
-    /** _more_ */
     public static final String ARG_DELIMITER = "delimiter";
 
-    /** _more_ */
     public static final String ARG_FIXEDWIDTH = "fixedwidth";
 
-    /** _more_ */
     public static final String ARG_FULLHEADER = "fullheader";
 
     private Result makeStream(Request request, InputStream is) throws Exception {
@@ -607,15 +584,6 @@ public class CsvOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param escape _more_
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public String sanitize(boolean escape, String s) {
         if (s == null) {
             return "";
@@ -641,16 +609,6 @@ public class CsvOutputHandler extends OutputHandler {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandlers _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result listTypes(Request request, List<TypeHandler> typeHandlers)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -663,13 +621,6 @@ public class CsvOutputHandler extends OutputHandler {
         return new Result("", sb, getMimeType(OUTPUT_CSV));
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_CSV)) {
             return repository.getMimeTypeFromSuffix(".csv");

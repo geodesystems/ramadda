@@ -150,17 +150,6 @@ public class ExampleOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -217,16 +206,6 @@ public class ExampleOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputExample3(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();

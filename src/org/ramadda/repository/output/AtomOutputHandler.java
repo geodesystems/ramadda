@@ -52,38 +52,20 @@ public class AtomOutputHandler extends OutputHandler {
     /** mime type */
     public static final String MIME_ATOM = "application/atom+xml";
 
-    /** _more_ */
     SimpleDateFormat sdf =
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss Z");
 
-    /** _more_ */
     public static final OutputType OUTPUT_ATOM = new OutputType("ATOM Feed",
                                                      "atom",
                                                      OutputType.TYPE_FEEDS,
                                                      "", ICON_ATOM);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public AtomOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_ATOM);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
@@ -95,18 +77,6 @@ public class AtomOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -114,17 +84,6 @@ public class AtomOutputHandler extends OutputHandler {
         return outputEntries(request, group, children);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -134,17 +93,6 @@ public class AtomOutputHandler extends OutputHandler {
         return outputEntries(request, entry, entries);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputEntries(Request request, Entry parentEntry,
                                  List<Entry> entries)
             throws Exception {
@@ -291,18 +239,6 @@ public class AtomOutputHandler extends OutputHandler {
         return new Result("", sb, MIME_ATOM);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param doc _more_
-     * @param root _more_
-     * @param metadata _more_
-     * @param metadataHandlers _more_
-     *
-     * @throws Exception _more_
-     */
     private void addMetadata(Request request, Entry entry, Document doc,
                              Element root, Metadata metadata,
                              List<MetadataHandler> metadataHandlers)

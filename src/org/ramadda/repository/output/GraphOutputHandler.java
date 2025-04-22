@@ -51,34 +51,17 @@ import java.util.zip.*;
  */
 public class GraphOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_GRAPH = new OutputType("Graph",
                                                       "graph.graph",
                                                       OutputType.TYPE_VIEW,
                                                       "", ICON_GRAPH);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public GraphOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_GRAPH);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
@@ -86,52 +69,30 @@ public class GraphOutputHandler extends OutputHandler {
         }
     }
 
-    /** _more_ */
     static long cnt = System.currentTimeMillis();
 
-    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_ */
     public static final String ATTR_URL = "url";
 
-    /** _more_ */
     public static final String ATTR_GRAPHURL = "graphurl";
 
-    /** _more_ */
     public static final String ATTR_NODEID = "nodeid";
 
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_ */
     public static final String ATTR_SOURCE = "source";
 
-    /** _more_ */
     public static final String ATTR_TARGET = "target";
 
-    /** _more_ */
     public static final String ATTR_SOURCE_ID = "source_id";
 
-    /** _more_ */
     public static final String ATTR_TARGET_ID = "target_id";
 
-    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param nodes _more_
-     * @param seen _more_
-     *
-     * @throws Exception _more_
-     */
     private void addNode(Request request, Entry entry, List<String> nodes,
                          HashSet<String> seen)
             throws Exception {
@@ -152,17 +113,6 @@ public class GraphOutputHandler extends OutputHandler {
                 entryUrl, ATTR_GRAPHURL, url, ATTR_ICON, getIconUrl)));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param from _more_
-     * @param to _more_
-     * @param title _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     private void addLink(Request request, Entry from, Entry to, String title,
                          List<String> links)
             throws Exception {
@@ -174,17 +124,6 @@ public class GraphOutputHandler extends OutputHandler {
                 title)));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -196,17 +135,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputGraphEntries(Request request, Entry mainEntry,
                                      List<Entry> entries)
             throws Exception {
@@ -219,18 +147,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entries _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     *
-     * @throws Exception _more_
-     */
     public void getGraph(Request request, Entry mainEntry,
                          List<Entry> entries, Appendable sb, int width,
                          int height)
@@ -250,21 +166,8 @@ public class GraphOutputHandler extends OutputHandler {
         addSuffixHtml(sb, js, id, nodes, links, width, height);
     }
 
-    /** _more_ */
     private int graphCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param js _more_
-     * @param width _more_
-     * @param height _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String addPrefixHtml(Appendable sb, Appendable js, int width,
                                 int height)
             throws Exception {
@@ -280,19 +183,6 @@ public class GraphOutputHandler extends OutputHandler {
         return divId;
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param js _more_
-     * @param id _more_
-     * @param nodes _more_
-     * @param links _more_
-     * @param width _more_
-     * @param height _more_
-     *
-     * @throws Exception _more_
-     */
     public void addSuffixHtml(Appendable sb, Appendable js, String id,
                               List<String> nodes, List<String> links,
                               int width, int height)
@@ -309,18 +199,6 @@ public class GraphOutputHandler extends OutputHandler {
         sb.append(HU.script(js.toString()));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -330,15 +208,6 @@ public class GraphOutputHandler extends OutputHandler {
         return outputGraphEntries(request, group, children);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param id _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     protected void getAssociationsGraph(Request request, String id,
                                         Appendable sb)
             throws Exception {
@@ -387,15 +256,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception _more_
-     */
     private void addNodeTag(Request request, Appendable sb, Entry entry)
             throws Exception {
         if (entry == null) {
@@ -440,31 +300,11 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param from _more_
-     * @param to _more_
-     * @param type _more_
-     *
-     * @throws Exception _more_
-     */
     private void addEdgeTag(Appendable sb, Entry from, Entry to, String type)
             throws Exception {
         addEdgeTag(sb, from.getId(), to.getId(), type);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param from _more_
-     * @param to _more_
-     * @param type _more_
-     *
-     * @throws Exception _more_
-     */
     private void addEdgeTag(Appendable sb, String from, String to,
                             String type)
             throws Exception {
@@ -475,15 +315,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processGraphGet(Request request) throws Exception {
 
         String id    = (String) request.getId((String) null);
@@ -532,17 +363,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param nodes _more_
-     * @param links _more_
-     * @param seen _more_
-     *
-     * @throws Exception _more_
-     */
     private void getAssociations(Request request, Entry entry,
                                  List<String> nodes, List<String> links,
                                  HashSet<String> seen)
@@ -567,13 +387,6 @@ public class GraphOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private String getGraphNodeTitle(String s) {
         if (s.length() > 40) {
             s = s.substring(0, 39) + "...";
@@ -582,13 +395,6 @@ public class GraphOutputHandler extends OutputHandler {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private String getTooltip(Entry entry) {
         if (true) {
             return entry.getName();

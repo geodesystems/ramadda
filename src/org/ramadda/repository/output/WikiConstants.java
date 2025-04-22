@@ -13,7 +13,6 @@ public interface WikiConstants {
 
     public static final String ARG_REMOTE = "remote";
 
-    /** _more_ */
     public static final String ID_ROOT = "root";
 
     public static final String ID_THIS = "this";
@@ -52,14 +51,11 @@ public interface WikiConstants {
     public static final String ID_GRANDCHILD = "grandchild";
     public static final String PREFIX_GRANDCHILD= ID_GRANDCHILD+":";
 
-    /** _more_ */
     public static final String ID_GREATGRANDCHILDREN = "greatgrandchildren";
     public static final String PREFIX_GREATGRANDCHILDREN = ID_GREATGRANDCHILDREN+":";    
 
-    /** _more_ */
     public static final String ID_REMOTE = "remote:";
 
-    /** _more_ */
     public static final String ID_SEARCH = "search";
 
     public static final String PREFIX_ALIAS= "alias:";
@@ -72,72 +68,53 @@ public interface WikiConstants {
     /** wiki page type */
     public static String TYPE_WIKIPAGE = "wikipage";
 
-    /** _more_ */
     public static final String ATTR_ALIGN = "align";
 
     public static final String ATTR_LABEL = "label";
 
-    /** _more_ */
     public static final String ATTR_COLLAPSE = "collapse";
 
-    /** _more_ */
     public static final String ATTR_ANNOTATE = "annotate";
 
-    /** _more_ */
     public static final String ATTR_BLOCK_SHOW = "block.show";
 
-    /** _more_ */
     public static final String ATTR_BLOCK_OPEN = "block.open";
 
-    /** _more_ */
     public static final String ATTR_BLOCK_TITLE = "block.title";
 
-    /** _more_ */
     public static final String ATTR_BLOCK_POPUP = "block.popup";
 
-    /** _more_ */
     public static final String ATTR_ROW_LABEL = "row.label";
 
     /** border attribute */
     public static final String ATTR_BORDER = "border";
 
-    /** _more_ */
     public static final String ATTR_METADATA_TYPES = "metadata.types";
 
-    /** _more_ */
     public static final String ATTR_METADATA_INCLUDE_TITLE = "includeTitle";
 
-    /** _more_ */
     public static final String ATTR_PADDING = "padding";
 
-    /** _more_ */
     public static final String ATTR_MARGIN = "margin";
 
     /** border color */
     public static final String ATTR_BORDERCOLOR = "bordercolor";
 
-    /** _more_ */
     public static final String ATTR_INNERCLASS = "innerClass";
 
-    /** _more_ */
     public static final String ATTR_COLORS = "colors";
 
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
-    /** _more_ */
     public static final String ATTR_MAPDETAILS = "mapDetails";
 
-    /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
 
-    /** _more_ */
     public static final String ATTR_SKIP_LINES = "skipLines";
 
-    /** _more_ */
     public static final String ATTR_MAX_LINES = "maxLines";
 
-    /** _more_ */
     public static final String ATTR_FORCE = "force";
 
     /** maximum attribute */
@@ -149,7 +126,6 @@ public interface WikiConstants {
     /** listentries attribute */
     public static final String ATTR_LISTENTRIES = "listEntries";
 
-    /** _more_ */
     public static final String ATTR_LAYER = "layer";
 
     /** listwidth attribute */
@@ -164,46 +140,35 @@ public interface WikiConstants {
     /** attribute in the tabs tag */
     public static final String ATTR_SHOWLINK = "showLink";
 
-    /** _more_ */
     public static final String ATTR_SHOWTITLE = "showTitle";
 
-    /** _more_ */
     public static final String ATTR_SHOWMAP = "showMap";
 
-    /** _more_ */
     public static final String ATTR_SHOWMENU = "showMenu";
 
     /** src attribute */
     public static final String ATTR_SRC = "src";
 
-    /** _more_ */
     public static final String ATTR_LIST_PREFIX = "listPrefix";
 
-    /** _more_ */
     public static final String ATTR_LIST_SUFFIX = "listSuffix";
 
-    /** _more_ */
     public static final String ATTR_PREFIX = "prefix";
 
-    /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
-    /** _more_ */
     public static final String ATTR_IF = "if";
 
     /**  */
     public static final String ATTR_SHOWICON = "showIcon";
 
-    /** _more_ */
     public static final String ATTR_SHOWDESCRIPTION = "showdescription";
 
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
     /** attribute in the tabs tag */
     public static final String ATTR_LINKLABEL = "linklabel";
 
-    /** _more_ */
     public static final String ATTR_ENTRY = "entry";
 
     /** attribute in import tag */
@@ -215,13 +180,10 @@ public interface WikiConstants {
     /** first attribute */
     public static final String ATTR_FIRST = "first";
 
-    /** _more_ */
     public static final String ATTR_FIELDS = "fields";
 
-    /** _more_ */
     public static final String ATTR_METADATA = "metadata";
 
-    /** _more_ */
     public static final String ATTR_LAST = "last";
 
     /** sort attribute */
@@ -254,7 +216,6 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_CHILDREN = "children";
 
-    /** _more_ */
     public static final String ATTR_CONSTRAINSIZE = "constrainsize";
 
     /** attribute in import tag */
@@ -287,7 +248,6 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_STYLE = "style";
 
-    /** _more_ */
     public static final String ATTR_TAG = "tag";
 
     /** attribute in import tag */
@@ -317,7 +277,6 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_REQUEST = "request";
 
-    /** _more_ */
     public static final String ATTR_POPUP = "popup";
 
     /** attribute in import tag */
@@ -335,10 +294,8 @@ public interface WikiConstants {
     /** max image height attribute */
     public static final String ATTR_MAXIMAGEHEIGHT = "maximageheight";
 
-    /** _more_ */
     public static final String ATTR_MAXHEIGHT = "maxheight";
 
-    /** _more_ */
     public static final String ATTR_MINHEIGHT = "minheight";
 
     /** attribute in import tag */
@@ -347,10 +304,8 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_DAYS = "days";
 
-    /** _more_ */
     public static final String WIKI_TAG_GROUP_OLD = "displaygroup";
 
-    /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
     /**  */
@@ -367,23 +322,18 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_ENTRIES_TEMPLATE = "entries_template";    
 
-    /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
 
-    /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
     public static final String WIKI_TAG_EMBEDMS = "embedms";
 
     public static final String WIKI_TAG_MEDIA = "media";
     public static final String WIKI_TAG_SOUNDCITE = "soundcite";
 
-    /** _more_ */
     public static final String WIKI_TAG_ODOMETER = "odometer";
 
-    /** _more_ */
     public static final String WIKI_TAG_CHART = "chart";
 
-    /** _more_ */
     public static final String WIKI_TAG_DISPLAY = "display";
 
     /** wiki import */
@@ -396,7 +346,6 @@ public interface WikiConstants {
     /** the field property */
     public static final String WIKI_TAG_FIELD = "field";
 
-    /** _more_ */
     public static final String WIKI_TAG_ROOT = "root";
 
     /** the calendar property */
@@ -405,7 +354,6 @@ public interface WikiConstants {
     /** the calendar property */
     public static final String WIKI_TAG_DATETABLE = "datetable";    
 
-    /** _more_ */
     public static final String WIKI_TAG_GRAPH = "graph";
 
     /** the timeline property */
@@ -414,7 +362,6 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_DATE = "date";
 
-    /** _more_ */
     public static final String WIKI_TAG_DATERANGE = "daterange";
 
     /** wiki import */
@@ -423,10 +370,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_DATE_TO = "todate";
 
-    /** _more_ */
     public static final String WIKI_TAG_DATE_CREATE = "createdate";
 
-    /** _more_ */
     public static final String WIKI_TAG_DATE_CHANGE = "changedate";
 
     /** wiki import */
@@ -435,7 +380,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_MENUTREE = "menutree";
 
-    /** _more_ */
     public static final String WIKI_TAG_SEARCH = "search";
 
     public static final String WIKI_TAG_TYPECOUNT = "typecount";    
@@ -451,13 +395,10 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_TABLETREE = "tabletree";
 
-    /** _more_ */
     public static final String WIKI_TAG_FULLTREE = "fulltree";
 
-    /** _more_ */
     public static final String WIKI_TAG_TREEVIEW = "treeview";
 
-    /** _more_ */
     public static final String WIKI_TAG_FRAMES = "frames";
 
     /**  */
@@ -469,7 +410,6 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_COMMENTS = "comments";
 
-    /** _more_ */
     public static final String WIKI_TAG_TAGCLOUD = "tagcloud";
 
     public static final String WIKI_TAG_PROPERTYLIST = "propertylist";    
@@ -493,10 +433,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TABS = "tabs";
 
-    /** _more_ */
     public static final String WIKI_TAG_BOUNDS = "bounds";
 
-    /** _more_ */
     public static final String WIKI_TAG_BOOTSTRAP = "bootstrap";
 
     public static final String WIKI_TAG_ACCESS_STATUS = "access_status";
@@ -506,38 +444,27 @@ public interface WikiConstants {
     public static final String WIKI_TAG_NEW_ENTRY = "new_entry";
     public static final String WIKI_TAG_NEW_PROPERTY = "new_property";    
 
-    /** _more_ */
     public static final String WIKI_TAG_APPLY = "apply";
 
-    /** _more_ */
     public static final String WIKI_TAG_ATTRS = "attrs";
 
-    /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
 
-    /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTIES =
         "displayProperties";
 
-    /** _more_ */
     public static final String WIKI_TAG_MULTI = "multi";
 
-    /** _more_ */
     public static final String APPLY_PREFIX = "apply.";
 
-    /** _more_ */
     public static final String ATTR_APPLY_TAG = APPLY_PREFIX + "tag";
 
-    /** _more_ */
     public static final String ATTR_SELECTFIELDS = "selectFields";
 
-    /** _more_ */
     public static final String ATTR_SELECTBOUNDS = "selectBounds";
 
-    /** _more_ */
     public static final String ATTR_VIEWBOUNDS = "viewBounds";
 
-    /** _more_ */
     public static final String ATTR_MAPVAR = "mapVar";
 
     /** accordian property */
@@ -558,7 +485,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_FLIPCARDS = "flipcards";
 
-    /** _more_ */
     public static final String WIKI_TAG_CARD = "card";
 
     /** wiki import */
@@ -588,7 +514,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_PREVNEXT = "prevnext";
 
-    /** _more_ */
     public static final String WIKI_TAG_DOWNLOAD = "download";
 
     /** wiki import */
@@ -600,7 +525,6 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_IMAGE2 = "image2";
 
-    /** _more_ */
     public static final String WIKI_TAG_STREETVIEW = "streetview";
 
     /** wiki import */
@@ -628,7 +552,6 @@ public interface WikiConstants {
 
     public static final String WIKI_TAG_SNIPPET = "snippet";    
 
-    /** _more_ */
     public static final String WIKI_TAG_SIMPLE = "simple";
 
     /** wiki import */
@@ -644,10 +567,8 @@ public interface WikiConstants {
     /**  */
     public static final String WIKI_TAG_DATAPOLICIES = "datapolicies";
 
-    /** _more_ */
     public static final String WIKI_TAG_PROPERTY = "property";
 
-    /** _more_ */
     public static final String WIKI_TAG_LABEL = "label";
 
     public static final String WIKI_TAG_ASSOCIATIONS = "associations";
@@ -687,14 +608,11 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_URL = "url";
 
-    /** _more_ */
-
     public static final String WIKI_TAG_RESOURCE = "resource";
 
     /**  */
     public static final String WIKI_TAG_ENTRYLINK = "entrylink";
 
-    /** _more_ */
     public static final String WIKI_TAG_TOOLS = "tools";
 
     /** Upload property */
@@ -711,34 +629,24 @@ public interface WikiConstants {
     /**  */
     public static final String PROP_SHOW_TITLE = "wikiShowTitle";
 
-    /** _more_ */
     public static final String PROP_GROUP_VAR = "groupvar";
 
-    /** _more_ */
     public static final String ATTR_SEARCH_TYPE = PREFIX_SEARCH + "type";
 
-    /** _more_ */
     public static final String ATTR_SEARCH_TEXT = PREFIX_SEARCH + "text";
 
-    /** _more_ */
     public static final String ATTR_SEARCH_PARENT = PREFIX_SEARCH + "parent";
 
-    /** _more_ */
     public static final String ATTR_SEARCH_NORTH = PREFIX_SEARCH + "north";
 
-    /** _more_ */
     public static final String ATTR_SEARCH_URL = PREFIX_SEARCH + "url";
 
-    /** _more_ */
     public static final String ATTR_SHOWFORM = "showForm";
 
-    /** _more_ */
     public static final String ATTR_TEXT = "text";
 
-    /** _more_ */
     public static final String ATTR_FORMOPEN = "formOpen";
 
-    /** _more_ */
     public static final String ATTR_LAYOUTHERE = "layoutHere";
 
     //    public static final String ATTR_SEARCH_PARENT = PREFIX_SEARCH +"parent";

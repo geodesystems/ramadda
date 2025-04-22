@@ -50,54 +50,39 @@ public class ZipOutputHandler extends OutputHandler {
 
     private static final boolean isSynthOk = true;
 
-    /** _more_ */
     private static final String ARG_WRITETODISK = "writetodisk";
 
-    /** _more_ */
     public static final OutputType OUTPUT_ZIP =
         new OutputType("Zip and Download File", "zip.zip",
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
 
-    /** _more_ */
     public static final OutputType OUTPUT_THUMBNAILS =
         new OutputType("Zip thumbnails", "zip.thumbnails",
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
 
-    /** _more_ */
     public static final OutputType OUTPUT_ZIPTREE =
         new OutputType("Zip and Download Tree", "zip.tree",
                        OutputType.TYPE_ACTION | OutputType.TYPE_OTHER, "",
                        ICON_ZIP);
 
-    /** _more_ */
     public static final OutputType OUTPUT_ZIPGROUP =
         new OutputType("Zip and Download Files", "zip.zipgroup",
                        OutputType.TYPE_OTHER, "", ICON_ZIP);
 
-    /** _more_ */
     public static final OutputType OUTPUT_CORPUS =
         new OutputType("Download Text Corpus", "text.corpus",
                        OutputType.TYPE_OTHER, "", ICON_TEXT);    
 
-    /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
         new OutputType("Export Entries", "zip.export",
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
                        "fa-file-export");
 
-    /** _more_ */
     public static final OutputType OUTPUT_EXPORT_SHALLOW =
         new OutputType("Shallow Export", "zip.export.shallow",
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
                        "fa-file-export");    
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public ZipOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -110,26 +95,10 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_EXPORT_SHALLOW);	
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public AuthorizationMethod getAuthorizationMethod(Request request) {
         return AuthorizationMethod.AUTH_HTTP;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
@@ -185,17 +154,6 @@ public class ZipOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -211,18 +169,6 @@ public class ZipOutputHandler extends OutputHandler {
         return toZip(request, entry.getName(), entries, false, false,false);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -250,13 +196,6 @@ public class ZipOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_ZIP) || output.equals(OUTPUT_ZIPGROUP) || output.equals(OUTPUT_THUMBNAILS)) {
             return repository.getMimeTypeFromSuffix(".zip");
@@ -265,19 +204,6 @@ public class ZipOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param prefix _more_
-     * @param entries _more_
-     * @param recurse _more_
-     * @param forExport _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result toZip(Request request, String prefix, List<Entry> entries,
                         boolean recurse, boolean forExport,boolean thumbnails)
             throws Exception {
@@ -424,24 +350,6 @@ public class ZipOutputHandler extends OutputHandler {
 	return request.returnStream("corpus.txt", "text/plain",is);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param recurse _more_
-     * @param level _more_
-     * @param fileWriter _more_
-     * @param prefix _more_
-     * @param sizeSoFar _more_
-     * @param counter _more_
-     * @param forExport _more_
-     * @param entriesRoot _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected long processZip(Request request, List<Entry> entries,
                               boolean recurse, int level,
                               FileWriter fileWriter, String prefix,

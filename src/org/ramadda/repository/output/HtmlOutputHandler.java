@@ -57,80 +57,58 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class HtmlOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_TEST = new OutputType("test",
                                                      "html.test",
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_DATA);
 
-    /** _more_ */
     public static final OutputType OUTPUT_GRID =
         new OutputType("Grid Layout", "html.grid", OutputType.TYPE_VIEW, "",
                        ICON_DATA);
 
-    /** _more_ */
     public static final OutputType OUTPUT_FRAMES =
         new OutputType("Frames", "html.frames", OutputType.TYPE_VIEW, "",
                        "fa-newspaper");
 
-    /** _more_ */
     public static final OutputType OUTPUT_INFO =
         new OutputType("Information", "html.info", OutputType.TYPE_VIEW, "",
                        ICON_INFORMATION);
 
-    /** _more_ */
     public static final OutputType OUTPUT_GRAPH = new OutputType("Graph",
                                                       "default.graph",
                                                       OutputType.TYPE_VIEW,
                                                       "", ICON_GRAPH);
 
-    /** _more_ */
     public static final OutputType OUTPUT_TABLE =
         new OutputType("Table", "html.table",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TABLE);
 
-    /** _more_ */
     public static final OutputType OUTPUT_CLOUD = new OutputType("Cloud",
                                                       "default.cloud",
                                                       OutputType.TYPE_VIEW);
 
-    /** _more_ */
     public static final OutputType OUTPUT_INLINE =
         new OutputType("inline", OutputType.TYPE_INTERNAL);
 
-    /** _more_ */
     public static final OutputType OUTPUT_MAPINFO =
         new OutputType("mapinfo", OutputType.TYPE_INTERNAL);
 
-    /** _more_ */
     public static final OutputType OUTPUT_SELECTXML =
         new OutputType("selectxml", OutputType.TYPE_INTERNAL);
 
-    /** _more_ */
     public static final OutputType OUTPUT_METADATAXML =
         new OutputType("metadataxml", OutputType.TYPE_INTERNAL);
 
-    /** _more_ */
     public static final OutputType OUTPUT_LINKSXML =
         new OutputType("linksxml", OutputType.TYPE_INTERNAL);
 
-    /** _more_ */
     public static final String ATTR_WIKI_SECTION = "wiki-section";
 
-    /** _more_ */
     public static final String ATTR_WIKI_URL = "wiki-url";
 
-    /** _more_ */
     public static final String ASSOCIATION_LABEL = "Connections";
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public HtmlOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -148,15 +126,6 @@ public class HtmlOutputHandler extends OutputHandler {
         //        addType(OUTPUT_TEST);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @param fromChildClass _more_
-     *
-     * @throws Exception _more_
-     */
     public HtmlOutputHandler(Repository repository, Element element,
                              boolean fromChildClass)
             throws Exception {
@@ -168,11 +137,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	return true;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean allowRobots() {
         return true;
@@ -192,16 +156,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getHtmlHeader(Request request, Entry entry)
             throws Exception {
         if (entry.isDummy() || !entry.isGroup()) {
@@ -212,17 +166,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return makeHtmlHeader(request, entry, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param title _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String makeHtmlHeader(Request request, Entry entry, String title)
             throws Exception {
         OutputType[] types = new OutputType[] { OUTPUT_INFO, OUTPUT_TABLE,
@@ -258,16 +201,6 @@ public class HtmlOutputHandler extends OutputHandler {
                + sb.toString() + "</td></tr></table>";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         List<Entry> entries = state.getAllEntries();
@@ -284,31 +217,10 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getMapInfo(Request request, Entry entry) throws Exception {
         return getMapInfo(request, entry, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param asXml _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getMapInfo(Request request, Entry entry, boolean asXml)
             throws Exception {
         String html = null;
@@ -344,17 +256,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param showLinks _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result getMetadataXml(Request request, Entry entry,
                                   boolean showLinks)
             throws Exception {
@@ -383,16 +284,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getLinksXml(Request request, Entry entry) throws Exception {
         StringBuffer sb = new StringBuffer("<content>\n");
         String links = getEntryManager().getEntryActionsTable(request, entry,
@@ -424,17 +315,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -490,35 +370,12 @@ public class HtmlOutputHandler extends OutputHandler {
                              !outputType.equals(OUTPUT_INFO));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getHtmlResult(Request request, OutputType outputType,
                                 Entry entry)
             throws Exception {
         return getHtmlResult(request, outputType, entry, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     * @param checkType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getHtmlResult(Request request, OutputType outputType,
                                 Entry entry, boolean checkType)
             throws Exception {
@@ -553,15 +410,6 @@ public class HtmlOutputHandler extends OutputHandler {
         //        return makeLinksResult(request, entry.getName(), sb, new State(entry));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void handleDefaultWiki(Request request, Entry entry, Appendable sb)
             throws Exception {
         String wikiTemplate = getWikiText(request, entry);
@@ -608,16 +456,6 @@ public class HtmlOutputHandler extends OutputHandler {
                 true));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getAttachmentsHtml(Request request, Entry entry)
             throws Exception {
         StringBuffer metadataSB = new StringBuffer();
@@ -632,13 +470,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return "";
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_GRID) || output.equals(OUTPUT_FRAMES)
                 || output.equals(OUTPUT_TABLE)) {
@@ -652,22 +483,6 @@ public class HtmlOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param onlyTheseTypes _more_
-     * @param notTheseTypes _more_
-     * @param showTitle _more_
-     * @param separator _more_
-     * @param decorate _more_
-     * @param stripe _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<TwoFacedObject> getMetadataHtml(Request request, Entry entry,
 						MetadataType.Checker checker,
 						boolean showTitle, String separator, boolean decorate,
@@ -840,16 +655,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getActionXml(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -863,17 +668,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return new Result("", xml, "text/xml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getChildrenXml(Request request, Entry parent,
                                  List<Entry> children)
             throws Exception {
@@ -940,13 +734,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return new Result("", xml, "text/xml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param services _more_
-     */
     @Override
     public void getServiceInfos(Request request, Entry entry,
                                 List<ServiceInfo> services) {
@@ -997,17 +784,6 @@ public class HtmlOutputHandler extends OutputHandler {
 	return children;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getSelectXml(Request request, Entry group, List<Entry> children)
             throws Exception {
 	children = getSelectEntries(request, children);
@@ -1192,17 +968,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return makeAjaxResult(request,s);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param open _more_
-     * @param suffix _more_
-     *
-     * @throws Exception _more_
-     */
     private void addDescription(Request request, Entry entry, Appendable sb,
                                 boolean open, Appendable suffix)
             throws Exception {
@@ -1332,17 +1097,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return OutputHandler.makeTabs(tabTitles, tabContents, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputGrid(Request request, Entry group,
                              List<Entry> children)
             throws Exception {
@@ -1353,17 +1107,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                new State(group, children));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputFrames(Request request, Entry group,
                                  List<Entry> children)
             throws Exception {
@@ -1376,37 +1119,15 @@ public class HtmlOutputHandler extends OutputHandler {
                                new State(group, children));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputTest(Request request, Entry group,
                              List<Entry> children)
             throws Exception {
         return outputTest(request, group);
     }
 
-    /** _more_ */
     private TTLCache<String, StringBuffer> testCache =
         new TTLCache<String, StringBuffer>(60 * 60 * 1000, -1, "HTML Test");
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputTest(Request request, Entry entry) throws Exception {
         StringBuffer sb        = new StringBuffer();
         String       selectArg = "select";
@@ -1478,17 +1199,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return new Result("test", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputTable(Request request, Entry group,
                               List<Entry> children)
             throws Exception {
@@ -1509,15 +1219,6 @@ public class HtmlOutputHandler extends OutputHandler {
                                new State(group, children));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param allEntries _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeGrid(Request request, List<Entry> allEntries,
                          Appendable sb)
             throws Exception {
@@ -1579,18 +1280,6 @@ public class HtmlOutputHandler extends OutputHandler {
         sb.append("</table>");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param children _more_
-     * @param sb _more_
-     * @param width _more_
-     * @param height _more_
-     * @param template _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeFrames(Request request, List<Entry> children,
 			   Appendable sb, int width, String height,
 			   String template,
@@ -1709,16 +1398,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param allEntries _more_
-     * @param sb _more_
-     * @param props _more_
-     *
-     * @throws Exception _more_
-     */
     public void makeTable(Request request, List<Entry> allEntries,
                           Appendable sb, Hashtable props)
             throws Exception {
@@ -2115,18 +1794,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(final Request request,
                               final OutputType outputType, final Entry group,
@@ -2297,16 +1964,6 @@ public class HtmlOutputHandler extends OutputHandler {
         return resultHandler.getResult();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getTimelineApplet(Request request, List<Entry> entries)
             throws Exception {
         String timelineAppletTemplate =
@@ -2339,15 +1996,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param text _more_
-     *
-     * @return _more_
-     */
     public String processText(Request request, Entry entry, String text) {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {

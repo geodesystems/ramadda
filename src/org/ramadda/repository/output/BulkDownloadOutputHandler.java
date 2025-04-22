@@ -39,30 +39,22 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         new OutputType("Bulk Download Script", "bulk.curl",
                        OutputType.TYPE_OTHER, "", ICON_FETCH);
 
-    /** _more_ */
     public static final OutputType OUTPUT_WGET =
         new OutputType("Wget Download Script", "bulk.wget",
                        OutputType.TYPE_OTHER, "", ICON_FETCH);
 
-    /** _more_ */
     public static final String ARG_RECURSE = "recurse";
 
-    /** _more_ */
     public static final String ARG_INCLUDEPARENT = "includeparent";
 
-    /** _more_ */
     public static final String ARG_OVERWRITE = "overwrite";
 
-    /** _more_ */
     public static final String ARG_OUTPUTS = "outputs";
 
-    /** _more_ */
     public static final String ARG_COMMAND = "command";
 
-    /** _more_ */
     public static final String COMMAND_WGET = "wget";
 
-    /** _more_ */
     public static final String COMMAND_CURL = "curl";
 
     private static String downloadsh;
@@ -203,20 +195,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         return new Result("", sb, getMimeType(OUTPUT_CURL));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param group _more_
-     * @param entries _more_
-     * @param recurse _more_
-     * @param overwrite _more_
-     * @param seen _more_
-     * @param wget _more_
-     *
-     * @throws Exception _more_
-     */
     public void process(Request request, StringBuilder sb, Entry group,
                         List<Entry> entries, boolean recurse,
                         boolean overwrite, HashSet<String> seen, boolean wget)
@@ -255,23 +233,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 	return s.replace("$","_dollar_");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param group _more_
-     * @param entries _more_
-     * @param recurse _more_
-     * @param overwrite _more_
-     * @param command _more_
-     * @param outputPairs _more_
-     * @param includeGroupOutputs _more_
-     * @param seen _more_
-     * @param wget _more_
-     *
-     * @throws Exception _more_
-     */
     public void process(Request request, StringBuilder sb, Entry group,
                         List<Entry> entries, boolean recurse,
                         boolean overwrite, CurlCommand command,
@@ -381,19 +342,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param command _more_
-     * @param outputPairs _more_
-     * @param includeGroupOutputs _more_
-     * @param wget _more_
-     *
-     * @throws Exception _more_
-     */
     private void writeGroupScript(Request request, Entry entry,
                                   StringBuilder sb, CurlCommand command,
                                   List<List<String>> outputPairs,
@@ -436,16 +384,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param command _more_
-     *
-     * @throws Exception _more_
-     */
     private void appendDownloadMetadata(Request request, Entry entry,
                                         StringBuilder sb, CurlCommand command)
             throws Exception {
@@ -457,13 +395,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private static String cmd(String s) {
         return s + ";\n";
     }
@@ -487,13 +418,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             "--------------------------------------------------------------------");
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private static String qt(String s) {
         return "\"" + s + "\"";
     }
@@ -528,21 +452,12 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      */
     public static final class CurlCommand {
 
-        /** _more_ */
         String command;
 
-        /** _more_ */
         String args;
 
-        /** _more_ */
         String outputArg;
 
-        /**
-         * _more_
-         *
-         * @param request _more_
-         * @param wget _more_
-         */
         public CurlCommand(Request request, boolean wget) {
             command   = request.getString(ARG_COMMAND, wget
                     ? COMMAND_WGET
@@ -560,13 +475,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param request _more_
-         * @param sb _more_
-         */
         public void init(Request request, StringBuilder sb) {
 	    sb.append("#!/bin/sh\n");
 	    sb.append("#this is generated by RAMADDA\n");
@@ -577,14 +485,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 	    sb.append(downloadsh.replace("${downloadargs}",args +" " + outputArg));
         }
 
-        /**
-         * _more_
-         *
-         * @param sb _more_
-         * @param msg _more_
-         * @param filename _more_
-         * @param url _more_
-         */
         public void download(StringBuilder sb, String msg, String filename,
                              String url, long size) {
             sb.append(cmd("download " + qt(msg) + " " + qt(filename) + " "
@@ -593,11 +493,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public int getMaxEntryCount() {
         return 20000;

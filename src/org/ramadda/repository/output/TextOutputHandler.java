@@ -39,29 +39,18 @@ import java.util.zip.*;
  */
 public class TextOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_TEXT =
         new OutputType("Annotated Text", "text", OutputType.TYPE_VIEW, "",
                        ICON_TEXT);
 
-    /** _more_ */
     public static final OutputType OUTPUT_WORDCLOUD =
         new OutputType("Word Cloud", "wordcloud", OutputType.TYPE_VIEW, "",
                        ICON_CLOUD);
 
-    /** _more_ */
     public static final OutputType OUTPUT_PRETTY =
         new OutputType("Pretty Print", "pretty", OutputType.TYPE_VIEW, "",
                        ICON_TEXT);
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public TextOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -70,16 +59,6 @@ public class TextOutputHandler extends OutputHandler {
         addType(OUTPUT_PRETTY);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
@@ -134,17 +113,6 @@ public class TextOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -184,16 +152,6 @@ public class TextOutputHandler extends OutputHandler {
         return makeLinksResult(request, msg("Text"), sb, new State(entry));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputWordCloud(Request request, Entry entry)
             throws Exception {
         String contents =
@@ -242,16 +200,6 @@ public class TextOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputPretty(Request request, Entry entry)
             throws Exception {
         String contents =

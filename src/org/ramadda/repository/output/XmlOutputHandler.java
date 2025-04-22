@@ -83,16 +83,6 @@ public class XmlOutputHandler extends OutputHandler {
         return new Result("", sb, repository.getMimeTypeFromSuffix(".xml"));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getEntryXml(Request request, Entry entry) throws Exception {
         Document doc = XmlUtil.makeDocument();
         Element root = getEntryTag(request, entry, null, doc, null, false,

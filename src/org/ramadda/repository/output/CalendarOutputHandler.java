@@ -57,65 +57,43 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class CalendarOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final String TAG_DATA = "data";
 
-    /** _more_ */
     public static final String TAG_EVENT = "event";
 
-    /** _more_ */
     public static final String ATTR_IMAGE = "image";
 
-    /** _more_ */
     public static final String ATTR_LINK = "link";
 
-    /** _more_ */
     public static final String ATTR_START = "start";
 
-    /** _more_ */
     public static final String ATTR_TITLE = "title";
 
-    /** _more_ */
     public static final String ATTR_END = "end";
 
-    /** _more_ */
     public static final String ATTR_EARLIESTEND = "earliestEnd";
 
-    /** _more_ */
     public static final String ATTR_ISDURATION = "isDuration";
 
-    /** _more_ */
     public static final String ATTR_LATESTSTART = "latestStart";
 
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_ */
     public static final String ATTR_COLOR = "color";
 
-    /** _more_ */
     public static final OutputType OUTPUT_DATE_GRID =
         new OutputType("Date Grid", "calendar.grid", OutputType.TYPE_VIEW,
                        "", ICON_DATEGRID);
 
-    /** _more_ */
     public static final OutputType OUTPUT_CALENDAR =
         new OutputType("Calendar", "calendar.calendar",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_CALENDAR);
 
-    /** _more_ */
     public static final OutputType OUTPUT_TIMELINE =
         new OutputType("Timeline", "default.timeline", OutputType.TYPE_VIEW,
                        "", ICON_TIMELINE);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public CalendarOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -124,16 +102,6 @@ public class CalendarOutputHandler extends OutputHandler {
         addType(OUTPUT_DATE_GRID);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.entry != null) {
@@ -150,17 +118,6 @@ public class CalendarOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleIfTimelineXml(Request request, Entry group,
                                       List<Entry> children)
             throws Exception {
@@ -171,18 +128,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -227,17 +172,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param allEntries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputTimelineXml(Request request, Entry group,
                                     List<Entry> allEntries)
             throws Exception {
@@ -289,19 +223,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return new Result("", sb, "text/xml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entries _more_
-     * @param sb _more_
-     * @param style _more_
-     * @param props _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void makeTimeline(Request request, Entry mainEntry,
                              List<Entry> entries, Appendable sb,
                              String style, Hashtable props)
@@ -407,18 +328,6 @@ public class CalendarOutputHandler extends OutputHandler {
         sb.append(timelineTemplate);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param entries _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result outputDateGrid(Request request, Entry group,
                                   List<Entry> entries, Appendable sb)
             throws Exception {
@@ -516,26 +425,10 @@ public class CalendarOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param day _more_
-     *
-     * @return _more_
-     */
     public static GregorianCalendar getCalendar(int[] day) {
         return getCalendar(day[IDX_DAY], day[IDX_MONTH], day[IDX_YEAR]);
     }
 
-    /**
-     * _more_
-     *
-     * @param day _more_
-     * @param month _more_
-     * @param year _more_
-     *
-     * @return _more_
-     */
     public static GregorianCalendar getCalendar(int day, int month,
             int year) {
         GregorianCalendar cal =
@@ -547,27 +440,11 @@ public class CalendarOutputHandler extends OutputHandler {
         return cal;
     }
 
-    /**
-     * _more_
-     *
-     * @param cal _more_
-     *
-     * @return _more_
-     */
     public static int[] getDayMonthYear(GregorianCalendar cal) {
         return new int[] { cal.get(cal.DAY_OF_MONTH), cal.get(cal.MONTH),
                            cal.get(cal.YEAR) };
     }
 
-    /**
-     * _more_
-     *
-     * @param cal _more_
-     * @param what _more_
-     * @param delta _more_
-     *
-     * @return _more_
-     */
     private GregorianCalendar add(GregorianCalendar cal, int what,
                                   int delta) {
         cal.add(what, delta);
@@ -575,51 +452,22 @@ public class CalendarOutputHandler extends OutputHandler {
         return cal;
     }
 
-    /** _more_ */
     private static final int IDX_DAY = 0;
 
-    /** _more_ */
     private static final int IDX_MONTH = 1;
 
-    /** _more_ */
     private static final int IDX_YEAR = 2;
 
-    /**
-     * _more_
-     *
-     * @param cal _more_
-     *
-     * @return _more_
-     */
     public static String getUrlArgs(GregorianCalendar cal) {
         return getUrlArgs(getDayMonthYear(cal));
     }
 
-    /**
-     * _more_
-     *
-     * @param dayMonthYear _more_
-     *
-     * @return _more_
-     */
     public static String getUrlArgs(int[] dayMonthYear) {
         return ARG_YEAR + "=" + dayMonthYear[IDX_YEAR] + "&" + ARG_MONTH
                + "=" + dayMonthYear[IDX_MONTH] + "&" + ARG_DAY + "="
                + dayMonthYear[IDX_DAY];
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param entries _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputCalendar(Request request, Entry group,
                                  List<Entry> entries, Appendable sb)
             throws Exception {
@@ -635,16 +483,6 @@ public class CalendarOutputHandler extends OutputHandler {
         return new Result(msg("Calendar"), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<CalendarEntry> makeCalendarEntries(Request request,
             List<Entry> entries)
             throws Exception {
@@ -682,22 +520,12 @@ public class CalendarOutputHandler extends OutputHandler {
      */
     public static class CalendarEntry {
 
-        /** _more_ */
         Date date;
 
-        /** _more_ */
         String label;
 
-        /** _more_ */
         Object dayObject;
 
-        /**
-         * _more_
-         *
-         * @param date _more_
-         * @param label _more_
-         * @param dayObject _more_
-         */
         public CalendarEntry(Date date, String label, Object dayObject) {
             this.date      = date;
             this.label     = label;
@@ -705,16 +533,6 @@ public class CalendarOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param sb _more_
-     * @param doDay _more_
-     *
-     * @throws Exception _more_
-     */
     public void outputCalendar(Request request, List<CalendarEntry> entries,
                                Appendable sb, boolean doDay)
             throws Exception {

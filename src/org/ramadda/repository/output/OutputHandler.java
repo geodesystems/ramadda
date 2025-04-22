@@ -65,19 +65,14 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class OutputHandler extends RepositoryManager implements OutputConstants {
 
-    /** _more_ */
     public static final String PROP_PROCESSDIR = "processdir";
 
-    /** _more_ */
     public static final String WIDTH_DATE = "120";
 
-    /** _more_ */
     public static final String WIDTH_SIZE = "100";
 
-    /** _more_ */
     public static final String WIDTH_KIND = "120";
 
-    /** _more_ */
     public static final JQuery JQ = null;
 
     /** max connections attribute */
@@ -111,9 +106,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
     /** total calls */
     private int totalCalls = 0;
 
-    /**
-     * _more_
-     */
     public OutputHandler() {
         super(null);
     }
@@ -164,11 +156,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return name;
     }
@@ -646,16 +633,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiText(Request request, Entry entry) throws Exception {
         String wikiText = getWikiTextInner(request, entry);
         if (wikiText != null) {
@@ -666,16 +643,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return wikiText;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getWikiTextInner(Request request, Entry entry)
             throws Exception {
         String description = entry.getDescription();
@@ -850,28 +817,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                               + getClass().getName());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public final Result xoutputEntry(Request request, Entry entry)
             throws Exception {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         return null;
     }
@@ -1045,18 +995,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
                       + HU.SIZE_40 + HU.id(arg)), HU.attr("onClick", event));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param seen _more_
-     * @param args _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getSelectLink(Request request, Entry entry, HashSet seen,
                                 String... args)
             throws Exception {
@@ -1180,16 +1118,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param contents _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result makeAjaxResult(Request request, String contents)
             throws Exception {
         StringBuilder xml = new StringBuilder("<content>\n");
@@ -1199,15 +1127,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return new Result("", xml, "text/xml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public List<Link> getNextPrevLinks(Request request, Entry entry,
                                        OutputType output) {
         Link       link;
@@ -1234,39 +1153,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return links;
     }
 
-    /**
-     * _more_
-     *
-     * @param buffer _more_
-     *
-     * @throws Exception _more_
-     */
     public void addToSettingsForm(Appendable buffer) throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void applySettings(Request request) throws Exception {}
 
-    /** _more_ */
     public static int entryCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param htmlSB _more_
-     * @param jsSB _more_
-     * @param showDetails _more_
-     * @param showIcon _more_
-     *
-     * @throws Exception _more_
-     */
     public void addEntryTableRow(Request request, Entry entry,
                                  Appendable htmlSB, Appendable jsSB,
                                  boolean showDetails, boolean showIcon)
@@ -1281,29 +1173,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-    /**
-     *     _more_
-     *
-     *     @param request _more_
-     *     @param formId _more_
-     *
-     *     @return _more_
-     */
     public String getEntryFormEnd(Request request, String formId) {
         return HU.formClose();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param output _more_
-     * @param links _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected List getHeader(Request request, OutputType output,
                              List<Link> links)
             throws Exception {
@@ -1337,16 +1210,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return items;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param typeHandlers _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result listTypes(Request request, List<TypeHandler> typeHandlers)
             throws Exception {
         return notImplemented("listTypes");
@@ -1365,60 +1228,24 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
      * @throws Exception _more_
      */
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result listAssociations(Request request) throws Exception {
         return notImplemented("listAssociations");
     }
 
-    /** _more_ */
     public static final String RESOURCE_ENTRYTEMPLATE = "entrytemplate.txt";
 
-    /** _more_ */
     public static final String RESOURCE_GROUPTEMPLATE = "grouptemplate.txt";
 
-    /** _more_ */
     public static final String PROP_ENTRY = "entry";
 
-    /** _more_ */
     public static final String PROP_REQUEST = "request";
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getImageUrl(Request request, Entry entry) throws Exception {
         return getImageUrl(request, entry, false);
     }
 
-    /** _more_ */
     private static int imageVersionCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param addVersion _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getImageUrl(Request request, Entry entry,
                               boolean addVersion)
             throws Exception {
@@ -1447,17 +1274,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 	return url;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param onlyIfWeHaveThem _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public StringBuilder getCommentBlock(Request request, Entry entry,
                                          boolean onlyIfWeHaveThem)
             throws Exception {
@@ -1475,11 +1291,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getMaxEntryCount() {
         return -1;
     }
@@ -1520,17 +1331,11 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return this.numberOfConnections;
     }
 
-    /**
-     * _more_
-     */
     public void incrNumberOfConnections() {
         numberOfConnections++;
         totalCalls++;
     }
 
-    /**
-     * _more_
-     */
     public void decrNumberOfConnections() {
         numberOfConnections--;
         if (numberOfConnections < 0) {
@@ -1538,13 +1343,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
     }
 
-    /** _more_ */
     public static final String CLASS_TAB_CONTENT = "tab_content";
 
-    /** _more_ */
     public static final String CLASS_TAB_CONTENTS = "tab_contents";
 
-    /** _more_ */
     private static int tabCnt = 0;
 
     /**
@@ -1616,45 +1418,16 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return tabHtml.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param dflt _more_
-     * @param width _more_
-     *
-     * @return _more_
-     */
     public String htmlInput(Request request, String arg, String dflt,
                             int width) {
         return HU.input(arg, request.getString(arg, dflt),
                         HU.attr(HU.ATTR_SIZE, "" + width));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String htmlInput(Request request, String arg, String dflt) {
         return htmlInput(request, arg, dflt, 5);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parent _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canAddTo(Request request, Entry parent) throws Exception {
         return getEntryManager().canAddTo(request, parent);
     }
@@ -1690,35 +1463,12 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         addPublishWidget(request, entry, sb, header, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param header _more_
-     * @param addNameField _more_
-     *
-     * @throws Exception _more_
-     */
     public void addPublishWidget(Request request, Entry entry, Appendable sb,
                                  String header, boolean addNameField)
             throws Exception {
         addPublishWidget(request, entry, sb, header, addNameField, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param header _more_
-     * @param addNameField _more_
-     * @param addMetadataField _more_
-     *
-     * @throws Exception _more_
-     */
     public void addPublishWidget(Request request, Entry entry, Appendable sb,
                                  String header, boolean addNameField,
                                  boolean addMetadataField)
@@ -1768,11 +1518,6 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public CalendarOutputHandler getCalendarOutputHandler() {
         try {
             return (CalendarOutputHandler) getRepository().getOutputHandler(
@@ -1782,39 +1527,17 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param title _more_
-     * @param msg _more_
-     *
-     * @return _more_
-     */
     public Result getErrorResult(Request request, String title, String msg) {
         return new Result(
             title, new StringBuilder(getPageHandler().showDialogError(msg)));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getProductDirName() {
         return "products";
     }
 
-    /** _more_ */
     private TempDir productDir;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getProductDir() throws Exception {
         if (productDir == null) {
             TempDir tempDir =
@@ -1827,24 +1550,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return productDir.getDir();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getProductDirTTLHours() {
         return 24 * 7;
     }
 
-    /**
-     * _more_
-     *
-     * @param jobId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getWorkDir(Object jobId) throws Exception {
         if (jobId == null) {
             jobId = getRepository().getGUID();
@@ -1856,67 +1565,23 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return theProductDir;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getServiceFilename(Entry entry) {
         return entry.getName().replace(" ", "_").replace(":", "_");
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryLink(Request request, Entry entry) {
         return getEntryManager().getEntryLink(request, entry, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param makeIfNeeded _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getCurrentProcessingDir(Request request, boolean makeIfNeeded)
             throws Exception {
         return getCurrentProcessingDir(request, makeIfNeeded, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void clearCurrentProcessingDir(Request request) throws Exception {
         getSessionManager().removeSessionProperty(request, PROP_PROCESSDIR);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param makeIfNeeded _more_
-     * @param name _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getCurrentProcessingDir(Request request,
                                         boolean makeIfNeeded, String name)
             throws Exception {

@@ -80,82 +80,59 @@ import javax.imageio.stream.ImageOutputStream;
 @SuppressWarnings("unchecked")
 public class ImageOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final String ARG_IMAGE_STYLE = "image.style";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT = "image.edit";
 
     public static final String ARG_IMAGE_RESIZE = "image.resize";    
 
-    /** _more_ */
     public static final String ARG_CAPTION = "caption";
 
-    /** _more_ */
     public static final String ARG_CAPTION_TOP = "caption.top";
 
-    /** _more_ */
     public static final String ARG_CAPTION_BOTTOM = "caption.bottom";
 
-    /** _more_ */
     public static final String ARG_IMAGE_APPLY_TO_GROUP =
         "image.applytogroup";
 
-    /** _more_ */
     public static final String ARG_IMAGE_UNDO = "image_undo";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_RESIZE = "image.edit.resize";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_WIDTH = "image.edit.width";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_CROP = "image.edit.crop";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_MATTE = "image.edit.matte";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_REDEYE = "image.edit.redeye";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_TRANSPARENT =
         "image.edit.transparent";
 
-    /** _more_ */
     public static final String ARG_IMAGE_CROPX1 = "image.edit.cropx1";
 
-    /** _more_ */
     public static final String ARG_IMAGE_CROPY1 = "image.edit.cropy1";
 
-    /** _more_ */
     public static final String ARG_IMAGE_CROPX2 = "image.edit.cropx2";
 
-    /** _more_ */
     public static final String ARG_IMAGE_CROPY2 = "image.edit.cropy2";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT =
         "image.edit.rotate.left";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_X =
         "image.edit.rotate.left.x";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_LEFT_Y =
         "image.edit.rotate.left.y";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT =
         "image.edit.rotate.right";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_X =
         "image.edit.rotate.right.x";
 
-    /** _more_ */
     public static final String ARG_IMAGE_EDIT_ROTATE_RIGHT_Y =
         "image.edit.rotate.right.y";
 
@@ -163,91 +140,69 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String CHANGE_GRAYSCALE = "grayscale";
     public static final String CHANGE_THUMBNAIL = "thumbnail";		
 
-    /** _more_ */
     public static final OutputType OUTPUT_GALLERY = new OutputType("Gallery",
                                                         "image.gallery",
                                                         OutputType.TYPE_VIEW,
                                                         "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_ZOOM = new OutputType("Image Zoom",
                                                      "image.zoom",
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
-    /** _more_ */
+
     public static final OutputType OUTPUT_FLIPCARDS = new OutputType("Flip Cards",
                                                      "image.flipcards",
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);    
 
-    /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
         new OutputType("Make Collage", "image.collage", OutputType.TYPE_VIEW,
                        "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_LABELER =
         new OutputType("Make Labeled Images", "image.labeler",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_ANIMATEDGIF =
         new OutputType("Make Animated Gif", "image.animatedgif",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_B64 =
         new OutputType("Base64 Image", "image.b64", OutputType.TYPE_FILE, "",
                        ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_VIDEO =
         new OutputType("Play Video", "image.video", OutputType.TYPE_VIEW, "",
                        ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_PLAYER =
         new OutputType("Image Player", "image.player", OutputType.TYPE_VIEW,
                        "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_SLIDESHOW =
         new OutputType("Slideshow", "image.slideshow", OutputType.TYPE_VIEW,
                        "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_EDIT = new OutputType("Edit Image",
                                                      "image.edit",
                                                      OutputType.TYPE_VIEW,
                                                      "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_CHANGE = new OutputType("Change Image",
                                                      "image.change",
                                                      OutputType.TYPE_EDIT,
                                                      "", ICON_IMAGES);    
 
-    /** _more_ */
     public static final OutputType OUTPUT_CAPTION =
         new OutputType("Caption Image", "image.caption",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-    /** _more_ */
     public static final OutputType OUTPUT_STREETVIEW =
         new OutputType("Caption Image", "streetview",
                        OutputType.TYPE_INTERNAL, "", ICON_IMAGES);
 
-    /** _more_ */
     private String streetviewKey;
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public ImageOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -267,17 +222,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         addType(OUTPUT_STREETVIEW);
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
 
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -357,17 +301,9 @@ public class ImageOutputHandler extends OutputHandler {
         }
     }
 
-    /** _more_ */
     private Hashtable<String, Image> imageCache = new Hashtable<String,
                                                       Image>();
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     private Image getImage(Entry entry) {
         Image image = imageCache.get(entry.getId());
         if (image == null) {
@@ -382,27 +318,10 @@ public class ImageOutputHandler extends OutputHandler {
         return image;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param image _more_
-     */
     private void putImage(Entry entry, Image image) {
         imageCache.put(entry.getId(), image);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -527,15 +446,6 @@ public class ImageOutputHandler extends OutputHandler {
 	return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processTui(Request request) throws Exception {
 
         Entry entry = getEntryManager().getEntry(request,
@@ -696,16 +606,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntryCaption(Request request, Entry entry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
@@ -727,16 +627,6 @@ public class ImageOutputHandler extends OutputHandler {
         return new Result("Image Caption", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntryStreetview(Request request, Entry entry)
             throws Exception {
         if (isStreetviewEnabled()) {
@@ -758,11 +648,6 @@ public class ImageOutputHandler extends OutputHandler {
         return new Result("", new StringBuffer("Streetview not enabled"));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isStreetviewEnabled() {
         if (streetviewKey == null) {
             streetviewKey = repository.getProperty("google.streetview.key",
@@ -772,17 +657,6 @@ public class ImageOutputHandler extends OutputHandler {
         return streetviewKey.length() > 0;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param image _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private boolean processImage(Request request, Entry entry, Image image)
             throws Exception {
         if ( !getAccessManager().canDoEdit(request, entry)) {
@@ -871,18 +745,6 @@ public class ImageOutputHandler extends OutputHandler {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -893,13 +755,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_GALLERY) || output.equals(OUTPUT_ZOOM)
 	    || output.equals(OUTPUT_FLIPCARDS)
@@ -911,17 +766,6 @@ public class ImageOutputHandler extends OutputHandler {
         return super.getMimeType(output);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param group _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeResult(Request request, Entry group,
                               List<Entry> entries)
             throws Exception {
@@ -1031,21 +875,9 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-    /** _more_ */
     private static final String FILL_FLOW = "flow";
     //    private static final String FILL_FLOW = "flow";
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeCollage(Request request, Entry entry,
                                List<Entry> entries)
             throws Exception {
@@ -1056,18 +888,6 @@ public class ImageOutputHandler extends OutputHandler {
         return makeCollageForm(request, entry, entries, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     * @param message _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeCollageForm(Request request, Entry entry,
                                    List<Entry> entries, String message)
             throws Exception {
@@ -1213,17 +1033,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processCollage(Request request, Entry entry,
                                   List<Entry> entries)
             throws Exception {
@@ -1559,17 +1368,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeLabels(Request request, Entry entry,
                               List<Entry> entries)
             throws Exception {
@@ -1677,16 +1475,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeB64(Request request, Entry entry) throws Exception {
         String path = entry.getResource().getPath();
         byte[] bytes =
@@ -1711,17 +1499,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeAnimatedGif(Request request, Entry entry,
                                    List<Entry> entries)
             throws Exception {
@@ -1732,17 +1509,6 @@ public class ImageOutputHandler extends OutputHandler {
         return makeAnimatedGifForm(request, entry, entries, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result processAnimatedGif(final Request request, Entry entry,
                                       List<Entry> entries)
             throws Exception {
@@ -1920,18 +1686,6 @@ public class ImageOutputHandler extends OutputHandler {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param entries _more_
-     * @param message _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeAnimatedGifForm(Request request, Entry entry,
                                        List<Entry> entries, String message)
             throws Exception {
@@ -2055,18 +1809,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param entries _more_
-     * @param finalSB _more_
-     * @param addHeader _more_
-     * @param checkSort _more_
-     *
-     * @throws Exception _more_
-     */
     public void makePlayer(Request request, Entry mainEntry,
                            List<Entry> entries, Hashtable props,Appendable finalSB,
                            boolean checkSort)

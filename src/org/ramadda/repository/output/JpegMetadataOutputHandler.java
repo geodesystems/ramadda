@@ -40,35 +40,15 @@ import java.util.List;
  */
 public class JpegMetadataOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_JPEG_METADATA =
         new OutputType("JPEG Metadata", "jpeg.metadata",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public JpegMetadataOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_JPEG_METADATA);
     }
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
 
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
@@ -83,17 +63,6 @@ public class JpegMetadataOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -104,18 +73,6 @@ public class JpegMetadataOutputHandler extends OutputHandler {
         return new Result("JPEG Metadata", sb);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param jpegFile _more_
-     * @param forHtml _more_
-     *
-     * @throws Exception _more_
-     */
     private void outputTags(Request request, Entry entry, StringBuffer sb,
                             File jpegFile, boolean forHtml)
             throws Exception {
@@ -166,13 +123,6 @@ public class JpegMetadataOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         for (String file : args) {
             StringBuffer sb = new StringBuffer();

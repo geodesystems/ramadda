@@ -38,42 +38,22 @@ import java.util.Properties;
  */
 public class KmlOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final String MIME_KML =
         "application/vnd.google-earth.kml+xml";
 
-    /** _more_ */
     public static final String KML_ATTRS =
         "  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ";
 
-    /** _more_ */
     public static final OutputType OUTPUT_KML =
         new OutputType("Google Earth KML", "kml", OutputType.TYPE_FEEDS, "",
                        ICON_KML);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public KmlOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_KML);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
         if (state.getEntry() != null) {
@@ -92,28 +72,10 @@ public class KmlOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         return repository.getMimeTypeFromSuffix(".kml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -124,18 +86,6 @@ public class KmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -334,21 +284,6 @@ public class KmlOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param parent _more_
-     * @param name _more_
-     * @param description _more_
-     * @param url _more_
-     * @param north _more_
-     * @param south _more_
-     * @param east _more_
-     * @param west _more_
-     * @param visible _more_
-     *
-     * @return _more_
-     */
     public static Element myGroundOverlay(Element parent, String name,
                                           String description, String url,
                                           double north, double south,
@@ -369,14 +304,6 @@ public class KmlOutputHandler extends OutputHandler {
         return node;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static String getKmlUrl(Request request, Entry entry) {
         if (isLatLonImage(entry)) {
             return request.getAbsoluteUrl(
@@ -405,13 +332,6 @@ public class KmlOutputHandler extends OutputHandler {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static boolean isKml(Entry entry) {
         String resource = entry.getResource().getPath();
         if ((resource != null)
@@ -423,14 +343,6 @@ public class KmlOutputHandler extends OutputHandler {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param l _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public static double getLocation(double l, double dflt) {
         if ((l == l) && (l != Entry.NONGEO)) {
             return l;
@@ -439,26 +351,11 @@ public class KmlOutputHandler extends OutputHandler {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static boolean isLatLonImage(Entry entry) {
         return entry.getType().equals("latlonimage")
                && entry.getResource().isImage();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param numEntries _more_
-     *
-     * @return _more_
-     */
     public String getName(Entry entry, int numEntries) {
         if (numEntries < 100) {
             return entry.getName();

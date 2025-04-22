@@ -42,19 +42,10 @@ import javax.servlet.http.*;
  */
 public class ZipFileOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_LIST =
         new OutputType("Zip File Listing", "zipfile.list",
                        OutputType.TYPE_FILE, "", ICON_ZIP);
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public ZipFileOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
@@ -66,16 +57,6 @@ public class ZipFileOutputHandler extends OutputHandler {
         super(repository, element);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
@@ -98,17 +79,6 @@ public class ZipFileOutputHandler extends OutputHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {

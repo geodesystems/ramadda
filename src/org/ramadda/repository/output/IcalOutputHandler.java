@@ -33,37 +33,19 @@ import java.util.zip.*;
  */
 public class IcalOutputHandler extends OutputHandler {
 
-    /** _more_ */
     public static final OutputType OUTPUT_ICAL = new OutputType("ICAL",
                                                      "ical",
                                                      OutputType.TYPE_FEEDS,
                                                      "", ICON_CALENDAR);
 
-    /** _more_ */
     private SimpleDateFormat sdf;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public IcalOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
         addType(OUTPUT_ICAL);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param state _more_
-     * @param links _more_
-     *
-     * @throws Exception _more_
-     */
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
 
@@ -76,13 +58,6 @@ public class IcalOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param output _more_
-     *
-     * @return _more_
-     */
     public String getMimeType(OutputType output) {
         if (output.equals(OUTPUT_ICAL)) {
             return repository.getMimeTypeFromSuffix(".ics");
@@ -91,17 +66,6 @@ public class IcalOutputHandler extends OutputHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param outputType _more_
-     * @param group _more_
-     * @param children _more_
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result outputGroup(Request request, OutputType outputType,
                               Entry group, List<Entry> children)
@@ -109,13 +73,6 @@ public class IcalOutputHandler extends OutputHandler {
         return outputEntries(request, children);
     }
 
-    /**
-     * _more_
-     *
-     * @param t _more_
-     *
-     * @return _more_
-     */
     private String format(long t) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
@@ -124,16 +81,6 @@ public class IcalOutputHandler extends OutputHandler {
         return sdf.format(new Date(t)) + "Z";
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result outputEntries(Request request, List<Entry> entries)
             throws Exception {
 

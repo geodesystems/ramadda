@@ -45,13 +45,6 @@ import java.util.zip.*;
  */
 public class TestOutputHandler extends OutputHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param element _more_
-     * @throws Exception _more_
-     */
     public TestOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);

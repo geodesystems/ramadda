@@ -16,71 +16,40 @@ import java.util.HashSet;
  */
 public class PageStyle {
 
-    /** _more_ */
     public static final String MENU_FILE = "file";
 
-    /** _more_ */
     public static final String MENU_EDIT = "edit";
 
-    /** _more_ */
     public static final String MENU_VIEW = "view";
 
-    /** _more_ */
     public static final String MENU_IMPORTANT = "important";
 
-    /** _more_ */
     public static final String MENU_FEEDS = "feeds";
 
-    /** _more_ */
     public static final String MENU_OTHER = "other";
 
-    /** _more_ */
     public static final String MENU_SERVICE = "service";
 
-    /** _more_ */
     private String wikiTemplate;
 
-    /** _more_ */
     private HashSet<String> menus = new HashSet<String>();
 
-    /** _more_ */
     private boolean showMenubar = true;
 
-    /** _more_ */
     private boolean showToolbar = true;
 
-    /** _more_ */
     private boolean showEntryHeader = true;
 
-    /** _more_ */
     private boolean showBreadcrumbs = true;
 
-    /** _more_ */
     private boolean showLayoutToolbar = true;
 
-    /**
-     * _more_
-     */
     public PageStyle() {}
 
-    /**
-     * _more_
-     *
-     * @param menu _more_
-     */
     public void setMenu(String menu) {
         menus.add(menu);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entry _more_
-     * @param menu _more_
-     *
-     * @return _more_
-     */
     public boolean okToShowMenu(Entry entry, String menu) {
         if (menus.size() == 0) {
             return true;
