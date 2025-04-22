@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.services;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
@@ -33,7 +32,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
 /**
  *
  *
@@ -43,285 +41,183 @@ import java.util.Properties;
 @SuppressWarnings("unchecked")
 public class OaiManager extends RepositoryManager {
 
-    /** _more_ */
     public static final String ARG_VERB = "verb";
 
-    /** _more_ */
     public static final String ARG_IDENTIFIER = "identifier";
 
-    /** _more_ */
     public static final String ARG_RESUMPTIONTOKEN = "resumptionToken";
 
-    /** _more_ */
     public static final String ARG_FROM = "from";
 
-    /** _more_ */
     public static final String ARG_UNTIL = "until";
 
-    /** _more_ */
     public static final String ARG_SET = "set";
 
-    /** _more_ */
     public static final String ARG_METADATAPREFIX = "metadataPrefix";
 
-    /** _more_ */
     private static final String[] ALLARGS = {
         ARG_VERB, ARG_IDENTIFIER, ARG_RESUMPTIONTOKEN, ARG_FROM, ARG_UNTIL,
         ARG_SET, ARG_METADATAPREFIX
     };
 
-    /** _more_ */
     private static final String[] formats = { "yyyy-MM-dd'T'HH:mm:ss Z",
             "yyyyMMdd'T'HHmmss Z" };
 
-    /** _more_ */
     private SimpleDateFormat[] parsers;
 
-
-
-    /** _more_ */
     private static HashSet argSet;
 
-    /** _more_ */
     private static HashSet verbSet;
 
-    /** _more_ */
     public static final String VERB_IDENTIFY = "Identify";
 
-    /** _more_ */
     public static final String VERB_LISTMETADATAFORMATS =
         "ListMetadataFormats";
 
-    /** _more_ */
     public static final String VERB_LISTSETS = "ListSets";
 
-    /** _more_ */
     public static final String VERB_LISTIDENTIFIERS = "ListIdentifiers";
 
-    /** _more_ */
     public static final String VERB_LISTRECORDS = "ListRecords";
 
-    /** _more_ */
     public static final String VERB_GETRECORD = "GetRecord";
 
-    /** _more_ */
     private static final String[] ALLVERBS = {
         VERB_IDENTIFY, VERB_LISTMETADATAFORMATS, VERB_LISTSETS,
         VERB_LISTIDENTIFIERS, VERB_LISTRECORDS, VERB_GETRECORD
     };
 
-
-    /** _more_ */
     public static final String ERROR_BADARGUMENT = "badArgument";
 
-    /** _more_ */
     public static final String ERROR_BADRESUMPTIONTOKEN =
         "badResumptionToken";
 
-    /** _more_ */
     public static final String ERROR_BADVERB = "badVerb";
 
-    /** _more_ */
     public static final String ERROR_CANNOTDISSEMINATEFORMAT =
         "cannotDisseminateFormat";
 
-    /** _more_ */
     public static final String ERROR_IDDOESNOTEXIST = "idDoesNotExist";
 
-    /** _more_ */
     public static final String ERROR_NORECORDSMATCH = "noRecordsMatch";
 
-    /** _more_ */
     public static final String ERROR_NOMETADATAFORMATS = "noMetaDataFormats";
 
-    /** _more_ */
     public static final String ERROR_NOSETHIERARCHY = "noSetHierarchy";
 
-
-
-
-
-    /** _more_ */
     public static final String TAG_OAI_PMH = "OAI-PMH";
 
-    /** _more_ */
     public static final String TAG_RESPONSEDATE = "responseDate";
 
-    /** _more_ */
     public static final String TAG_REQUEST = "request";
 
-    /** _more_ */
     public static final String TAG_IDENTIFY = "Identify";
 
-    /** _more_ */
     public static final String TAG_REPOSITORYNAME = "repositoryName";
 
-    /** _more_ */
     public static final String TAG_BASEURL = "baseURL";
 
-    /** _more_ */
     public static final String TAG_PROTOCOLVERSION = "protocolVersion";
 
-    /** _more_ */
     public static final String TAG_ADMINEMAIL = "adminEmail";
 
-    /** _more_ */
     public static final String TAG_EARLIESTDATESTAMP = "earliestDatestamp";
 
-    /** _more_ */
     public static final String TAG_DELETEDRECORD = "deletedRecord";
 
-    /** _more_ */
     public static final String TAG_GRANULARITY = "granularity";
 
-    /** _more_ */
     public static final String TAG_DESCRIPTION = "description";
 
-    /** _more_ */
     public static final String TAG_OAI_IDENTIFIER = "oai-identifier";
 
-    /** _more_ */
     public static final String TAG_SCHEME = "scheme";
 
-    /** _more_ */
     public static final String TAG_REPOSITORYIDENTIFIER =
         "repositoryIdentifier";
 
-    /** _more_ */
     public static final String TAG_DELIMITER = "delimiter";
 
-    /** _more_ */
     public static final String TAG_SAMPLEIDENTIFIER = "sampleIdentifier";
 
-    /** _more_ */
     public static final String TAG_ERROR = "error";
 
-    /** _more_ */
     public static final String TAG_LISTMETADATAFORMATS =
         "ListMetadataFormats";
 
-    /** _more_ */
     public static final String TAG_METADATAFORMAT = "metadataFormat";
 
-    /** _more_ */
     public static final String TAG_METADATAPREFIX = "metadataPrefix";
 
-    /** _more_ */
     public static final String TAG_SCHEMA = "schema";
 
-    /** _more_ */
     public static final String TAG_METADATANAMESPACE = "metadataNamespace";
 
-    /** _more_ */
     public static final String TAG_LISTIDENTIFIERS = "ListIdentifiers";
 
-    /** _more_ */
     public static final String TAG_LISTRECORDS = "ListRecords";
 
-
-    /** _more_ */
     public static final String TAG_DC_TITLE = "dc:title";
 
-    /** _more_ */
     public static final String TAG_DC_CREATOR = "dc:creator";
 
-    /** _more_ */
     public static final String TAG_DC_PUBLISHER = "dc:publisher";
 
-    /** _more_ */
     public static final String TAG_DC_SUBJECT = "dc:subject";
 
-    /** _more_ */
     public static final String TAG_DC_DESCRIPTION = "dc:description";
 
-    /** _more_ */
     public static final String TAG_DC_CONTRIBUTOR = "dc:contributor";
 
-    /** _more_ */
     public static final String TAG_DC_TYPE = "dc:type";
 
-    /** _more_ */
     public static final String TAG_DC_IDENTIFIER = "dc:identifier";
 
-    /** _more_ */
     public static final String TAG_DC_LANGUAGE = "dc:language";
 
-    /** _more_ */
     public static final String TAG_DC_RELATION = "dc:relation";
 
-
-    /** _more_ */
     public static final String TAG_GETRECORD = "GetRecord";
 
-    /** _more_ */
     public static final String TAG_RECORD = "record";
 
-    /** _more_ */
     public static final String TAG_HEADER = "header";
 
-    /** _more_ */
     public static final String TAG_IDENTIFIER = "identifier";
 
-    /** _more_ */
     public static final String TAG_DATESTAMP = "datestamp";
 
-    /** _more_ */
     public static final String TAG_METADATA = "metadata";
 
-    /** _more_ */
     public static final String TAG_OAIDC_DC = "oaidc:dc";
 
-    /** _more_ */
     public static final String TAG_RESUMPTIONTOKEN = "resumptionToken";
 
-
-    /** _more_ */
     public static final String ATTR_CODE = "code";
 
-    /** _more_ */
     public static final String ATTR_XMLNS = "xmlns";
 
-    /** _more_ */
     public static final String ATTR_XMLNS_DC = "xmlns:dc";
 
-    /** _more_ */
     public static final String ATTR_XMLNS_OAIDC = "xmlns:oaidc";
 
-    /** _more_ */
     public static final String ATTR_XMLNS_XSI = "xmlns:xsi";
 
-    /** _more_ */
     public static final String ATTR_VERB = "verb";
 
-    /** _more_ */
     public static final String ATTR_IDENTIFIER = "identifier";
 
-    /** _more_ */
     public static final String ATTR_METADATAPREFIX = "metadataPrefix";
 
-
-    /** _more_ */
     public static final String ATTR_XSI_SCHEMALOCATION = "xsi:schemaLocation";
 
-    /** _more_ */
     public static final String SCHEMA =
         "http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
 
-
-
-
-    /** _more_ */
     private SimpleDateFormat sdf;
 
-    /** _more_ */
     private String repositoryIdentifier;
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public OaiManager(Repository repository) {
         super(repository);
         sdf    = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -340,16 +236,6 @@ public class OaiManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Element getRoot(Request request) throws Exception {
         Document doc  = XmlUtil.makeDocument();
         Element  root = XmlUtil.create(doc, TAG_OAI_PMH, (String[]) null);
@@ -365,15 +251,6 @@ public class OaiManager extends RepositoryManager {
         return root;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void addRequest(Request request, Element root) throws Exception {
         String  url         =
             request.getAbsoluteUrl(request.getRequestPath());
@@ -414,7 +291,6 @@ public class OaiManager extends RepositoryManager {
             }
         }
 
-
         if ((fromDate != null) && (untilDate != null)) {
             if (fromDate.getTime() > untilDate.getTime()) {
                 throw new IllegalArgumentException("from date > until date");
@@ -440,15 +316,6 @@ public class OaiManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processRequest(Request request) throws Exception {
         Element root = getRoot(request);
         try {
@@ -466,15 +333,6 @@ public class OaiManager extends RepositoryManager {
         return makeResult(request, root);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void processRequestInner(Request request, Element root)
             throws Exception {
         if ( !request.exists(ARG_VERB)) {
@@ -495,7 +353,6 @@ public class OaiManager extends RepositoryManager {
 
         addRequest(request, root);
 
-
         for (Enumeration keys = request.getArgs().keys();
                 keys.hasMoreElements(); ) {
             String key = (String) keys.nextElement();
@@ -512,7 +369,6 @@ public class OaiManager extends RepositoryManager {
                 return;
             }
         }
-
 
         if (verb.equals(VERB_IDENTIFY)) {
             handleIdentify(request, root);
@@ -532,49 +388,17 @@ public class OaiManager extends RepositoryManager {
 
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Result makeResult(Request request, Element root)
             throws Exception {
         return new Result("", new StringBuffer(XmlUtil.toString(root, true)),
                           "text/xml");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     * @param code _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleError(Request request, Element root, String code)
             throws Exception {
         handleError(request, root, code, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     * @param code _more_
-     * @param contents _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleError(Request request, Element root, String code,
                              String contents)
             throws Exception {
@@ -587,15 +411,6 @@ public class OaiManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleIdentify(Request request, Element root)
             throws Exception {
         Element id = XmlUtil.create(TAG_IDENTIFY, root);
@@ -625,14 +440,6 @@ public class OaiManager extends RepositoryManager {
                        makeId(getEntryManager().getRootEntry().getId()));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleListMetadataformats(Request request, Element root)
             throws Exception {
         if (request.exists(ARG_IDENTIFIER)) {
@@ -645,8 +452,6 @@ public class OaiManager extends RepositoryManager {
             }
         }
 
-
-
         Element node = XmlUtil.create(TAG_LISTMETADATAFORMATS, root);
         Element fmt  = XmlUtil.create(TAG_METADATAFORMAT, node);
         XmlUtil.create(TAG_METADATAPREFIX, fmt, "oai_dc");
@@ -656,26 +461,12 @@ public class OaiManager extends RepositoryManager {
                        "http://www.openarchives.org/OAI/2.0/oai_dc/");
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     private String getId(String id) {
         id = id.replace("oai:" + getRepositoryIdentifier() + ":", "");
 
         return id;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private String getRepositoryIdentifier() {
         if (repositoryIdentifier == null) {
             repositoryIdentifier = StringUtil.join(
@@ -688,17 +479,9 @@ public class OaiManager extends RepositoryManager {
         return repositoryIdentifier;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     private String makeId(String id) {
         return "oai:" + getRepositoryIdentifier() + ":" + id;
     }
-
 
     /**
      * Class EntryList _more_
@@ -708,53 +491,26 @@ public class OaiManager extends RepositoryManager {
      */
     private static class EntryList {
 
-        /** _more_ */
         String resumptionToken;
 
-        /** _more_ */
         List<Entry> entries = new ArrayList<Entry>();
 
-        /**
-         * _more_
-         *
-         * @param entries _more_
-         * @param token _more_
-         */
         public EntryList(List<Entry> entries, String token) {
             this.entries         = entries;
             this.resumptionToken = token;
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param d _more_
-     *
-     * @return _more_
-     */
     private String format(Date d) {
         return sdf.format(d) + "Z";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     private void makeHeader(Entry entry, Element node) throws Exception {
         Element header = XmlUtil.create(TAG_HEADER, node);
         XmlUtil.create(TAG_IDENTIFIER, header, makeId(entry.getId()));
         XmlUtil.create(TAG_DATESTAMP, header,
                        format(new Date(entry.getStartDate())));
     }
-
 
     /**
      * Class MyException _more_
@@ -764,28 +520,14 @@ public class OaiManager extends RepositoryManager {
      */
     public static class MyException extends IllegalArgumentException {
 
-        /** _more_ */
         String code;
 
-        /**
-         * _more_
-         *
-         * @param code _more_
-         * @param msg _more_
-         */
         public MyException(String code, String msg) {
             super(msg);
             this.code = code;
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     private Date parseUTC(String s) {
         for (SimpleDateFormat parser : parsers) {
             try {
@@ -796,15 +538,6 @@ public class OaiManager extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private EntryList getEntries(Request request) throws Exception {
         int     max        = request.get(ARG_MAX, 5);
         int     skip       = request.get(ARG_RESUMPTIONTOKEN, 0);
@@ -831,29 +564,11 @@ public class OaiManager extends RepositoryManager {
         return new EntryList(entries, token);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleListSets(Request request, Element root)
             throws Exception {
         handleError(request, root, ERROR_NOSETHIERARCHY);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     * @param entries _more_
-     *
-     * @throws Exception _more_
-     */
     private void addResumption(Request request, Element root,
                                EntryList entries)
             throws Exception {
@@ -867,15 +582,6 @@ public class OaiManager extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleListIdentifiers(Request request, Element root)
             throws Exception {
         if ( !request.exists(ARG_METADATAPREFIX)) {
@@ -884,7 +590,6 @@ public class OaiManager extends RepositoryManager {
 
             return;
         }
-
 
         EntryList entryList = getEntries(request);
         if (entryList.entries.size() == 0) {
@@ -901,14 +606,6 @@ public class OaiManager extends RepositoryManager {
         addResumption(request, listNode, entryList);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleListRecords(Request request, Element root)
             throws Exception {
         EntryList entryList = getEntries(request);
@@ -925,7 +622,6 @@ public class OaiManager extends RepositoryManager {
                 "no metadataPrefix argument defined");
         }
 
-
         if (entryList.entries.size() == 0) {
             handleError(request, root, ERROR_NORECORDSMATCH,
                         "No records match");
@@ -939,16 +635,6 @@ public class OaiManager extends RepositoryManager {
         addResumption(request, listRecordNode, entryList);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     private void addMetadata(Request request, Entry entry, Element node)
             throws Exception {
         List<Metadata> metadataList = getMetadataManager().getMetadata(request,entry);
@@ -965,16 +651,6 @@ public class OaiManager extends RepositoryManager {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param root _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleGetRecord(Request request, Element root)
             throws Exception {
         if ( !request.exists(ARG_IDENTIFIER)) {
@@ -990,7 +666,6 @@ public class OaiManager extends RepositoryManager {
             return;
         }
 
-
         String id    = getId(request.getString(ARG_IDENTIFIER, ""));
         Entry  entry = getEntryManager().getEntry(request, id);
         if (entry == null) {
@@ -1003,15 +678,6 @@ public class OaiManager extends RepositoryManager {
         makeRecord(request, entry, node);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     private void makeRecord(Request request, Entry entry, Element node)
             throws Exception {
         Element record = XmlUtil.create(TAG_RECORD, node);
@@ -1035,6 +701,5 @@ public class OaiManager extends RepositoryManager {
         addMetadata(request, entry, oaidc);
 
     }
-
 
 }
