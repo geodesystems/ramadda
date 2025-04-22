@@ -8087,10 +8087,12 @@ public class WikiManager extends RepositoryManager
 	  }
 	  }*/
 
+	help.append(HU.div(HU.b("Basics")));
         makeHelp.accept("/userguide/wiki/wiki.html", "Editor");
         makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
         makeHelp.accept("/userguide/wiki/wikitext.html#sections", "Sections");
-        makeHelp.accept("/userguide/wiki/wikitext.html#heading-grid_layout", "Grid layout");
+        makeHelp.accept("/userguide/wiki/wikitext.html#grid_layout", "Grid layout");
+	help.append(HU.div(HU.b("Entries")));
         makeHelp.accept("/userguide/wiki/wikientries.html",
                         "Specifying the entry");
         makeHelp.accept("/userguide/wiki/wikientries.html#entries",
