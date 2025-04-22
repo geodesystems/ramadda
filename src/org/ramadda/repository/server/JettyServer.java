@@ -8,8 +8,6 @@ package org.ramadda.repository.server;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Repository;
 
-
-
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -32,50 +30,33 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.security.Constraint;
 
-
 import ucar.unidata.util.LogUtil;
 
 import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 
-
 /**
  */
 public class JettyServer implements Constants {
 
-
-    /** _more_ */
     private String[] args;
 
-    /** _more_ */
     private int port;
 
-    /** _more_ */
     private int sslPort = -1;
 
-    /** _more_ */
     private Server server;
 
-    /** _more_ */
     private RepositoryServlet baseServlet;
 
-    /** _more_ */
     private ServletContextHandler context;
 
-    /** _more_ */
     private Repository baseRepository;
 
-    /** _more_ */
     private Hashtable<RepositoryServlet, ServletHolder> servletToHolder =
         new Hashtable<RepositoryServlet, ServletHolder>();
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @throws Throwable _more_
-     */
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
 
@@ -116,7 +97,6 @@ public class JettyServer implements Constants {
         baseServlet    = addServlet();
         baseRepository = baseServlet.getRepository();
 
-
         if ( !hadPort) {
             port = baseRepository.getProperty("ramadda.port", port);
         }
@@ -146,23 +126,10 @@ public class JettyServer implements Constants {
         server.join();
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getPort() {
         return port;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryServlet addServlet() throws Exception {
         Properties properties  = new Properties();
         String[]   cmdLineArgs = args;
@@ -171,16 +138,6 @@ public class JettyServer implements Constants {
 						properties));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param servlet _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryServlet addServlet(RepositoryServlet servlet)
 	throws Exception {
         Repository    repository = servlet.getRepository();
@@ -193,27 +150,11 @@ public class JettyServer implements Constants {
         return servlet;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param servlet _more_
-     *
-     * @throws Exception _more_
-     */
     public void removeServlet(RepositoryServlet servlet) throws Exception {
         ServletHolder holder = servletToHolder.get(servlet);
         //TODO: Remove the servlet from the server
     }
 
-    /**
-     * _more_
-     *
-     * @param server _more_
-     * @param repository _more_
-     *
-     * @throws Throwable _more_
-     */
     protected void initSsl(Server server, Repository repository)
 	throws Throwable {
 
@@ -228,8 +169,6 @@ public class JettyServer implements Constants {
 						     repository.getStorageManager().getRepositoryDir()
 						     + "/keystore", false));
         }
-
-
 
         if ( !keystore.exists()) {
             return;
@@ -264,8 +203,6 @@ public class JettyServer implements Constants {
             return;
         }
 
-
-
         if (sslPort < 0) {
             repository.getLogManager().logInfoAndPrint(
 						       "SSL: no ssl port defined. not creating ssl connection");
@@ -298,7 +235,6 @@ public class JettyServer implements Constants {
         if (certAlias != null) {
             sslContextFactory.setCertAlias(certAlias);
         }
-
 
         sslContextFactory.setIncludeCipherSuites(
 						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
@@ -352,7 +288,6 @@ public class JettyServer implements Constants {
 
         sslContextFactory.setExcludeProtocols("SSLv3");
 
-
         sslContextFactory.setRenegotiationAllowed(false);
 
         HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
@@ -370,15 +305,6 @@ public class JettyServer implements Constants {
         server.addConnector(httpsConnector);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Throwable _more_
-     */
     public static void main(String[] args) throws Throwable {
         try {
             JettyServer mds = new JettyServer(args);

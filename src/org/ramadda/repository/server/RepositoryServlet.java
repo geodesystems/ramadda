@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.server;
 
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.*;
@@ -41,7 +40,6 @@ import java.util.Properties;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-
 /**
  *
  *
@@ -51,47 +49,26 @@ import javax.servlet.http.*;
 @SuppressWarnings("unchecked")
 public class RepositoryServlet extends HttpServlet implements Constants {
 
-
     /**  */
     public static boolean debugRequests = false;
 
     /**  */
     public static boolean debugMultiPart = false;
 
-
-    /** _more_ */
     private SimpleDateFormat sdf =
         RepositoryUtil.makeDateFormat("E, d M yyyy HH:m Z");
 
-
-
-    /** _more_ */
     private String[] args;
 
     /** Repository object that will be instantiated */
     private Repository repository;
 
-    /** _more_ */
     private Object standAloneServer;
 
-
-    /**
-     * _more_
-     */
     public RepositoryServlet() {
         //        System.err.println("RepositoryServlet:ctor");
     }
 
-    /**
-     * _more_
-     *
-     * @param standAloneServer _more_
-     * @param args _more_
-     * @param port _more_
-     * @param properties _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryServlet(Object standAloneServer, String[] args,
                              int port, Properties properties)
             throws Exception {
@@ -100,14 +77,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         createRepository(port, properties, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryServlet(String[] args, Repository repository)
             throws Exception {
         this.args       = args;
@@ -115,12 +84,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         initRepository(this.repository, false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getRepository() {
         return repository;
     }
@@ -176,13 +139,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 	repository.setRunningStandalone(true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param tmpRepository _more_
-     * @param checkSsl _more_
-     */
     private void initRepository(Repository tmpRepository, boolean checkSsl) {
         if (checkSsl) {
             int sslPort = -1;
@@ -198,11 +154,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
         }
     }
-
-
-
-
-
 
     /**
      * Gets any initialization parameters the specified in the Web deployment descriptor (web.xml)
@@ -233,10 +184,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         return args;
     }
 
-
-    /**
-     * _more_
-     */
     public void destroy() {
         super.destroy();
         System.err.println("RAMADDA: RepositoryServlet.destroy");
@@ -250,8 +197,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         repository = null;
     }
 
-
-
     /**
      * Overriding doGet method in HttpServlet. Called by the server via the service method.
      *
@@ -264,8 +209,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
             throws IOException, ServletException {
-
-
 
         // there can be only one
         if (repository == null) {
@@ -284,7 +227,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;
-	
+
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
 	//	System.err.println("R: " + request.getRequestURI() +" " +request.getMethod());
         try {
@@ -426,7 +369,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
     }
 
-
     /**
      * Overriding doPost method in HttpServlet. Called by the server via the service method.
      * Hands off HttpServletRequest and HttpServletResponse to doGet method.
@@ -443,8 +385,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         doGet(request, response);
     }
 
-
-
     /**
      * Class RequestHandler _more_
      *
@@ -454,28 +394,16 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      */
     private class RequestHandler {
 
-        /** _more_ */
         Hashtable formArgs = new Hashtable();
 
-        /** _more_ */
         Hashtable httpArgs = new Hashtable();
 
-        /** _more_ */
         Hashtable fileUploads = new Hashtable();
 
-
-        /**
-         * _more_
-         *
-         * @param request _more_
-         *
-         * @throws IOException _more_
-         */
         public RequestHandler(HttpServletRequest request) throws IOException {
             getFormArgs(request);
             getRequestHeaders(request);
         }
-
 
         /**
          * Get parameters of this request including any uploaded files.
@@ -486,7 +414,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
          */
         public void getFormArgs(HttpServletRequest request)
                 throws IOException {
-
 
             if (ServletFileUpload.isMultipartContent(request)) {
                 if (debugMultiPart || debugRequests) {
@@ -546,8 +473,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
         }
 
-
-
         /**
          * Process any form input.
          *
@@ -578,7 +503,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
             }
             formArgs.put(name, value);
         }
-
 
         /**
          * Process any files uploaded with the form input.
@@ -612,10 +536,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 fileName = fileName.substring(idx + 1);
             }
 
-
             //TODO: what should we do with the fileName to ensure against XSS
             //            fileName = HtmlUtils.encode(fileName);
-
 
             if (debugMultiPart || debugRequests) {
                 System.err.println("\tfile:" + fileName);
@@ -659,7 +581,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 	    fileNames.add(fileName);
         }
 
-
         /**
          * Gets the HTTP request headers.  Populate httpArgs.
          *
@@ -678,22 +599,10 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param exc _more_
-     */
     protected void logException(Throwable exc) {
         logException(exc, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param exc _more_
-     * @param request _more_
-     */
     protected void logException(Throwable exc, HttpServletRequest request) {
         try {
             String address = "";
@@ -713,8 +622,5 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         }
 
     }
-
-
-
 
 }
