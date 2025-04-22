@@ -8087,19 +8087,21 @@ public class WikiManager extends RepositoryManager
 	  }
 	  }*/
 
+        makeHelp.accept("/userguide/wiki/wiki.html", "Editor");
         makeHelp.accept("/userguide/wiki/wikitext.html", "Wiki text");
-        makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
         makeHelp.accept("/userguide/wiki/wikitext.html#sections", "Sections");
-        makeHelp.accept("/userguide/wiki/wikitext.html#gridlayout", "Grid layout");
+        makeHelp.accept("/userguide/wiki/wikitext.html#heading-grid_layout", "Grid layout");
         makeHelp.accept("/userguide/wiki/wikientries.html",
                         "Specifying the entry");
         makeHelp.accept("/userguide/wiki/wikientries.html#entries",
                         "Specifying multiple entries");
+        makeHelp.accept("/userguide/wiki/wikidisplay.html", "Displays and Charts");
+	help.append(HU.div(HU.b("Listings")));
         makeHelp.accept("/entry/types.html", "Entry Types");
         makeHelp.accept("/metadata/types.html", "Metadata Types");
-        makeHelp.accept("/search/providers", "Search Providers");
         makeHelp.accept("/colortables", "Color Tables");
         makeHelp.accept("/icons.html", "Icons");	
+        makeHelp.accept("/search/providers", "Search Providers");
 
         wikiMenuEtcButton = makeMenuButton("Misc", etc.toString());
         wikiMenuHelpButton = makeMenuButton("Help", help.toString(),false,true);
