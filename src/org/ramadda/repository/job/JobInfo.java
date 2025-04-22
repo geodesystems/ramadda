@@ -5,15 +5,12 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.job;
 
-
 import org.ramadda.repository.*;
-
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  * Holds information about processing jobs
@@ -22,21 +19,15 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class JobInfo implements Constants {
 
-    /** _more_ */
     public static final String ARG_REQUEST_CLIENT = "request.client";
 
-    /** _more_ */
     public static final String ARG_REQUEST_DOMAIN = "request.domain";
 
-    /** _more_ */
     public static final String ARG_REQUEST_EMAIL = "request.email";
 
-    /** _more_ */
     public static final String ARG_REQUEST_USER = "request.user";
 
-    /** _more_ */
     public static final String ARG_REQUEST_IP = "request.ip";
-
 
     /** url argument */
     public static final String ARG_JOB_EMAIL = "job.email";
@@ -53,8 +44,6 @@ public class JobInfo implements Constants {
     /** url argument */
     public static final String ARG_JOB_USER = "job.user";
 
-
-
     /** db column for jobs table */
     public static final String DB_TABLE = "jobinfos";
 
@@ -70,7 +59,6 @@ public class JobInfo implements Constants {
     /** db column for jobs table */
     public static final String DB_COL_USER_ID = "user_id";
 
-    /** _more_ */
     public static final String DB_COL_TYPE = "type";
 
     /** db column for jobs table */
@@ -81,7 +69,6 @@ public class JobInfo implements Constants {
         DB_COL_ID, DB_COL_ENTRY_ID, DB_COL_DATE, DB_COL_USER_ID, DB_COL_TYPE,
         DB_COL_JOB_INFO_BLOB
     };
-
 
     /** job status */
     public static final String STATUS_RUNNING = "running";
@@ -98,14 +85,12 @@ public class JobInfo implements Constants {
     /** job status */
     public static final String STATUS_UNKNOWN = "unknown";
 
-
     /** unique job id. This is the jobs.id db column */
     private Object jobId;
 
     /** job status */
     private String status = STATUS_RUNNING;
 
-    /** _more_ */
     private String type = "processing";
 
     /** The processing can add various status messages */
@@ -135,13 +120,10 @@ public class JobInfo implements Constants {
     /** job name the user gave */
     private String jobName;
 
-    /** _more_ */
     private String jobUrl;
 
-    /** _more_ */
     private String returnUrl;
 
-    /** _more_ */
     private String jobStatusUrl;
 
     /** job description the user gave */
@@ -162,13 +144,10 @@ public class JobInfo implements Constants {
     /** file size of the products */
     private long productSize;
 
-    /** _more_ */
     private StringBuffer extraInfo = new StringBuffer();
 
-    /** _more_ */
     private Entry entry;
 
-    /** _more_ */
     private String jobLabel;
 
     /**
@@ -176,11 +155,6 @@ public class JobInfo implements Constants {
      */
     public JobInfo() {}
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     */
     public JobInfo(String type) {
         this.type = type;
     }
@@ -212,7 +186,6 @@ public class JobInfo implements Constants {
 
     }
 
-
     /**
      *  Get the Entry property.
      *  This needs to be a different name than the getEntry getter because we encode this object as xml
@@ -232,7 +205,6 @@ public class JobInfo implements Constants {
         return entry;
     }
 
-
     /**
      *  Set the JobLabel property.
      *
@@ -251,9 +223,6 @@ public class JobInfo implements Constants {
         return jobLabel;
     }
 
-
-
-
     /**
      * is job cancelled
      *
@@ -262,7 +231,6 @@ public class JobInfo implements Constants {
     public boolean isCancelled() {
         return status.equals(STATUS_CANCELLED);
     }
-
 
     /**
      * Is job running
@@ -291,7 +259,6 @@ public class JobInfo implements Constants {
         return status.equals(STATUS_INERROR);
     }
 
-
     /**
      * Set the JobId property.
      *
@@ -309,7 +276,6 @@ public class JobInfo implements Constants {
     public Object getJobId() {
         return jobId;
     }
-
 
     /**
      * Set the User property.
@@ -336,8 +302,6 @@ public class JobInfo implements Constants {
      * noop -  save for old jobs
      */
     public void setRequestArgs(Hashtable value) {}
-
-
 
     /**
      * Set the JobName property.
@@ -412,8 +376,6 @@ public class JobInfo implements Constants {
         return error;
     }
 
-
-
     /**
      *  Set the CurrentStatus property.
      *
@@ -431,9 +393,6 @@ public class JobInfo implements Constants {
     public String getCurrentStatus() {
         return currentStatus;
     }
-
-
-
 
     /**
      *  Set the Status property.
@@ -453,7 +412,6 @@ public class JobInfo implements Constants {
         return status;
     }
 
-
     /**
      * set date
      *
@@ -471,7 +429,6 @@ public class JobInfo implements Constants {
     public Date getStartDate() {
         return startDate;
     }
-
 
     /**
      * Set the EndDate property.
@@ -491,9 +448,6 @@ public class JobInfo implements Constants {
         return endDate;
     }
 
-
-
-
     /**
      * Add the status message to the list of messages
      *
@@ -512,7 +466,6 @@ public class JobInfo implements Constants {
     public List<String> getStatusItems() {
         return statusItems;
     }
-
 
     /**
      *  Set the IpAddress property.
@@ -586,11 +539,6 @@ public class JobInfo implements Constants {
         return email;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getEmailForDisplay() {
         if ((email == null) || (email.length() == 0)) {
             if (logEmail != null) {
@@ -602,7 +550,6 @@ public class JobInfo implements Constants {
 
         return email;
     }
-
 
     /**
      * Set the ProductSize property.
@@ -676,12 +623,6 @@ public class JobInfo implements Constants {
         return type;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     */
     public void appendExtraInfo(String s) {
         extraInfo.append(s);
     }
@@ -708,7 +649,6 @@ public class JobInfo implements Constants {
         return extraInfo.toString();
     }
 
-
     /**
      *  Set the ReturnUrl property.
      *
@@ -726,7 +666,5 @@ public class JobInfo implements Constants {
     public String getReturnUrl() {
         return returnUrl;
     }
-
-
 
 }

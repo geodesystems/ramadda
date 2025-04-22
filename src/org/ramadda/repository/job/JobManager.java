@@ -5,10 +5,8 @@
 
 package org.ramadda.repository.job;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -18,11 +16,9 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
 
-
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceTypeHandler;
 import org.ramadda.util.CategoryBuffer;
-
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.ProcessRunner;
@@ -33,14 +29,11 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.Trace;
 import ucar.unidata.xml.XmlUtil;
-
-
 
 import java.io.*;
 
@@ -54,16 +47,10 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
-
 import java.util.Map;
 import java.util.concurrent.*;
 
 import java.util.zip.*;
-
-
-
 
 public class JobManager extends RepositoryManager {
     public final RequestUrl URL_SERVICES_LIST = new RequestUrl(this,  "/services/list");
@@ -118,17 +105,14 @@ public class JobManager extends RepositoryManager {
 	jobLimit = repository.getProperty("ramadda.job.limit",100);
     }    
 
-
     public void setDebug(boolean v) {
 	debug =v;
     }
 
-    
     public int getNumberOfJobs() {
         return currentJobs;
     }
 
-    
     public void shutdown() {
         running = false;
         if (executor != null) {
@@ -139,13 +123,10 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-
-    
     public List<Service> getServices() {
         return services;
     }
 
-    
     public Service getService(String id) throws Exception {
         Service service = serviceMap.get(id);
         if (service != null) {
@@ -169,8 +150,6 @@ public class JobManager extends RepositoryManager {
 
     }
 
-
-    
     public Service addService(Service service) {
         Service existingService = serviceMap.get(service.getId());
         if (existingService != null) {
@@ -183,8 +162,6 @@ public class JobManager extends RepositoryManager {
         return service;
     }
 
-
-    
     public ExecutorService getExecutor() {
         if (executor == null) {
             synchronized (MUTEX) {
@@ -205,14 +182,10 @@ public class JobManager extends RepositoryManager {
         return executor;
     }
 
-
     public int getNumThreads() {
 	return 	numThreads;
     }
 
-
-
-    
     public JobInfo doMakeJobInfo(Object jobId) throws Exception {
         Statement stmt =
             getDatabaseManager().select(JobInfo.DB_COL_JOB_INFO_BLOB,
@@ -228,8 +201,6 @@ public class JobManager extends RepositoryManager {
         return makeJobInfo(values[0]);
     }
 
-
-    
     private JobInfo makeJobInfo(String blob) throws Exception {
         blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo",
                                "org.ramadda.repository.job.JobInfo");
@@ -243,14 +214,10 @@ public class JobManager extends RepositoryManager {
         return jobInfo;
     }
 
-
-    
     public List<JobInfo> readJobs(String type) throws Exception {
         return readJobs(Clause.eq(JobInfo.DB_COL_TYPE, type));
     }
 
-
-    
     public List<JobInfo> readJobs(Clause clause) throws Exception {
         List<JobInfo> jobInfos = new ArrayList<JobInfo>();
         Statement stmt =
@@ -265,7 +232,6 @@ public class JobManager extends RepositoryManager {
         return jobInfos;
 
     }
-
 
     /**
      * save the job info to the database. This either writes the job to the db if its not there or overwrites the row if it is there
@@ -307,7 +273,6 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-
     /**
      * find the jobinfo for the given job. This looks in the runningJobs and if its not there looks at the database
      *
@@ -333,14 +298,10 @@ public class JobManager extends RepositoryManager {
         return null;
     }
 
-
-
-    
     public void setError(JobInfo jobInfo, String error) {
         jobInfo.setError(error);
         writeJobInfo(jobInfo);
     }
-
 
     /**
      * Is the job still running
@@ -357,22 +318,11 @@ public class JobManager extends RepositoryManager {
         return runningJobs.get(jobId) != null;
     }
 
-    /**
-     * _more_
-     *
-     * @param jobInfo _more_
-     */
     public void jobHasStarted(JobInfo jobInfo) {
         runningJobs.put(jobInfo.getJobId(), jobInfo);
         writeJobInfo(jobInfo, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param jobInfo _more_
-     */
     public void jobHasFinished(JobInfo jobInfo) {
         removeJob(jobInfo);
         jobInfo.setStatus(jobInfo.STATUS_DONE);
@@ -380,27 +330,15 @@ public class JobManager extends RepositoryManager {
         writeJobInfo(jobInfo);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param jobInfo _more_
-     */
     public void jobWasCancelled(JobInfo jobInfo) {
         removeJob(jobInfo);
         jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
         writeJobInfo(jobInfo);
     }
 
-    /**
-     * _more_
-     *
-     * @param jobInfo _more_
-     */
     public void removeJob(JobInfo jobInfo) {
         runningJobs.remove(jobInfo.getJobId());
     }
-
 
     /**
      * utility to execute the list of callable objects
@@ -421,20 +359,10 @@ public class JobManager extends RepositoryManager {
         invokeAndWait(callables);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return "# threads:" + getNumThreads() +" current jobs:" + currentJobs + " completed jobs:" + totalJobs;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private boolean canAcceptJob() {
         return currentJobs <= jobLimit;
     }
@@ -453,7 +381,6 @@ public class JobManager extends RepositoryManager {
             throw new IllegalStateException("JobManager: Too many outstanding processing jobs");
         }
     }
-
 
     /**
      * execute the list of callables in the executor thread pool
@@ -474,7 +401,7 @@ public class JobManager extends RepositoryManager {
 		callCnt++;
                 currentJobs++;
             }
-	    
+
 	    //If only 1 job then run in this thread
 	    /*	    if(false && callables.size()==1) {
 		    callables.get(0).call();
@@ -499,7 +426,6 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-
     /**
      *
      * @param callables _more_
@@ -520,17 +446,6 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleJobStatusRequest(Request request, Entry entry)
 	throws Exception {
         String jobId = request.getString(JobInfo.ARG_JOB_ID, (String) null);
@@ -562,7 +477,6 @@ public class JobManager extends RepositoryManager {
                                           + jobInfo.getError());
         }
 
-
         if (request.get(ARG_CANCEL, false)) {
             runningJobs.remove(jobId);
             jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
@@ -575,16 +489,6 @@ public class JobManager extends RepositoryManager {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processServicesList(Request request) throws Exception {
         StringBuffer sb = new StringBuffer("\n");
         sb.append(HtmlUtils.p());
@@ -635,7 +539,6 @@ public class JobManager extends RepositoryManager {
             cb.append(service.getCategory(), serviceSB.toString());
         }
 
-
         for (String category : cb.getCategories()) {
             sb.append(
 		      HtmlUtils.div(
@@ -653,29 +556,11 @@ public class JobManager extends RepositoryManager {
         return new Result(msg("Services"), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param service _more_
-     *
-     * @return _more_
-     */
     public String getServiceUrl(Request request, Service service) {
         return HtmlUtils.url(getRepository().getUrlBase() + "/services/view",
                              ARG_SERVICEID, service.getId());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processServicesView(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
         Service service  = getService(request.getString(ARG_SERVICEID, ""));
@@ -692,7 +577,6 @@ public class JobManager extends RepositoryManager {
 	  request.setReturnFilename(service.getLabel()+"services.xml");
 	  return new Result("",sb,"text/xml");
 	  }*/
-
 
         if ( !service.isEnabled()) {
             sb.append(
@@ -717,17 +601,6 @@ public class JobManager extends RepositoryManager {
                                    null, service, extra);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param jobInfo _more_
-     * @param message _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result makeRequestErrorResult(Request request, JobInfo jobInfo,
                                          String message)
 	throws Exception {
@@ -786,21 +659,6 @@ public class JobManager extends RepositoryManager {
         return new Result("", sb);
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param jobInfo _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void openHtmlHeader(Request request, JobInfo jobInfo,
                                Appendable sb)
 	throws Exception {
@@ -810,15 +668,6 @@ public class JobManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param jobInfo _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void closeHtmlHeader(Request request, JobInfo jobInfo,
                                 Appendable sb)
 	throws Exception {
@@ -827,8 +676,6 @@ public class JobManager extends RepositoryManager {
 					       sb);
         }
     }
-
-
 
     /**
      * Excecute a command
@@ -887,20 +734,6 @@ public class JobManager extends RepositoryManager {
                               timeOutInSeconds, null, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param commands _more_
-     * @param envVars _more_
-     * @param workingDir _more_
-     * @param timeOutInSeconds _more_
-     * @param stdOutPrintWriter _more_
-     * @param stdErrPrintWriter _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public CommandResults executeCommand(List<String> commands,
                                          Map<String, String> envVars,
                                          File workingDir,
@@ -941,7 +774,6 @@ public class JobManager extends RepositoryManager {
 
 	}
 
-
         ProcessBuilder pb = getRepository().makeProcessBuilder(commands);
 	pb.redirectErrorStream(false);
 
@@ -971,7 +803,7 @@ public class JobManager extends RepositoryManager {
 				}				    
 			    }
 			}
-			
+
 		    }
 		});
 	}
@@ -979,8 +811,6 @@ public class JobManager extends RepositoryManager {
 	try {
 	    runner[0] = new ProcessRunner(pb, timeOutInSeconds,
 					  stdOutPrintWriter, stdErrPrintWriter);
-
-
 
 	    int exitCode = runner[0].runProcess();
 	    stdOutPrintWriter.flush();
@@ -997,18 +827,6 @@ public class JobManager extends RepositoryManager {
 	}
     }
 
-
-    /**
-     * _more_
-     *
-     * @param command _more_
-     * @param workingDir _more_
-     * @param timeOutInSeconds _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public CommandResults executeCommand(String command, File workingDir,
                                          int timeOutInSeconds)
 	throws Exception {
@@ -1033,7 +851,6 @@ public class JobManager extends RepositoryManager {
 
     }
 
-
     /**
      * Class description
      *
@@ -1043,22 +860,12 @@ public class JobManager extends RepositoryManager {
      */
     public static class CommandResults {
 
-        /** _more_ */
         private String stdoutMsg;
 
-        /** _more_ */
         private String stderrMsg;
 
-        /** _more_ */
         private int exitCode;
 
-        /**
-         * _more_
-         *
-         * @param stdoutMsg _more_
-         * @param stderrMsg _more_
-         * @param exitCode _more_
-         */
         public CommandResults(String stdoutMsg, String stderrMsg,
                               int exitCode) {
             this.stdoutMsg = stdoutMsg;
@@ -1066,29 +873,14 @@ public class JobManager extends RepositoryManager {
             this.exitCode  = exitCode;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getStderrMsg() {
             return stderrMsg;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getStdoutMsg() {
             return stdoutMsg;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public int getExitCode() {
             return exitCode;
         }
