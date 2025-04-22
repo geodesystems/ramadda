@@ -21,142 +21,84 @@ import java.util.List;
 
 public class ApiMethod {
 
-    /** _more_ */
     public static final String TAG_API = "api";
 
-    /** _more_ */
     public static final String TAG_GROUP = "group";
 
-    /** _more_ */
     public static final String TAG_PROPERTY = "property";
 
-    /** _more_ */
     public static final String ATTR_REQUEST = "request";
 
-    /** _more_ */
     public static final String ATTR_NEEDS_SSL = "needs_ssl";
 
-    /** _more_ */
     public static final String ATTR_CHECKAUTHMETHOD = "checkauthmethod";
 
-    /** _more_ */
     public static final String ATTR_AUTHMETHOD = "authmethod";
 
-    /** _more_ */
     public static final String ATTR_HANDLER = "handler";
 
-    /** _more_ */
     public static final String ATTR_ACTIONS = "actions";
 
-    /** _more_ */
     public static final String ATTR_TOPLEVEL = "toplevel";
 
-    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_ */
     public static final String ATTR_ICON = "icon";
 
-    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_ */
     public static final String ATTR_VALUE = "value";
 
-    /** _more_ */
     public static final String ATTR_METHOD = "method";
 
-    /** _more_ */
     public static final String ATTR_ADMIN = "admin";
 
-    /** _more_ */
     public static final String ATTR_ISUSER = "isuser";
 
-    /** _more_ */
     public static final String ATTR_POST = "post";
 
-    /** _more_ */
     public static final String ATTR_REQUIRESAUTHTOKEN = "requires_auth_token";
 
-    /** _more_ */
     public static final String ATTR_ISHOME = "ishome";
 
-    /** _more_ */
     public static final String ATTR_HANDLESHEAD = "head";
 
-    /** _more_ */
     private String request;
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String icon;
 
-    /** _more_ */
     private boolean isTopLevel = false;
 
-    /** _more_ */
     private boolean mustBeAdmin = true;
 
-    /** _more_ */
     private boolean mustBeUser = false;
 
-    /** _more_ */
     private boolean mustBePost = false;
 
-    /** _more_ */
     private boolean requiresAuthToken = false;
 
-    /** _more_ */
     private RequestHandler requestHandler;
 
-    /** _more_ */
     private Method method;
 
-    /** _more_ */
     private List actions;
 
-    /** _more_ */
     private Repository repository;
 
-    /** _more_ */
     private RequestUrl url;
 
-    /** _more_ */
     private boolean needsSsl = false;
 
-    /** _more_ */
     private boolean checkAuthMethod = false;
 
-    /** _more_ */
     private String authMethod;
 
-    /** _more_ */
     private boolean handlesHead = false;
 
-    /** _more_ */
     private Counter numberOfCalls = new Counter();
 
-    /**
-     * _more_
-     *
-     *
-     *
-     * @param repository _more_
-     * @param requestHandler _more_
-     * @param request _more_
-     * @param name _more_
-     * @param method _more_
-     * @param mustBeAdmin _more_
-     * @param mustBeUser _more_
-     * @param requiresAuthToken _more_
-     * @param needsSsl _more_
-     * @param authMethod _more_
-     * @param checkAuthMethod _more_
-     * @param isTopLevel _more_
-     * @param icon _more_
-     */
     public ApiMethod(Repository repository, RequestHandler requestHandler,
                      String request, String name, Method method,
                      boolean mustBeAdmin, boolean mustBeUser,
@@ -178,25 +120,10 @@ public class ApiMethod {
         this.icon              = icon;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isWildcard() {
         return request.endsWith("/*");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean isRequestOk(Request request, Repository repository)
             throws Exception {
         User user = request.getUser();
@@ -229,13 +156,6 @@ public class ApiMethod {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void printDebug(Request request) throws Exception {
         System.err.println("Api method requiresAuthToken="
                            + requiresAuthToken + " must be admin="
@@ -248,34 +168,15 @@ public class ApiMethod {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return request;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result invoke(Request request) throws Exception {
         return (Result) getMethod().invoke(requestHandler,
                                            new Object[] { request });
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RequestHandler getRequestHandler() {
         return requestHandler;
     }
@@ -298,17 +199,10 @@ public class ApiMethod {
         return request;
     }
 
-    /** _more_ */
     private String wildcardPath1;
 
-    /** _more_ */
     private String wildcardPath2;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getWildcardPath1() {
         if (wildcardPath1 == null) {
             wildcardPath1 = request.substring(0, request.length() - 1);
@@ -317,11 +211,6 @@ public class ApiMethod {
         return wildcardPath1;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getWildcardPath2() {
         if (wildcardPath2 == null) {
             wildcardPath2 = request.substring(0, request.length() - 2);
@@ -330,11 +219,6 @@ public class ApiMethod {
         return wildcardPath2;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RequestUrl getUrl() {
         if (url == null) {
             url = new RequestUrl(repository, request);
@@ -505,18 +389,10 @@ public class ApiMethod {
         return this.authMethod;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getNumberOfCalls() {
         return numberOfCalls.getCount();
     }
 
-    /**
-     * _more_
-     */
     public void incrNumberOfCalls() {
         numberOfCalls.incr();
     }

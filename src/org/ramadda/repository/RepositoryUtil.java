@@ -49,15 +49,12 @@ public class RepositoryUtil {
     /**  */
     private static int requestCnt = 0;
 
-    /** _more_ */
     private static String HTDOCS_VERSION = "htdocs_v"
                                            + VERSION_FULL.replaceAll("\\.",
                                                "_");
 
-    /** _more_ */
     private static String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
-    /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
     /** timezone */
@@ -99,33 +96,16 @@ public class RepositoryUtil {
         return VERSION_FULL;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String getHtdocsVersion() {
 	//        return HTDOCS_VERSION +"_"+new Date().getTime();
         return HTDOCS_VERSION;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public static String getHtdocsVersionSlash() {
 	//        return HTDOCS_VERSION_SLASH +"_"+new Date().getTime();
         return HTDOCS_VERSION_SLASH;
     }
 
-    /**
-     * _more_
-     *
-     * @param string _more_
-     *
-     * @return _more_
-     */
     public static String hashString(String string) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
@@ -156,14 +136,6 @@ public class RepositoryUtil {
         return makeDateFormat(formatString, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param formatString _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public static SimpleDateFormat makeDateFormat(String formatString,
             TimeZone timezone) {
         if (timezone == null) {
@@ -270,13 +242,6 @@ public class RepositoryUtil {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {}
 
 }

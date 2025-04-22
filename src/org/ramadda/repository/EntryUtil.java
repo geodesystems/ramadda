@@ -52,16 +52,10 @@ public class EntryUtil extends RepositoryManager {
 
     //Cache for 1 hour
 
-    /** _more_ */
     private TTLObject<Hashtable<String, Integer>> typeCache =
         new TTLObject<Hashtable<String, Integer>>(60 * 60 * 1000,
                       "Entry Type Count Cache");
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     private EntryUtil(Repository repository) {
         super(repository);
     }
@@ -76,9 +70,6 @@ public class EntryUtil extends RepositoryManager {
         return new EntryUtil(repository);
     }
 
-    /**
-     * _more_
-     */
     public synchronized void clearCache() {
         if (typeCache != null) {
             typeCache.clearCache();
@@ -166,14 +157,6 @@ public class EntryUtil extends RepositoryManager {
 	return 	sortEntriesOn(entries,by, descending);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntriesOnName(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on name:" + entries);
@@ -431,15 +414,6 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     * @param p _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntriesOnPattern(List<Entry> entries,
             final boolean descending, String p) {
 	if(debugSort)    System.err.println("sort on pattern:" + entries);
@@ -511,14 +485,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> doGroupAndNameSort(List<Entry> entries,
             final boolean descending) {
         Comparator comp = new Comparator() {
@@ -553,14 +519,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public List<Entry> sortEntriesOnDate(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on date:" + entries);
@@ -591,14 +549,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntriesOnCreateDate(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on create date:" + entries);
@@ -629,14 +579,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntriesOnEntryOrder(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on entry order:" + entries);
@@ -667,14 +609,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntriesOnChangeDate(List<Entry> entries,
             final boolean descending) {
 	if(debugSort)    System.err.println("sort on change date:" + entries);
@@ -733,14 +667,6 @@ public class EntryUtil extends RepositoryManager {
 	return (int)(d1.doubleValue()-d2.doubleValue());
     }        
 
-    /**
-     * _more_
-     *
-     * @param l1 _more_
-     * @param l2 _more_
-     *
-     * @return _more_
-     */
     private static int compare(long l1, long l2) {
         if (l1 < l2) {
             return -1;
@@ -751,15 +677,6 @@ public class EntryUtil extends RepositoryManager {
         return 0;
     }
 
-    /**
-     * _more_
-     *
-     * @param e1 _more_
-     * @param e2 _more_
-     * @param on _more_
-     *
-     * @return _more_
-     */
     private  int compareEntries(Request request,Entry e1, Entry e2, CompareOn on) {
 	if(on.column!=null) {
 	    if(e1.getTypeHandler().equals(e2.getTypeHandler())) {
@@ -893,15 +810,6 @@ public class EntryUtil extends RepositoryManager {
         return entries;
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param sorts _more_
-     * @param descending _more_
-     *
-     * @return _more_
-     */
     public  List<Entry> sortEntries(List<Entry> entries, String sorts,
                                           final boolean descending) {
         if (sorts.startsWith("number:")) {
@@ -983,13 +891,6 @@ public class EntryUtil extends RepositoryManager {
         return (List<Entry>) Misc.toList(array);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getTimezone(Request request, Entry entry) {
         try {
             List<Metadata> metadataList =
@@ -1009,27 +910,11 @@ public class EntryUtil extends RepositoryManager {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, Entry entry) {
         return getDateHandler().formatDate(request, entry.getStartDate(),
                                            getTimezone(request,entry));
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public List<Entry> getEntriesWithType(List<Entry> entries, String type) {
         List<Entry> results = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -1041,15 +926,6 @@ public class EntryUtil extends RepositoryManager {
         return results;
     }
 
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public int getEntryCount(TypeHandler typeHandler) throws Exception {
         Hashtable<String, Integer> typesWeHave = typeCache.get();
         if (typesWeHave == null) {
@@ -1072,14 +948,6 @@ public class EntryUtil extends RepositoryManager {
         return cnt.intValue();
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public List<Entry> getEntriesOfType(List<Entry> entries, String type) {
         List<Entry> result = new ArrayList<Entry>();
         for (Entry entry : entries) {
@@ -1091,13 +959,6 @@ public class EntryUtil extends RepositoryManager {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param children _more_
-     *
-     * @return _more_
-     */
     public Rectangle2D.Double getBounds(Request request, List<Entry> children) {
         Rectangle2D.Double rect = null;
 
@@ -1157,13 +1018,6 @@ public class EntryUtil extends RepositoryManager {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {}
 
     public static class Excluder {

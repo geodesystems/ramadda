@@ -41,15 +41,6 @@ public class CommentManager extends RepositoryManager {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processCommentsShow(Request request) throws Exception {
         Entry        entry = getEntryManager().getEntry(request);
         StringBuffer sb    = new StringBuffer();
@@ -106,16 +97,6 @@ public class CommentManager extends RepositoryManager {
                                       new OutputHandler.State(entry)));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Comment> getComments(Request request, final Entry entry)
             throws Exception {
         if (entry.getComments() != null) {
@@ -157,15 +138,6 @@ public class CommentManager extends RepositoryManager {
         return comments;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processCommentsEdit(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request);
         //TODO: actually support comment editing
@@ -183,15 +155,6 @@ public class CommentManager extends RepositoryManager {
 					  "Comment deleted"));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processCommentsAdd(Request request) throws Exception {
         Entry entry = getEntryManager().getEntry(request);
         if (request.exists(ARG_CANCEL)) {

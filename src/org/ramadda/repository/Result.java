@@ -25,7 +25,6 @@ public class Result {
     /** OK response code */
     public static final int RESPONSE_OK = 200;
 
-    /** _more_ */
     public static final int RESPONSE_PARTIAL = 206;
 
     /** Not found response code */
@@ -37,7 +36,6 @@ public class Result {
     /** Internal error response code */
     public static final int RESPONSE_INTERNALERROR = 500;
 
-    /** _more_ */
     public static final int RESPONSE_BLOCKED = 403;
 
     public static final int RESPONSE_BADRREQUEST = 400;    
@@ -63,7 +61,6 @@ public class Result {
     /** content bytes */
     private byte[] byteContent;
 
-    /** _more_ */
     private String stringContent;
 
     /** the title */
@@ -189,13 +186,6 @@ public class Result {
         stringContent = content.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param content _more_
-     * @param mimeType _more_
-     * @param decorate _more_
-     */
     public Result(Appendable content, String mimeType, boolean decorate) {
         this("", (byte[]) null, mimeType);
         stringContent       = content.toString();
@@ -322,14 +312,6 @@ public class Result {
         return properties.get(name);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public Object getProperty(String name, Object dflt) {
         Object prop = properties.get(name);
         if (prop == null) {
@@ -376,11 +358,6 @@ public class Result {
         stringContent = null;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setContent(String value) {
         stringContent = value;
         byteContent   = null;
@@ -399,11 +376,6 @@ public class Result {
         return byteContent;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getStringContent() {
         if ((stringContent == null) && (byteContent != null)) {
             stringContent = new String(byteContent);

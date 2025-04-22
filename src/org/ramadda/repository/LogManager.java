@@ -72,7 +72,6 @@ public class LogManager extends RepositoryManager {
     /** apache style log macro */
     public static final String LOG_MACRO_RESPONSE = "%>s";
 
-    /** _more_ */
     public static final String LOG_MACRO_SIZE = "%b";
 
     /** apache style log macro */
@@ -90,7 +89,6 @@ public class LogManager extends RepositoryManager {
     /** the log directory property */
     public static final String PROP_LOGDIR = "ramadda.storage.logdir";
 
-    /** _more_ */
     public static final String LOG_TEMPLATE = LOG_MACRO_IP + " " + "["
                                               + LOG_MACRO_TIME + "] " + QUOTE
                                               + LOG_MACRO_REQUEST + QUOTE

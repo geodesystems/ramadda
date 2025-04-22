@@ -30,26 +30,14 @@ import java.util.Properties;
  */
 public class FavoriteEntry {
 
-    /** _more_ */
     private String id;
 
-    /** _more_ */
     private Entry entry;
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String category;
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param entry _more_
-     * @param name _more_
-     * @param category _more_
-     */
     public FavoriteEntry(String id, Entry entry, String name,
                          String category) {
         this.id       = id;
@@ -58,13 +46,6 @@ public class FavoriteEntry {
         this.category = category;
     }
 
-    /**
-     * _more_
-     *
-     * @param favorites _more_
-     *
-     * @return _more_
-     */
     public static List<Entry> getEntries(List<FavoriteEntry> favorites) {
         List<Entry> entries = new ArrayList<Entry>();
         for (FavoriteEntry favorite : favorites) {

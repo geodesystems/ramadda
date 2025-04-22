@@ -16,42 +16,22 @@ import java.util.List;
  */
 public class RequestUrl {
 
-    /** _more_ */
     private RepositorySource repositorySource;
 
-    /** _more_ */
     private String path = "foo";
 
-    /** _more_ */
     private String basePath;
 
-    /** _more_ */
     private String label = null;
 
-    /** _more_ */
     private boolean haveInitialized = false;
 
-    /** _more_ */
     private boolean needsSsl = false;
 
-    /**
-     * _more_
-     *
-     *
-     * @param repositorySource _more_
-     * @param path _more_
-     */
     public RequestUrl(RepositorySource repositorySource, String path) {
         this(repositorySource, path, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param repositorySource _more_
-     * @param path _more_
-     * @param needsSsl _more_
-     */
     public RequestUrl(RepositorySource repositorySource, String path, boolean needsSsl) {
         this.repositorySource = repositorySource;
         this.path             = path;
@@ -65,14 +45,6 @@ public class RequestUrl {
 
     private List<String>aliases = new ArrayList<String>();
 
-    /**
-     * _more_
-     *
-     *
-     * @param repositorySource _more_
-     * @param path _more_
-     * @param label _more_
-     */
     public RequestUrl(RepositorySource repositorySource, String path,  String label,
 		      String...aliases) {
         this(repositorySource, path);
@@ -104,13 +76,6 @@ public class RequestUrl {
         return l;
     }
 
-    /**
-     * _more_
-     *
-     * @param suffix _more_
-     *
-     * @return _more_
-     */
     public String getFullUrl(String suffix) {
         checkInit();
         if (needsSsl) {
@@ -126,50 +91,23 @@ public class RequestUrl {
         return url2;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getFullUrl() {
         return getFullUrl("");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private RepositoryBase getRepositoryBase() {
         return repositorySource.getRepositoryBase();
     }
 
-    /**
-     * _more_
-     *
-     * @param suffix _more_
-     *
-     * @return _more_
-     */
     public String getHttpsUrl(String suffix) {
         return getRepositoryBase().getHttpsUrl(
             getRepositoryBase().getUrlBase() + path) + suffix;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHttpsUrl() {
         return getHttpsUrl("");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUrlPath() {
         checkInit();
         if (needsSsl) {
@@ -179,9 +117,6 @@ public class RequestUrl {
         return getRepositoryBase().getUrlBase() + path;
     }
 
-    /**
-     * _more_
-     */
     private void checkInit() {
         if ( !haveInitialized) {
             getRepositoryBase().initRequestUrl(this);
@@ -189,14 +124,8 @@ public class RequestUrl {
         }
     }
 
-    /** _more_ */
     private String myString;
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         if (myString == null) {
             checkInit();
@@ -206,51 +135,22 @@ public class RequestUrl {
         return myString;
     }
 
-    /**
-     * _more_
-     *
-     * @param collectionPath _more_
-     *
-     * @return _more_
-     */
     public String getUrl(String collectionPath) {
         return getRepositoryBase().getUrlBase() + "/" + collectionPath + path;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLabel() {
         return label;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getBasePath() {
         return basePath;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getPath() {
         return path;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public boolean equals(Object o) {
         if ( !(o instanceof RequestUrl)) {
             return false;

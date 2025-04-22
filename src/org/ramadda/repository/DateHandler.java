@@ -35,55 +35,36 @@ public class DateHandler extends RepositoryManager {
     public static final long NULL_DATE=-9999999L;
     public static final String NULL_DATE_LABEL="NA";
 
-    /** _more_ */
     public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
-    /** _more_ */
     public static final String DEFAULT_TIME_SHORTFORMAT = "yyyy/MM/dd";
 
-    /** _more_ */
     public static final String DEFAULT_TIME_THISYEARFORMAT =
         "yyyy/MM/dd HH:mm z";
 
-    /** _more_ */
     private static TimeZone displayTimeZone;
 
-    /** _more_ */
     private SimpleDateFormat displaySdf;
 
-    /** _more_ */
     private SimpleDateFormat yyyymmddSdf;
 
-    /** _more_ */
     private SimpleDateFormat dateSdf =
         RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 
-    /** _more_ */
     private SimpleDateFormat timeSdf =
         RepositoryUtil.makeDateFormat("HH:mm:ss z");
 
-    /** _more_ */
     private String shortDateFormat;
 
-    /** _more_ */
     private static Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
 
-    /** _more_ */
     protected static List<SimpleDateFormat> parseFormats;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public DateHandler(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     */
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -134,16 +115,6 @@ public class DateHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param date _more_
-     * @param url _more_
-     * @param dayLinks _more_
-     *
-     * @throws Exception _more_
-     */
     public void createMonthNav(Appendable sb, Date date, String url,
                                Hashtable dayLinks)
             throws Exception {
@@ -266,32 +237,11 @@ public class DateHandler extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param name _more_
-     * @param formName _more_
-     * @param date _more_
-     *
-     * @return _more_
-     */
     public String makeDateInput(Request request, String name,
                                 String formName, Date date) {
         return makeDateInput(request, name, formName, date, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param name _more_
-     * @param formName _more_
-     * @param date _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public String makeDateInput(Request request, String name,
                                 String formName, Date date, String timezone) {
         return makeDateInput(request, name, formName, date, timezone, true);
@@ -381,43 +331,19 @@ public class DateHandler extends RepositoryManager {
                           + HU.id(inputId) + HU.title(dateHelp)) + extra;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getShortDateFormat() {
         return shortDateFormat;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public TimeZone getDisplayTimeZone() {
         return displayTimeZone;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDefaultDisplayDateFormat() {
         return getRepository().getProperty(PROP_DATE_FORMAT,
                                            DEFAULT_TIME_FORMAT);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param format _more_
-     *
-     * @return _more_
-     *
-     */
     public SimpleDateFormat getDateFormat(Request request, Entry entry, String format) {
         try {
             if (format == null) {
@@ -468,29 +394,10 @@ public class DateHandler extends RepositoryManager {
 	return false;
     }        
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param date _more_
-     * @param format _more_
-     *
-     * @return _more_
-     *
-     */
     public String formatDate(Request request, Entry entry, Date date, String format) {
         return doFormat(date, getDateFormat(request,entry, format));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param ms _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, Entry entry, long ms) {
 	if(ms==NULL_DATE) return NULL_DATE_LABEL;
         return formatDate(request, entry, new Date(ms));
@@ -500,26 +407,10 @@ public class DateHandler extends RepositoryManager {
         return formatDate(request,entry, new Date(d), macro.getProperty("format",null));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, Entry entry, Date d) {
         return formatDate(request,entry, d, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param format _more_
-     *
-     * @return _more_
-     */
     public SimpleDateFormat getSDF(String format) {
         return getSDF(format, null);
     }
@@ -528,14 +419,6 @@ public class DateHandler extends RepositoryManager {
 	return getSDF(format, timezone, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param format _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public  static  SimpleDateFormat getSDF(String format, String timezone,boolean shared) {
         SimpleDateFormat sdf = null;
         String key=null;
@@ -565,50 +448,20 @@ public class DateHandler extends RepositoryManager {
         return sdf;
     }
 
-    /**
-     * _more_
-     *
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Date d) {
         return formatDate(d, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param date _more_
-     *
-     * @return _more_
-     */
     public String formatYYYYMMDD(Date date) {
         return doFormat(date, yyyymmddSdf);
     }
 
-    /**
-     * _more_
-     *
-     * @param date _more_
-     * @param sdf _more_
-     *
-     * @return _more_
-     */
     public static  String doFormat(Date date, SimpleDateFormat sdf) {
         synchronized (sdf) {
             return sdf.format(date);
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param d _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Date d, String timezone) {
         if (d == null) {
             return BLANK;
@@ -627,106 +480,35 @@ public class DateHandler extends RepositoryManager {
         return doFormat(d, dateFormat);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param ms _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, long ms) {
         return formatDate(new Date(ms));
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param ms _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, long ms, String timezone) {
         return formatDate(new Date(ms), timezone);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, Date d) {
         return formatDate(d);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public String formatDate(Request request, Date d, String timezone) {
         return formatDate(d, timezone);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param ms _more_
-     *
-     * @return _more_
-     */
     public String formatDateShort(Request request, Entry entry, long ms) {
         return formatDateShort(request, entry, new Date(ms));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param date _more_
-     *
-     * @return _more_
-     */
     public String formatDateShort(Request request, Entry entry, Date date) {
         return formatDateShort(request, date,
                                getEntryUtil().getTimezone(request, entry));
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     *
-     * @return _more_
-     */
     public String formatDateShort(Request request, Date d, String timezone) {
         return formatDateShort(request, d, timezone, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param d _more_
-     * @param timezone _more_
-     * @param extraAlt _more_
-     *
-     * @return _more_
-     */
     public String formatDateShort(Request request, Date d, String timezone,
                                   String extraAlt) {
 	d = checkDate(d);
@@ -769,15 +551,6 @@ public class DateHandler extends RepositoryManager {
                        + HU.attr(HU.ATTR_TITLE, fullDate + extraAlt));
     }
 
-    /**
-     * _more_
-     *
-     * @param dttm _more_
-     *
-     * @return _more_
-     *
-     * @throws java.text.ParseException _more_
-     */
     public Date parseDate(String dttm) throws java.text.ParseException {
         if ( !Utils.stringDefined(dttm)) {
             return null;

@@ -24,34 +24,18 @@ import java.util.List;
  */
 public class Association {
 
-    /** _more_ */
     public static final String TYPE_ATTACHMENT = "attachment";
 
-    /** _more_ */
     private String id;
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String type;
 
-    /** _more_ */
     private String fromId;
 
-    /** _more_ */
     private String toId;
 
-    /**
-     * _more_
-     *
-     *
-     * @param id _more_
-     * @param name _more_
-     * @param type _more_
-     * @param fromId _more_
-     * @param toId _more_
-     */
     public Association(String id, String name, String type, String fromId,
                        String toId) {
         this.id   = id;
@@ -100,11 +84,6 @@ public class Association {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLabel() {
         if ((name == null) || (name.length() == 0)) {
             return type;
@@ -113,13 +92,6 @@ public class Association {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public boolean equals(Object o) {
         if ( !(o instanceof Association)) {
             return false;
@@ -133,11 +105,6 @@ public class Association {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return "name:" + name + " type:" + type + " fromId:" + fromId;
         //        return "name:" + name +" type:" + type + " fromId:" + fromId +" toId:" + toId;

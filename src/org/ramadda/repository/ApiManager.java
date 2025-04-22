@@ -78,23 +78,17 @@ import java.util.zip.*;
 @SuppressWarnings("unchecked")
 public class ApiManager extends RepositoryManager {
 
-    /** _more_ */
     ApiMethod homeApi;
 
-    /** _more_ */
     private Hashtable<String, RequestHandler> apiHandlers =
         new Hashtable<String, RequestHandler>();
 
-    /** _more_ */
     Hashtable<String, ApiMethod> requestMap = new Hashtable();
 
-    /** _more_ */
     ArrayList<ApiMethod> apiMethods = new ArrayList();
 
-    /** _more_ */
     ArrayList<ApiMethod> wildCardApiMethods = new ArrayList();
 
-    /** _more_ */
     ArrayList<ApiMethod> topLevelMethods = new ArrayList();
 
     /**
@@ -106,16 +100,6 @@ public class ApiManager extends RepositoryManager {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     * @param props _more_
-     * @param handlers _more_
-     * @param defaultHandler _more_
-     *
-     * @throws Exception _more_
-     */
     protected void addRequest(Element node, Hashtable props,
                               Hashtable handlers, String defaultHandler)
             throws Exception {
@@ -302,11 +286,6 @@ public class ApiManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadApi() throws Exception {
         for (String file : getPluginManager().getApiDefFiles()) {
             file = getStorageManager().localizePath(file);
@@ -324,54 +303,22 @@ public class ApiManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public ArrayList<ApiMethod> getTopLevelMethods() {
         return topLevelMethods;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public ApiMethod getHomeApi() {
         return homeApi;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public RequestHandler getApiHandler(String id) {
         return apiHandlers.get(id);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<ApiMethod> getApiMethods() {
         return apiMethods;
     }
 
-    /**
-     * _more_
-     *
-     * @param apiRoot _more_
-     * @param handlers _more_
-     * @param props _more_
-     * @param defaultHandler _more_
-     *
-     * @throws Exception _more_
-     */
     private void processApiNode(Element apiRoot, Hashtable handlers,
                                 Hashtable props, String defaultHandler)
             throws Exception {
@@ -398,15 +345,6 @@ public class ApiManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected ApiMethod findApiMethod(Request request) throws Exception {
         String incoming = request.getRequestPath().trim();
         if (incoming.endsWith("/")) {
@@ -454,13 +392,6 @@ public class ApiManager extends RepositoryManager {
 	return null;
     }	
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public ApiMethod getApiMethod(String path) {
         return requestMap.get(path);
     }

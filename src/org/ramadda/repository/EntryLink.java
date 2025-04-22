@@ -15,24 +15,14 @@ import org.ramadda.util.HtmlUtils;
  */
 public class EntryLink {
 
-    /** _more_ */
     private String link;
 
-    /** _more_ */
     private String folderBlock;
 
-    /** _more_ */
     private String uid;
 
     private String folderClickUrl;
 
-    /**
-     * _more_
-     *
-     * @param link _more_
-     * @param folderBlock _more_
-     * @param uid _more_
-     */
     public EntryLink(String link, String folderBlock, String uid, String folderClickUrl) {
         this.link        = link;
         this.folderBlock = folderBlock;
@@ -40,11 +30,6 @@ public class EntryLink {
 	this.folderClickUrl = folderClickUrl;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return link + HtmlUtils.br() + folderBlock;
     }

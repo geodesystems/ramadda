@@ -83,7 +83,6 @@ public class Entry implements Cloneable {
     /** the description */
     private String description = "";
 
-    /** _more_ */
     private String snippet;
 
     /** the parent entry */
@@ -103,7 +102,6 @@ public class Entry implements Cloneable {
     /** the user (owner) */
     private User user;
 
-    /** _more_ */
     private int entryOrder = DEFAULT_ORDER;
 
     /** the create date */
@@ -131,7 +129,6 @@ public class Entry implements Cloneable {
     /** the type handler for this entry */
     private TypeHandler typeHandler;
 
-    /** _more_ */
     private TypeHandler masterTypeHandler;
 
     /** the start date */
@@ -161,10 +158,8 @@ public class Entry implements Cloneable {
     /** is this a local file */
     private boolean isLocalFile = false;
 
-    /** _more_ */
     private ServerInfo remoteServer;
 
-    /** _more_ */
     private String remoteUrl;
 
     private String remoteId;    
@@ -187,10 +182,8 @@ public class Entry implements Cloneable {
     /** the chillens ids */
     private List<String> childIds;
 
-    /** _more_ */
     private List<Entry> children;
 
-    /** _more_ */
     private Element xmlNode;
 
     /**
@@ -408,11 +401,6 @@ public class Entry implements Cloneable {
 	return getTypeHandler().getPathForEntry( request, this,true);
     }    
 
-    /**
-     * _more_
-     *
-     * @param template _more_
-     */
     public void initWith(Entry template) {
         initWith(template, false);
     }
@@ -468,33 +456,14 @@ public class Entry implements Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     *
-     * @return _more_
-     */
     private double cleanLat(double lat) {
         return Math.max(Math.min(lat, 90), -90);
     }
 
-    /**
-     * _more_
-     *
-     * @param lon _more_
-     *
-     * @return _more_
-     */
     private double cleanLon(double lon) {
         return Math.max(Math.min(lon, 180), -180);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getBoundsString(Request request) {
 	return getBoundsString(request, false);
     }
@@ -605,29 +574,14 @@ public class Entry implements Cloneable {
         return (resource != null) && resource.isFile();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isImage() {
         return getTypeHandler().isImage(this);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isFileType() {
         return (resource != null) && resource.isFileType();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getInsertSql() {
         return null;
     }
@@ -675,11 +629,6 @@ public class Entry implements Cloneable {
         startDate = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setStartDate(Date value) {
         if (value != null) {
             setStartDate(value.getTime()); 
@@ -688,11 +637,6 @@ public class Entry implements Cloneable {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setEndDate(Date value) {
         if (value != null) {
             setEndDate(value.getTime());
@@ -701,11 +645,6 @@ public class Entry implements Cloneable {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setStartAndEndDate(long value) {
         setStartDate(value);
         setEndDate(value);
@@ -808,20 +747,10 @@ public class Entry implements Cloneable {
         typeHandler = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setMasterTypeHandler(TypeHandler value) {
         masterTypeHandler = value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public TypeHandler getMasterTypeHandler() {
         if (masterTypeHandler != null) {
             return masterTypeHandler;
@@ -1049,12 +978,6 @@ public class Entry implements Cloneable {
 	//	setValue(column.getOffset(),v);
     }
 
-    /**
-     * _more_
-     *
-     * @param idx _more_
-     * @param v _more_
-     */
     public void setValue(int idx, Object v) {
         Object[] values = getTypeHandler().getEntryValues(this);
         if (idx >= values.length) {
@@ -1075,9 +998,6 @@ public class Entry implements Cloneable {
         return name + " ";
     }
 
-    /**
-     * _more_
-     */
     public void printMe() {
         System.err.println(this.toString());
         if (values != null) {
@@ -1088,29 +1008,14 @@ public class Entry implements Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasDate() {
         return (startDate != 0L) && (startDate != createDate);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasCreateDate() {
         return (createDate != 0L);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasStartDate() {
         return (startDate != 0L);
     }
@@ -1173,11 +1078,6 @@ public class Entry implements Cloneable {
 			      getEast(request) + (getWest(request) - getEast(request)) / 2 };
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isGeoreferenced(Request request) {
         return hasAreaDefined(request) || hasLocationDefined(request);
     }
@@ -1215,9 +1115,6 @@ public class Entry implements Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     */
     public void normalizeLongitude() {
         if (east > 180) {
             double delta = (east % 180);
@@ -1304,13 +1201,6 @@ public class Entry implements Cloneable {
         setLocation(lat, lon, Double.NaN);
     }
 
-    /**
-     * _more_
-     *
-     * @param lat _more_
-     * @param lon _more_
-     * @param alt _more_
-     */
     public void setLocation(double lat, double lon, double alt) {
         setNorth(lat);
         setSouth(lat);
@@ -1677,9 +1567,6 @@ public class Entry implements Cloneable {
         return remoteId;
     }
 
-    /**
-     * _more_
-     */
     public void clearTransientProperties() {
         transientProperties = new Hashtable();
     }
@@ -1844,13 +1731,6 @@ public class Entry implements Cloneable {
         return id.hashCode();
     }
 
-    /**
-     * _more_
-     *
-     * @param that _more_
-     *
-     * @return _more_
-     */
     public boolean equalsEntry(Entry that) {
         if (that == null) {
             return false;
@@ -1859,11 +1739,6 @@ public class Entry implements Cloneable {
         return Misc.equals(this.id, that.id);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean sameDate() {
         return (createDate == startDate) && (createDate == endDate);
     }
@@ -1948,13 +1823,6 @@ public class Entry implements Cloneable {
         return parentEntry;
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public Entry getAncestor(String type) {
         if (this.getTypeHandler().isType(type)) {
             return this;
@@ -2099,11 +1967,6 @@ public class Entry implements Cloneable {
         return user;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUserId() {
         if (user == null) {
             return UserManager.USER_ANONYMOUS;
@@ -2134,13 +1997,6 @@ public class Entry implements Cloneable {
         return metadata.contains(value);
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public boolean hasMetadataOfType(String type) {
         if (metadata == null) {
             return false;
@@ -2196,9 +2052,6 @@ public class Entry implements Cloneable {
         return metadata;
     }
 
-    /**
-     * _more_
-     */
     public void clearAssociations() {
         associations = null;
     }
@@ -2221,11 +2074,6 @@ public class Entry implements Cloneable {
         return associations;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void addAssociation(Association value) {
         if (associations == null) {
             associations = new ArrayList<Association>();
@@ -2252,11 +2100,6 @@ public class Entry implements Cloneable {
         return comments;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void addComment(Comment value) {
         if (comments == null) {
             comments = new ArrayList<Comment>();
@@ -2283,11 +2126,6 @@ public class Entry implements Cloneable {
         return permissions;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void addPermission(Permission value) {
         if (permissions == null) {
             permissions = new ArrayList<Permission>();
@@ -2296,11 +2134,6 @@ public class Entry implements Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isDummy() {
         return isDummy;
     }

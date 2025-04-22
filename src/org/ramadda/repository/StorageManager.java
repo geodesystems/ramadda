@@ -82,7 +82,6 @@ public class StorageManager extends RepositoryManager implements PointFile
 
     public static final String MACRO_STORAGEDIR = "${ramadda.storagedir}";
 
-    /** _more_ */
     public static final String DFLT_CIPHER = "DES";
 
     /** the full log file */
@@ -97,7 +96,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the users directory */
     public static final String DIR_USERS = "users";
 
-    /** _more_ */
     public static final String DIR_VOLATILE = "volatile";
 
     /** the backups directory */
@@ -175,7 +173,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** the temporary directory */
     private File tmpDir;
 
-    /** _more_ */
     private File processDir;
 
     /** the htdocs directory */
@@ -228,7 +225,6 @@ public class StorageManager extends RepositoryManager implements PointFile
     /** list of directories that are okay to write to */
     private List<File> okToWriteToDirs = new ArrayList<File>();
 
-    /** _more_ */
     private String encryptionPassword;
 
     /**
@@ -320,11 +316,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         });
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private String getDiskUsage() {
         //Note: this will break on systems without du
         List<String> commands = new ArrayList<String>();
@@ -434,31 +425,14 @@ public class StorageManager extends RepositoryManager implements PointFile
         dirRange = getRepository().getProperty(PROP_DIRRANGE, dirRange);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public File getResourceDir() {
         return new File(IOUtil.joinDir(repositoryDir, DIR_RESOURCES));
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public File getVolatileDir() {
         return new File(IOUtil.joinDir(repositoryDir, DIR_VOLATILE));
     }
 
-    /**
-     * _more_
-     *
-     * @param dirName _more_
-     *
-     * @return _more_
-     */
     public File getPluginResourceDir(String dirName) {
         File f = new File(IOUtil.joinDir(getResourceDir(), dirName));
         f.mkdirs();
@@ -628,11 +602,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return tmpDir;
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     public static void makeDirRecursive(File f) {
         f.mkdirs();
         if (f.exists()) {
@@ -642,11 +611,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         throw new RuntimeException("Could not create directory:" + f);
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     public static void makeDir(File f) {
         f.mkdir();
         if (f.exists()) {
@@ -656,11 +620,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         throw new RuntimeException("Could not create directory:" + f);
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     */
     public static void makeDir(String f) {
         makeDir(new File(f));
     }
@@ -677,15 +636,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return getTmpDirFile(tmpDir, file, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param tmpDir _more_
-     * @param file _more_
-     * @param andTouch _more_
-     *
-     * @return _more_
-     */
     public File getTmpDirFile(TempDir tmpDir, String file, boolean andTouch) {
 	file = IO.cleanFileName(file);
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
@@ -721,38 +671,18 @@ public class StorageManager extends RepositoryManager implements PointFile
         return iconsDir;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHtdocsDir() {
         return htdocsDir;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSnapshotsDir() {
         return getHtdocsDir() + "/snapshots";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSnapshotsDataDir() {
         return getSnapshotsDir() + "/data";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSnapshotsPagesDir() {
         return getSnapshotsDir() + "/pages";
     }
@@ -771,9 +701,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return tmpDir;
     }
 
-    /**
-     * _more_
-     */
     protected void clearTmpDir() {
         tmpDir = null;
     }
@@ -870,9 +797,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return getTmpDirFile(getThumbDir(), file);
     }
 
-    /**
-     * _more_
-     */
     @Override
     public void clearCache() {
         for (File file : cacheDir.listFiles()) {
@@ -888,13 +812,6 @@ public class StorageManager extends RepositoryManager implements PointFile
 	clearCacheGroup(getCacheDir(), group);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param tempDir _more_
-     * @param group _more_
-     */
     private void clearCacheGroup(TempDir tempDir, String group) {
         File groupDir = getCacheGroup(tempDir, group);
         IOUtil.deleteDirectory(groupDir);
@@ -943,14 +860,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return getCacheFile(file, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param andTouch _more_
-     *
-     * @return _more_
-     */
     public File getCacheFile(String file, boolean andTouch) {
         return getTmpDirFile(getCacheDir(), file, andTouch);
     }
@@ -966,39 +875,14 @@ public class StorageManager extends RepositoryManager implements PointFile
         return getLongTermCacheFile(file, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param andTouch _more_
-     *
-     * @return _more_
-     */
     public File getLongTermCacheFile(String file, boolean andTouch) {
         return getTmpDirFile(getLongTermCacheDir(), file, andTouch);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param tempDir _more_
-     * @param group _more_
-     *
-     * @return _more_
-     */
     private File getCacheGroup(TempDir tempDir, String group) {
         return new File(IOUtil.joinDir(tempDir.getDir(), group));
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public File getCacheFile(String group, String file) {
         return getCacheFile(getCacheDir(), group, file);
     }
@@ -1042,13 +926,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return new File(IOUtil.joinDir(groupDir, "object.xml"));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public String getCacheKey(Request request) {
         HashSet<String> except =
             (HashSet<String>) Utils.makeHashSet(TypeHandler.ALL);
@@ -1068,29 +945,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         return key;
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     * @param request _more_
-     * @param object _more_
-     *
-     * @throws Exception _more_
-     */
     public void putCacheObject(String group, Request request, Object object)
             throws Exception {
         putCacheObject(group, getCacheKey(request), object);
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     * @param key _more_
-     * @param object _more_
-     *
-     * @throws Exception _more_
-     */
     public void putCacheObject(String group, String key, Object object)
             throws Exception {
         String o = Repository.encodeObject(object);
@@ -1098,31 +957,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         IOUtil.writeFile(f, o);
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Object getCacheObject(String group, Request request)
             throws Exception {
         return getCacheObject(group, getCacheKey(request));
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     * @param key _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Object getCacheObject(String group, String key) throws Exception {
         return getCacheObject(group, key, -1);
     }
@@ -1309,37 +1148,14 @@ public class StorageManager extends RepositoryManager implements PointFile
         return storageDir.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param processDir _more_
-     *
-     * @return _more_
-     */
     public String getProcessDirEntryId(File processDir) {
         return getProcessDirEntryId(processDir.getName());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param processDir _more_
-     *
-     * @return _more_
-     */
     public String getProcessDirEntryUrl(Request request, File processDir) {
         return getProcessDirEntryUrl(request, processDir.getName());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entryId processDir entry id
-     *
-     * @return _more_
-     */
     public String getProcessDirEntryUrl(Request request, String entryId) {
         String processEntryId = getEncodedProcessDirEntryId(entryId);
 
@@ -1350,25 +1166,11 @@ public class StorageManager extends RepositoryManager implements PointFile
         return entryUrl;
     }
 
-    /**
-     * _more_
-     *
-     * @param processId _more_
-     *
-     * @return _more_
-     */
     public String getProcessDirEntryId(String processId) {
         return EntryManager.ID_PREFIX_SYNTH
                + ProcessFileTypeHandler.TYPE_PROCESS + ":/" + processId;
     }
 
-    /**
-     * _more_
-     *
-     * @param processId _more_
-     *
-     * @return _more_
-     */
     public String getEncodedProcessDirEntryId(String processId) {
         String encodedId = Utils.encodeBase64("/" + processId);
 
@@ -1376,13 +1178,6 @@ public class StorageManager extends RepositoryManager implements PointFile
                + ProcessFileTypeHandler.TYPE_PROCESS + ":" + encodedId;
     }
 
-    /**
-     * _more_
-     *
-     * @param processId _more_
-     *
-     * @return _more_
-     */
     public File getProcessDir(String processId) {
         File subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
         if ( !subDir.exists()) {
@@ -1394,11 +1189,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return subDir;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public File createProcessDir() {
         String processId = getRepository().getGUID();
         File   subDir = new File(IOUtil.joinDir(getProcessDir(), processId));
@@ -1407,11 +1197,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return subDir;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public File getProcessDir() {
         if (processDir == null) {
             processDir = getFileFromProperty(PROP_PROCESSDIR);
@@ -1421,13 +1206,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return processDir;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public boolean isProcessFile(File file) {
         return IO.isADescendent(getProcessDir(), file);
 
@@ -1490,14 +1268,6 @@ public class StorageManager extends RepositoryManager implements PointFile
                              + name);
     }
 
-    /**
-     * _more_
-     *
-     * @param tmpDir _more_
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public File makeTmpFile(File tmpDir, String file) {
         File   f;
         int    cnt  = 0;
@@ -1514,25 +1284,10 @@ public class StorageManager extends RepositoryManager implements PointFile
         return checkReadFile(f);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public File getTmpFilePath(Request request, String name) {
         return new File(IOUtil.joinDir(getScratchDir().getDir(), name));
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public static String getOriginalFilename(String name) {
         int idx = name.indexOf(FILE_SEPARATOR);
         if (idx >= 0) {
@@ -1594,17 +1349,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return moveToStorage(request, original, original.getName());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param inputStream _more_
-     * @param fileName _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File moveToStorage(Request request, InputStream inputStream,
                               String fileName)
             throws Exception {
@@ -1816,15 +1560,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return newFile.getName();
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File fetchUrl(String path) throws Exception {
         //Make sure its a url
         if ( !path.toLowerCase().startsWith("http")) {
@@ -1857,14 +1592,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         IOUtil.copyFile(oldFile, newFile);
     }
 
-    /**
-     * _more_
-     *
-     * @param oldFile _more_
-     * @param contents _more_
-     *
-     * @throws Exception _more_
-     */
     public void writeFile(File oldFile, String contents) throws Exception {
         checkWriteFile(oldFile);
         IOUtil.writeFile(oldFile, contents);
@@ -2537,15 +2264,6 @@ public class StorageManager extends RepositoryManager implements PointFile
 	return readFile(getEntryFile(entry).toString());
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String readFile(String file) throws Exception {
         checkPath(file);
 	InputStream is = IO.getInputStream(file);
@@ -2681,13 +2399,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return encrypt(file, getEncryptionPassword());
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public boolean shouldCrypt(File file) {
         //We only crypt files stored under the RAMADDA home dir
         if (IO.isADescendent(getRepositoryDir(), file)) {
@@ -2697,25 +2408,10 @@ public class StorageManager extends RepositoryManager implements PointFile
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getEncryptionPassword() {
         return encryptionPassword;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param key _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public InputStream decrypt(File file, String key) throws Exception {
         InputStream is = new FileInputStream(file);
         if ((key == null) || !shouldCrypt(file)) {
@@ -2732,16 +2428,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return new CipherInputStream(is, cipher);
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param key _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public OutputStream encrypt(File file, String key) throws Exception {
         OutputStream os = new FileOutputStream(file);
         if ((key == null) || !shouldCrypt(file)) {
@@ -2758,14 +2444,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return new CipherOutputStream(os, cipher);
     }
 
-    /**
-     * _more_
-     *
-     * @param is _more_
-     * @param os _more_
-     *
-     * @throws Exception _more_
-     */
     public static void doCopy(InputStream is, OutputStream os)
             throws Exception {
         IOUtil.writeTo(is, os);
@@ -2773,16 +2451,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         IO.close(os);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param zipFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<File> unpackZipfile(Request request, String zipFile)
             throws Exception {
         List<File>     files = new ArrayList<File>();
@@ -2817,16 +2485,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return files;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param f _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File uncompressIfNeeded(Request request, File f) throws Exception {
         if (Utils.isCompressed(f.toString())) {
             File uncompressedFile =
@@ -2845,15 +2503,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         return f;
     }
 
-    /**
-     * _more_
-     *
-     * @param fis _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ZipInputStream makeZipInputStream(InputStream fis)
             throws Exception {
         String encoding = getRepository().getProperty("ramadda.zip.encoding");
@@ -2864,13 +2513,6 @@ public class StorageManager extends RepositoryManager implements PointFile
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     */
     public String readPointFileContents(String path) {
         try {
             checkPath(path);

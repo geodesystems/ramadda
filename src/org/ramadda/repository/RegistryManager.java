@@ -58,90 +58,64 @@ public class RegistryManager extends RepositoryManager {
 
     private static final XmlUtil XU=null;
 
-    /** _more_ */
     public static final String PROP_REGISTRY_DEFAULTSERVER =
         "ramadda.registry.defaultserver";
 
-    /** _more_ */
     public static final String PROP_REGISTRY_ENABLED =
         "ramadda.registry.enabled";
 
     public static final String PROP_REGISTRY_PASSWORD =
         "ramadda_registry_password";
 
-    /** _more_ */
     public static final String PROP_REGISTRY_SERVERS =
         "ramadda.registry.servers";
 
     //    public static final String PROP_CLEARINGHOUSE_ENABLED = "ramadda.clearinghouse.enabled";
 
-    /** _more_ */
     public final RequestUrl URL_REGISTRY_ADD = new RequestUrl(this,
                                                    "/registry/add");
 
-    /** _more_ */
     public final RequestUrl URL_REGISTRY_LIST = new RequestUrl(this,
                                                     "/registry/list");
 
-    /** _more_ */
     //    public final RequestUrl URL_REGISTRY_INFO = new RequestUrl(this, "/registry/info");
 
-    /** _more_ */
     public RequestUrl URL_REGISTRY_REMOTESERVERS =
         new RequestUrl(this, "/admin/remoteservers", "Remote Servers");
 
-    /** _more_ */
     private Object REMOTE_MUTEX = new Object();
 
     /**  */
     public static final String ARG_CHANGE = "registry.change";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_RELOAD = "registry.reload";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_SERVER = "registry.server";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_SELECTED = "registry.selected";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_ENABLED = "registry.enabled";
 
     public static final String ARG_REGISTRY_LIVE = "registry.live";
 
     public static final String ARG_REGISTRY_ISREGISTRY = "registry.isregistry";        
 
-    /** _more_ */
     public static final String ARG_REGISTRY_LABEL = "registry.label";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_CLIENT = "registry.client";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_ADD = "registry.add";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_URL = "registry.url";
 
-    /** _more_ */
     public static final String ARG_REGISTRY_SEARCHROOT = "registry.searchroot";    
 
     public static final String ARG_REGISTRY_SLUG="slug";
 
-    /** _more_ */
     private List<ServerInfo> remoteServers;
 
-    /** _more_ */
     private Hashtable<String, ServerInfo> remoteServerMap;
 
-    /**
-     * _more_
-     *
-     *
-     * @param repository _more_
-     *
-     */
     public RegistryManager(Repository repository) {
         super(repository);
     }
@@ -166,15 +140,6 @@ public class RegistryManager extends RepositoryManager {
 	getLogManager().logRegistry(msg,thr);
     }    
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processAdminRemoteServers(Request request)
             throws Exception {
 
@@ -374,11 +339,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void doFinalInitialization() throws Exception {
         if (isEnabledAsServer()) {
             Misc.run(new Runnable() {
@@ -396,9 +356,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     */
     private void runRegistrationLoop() {
 	Misc.sleep(5000);
 	while (true) {
@@ -412,9 +369,6 @@ public class RegistryManager extends RepositoryManager {
 	}
     }
 
-    /**
-     * _more_
-     */
     private void cleanupServers() {
         if ( !isEnabledAsServer()) {
             return;
@@ -430,11 +384,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void checkApi() throws Exception {
         ApiMethod apiMethod =
             getRepository().getApiManager().getApiMethod("/registry/list");
@@ -444,14 +393,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param csb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addAdminSettings(Request request, StringBuffer csb)
             throws Exception {
@@ -486,13 +427,6 @@ public class RegistryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void applyAdminSettings(Request request) throws Exception {
         List<String> newList =
@@ -509,33 +443,16 @@ public class RegistryManager extends RepositoryManager {
         checkApi();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isEnabledAsServer() {
         return getRepository().getProperty(PROP_REGISTRY_ENABLED, false);
     }
 
-    /**
-     * _more_
-     */
     private void clearRemoteServers() {
         remoteServers        = null;
         remoteServerMap      = null;
         getSearchManager().clearSearchProviders();
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public ServerInfo findRemoteServer(String id) throws Exception {
         if (id.equals(ServerInfo.ID_THIS)) {
             ServerInfo serverInfo = getRepository().getServerInfo();
@@ -547,13 +464,6 @@ public class RegistryManager extends RepositoryManager {
         return getRemoteServerMap().get(id);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<ServerInfo> getEnabledRemoteServers() throws Exception {
         List<ServerInfo> selected = new ArrayList<ServerInfo>();
         for (ServerInfo serverInfo : getRemoteServers()) {
@@ -564,13 +474,6 @@ public class RegistryManager extends RepositoryManager {
         return selected;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Hashtable<String, ServerInfo> getRemoteServerMap()
             throws Exception {
         Hashtable<String, ServerInfo> map = remoteServerMap;
@@ -582,15 +485,6 @@ public class RegistryManager extends RepositoryManager {
         return map;
     }
 
-    /**
-     * _more_
-     *
-     * @param results _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private ServerInfo makeRemoteServer(ResultSet results) throws Exception {
 	int idx=1;
         String  id         = results.getString(idx++);
@@ -611,13 +505,6 @@ public class RegistryManager extends RepositoryManager {
         return serverInfo;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<ServerInfo> getRemoteServers() throws Exception {
         List<ServerInfo> servers = remoteServers;
         if (servers != null) {
@@ -652,11 +539,6 @@ public class RegistryManager extends RepositoryManager {
         return servers;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private List<List<String>> getServersToRegisterWith() {
         List<List<String>> urls = new ArrayList<List<String>>();
 	for(String line: Utils.split(getRepository().getProperty(PROP_REGISTRY_SERVERS,""), "\n", true, true)) {
@@ -670,11 +552,6 @@ public class RegistryManager extends RepositoryManager {
         return urls;
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void registerWithServers() throws Exception {
         List<List<String>> urls = getServersToRegisterWith();
         for (List<String>tuple : urls) {
@@ -682,13 +559,6 @@ public class RegistryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @throws Exception _more_
-     */
     public void registerWithServer(List<String>tuple) throws Exception {
 	String password = tuple.get(0);
 	String url = tuple.get(1);
@@ -710,13 +580,6 @@ public class RegistryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param root _more_
-     *
-     * @return _more_
-     */
     public boolean responseOk(Element root) {
         return XU.getAttribute(root, ATTR_CODE).equals(CODE_OK);
     }
@@ -729,15 +592,6 @@ public class RegistryManager extends RepositoryManager {
 	return new Result(XU.tag(TAG_RESPONSE, XU.attr(ATTR_CODE, CODE_ERROR),msg), MIME_XML);	
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processRegistryAdd(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         if ( !isEnabledAsServer()) {
@@ -763,13 +617,6 @@ public class RegistryManager extends RepositoryManager {
 	return makeErrorResult("failed");
     }
 
-    /**
-     * _more_
-     *
-     * @param serverUrl _more_
-     *
-     * @throws Exception _more_
-     */
     private void fetchRemoteServers(String serverUrl) throws Exception {
         serverUrl = serverUrl + URL_REGISTRY_LIST.getPath();
         serverUrl = HU.url(serverUrl, ARG_RESPONSE, RESPONSE_XML);
@@ -807,14 +654,6 @@ public class RegistryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param serverInfo _more_
-     * @param deleteOldServer _more_
-     *
-     * @throws Exception _more_
-     */
     private void addRemoteServer(ServerInfo serverInfo,
                                  boolean deleteOldServer)
             throws Exception {
@@ -898,15 +737,6 @@ public class RegistryManager extends RepositoryManager {
 	return new Result(XU.toString(resultRoot, false), MIME_XML);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processRegistryList(Request request) throws Exception {
         boolean responseAsXml = request.getString(ARG_RESPONSE,
                                     "").equals(RESPONSE_XML);

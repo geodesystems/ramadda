@@ -51,103 +51,73 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
 
-    /** _more_ */
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
 							REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
-    /** _more_ */
     private static int COUNTER = 0;
 
-    /** _more_ */
     public int count = COUNTER++;
 
-    /** _more_ */
     private Hashtable fileUploads;
 
-    /** _more_ */
     private String urlPath;
 
-    /** _more_ */
     private Hashtable parameters;
 
-    /** _more_ */
     private Hashtable originalParameters;
 
-    /** _more_ */
     private Hashtable extraProperties = new Hashtable();
 
-    /** _more_ */
     private Repository repository;
 
-    /** _more_ */
     private Hashtable httpHeaderArgs;
 
-    /** _more_ */
     private String sessionId;
 
-    /** _more_ */
     private OutputStream outputStream;
 
-    /** _more_ */
     private User user;
 
-    /** _more_ */
     private String ip;
 
-    /** _more_ */
     //    private Entry collectionEntry;
 
     private Entry rootEntry;
 
-    /** _more_ */
     private Entry currentEntry;
 
-    /** _more_ */
     private HttpServletRequest httpServletRequest;
 
-    /** _more_ */
     private HttpServletResponse httpServletResponse;
 
-    /** _more_ */
     private HttpServlet httpServlet;
 
-    /** _more_ */
     private StringBuilder prefixHtml = new StringBuilder();
 
-    /** _more_ */
     private StringBuilder suffixHtml = new StringBuilder();
 
     private StringBuilder headContent = null;
 
-    /** _more_ */
     private boolean checkingAuthMethod = false;
 
     private boolean isEntryShow = false;    
 
-    /** _more_ */
     private ApiMethod apiMethod;
 
-    /** _more_ */
     private boolean isMobile = false;
 
-    /** _more_ */
     private boolean isRobot = false;
 
     private boolean isGoogleBot = false;
 
-    /** _more_ */
     private boolean makeAbsoluteUrls = false;
 
-    /** _more_ */
     private String htmlTemplateId;
 
-    /** _more_ */
     private PageStyle pageStyle;
 
-    /** _more_ */
     private boolean sessionIdWasSet = false;
 
-    /** _more_ */
     private boolean sessionHasBeenHandled = false;
 
     /**  */
@@ -224,16 +194,6 @@ public class Request implements Constants, Cloneable {
         originalParameters.putAll(parameters);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository the repository
-     * @param urlPath _more_
-     * @param parameters _more_
-     * @param httpServletRequest _more_
-     * @param httpServletResponse _more_
-     * @param httpServlet _more_
-     */
     public Request(Repository repository, String urlPath,
                    Hashtable parameters,
                    HttpServletRequest httpServletRequest,
@@ -245,22 +205,10 @@ public class Request implements Constants, Cloneable {
         this.httpServlet         = httpServlet;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Request cloneMe() {
         return cloneMe(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository the repository
-     *
-     * @return _more_
-     */
     public Request cloneMe(Repository repository) {
         try {
             Request that = (Request) super.clone();
@@ -285,11 +233,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getRepository() {
         return repository;
     }
@@ -316,32 +259,11 @@ public class Request implements Constants, Cloneable {
 	return v;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getSession(String key, String dflt) throws Exception {
         return (String) getRepository().getSessionManager()
             .getSessionProperty(this, key, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param sessionPrefix _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getStringOrSession(String key, String sessionPrefix,
                                      String dflt)
 	throws Exception {
@@ -352,14 +274,6 @@ public class Request implements Constants, Cloneable {
         return getSession(sessionPrefix + key, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     *
-     * @throws Exception On badness
-     */
     public void putSession(String key, String value) throws Exception {
         getRepository().getSessionManager().putSessionProperty(this, key,
 							       value);
@@ -391,12 +305,6 @@ public class Request implements Constants, Cloneable {
 	return getStrictSanitizedString(ARG_MESSAGE, "");
     }    
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param prefix _more_
-     */
     public void putSessionIfDefined(String key, String prefix) {
         try {
             getRepository().getSessionManager().putSessionProperty(this,
@@ -406,11 +314,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isConnected() {
         try {
             OutputStream os = getHttpServletResponse().getOutputStream();
@@ -428,22 +331,10 @@ public class Request implements Constants, Cloneable {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean useFullUrl() {
         return get(ARG_FULLURL, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     public String checkUrl(String url) {
         if (useFullUrl() && !url.startsWith("http")) {
             return getAbsoluteUrl(url);
@@ -452,11 +343,6 @@ public class Request implements Constants, Cloneable {
         return url;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isPost() {
         if (httpServletRequest == null) {
             return false;
@@ -465,13 +351,6 @@ public class Request implements Constants, Cloneable {
         return httpServletRequest.getMethod().equals("POST");
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getReferer(String dflt) {
         String referer = httpServletRequest.getHeader("referer");
         if (referer == null) {
@@ -481,11 +360,6 @@ public class Request implements Constants, Cloneable {
         return referer;
     }
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     */
     public void setReturnFilename(String filename) {
         setReturnFilename(filename, true);
     }
@@ -521,14 +395,6 @@ public class Request implements Constants, Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public String getEntryUrlPath(String theUrl, Entry entry) {
         String url  = theUrl;
         String name = entry.getFullName(true);
@@ -551,30 +417,11 @@ public class Request implements Constants, Cloneable {
         return checkUrl(url);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param entry _more_
-     * @param arg _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String entryUrlWithArg(RequestUrl theUrl, Entry entry, String arg,
                                   String... args) {
         return entryUrl(theUrl, entry, arg, false, args);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param entry _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String entryUrl(RequestUrl theUrl, Entry entry, String... args) {
         //handle some possible backwards compatability issues
         if (args.length == 1) {
@@ -585,17 +432,6 @@ public class Request implements Constants, Cloneable {
         return entryUrl(theUrl, entry, arg, false, args);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param entry _more_
-     * @param arg _more_
-     * @param fullPath _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String entryUrl(RequestUrl theUrl, Entry entry, String arg,
 			   boolean fullPath, String... args) {
         if (entry.getIsRemoteEntry()) {
@@ -621,25 +457,10 @@ public class Request implements Constants, Cloneable {
         return url;
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String makeUrl(RequestUrl theUrl, String... args) {
         return HtmlUtils.url(makeUrlPath(theUrl), args);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     *
-     * @return _more_
-     */
     public String makeUrlPath(RequestUrl theUrl) {
         if (makeAbsoluteUrls) {
             return getAbsoluteUrl(theUrl);
@@ -648,80 +469,32 @@ public class Request implements Constants, Cloneable {
         return getRepository().getUrlPath(this, theUrl);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     *
-     * @return _more_
-     */
     public String form(RequestUrl theUrl) {
         return HtmlUtils.form(makeUrl(theUrl));
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     *
-     * @return _more_
-     */
     public String formPost(RequestUrl theUrl) {
         return HtmlUtils.formPost(makeUrl(theUrl));
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
     public String formPost(RequestUrl theUrl, String extra) {
         return HtmlUtils.formPost(makeUrl(theUrl), extra);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param theUrl _more_
-     */
     public void formPostWithAuthToken(Appendable sb, RequestUrl theUrl) {
         formPostWithAuthToken(sb, theUrl, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param theUrl _more_
-     * @param extra _more_
-     */
     public void formPostWithAuthToken(Appendable sb, RequestUrl theUrl,
                                       String extra) {
         Utils.append(sb, formPost(theUrl, extra));
         getRepository().getAuthManager().addAuthToken(this, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param theUrl _more_
-     */
     public void uploadFormWithAuthToken(Appendable sb, RequestUrl theUrl) {
         uploadFormWithAuthToken(sb, theUrl, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param theUrl _more_
-     * @param extra _more_
-     */
     public void uploadFormWithAuthToken(Appendable sb, RequestUrl theUrl,
                                         String extra) {
         Utils.append(sb, HtmlUtils.uploadForm(makeUrl(theUrl), extra));
@@ -733,37 +506,14 @@ public class Request implements Constants, Cloneable {
         getRepository().getAuthManager().addAuthToken(this, sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
     public String form(RequestUrl theUrl, String extra) {
         return HtmlUtils.form(makeUrl(theUrl), extra);
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     *
-     * @return _more_
-     */
     public String uploadForm(RequestUrl theUrl) {
         return uploadForm(theUrl, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param theUrl _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
     public String uploadForm(RequestUrl theUrl, String extra) {
         return HtmlUtils.uploadForm(makeUrl(theUrl), extra);
     }
@@ -786,22 +536,10 @@ public class Request implements Constants, Cloneable {
         return outputStream;
     }
 
-    /**
-     * _more_
-     *
-     * @param uploads _more_
-     */
     public void setFileUploads(Hashtable uploads) {
         fileUploads = uploads;
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     *
-     * @return _more_
-     */
     public String getUploadedFile(String arg) {
 	return getUploadedFile(arg,false);
     }
@@ -822,69 +560,30 @@ public class Request implements Constants, Cloneable {
 	return files.get(0);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUrl() {
         return checkUrl(getRequestPath() + "?" + getUrlArgs());
     }
 
-    /**
-     * _more_
-     *
-     * @param exceptArgs _more_
-     * @param exceptValues _more_
-     *
-     * @return _more_
-     */
     public String getUrl(HashSet<String> exceptArgs,
                          HashSet<String> exceptValues) {
         return checkUrl(getRequestPath() + "?"
                         + getUrlArgs(exceptArgs, exceptValues));
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public String getUrl(RequestUrl request) {
         return makeUrl(request) + "?" + getUrlArgs();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getAbsoluteUrl() {
         return getAbsoluteUrl(getUrl());
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     public String getAbsoluteUrl(RequestUrl url) {
         String path = repository.getUrlBase() + url.getPath();
 
         return getAbsoluteUrl(path);
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     public String getAbsoluteUrl(String url) {
         if (url.startsWith("http:") || url.startsWith("https:")) {
             return url;
@@ -923,33 +622,14 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param except _more_
-     *
-     * @return _more_
-     */
     public String getUrl(String except) {
         return getRequestPath() + "?" + getUrlArgs(except);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUrlArgs() {
         return getUrlArgs((HashSet) null);
     }
 
-    /**
-     * _more_
-     *
-     * @param except _more_
-     *
-     * @return _more_
-     */
     public String getUrlArgs(String except) {
         HashSet<String> tmp = new HashSet<String>();
         tmp.add(except);
@@ -957,40 +637,15 @@ public class Request implements Constants, Cloneable {
         return getUrlArgs(tmp);
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param exceptArgs _more_
-     *
-     * @return _more_
-     */
     public String getUrlArgs(HashSet<String> exceptArgs) {
         return getUrlArgs(exceptArgs, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param exceptArgs _more_
-     * @param exceptValues _more_
-     *
-     * @return _more_
-     */
     public String getUrlArgs(HashSet<String> exceptArgs,
                              HashSet<String> exceptValues) {
         return getUrlArgs(exceptArgs, exceptValues, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param exceptArgs _more_
-     * @param exceptValues _more_
-     * @param exceptArgsPattern _more_
-     *
-     * @return _more_
-     */
     public String getUrlArgs(HashSet<String> exceptArgs,
                              HashSet<String> exceptValues,
                              String exceptArgsPattern) {
@@ -1122,11 +777,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getPathEmbeddedArgs() {
         try {
             StringBuilder sb  = new StringBuilder();
@@ -1173,14 +823,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public static String encodeEmbedded(Object o) {
         String s = o.toString();
         try {
@@ -1195,13 +837,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static String decodeEmbedded(String s) {
         try {
             if (s.startsWith("b64:")) {
@@ -1217,13 +852,6 @@ public class Request implements Constants, Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public String getFromPath(String key) {
         String path = getRequestPath();
         //Look for .../id:<id>
@@ -1247,11 +875,6 @@ public class Request implements Constants, Cloneable {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Hashtable getDefinedProperties() {
         Hashtable props = new Hashtable();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
@@ -1274,22 +897,10 @@ public class Request implements Constants, Cloneable {
         return props;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Hashtable getArgs() {
         return parameters;
     }
 
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public boolean equals(Object o) {
         if ( !o.getClass().equals(getClass())) {
             return false;
@@ -1301,34 +912,15 @@ public class Request implements Constants, Cloneable {
 	    && this.originalParameters.equals(that.originalParameters);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int hashCode() {
         return urlPath.hashCode() ^ Misc.hashcode(user)
 	    ^ originalParameters.hashCode();
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean hasParameter(String key) {
         return parameters.containsKey(key);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public Object remove(Object ...keys) {
 	Object v =null;
 	for(Object key: keys) {
@@ -1338,11 +930,6 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-    /**
-     * _more_
-     *
-     * @param props _more_
-     */
     public void putAll(Hashtable props) {
         parameters.putAll(props);
     }
@@ -1358,23 +945,10 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void put(Object key, Object value) {
         put(key, value, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     * @param singular _more_
-     */
     public void put(Object key, Object value, boolean singular) {
         Object existing = singular
 	    ? null
@@ -1397,12 +971,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void putMultiples(Object key, Object value) {
         Object existing = parameters.get(key);
         if ((existing != null) && (existing instanceof List)) {
@@ -1417,13 +985,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean exists(Object key) {
         Object result = getValue(key, (Object) null);
 
@@ -1437,13 +998,6 @@ public class Request implements Constants, Cloneable {
 	return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean defined(String key) {
         if (key == null) {
             return false;
@@ -1469,13 +1023,6 @@ public class Request implements Constants, Cloneable {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public boolean hasMultiples(String key) {
         Object result = getValue(key, (Object) null);
         if (result == null) {
@@ -1485,14 +1032,6 @@ public class Request implements Constants, Cloneable {
         return (result instanceof List);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public List get(String key, List dflt) {
         Object result = getValue(key, (Object) null);
         if (result == null) {
@@ -1509,14 +1048,6 @@ public class Request implements Constants, Cloneable {
         return tmp;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getUnsafeString(String key, String dflt) {
         String result = (String) getValue(key, (String) null);
         if (result == null) {
@@ -1526,31 +1057,13 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-    /** _more_ */
     private static Pattern checker;
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     * @param patternString _more_
-     *
-     * @return _more_
-     */
     public String getCheckedString(String key, String dflt,
                                    String patternString) {
         return getCheckedString(key, dflt, Pattern.compile(patternString));
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getEncodedString(String key, String dflt) {
         String s = getString(key, dflt);
         if (s != null) {
@@ -1561,14 +1074,6 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getAnonymousEncodedString(String key, String dflt) {
         if ( !isAnonymous()) {
             return getString(key, dflt);
@@ -1577,11 +1082,6 @@ public class Request implements Constants, Cloneable {
         return getEncodedString(key, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     */
     public void appendMessage(Appendable sb) {
         try {
             if (hasMessage()) {
@@ -1614,11 +1114,6 @@ public class Request implements Constants, Cloneable {
         embedded = value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isEmbedded() {
         return embedded || get(ARG_EMBEDDED, false);
     }
@@ -1641,9 +1136,6 @@ public class Request implements Constants, Cloneable {
         return canStreamResult;
     }
 
-    /**
-     * _more_
-     */
     public void setCORSHeaderOnResponse() {
         if (repository.isCORSOk()) {
             httpServletResponse.setHeader("Access-Control-Allow-Methods",
@@ -1652,32 +1144,17 @@ public class Request implements Constants, Cloneable {
 	}
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isAdmin() {
 	User user = getUser();
         return user==null?false:getUser().getAdmin();
     }
 
-    /**
-     * _more_
-     */
     public void ensureAdmin() {
         if ( !getUser().getAdmin()) {
             throw new IllegalArgumentException("Need to be an administrator");
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     *
-     * @return _more_
-     */
     public boolean defined(RequestArgument arg) {
         for (String key : getArgs(arg)) {
             if (defined(key)) {
@@ -1688,15 +1165,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param dflt _more_
-     * @param values _more_
-     *
-     * @return _more_
-     */
     public String getEnum(String arg, String dflt, String... values) {
         String value = getString(arg, "");
         for (String enumValue : values) {
@@ -1708,13 +1176,6 @@ public class Request implements Constants, Cloneable {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public String getString(String key) {
         return getString(key, "");
     }
@@ -1723,14 +1184,6 @@ public class Request implements Constants, Cloneable {
         return getUnsafeString(key, "");
     }    
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getString(RequestArgument arg, String dflt) {
         for (String key : getArgs(arg)) {
             String value = getString(key, (String) null);
@@ -1742,14 +1195,6 @@ public class Request implements Constants, Cloneable {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getString(String key, String dflt) {
         if (checker == null) {
             //Don't run the checker for now
@@ -1775,14 +1220,6 @@ public class Request implements Constants, Cloneable {
         return new String(Utils.decodeBase64(raw));
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getSanitizedString(String key, String dflt) {
         if (checker == null) {
             //Don't run the checker for now
@@ -1851,15 +1288,6 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     */
     public String getCheckedString(String key, String dflt, Pattern pattern) {
         String v = (String) getValue(key, (String) null);
         if (v == null) {
@@ -1882,14 +1310,6 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public double get(RequestArgument arg, double dflt) {
         for (String key : getArgs(arg)) {
             if (defined(key)) {
@@ -1900,9 +1320,6 @@ public class Request implements Constants, Cloneable {
         return dflt;
     }
 
-    /**
-     * _more_
-     */
     public void clearUrlArgs() {
         parameters = new Hashtable();
     }
@@ -1913,14 +1330,6 @@ public class Request implements Constants, Cloneable {
 	return exists(ARG_ENTRYID);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private Object getValue(Object key, Object dflt) {
         if (parameters == null) {
             return dflt;
@@ -1936,14 +1345,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private String getValue(Object key, String dflt) {
         Object result = parameters.get(key);
         if (result == null) {
@@ -1972,20 +1373,10 @@ public class Request implements Constants, Cloneable {
         return s;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public OutputType getOutput() {
         return getOutput(OutputHandler.OUTPUT_HTML.getId());
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isOutputDefined() {
         if (defined(ARG_OUTPUT)) {
             return true;
@@ -2003,13 +1394,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public OutputType getOutput(String dflt) {
         String     typeId     = getString(ARG_OUTPUT, dflt);
         OutputType outputType = repository.findOutputType(typeId);
@@ -2020,36 +1404,14 @@ public class Request implements Constants, Cloneable {
         return new OutputType(typeId, OutputType.TYPE_FEEDS);
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getId(String dflt) {
         return getString(ARG_ENTRYID, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getIds(String dflt) {
         return getString(ARG_ENTRYIDS, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getDateSelect(String name, String dflt) {
         String v = getUnsafeString(name, (String) null);
         if (v == null) {
@@ -2063,14 +1425,6 @@ public class Request implements Constants, Cloneable {
         return v;
     }
 
-    /**
-     * _more_
-     *
-     * @param from _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public double getLatOrLonValue(RequestArgument from, double dflt) {
         if ( !defined(from)) {
             return dflt;
@@ -2113,13 +1467,6 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getWhat(String dflt) {
         return getString(ARG_WHAT, dflt);
     }
@@ -2133,14 +1480,6 @@ public class Request implements Constants, Cloneable {
      * @return _more_
      */
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public int get(Object key, int dflt) {
         String result = (String) getValue(key, (String) null);
         if (!Utils.stringDefined(result)) {
@@ -2150,14 +1489,6 @@ public class Request implements Constants, Cloneable {
         return Integer.parseInt(result.trim());
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public long get(Object key, long dflt) {
         String result = (String) getValue(key, (String) null);
         if ((result == null) || (result.trim().length() == 0)) {
@@ -2167,14 +1498,6 @@ public class Request implements Constants, Cloneable {
         return Long.parseLong(result);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public double get(Object key, double dflt) {
         String result = (String) getValue(key, (String) null);
         if ((result == null) || (result.trim().length() == 0)) {
@@ -2184,16 +1507,6 @@ public class Request implements Constants, Cloneable {
         return Double.parseDouble(result);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws java.text.ParseException On badness
-     */
     public Date get(Object key, Date dflt) throws java.text.ParseException {
         String result = (String) getValue(key, (String) null);
         if ((result == null) || (result.trim().length() == 0)) {
@@ -2203,16 +1516,6 @@ public class Request implements Constants, Cloneable {
         return Utils.parseDate(result);
     }
 
-    /**
-     * _more_
-     *
-     * @param from _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Date getDate(String from, Date dflt) throws Exception {
         if ( !defined(from)) {
             return dflt;
@@ -2222,34 +1525,11 @@ public class Request implements Constants, Cloneable {
         return repository.getDateHandler().parseDate(dateString);
     }
 
-    /**
-     * _more_
-     *
-     * @param from _more_
-     * @param to _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws java.text.ParseException On badness
-     */
     public Date[] getDateRange(String from, String to, Date dflt)
 	throws java.text.ParseException {
         return getDateRange(from, to, ARG_RELATIVEDATE, dflt);
     }
 
-    /**
-     * _more_
-     *
-     * @param from _more_
-     * @param to _more_
-     * @param relativeArg _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     *
-     * @throws java.text.ParseException On badness
-     */
     public Date[] getDateRange(String from, String to, String relativeArg,
                                Date dflt)
 	throws java.text.ParseException {
@@ -2283,14 +1563,6 @@ public class Request implements Constants, Cloneable {
         return range;
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public boolean setContains(String key, Object value) {
         List list = get(key, (List) null);
         if (list == null) {
@@ -2305,14 +1577,6 @@ public class Request implements Constants, Cloneable {
         return list.contains(value);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public boolean get(Object key, boolean dflt) {
         String result = (String) getValue(key, (String) null);
         if ((result == null) || (result.trim().length() == 0)) {
@@ -2322,11 +1586,6 @@ public class Request implements Constants, Cloneable {
         return Boolean.parseBoolean(result);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Enumeration keys() {
         return parameters.keys();
     }
@@ -2340,11 +1599,6 @@ public class Request implements Constants, Cloneable {
         urlPath = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setRequestPath(String value) {
         urlPath = value;
     }
@@ -2367,11 +1621,6 @@ public class Request implements Constants, Cloneable {
      */
     public static class BadInputException extends RuntimeException {
 
-        /**
-         * _more_
-         *
-         * @param msg _more_
-         */
         public BadInputException(String msg) {
             super(msg);
         }
@@ -2402,11 +1651,6 @@ public class Request implements Constants, Cloneable {
         return httpHeaderArgs;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean canAcceptGzip() {
         String accept = (String) httpHeaderArgs.get("Accept-Encoding");
         if (accept == null) {
@@ -2427,13 +1671,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     *
-     * @return _more_
-     */
     public String getHeaderArg(String name) {
         if (httpHeaderArgs == null) {
             return null;
@@ -2456,11 +1693,6 @@ public class Request implements Constants, Cloneable {
 	return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         String args = getUrlArgs();
         if (args.trim().length() > 0) {
@@ -2470,11 +1702,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getKeys() {
         StringBuilder sb = new StringBuilder();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
@@ -2485,11 +1712,6 @@ public class Request implements Constants, Cloneable {
         return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getDebug() {
         StringBuilder sb = new StringBuilder();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
@@ -2517,11 +1739,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getSessionIdWasSet() {
         return sessionIdWasSet;
     }
@@ -2565,11 +1782,6 @@ public class Request implements Constants, Cloneable {
         return user;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isAnonymous() {
         if ((user == null) || user.getAnonymous()) {
             return true;
@@ -2605,40 +1817,18 @@ public class Request implements Constants, Cloneable {
         return ip;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getIpRaw() {
         return ip;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getUserAgent() {
         return getUserAgent(null);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isMobile() {
         return isMobile;
     }
 
-    /**
-     * _more_
-     *
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getUserAgent(String dflt) {
         String value = getHeaderArg("User-Agent");
         if (value == null) {
@@ -2649,11 +1839,6 @@ public class Request implements Constants, Cloneable {
         return value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean getIsRobot() {
         return isRobot;
     }
@@ -2662,20 +1847,10 @@ public class Request implements Constants, Cloneable {
         return isGoogleBot;
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isRealRequest() {
         return httpServletResponse != null;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     private boolean checkForRobot() {
         String userAgent = getUserAgent();
 	return checkForRobot(userAgent);
@@ -2712,11 +1887,6 @@ public class Request implements Constants, Cloneable {
 			     "spider")>=0;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isHeadRequest() {
         if (httpServletRequest != null) {
             return httpServletRequest.getMethod().equals("HEAD");
@@ -2725,11 +1895,6 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getServerName() {
         String serverName = null;
         if ( !repository.useFixedHostnameForAbsoluteUrls()) {
@@ -2742,11 +1907,6 @@ public class Request implements Constants, Cloneable {
         return serverName;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getRequestHostname() {
         String serverName = null;
         try {
@@ -2762,11 +1922,6 @@ public class Request implements Constants, Cloneable {
         return serverName;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getServerPort() {
         if ( !repository.useFixedHostnameForAbsoluteUrls()) {
             try {
@@ -2788,20 +1943,10 @@ public class Request implements Constants, Cloneable {
         return httpServletRequest;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public HttpServletResponse getHttpServletResponse() {
         return httpServletResponse;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public javax.servlet.http.HttpServlet getHttpServlet() {
         return httpServlet;
     }
@@ -2842,23 +1987,10 @@ public class Request implements Constants, Cloneable {
         return suffixHtml.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void putExtraProperty(Object key, Object value) {
         extraProperties.put(key, value);
     }
 
-    /**
-     * _more_
-     *
-     * @param prefix _more_
-     *
-     * @return _more_
-     */
     public String getUniqueId(String prefix) {
         Integer base = (Integer) extraProperties.get("uniquebase");
         if (base == null) {
@@ -2871,11 +2003,6 @@ public class Request implements Constants, Cloneable {
         return prefix + base;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     */
     public synchronized void appendHead0(String s) {
         if (printWriter != null) {
             printWriter.append(s);
@@ -2892,11 +2019,6 @@ public class Request implements Constants, Cloneable {
         head0.append("\n");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHead0() {
         StringBuilder head0 = (StringBuilder) getExtraProperty("head0");
         if (head0 == null) {
@@ -2929,11 +2051,6 @@ public class Request implements Constants, Cloneable {
         printWriter = pw;
     }
 
-    /**
-     * _more_
-     *
-     * @param s _more_
-     */
     public synchronized void appendHead(String s) {
         if (printWriter != null) {
             printWriter.append(s);
@@ -2949,11 +2066,6 @@ public class Request implements Constants, Cloneable {
         head.append("\n");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHead() {
         StringBuilder head = (StringBuilder) getExtraProperty("head");
         if (head == null) {
@@ -2963,11 +2075,6 @@ public class Request implements Constants, Cloneable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     */
     public void removeExtraProperty(Object key) {
         extraProperties.remove(key);
     }
@@ -2976,13 +2083,6 @@ public class Request implements Constants, Cloneable {
 	extraProperties = new Hashtable();
     }	
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public Object getExtraProperty(Object key) {
         return extraProperties.get(key);
     }
@@ -3055,39 +2155,19 @@ public class Request implements Constants, Cloneable {
         return this.apiMethod;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean responseAsXml() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_XML);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean responseAsJson() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_JSON)
 	    || getString(ARG_OUTPUT).equals("json");
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean responseAsData() {
         return responseAsJson() || responseAsXml() || responseAsText();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean responseAsText() {
         return getString(ARG_RESPONSE, "").equals(RESPONSE_TEXT);
     }
@@ -3114,11 +2194,6 @@ public class Request implements Constants, Cloneable {
         return getString(ARG_TEMPLATE, (String) null);
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLanguage() {
         if (exists(ARG_LANGUAGE)) {
             return getString(ARG_LANGUAGE, "");
@@ -3154,16 +2229,6 @@ public class Request implements Constants, Cloneable {
         return pageStyle;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param filename _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result returnFile(File file, String filename) throws Exception {
         setReturnFilename(filename);
         Result result = new Result();
@@ -3197,15 +2262,6 @@ public class Request implements Constants, Cloneable {
         return returnStream(is);
     }
 
-    /**
-     * _more_
-     *
-     * @param is _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result returnStream(InputStream is) throws Exception {
         Result result = new Result();
         result.setNeedToWrite(false);
@@ -3225,16 +2281,6 @@ public class Request implements Constants, Cloneable {
       http output stream which is gotten by calling request.getOutputStream()
     */
 
-    /**
-     * _more_
-     *
-     * @param filename _more_
-     * @param mimeType _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result getOutputStreamResult(String filename, String mimeType)
 	throws Exception {
         getHttpServletResponse().setContentType(mimeType);
@@ -3357,11 +2403,6 @@ public class Request implements Constants, Cloneable {
     /**  */
     private static final String[] argPrefixes = { ARG_AREA, ARG_BBOX };
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public SelectionRectangle getSelectionBounds() {
         double[] bbox = { Double.NaN, Double.NaN, Double.NaN, Double.NaN };
         for (String argPrefix : argPrefixes) {
@@ -3387,12 +2428,6 @@ public class Request implements Constants, Cloneable {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param arg _more_
-     * @return _more_
-     */
     public List<String> getArgs(RequestArgument arg) {
         return arg.getArgs(getRepository());
     }
@@ -3423,13 +2458,6 @@ public class Request implements Constants, Cloneable {
 	return HtmlUtils.labeledCheckbox(arg, "true", v,label);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
             args = new String[] { "script", "Script", "src=http",

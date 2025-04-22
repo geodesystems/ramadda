@@ -47,27 +47,12 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class AssociationManager extends RepositoryManager {
 
-    /** _more_ */
     private List<String> types = null;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public AssociationManager(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processAssociationAdd(Request request) throws Exception {
         Entry fromEntry = getEntryManager().getEntry(request,
                               request.getString(ARG_FROM, BLANK));
@@ -137,15 +122,6 @@ public class AssociationManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processAssociationDelete(Request request) throws Exception {
         String associationId = request.getString(ARG_ASSOCIATION, "");
         Clause clause = Clause.eq(Tables.ASSOCIATIONS.COL_ID, associationId);
@@ -202,18 +178,6 @@ public class AssociationManager extends RepositoryManager {
         return new Result(msg("Delete Links"), sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param node _more_
-     * @param entries _more_
-     * @param files _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String processAssociationXml(Request request, Element node,
                                         Hashtable entries, Hashtable files)
             throws Exception {
@@ -279,16 +243,6 @@ public class AssociationManager extends RepositoryManager {
         return result;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param association _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String addAssociation(Request request, Association association)
             throws Exception {
         getAuthManager().ensureAuthToken(request);
@@ -302,13 +256,6 @@ public class AssociationManager extends RepositoryManager {
         return id;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public List<String> getTypes() throws Exception {
         if (types == null) {
             Statement stmt =
@@ -324,14 +271,6 @@ public class AssociationManager extends RepositoryManager {
         return new ArrayList<String>(types);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param association _more_
-     *
-     * @throws Exception On badness
-     */
     public void associationChanged(Request request, Association association)
             throws Exception {
         types = null;
@@ -348,14 +287,6 @@ public class AssociationManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param association _more_
-     *
-     * @throws Exception On badness
-     */
     public void deleteAssociation(Request request, Association association)
             throws Exception {
         getAuthManager().ensureAuthToken(request);
@@ -365,16 +296,6 @@ public class AssociationManager extends RepositoryManager {
         types = null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param association _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String getAssociationLinks(Request request, String association)
             throws Exception {
         if (true) {
@@ -391,17 +312,6 @@ public class AssociationManager extends RepositoryManager {
         return search;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Association> getAssociationsWithType(Request request,
             Entry entry, String type)
             throws Exception {
@@ -409,16 +319,6 @@ public class AssociationManager extends RepositoryManager {
                 entry.getId()), type);
     }
 
-    /**
-     * _more_
-     *
-     * @param associations _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Association> getAssociationsWithType(
             List<Association> associations, String type)
             throws Exception {
@@ -433,17 +333,6 @@ public class AssociationManager extends RepositoryManager {
         return results;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getHeadEntriesWithAssociationType(Request request,
             Entry entry, String type)
             throws Exception {
@@ -464,17 +353,6 @@ public class AssociationManager extends RepositoryManager {
         return results;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param type _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<Entry> getTailEntriesWithAssociationType(Request request,
             Entry entry, String type)
             throws Exception {
@@ -494,16 +372,6 @@ public class AssociationManager extends RepositoryManager {
         return results;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entryId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public List<Association> getAssociations(Request request, String entryId)
             throws Exception {
         Entry entry = getEntryManager().getEntry(request, entryId);
@@ -517,16 +385,6 @@ public class AssociationManager extends RepositoryManager {
         return getAssociations(request, entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public List<Association> getAssociations(Request request, Entry entry)
             throws Exception {
         if (entry.getAssociations() != null) {
@@ -550,16 +408,6 @@ public class AssociationManager extends RepositoryManager {
         return associations;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param clause _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public List<Association> getAssociations(Request request, Clause clause)
             throws Exception {
         int max = request.get(ARG_MAX, DB_MAX_ROWS);
@@ -593,15 +441,6 @@ public class AssociationManager extends RepositoryManager {
         return associations;
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public String[] getAssociations(Request request) throws Exception {
         TypeHandler  typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where       = typeHandler.assembleWhereClause(request);
@@ -619,15 +458,6 @@ public class AssociationManager extends RepositoryManager {
                     where, "")), 1);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param text _more_
-     *
-     * @return _more_
-     */
     public String processText(Request request, Entry entry, String text) {
         int idx = text.indexOf("<more>");
         if (idx >= 0) {
@@ -775,15 +605,6 @@ public class AssociationManager extends RepositoryManager {
 			   + HU.attr(HU.ATTR_CELLPADDING, "3")));
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processSearchAssociations(Request request)
             throws Exception {
         StringBuilder sb      = new StringBuilder();
@@ -832,15 +653,6 @@ public class AssociationManager extends RepositoryManager {
                                              sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result processSearchAssociationsForm(Request request)
             throws Exception {
 
@@ -851,14 +663,6 @@ public class AssociationManager extends RepositoryManager {
                                              sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param sb buffer to append to
-     *
-     * @throws Exception On badness
-     */
     private void getAssociationsSearchForm(Request request, Appendable sb)
             throws Exception {
 
@@ -903,17 +707,6 @@ public class AssociationManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param association _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry getOtherEntry(Request request, Association association,
                                Entry entry)
             throws Exception {

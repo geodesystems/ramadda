@@ -44,73 +44,47 @@ import java.util.TimeZone;
  */
 public class LocalRepositoryManager extends RepositoryManager {
 
-    /** _more_ */
     public static final String PROP_MASTER_ENABLED = "ramadda.master.enabled";
 
-    /** _more_ */
     public static final String ARG_LOCAL_NEW = "local.new";
 
-    /** _more_ */
     public static final String ARG_LOCAL_SURE = "local.sure";
 
-    /** _more_ */
     public static final String ARG_LOCAL_NAME = "local.name";
 
-    /** _more_ */
     public static final String ARG_LOCAL_CONTACT = "local.contact";
 
-    /** _more_ */
     public static final String ARG_LOCAL_ID = "local.id";
 
-    /** _more_ */
     public static final String ARG_LOCAL_ADMIN = "local.admin";
 
-    /** _more_ */
     public static final String ARG_LOCAL_CHANGE = "local.change";
 
-    /** _more_ */
     public static final String STATUS_ACTIVE = "active";
 
-    /** _more_ */
     public static final String STATUS_STOPPED = "stopped";
 
-    /** _more_ */
     public static final String STATUS_DELETED = "deleted";
 
-    /** _more_ */
     public static final String ARG_LOCAL_DELETE = "local_delete";
 
-    /** _more_ */
     public static final String ARG_LOCAL_STOP = "local_stop";
 
-    /** _more_ */
     public static final String ARG_LOCAL_START = "local_start";
 
     /*
      * Holds the currently running repositories
      */
 
-    /** _more_ */
     private Hashtable<String, Repository> children = new Hashtable<String,
                                                          Repository>();
 
-    /** _more_ */
     private List<String> childrenIds = new ArrayList<String>();
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public LocalRepositoryManager(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void shutdown() throws Exception {
         if (children == null) {
@@ -124,11 +98,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         children = null;
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeLocalRepositories() throws Exception {
         if ( !getRepository().isMaster()) {
             return;
@@ -141,13 +110,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Local> readLocals() throws Exception {
         List<Local> locals = new ArrayList<Local>();
         Statement stmt =
@@ -167,29 +129,11 @@ public class LocalRepositoryManager extends RepositoryManager {
         return locals;
     }
 
-    /**
-     * _more_
-     *
-     * @param otherServer _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean hasServer(String otherServer) throws Exception {
         return getDatabaseManager().tableContains(Tables.LOCALREPOSITORIES.NAME,
 						  Tables.LOCALREPOSITORIES.COL_ID,otherServer);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param repositoryId _more_
-     *
-     * @throws Exception _more_
-     */
     public void addChildRepository(Request request, StringBuffer sb,
                                    String repositoryId)
             throws Exception {
@@ -273,26 +217,10 @@ public class LocalRepositoryManager extends RepositoryManager {
         getRepository().addChildRepository(childRepository);
     }
 
-    /**
-     * _more_
-     *
-     * @param childId _more_
-     *
-     * @return _more_
-     */
     private String getChildUrlBase(String childId) {
         return getRepository().getUrlBase() + "/repos/" + childId;
     }
 
-    /**
-     * _more_
-     *
-     * @param repositoryId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private File getHomeDir(String repositoryId) throws Exception {
         String repositoriesDir =
             getRepository().getProperty("ramadda.master.dir",
@@ -304,16 +232,6 @@ public class LocalRepositoryManager extends RepositoryManager {
                                        "repository_" + repositoryId));
     }
 
-    /**
-     * _more_
-     *
-     * @param repositoryId _more_
-     * @param properties _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Repository startLocalRepository(String repositoryId,
                                             Properties properties)
             throws Exception {
@@ -383,15 +301,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         return childRepository;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result handleRepos(Request request) throws Exception {
         if ( !getRepository().isMaster()) {
             throw new IllegalArgumentException("Not a master repo");
@@ -434,15 +343,6 @@ public class LocalRepositoryManager extends RepositoryManager {
         return new Result("", sb);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result adminLocal(Request request) throws Exception {
 
         if ( !getRepository().isMaster()) {
@@ -570,14 +470,6 @@ public class LocalRepositoryManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void processLocalChange(Request request, StringBuffer sb)
             throws Exception {
 
@@ -625,14 +517,6 @@ public class LocalRepositoryManager extends RepositoryManager {
             new String[] { status });
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void processLocalNew(Request request, StringBuffer sb)
             throws Exception {
         String id = request.getString(ARG_LOCAL_ID, "");
@@ -667,22 +551,12 @@ public class LocalRepositoryManager extends RepositoryManager {
      */
     private static class Local {
 
-        /** _more_ */
         String id;
 
-        /** _more_ */
         String contact;
 
-        /** _more_ */
         String status;
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param contact _more_
-         * @param status _more_
-         */
         public Local(String id, String contact, String status) {
             this.id      = id;
             this.contact = contact;

@@ -23,97 +23,72 @@ import java.util.UUID;
  */
 public class RepositoryBase implements Constants, RepositorySource {
 
-    /** _more_ */
     public static final HtmlUtils HU = null;
     public static final XmlUtil XU = null;    
 
-    /** _more_ */
     public final RequestUrl URL_HELP = new RequestUrl(this, "/docs");
 
-    /** _more_ */
     public final RequestUrl URL_PING = new RequestUrl(this, "/ping");
 
-    /** _more_ */
     public final RequestUrl URL_CLEARSTATE = new RequestUrl(this,
                                                  "/clearstate");
 
-    /** _more_ */
     public final RequestUrl URL_SSLREDIRECT = new RequestUrl(this,
                                                   "/sslredirect");
 
-    /** _more_ */
     public final RequestUrl URL_INFO = new RequestUrl(this, "/info");
 
-    /** _more_ */
     public final RequestUrl URL_MESSAGE = new RequestUrl(this, "/message");
 
-    /** _more_ */
     public final RequestUrl URL_DUMMY = new RequestUrl(this, "/dummy");
 
-    /** _more_ */
     public final RequestUrl URL_INSTALL = new RequestUrl(this, "/install");
 
-    /** _more_ */
     public final RequestUrl URL_COMMENTS_SHOW = new RequestUrl(this,
                                                     "/entry/comments/show");
 
-    /** _more_ */
     public final RequestUrl URL_COMMENTS_ADD = new RequestUrl(this,
                                                    "/entry/comments/add");
 
-    /** _more_ */
     public final RequestUrl URL_COMMENTS_EDIT = new RequestUrl(this,
                                                     "/entry/comments/edit");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
                                                       "/entry/xmlcreate");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_IMPORT = new RequestUrl(this,
                                                    "/entry/import");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_ACTION = new RequestUrl(this,
                                                    "/entry/action");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_EXPORT = new RequestUrl(this,
                                                    "/entry/export");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_PUBLISH = new RequestUrl(this,
                                                     "/entry/publish");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_LINKS = new RequestUrl(this,
                                                   "/entry/links");
 
-    /** _more_ */
     public final RequestUrl URL_ASSOCIATION_ADD = new RequestUrl(this,
                                                       "/association/add");
 
-    /** _more_ */
     public final RequestUrl URL_ASSOCIATION_DELETE =
         new RequestUrl(this, "/association/delete");
 
-    /** _more_ */
     public final RequestUrl URL_LIST_HOME = new RequestUrl(this,
                                                 "/list/home");
 
-    /** _more_ */
     public final RequestUrl URL_LIST_SHOW = new RequestUrl(this,
                                                 "/list/show");
 
-    /** _more_ */
     public final RequestUrl URL_GRAPH_VIEW = new RequestUrl(this,
                                                  "/graph/view");
 
-    /** _more_ */
     public final RequestUrl URL_GRAPH_GET = new RequestUrl(this,
                                                 "/graph/get");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_SHOW = new RequestUrl(this,
                                                  "/entry/show",
                                                  "View " + LABEL_ENTRY);
@@ -122,218 +97,149 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_DATA = new RequestUrl(this,
                                                  "/entry/data", "Entry Data");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY = new RequestUrl(this, "/entry",
                                             "View " + LABEL_ENTRY);
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_COPY = new RequestUrl(this,
                                                  "/entry/copy");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_TYPECHANGE = new RequestUrl(this,
                                                        "/entry/typechange");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_DELETE = new RequestUrl(this,
                                                    "/entry/delete", "Delete");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_DELETELIST = new RequestUrl(this,
                                                        "/entry/deletelist");
 
-    /** _more_ */
     public final RequestUrl URL_ACCESS_FORM = new RequestUrl(this,
                                                   "/access/form", "Permissions");
 
-    /** _more_ */
     public final RequestUrl URL_ACCESS_CHANGE = new RequestUrl(this,
                                                     "/access/change");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_CHANGE = new RequestUrl(this,
                                                    "/entry/change");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_FORM = new RequestUrl(this,
                                                  "/entry/form",
                                                  "Edit Entry");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_EXTEDIT = new RequestUrl(this,
                                                     "/entry/extedit",
                                                     "Extra Edit");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_ACTIVITY = new RequestUrl(this,
                                                      "/entry/activity",
                                                      "Entry Activity");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_ACCESS = new RequestUrl(this,
                                                    "/entry/access",
                                                    "Edit " + LABEL_ENTRY);
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_NEW = new RequestUrl(this,
                                                 "/entry/new",
                                                 "New " + LABEL_ENTRY);
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_UPLOAD = new RequestUrl(this,
                                                    "/entry/upload",
                                                    "Upload a file");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_GETENTRIES = new RequestUrl(this,
                                                        "/entry/getentries");
 
-    /** _more_ */
     public final RequestUrl URL_ENTRY_GET = new RequestUrl(this,
                                                 "/entry/get");
 
-    /** _more_ */
     public final RequestUrl URL_USER_LOGIN = new RequestUrl(this,
                                                  "/user/login", true);
 
-    /** _more_ */
     public final RequestUrl URL_USER_REGISTER = new RequestUrl(this,
                                                     "/user/register", true);
 
-    /** _more_ */
     public final RequestUrl URL_USER_FAVORITE = new RequestUrl(this,
                                                     "/user/favorite");
 
-    /** _more_ */
     public final RequestUrl URL_USER_ACTIVITY = new RequestUrl(this,
                                                     "/user/activity");
 
-    /** _more_ */
     public final RequestUrl URL_USER_RESETPASSWORD =
         new RequestUrl(this, "/user/resetpassword");
 
-    /** _more_ */
     public final RequestUrl URL_USER_FINDUSERID = new RequestUrl(this,
                                                       "/user/finduserid");
 
-    /** _more_ */
     public final RequestUrl URL_USER_LOGOUT = new RequestUrl(this,
                                                   "/user/logout");
 
-    /** _more_ */
     public final RequestUrl URL_USER_HOME = new RequestUrl(this,
                                                 "/user/home", "Favorites");
 
-    /** _more_ */
     public final RequestUrl URL_USER_PROFILE = new RequestUrl(this,
                                                    "/user/profile",
                                                    "User Profile");
 
-    /** _more_ */
     public final RequestUrl URL_USER_SETTINGS = new RequestUrl(this,
 							       "/user/settings", "Settings",
 							       "/user/changesettings");
 
-    /** _more_ */
     public final RequestUrl URL_USER_PASSWORD = new RequestUrl(this,
 							       "/user/password", "Password",
 							       "/user/changepassword");    
 
-    /** _more_ */
     public final RequestUrl URL_USER_CHANGE_SETTINGS = new RequestUrl(this,
 								      "/user/changesettings");
 
-    /** _more_ */
     public final RequestUrl URL_USER_CHANGE_PASSWORD = new RequestUrl(this,
 								      "/user/changepassword");
 
-    /** _more_ */
     public final RequestUrl URL_USER_CART = new RequestUrl(this,
                                                 "/user/cart", "Data Cart");
 
-    /** _more_ */
     public final RequestUrl URL_USER_LIST = new RequestUrl(this,
 							   "/user/list", "Users","/user/edit","/user/new/form");
 
-    /** _more_ */
     public final RequestUrl URL_USER_EDIT = new RequestUrl(this,
                                                 "/user/edit", "Users");
 
-    /** _more_ */
     public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
-    /** _more_ */
     public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
 
-    /** _more_ */
     public static final GregorianCalendar calendar =
         new GregorianCalendar(TIMEZONE_UTC);
 
-    /** _more_ */
     private String urlBase = "/repository";
 
     /**  */
     protected boolean alwaysHttps = false;
 
-    /** _more_ */
     private boolean isMinified;
 
-    /** _more_ */
     private String hostname = "";
 
-    /** _more_ */
     private String ipAddress = "";
 
-    /** _more_ */
     private int httpPort = 80;
 
-    /** _more_ */
     private int httpsPort = -1;
 
-    /** _more_ */
     private boolean clientMode = false;
 
-    /**
-     * _more_
-     */
     public RepositoryBase() {}
 
-    /**
-     * _more_
-     *
-     * @param port _more_
-     *
-     * @throws Exception _more_
-     */
     public RepositoryBase(int port) throws Exception {
         this.httpPort = port;
     }
 
-    /**
-     *     _more_
-     *
-     *     @return _more_
-     */
     public String getGUID() {
         return UUID.randomUUID().toString();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     protected long currentTime() {
         return new Date().getTime();
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     public String absoluteUrl(String url) {
         int port = getPort();
         if ((port == 80) || (port == 0)) {
@@ -344,11 +250,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getHttpProtocol() {
         if (getAlwaysHttps()) {
             return "https";
@@ -364,38 +265,16 @@ public class RepositoryBase implements Constants, RepositorySource {
         return alwaysHttps;
     }
 
-    /**
-     * _more_
-     *
-     * @param requestUrl _more_
-     */
     public void initRequestUrl(RequestUrl requestUrl) {}
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getHttpsPort() {
         return httpsPort;
     }
 
-    /**
-     * _more_
-     *
-     * @param port _more_
-     */
     public void setHttpsPort(int port) {
         httpsPort = port;
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     *
-     * @return _more_
-     */
     public String getHttpsUrl(String url) {
         String hostname = getHostname();
         int    port     = getHttpsPort();
@@ -411,14 +290,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param name _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     public String getProperty(String name, String dflt) {
         return dflt;
     }
@@ -435,11 +306,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RepositoryBase getRepositoryBase() {
         return this;
     }
@@ -453,20 +319,10 @@ public class RepositoryBase implements Constants, RepositorySource {
         hostname = value;
     }
 
-    /**
-     * _more_
-     *
-     * @param ip _more_
-     */
     public void setIpAddress(String ip) {
         ipAddress = ip;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getIpAddress() {
         return ipAddress;
     }
@@ -498,26 +354,10 @@ public class RepositoryBase implements Constants, RepositorySource {
         return httpPort;
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     *
-     * @return _more_
-     */
     public String progress(String h) {
         return getMessage(h, Constants.ICON_PROGRESS, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param h _more_
-     * @param icon _more_
-     * @param showClose _more_
-     *
-     * @return _more_
-     */
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),
@@ -535,13 +375,6 @@ public class RepositoryBase implements Constants, RepositorySource {
                + "</div></td></tr></table>\n";
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     public String getFileUrl(String f) {
         return Utils.concatString(urlBase, f);
     }
@@ -550,24 +383,10 @@ public class RepositoryBase implements Constants, RepositorySource {
         return Utils.concatString(urlBase, f);
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     public String getHtdocsUrl(String f) {
         return getFileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
     }
 
-    /**
-     * _more_
-     *
-     * @param f _more_
-     *
-     * @return _more_
-     */
     public String getIconUrl(String f) {
         if (f == null) {
             return null;
@@ -576,14 +395,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return urlBase + f;
     }
 
-    /**
-     * _more_
-     *
-     * @param url _more_
-     * @param args _more_
-     *
-     * @return _more_
-     */
     public String getIconImage(String url, String... args) {
         if (HU.isFontAwesome(url)) {
             return HU.faIcon(url, args);
@@ -628,13 +439,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         return isMinified;
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {}
 
 }

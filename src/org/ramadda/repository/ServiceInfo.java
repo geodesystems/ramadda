@@ -13,65 +13,32 @@ package org.ramadda.repository;
  */
 public class ServiceInfo {
 
-    /** _more_ */
     public static final String TYPE_KML = "kml";
 
-    /** _more_ */
     public static final String TYPE_WMS = "wms";
 
-    /** _more_ */
     public static final String TYPE_GRID = "grid";
 
-    /** _more_ */
     public static final String TYPE_NA = "na";
 
-    /** _more_ */
     private String type;
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String url;
 
-    /** _more_ */
     private String icon;
 
-    /** _more_ */
     private String mimeType;
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param name _more_
-     * @param url _more_
-     */
     public ServiceInfo(String type, String name, String url) {
         this(type, name, url, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param name _more_
-     * @param url _more_
-     * @param icon _more_
-     */
     public ServiceInfo(String type, String name, String url, String icon) {
         this(type, name, url, icon, null);
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     * @param name _more_
-     * @param url _more_
-     * @param icon _more_
-     * @param mimeType _more_
-     */
     public ServiceInfo(String type, String name, String url, String icon,
                        String mimeType) {
         this.type     = type;
@@ -89,24 +56,10 @@ public class ServiceInfo {
         return "service:" + name + " url:" + url;
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public boolean isType(String type) {
         return this.type.equals(type);
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean equals(Object object) {
         if ( !(object instanceof ServiceInfo)) {

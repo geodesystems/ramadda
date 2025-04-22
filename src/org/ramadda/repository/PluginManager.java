@@ -63,108 +63,78 @@ public class PluginManager extends RepositoryManager {
 
     //Uggh
 
-    /** _more_ */
     public static final String PLUGIN_ALL =
         "/org/ramadda/repository/resources/plugins/allplugins.jar";
 
-    /** _more_ */
     public static final String PLUGIN_CORE =
         "/org/ramadda/repository/resources/plugins/coreplugins.jar";
 
-    /** _more_ */
     public static final String PLUGIN_GEO =
         "/org/ramadda/repository/resources/plugins/geoplugins.jar";
 
-    /** _more_ */
     public static final String PLUGIN_BIO =
         "/org/ramadda/repository/resources/plugins/bioplugins.jar";
 
-    /** _more_ */
     public static final String PLUGIN_MISC =
         "/org/ramadda/repository/resources/plugins/miscplugins.jar";
 
     //This should be a properties file but...
 
-    /** _more_ */
     public static final String[] PLUGINS = { PLUGIN_CORE, PLUGIN_GEO,
                                              PLUGIN_MISC, PLUGIN_BIO };
 
-    /** _more_ */
     private StringBuffer pluginFilesList = new StringBuffer();
 
-    /** _more_ */
     private StringBuffer pluginsList = new StringBuffer();
 
-    /** _more_ */
     private List<String> propertyFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> templateFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> sqlFiles = new ArrayList<String>();
 
     /**  */
     private List<String> licenseFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> pluginFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<MultiJarClassLoader> classLoaders =
         new ArrayList<MultiJarClassLoader>();
 
-    /** _more_ */
     private MyClassLoader classLoader;
 
-    /** _more_ */
     File tmpPluginsDir;
 
-    /** _more_ */
     private Properties properties;
 
-    /** _more_ */
     private List<String> allFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> metadataDefFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> typeDefFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> apiDefFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> outputDefFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> classDefFiles = new ArrayList<String>();
 
-    /** _more_ */
     private List<String> pythonLibs = new ArrayList<String>();
 
-    /** _more_ */
     private Hashtable<String, String> htdocsMap = new Hashtable<String,
                                                       String>();
 
-    /** _more_ */
     private List<String[]> docUrls = new ArrayList<String[]>();
 
-    /** _more_ */
     private List<String[]> lastDocUrls = new ArrayList<String[]>();
 
-    /** _more_ */
     private List<Class> adminHandlerClasses = new ArrayList<Class>();
 
-    /** _more_ */
     private List<Class> specialClasses = new ArrayList<Class>();
 
-    /** _more_ */
     private List<PageDecorator> pageDecorators =
         new ArrayList<PageDecorator>();
 
-    /** _more_ */
     private List<ImportHandler> importHandlers =
         new ArrayList<ImportHandler>();
 
@@ -174,20 +144,10 @@ public class PluginManager extends RepositoryManager {
     /**  */
     private List<Class> seesvClasses = new ArrayList<Class>();
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public PluginManager(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void shutdown() throws Exception {
         for (MultiJarClassLoader classLoader : classLoaders) {
             classLoader.shutdown();
@@ -204,34 +164,14 @@ public class PluginManager extends RepositoryManager {
         return seesvClasses;
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     */
     public void markSeen(Object object) {
         seenThings.add(object);
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     *
-     * @return _more_
-     */
     public boolean haveSeen(Object object) {
         return haveSeen(object, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param object _more_
-     * @param andMark _more_
-     *
-     * @return _more_
-     */
     public boolean haveSeen(Object object, boolean andMark) {
         boolean contains = seenThings.contains(object);
         if ( !contains && andMark) {
@@ -241,13 +181,6 @@ public class PluginManager extends RepositoryManager {
         return contains;
     }
 
-    /**
-     * _more_
-     *
-     * @param properties _more_
-     *
-     * @throws Exception On badness
-     */
     public void init(Properties properties) throws Exception {
         this.properties = properties;
         if (classLoader == null) {
@@ -288,11 +221,6 @@ public class PluginManager extends RepositoryManager {
             0, getRepository().getResourcePaths(PROP_METADATA));
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception On badness
-     */
     public void loadPlugins() throws Exception {
 	if(Repository.debugInit)   System.err.println("PluginManager.loadPlugins-1");
         //The false says not to scour
@@ -384,11 +312,6 @@ public class PluginManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     public void loadPluginsFinish() throws Exception {
         //Now check for the unknown plugin files
         List<String> remainder = new ArrayList<String>();
@@ -421,11 +344,6 @@ public class PluginManager extends RepositoryManager {
 
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception On badness
-     */
     public void loadPropertyFiles() throws Exception {
         for (String f : propertyFiles) {
             //            if (haveSeen(f)) {
@@ -435,16 +353,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param pluginFile _more_
-     * @param pluginSB _more_
-     * @param classLoader _more_
-     * @param top _more_
-     *
-     * @throws Exception On badness
-     */
     private void processPluginFile(String pluginFile, StringBuffer pluginSB,
                                    MultiJarClassLoader classLoader,
                                    boolean top)
@@ -494,15 +402,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected boolean reloadFile(String file) throws Exception {
         boolean contains = seenThings.contains(file);
         seenThings.remove(file);
@@ -511,39 +410,15 @@ public class PluginManager extends RepositoryManager {
         return contains;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected boolean checkFile(String file) throws Exception {
         return checkFile(file, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param desc _more_
-     * @param what _more_
-     */
     private void pluginStat(String desc, Object what) {
         pluginsList.append("<tr><td></td><td><b>" + desc + "</b></td><td><i>"
                            + what + "</i></td></tr>");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception On badness
-     */
     public Result adminPluginUpload(Request request) throws Exception {
         String pluginFile = request.getUploadedFile(ARG_PLUGIN_FILE);
         if ((pluginFile == null) || !new File(pluginFile).exists()) {
@@ -563,15 +438,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param pluginPath _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public boolean installPlugin(String pluginPath) throws Exception {
         return installPlugin(pluginPath, false);
     }
@@ -610,15 +476,6 @@ public class PluginManager extends RepositoryManager {
         return false;
     }
 
-    /**
-     * _more_
-     *
-     * @param pluginPath _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String copyPlugin(String pluginPath) throws Exception {
         //Remove any ..._file_ prefix
         String tail = RepositoryUtil.getFileTail(pluginPath);
@@ -633,13 +490,6 @@ public class PluginManager extends RepositoryManager {
         return newPluginFile;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param sb _more_
-     */
     public void addStatusInfo(Request request, StringBuffer sb) {
         StringBuffer formBuffer = new StringBuffer();
         /*
@@ -661,16 +511,6 @@ public class PluginManager extends RepositoryManager {
         sb.append(formBuffer.toString());
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fromPlugin _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected boolean checkFile(String file, boolean fromPlugin)
             throws Exception {
         String rootName = new File(file).getName();
@@ -767,29 +607,12 @@ public class PluginManager extends RepositoryManager {
      */
     private class MyClassLoader extends MultiJarClassLoader {
 
-        /** _more_ */
         private HashSet seenClasses = new HashSet();
 
-        /**
-         * _more_
-         *
-         * @param parent _more_
-         *
-         * @throws Exception On badness
-         */
         public MyClassLoader(ClassLoader parent) throws Exception {
             super(parent);
         }
 
-        /**
-         * _more_
-         *
-         * @param name _more_
-         *
-         * @return _more_
-         *
-         * @throws ClassNotFoundException On badness
-         */
         public Class xxxloadClass(String name) throws ClassNotFoundException {
             try {
                 Class clazz = super.loadClass(name);
@@ -925,17 +748,6 @@ public class PluginManager extends RepositoryManager {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param jarFilePath _more_
-         * @param jarEntry _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         protected String defineResource(String jarFilePath, JarEntry jarEntry)
                 throws Exception {
             String path = super.defineResource(jarFilePath, jarEntry);
@@ -981,11 +793,6 @@ public class PluginManager extends RepositoryManager {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String[]> getDocUrls() {
         return docUrls;
     }
@@ -1008,11 +815,6 @@ public class PluginManager extends RepositoryManager {
         return typeDefFiles;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getAllFiles() {
         return allFiles;
     }
@@ -1044,11 +846,6 @@ public class PluginManager extends RepositoryManager {
         return pythonLibs;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getPluginFiles() {
         return pluginFiles;
     }
@@ -1069,56 +866,26 @@ public class PluginManager extends RepositoryManager {
         return licenseFiles;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<PageDecorator> getPageDecorators() {
         return pageDecorators;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<ImportHandler> getImportHandlers() {
         return importHandlers;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Hashtable<String, String> getHtdocsMap() {
         return htdocsMap;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<String> getTemplateFiles() {
         return templateFiles;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Class> getAdminHandlerClasses() {
         return adminHandlerClasses;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<Class> getSpecialClasses() {
         return specialClasses;
     }

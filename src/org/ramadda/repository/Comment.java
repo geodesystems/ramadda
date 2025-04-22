@@ -19,35 +19,18 @@ import java.util.Date;
  */
 public class Comment {
 
-    /** _more_ */
     private String id;
 
-    /** _more_ */
     private String subject;
 
-    /** _more_ */
     private String comment;
 
-    /** _more_ */
     private Date date;
 
-    /** _more_ */
     private User user;
 
-    /** _more_ */
     private Entry entry;
 
-    /**
-     * _more_
-     *
-     *
-     * @param id _more_
-     * @param entry _more_
-     * @param user _more_
-     * @param date _more_
-     * @param subject _more_
-     * @param comment _more_
-     */
     public Comment(String id, Entry entry, User user, Date date,
                    String subject, String comment) {
         this.id      = id;
@@ -148,11 +131,6 @@ public class Comment {
         return date;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return subject;
     }

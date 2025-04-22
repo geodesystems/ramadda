@@ -14,11 +14,6 @@ package org.ramadda.repository;
  */
 public interface RepositorySource {
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public RepositoryBase getRepositoryBase();
 
 }
