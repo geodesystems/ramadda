@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -66,7 +65,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
     }
 
-
     private void initializeNewEntryInner(Request request, Entry entry,Entry base)
 	throws Exception {	
 	String id = ("" + entry.getValue(request,IDX_SITE_CODE)).trim();
@@ -95,7 +93,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	    entry.setName(siteColumn.getEnumLabel(id)+"-" + productColumn.getEnumLabel(product));
 	}
     }
-
 
     /**
      *
@@ -135,13 +132,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 
     }
 
-
-
-
-
-
-	    
-
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -149,7 +139,6 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
             throws Exception {
         return new CsvFile(getPathForRecordEntry(request,entry,requestProperties), properties);
     }
-
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
@@ -174,7 +163,5 @@ public class NeonTypeHandler extends BaseNeonTypeHandler {
 	String url = getPathForEntry(request,  entry,true);
 	return new Result(url);
     }
-
-
 
 }

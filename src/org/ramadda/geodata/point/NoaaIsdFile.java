@@ -3,7 +3,6 @@ Copyright (c) 2008-2025 Geode Systems LLC
 SPDX-License-Identifier: Apache-2.0
 */
 
-
 package org.ramadda.geodata.point;
 
 import org.ramadda.data.record.*;
@@ -16,12 +15,10 @@ import org.ramadda.util.Utils;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  */
 
 public class NoaaIsdFile extends CsvFile {
-
 
     public static int STATION = 0; 
     public static int DATE = 1; 
@@ -49,12 +46,9 @@ public class NoaaIsdFile extends CsvFile {
     public static int MW1 = 21; 
     public static int EQD = 22; 
 
-
     String FIELDS= "STATION,DATE,SOURCE,LATITUDE,LONGITUDE,ELEVATION,NAME,REPORT_TYPE,CALL_SIGN,QUALITY_CONTROL,WND_DIR,WND_QC,WND_TYPE,WND_SPEED,CIG_AGL,CIG_QC,CIG_TYPE,CIG_CAVOK_CODE,VIS,VIS_QC,VIS_VAR,VIS_VAR_QC,TMP,TMP_QC,DEW,DEW_QC,PRESSURE,PRESSURE_QC";
 
-
     private List<String> header;
-
 
     /**
      * ctor
@@ -71,8 +65,6 @@ public class NoaaIsdFile extends CsvFile {
 				  double v) {
 	return v == 999.9 || v==9999.9 || v==9999 || v==99999 || v==999999;
     }
-
-
 
     int cnt = 0;
     boolean hdr = true;

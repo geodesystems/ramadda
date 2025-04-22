@@ -5,19 +5,15 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.PointMetadataHarvester;
-
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.*;
 
-
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordEntry;
 import org.ramadda.data.services.RecordTypeHandler;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
@@ -28,7 +24,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
@@ -42,7 +37,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -51,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 public class NasaAmesTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
@@ -68,7 +61,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
-
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -76,7 +68,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
             throws Exception {
         return new NasaAmesRecordFile(new IO.Path(getPathForEntry(request, entry,true)));
     } 
-
 
     @Override
     protected void handleHarvestedMetadata(Request request,RecordEntry recordEntry,
@@ -108,7 +99,6 @@ public class NasaAmesTypeHandler extends PointTypeHandler {
 
         private SimpleDateFormat sdf =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 
         public static final int DATEUNIT_HOURS = 1;
         public static final int DATEUNIT_DAYS = 2;

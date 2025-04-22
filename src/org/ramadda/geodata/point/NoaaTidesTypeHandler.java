@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 
-
 public class NoaaTidesTypeHandler extends PointTypeHandler {
     private static final String PRODUCT_WATER_LEVEL="water_level";
     private static final String PRODUCT_HOURLY_HEIGHT="hourly_height";
@@ -42,7 +41,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
@@ -73,7 +71,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    }
 	}
 
-
 	if(!stringDefined(id)) return;
 
 	String url = "https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations/" + id+".json?expand=datums,floodlevels,disclaimers,notices,details,benchmarks&units=english";
@@ -103,7 +100,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		}
 	    }
 
-
 	    entry.setLatitude(station.optDouble("lat",Double.NaN));
 	    entry.setLongitude(station.optDouble("lng",Double.NaN));	    
 	    String name = entry.getName().replace(id,"").replace(stationName,"").replace("Monthly Mean","").trim();
@@ -124,8 +120,6 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	    if(stringDefined(name)) names.add(name);	    
 	    entry.setName(Utils.join(names," - "));
 
-
-
 	    entry.setValue("flood_stage_minor",new Double(flood.optDouble("nos_minor",Double.NaN)));
 	    entry.setValue("flood_stage_moderate",new Double(flood.optDouble("nos_moderate",Double.NaN)));
 	    entry.setValue("flood_stage_major",new Double(flood.optDouble("nos_major",Double.NaN)));
@@ -140,7 +134,7 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 		    new Metadata(getRepository().getGUID(), entry.getId(),
 				 getMetadataManager().findType(ContentMetadataHandler.TYPE_THUMBNAIL), false,
 				 fileName, null, null, null, null);
-		
+
 		getMetadataManager().addMetadata(request,entry, thumbnailMetadata);
 	    } catch(Exception imageExc){
 	    }
@@ -230,6 +224,5 @@ public class NoaaTidesTypeHandler extends PointTypeHandler {
 	}
 	return  getPathForEntry(request,  entry,false);
     }
-
 
 }

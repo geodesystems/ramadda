@@ -335,7 +335,6 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 
     }
 
-
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -370,5 +369,5 @@ public class UsgsGaugeTypeHandler extends PointTypeHandler {
 	}
 	return getWikiManager().wikifyEntry(request, entry,wiki.toString());
     }
-    
+
 }

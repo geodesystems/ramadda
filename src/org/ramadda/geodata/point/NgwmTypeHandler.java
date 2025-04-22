@@ -135,6 +135,6 @@ public class NgwmTypeHandler extends PointTypeHandler {
 	if(toks.size()!=2)
 	    throw new IllegalArgumentException("Incorrect Site ID:" + id +". It must be of the form agency:Site #, e.g. UNLCSD:241551");
 	return url.replace("${agency}",toks.get(0)).replace("${site}",toks.get(1));
-	
+
     }
 }

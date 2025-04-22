@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -32,9 +31,6 @@ import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 public class NdbcBuoyTypeHandler extends PointTypeHandler {
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
     private static int IDX_STATION_ID = IDX++;
@@ -46,8 +42,6 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
@@ -106,7 +100,6 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
 	    getSessionManager().addSessionMessage(request,"Error reading buoy metadata for station:" +  id +"<br>Url:" + url +
 						       "<br>Error:" +exc.getMessage());
 
-
 	}
     }
 
@@ -119,7 +112,6 @@ public class NdbcBuoyTypeHandler extends PointTypeHandler {
         url = url.replace("${data_type}", "" + entry.getValue(request,IDX_DATA_TYPE));
         return url;
     }
-
 
     public static void main(String[]args) {
   	String mtd = "<p><b>Owned and maintained by National Data Buoy Center</b><br>\n		<b>3-meter foam buoy</b><br>\n		<b>SCOOP payload</b><br>\n		<b>31.759 N 74.936 W (31&#176;45'33\" N 74&#176;56'10\" W)</b><br>\n		<br>";

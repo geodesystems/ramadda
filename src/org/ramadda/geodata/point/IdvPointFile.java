@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 public class IdvPointFile extends CsvFile {
 
     public IdvPointFile() {}
@@ -67,7 +66,6 @@ public class IdvPointFile extends CsvFile {
 
         return super.getProperty(field, properties, prop, dflt);
     }
-
 
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {

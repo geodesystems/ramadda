@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -28,7 +27,6 @@ import java.util.GregorianCalendar;
 
 import java.util.Hashtable;
 
-
 public class DaymetTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
@@ -48,7 +46,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
                                     new IO.Path(getPathForEntry(request, entry,true)));
     }
 
-
     private static final String URL_TEMPLATE =
         "https://daymet.ornl.gov/single-pixel/api/data?lat=${latitude}&lon=${longitude}&vars=prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
 
@@ -62,7 +59,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	return new String[]{lat,lon};
     }
 
-
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)
             throws Exception {
@@ -71,7 +67,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
 	url = url.replace("${latitude}", loc[0]);
 	url = url.replace("${longitude}", loc[1]);
 
-	
         Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
@@ -105,8 +100,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
             this.entry      = entry;
 	    this.loc = loc;
         }
-
-
 
         @Override
         public InputStream doMakeInputStream(boolean buffered)
@@ -157,12 +150,6 @@ public class DaymetTypeHandler extends PointTypeHandler {
             return visitInfo;
         }
 
-
-
-
     }
-
-
-
 
 }

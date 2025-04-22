@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.*;
 import org.ramadda.repository.*;
@@ -22,7 +21,6 @@ import java.util.List;
 
 public class PointApiHandler extends RepositoryManager {
 
-
     /**
      * ctor
      *
@@ -37,7 +35,6 @@ public class PointApiHandler extends RepositoryManager {
             throws Exception {
         super(repository);
     }
-
 
     public PointOutputHandler getPointOutputHandler() {
         return (PointOutputHandler) getRepository().getOutputHandler(

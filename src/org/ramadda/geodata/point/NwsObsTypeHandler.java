@@ -8,8 +8,6 @@ package org.ramadda.geodata.point;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
-
-
 import org.ramadda.data.record.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.services.*;
@@ -25,7 +23,6 @@ import java.io.*;
 import org.w3c.dom.Element;
 import org.json.*;
 
-
 /**
  * TypeHandler for Aviation Weather Center METARS
  * https://www.aviationweather.gov/adds/dataserver
@@ -34,10 +31,8 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
     public static final String URL =
         "https://api.weather.gov/stations/{station}/observations";
 
-
     private static int IDX =
         org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
-
 
     public static final int IDX_SITE_ID = IDX++;
 
@@ -46,14 +41,12 @@ public class NwsObsTypeHandler extends NwsStationTypeHandler {
         super(repository, node);
     }
 
-
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)throws Exception {
         super.initializeNewEntry(request, entry, newType);                                      
 	if(!isNew(newType)) return;
 	initializeStation(request, entry,  (String) entry.getStringValue(request,IDX_SITE_ID, ""));
    }
-
 
     @Override
     public String getPathForEntry(Request request, Entry entry, boolean forRead)

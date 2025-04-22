@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.*;
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
@@ -17,8 +16,6 @@ import org.ramadda.util.WaterMLUtil;
 
 import org.w3c.dom.*;
 
-
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -28,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 /**
  * Reads waterml xml files
@@ -54,7 +50,6 @@ public class WaterMLFile extends PointFile {
     /** dates */
     private List<Date> dates;
 
-
     public WaterMLFile(IO.Path path) throws IOException {
         super(path);
         sdf = makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -69,7 +64,6 @@ public class WaterMLFile extends PointFile {
 
         return dataRecord;
     }
-
 
     /**
      * This  gets called before the file is visited. It reads the header and defines the fields
@@ -135,8 +129,6 @@ public class WaterMLFile extends PointFile {
                 }
             }
 
-
-
             Element valuesNode = XmlUtil.findChild(timeSeriesNode,
                                      WaterMLUtil.TAG_VALUES);
             Element variable = XmlUtil.findChild(timeSeriesNode,
@@ -155,8 +147,6 @@ public class WaterMLFile extends PointFile {
                                    WaterMLUtil.TAG_VALUETYPE, "");
             String dataType = XmlUtil.getGrandChildText(variable,
                                   WaterMLUtil.TAG_DATATYPE, "");
-
-
 
             List values = XmlUtil.findChildren(valuesNode,
                               WaterMLUtil.TAG_VALUE);
@@ -211,7 +201,6 @@ public class WaterMLFile extends PointFile {
         latField.setType(RecordField.TYPE_DOUBLE);
         fields.add(0, latField);
 
-
         //This sets the getters
         for (RecordField recordField : fields) {
             DataRecord.initField(recordField);
@@ -244,7 +233,6 @@ public class WaterMLFile extends PointFile {
 
         return visitInfo;
 
-
     }
 
     public BaseRecord.ReadStatus readNextRecord(VisitInfo visitInfo,
@@ -268,7 +256,6 @@ public class WaterMLFile extends PointFile {
         return BaseRecord.ReadStatus.OK;
     }
 
-
     public boolean isCapable(String action) {
         if (action.equals(ACTION_TIME)) {
             return true;
@@ -276,7 +263,6 @@ public class WaterMLFile extends PointFile {
 
         return super.isCapable(action);
     }
-
 
     public static void main(String[] args) {
         PointFile.test(args, WaterMLFile.class);

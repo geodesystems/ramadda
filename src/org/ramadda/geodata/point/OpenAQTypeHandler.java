@@ -8,18 +8,15 @@ package org.ramadda.geodata.point;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 import org.ramadda.util.seesv.Seesv;
-
 
 import org.json.*;
 import org.w3c.dom.*;
@@ -34,7 +31,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-
 
 public class OpenAQTypeHandler extends PointTypeHandler {
 
@@ -67,7 +63,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
-
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
 	throws Exception {
@@ -90,7 +85,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	JSONObject obj           = new JSONObject(result.getResult());
 	JSONObject location = obj.getJSONArray("results").getJSONObject(0);
 	JSONObject coords = location.getJSONObject("coordinates");
-	
+
 	entry.setName(location.getString("name"));
 	entry.setValue(IDX_COUNTRY,location.optString("country",""));
 	entry.setValue(IDX_CITY,location.optString("city",""));	
@@ -158,7 +153,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	path.setRequestArgs(new String[]{"X-API-Key",key});
         return path;
     }
-
 
     public static class OpenAQRecordFile extends CsvFile {
 	Entry entry;

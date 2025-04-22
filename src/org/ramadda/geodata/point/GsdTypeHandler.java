@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -22,12 +21,10 @@ import java.io.*;
 
 import java.text.SimpleDateFormat;
 
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-
 
 public class GsdTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
@@ -35,7 +32,6 @@ public class GsdTypeHandler extends PointTypeHandler {
     private static int IDX_MODEL = IDX++;
     private static final String URL_TEMPLATE =
         "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source={model}&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
-
 
     public GsdTypeHandler(Repository repository, Element node)
             throws Exception {

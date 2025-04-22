@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -14,8 +13,6 @@ import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.JsonUtil;
-
-
 
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
@@ -40,8 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-
-
 public class WaggleTypeHandler extends PointTypeHandler {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.S'Z'";
@@ -55,8 +50,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
-
-
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry,
                                        Hashtable properties,
@@ -64,7 +57,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
             throws Exception {
         return new WaggleRecordFile(request,getRepository(), this,entry);
     }
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry, NewType newType)
@@ -112,8 +104,7 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    String state = location.substring(idx+1).trim();
 	    entry.setValue("state",state);
 	}
-	    
-	    
+
 	entry.setValue("location",location);
 	entry.setValue("node_type",vsn.getString("node_type"));	
 	entry.setValue("notes",vsn.getString("notes").replace("\n","<br>"));		
@@ -127,10 +118,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    else if(record.name.equals("sys.gps.alt")) entry.setAltitude(record.value);    	    
 	}
 
-
-
-
-
 	if(!entry.hasLocationDefined(request)) {
 	    URL manifestUrl = new URL("https://auth."+ baseUrl+"/manifests/"+ nodeId);
 	    String manifest=IO.doGet(manifestUrl,"Accept","*/*");
@@ -138,8 +125,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    entry.setLatitude(obj.optDouble("gps_lat",Double.NaN));
 	    entry.setLongitude(obj.optDouble("gps_lon",Double.NaN));	    
 	}
-	
-
 
     }
 
@@ -162,12 +147,10 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	return new URL("https://data." + base +"/api/v1/query");
     }
 
-
     private static String format(Date d) {
 	if(d==null) return null;
 	return new SimpleDateFormat(DATE_FORMAT).format(d);
     }
-
 
     public static class WaggleRecordFile extends CsvFile {
 
@@ -212,7 +195,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	public int  getSkipToLast(int last) throws Exception {
 	    return 0;
 	}
-
 
         @Override
         public InputStream doMakeInputStream(VisitInfo visitInfo,boolean buffered)
@@ -264,7 +246,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    String payload = JU.map(items);
 	    //	    System.err.println("query:"+payload.replace("\n"," "));
 	    final IO.Path path = new IO.Path(typeHandler.getDataUrl(request,entry).toString(),IO.HTTP_METHOD_POST,payload,null);
-	    
 
 	    InputStream pipedStream =IO.pipeIt(new IO.PipedThing(){
 		    int cnt=0;
@@ -301,11 +282,10 @@ public class WaggleTypeHandler extends PointTypeHandler {
 			    return;
 			}
 		    }});
-	    
+
 	    return pipedStream;
         }
     }
-
 
     public static class WaggleRecord {
 	String timestamp;
@@ -338,7 +318,6 @@ public class WaggleTypeHandler extends PointTypeHandler {
 	    name = obj.getString("name");
 	    value=obj.optDouble("value",Double.NaN);
 	}
-
 
     }
 

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -19,13 +18,11 @@ import org.ramadda.util.geo.GeoUtils;
 import ucar.unidata.util.StringUtil;
 import org.w3c.dom.*;
 
-
 import java.net.URL;
 import java.io.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class ISLRTypeHandler extends PointTypeHandler {
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
@@ -35,7 +32,6 @@ public class ISLRTypeHandler extends PointTypeHandler {
             throws Exception {
         super(repository, node);
     }
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
@@ -61,6 +57,5 @@ public class ISLRTypeHandler extends PointTypeHandler {
 	    entry.setLongitude(GeoUtils.decodeLatLon(lon));
 	}
     }
-
 
 }

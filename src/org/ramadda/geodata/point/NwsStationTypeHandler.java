@@ -7,8 +7,6 @@ package org.ramadda.geodata.point;
 
 import org.ramadda.util.Utils;
 
-
-
 import org.ramadda.data.services.*;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
@@ -18,7 +16,6 @@ import java.util.Hashtable;
 
 import org.w3c.dom.Element;
 import org.json.*;
-
 
 /**
  * TypeHandler for Aviation Weather Center METARS
@@ -33,7 +30,6 @@ public class NwsStationTypeHandler extends PointTypeHandler {
 
     private Hashtable<String,JSONObject> stations;
 
-
     public JSONObject getStation(String id) throws Exception {
 	if(stations==null) {
 	    JSONArray a= new JSONArray(getStorageManager().readUncheckedSystemResource("/org/ramadda/geodata/point/resources/weatherstations.json"));
@@ -47,7 +43,6 @@ public class NwsStationTypeHandler extends PointTypeHandler {
 	return stations.get(id);
     }
 
-
     public void initializeStation(Request request, Entry entry, String id)
             throws Exception {
 	if(!Utils.stringDefined(id)) return;
@@ -59,7 +54,5 @@ public class NwsStationTypeHandler extends PointTypeHandler {
     	entry.setLongitude(station.getDouble("lon"));	
 	entry.setValue("state",station.optString("st",""));
    }
-
-
 
 }

@@ -59,7 +59,6 @@ public class SnotelTypeHandler extends PointTypeHandler {
             return false;
         }
 
-
 	id =id.trim();
 	String url = "https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/stations?activeOnly=true&returnForecastPointMetadata=false&returnReservoirMetadata=false&returnStationElements=false&stationTriplets="+ id+"%3A*%3ASNTL";
 

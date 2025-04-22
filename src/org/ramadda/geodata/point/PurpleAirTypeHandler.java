@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.point;
 
-
 import org.json.*;
 
 import org.ramadda.data.point.text.*;
@@ -35,7 +34,6 @@ import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 
-
 public class PurpleAirTypeHandler extends PointTypeHandler {
 
     private static String FIELDS_DEFAULT="default";
@@ -60,9 +58,7 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static final String FIELDS_STRING_SHORT =
         "humidity,temperature,pressure,voc,ozone1,pm1.0,pm2.5,pm10.0,0.3_um_count,0.5_um_count,1.0_um_count,2.5_um_count,5.0_um_count,10.0_um_count";
 
-
     private static final String FIELDS_DOWNLOAD_ALL = "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,analog_input,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
-
 
     private static final String FIELDS_STRING_ALL =
         "humidity,humidity_a,humidity_b,temperature,temperature_a,temperature_b,pressure,pressure_a,pressure_b,voc,voc_a,voc_b,ozone1,analog_input,pm1.0,pm1.0_a,pm1.0_b,pm1.0_atm,pm1.0_atm_a,pm1.0_atm_b,pm1.0_cf_1,pm1.0_cf_1_a,pm1.0_cf_1_b,pm2.5_alt,pm2.5_alt_a,pm2.5_alt_b,pm2.5,pm2.5_a,pm2.5_b,pm2.5_atm,pm2.5_atm_a,pm2.5_atm_b,pm2.5_cf_1,pm2.5_cf_1_a,pm2.5_cf_1_b,pm2.5_10minute,pm2.5_10minute_a,pm2.5_10minute_b,pm2.5_30minute,pm2.5_30minute_a,pm2.5_30minute_b,pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,pm2.5_6hour,pm2.5_6hour_a,pm2.5_6hour_b,pm2.5_24hour,pm2.5_24hour_a,pm2.5_24hour_b,pm2.5_1week,pm2.5_1week_a,pm2.5_1week_b,pm10.0,pm10.0_a,pm10.0_b,pm10.0_atm,pm10.0_atm_a,pm10.0_atm_b,pm10.0_cf_1,pm10.0_cf_1_a,pm10.0_cf_1_b,scattering_coefficient,scattering_coefficient_a,scattering_coefficient_b,deciviews,deciviews_a,deciviews_b,visual_range,visual_range_a,visual_range_b,0.3_um_count,0.3_um_count_a,0.3_um_count_b,0.5_um_count,0.5_um_count_a,0.5_um_count_b,1.0_um_count,1.0_um_count_a,1.0_um_count_b,2.5_um_count,2.5_um_count_a,2.5_um_count_b,5.0_um_count,5.0_um_count_a,5.0_um_count_b,10.0_um_count,10.0_um_count_a,10.0_um_count_b";
@@ -104,13 +100,9 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         }
     }
 
-
     private String getFieldsType(Request request,Entry entry) {
 	return (String)entry.getValue(request,IDX_FIELDS);
     }
-
-
-
 
     private String makeFieldsProperty(Entry entry,List<String>fields) {
 	StringBuilder sb = new StringBuilder();
@@ -159,7 +151,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 
         return FIELDS_LIST_SHORT;
     }
-
 
     private String getFileHeader(Request request, Entry entry) {
 	return "date," + getDataFields(request,entry)   + "\n";
@@ -249,7 +240,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
         fos.close();
         entry.getResource().setFileSize(file.length());
 
-
         entry.setValue(IDX_RECORD_COUNT, points + 1);
         getEntryManager().updateEntry(request, entry);
 
@@ -310,7 +300,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
                        : "inside");
     }
 
-
     private static class Sensor {
         Date date;
         JSONObject data;
@@ -319,7 +308,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             this.data = data;
         }
     }
-
 
     private String getPrivateKey(Entry entry) {
 	String privateKey = (String) entry.getStringValue(getAdminRequest(),IDX_PRIVATE_KEY, "");
@@ -425,7 +413,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
     private static final String ARG_FIELDS ="fields";
     private static final String ARG_DOWNLOAD = "download";
 
-
     private static final String DOWNLOAD_TITLE="PurpleAir Download";
     public Result processGetHistory(Request request, Entry entry)
             throws Exception {
@@ -471,7 +458,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		url=HU.url(url, "read_key",privateKey);
 	    }
 
-	    
 	    if(startTimestamp!=null) 
 		url=HU.url(url,ARG_START_TIMESTAMP,Utils.format(sdf,startTimestamp.getTime())+"T00:00:00Z");
 	    //Always have an end time
@@ -502,7 +488,6 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 		    final Seesv seesv = new Seesv(new String[]{"-sort","time_stamp","-p"},
 					    bis,out);		    
 
-
 		    Result theResult = new Result(in,"text/csv");
 		    Misc.run(new Runnable() {
 			    public void run()  {
@@ -516,18 +501,16 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
 			    }
 			});
 
-
 		    return theResult;
 		}
 	    } catch(Exception exc) {
 		messageSB.append(getPageHandler().showDialogError("An error has occurred: " + exc));
 	    }
         }
-	
+
 	getPageHandler().entrySectionOpen(request, entry, sb, DOWNLOAD_TITLE);
 
 	sb.append(getWikiManager().wikify(request,"+note\nThis downloads historic sensor data from PurpleAir\n-note"));
-
 
 	if(messageSB.length()>0) {
 	    sb.append(messageSB);
@@ -601,6 +584,5 @@ public class PurpleAirTypeHandler extends PointTypeHandler {
             return visitInfo;
         }
     }
-
 
 }

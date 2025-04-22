@@ -5,7 +5,6 @@
 
 package org.ramadda.geodata.point;
 
-
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -28,7 +27,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
-
 
 public class TmyTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;

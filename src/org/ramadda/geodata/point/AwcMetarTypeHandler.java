@@ -24,20 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
 
-
 /**
  * TypeHandler for Aviation Weather Center METARS
  * https://www.aviationweather.gov/adds/dataserver
  */
 public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 
-
     public static final String URL = "https://aviationweather.gov/api/data/metar?format=json&ids={station}&hours={offset}";
-
 
     private static int IDX =
         org.ramadda.data.services.RecordTypeHandler.IDX_LAST + 1;
-
 
     public static final int IDX_SITE_ID = IDX++;
     public static final int IDX_STATE = IDX++;
@@ -49,7 +45,6 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	//Not now
 	//	Misc.runInABit(5000,new Runnable() {public void run() {doCleanup();}});
     }
-
 
     private void doCleanup() {
 	/*
@@ -93,12 +88,8 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	}catch(Exception exc) {
 	    exc.printStackTrace();
 	}
-	    
+
     }
-
-
-
-
 
     @Override
     public void initializeNewEntry(Request request, Entry entry,NewType newType)
@@ -118,9 +109,7 @@ public class AwcMetarTypeHandler extends NwsStationTypeHandler {
 	}
 	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);
 
-
     }
-
 
     @Override
     public String getPathForEntry(Request request, Entry entry,
