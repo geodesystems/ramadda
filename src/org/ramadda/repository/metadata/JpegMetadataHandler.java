@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import com.drew.imaging.jpeg.*;
 import com.drew.lang.*;
 import com.drew.metadata.*;
@@ -15,12 +14,9 @@ import com.drew.imaging.ImageMetadataReader;
 
 import org.ramadda.repository.*;
 
-
 import org.ramadda.util.Utils;
 import org.ramadda.util.IO;
 import org.ramadda.util.ImageUtils;
-
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -37,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * A class for handling JPEG Metadata
  *
@@ -49,7 +44,6 @@ public class JpegMetadataHandler extends MetadataHandler {
     /** Camera Direction type */
     public static final String TYPE_CAMERA_DIRECTION = "camera.direction";
 
-
     /**
      * Construct a new instance for the repository
      *
@@ -60,7 +54,6 @@ public class JpegMetadataHandler extends MetadataHandler {
     public JpegMetadataHandler(Repository repository) throws Exception {
         super(repository);
     }
-
 
     /**
      *
@@ -121,9 +114,6 @@ public class JpegMetadataHandler extends MetadataHandler {
 			    false,  fileName, null, null, null, null);
     }
 
-
-
-
     /**
      * Get the initial metadata
      *
@@ -150,7 +140,6 @@ public class JpegMetadataHandler extends MetadataHandler {
 	    return;
 	}
 
-
 	com.drew.metadata.Metadata []mtd ={null};
         try {
 	    if(request.get(ATTR_MAKETHUMBNAILS,true)) {
@@ -167,12 +156,9 @@ public class JpegMetadataHandler extends MetadataHandler {
             return;
         }
 
-
         if (shortForm) {
             return;
         }
-
-
 
         if ( !(path.toLowerCase().endsWith(".jpg")
                 || path.toLowerCase().endsWith(".jpeg"))) {
@@ -293,7 +279,6 @@ public class JpegMetadataHandler extends MetadataHandler {
 
     }
 
-
     /**
      * Get the value of a tag as a double
      *
@@ -325,16 +310,8 @@ public class JpegMetadataHandler extends MetadataHandler {
         return dir.getDouble(tag);
     }
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         //        String str = "40:00:40.200000000004366";
-
 
         int cnt = 0;
         for (String path : args) {
@@ -351,6 +328,5 @@ public class JpegMetadataHandler extends MetadataHandler {
         }
 
     }
-
 
 }

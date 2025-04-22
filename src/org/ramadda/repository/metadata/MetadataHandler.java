@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.FormInfo;
@@ -15,9 +14,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
-
 import ucar.unidata.util.Misc;
-
 
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
@@ -28,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 @SuppressWarnings("unchecked")
 public class MetadataHandler extends RepositoryManager {
@@ -47,27 +42,17 @@ public class MetadataHandler extends RepositoryManager {
     private List<MetadataType> metadataTypes = new ArrayList<MetadataType>();
     boolean forUser = true;
 
-    
     public MetadataHandler(Repository repository) {
         super(repository);
     }
 
-
-    
     public MetadataHandler(Repository repository, Element node) {
         super(repository);
     }
 
-
-
-
-
-
-    
     public boolean isForEntry(Entry entry) {
         return true;
     }
-
 
     public String getTag(Request request, Metadata metadata) {
 	String mtd = metadata.getAttr(1);
@@ -81,7 +66,6 @@ public class MetadataHandler extends RepositoryManager {
 				   "class","metadata-tag","metadata-tag",mtd));
     }
 
-    
     public Metadata copyMetadata(Entry oldEntry, Entry newEntry,
                                  Metadata oldMetadata)
             throws Exception {
@@ -96,16 +80,12 @@ public class MetadataHandler extends RepositoryManager {
         return newMetadata;
     }
 
-    
     public void addMetadataType(MetadataType type) {
         type.setHandler(this);
         metadataTypes.add(type);
         typeMap.put(type.getId(), type);
         getMetadataManager().addMetadataType(type);
     }
-
-
-
 
     public void processMetadataXml(Request request,Entry entry, Element node,
                                    Hashtable filesMap, EntryManager.INTERNAL isInternal)
@@ -169,7 +149,6 @@ public class MetadataHandler extends RepositoryManager {
         getMetadataManager().addMetadata(request,entry, metadata);
     }
 
-    
     public void initNewEntry(Metadata metadata, Entry entry,
                              EntryInitializer initializer)
             throws Exception {
@@ -177,9 +156,6 @@ public class MetadataHandler extends RepositoryManager {
         type.initNewEntry(metadata, entry, initializer);
     }
 
-
-
-    
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink, boolean fileOk)
             throws Exception {
@@ -190,9 +166,6 @@ public class MetadataHandler extends RepositoryManager {
         type.decorateEntry(request, entry, sb, metadata, forLink,fileOk);
     }
 
-
-
-    
     public void getTextCorpus(Entry entry, Appendable sb, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
@@ -202,8 +175,6 @@ public class MetadataHandler extends RepositoryManager {
         type.getTextCorpus(entry, sb, metadata);
     }
 
-
-    
     public void getThumbnailUrls(Request request, Entry entry,
                                  List<String[]> urls, Metadata metadata)
             throws Exception {
@@ -214,7 +185,6 @@ public class MetadataHandler extends RepositoryManager {
         type.getThumbnailUrls(request, entry, urls, metadata);
     }
 
-    
     public void getFileUrls(Request request, Entry entry,
                             List<String[]> nameUrlPairs, Metadata metadata)
             throws Exception {
@@ -228,16 +198,12 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-    
     public Result xxxprocessView(Request request, Entry entry,
                                  Metadata metadata)
             throws Exception {
         return new Result("", "Cannot process view");
     }
 
-
-    
     public Result processView(Request request, Entry entry, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
@@ -248,9 +214,6 @@ public class MetadataHandler extends RepositoryManager {
         return type.processView(request, entry, metadata);
     }
 
-
-
-    
     protected String formEntry(String[] cols) {
         if (cols.length == 2) {
             //            return HtmlUtils.rowTop(HtmlUtils.cols(cols[0])+"<td colspan=2>" + cols[1] +"</td>");
@@ -280,13 +243,10 @@ public class MetadataHandler extends RepositoryManager {
         return sb.toString();
     }
 
-
-    
     protected String getHandlerGroupName() {
         return "Properties";
     }
 
-    
     public Metadata makeMetadata(String id, String entryId, String type,
                                  boolean inherited, String access,String attr1,
                                  String attr2, String attr3, String attr4,
@@ -303,9 +263,6 @@ public class MetadataHandler extends RepositoryManager {
         return metadata;
     }
 
-
-
-    
     public MetadataType findType(String stringType) {
 	return findType(stringType,true);
     }
@@ -319,21 +276,14 @@ public class MetadataHandler extends RepositoryManager {
 	return type;
     }
 
-
-    
     public MetadataType getType(String type) {
         return typeMap.get(type);
     }
 
-
-    
     public void getInitialMetadata(Request request, Entry entry,
                                    List<Metadata> metadataList,
                                    Hashtable extra, boolean shortForm) {}
 
-
-
-    
     public void addMetadata(Request request, Entry entry,
                             FileWriter fileWriter, Metadata metadata,
                             Element node,boolean encode)
@@ -347,7 +297,6 @@ public class MetadataHandler extends RepositoryManager {
         }
 
 	if(!type.getCanView()) return;
-
 
         Document doc = node.getOwnerDocument();
         Element metadataNode = XmlUtil.create(doc, TAG_METADATA, node,
@@ -392,8 +341,6 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-    
     public boolean addMetadataToXml(Request request, String xmlType,
                                     Entry entry, Metadata metadata,
                                     Document doc, Element datasetNode)
@@ -407,7 +354,6 @@ public class MetadataHandler extends RepositoryManager {
                                      datasetNode);
     }
 
-    
     public String getLabel(String s) {
         if (s.length() == 0) {
             return "No label";
@@ -419,8 +365,6 @@ public class MetadataHandler extends RepositoryManager {
         return s;
     }
 
-
-    
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata.getType());
@@ -431,7 +375,6 @@ public class MetadataHandler extends RepositoryManager {
         return type.getHtml(request, entry, metadata);
     }
 
-    
     public boolean isSimple(Metadata metadata) throws Exception {
         MetadataType type = getType(metadata.getType());
         if ((type == null) || !type.hasElements()) {
@@ -441,8 +384,6 @@ public class MetadataHandler extends RepositoryManager {
         return type.isSimple();
     }
 
-
-    
     public String[] getForm(Request request, FormInfo formInfo, Entry entry,
                             Metadata metadata, boolean forEdit)
             throws Exception {
@@ -459,8 +400,6 @@ public class MetadataHandler extends RepositoryManager {
                             forEdit);
     }
 
-
-    
     public void makeAddForm(Request request, Entry entry, Appendable sb)
             throws Exception {
         for (MetadataType type : metadataTypes) {
@@ -468,8 +407,6 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-    
     public String getSearchUrl(Request request, Metadata metadata) {
         MetadataType type = findType(metadata.getType());
         if (type == null) {
@@ -479,7 +416,6 @@ public class MetadataHandler extends RepositoryManager {
         return type.getSearchUrl(request, metadata);
     }
 
-    
     public String getSearchUrl(Request request, MetadataType type,
                                String value) {
         List args = new ArrayList();
@@ -500,7 +436,7 @@ public class MetadataHandler extends RepositoryManager {
 	    HU.attr("title","Search for entries with this metadata") +
 	    HU.cssClass("metadata-search-link ramadda-clickable"));
     }
-    
+
     public void addToSearchForm(Request request, Appendable sb,
                                 MetadataType type)
             throws Exception {
@@ -546,7 +482,6 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
     private Object findId(Object lookFor, List enums) {
 	for(Object o:enums) {
 	    if(o instanceof TwoFacedObject) {
@@ -560,8 +495,6 @@ public class MetadataHandler extends RepositoryManager {
 	return null;
     }
 
-
-    
     public void addToBrowseSearchForm(Request request, StringBuffer sb,
                                       MetadataType type, List<String> titles,
                                       List<String> contents)
@@ -623,10 +556,8 @@ public class MetadataHandler extends RepositoryManager {
         sb.append(HtmlUtils.makeShowHideBlock(type.getLabel(),
                 content.toString(), false));
 
-
     }
 
-    
     protected List<TwoFacedObject> trimValues(List<String> l) {
         List<TwoFacedObject> values = new ArrayList();
         for (String s : l) {
@@ -640,8 +571,6 @@ public class MetadataHandler extends RepositoryManager {
         return values;
     }
 
-
-    
     public void makeAddForm(Request request, Entry entry, MetadataType type,
                             Appendable sb)
             throws Exception {
@@ -673,7 +602,6 @@ public class MetadataHandler extends RepositoryManager {
             sb.append(HtmlUtils.row(HtmlUtils.colspan(header(html[0]), 2)));
         }
 
-
         sb.append("\n");
         sb.append(html[1]);
         sb.append("\n");
@@ -688,9 +616,6 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public void makeSearchForm(Request request, StringBuffer sb)
             throws Exception {
         for (MetadataType type : metadataTypes) {
@@ -698,9 +623,6 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-
-    
     public void handleAddSubmit(Request request, Entry entry,
                                 List<Metadata> metadataList)
             throws Exception {
@@ -708,8 +630,6 @@ public class MetadataHandler extends RepositoryManager {
         handleForm(request, entry, id, "", null, metadataList, true);
     }
 
-
-    
     public void handleFormSubmit(
             Request request, Entry entry,
             Hashtable<String, Metadata> existingMetadata,
@@ -728,21 +648,14 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-    
     public String getEnumerationValues(MetadataElement element) {
         return "";
     }
 
-    
     public boolean canHandle(String type) {
         return typeMap.get(type) != null;
     }
 
-
-
-
-    
     public void handleForm(Request request, Entry entry, String id,
                            String suffix,
                            Hashtable<String, Metadata> existingMetadata,
@@ -768,30 +681,16 @@ public class MetadataHandler extends RepositoryManager {
         }
     }
 
-
-
-
-    
     public String getFormHtml(String type) {
         return null;
     }
 
-
-
-
-
-
-
-    
     public void setForUser(boolean value) {
         forUser = value;
     }
 
-    
     public boolean getForUser() {
         return forUser;
     }
-
-
 
 }

@@ -5,10 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
-
-
 
 /**
  *
@@ -18,22 +15,10 @@ import org.ramadda.repository.*;
  */
 public class EnumeratedMetadataHandler extends MetadataHandler {
 
-    /** _more_ */
     public static final String TYPE_TAG = "enum_tag";
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
     public EnumeratedMetadataHandler(Repository repository) throws Exception {
         super(repository);
     }
-
-
 
 }

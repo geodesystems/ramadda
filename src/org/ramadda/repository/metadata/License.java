@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import org.json.*;
 
 import org.ramadda.repository.Repository;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  * @author RAMADDA Development Team
@@ -25,7 +23,6 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public class License implements Comparable {
-
 
     private String from;
 
@@ -76,7 +73,6 @@ public class License implements Comparable {
         this.text = text;
     }
 
-
     /**
      *
      *
@@ -102,7 +98,6 @@ public class License implements Comparable {
         }
     }
 
-
     /**
      *
      * @param o _more_
@@ -116,7 +111,6 @@ public class License implements Comparable {
 
         return this.priority - ((License) o).priority;
     }
-
 
     /**
      *
@@ -166,7 +160,6 @@ public class License implements Comparable {
                 icon = JsonUtil.quote(icon);
             }
 
-
             List<String> attrs = Utils.add(null, "id", JsonUtil.quote(id),
                                            "name", JsonUtil.quote(name),
                                            "icon", icon);
@@ -180,7 +173,6 @@ public class License implements Comparable {
                 "licenses", JsonUtil.list(licenses))));
     }
 
-
     /**
        Get the From property.
 
@@ -193,7 +185,6 @@ public class License implements Comparable {
     public void setFrom (String s) {
 	from =s;
     }
-    
 
     /**
      *  @return _more_
@@ -309,7 +300,5 @@ public class License implements Comparable {
     public int getPriority() {
         return priority;
     }
-
-
 
 }

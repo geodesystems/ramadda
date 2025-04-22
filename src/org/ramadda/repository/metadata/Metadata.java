@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.Role;
 import org.ramadda.repository.database.*;
@@ -14,28 +13,22 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Misc;
 
-
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.*;
 
-
 import java.net.*;
-
 
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,13 +38,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 import java.util.regex.*;
 
 import java.util.zip.*;
-
-
 
 @SuppressWarnings("unchecked")
 public class Metadata implements Constants {
@@ -89,7 +78,7 @@ public class Metadata implements Constants {
     private boolean markedForDelete = false;
 
     public Metadata() {}
-    
+
     public Metadata(Metadata that) {
         this("", "", that);
     }
@@ -97,19 +86,17 @@ public class Metadata implements Constants {
     public Metadata(String id, String entryId, MetadataType type,  boolean inherited) {
         this(id, entryId, type, inherited, DFLT_ATTR, DFLT_ATTR, DFLT_ATTR, DFLT_ATTR, DFLT_EXTRA);
     }
-    
+
     public Metadata(MetadataType type, String attr1, String attr2, String attr3,
                     String attr4, String extra) {
         this(DFLT_ID, DFLT_ENTRYID, type, false, attr1, attr2, attr3, attr4, extra);
     }
-    
+
     public Metadata(MetadataType type) {
         this(DFLT_ID, DFLT_ENTRYID, type, false, DFLT_ATTR, DFLT_ATTR,
              DFLT_ATTR, DFLT_ATTR, DFLT_EXTRA);
     }
 
-
-    
     public Metadata(String id, String entryId, MetadataType type,
                     boolean inherited, Object[] values) {
         this.id        = id;
@@ -119,8 +106,6 @@ public class Metadata implements Constants {
 	setMetadataType(type);
     }
 
-
-    
     public Metadata(String id, String entryId, MetadataType type,
                     boolean inherited, String attr1, String attr2,
                     String attr3, String attr4, String extra) {
@@ -174,7 +159,7 @@ public class Metadata implements Constants {
         }
     }
     */
-    
+
     public Metadata(String id, String entryId, MetadataType type, String[] attrs) {
         this.id      = id;
         this.entryId = entryId;
@@ -184,8 +169,6 @@ public class Metadata implements Constants {
         }
     }
 
-
-    
     public Metadata(String id, String entryId, Metadata that) {
         this.id        = id;
         this.entryId   = entryId;
@@ -205,7 +188,6 @@ public class Metadata implements Constants {
         this.values = that.values;
     }
 
-
     public void sanitize() {
 	id = HtmlUtils.strictSanitizeString(id);
 	type = HtmlUtils.strictSanitizeString(type);
@@ -217,7 +199,6 @@ public class Metadata implements Constants {
 	extraMap=null;
     }
 
-    
     public static List<Metadata> sort(List<Metadata> metadata) {
         ArrayList<Metadata> sorted =
             (ArrayList<Metadata>) new ArrayList(metadata);
@@ -226,11 +207,8 @@ public class Metadata implements Constants {
         return sorted;
     }
 
-
-    
     private static class MetadataCompare implements Comparator<Metadata> {
 
-        
         public int compare(Metadata o1, Metadata o2) {
 
             if ((o1.priority != PRIORITY_UNDEFINED)
@@ -242,7 +220,6 @@ public class Metadata implements Constants {
                     return 1;
                 }
             }
-
 
             int result = o1.getType().compareTo(o2.getType());
             if (result != 0) {
@@ -261,7 +238,6 @@ public class Metadata implements Constants {
         }
     }
 
-    
     public static boolean lengthOK(String s) {
         if (s == null) {
             return true;
@@ -270,29 +246,22 @@ public class Metadata implements Constants {
         return s.length() < MAX_LENGTH;
     }
 
-
-
-    
     public void setId(String value) {
         id = value;
     }
 
-    
     public String getId() {
         return id;
     }
 
-
-    
     public void setEntryId(String value) {
         entryId = value;
     }
 
-    
     public String getEntryId() {
         return entryId;
     }
-    
+
     public String getType() {
         return type;
     }
@@ -300,7 +269,7 @@ public class Metadata implements Constants {
     public boolean isType(String t) {
         return type.equals(t);
     }    
-    
+
     public void setAttr(int idx, String value) {
         if (idx == 1) {
             attr1 = value;
@@ -324,61 +293,45 @@ public class Metadata implements Constants {
         this.extra = null;
     }
 
-
-    
     public void setAttr1(String value) {
         attr1 = value;
     }
 
-
-
-
-    
     public String getAttr1() {
         return getValue(1, attr1);
     }
 
-    
     public void setAttr2(String value) {
         attr2 = value;
     }
 
-    
     public String getAttr2() {
         return getValue(2, attr2);
     }
 
-    
     public void setAttr3(String value) {
         attr3 = value;
     }
 
-    
     public String getAttr3() {
         return getValue(3, attr3);
     }
 
-    
     public void setAttr4(String value) {
         attr4 = value;
     }
 
-    
     public String getAttr4() {
         return getValue(4, attr4);
     }
 
-
-    
     public void setInherited(boolean value) {
         inherited = value;
     }
 
-    
     public boolean getInherited() {
         return inherited;
     }
-
 
     public void setAccess (String value) {
 	access = value;
@@ -394,22 +347,16 @@ public class Metadata implements Constants {
 	return accessList;
     }
 
-
     public String getAccess () {
 	return access;
     }
 
-
-
-    
     public String toString() {
         return "id:"+ id +" entry:" + entryId + " Type:" + metadataType+
 	    " type:" + type + " attr1:" + attr1
 	    + " attr2:" + attr2 + " attr3:" + attr3 + " attr4:" + attr4;
     }
 
-
-    
     private String getValue(int index, String dflt) {
         if (values == null) {
             return dflt;
@@ -423,8 +370,6 @@ public class Metadata implements Constants {
         return null;
     }
 
-
-    
     private Object getValue(int index) {
         if (values != null) {
             index--;
@@ -438,8 +383,6 @@ public class Metadata implements Constants {
         return getAttr(index);
     }
 
-
-    
     public String getAttr(int idx,boolean...checkExtra) {
         if (values != null) {
             return (String) getValue(idx);
@@ -461,14 +404,8 @@ public class Metadata implements Constants {
         return extraMap.get(Integer.valueOf(idx));
         //        throw new IllegalArgumentException("Bad attr idx:" + idx);
 
-
-
     }
 
-
-
-
-    
     public static class Type {
         public static final String DEFAULT_CATEGORY = "Properties";
         public static final int SEARCHABLE_ATTR1 = 1 << 0;
@@ -481,7 +418,6 @@ public class Metadata implements Constants {
         private String label;
         private boolean isEnumerated = false;
 
-        
         public Type(String type) {
             this.type = type;
             label     = type.replace("_", " ");
@@ -489,22 +425,18 @@ public class Metadata implements Constants {
             label = label.substring(0, 1).toUpperCase() + label.substring(1);
         }
 
-        
         public Type(String type, String label) {
             this(type, label, DEFAULT_CATEGORY, false);
         }
 
-        
         public Type(String type, String label, String category) {
             this(type, label, category, false);
         }
 
-        
         public Type(String type, String label, boolean enumerated) {
             this(type, label, DEFAULT_CATEGORY, enumerated);
         }
 
-        
         public Type(String type, String label, String category,
                     boolean enumerated) {
             this.type         = type;
@@ -513,45 +445,34 @@ public class Metadata implements Constants {
             this.isEnumerated = enumerated;
         }
 
-        
         public void setSearchableMask(int mask) {
             searchableMask = mask;
         }
 
-
-        
         public boolean isSearchable(int mask) {
             return (searchableMask & mask) != 0;
         }
 
-        
         public boolean isAttr1Searchable() {
             return isSearchable(SEARCHABLE_ATTR1);
         }
 
-        
         public boolean isAttr2Searchable() {
             return isSearchable(SEARCHABLE_ATTR2);
         }
 
-        
         public boolean isAttr3Searchable() {
             return isSearchable(SEARCHABLE_ATTR3);
         }
 
-        
         public boolean isAttr4Searchable() {
             return isSearchable(SEARCHABLE_ATTR4);
         }
 
-
-
-        
         public boolean isType(String type) {
             return this.type.equals(type);
         }
 
-        
         public boolean equals(Object o) {
             if ( !getClass().equals(o.getClass())) {
                 return false;
@@ -561,58 +482,44 @@ public class Metadata implements Constants {
             return type.equals(that.type);
         }
 
-        
         public String toString() {
             return type;
         }
 
-
-        
         public void setType(String value) {
             type = value;
         }
 
-        
         public String getType() {
             return type;
         }
 
-        
         public void setLabel(String value) {
             label = value;
         }
 
-        
         public String getLabel() {
             return label;
         }
 
-        
         public void setIsEnumerated(boolean value) {
             isEnumerated = value;
         }
 
-        
         public boolean getIsEnumerated() {
             return isEnumerated;
         }
 
-
-        
         public void setCategory(String value) {
             category = value;
         }
 
-        
         public String getCategory() {
             return category;
         }
 
-
-
     }
 
-    
     public boolean equals(Object o) {
         if ( !getClass().equals(o.getClass())) {
             return false;
@@ -635,8 +542,6 @@ public class Metadata implements Constants {
 	    && Misc.equals(this.entryId, that.entryId);
     }
 
-
-    
     public void setEntry(Entry value) {
         entry = value;
         if (value != null) {
@@ -644,17 +549,14 @@ public class Metadata implements Constants {
         }
     }
 
-    
     public Entry getEntry() {
         return entry;
     }
 
-    
     public void setExtra(String value) {
         this.extra = value;
     }
 
-    
     public String getExtraRaw() {
 	return extra;
     }
@@ -672,12 +574,10 @@ public class Metadata implements Constants {
         return tmp;
     }
 
-
     public int getExtraCount() {
 	if(!Utils.stringDefined(extra)) return 0;
 	return getExtraMap().size();
     }
-
 
     public Hashtable<Integer, String> getExtraMap() {
         if (extraMap != null) {
@@ -690,9 +590,6 @@ public class Metadata implements Constants {
         return tmp;
     }
 
-
-
-    
     public static Hashtable<Integer, String> extraToMap(String extra) {
         Hashtable<Integer, String> tmp = new Hashtable<Integer, String>();
         if ((extra != null) && (extra.length() > 0)) {
@@ -723,9 +620,6 @@ public class Metadata implements Constants {
         return tmp;
     }
 
-
-
-    
     public static String mapToExtra(Hashtable<Integer, String> map) {
         try {
             Document doc = XmlUtil.makeDocument();
@@ -745,12 +639,10 @@ public class Metadata implements Constants {
         }
     }
 
-    
     public void setPriority(int p) {
         priority = p;
     }
 
-    
     public static String trimToMaxLength(String s) {
         if (s == null) {
             return s;
@@ -760,33 +652,25 @@ public class Metadata implements Constants {
         return s;
     }
 
-
-    
     public void setMarkedForDelete(boolean value) {
         markedForDelete = value;
     }
 
-    
     public boolean getMarkedForDelete() {
         return markedForDelete;
     }
 
-
-    
     public void setMetadataType (MetadataType value) {
 	metadataType = value;
 	if(metadataType!=null)
 	    this.type    = metadataType.getId();
 	else
 	    System.err.println("Bad type:" + this + " " + Utils.getStack(10));
-	
+
     }
 
-    
     public MetadataType getMetadataType () {
 	return metadataType;
     }
-
-
 
 }

@@ -1723,7 +1723,7 @@ public class MetadataManager extends RepositoryManager {
 		    MetadataType    type    = handler.findType(t,false);
 		    if(type==null) continue;
 		    tmp.add(t+":"+type.getLabel());
-		    
+
 		}
 		props.put("types",Utils.join(tmp,","));
 	    }
@@ -1739,8 +1739,6 @@ public class MetadataManager extends RepositoryManager {
 	    return;
 	}
 
-
-
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
         if ((type == null) || (type.getChildren() == null)) {
@@ -1751,19 +1749,14 @@ public class MetadataManager extends RepositoryManager {
             return;
         }
 
-
-
-
 	List<MetadataElement> searchableElements = getSearchableElements(type);
 	List<String> jsonItems = new ArrayList<String>();
-
 
 	if(!doJson && !doCloud) {
 	    sb.append("<center>");
 	    HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-metadata-item','.formtable','Find',true)");
 	    sb.append("</center>");
 	}
-
 
 	for(MetadataElement element:searchableElements) {
 	    if(!element.isEnumeration()) {

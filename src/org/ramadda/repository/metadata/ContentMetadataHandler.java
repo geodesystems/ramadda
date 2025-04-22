@@ -15,26 +15,20 @@ import org.ramadda.util.HtmlUtils;
 import ucar.unidata.util.TwoFacedObject;
 import org.w3c.dom.*;
 
-
 import ucar.unidata.util.Misc;
 
-
 import java.awt.Image;
-
 
 import java.io.*;
 
 import java.net.URL;
 import java.net.URLConnection;
 
-
-
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  *
@@ -45,86 +39,49 @@ import java.util.Properties;
 @SuppressWarnings("unchecked")
 public class ContentMetadataHandler extends MetadataHandler {
 
-
     public static final String TYPE_PROPERTY = "property";
 
-    /** _more_ */
     public static final String TYPE_THUMBNAIL = "content.thumbnail";
 
-    /** _more_ */
     public static final String TYPE_TOOLS = "output_tools";
-    
-    /** _more_ */
+
     public static final String TYPE_ICON = "content.icon";
 
-    /** _more_ */
     public static final String TYPE_ATTACHMENT = "content.attachment";
 
-    /** _more_ */
     public static final String TYPE_PAGESTYLE = "content.pagestyle";
 
-    /** _more_ */
     public static final String TYPE_KEYWORD = "content.keyword";
 
-    /** _more_ */
     public static final String TYPE_URL = "content.url";
 
-    /** _more_ */
     public static final String TYPE_EMAIL = "content.email";
 
-    /** _more_ */
     public static final String TYPE_AUTHOR = "content.author";
 
-    /** _more_ */
     public static final String TYPE_LOGO = "content.logo";
 
-    /** _more_ */
     public static final String TYPE_JYTHON = "content.jython";
 
-    /** _more_ */
     public static final String TYPE_CONTACT = "content.contact";
 
-    /** _more_ */
     public static final String TYPE_SORT = "content.sort";
 
-    /** _more_ */
     public static final String TYPE_TIMEZONE = "content.timezone";
 
-    /** _more_ */
     public static final String TYPE_ALIAS = "content.alias";
 
-    /** _more_ */
     public static final String TYPE_TEMPLATE = "content.pagetemplate";
 
     /**  */
     public static final String TYPE_LICENSE = "content.license";
 
-    /** _more_ */
     public static final String TYPE_TAG = "enum_tag";
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     * @throws Exception _more_
-     */
     public ContentMetadataHandler(Repository repository) throws Exception {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
             throws Exception {
@@ -161,11 +118,10 @@ public class ContentMetadataHandler extends MetadataHandler {
 	    if(stringDefined(logName)) {
 		wiki.append("logName=\"" + logName+"\" ");
 	    }	    	    
-	    
+
 	    wiki.append("}}");
             return new String[] { "License:&nbsp;",getWikiManager().wikifyEntry(request, entry, wiki.toString())};
         }
-
 
         if (metadata.getType().equals(TYPE_ALIAS)) {
             Hashtable props =
@@ -183,20 +139,9 @@ public class ContentMetadataHandler extends MetadataHandler {
             }
         }
 
-
-
-
         return super.getHtml(request, entry, metadata);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param element _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getEnumerationValues(MetadataElement element) {
         if (element.getName().equals("entrytype")) {
@@ -250,7 +195,6 @@ public class ContentMetadataHandler extends MetadataHandler {
 			}
 		    });
 
-	    
 		for(TwoFacedObject tfo: tfos) {
 		    sb.append(tfo.getId());
 		    sb.append(":");
@@ -262,7 +206,7 @@ public class ContentMetadataHandler extends MetadataHandler {
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
 	}
-	
+
         return "";
     }
 

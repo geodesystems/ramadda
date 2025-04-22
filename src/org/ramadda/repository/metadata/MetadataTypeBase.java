@@ -5,16 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.NamedValue;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -37,8 +34,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-
-
 /**
  *
  *
@@ -48,124 +43,79 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataTypeBase extends RepositoryManager {
 
-    /** _more_ */
     private SimpleDateFormat sdf;
 
-    /** _more_ */
     public static final String TAG_TYPE = "type";
 
-    /** _more_ */
     public static final String TAG_ELEMENT = "element";
 
-    /** _more_ */
     public static final String TAG_TEMPLATE = "template";
 
-    /** _more_ */
     public static String ATTR_HELP = "help";
 
-    /** _more_ */
     public static final String ATTR_FILE = "file";
 
-    /** _more_ */
     public static final String ATTR_TAG = "tag";
 
-    /** _more_ */
     public static final String ATTR_TYPE = "type";
 
-
-    /** _more_ */
     public static final String ATTR_NAME = "name";
 
-    /** _more_ */
     public static final String ATTR_LABEL = "label";
 
-    /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
     public static final String ATTR_ENTRYTYPE = "entrytype";    
 
-    /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
-    /** _more_ */
     public static final String ATTR_SHOWINHTML = "showinhtml";
 
-
-    /** _more_ */
     public static final String TEMPLATETYPE_THREDDS = "thredds";
 
-    /** _more_ */
     public static final String TEMPLATETYPE_DIF = "dif";
 
-
-    /** _more_ */
     public static final String TEMPLATETYPE_ISO = "iso";
 
-
-    /** _more_ */
     public static final String TEMPLATETYPE_OAIDC = "oai_dc";
 
-    /** _more_ */
     public static final String TEMPLATETYPE_HTML = "html";
 
-    /** _more_ */
     private String name;
 
-    /** _more_ */
     private String label;
 
-    /** _more_ */
     private String suffixLabel;
 
     protected String entryType;
 
-    /** _more_ */
     private boolean showInHtml = true;
 
     private boolean isTitle = false;
 
     protected boolean hasFile = false;
 
-
-    /** _more_ */
     private Hashtable<String, String> templates = new Hashtable<String,
                                                       String>();
 
-
-
-    /** _more_ */
     List<MetadataElement> children = new ArrayList<MetadataElement>();
-
 
     private Hashtable<String,MetadataElement> map;
 
-    /** _more_ */
     MetadataHandler handler;
 
-    /** _more_ */
     private boolean searchable = false;
 
-    /** _more_ */
     private Hashtable<String, String> tags = new Hashtable<String, String>();
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param handler _more_
-     */
     public MetadataTypeBase(MetadataHandler handler) {
         super(handler.getRepository());
         this.handler = handler;
     }
 
-
-
     public String getId() {
         return name;
     }
-
 
     /**
      *  Set the Handler property.
@@ -185,15 +135,9 @@ public class MetadataTypeBase extends RepositoryManager {
         return this.handler;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return name;
     }
-
 
     protected void checkFileXml(Request request, String templateType,
                                 Entry entry, Metadata metadata,
@@ -227,7 +171,6 @@ public class MetadataTypeBase extends RepositoryManager {
         }
     }
 
-
     public String applyTemplate(Request request, String templateType,
                                 Entry entry, Metadata metadata,
                                 Element parent)
@@ -254,7 +197,6 @@ public class MetadataTypeBase extends RepositoryManager {
         template = template.replace("${entry.changedate}",
                                     formatDate(entry.getChangeDate()));
 
-
 	StringBuilder sb = new StringBuilder();
 	for(Utils.Macro macro: Utils.splitMacros(template)) {
 	    if(macro.isText()) {
@@ -272,7 +214,7 @@ public class MetadataTypeBase extends RepositoryManager {
 	    if(value==null) value="";
 	    value = getRepository().getPageHandler().applyBaseMacros(value);		
 	    value = value.replaceAll("[\\r\\n]+", " ").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\"", "&quot;");
-	    
+
 	    if(macro.getProperty("encoded", false)) value = XmlUtil.encodeString(value);
 	    if(macro.getProperty("cdata", false)) value = wrapCdata(value);
 	    boolean addSearch = macro.getProperty("addSearch",false);
@@ -288,30 +230,10 @@ public class MetadataTypeBase extends RepositoryManager {
 	return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public String wrapCdata(String s) {
         return "<![CDATA[" + s + "]]>";
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param template _more_
-     * @param element _more_
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public String applyMacros(String template, MetadataElement element,
                               String value) {
         if (value == null) {
@@ -362,21 +284,10 @@ public class MetadataTypeBase extends RepositoryManager {
         return template;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean hasElements() {
         return getChildren().size() > 0;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isSimple() {
         if (getChildren().size() > 1) {
             return false;
@@ -385,25 +296,10 @@ public class MetadataTypeBase extends RepositoryManager {
         return !getChildren().get(0).getDataType().equals(TYPE_GROUP);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     *
-     * @return _more_
-     */
     public String getTag(String what) {
         return tags.get(what + ".tag");
     }
 
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
         setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
@@ -460,25 +356,10 @@ public class MetadataTypeBase extends RepositoryManager {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param templateType _more_
-     * @param template _more_
-     */
     public void processTemplate(String templateType, String template) {
         templates.put(templateType, template);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param childNode _more_
-     *
-     * @throws Exception _more_
-     */
     public void processTemplateTag(Element childNode) throws Exception {
         String templateType = XmlUtil.getAttribute(childNode, ATTR_TYPE);
         if (XmlUtil.hasAttribute(childNode, ATTR_FILE)) {
@@ -490,23 +371,14 @@ public class MetadataTypeBase extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<MetadataElement> getChildren() {
         return children;
     }
-
-
 
     public MetadataElement getElement(int idx) {
 	if(idx<0 || idx>=children.size()) return null;
 	return children.get(idx);
     }
-
 
     public MetadataElement getElement(String id) {
 	if(id==null) return null;
@@ -532,11 +404,6 @@ public class MetadataTypeBase extends RepositoryManager {
         return map.get(id);
     }    
 
-    /**
-     * _more_
-     *
-     * @param element _more_
-     */
     public void addElement(MetadataElement element) {
         getChildren().add(element);
 	if(element.isFileType()) hasFile = true;
@@ -597,18 +464,6 @@ public class MetadataTypeBase extends RepositoryManager {
 		      ARG_METADATA_ID, metadata.getId());
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param element _more_
-     * @param forLink _more_
-     *
-     * @return _more_
-     */
     public String getFileHtml(Request request, Entry entry,
                               Metadata metadata, MetadataElement element,
                               boolean forLink) {
@@ -626,7 +481,6 @@ public class MetadataTypeBase extends RepositoryManager {
         String path =
             Utils.concatString(handler.getRepository().getMetadataManager()
                 .URL_METADATA_VIEW.toString(), "/", tail);
-
 
         if (Utils.isImage(f.toString())) {
             String img = HU.img(HU.url(path, ARG_ELEMENT,
@@ -668,18 +522,6 @@ public class MetadataTypeBase extends RepositoryManager {
         return "";
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] getFileUrl(Request request, Entry entry,
                                Metadata metadata)
             throws Exception {
@@ -696,19 +538,6 @@ public class MetadataTypeBase extends RepositoryManager {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param element _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String[] getFileUrl(Request request, Entry entry,
                                Metadata metadata, MetadataElement element)
             throws Exception {
@@ -739,16 +568,6 @@ public class MetadataTypeBase extends RepositoryManager {
         return new String[] { IO.getFileTail(f.toString()), url,f.getName()};
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param t _more_
-     *
-     * @return _more_
-     */
     private String formatDate(long t) {
         if (sdf == null) {
             sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -758,16 +577,6 @@ public class MetadataTypeBase extends RepositoryManager {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param metadata _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
     public File getFile(Entry entry, Metadata metadata, int attr) {
 	return getFile(entry,metadata,metadata.getAttr(attr));
     }
@@ -785,16 +594,6 @@ public class MetadataTypeBase extends RepositoryManager {
 	return f;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param metadata _more_
-     * @param element _more_
-     *
-     * @return _more_
-     */
     public File getFile(Entry entry, Metadata metadata,
                         MetadataElement element) {
         File f;
@@ -810,8 +609,6 @@ public class MetadataTypeBase extends RepositoryManager {
 
         return f;
     }
-
-
 
     /**
      * Set the Name property.
@@ -831,11 +628,6 @@ public class MetadataTypeBase extends RepositoryManager {
         return name;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getLabel() {
         if (label != null) {
             return label;
@@ -844,31 +636,14 @@ public class MetadataTypeBase extends RepositoryManager {
         return getName();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setLabel(String value) {
         label = value;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSuffixLabel() {
         return suffixLabel;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     */
     public void setSuffixLabel(String value) {
         suffixLabel = value;
     }
@@ -937,7 +712,5 @@ public class MetadataTypeBase extends RepositoryManager {
     public boolean getIsTitle () {
 	return isTitle;
     }
-
-
 
 }

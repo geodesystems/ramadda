@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.map.MapManager;
@@ -18,7 +17,6 @@ import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -43,7 +41,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  * @author Jeff McWhirter
@@ -52,136 +49,84 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
-    /** _more_ */
     public static final int THUMBNAIL_WIDTH = 600;
 
-    /** _more_ */
     public static final String ARG_THUMBNAIL_SCALEDOWN =
         "metadata_thumbnail_scaledown";
 
-    /** _more_ */
     public static final String ARG_THUMBNAIL_WIDTH =
         "metadata_thumbnail_width";
 
     public static final String ARG_THUMBNAIL_DELETE =
         "metadata_thumbnail_delete";    
 
-    /** _more_ */
     public static final String ATTR_REQUIRED = "required";
 
-    /** _more_ */
     public static final String ATTR_MAX = "max";
 
-    /** _more_ */
     public static final String ATTR_ID = "id";
 
-    /** _more_ */
     public static final String ATTR_ROWS = "rows";
 
-    /** _more_ */
     public static final String ATTR_COLUMNS = "columns";
 
-    /** _more_ */
     public static final String ATTR_DEPENDS = "depends";
 
-    /** _more_ */
     public static final String ATTR_DATATYPE = "datatype";
 
-    /** _more_ */
     public static final String ATTR_GROUP = "group";
 
-
-    /** _more_ */
     public static final String ATTR_SUBNAME = "subname";
 
-    /** _more_ */
     public static final String ATTR_DEFAULT = "default";
 
-    /** _more_ */
     public static final String ATTR_VALUES = "values";
 
-
-    /** _more_ */
     public static final String ATTR_SEARCHABLE = "searchable";
 
-    /** _more_ */
     public static final String ATTR_THUMBNAIL = "thumbnail";
 
-    /** _more_ */
     public static final String ATTR_INDEX = "index";
 
-    /** _more_ */
     public static final String ATTR_ATTACHMENT = "attachment";
 
-
-    /** _more_ */
     private String dataType = DATATYPE_STRING;
 
-
-    /** _more_ */
     private boolean attachment = true;
 
-
-    /** _more_ */
     private String id = null;
 
-    /** _more_ */
     private String subName = "";
 
-    /** _more_ */
     private int max = -1;
 
-    /** _more_ */
     private int rows = 1;
 
-    /** _more_ */
     private int columns = 60;
 
-    /** _more_ */
     private List<HtmlUtils.Selector> values;    
 
-    /** _more_ */
     private Hashtable<String, String> valueMap = new Hashtable<String,
                                                      String>();
 
-    
-    /** _more_ */
     private String dflt = "";
 
-    /** _more_ */
     private boolean thumbnail = false;
 
     private boolean embed=false;
 
-    /** _more_ */
     private boolean required = false;
 
-    /** _more_ */
     private boolean searchable = false;
 
-
-    /** _more_ */
     private int index;
 
-    /** _more_ */
     private MetadataTypeBase parent;
 
-    /** _more_ */
     private String group;
 
-    /** _more_ */
     private Element xmlNode;
 
-    /**
-     * _more_
-     *
-     * @param handler _more_
-     * @param parent _more_
-     * @param index _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     public MetadataElement(MetadataHandler handler, MetadataTypeBase parent,
                            int index, Element node)
             throws Exception {
@@ -192,14 +137,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         init(node);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     public void init(Element node) throws Exception {
         super.init(node);
 
@@ -210,7 +147,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
         setDataType(XmlUtil.getAttribute(node, ATTR_DATATYPE,
                                          MetadataElement.DATATYPE_STRING));
-	
+
         setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
         setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, isEnumeration()?20:60));
 
@@ -219,7 +156,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         setGroup(XmlUtil.getAttribute(node, ATTR_GROUP, (String) null));
         setSearchable(XmlUtil.getAttribute(node, ATTR_SEARCHABLE, false));
-
 
         required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
         embed= XmlUtil.getAttribute(node, "embed", false);
@@ -279,7 +215,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         }
     }
 
-
     public MetadataTypeBase getParent() {
 	return parent;
     }
@@ -305,22 +240,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	return Misc.equals(this.id,that.id) && Misc.equals(this.parent,that.parent);
     }    
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Element getXmlNode() {
         return xmlNode;
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     private boolean isString(String type) {
         return dataType.equals(DATATYPE_STRING)
                || dataType.equals(DATATYPE_WIKI)
@@ -328,16 +251,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                || dataType.equals(DATATYPE_URL);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Metadata> getGroupData(String value) throws Exception {
         List<Metadata> result = new ArrayList<Metadata>();
         List<Hashtable<Integer, String>> entries =
@@ -373,7 +286,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	return false;
     }
 
-
     public String getValueForExport(Request request, Entry entry,MetadataType type,
 				    Metadata metadata) 
             throws Exception {
@@ -384,9 +296,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	String value = metadata.getAttr(index);
 	return value;
     }
-
-
-
 
     public MetadataHtml getHtml(Request request, Entry entry,
                                 MetadataType type,
@@ -401,7 +310,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if (isPrivate(request,entry,type, containerMetadata)) {
 	    return null;
 	}
-
 
         if (dataType.equals(DATATYPE_FILE)) {
             //Don't show thumbnails
@@ -498,7 +406,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                     }
                 }
             }
-
 
             StringBuffer entriesSB      = new StringBuffer();
             boolean      haveSubEntries = subEntries.size() != 0;
@@ -613,16 +520,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void getTextCorpus(String value, Appendable sb) throws Exception {
         if ((value == null) || dataType.equals(DATATYPE_SKIP)) {
             return;
@@ -658,7 +555,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         sb.append(" ");
     }
 
-
     /**
      * Class description
      *
@@ -668,63 +564,31 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
      */
     public static class MetadataHtml {
 
-        /** _more_ */
         public String label;
 
-        /** _more_ */
         public String content;
 
-        /** _more_ */
         public boolean isGroup = false;
 
-        /**
-         * _more_
-         *
-         * @param label _more_
-         * @param content _more_
-         */
         public MetadataHtml(String label, String content) {
             this.label   = label;
             this.content = content;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String toString() {
             return "MetadataHtml:" + label + " " + content;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getLabel() {
             return label;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getHtml() {
             return content;
         }
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     *
-     * @return _more_
-     */
     public String getLabel(String value) {
         if (valueMap == null) {
             return value;
@@ -737,12 +601,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return label;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isGroup() {
         return getDataType().equals(DATATYPE_GROUP);
     }
@@ -759,7 +617,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                    + request.getString(arg + ".longitude", "");
         }
 
-
         if (getDataType().equals(DATATYPE_BOOLEAN)) {
             boolean value = request.get(arg, false);
 
@@ -772,7 +629,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    }
 	    return request.getString(arg,"");
 	}
-
 
         if (getDataType().equals(DATATYPE_ENTRY)) {
             return request.getString(arg + "_hidden", "");
@@ -812,7 +668,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return Repository.encodeObject(entries);
         }
 
-
         String attr = request.getString(arg, "");
         if (request.defined(arg + "_select")) {
             attr = request.getString(arg + "_select", "");
@@ -827,12 +682,9 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return attr;
         }
 
-
-
         String oldValue = ((oldMetadata == null)
                            ? ""
                            : oldMetadata.getAttr(getIndex()));
-
 
 	if(request.get(ARG_THUMBNAIL_DELETE,false)) {
 	    File f = getFile(entry,oldMetadata,oldValue);
@@ -841,9 +693,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    }
 	    return null;
 	}		
-
-
-
 
         String url      = request.getString(arg + "_url", "");
         String theFile  = null;
@@ -892,20 +741,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    }
         }
 
-
         theFile = getStorageManager().moveToEntryDir(entry,
 						     new File(theFile)).getName();
 
         return theFile;
     }
 
-
     public String getForm(Request request, Entry entry, FormInfo formInfo,
                           Metadata metadata, String suffix, String value,
                           boolean forEdit)
             throws Exception {
-
-
 
         if (dataType.equals(DATATYPE_SKIP)) {
             return "";
@@ -915,8 +760,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         if ((value == null) || (value.length() == 0)) {
             value = request.getString(arg, dflt);
         }
-
-
 
         if (isString(dataType)) {
             if (dataType.equals(DATATYPE_WIKI)) {
@@ -1011,7 +854,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 	    MetadataType mtdType = getMetadataManager().findType(metadata.getType(),true);
             String[] va = getMetadataManager().getDistinctValues(request,
 								 mtdType.getHandler(), mtdType,index);
-	    
+
 	    //Check for any values in the database
 	    List<HtmlUtils.Selector> valuesToUse = values;    
 	    if(va.length>0) {
@@ -1023,7 +866,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 		}
 	    }
             boolean contains = HtmlUtils.Selector.contains(valuesToUse, value);
-	    
+
             return HU.select(arg, valuesToUse, value) + HU.space(2)
                    + msgLabel("Or")
                    + HU.input(arg + "_input", (contains
@@ -1037,7 +880,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (image == null) {
                 image = "";
             } 
-
 
             String extra = "";
             if (getThumbnail()) {
@@ -1119,7 +961,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                             "true"));
                 }
 
-
                 groupSB.append(HU.formTableClose());
 
                 if (lastOne) {
@@ -1161,12 +1002,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     }
 
-
     private Date parseDate(String value) {
 	if(!Utils.stringDefined(value)) return null;
 	return Utils.parseDate(value);
     }
-
 
     /**
      *  Set the Type property.
@@ -1194,7 +1033,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public boolean isBoolean() {
 	return dataType.equals(DATATYPE_BOOLEAN);
     }
-    
 
     /**
      *  Set the Rows property.
@@ -1232,7 +1070,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return columns;
     }
 
-
     /**
      * Set the Values property.
      *
@@ -1250,7 +1087,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public List<HtmlUtils.Selector> getValues() {
         return values;
     }
-
 
     /**
      * Set the Dflt property.
@@ -1306,7 +1142,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return this.index;
     }
 
-
     /**
      * Set the Searchable property.
      *
@@ -1324,7 +1159,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     public boolean getSearchable() {
         return this.searchable;
     }
-
 
     /**
      *  Set the Group property.
@@ -1362,14 +1196,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         return this.id;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean showAsAttachment() {
         return attachment;
     }
-
 
 }

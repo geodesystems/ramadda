@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.metadata;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.auth.Role;
@@ -16,10 +15,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.ImageUtils;
 import org.ramadda.util.sql.SqlUtil;
 
-
 import org.w3c.dom.*;
-
-
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -39,12 +35,9 @@ import java.net.URL;
 
 import java.sql.Statement;
 
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 @SuppressWarnings("unchecked")
 public class MetadataType extends MetadataTypeBase implements Comparable {
@@ -113,7 +106,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return this.getName().compareTo(((MetadataType) o).getName());
     }
 
-
     @Override
     public int hashCode() {
 	return id.hashCode();
@@ -125,13 +117,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	return id.equals(((MetadataType)o).id);
     }    
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public boolean isForEntry(Entry entry) {
         if (entryType != null) {
             return entry.getTypeHandler().isType(entryType);
@@ -144,26 +129,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	return hasFile;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param root _more_
-     * @param manager _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<MetadataType> parse(Element root,
                                            MetadataManager manager)
 	throws Exception {
@@ -173,15 +142,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return types;
     }
 
-    /**
-     * _more_
-     *
-     * @param root _more_
-     * @param manager _more_
-     * @param types _more_
-     *
-     * @throws Exception _more_
-     */
     private static void parse(Element root, MetadataManager manager,
                               List<MetadataType> types)
 	throws Exception {
@@ -234,9 +194,8 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
             String          id           = XmlUtil.getAttribute(node, ATTR_ID);
 
-
             MetadataHandler handler      = manager.getHandler(c);
-	    
+
             MetadataType    metadataType = new MetadataType(id, handler);
             metadataType.help = Utils.getAttributeOrTag(node, ATTR_HELP, "");
             metadataType.tagStyle = Utils.getAttributeOrTag(node, "tagstyle","");
@@ -251,14 +210,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	}
     }
 
-
-    /**
-     * _more_
-     *
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
     public void init(Element node) throws Exception {
         super.init(node);
         setAdminOnly(XmlUtil.getAttributeFromTree(node, ATTR_ADMINONLY,  false));
@@ -283,7 +234,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         setDisplayCategory(XmlUtil.getAttributeFromTree(node,
 							ATTR_DISPLAYCATEGORY, "Properties"));
 
-
 	tag = XmlUtil.getAttributeFromTree(node, "tag",  (String) null);
 
         setDisplayGroup(XmlUtil.getAttributeFromTree(node, ATTR_DISPLAYGROUP,
@@ -291,9 +241,7 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         setCategory(XmlUtil.getAttributeFromTree(node, ATTR_CATEGORY,
 						 handler.getHandlerGroupName()));
 
-
     }
-
 
     /**  */
     public static final String TABLE_NAME_PREFIX = "metadata_";
@@ -307,7 +255,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         return TABLE_NAME_PREFIX + id;
     }
-
 
     /**
      *
@@ -326,17 +273,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return name;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     * @param entry _more_
-     * @param initializer _more_
-     *
-     * @throws Exception _more_
-     */
     public void initNewEntry(Metadata metadata, Entry entry,
                              EntryInitializer initializer)
 	throws Exception {
@@ -404,7 +340,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 fileArg = metadata.getAttr(element.getIndex());
             }
 
-
             if (fileArg == null) {
                 System.err.println(
 				   "Metadata: Could not find file id for entry: "
@@ -448,7 +383,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
                 }
             }
 
-
 	    File newFile=null;
             if (IO.exists(tmpFile)) {
 		//If it is a template or remote then don't do anything with the file
@@ -456,7 +390,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		    metadata.setAttr(element.getIndex(), tmpFile.toString());
 		    return true;
 		} 
-
 
                 File file = new File(tmpFile.toString());
                 newFile = getStorageManager().copyToEntryDir(entry, file,
@@ -469,22 +402,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
     }
 
-
-
-    /**
-     *  _more_
-     *
-     *  @param request _more_
-     *  @param entry _more_
-     *  @param id _more_
-     *  @param suffix _more_
-     * @param oldMetadata _more_
-     *  @param newMetadata _more_
-     *
-     *
-     * @return _more_
-     *  @throws Exception _more_
-     */
     public Metadata handleForm(Request request, Entry entry, String id,
                                String suffix, Metadata oldMetadata,
                                boolean newMetadata)
@@ -502,20 +419,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return metadata;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param templateType _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param parent _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public boolean addMetadataToXml(Request request, String templateType,
                                     Entry entry, Metadata metadata,
                                     Element parent)
@@ -553,41 +456,12 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return true;
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param metadata _more_
-     * @param forLink _more_
-     *
-     * @throws Exception _more_
-     */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink,boolean fileOk)
 	throws Exception {
         decorateEntry(request, entry, sb, metadata, forLink, false,fileOk);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param metadata _more_
-     * @param forLink _more_
-     * @param isThumbnail _more_
-     *
-     * @throws Exception _more_
-     */
     public void decorateEntry(Request request, Entry entry, Appendable sb,
                               Metadata metadata, boolean forLink,
                               boolean isThumbnail,boolean fileOk)
@@ -631,16 +505,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param oldEntry _more_
-     * @param newEntry _more_
-     * @param newMetadata _more_
-     *
-     * @throws Exception _more_
-     */
     public void initializeCopiedMetadata(Entry oldEntry, Entry newEntry,
                                          Metadata newMetadata)
 	throws Exception {
@@ -655,18 +519,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param urls _more_
-     * @param metadata _more_
-     *
-     * @throws Exception _more_
-     */
     public void getThumbnailUrls(Request request, Entry entry,
                                  List<String[]> urls, Metadata metadata)
 	throws Exception {
@@ -701,19 +553,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param filter _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getDisplayImageUrl(Request request, Entry entry,
                                      Metadata metadata, String filter)
 	throws Exception {
@@ -736,18 +575,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param filter _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public MetadataElement getDisplayImageElement(Request request,
 						  Entry entry, Metadata metadata, String filter)
 	throws Exception {
@@ -770,19 +597,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return null;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processView(Request request, Entry entry, Metadata metadata)
 	throws Exception {
         int elementIndex = request.get(ARG_ELEMENT, 0) - 1;
@@ -794,18 +608,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return processView(request, entry, metadata, element);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param metadata _more_
-     * @param element _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processView(Request request, Entry entry,
                               Metadata metadata, MetadataElement element)
 	throws Exception {
@@ -837,7 +639,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
         }
 
-
         InputStream inputStream = getStorageManager().getFileInputStream(f);
         Result      result      = new Result(inputStream, mimeType);
         result.setCacheOk(true);
@@ -845,19 +646,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return result;
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param metadata _more_
-     *
-     * @return _more_
-     */
     public String getSearchUrl(Request request, Metadata metadata) {
         if ( !getSearchable()) {
             return null;
@@ -866,7 +654,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         List args = new ArrayList();
         args.add(ARG_METADATA_TYPE + "_" + getId());
         args.add(this.toString());
-
 
         for (MetadataElement element : getChildren()) {
             if ( !element.getSearchable()) {
@@ -902,16 +689,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param sb _more_
-     * @param metadata _more_
-     *
-     * @throws Exception _more_
-     */
     public void getTextCorpus(Entry entry, Appendable sb, Metadata metadata)
 	throws Exception {
         for (MetadataElement element : getChildren()) {
@@ -920,13 +697,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
     public String getTemplate(String type) {
         String template = super.getTemplate(type);
         if (template != null) {
@@ -936,17 +706,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return getMetadataManager().getTemplate(id, type);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getTypeLabel(Metadata metadata) throws Exception {
         String nameString = getName();
         for (MetadataElement element : getChildren()) {
@@ -999,7 +758,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	return false;
     }
 
-
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
 	throws Exception {
         if ( !getShowInHtml()) {
@@ -1022,7 +780,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	    : msgLabel(nameString);
 	boolean showLabel = Utils.getProperty(props,"showLabel",true);
 
-
 	List<MetadataElement> children = getChildren();
 	boolean makeSearchLink =  !smallDisplay && (this.makeSearchLink ||getSearchable()) && children.size()>=1;
 	if(makeSearchLink) {
@@ -1034,7 +791,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 		makeSearchLink = this.makeSearchLink;
 	    }
 	}
-
 
 	makeSearchLink = Utils.getProperty(props,"addLink",makeSearchLink);
 
@@ -1093,8 +849,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return new String[] { lbl, content.toString() };
     }
 
-
-
     @Override
     public String applyMacros(String template, MetadataElement element,
                               String value) {
@@ -1107,7 +861,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 
         return template;
     }
-
 
     public String getHelp() {
         return help;
@@ -1138,7 +891,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             //            sb.append(header(msgLabel("Add") + getName()));
         }
 	String clazz = 	"ramadda-metadata-widget ramadda-metadata-widget-"+HU.makeCssClass(id);
-
 
         String lastGroup = null;
         for (MetadataElement element : getChildren()) {
@@ -1180,13 +932,11 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
             }
         }
 
-
         sb.append("\n");
         sb.append( HU.formEntry("",
 				HU.labeledCheckbox(
 						   ARG_METADATA_INHERITED + suffix, "true",
 						   metadata.getInherited(),"Inherited")));
-
 
 	String msg ="<br>Comma separated list - e.g.: <i>admin</i>, <i>user</i>, <i>user:&lt;user id&gt;, <i>&lt;userrole&gt;</i>";
 	msg+=" " +HU.href(getRepository().getUrlBase()+"/userguide/editing.html#property_access","Help",
@@ -1194,7 +944,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	sb.append(HU.formEntry(msgLabel("Permissions"),
 			       HU.input(ARG_METADATA_ACCESS+suffix,metadata.getAccess(),HU.attrs("size","40")) +
 			       msg));
-
 
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
@@ -1222,8 +971,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return new String[] { lbl, sb.toString() };
     }
 
-
-
     public List<String> getFiles(Entry entry, Metadata metadata)
 	throws Exception {
 	List<String> files = new ArrayList<String>();
@@ -1234,17 +981,9 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	return files;
     }
 
-    
-
-
-
-
-
     public boolean isType(String id) {
         return Misc.equals(this.id, id);
     }
-
-
 
     /**
      *  Get the ID property.
@@ -1255,9 +994,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public String getId() {
         return id;
     }
-
-
-
 
     /**
      *  Set the Category property.
@@ -1276,10 +1012,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public String getCategory() {
         return category;
     }
-
-
-
-
 
     /**
      *  Set the DisplayCategory property.
@@ -1302,7 +1034,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public String getTag() {
 	return tag;
     }
-
 
     /**
      *  Set the DisplayGroup property.
@@ -1343,8 +1074,6 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
     public boolean getAdminOnly() {
         return this.adminOnly;
     }
-
-
 
     /**
      * Set the Browsable property.
@@ -1397,18 +1126,10 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
         return this.forUser;
     }
 
-
-
     public String getTagStyle() {
 	return tagStyle;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public int getPriority() {
         return priority;
     }
@@ -1476,7 +1197,5 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	}
 
     }
-
-
 
 }
