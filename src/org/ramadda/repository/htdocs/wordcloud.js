@@ -38,7 +38,8 @@ function ramaddaWordCloud(source,target,args) {
 		return {value:t.type,label:t.label};
 	    });
 	    menuId = HU.getUniqueId('menu');
-	    jqid(this.opts.headerId).append(HU.select('',[ATTR_ID,menuId], options));
+	    jqid(this.opts.headerId).append(HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
+						   HU.select('',[ATTR_ID,menuId], options)));
 	    jqid(menuId).change(function() {
 		_this.opts.type=$(this).val();
 		_this.loadJson();
