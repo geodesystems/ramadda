@@ -19,7 +19,6 @@ import org.ramadda.util.Utils;
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.StringUtil;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -40,62 +39,28 @@ public class DataAction extends MonitorAction {
     private String execPath="";
     private String execTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";    
 
-
     private String emails="";
     private String phoneNumbers="";    
     private String emailTemplate="A data monitor action has occurred for entry: ${entryname}. View entry at ${entryurl}. Message: ${message}";
     private String smsTemplate="";
 
-
-
-
-
     private double windowHours = 6;
     private LinkedHashMap<String,Long> lastMessageSent = new LinkedHashMap<String,Long>();
-    
 
-    /**
-     * _more_
-     */
     public DataAction() {}
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public DataAction(String id) {
         super(id);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "Data Action";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "data";
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         return "Monitor data";
     }
@@ -111,7 +76,7 @@ public class DataAction extends MonitorAction {
     }    
 
     private EntryMonitor monitor;
-    
+
     @Override
     public void checkLiveAction(EntryMonitor monitor) throws Throwable {
 	Request request = monitor.getRepository().getAdminRequest();
@@ -129,7 +94,6 @@ public class DataAction extends MonitorAction {
 	    checkLiveAction(request, monitor,entry,test);
 	}
     }
-
 
     public void checkLiveAction(Request request, EntryMonitor monitor,Entry entry,boolean test) throws Throwable {
 	this.monitor = monitor;
@@ -161,7 +125,6 @@ public class DataAction extends MonitorAction {
 	    return;
 	}
 
-
 	currentRequest=request;
 	testMode = test;
 
@@ -180,7 +143,6 @@ public class DataAction extends MonitorAction {
 	    testMode = false;
 	}
     }
-    
 
     public double getHoursSince(Object object)     {
 	Date date;
@@ -194,17 +156,15 @@ public class DataAction extends MonitorAction {
 	return Utils.millisToHours(diff);
     }
 
-
     public void print(Object message)     {
 	System.err.println(message.toString());
 	testModeMessage(message.toString());
     }
 
-
     public void logMessage(Object message)     {
 	monitor.getRepository().getLogManager().logMonitor(message.toString());
     }
-    
+
     public boolean canTrigger(Entry entry) throws Throwable {
 	Date now = new Date();
 	Long lastTime = lastMessageSent.get(entry.getId());
@@ -222,7 +182,6 @@ public class DataAction extends MonitorAction {
 	}
 	return true;
     }
-
 
     public void clear(Entry entry) throws Throwable {
 	lastMessageSent.remove(entry.getId());
@@ -245,7 +204,6 @@ public class DataAction extends MonitorAction {
 
 	int sent = 0;
 
-
 	if(what.length==0 || call.contains("program")) {
 	    sent+=triggerExec(entry,message);
 	}
@@ -264,7 +222,6 @@ public class DataAction extends MonitorAction {
 	    logMessage(monitor +" No message sent for entry: " + entry +" message: " + message);
 	}
     }
-
 
     public int triggerExec(Entry entry,String message) throws Throwable {
 	Repository repository = monitor.getRepository();
@@ -293,9 +250,6 @@ public class DataAction extends MonitorAction {
 	return 1;
     }
 
-
-
-
     public String applyTemplate(String template, Entry entry,String message)  {
 	template = template.replace("${message}",message).replace("${entryname}",entry.getName()).replace("${entryid}",entry.getId());
 	Request request = monitor.getRepository().getAdminRequest();
@@ -303,7 +257,6 @@ public class DataAction extends MonitorAction {
 	template = template.replace("${entryurl}",url);
 	return template;
     }
-
 
     public int triggerEmail(Entry entry,String message)  throws Throwable {
 	if(!Utils.stringDefined(emails)) {
@@ -325,7 +278,6 @@ public class DataAction extends MonitorAction {
 	}
 	return cnt;
     }
-
 
     public int triggerSms(Entry entry,String message)  throws Throwable {
 	if(!Utils.stringDefined(phoneNumbers)) {
@@ -353,9 +305,7 @@ public class DataAction extends MonitorAction {
 	}
 	return cnt;
 
-
     }
-    
 
     @Override
     public void applyEditForm(Request request, EntryMonitor monitor) {
@@ -381,14 +331,11 @@ public class DataAction extends MonitorAction {
 		monitor.setLastError("Error running test: " + thr);
 		monitor.getRepository().getSessionManager().addSessionMessage(request,
 										   "Error running test: " + thr);
-		
+
 	    }
 	}
 
-
-	
     }
-
 
     @Override
     public void addStatusLine(Request request, EntryMonitor monitor,Appendable sb) throws Exception {
@@ -419,8 +366,6 @@ public class DataAction extends MonitorAction {
                            + "/userguide/datamonitor.html", "Help",
 		    HU.attrs("class","ramadda-button", HU.ATTR_TARGET, "_help"));
 
-
-
 	String top="";
 	top+=helpLink;
 	top+=HU.space(2);
@@ -437,14 +382,12 @@ public class DataAction extends MonitorAction {
 	sb.append(HU.formEntry("Message Delay:",HU.input(getArgId("windowhours"),""+windowHours,
 							 " size=\"10\" ")+" hours. Enter 0 to only send 1 message until this action is cleared"));
 
-
         sb.append(HU.colspan(HU.div("Select entries to monitor",HU.cssClass("ramadda-form-help")),3));
 	String textAreaId = HU.getUniqueId("input_");
 	HU.importJS(sb, monitor.getRepository().getPageHandler().getCdnPath("/wiki.js"));
 	String buttons = OutputHandler.getSelect(request, textAreaId,
 						 HU.span("Add entry id",HU.cssClass("ramadda-button")), true, "entryid", null,
 						 false,false);
-
 
         sb.append(
 		  HU.formEntryTop(
@@ -475,10 +418,6 @@ public class DataAction extends MonitorAction {
 					      getArgId("script"), script, 15,
 					      60),jsInfo.toString()));
 
-
-	
-
-
 	Repository repository= monitor.getRepository();
 
 	sb.append(HU.colspan(HU.div("Path to program to execute. Will be called with arguments:<pre><i>program</i> &lt;entry id&gt; &lt;url to entry&gt; &lt;message&gt;",HU.cssClass("ramadda-form-help")),3));	
@@ -488,8 +427,6 @@ public class DataAction extends MonitorAction {
 				  HU.textArea(
 						  getArgId("exectemplate"), execTemplate, 5,
 						  60)));
-
-
 
 	if(repository.getMailManager().isEmailEnabled())  {
 	    sb.append(HU.colspan(HU.div("Enter emails to send",HU.cssClass("ramadda-form-help")),3));
@@ -508,7 +445,6 @@ public class DataAction extends MonitorAction {
 	    sb.append(HU.formEntry("","Email is not configured"));
 	}
 
-
 	if(repository.getMailManager().isSmsEnabled()) {
 	    sb.append(HU.colspan(HU.div("Enter phone numbers to text to",HU.cssClass("ramadda-form-help")),3));
 	    sb.append(
@@ -518,8 +454,6 @@ public class DataAction extends MonitorAction {
 						  getArgId("phonenumbers"), phoneNumbers, 5,
 						  60)));		
 
-
-	    
 	    sb.append(
 		      HU.formEntryTop(
 				      "Text Message:",
@@ -530,11 +464,8 @@ public class DataAction extends MonitorAction {
 	    sb.append(HU.formEntry("","SMS is not configured"));
 	}
 
-
-
         sb.append(HU.formTableClose());
     }
-
 
     private void addEntryInfo(Request request, EntryMonitor monitor,StringBuilder entriesInfo) throws Exception {
 	EntryManager em = monitor.getRepository().getEntryManager();
@@ -558,24 +489,15 @@ public class DataAction extends MonitorAction {
 		    }
 		    entriesInfo.append(line+"<br>");
 		}
-		
+
 	    }
 	}
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     * @param isNew _more_
-     */
     @Override
     public void entryMatched(EntryMonitor monitor, Entry entry,
                              boolean isNew) {
     }
-
 
     /**
        Set the Script property.
@@ -593,7 +515,6 @@ public class DataAction extends MonitorAction {
     public String getScript () {
 	return script;
     }
-
 
     /**
        Set the EntryIds property.
@@ -648,7 +569,6 @@ public class DataAction extends MonitorAction {
     public String getPhoneNumbers () {
 	return phoneNumbers;
     }
-
 
     /**
        Set the EmailTemplate property.
@@ -761,9 +681,5 @@ Get the ExecTemplate property.
 public String getExecTemplate () {
 	return execTemplate;
 }
-
-
-
-
 
 }

@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.client.RepositoryClient;
@@ -20,7 +19,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  *
  *
@@ -29,7 +27,6 @@ import java.util.List;
  */
 public class PublishAction extends MonitorAction {
 
-    /** _more_ */
     public static final String ARG_DESTRAMADDA = "destramadda";
 
     /**  */
@@ -41,7 +38,6 @@ public class PublishAction extends MonitorAction {
     /**  */
     public static final String ARG_PARENTENTRYID = "parententryid";
 
-    /** _more_ */
     private String destRamadda;
 
     /**  */
@@ -53,61 +49,24 @@ public class PublishAction extends MonitorAction {
     /**  */
     private String parentEntryId;
 
-
-
-    /**
-     * _more_
-     */
     public PublishAction() {}
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public PublishAction(String id) {
         super(id);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "publish";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "Publish Action";
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         return "Publish entry to: " + (Utils.stringDefined(destRamadda)?destRamadda:"not defined");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
         destRamadda = request.getString(getArgId(ARG_DESTRAMADDA),
@@ -118,15 +77,6 @@ public class PublishAction extends MonitorAction {
                                           parentEntryId).trim();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
 	throws Exception {
@@ -155,15 +105,6 @@ public class PublishAction extends MonitorAction {
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     * @param isNew _more_
-     */
     public void entryMatched(EntryMonitor monitor, Entry entry,
                              boolean isNew) {
         try {
@@ -220,7 +161,6 @@ public class PublishAction extends MonitorAction {
             monitor.handleError("Error handling Publish Action", exc);
         }
     }
-
 
     /**
      *  Set the ParentGroupId property.
@@ -293,9 +233,6 @@ public class PublishAction extends MonitorAction {
     public String getParentEntryId() {
         return parentEntryId;
     }
-
-
-
 
 }
 

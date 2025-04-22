@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
@@ -32,7 +31,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
 /**
  *
  *
@@ -42,53 +40,33 @@ import java.util.Properties;
 @SuppressWarnings("unchecked")
 public class MonitorManager extends RepositoryManager implements EntryChecker {
 
-    /** _more_ */
     public static final String ARG_MONITOR_CHANGE = "monitorchange";
 
-    /** _more_ */
     public static final String ARG_MONITOR_ONLYNEW = "onlynew";
 
-    /** _more_ */
     public static final String ARG_MONITOR_CREATE = "monitorcreate";
 
-    /** _more_ */
     public static final String ARG_MONITOR_DELETE = "monitordelete";
 
-    /** _more_ */
     public static final String ARG_MONITOR_DELETE_CONFIRM =
         "monitordeletefconfirm";
 
-    /** _more_ */
     public static final String ARG_MONITOR_ENABLED = "monitor_enabled";
 
-    /** _more_ */
     public static final String ARG_MONITOR_FROMDATE = "monitor_fromdate";
 
-    /** _more_ */
     public static final String ARG_MONITOR_ID = "monitorid";
 
-    /** _more_ */
     public static final String ARG_MONITOR_NAME = "monitor_name";
 
-    /** _more_ */
     public static final String ARG_MONITOR_TODATE = "monitor_todate";
 
-    /** _more_ */
     public static final String ARG_MONITOR_TYPE = "monitortype";
 
-
-    /** _more_ */
     private List<EntryMonitor> monitors = new ArrayList<EntryMonitor>();
 
-
-    /** _more_ */
     private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public MonitorManager(Repository repository) {
         super(repository);
         repository.addEntryChecker(this);
@@ -100,7 +78,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             throw new RuntimeException(exc);
         }
     }
-
 
     public void monitorLive() {
 	long delaySeconds = repository.getProperty("ramadda.monitor.live.sleepseconds",60*5);
@@ -127,25 +104,11 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 	}
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @throws Exception _more_
-     */
     public void addClass(Class c) throws Exception {
         MonitorAction action = (MonitorAction) c.getDeclaredConstructor().newInstance();
         actions.add(action);
     }
 
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void initActions() throws Exception {
         actions.add(new DataAction());
         actions.add(new EmailAction());
@@ -160,15 +123,8 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             }
         }
 
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @throws Exception _more_
-     */
     private void initMonitors() throws Exception {
         Statement stmt =
             getDatabaseManager().select(Tables.MONITORS.COL_MONITOR_ID+","+
@@ -178,7 +134,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                         + Tables.MONITORS.COL_NAME);
         SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
         ResultSet        results;
-	
+
         while ((results = iter.getNext()) != null) {
             String id = results.getString(1);
             String xml = results.getString(2);
@@ -212,12 +168,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public List<EntryMonitor> getEntryMonitors() {
 	return getEntryMonitors(false);
 
@@ -230,16 +180,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         return monitors;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processEntryListen(Request request) throws Exception {
         SynchronousEntryMonitor entryMonitor =
             new SynchronousEntryMonitor(getRepository(), request);
@@ -262,14 +202,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 request.getOutput(), entry);
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entries _more_
-     */
     public void entriesModified(Request request, final List<Entry> entries) {
         handleEntriesChanged(entries, false);
     }
@@ -280,31 +212,12 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
      */
     public void entriesMoved(final List<Entry> entries) {}
 
-    /**
-     * _more_
-     *
-     * @param entryIds _more_
-     */
     public void entriesDeleted(List<String> entryIds) {}
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entries _more_
-     */
     public void entriesCreated(Request request, final List<Entry> entries) {
         handleEntriesChanged(entries, true);
     }
 
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param isNew _more_
-     */
     private void handleEntriesChanged(final List<Entry> entries,
                                       final boolean isNew) {
         Misc.run(new Runnable() {
@@ -314,13 +227,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entries _more_
-     * @param isNew _more_
-     */
     private void handleEntriesChangedInner(List<Entry> entries,
                                            boolean isNew) {
 	boolean debug = false;
@@ -346,15 +252,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     *
-     * @throws Exception _more_
-     */
     private void deleteMonitor(EntryMonitor monitor) throws Exception {
         monitors.remove(monitor);
         if ( !monitor.getEditable()) {
@@ -366,13 +263,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     *
-     * @throws Exception _more_
-     */
     private void insertMonitor(EntryMonitor monitor) throws Exception {
         String xml = Repository.encodeObject(monitor);
         getDatabaseManager().executeInsert(Tables.MONITORS.INSERT,
@@ -382,13 +272,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         });
     }
 
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     *
-     * @throws Exception _more_
-     */
     private void addNewMonitor(EntryMonitor monitor) throws Exception {
         monitors.add(monitor);
         if ( !monitor.getEditable()) {
@@ -397,13 +280,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         insertMonitor(monitor);
     }
 
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     *
-     * @throws Exception _more_
-     */
     public void updateMonitor(EntryMonitor monitor) throws Exception {
         if ( !monitor.getEditable()) {
             return;
@@ -412,20 +288,9 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                     Clause.eq(Tables.MONITORS.COL_MONITOR_ID,
                                         monitor.getId()));
 
-
         insertMonitor(monitor);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processMonitorEdit(Request request, EntryMonitor monitor)
             throws Exception {
 
@@ -478,7 +343,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 					 msg("Monitor Delete"), sb);
         }
 
-
         StringBuffer buttons = new StringBuffer();
         buttons.append(HU.submit("Save", ARG_MONITOR_CHANGE));
         buttons.append(HU.space(2));
@@ -498,16 +362,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                                            msg("Edit Entry Monitor"), sb);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processMonitorCreate(Request request) throws Exception {
         StringBuffer sb = new StringBuffer();
         EntryMonitor monitor = new EntryMonitor(getRepository(),
@@ -535,7 +389,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 "You need to be an admin to add an " + type + " action");
         }
 
-
         monitor.addAction(action);
         addNewMonitor(monitor);
 
@@ -545,18 +398,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                 ARG_MONITOR_ID, monitor.getId()));
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canView(Request request, EntryMonitor monitor)
             throws Exception {
         if (request.getUser().getAdmin()) {
@@ -566,16 +407,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         return Misc.equals(monitor.getUser(), request.getUser());
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitors _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public List<EntryMonitor> getEditableMonitors(Request request,
             List<EntryMonitor> monitors)
             throws Exception {
@@ -589,16 +420,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
         return result;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Result processMonitors(Request request) throws Exception {
 
         if (request.getUser().getAnonymous()
@@ -633,7 +454,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         sb.append(HU.sectionOpen(null, false));
 
-
         sb.append(HU.b("New Monitor:"));
         sb.append(HU.space(2));
 
@@ -646,7 +466,6 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
             if (templateAction.adminOnly() && !request.getUser().getAdmin()) {
                 continue;
             }
-
 
             sb.append(HU.open(HU.TAG_TD));
             sb.append(HU.open(HU.TAG_DIV,
@@ -717,8 +536,5 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
 
         return getAdmin().makeResult(request, "RAMADDA-Admin-Monitors", sb);
     }
-
-
-
 
 }

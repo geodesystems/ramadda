@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
@@ -22,7 +21,6 @@ import java.util.Hashtable;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
@@ -32,94 +30,45 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class Filter implements Constants {
 
-    /** _more_ */
     public static final String[] FIELD_TYPES = {
         ARG_TEXT, ARG_TYPE, ARG_USER, ARG_FILESUFFIX, ARG_ANCESTOR, ARG_AREA
     };
 
-
-    /** _more_ */
     private String field;
 
-    /** _more_ */
     private Object value;
 
-    /** _more_ */
     private boolean doNot = false;
 
-    /** _more_ */
     private Hashtable properties = new Hashtable();
 
-
-    /**
-     * _more_
-     */
     public Filter() {}
 
-    /**
-     * _more_
-     *
-     * @param field _more_
-     * @param value _more_
-     */
     public Filter(String field, Object value) {
         this(field, value, false);
     }
 
-    /**
-     * _more_
-     *
-     * @param field _more_
-     * @param value _more_
-     * @param doNot _more_
-     */
     public Filter(String field, Object value, boolean doNot) {
         this.field = field;
         this.value = value;
         this.doNot = doNot;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
     public Object getProperty(Object key) {
         return properties.get(key);
     }
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param value _more_
-     */
     public void putProperty(Object key, Object value) {
         properties.put(key, value);
     }
 
-    /**
-     * _more_
-     */
     public void clearProperties() {
         properties = new Hashtable();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
         return field + "=" + value;
     }
-
 
     /**
      * Set the Field property.
@@ -157,7 +106,6 @@ public class Filter implements Constants {
         return value;
     }
 
-
     /**
      * Set the DoNot property.
      *
@@ -175,7 +123,5 @@ public class Filter implements Constants {
     public boolean getDoNot() {
         return doNot;
     }
-
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
@@ -16,7 +15,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.File;
 import java.io.InputStream;
 
@@ -24,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -34,48 +31,20 @@ import java.util.List;
  */
 public class CopyAction extends MonitorAction {
 
-
-    /**
-     * _more_
-     */
     public CopyAction() {}
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public CopyAction(String id) {
         super(id);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "copy";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "Copy Action";
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         Entry group = getGroup(entryMonitor);
         if (group == null) {
@@ -85,29 +54,12 @@ public class CopyAction extends MonitorAction {
         return "Copy entry to:" + group.getName();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     */
     @Override
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
 	applyGroupEditForm(request, monitor);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
@@ -122,15 +74,6 @@ public class CopyAction extends MonitorAction {
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     * @param isNew _more_
-     */
     public void entryMatched(EntryMonitor monitor, Entry entry,
                              boolean isNew) {
         try {
@@ -145,6 +88,5 @@ public class CopyAction extends MonitorAction {
             monitor.handleError("Error handling Copy Action", exc);
         }
     }
-
 
 }

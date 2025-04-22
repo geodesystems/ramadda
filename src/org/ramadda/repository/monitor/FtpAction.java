@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
@@ -21,7 +20,6 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.BufferedInputStream;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -31,7 +29,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  *
  *
@@ -40,91 +37,44 @@ import java.util.List;
  */
 public class FtpAction extends MonitorAction {
 
-    /** _more_ */
     public static final String PROP_FTP_SERVER = "ftp.server";
 
-    /** _more_ */
     public static final String PROP_FTP_DIRECTORY = "ftp.directory";
 
-    /** _more_ */
     public static final String PROP_FTP_FILETEMPLATE = "ftp.filetemplate";
 
-    /** _more_ */
     public static final String PROP_FTP_USER = "ftp.user";
 
-    /** _more_ */
     public static final String PROP_FTP_PASSWORD = "ftp.password";
 
-
-    /** _more_ */
     private String server = "";
 
-    /** _more_ */
     private String directory = "";
 
-    /** _more_ */
     private String fileTemplate = "${filename}";
 
-    /** _more_ */
     private String user = "";
 
-    /** _more_ */
     private String password = "";
 
-
-    /**
-     * _more_
-     */
     public FtpAction() {}
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public FtpAction(String id) {
         super(id);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "ftp";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "FTP Action";
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         return "Put file via FTP";
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
         this.server = request.getString(getArgId(PROP_FTP_SERVER), "");
@@ -135,21 +85,11 @@ public class FtpAction extends MonitorAction {
         this.password = request.getString(getArgId(PROP_FTP_PASSWORD), "");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.colspan("FTP Action", 2));
-
 
         sb.append(
             HtmlUtils.formEntry(
@@ -188,14 +128,6 @@ public class FtpAction extends MonitorAction {
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     */
     protected void entryMatched(EntryMonitor monitor, Entry entry) {
         FTPClient ftpClient = new FTPClient();
         try {
@@ -256,8 +188,6 @@ public class FtpAction extends MonitorAction {
         }
     }
 
-
-
     /**
      * Set the Server property.
      *
@@ -312,7 +242,6 @@ public class FtpAction extends MonitorAction {
         return user;
     }
 
-
     /**
      * Set the Tmp property.
      *
@@ -338,7 +267,5 @@ public class FtpAction extends MonitorAction {
 
         return Utils.encodeBase64(password).getBytes();
     }
-
-
 
 }

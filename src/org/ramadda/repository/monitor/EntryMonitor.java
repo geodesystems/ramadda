@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
@@ -31,97 +30,55 @@ import java.util.Hashtable;
 
 import java.util.List;
 
-
-
 @SuppressWarnings("unchecked")
 public class EntryMonitor implements Constants {
 
     public static final HtmlUtils HU = null;
 
-
-    /** _more_ */
     public static final LogManager.LogId LOGID =
         new LogManager.LogId("org.ramadda.repository.monitor.Monitor");
 
-
-    /** _more_ */
     public static final String ARG_CLEARERROR = "monitor_clearerror";
 
-    /** _more_ */
     private String lastError;
 
     private String currentStatus;    
 
-    /** _more_ */
     private String id;
 
-    /** _more_ */
     private String name = "";
 
-    /** _more_ */
     private Repository repository;
 
-
-    /** _more_ */
     private String userId;
 
-    /** _more_ */
     private User user;
 
-    /** _more_ */
     private Request request;
 
-    /** _more_ */
     private boolean enabled = true;
 
-    /** _more_ */
     private boolean onlyNew = true;
 
-    /** _more_ */
     private List<Filter> filters = new ArrayList<Filter>();
 
-    /** _more_ */
     private List<MonitorAction> actions = new ArrayList<MonitorAction>();
 
-
-    /** _more_ */
     private Date fromDate;
 
-    /** _more_ */
     private Date toDate;
 
-    /** _more_ */
     private boolean editable = true;
 
-
-
-    /** _more_ */
     public static final String ARG_ADD_ACTION = "addaction";
 
-    /** _more_ */
     public static final String ARG_DELETE_ACTION = "deleteaction";
 
-    /** _more_ */
     public static final String ARG_DELETE_ACTION_CONFIRM =
         "deleteactionconfirm";
 
-
-
-
-    /**
-     * _more_
-     */
     public EntryMonitor() {}
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param user _more_
-     * @param name _more_
-     * @param editable _more_
-     */
     public EntryMonitor(Repository repository, User user, String name,
                         boolean editable) {
         this.repository = repository;
@@ -137,18 +94,6 @@ public class EntryMonitor implements Constants {
                           + (long) DateUtil.daysToMillis(365*5));
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param monitors _more_
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public static EntryMonitor findMonitor(List<EntryMonitor> monitors,
                                            String id) {
         for (EntryMonitor monitor : monitors) {
@@ -160,15 +105,6 @@ public class EntryMonitor implements Constants {
         return null;
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getSearchSummary() {
         StringBuffer sb = new StringBuffer();
         if (filters.size() == 0) {
@@ -184,12 +120,6 @@ public class EntryMonitor implements Constants {
         return sb.toString();
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionSummary() {
         StringBuffer sb = new StringBuffer();
         if (actions.size() == 0) {
@@ -215,15 +145,7 @@ public class EntryMonitor implements Constants {
     public void logError(MonitorAction action, String message,Exception exc) {	
         getRepository().getLogManager().logError(LOGID, getName() + ": "  + message,exc);
     }
-    
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @throws Exception _more_
-     */
     public void applyEditForm(Request request) throws Exception {
 
         if (request.get(ARG_CLEARERROR, false)) {
@@ -241,8 +163,6 @@ public class EntryMonitor implements Constants {
         fromDate = dateRange[0];
         toDate   = dateRange[1];
 
-
-
         for (MonitorAction action : actions) {
             action.applyEditForm(request, this);
         }
@@ -257,21 +177,16 @@ public class EntryMonitor implements Constants {
 	return actions.size()>0?actions.get(0):null;
     }
 
-
     public boolean isLive() {
 	MonitorAction action = getAction();
 	if(action==null) return false;
 	return action.isLive(this);
     }
 
-
     public void checkLiveAction() throws Throwable {
 	MonitorAction action = getAction();
 	action.checkLiveAction(this);
     }
-    
-
-
 
     public void addStatusLine(Request request, Appendable sb) throws Exception {
 	MonitorAction action = getAction();
@@ -297,11 +212,9 @@ public class EntryMonitor implements Constants {
 	}
     }
 
-
     public void addToEditForm(Request request, Appendable sb)
 	throws Exception {
 	MonitorAction theAction = actions.size()>0?actions.get(0):null;
-
 
         StringBuffer stateSB = new StringBuffer();
 
@@ -340,7 +253,6 @@ public class EntryMonitor implements Constants {
 
         stateSB.append(HU.formTableClose());
 
-
         StringBuffer searchSB = new StringBuffer();
         addSearchToEditForm(request, searchSB);
 
@@ -354,8 +266,6 @@ public class EntryMonitor implements Constants {
 
 	addErrorMessage(request, sb);
 
-
-
 	if(doSearch) {
 	    sb.append(HU.makeShowHideBlock("Search Criteria",
 					   searchSB.toString(), false));
@@ -366,17 +276,10 @@ public class EntryMonitor implements Constants {
 	    sb.append(actionsSB.toString());
 	}
 
-
-
         sb.append(HU.p());
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String toString() {
 	MonitorAction action = getAction();
 	if(action!=null && !action.doSearch())
@@ -384,14 +287,6 @@ public class EntryMonitor implements Constants {
         return "Monitor" + name + " filters:" + filters;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     public void addSearchToEditForm(Request request, StringBuffer sb)
 	throws Exception {
         sb.append(HU.formTable());
@@ -404,19 +299,10 @@ public class EntryMonitor implements Constants {
             addFilterField(Filter.FIELD_TYPES[i], filterMap, sb);
         }
 
-
         sb.append(HU.formTableClose());
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param what _more_
-     *
-     * @throws Exception _more_
-     */
     private void applyEditFilterField(Request request, String what)
 	throws Exception {
         boolean doNot = request.get(what + "_not", false);
@@ -439,8 +325,6 @@ public class EntryMonitor implements Constants {
             return;
         }
 
-
-
         if (what.equals(ARG_ANCESTOR)) {
             String ancestorId = request.getString(ARG_ANCESTOR + "_hidden",
 						  "");
@@ -450,7 +334,6 @@ public class EntryMonitor implements Constants {
 
             return;
         }
-
 
         if ( !request.defined(what)) {
             return;
@@ -472,15 +355,6 @@ public class EntryMonitor implements Constants {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     * @param s2 _more_
-     *
-     * @return _more_
-     */
     public boolean nameMatch(String pattern, String s2) {
         boolean debug = false;
         if (StringUtil.containsRegExp(pattern)) {
@@ -506,17 +380,6 @@ public class EntryMonitor implements Constants {
         return s2.equals(s1);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param what _more_
-     * @param filterMap _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void addFilterField(String what,
                                 Hashtable<String, Filter> filterMap,
                                 StringBuffer sb)
@@ -599,15 +462,6 @@ public class EntryMonitor implements Constants {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param filter _more_
-     *
-     * @return _more_
-     */
     private Entry getGroup(Filter filter) {
         try {
             Entry group = (Entry) filter.getProperty("ancestor");
@@ -626,15 +480,6 @@ public class EntryMonitor implements Constants {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param filter _more_
-     *
-     * @return _more_
-     */
     private String getSearchSummary(Filter filter) {
         String desc  = "";
         String value = null;
@@ -673,57 +518,24 @@ public class EntryMonitor implements Constants {
 					 : "") + "= (" + value + ")";
     }
 
-    /**
-     * _more_
-     *
-     * @param dummy _more_
-     */
     public void setRepository(String dummy) {}
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     protected void setRepository(Repository repository) {
         this.repository = repository;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public Repository getRepository() {
         return repository;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public void setId(String id) {
         this.id = id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param message _more_
-     * @param exc _more_
-     */
     public void handleError(String message, Exception exc) {
         lastError = message + "<br>" + exc + "<br>" + ((exc != null)
 						       ? LogUtil.getStackTrace(exc)
@@ -731,24 +543,12 @@ public class EntryMonitor implements Constants {
         logError(null, message, exc);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param filter _more_
-     */
     public void addFilter(Filter filter) {
         synchronized (filters) {
             filters.add(filter);
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isActive() {
         if ( !getEnabled()) {
             return false;
@@ -773,8 +573,6 @@ public class EntryMonitor implements Constants {
 
         return true;
     }
-
-
 
     public boolean checkEntry(Entry entry, boolean isNew) throws Exception {
         boolean debug = false;
@@ -809,8 +607,6 @@ public class EntryMonitor implements Constants {
             return false;
         }
 
-
-
         for (Filter filter : filters) {
             boolean ok = checkEntry(filter, entry, isNew);
             if (debug) {
@@ -833,19 +629,6 @@ public class EntryMonitor implements Constants {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param filter _more_
-     * @param entry _more_
-     * @param isNew _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean checkEntry(Filter filter, Entry entry, boolean isNew)
 	throws Exception {
         boolean ok    = false;
@@ -943,15 +726,6 @@ public class EntryMonitor implements Constants {
         return ok;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Request getRequest() throws Exception {
         if (request == null) {
 	    request =  getRepository().getAdminRequest();
@@ -960,15 +734,6 @@ public class EntryMonitor implements Constants {
         return request;
     }
 
-    /**
-     * _more_
-     *
-     * @param group _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean okToAddNew(Entry group) throws Exception {
         if (group == null) {
             return false;
@@ -978,15 +743,6 @@ public class EntryMonitor implements Constants {
 							   group);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean okToView(Entry entry) throws Exception {
         if (entry == null) {
             return false;
@@ -996,15 +752,6 @@ public class EntryMonitor implements Constants {
 							    entry);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param isNew _more_
-     */
     protected void entryMatched(final Entry entry, final boolean isNew) {
         Misc.run(new Runnable() {
 		public void run() {
@@ -1017,13 +764,6 @@ public class EntryMonitor implements Constants {
 	    });
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param isNew _more_
-     */
     protected void entryMatchedInner(Entry entry, boolean isNew) {
         System.err.println(getName() + " matched entry: " + entry);
         for (MonitorAction action : actions) {
@@ -1031,12 +771,6 @@ public class EntryMonitor implements Constants {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     */
     public void addAction(MonitorAction action) {
         actions.add(action);
     }
@@ -1059,15 +793,6 @@ public class EntryMonitor implements Constants {
         return filters;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public User getUser() throws Exception {
         if (user == null) {
             if (repository != null) {
@@ -1077,7 +802,6 @@ public class EntryMonitor implements Constants {
 
         return user;
     }
-
 
     /**
      *  Set the UserId property.
@@ -1097,7 +821,6 @@ public class EntryMonitor implements Constants {
         return userId;
     }
 
-
     /**
      *  Set the Enabled property.
      *
@@ -1115,8 +838,6 @@ public class EntryMonitor implements Constants {
     public boolean getEnabled() {
         return enabled;
     }
-
-
 
     /**
      * Set the OnlyNew property.
@@ -1190,7 +911,6 @@ public class EntryMonitor implements Constants {
         return actions;
     }
 
-
     /**
      *  Set the Name property.
      *
@@ -1208,7 +928,6 @@ public class EntryMonitor implements Constants {
     public String getName() {
         return name;
     }
-
 
     /**
      *  Set the Editable property.
@@ -1228,16 +947,6 @@ public class EntryMonitor implements Constants {
         return editable;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param o _more_
-     *
-     * @return _more_
-     */
     public boolean equals(Object o) {
         if ( !(o instanceof EntryMonitor)) {
             return false;
@@ -1246,7 +955,6 @@ public class EntryMonitor implements Constants {
 
         return this.id.equals(that.id);
     }
-
 
     /**
      *  Set the LastError property.
@@ -1283,6 +991,5 @@ public class EntryMonitor implements Constants {
     public String getCurrentStatus () {
 	return currentStatus;
     }
-
 
 }

@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
@@ -17,7 +16,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.File;
 import java.io.InputStream;
 
@@ -25,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -35,101 +32,41 @@ import java.util.List;
  */
 public class ExecAction extends MonitorAction {
 
-    /** _more_ */
     public static final String PROP_EXEC_EXECLINE = "exec.execline";
 
-    /** _more_ */
     private String execLine;
 
-
-    /**
-     * _more_
-     */
     public ExecAction() {}
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public ExecAction(String id) {
         super(id);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     *
-     * @return _more_
-     */
     public boolean enabled(Repository repository) {
         return repository.getProperty(PROP_MONITOR_ENABLE_EXEC, false);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean adminOnly() {
         return true;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "exec";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "Exec Action";
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         return "Execute external program on server";
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param monitor _more_
-     */
     public void applyEditForm(Request request, EntryMonitor monitor) {
         super.applyEditForm(request, monitor);
         this.execLine = request.getString(getArgId(PROP_EXEC_EXECLINE), "");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
@@ -145,14 +82,6 @@ public class ExecAction extends MonitorAction {
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     */
     protected void entryMatched(EntryMonitor monitor, Entry entry) {
         if ( !monitor.getRepository().getProperty(PROP_MONITOR_ENABLE_EXEC,
                 false)) {
@@ -206,7 +135,5 @@ public class ExecAction extends MonitorAction {
     public String getExecLine() {
         return execLine;
     }
-
-
 
 }

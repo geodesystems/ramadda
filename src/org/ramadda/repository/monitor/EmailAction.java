@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.monitor;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
@@ -14,12 +13,10 @@ import org.ramadda.util.Utils;
 
 import ucar.unidata.util.StringUtil;
 
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -29,70 +26,28 @@ import java.util.List;
  */
 public class EmailAction extends PasswordAction {
 
-
-    /**
-     * _more_
-     */
     public EmailAction() {}
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     */
     public EmailAction(String id) {
         super(id);
     }
 
-
-    /**
-     * _more_
-     * @param id _more_
-     * @param remoteUserId _more_
-     */
     public EmailAction(String id, String remoteUserId) {
         super(id, remoteUserId, (String) null);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionLabel() {
         return "Email Action";
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getActionName() {
         return "email";
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param entryMonitor _more_
-     * @return _more_
-     */
     public String getSummary(EntryMonitor entryMonitor) {
         return "Send an email to " + getRemoteUserId();
     }
 
-    /**
-     * _more_
-     *
-     * @param monitor _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void addToEditForm(Request request,EntryMonitor monitor, Appendable sb)
             throws Exception {
@@ -114,15 +69,6 @@ public class EmailAction extends PasswordAction {
         sb.append(HtmlUtils.formTableClose());
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param monitor _more_
-     * @param entry _more_
-     * @param isNew _more_
-     */
     @Override
     public void entryMatched(EntryMonitor monitor, Entry entry,
                              boolean isNew) {
@@ -151,7 +97,5 @@ public class EmailAction extends PasswordAction {
             monitor.handleError("Error:", exc2);
         }
     }
-
-
 
 }
