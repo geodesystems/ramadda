@@ -5,21 +5,17 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.util.WikiUtil;
 
 import org.apache.tika.metadata.Office;
 
 import org.apache.tika.metadata.TikaCoreProperties;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
-
 import org.ramadda.service.*;
-
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
@@ -31,12 +27,10 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 public class PdfTypeHandler extends GenericTypeHandler {
 
@@ -118,7 +112,6 @@ public class PdfTypeHandler extends GenericTypeHandler {
             }
         }
 
-
         if ((headerLines.size() > 0)
                 && !Utils.stringDefined(entry.getDescription())) {
             String desc = "<pre class=\"ramadda-pre\">"
@@ -126,7 +119,6 @@ public class PdfTypeHandler extends GenericTypeHandler {
             entry.setDescription(desc + "</pre>");
         }
     }
-
 
     private String clean(String s) {
         if (s == null) {
@@ -154,8 +146,5 @@ public class PdfTypeHandler extends GenericTypeHandler {
 	return HU.getPdfEmbed(url,props);
 
     }
-
-
-
 
 }

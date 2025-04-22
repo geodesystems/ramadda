@@ -5,12 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.apache.commons.net.ftp.*;
 
 import org.python.core.*;
 import org.python.util.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  * Class TypeHandler _more_
  *
@@ -44,10 +41,8 @@ import java.util.List;
  */
 public class JythonTypeHandler extends GenericTypeHandler {
 
-    /** _more_ */
     public static final String ARG_SCRIPT_PASSWORD = "script.password";
 
-    /** _more_ */
     private Pool<String, PythonInterpreter> interpPool =
         new Pool<String, PythonInterpreter>(10) {
         protected PythonInterpreter createValue(String path) {
@@ -69,43 +64,15 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
     };
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public JythonTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public boolean canBeCreatedBy(Request request) {
         return request.getUser().getAdmin();
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
@@ -116,28 +83,13 @@ public class JythonTypeHandler extends GenericTypeHandler {
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param interp _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected Result getHtmlDisplay(Request request, Entry entry,  PythonInterpreter interp)
             throws Exception {
-
 
         String       init     =  entry.getStringValue(request, 1,"");
         StringBuffer sb       = new StringBuffer();
         FormInfo     formInfo = new FormInfo(this, entry, request, sb);
         boolean      makeForm = !request.exists(ARG_SUBMIT);
-
 
         interp.set("formInfo", formInfo);
         interp.set("request", request);
@@ -165,9 +117,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
             }
         }
 
-
-
-
         if ((init != null) && (init.trim().length() > 0)) {
             try {
                 interp.exec(init);
@@ -176,11 +125,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                   new StringBuffer("Error:" + exc));
             }
         }
-
-
-
-
-
 
         String password =  entry.getStringValue(request,0,"");
         if ((password != null) && (password.trim().length() > 0)) {
@@ -199,24 +143,9 @@ public class JythonTypeHandler extends GenericTypeHandler {
             return makeForm(request, entry, interp, formInfo);
         }
 
-
         return processForm(request, entry, interp, formInfo);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param interp _more_
-     * @param formInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected Result makeForm(Request request, Entry entry,
                               PythonInterpreter interp, FormInfo formInfo)
             throws Exception {
@@ -228,8 +157,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
 
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         interp.set("formUrl", formUrl);
-
-
 
         if (formInfo.cnt > 0) {
             if (formInfo.resultFileName != null) {
@@ -254,20 +181,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
         return result;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param interp _more_
-     * @param formInfo _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     protected Result processForm(Request request, Entry entry,
                                  PythonInterpreter interp, FormInfo formInfo)
             throws Exception {
@@ -360,33 +273,11 @@ public class JythonTypeHandler extends GenericTypeHandler {
         return result;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param interp _more_
-     * @param info _more_
-     * @param processInfo _more_
-     * @param theEntry _more_
-     *
-     * @throws Exception _more_
-     */
     protected void processEntry(Request request, PythonInterpreter interp,
                                 InputInfo info, ProcessInfo processInfo,
                                 Entry theEntry)
             throws Exception {}
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param interp _more_
-     * @param processInfo _more_
-     *
-     * @throws Exception _more_
-     */
     protected void cleanup(Request request, Entry entry,
                            PythonInterpreter interp, ProcessInfo processInfo)
             throws Exception {
@@ -398,16 +289,9 @@ public class JythonTypeHandler extends GenericTypeHandler {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public ProcessInfo doMakeProcessInfo() {
         return new ProcessInfo();
     }
-
 
     /**
      * Class description
@@ -418,20 +302,13 @@ public class JythonTypeHandler extends GenericTypeHandler {
      */
     public static class ProcessInfo {
 
-        /**
-         * _more_
-         */
         public ProcessInfo() {}
 
-        /** _more_ */
         public List<File> files = new ArrayList<File>();
 
-        /** _more_ */
         public List<String> variables = new ArrayList<String>();
 
     }
-
-
 
     /**
      * Class InputInfo _more_
@@ -441,32 +318,18 @@ public class JythonTypeHandler extends GenericTypeHandler {
      */
     public static class InputInfo {
 
-        /** _more_ */
         private static final int TYPE_FILE = 0;
 
-        /** _more_ */
         private static final int TYPE_ENTRY = 1;
 
-        /** _more_ */
         private static final int TYPE_TEXT = 2;
 
-        /** _more_ */
         private static final int TYPE_NUMBER = 3;
 
-
-        /** _more_ */
         int type;
 
-        /** _more_ */
         public String id;
 
-
-        /**
-         * _more_
-         *
-         * @param type _more_
-         * @param id _more_
-         */
         public InputInfo(int type, String id) {
             this.type = type;
             this.id   = id;
@@ -481,57 +344,32 @@ public class JythonTypeHandler extends GenericTypeHandler {
      */
     public static class FormInfo {
 
-        /** _more_ */
         List<InputInfo> inputs = new ArrayList<InputInfo>();
 
-
-
-        /** _more_ */
         JythonTypeHandler typeHandler;
 
-        /** _more_ */
         Entry entry;
 
-
-        /** _more_ */
         StringBuffer sb;
 
-        /** _more_ */
         int cnt = 0;
 
-        /** _more_ */
         String title;
 
-        /** _more_ */
         String prefix = "";
 
-        /** _more_ */
         Request request;
 
-        /** _more_ */
         String resultHtml;
 
-        /** _more_ */
         String mimeType = "text/html";
 
-        /** _more_ */
         InputStream inputStream;
 
-        /** _more_ */
         String errorMessage;
 
-        /** _more_ */
         String resultFileName = null;
 
-
-        /**
-         * _more_
-         *
-         * @param typeHandler _more_
-         * @param entry _more_
-         * @param request _more_
-         * @param sb _more_
-         */
         public FormInfo(JythonTypeHandler typeHandler, Entry entry,
                         Request request, StringBuffer sb) {
             this.sb          = sb;
@@ -540,20 +378,10 @@ public class JythonTypeHandler extends GenericTypeHandler {
             this.entry       = entry;
         }
 
-        /**
-         * _more_
-         *
-         * @param value _more_
-         */
         public void setErrorMessage(String value) {
             errorMessage = value;
         }
 
-        /**
-         * _more_
-         *
-         * @param f _more_
-         */
         public void setResultFileName(String f) {
             resultFileName = f;
         }
@@ -596,51 +424,22 @@ public class JythonTypeHandler extends GenericTypeHandler {
             return this.inputStream;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param s _more_
-         */
         public void append(String s) {
             sb.append(s);
         }
 
-        /**
-         * _more_
-         *
-         * @param html _more_
-         */
         public void setResult(String html) {
             resultHtml = html;
         }
 
-        /**
-         * _more_
-         *
-         * @param title _more_
-         */
         public void setTitle(String title) {
             this.title = title;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param prefix _more_
-         */
         public void setFormPrefix(String prefix) {
             this.prefix = prefix;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         */
         public void addFormFileUpload(String id, String label) {
             cnt++;
             inputs.add(new InputInfo(InputInfo.TYPE_FILE, id));
@@ -651,15 +450,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         id, HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "80"))));
         }
 
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         *
-         * @throws Exception _more_
-         */
         public void addFormEntry(String id, String label) throws Exception {
             inputs.add(new InputInfo(InputInfo.TYPE_ENTRY, id));
 
@@ -676,28 +466,10 @@ public class JythonTypeHandler extends GenericTypeHandler {
             cnt++;
         }
 
-
-        /**
-         * _more_
-         *
-         * @param label _more_
-         *
-         * @throws Exception _more_
-         */
         public void addFormLabel(String label) throws Exception {
             sb.append(HtmlUtils.formEntry("", label));
         }
 
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         * @param dflt _more_
-         * @param columns _more_
-         * @param rows _more_
-         */
         public void addFormText(String id, String label, String dflt,
                                 int columns, int rows) {
             cnt++;
@@ -713,14 +485,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         * @param dflt _more_
-         * @param items _more_
-         */
         public void addFormSelect(String id, String label, String dflt,
                                   List items) {
             cnt++;
@@ -729,14 +493,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
                                           HtmlUtils.select(id, items, dflt)));
         }
 
-
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param label _more_
-         * @param dflt _more_
-         */
         public void addFormNumber(String id, String label, double dflt) {
             inputs.add(new InputInfo(InputInfo.TYPE_NUMBER, id));
             cnt++;
@@ -748,9 +504,6 @@ public class JythonTypeHandler extends GenericTypeHandler {
                         HtmlUtils.attr(HtmlUtils.ATTR_SIZE, "" + 5))));
         }
 
-
     }
-
-
 
 }

@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.util.HtmlUtils;
 
-
 import org.ramadda.util.sql.SqlUtil;
-
 
 import org.w3c.dom.*;
 
@@ -30,14 +27,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  * Class TypeHandler _more_
@@ -48,36 +43,16 @@ import java.util.Properties;
  */
 public class ExtensibleGroupTypeHandler extends GenericTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public ExtensibleGroupTypeHandler(Repository repository,
                                       Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isGroup() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public String getNodeType() {
         if (getParent() != null) {
             return getParent().getNodeType();
@@ -86,15 +61,6 @@ public class ExtensibleGroupTypeHandler extends GenericTypeHandler {
         return NODETYPE_GROUP;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public Entry createEntry(String id) {
         return new Entry(id, this, true);
     }

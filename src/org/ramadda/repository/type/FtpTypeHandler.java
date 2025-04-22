@@ -10,10 +10,8 @@ import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.util.Utils;
-
 
 import org.w3c.dom.*;
 
@@ -28,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
  * Class TypeHandler _more_
  *
@@ -39,55 +36,27 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_ */
     public static final int COL_SERVER = 0;
 
-    /** _more_ */
     public static final int COL_BASEDIR = 1;
 
-    /** _more_ */
     public static final int COL_USER = 2;
 
-    /** _more_ */
     public static final int COL_PASSWORD = 3;
 
-    /** _more_ */
     public static final int COL_MAXSIZE = 4;
 
-    /** _more_ */
     public static final int COL_FILE_PATTERN = 5;
 
-    /** _more_ */
     public static final int COL_DATE_PATTERN = 6;
 
-    /** _more_ */
     public static final int COL_DATE_FORMAT = 7;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public FtpTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public TypeHandler getTypeHandlerForCopy(Entry entry) throws Exception {
         if (getEntryManager().isSynthEntry(entry.getId())) {
             return getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
@@ -96,37 +65,14 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return this;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public boolean canBeCreatedBy(Request request) {
         return request.getUser().getAdmin();
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public boolean isSynthType() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
@@ -141,18 +87,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return super.getIconUrl(request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public boolean canDownload(Request request, Entry entry)
             throws Exception {
         Entry mainEntry = getMainEntry(entry.getId());
@@ -163,16 +97,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return entry.getResource().getFileSize() < 1000000 * maxSize;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Entry getMainEntry(String id) throws Exception {
         String[] pair   = getEntryManager().getSynthId(id);
         Entry    parent = getEntryManager().getEntry(null, pair[0]);
@@ -180,15 +104,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return parent;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public File getFileForEntry(Request request, Entry entry) {
         try {
             File  badFile = new File("badfile");
@@ -254,19 +169,8 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             throw new RuntimeException(exc);
         }
 
-
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *   @param baseDir _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public String getPathFromId(String id, String baseDir) throws Exception {
         if ((id == null) || (id.length() == 0)) {
             return baseDir;
@@ -275,16 +179,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return new String(Utils.decodeBase64(id));
     }
 
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param rootDirPath _more_
-     * @param parentPath _more_
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath, FTPFile file) {
         String id = parentPath + "/" + file.getName();
@@ -293,16 +187,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param rootDirPath _more_
-     * @param parentPath _more_
-     *
-     * @return _more_
-     */
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath) {
         String id = parentPath;
@@ -311,18 +195,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param ftpClient _more_
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static boolean isDir(FTPClient ftpClient, String path)
             throws Exception {
         boolean isDir = false;
@@ -338,19 +210,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return isDir;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param mainEntry _more_
-     * @param parentEntry _more_
-     * @param synthId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public List<String> getSynthIds(Request request, SelectInfo select, Entry mainEntry,
                                     Entry parentEntry, String synthId)
@@ -432,12 +291,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return ids;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param ftpClient _more_
-     */
     private static void closeConnection(FTPClient ftpClient) {
         try {
             ftpClient.logout();
@@ -447,18 +300,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         } catch (Exception exc) {}
     }
 
-    /**
-     * _more_
-     *
-     * @param server _more_
-     * @param baseDir _more_
-     * @param user _more_
-     * @param password _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String test(String server, String baseDir, String user,
                               String password)
             throws Exception {
@@ -539,21 +380,11 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-
-    /** _more_ */
     private Hashtable<String, Hashtable> cache = new Hashtable<String,
                                                      Hashtable>();
 
-    /** _more_ */
     private int cacheCnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param path _more_
-     * @param file _more_
-     */
     private void putCache(Entry entry, String path, FTPFile file) {
         if (cacheCnt++ > 1000) {
             cache    = new Hashtable<String, Hashtable>();
@@ -562,14 +393,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         getCache(entry).put(path, file);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     */
     private Hashtable<String, FTPFile> getCache(Entry parentEntry) {
         Hashtable<String, FTPFile> map =
             (Hashtable<String, FTPFile>) cache.get(parentEntry.getId());
@@ -582,19 +405,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         return map;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param id _more_
-     * @param baseDir _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public MyFTPFile getFileFromId(Request request, Entry parentEntry, String id,
                                    String baseDir)
             throws Exception {
@@ -666,21 +476,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
         String    baseDir   = parentEntry.getStringValue(request,COL_BASEDIR,"");
@@ -724,8 +519,6 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
-
-
         double maxSize = parentEntry.getDoubleValue(request,COL_MAXSIZE,0);
 
         long dttm = ftpFile.getTimestamp().getTime().getTime();
@@ -747,10 +540,8 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                         getUserManager().getLocalFileUser(), resource, "",
                         999, dttm, dttm, dttm, dttm, null);
 
-
         return entry;
     }
-
 
     /**
      * Class MyFTPFile _more_
@@ -760,44 +551,20 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
      */
     public static class MyFTPFile {
 
-        /** _more_ */
         FTPFile ftpFile;
 
-        /** _more_ */
         String path;
 
-        /**
-         * _more_
-         *
-         * @param ftpFile _more_
-         * @param path _more_
-         */
         public MyFTPFile(FTPFile ftpFile, String path) {
             this.ftpFile = ftpFile;
             this.path    = path;
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public Entry createEntry(String id) {
         return new Entry(id, this, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         test("ftp.unidata.ucar.edu", "/pub", "anonymous", "");
         System.err.println("------------");
@@ -808,7 +575,5 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
         test("ftp.unidata.ucar.edu", "/pub/ramadda/test/test", "anonymous",
              "");
     }
-
-
 
 }

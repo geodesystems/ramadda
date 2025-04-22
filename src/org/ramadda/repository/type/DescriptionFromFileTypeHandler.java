@@ -5,22 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
-
-
-
 
 import org.w3c.dom.*;
 
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.util.Hashtable;
-
-
-
-
 
 /**
  *
@@ -30,34 +21,16 @@ import java.util.Hashtable;
  */
 public class DescriptionFromFileTypeHandler extends GenericTypeHandler {
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public DescriptionFromFileTypeHandler(Repository repository,
                                           Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param type _more_
-     * @param description _more_
-     */
     public DescriptionFromFileTypeHandler(Repository repository, String type,
                                           String description) {
         super(repository, type, description);
     }
-
 
     /**
      *
@@ -76,8 +49,6 @@ public class DescriptionFromFileTypeHandler extends GenericTypeHandler {
             }
         }
 
-
     }
-
 
 }

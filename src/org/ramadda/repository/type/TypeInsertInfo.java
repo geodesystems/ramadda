@@ -5,15 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-
-
 
 /**
  *
@@ -24,26 +20,16 @@ import java.sql.Statement;
  */
 public class TypeInsertInfo {
 
-    /** _more_ */
     private String sql;
 
-    /** _more_ */
     private PreparedStatement statement;
 
-    /** _more_ */
     private TypeHandler typeHandler;
 
-    /**
-     * _more_
-     *
-     * @param typeHandler _more_
-     * @param sql _more_
-     */
     public TypeInsertInfo(TypeHandler typeHandler, String sql) {
         this.sql         = sql;
         this.typeHandler = typeHandler;
     }
-
 
     /**
      * Set the Sql property.
@@ -98,8 +84,5 @@ public class TypeInsertInfo {
     public TypeHandler getTypeHandler() {
         return typeHandler;
     }
-
-
-
 
 }

@@ -60,8 +60,6 @@ public class GenericTypeHandler extends TypeHandler {
     //This is where the actual values start, skipping the COL_ID and COL_ENTRY_TYPE
     public static final int COL_VALUE_OFFSET=2;
 
-
-
     private List<Column> myColumns = new ArrayList<Column>();
     private List<Column> allColumns;
     private Column categoryColumn;
@@ -153,7 +151,6 @@ public class GenericTypeHandler extends TypeHandler {
         try {
             getDatabaseManager().loadSql(idIndexDef, true, false);
         } catch (Throwable exc) {}
-
 
         int     valuesOffset = getValuesOffset();
 

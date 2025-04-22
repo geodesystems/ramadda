@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.util.SelectInfo;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * Class TypeHandler _more_
  *
@@ -34,19 +32,10 @@ import java.util.List;
  */
 public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public LocalFileTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
-
 
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
@@ -73,29 +62,10 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	return super.getFormWidget(request, entry,column, widget);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     *
-     * @return _more_
-     */
     public boolean canBeCreatedBy(Request request) {
         return request.getUser().getAdmin();
     }
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getEntryIconUrl(Request request, Entry entry)
             throws Exception {
@@ -106,28 +76,11 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return super.getIconUrl(request, entry);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean isSynthType() {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param baseFile _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public File getFileFromId(String id, File baseFile) throws Exception {
         boolean debug = false;
         if (debug) {
@@ -153,7 +106,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
 
-
         if ( !IO.isADescendentNonCanonical(baseFile, file)) {
             if (debug) {
                 System.err.println("File:" + file
@@ -169,22 +121,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return file;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param select _more_
-     * @param mainEntry _more_
-     * @param parentEntry _more_
-     * @param synthId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public List<String> getSynthIds(Request request, SelectInfo select,
                                     Entry mainEntry, Entry parentEntry,
@@ -282,7 +218,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             files = IOUtil.sortFilesOnAge(files, descending);
         }
 
-	
         List<String> includes = localFileInfo.getIncludes();
         List<String> excludes = localFileInfo.getExcludes();
         long         age = (long) (1000 * (localFileInfo.getAgeLimit() * 60));
@@ -316,17 +251,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
         return ids;
 
-
-
     }
 
-    /**
-     * _more_
-     *
-     * @param files _more_
-     *
-     * @return _more_
-     */
     private static File[] toArray(List<File> files) {
         File[] a = new File[files.size()];
         for (int i = 0; i < a.length; i++) {
@@ -336,19 +262,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return a;
     }
 
-
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param pattern _more_
-     *
-     * @return _more_
-     */
     private String getRegexp(String pattern) {
         if ( !pattern.startsWith("regexp:")) {
             pattern = StringUtil.wildcardToRegexp(pattern);
@@ -359,15 +272,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return pattern;
     }
 
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param patterns _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private boolean match(File file, List<String> patterns, boolean dflt) {
         String  value      = file.toString();
         boolean hadPattern = false;
@@ -399,15 +303,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return dflt;
     }
 
-    /**
-     * _more_
-     *
-     * @param parentEntry _more_
-     * @param rootDirPath _more_
-     * @param childFile _more_
-     *
-     * @return _more_
-     */
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              File childFile) {
         String subId    = getFileComponentOfSynthId(rootDirPath, childFile);
@@ -418,16 +313,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return prefix + ":" + subId;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param parentId _more_
-     *
-     * @return _more_
-     */
     private String getPrefix(String parentId) {
         if (parentId.startsWith(Repository.ID_PREFIX_SYNTH)) {
             return parentId;
@@ -437,14 +322,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param rootDirPath _more_
-     * @param childFile _more_
-     *
-     * @return _more_
-     */
     private String getFileComponentOfSynthId(String rootDirPath,
                                              File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
@@ -453,18 +330,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return subId;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
@@ -489,7 +354,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             }
             metadataList = tmp;
         }
-
 
         File targetFile = getFileFromId(id, localFileInfo.getRootDir());
         //        System.err.println ("\tntarget file:" + targetFile);
@@ -533,17 +397,14 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 		handler = getRepository().getTypeHandler(TypeHandler.TYPE_FILE);
 	}
 
-
         Entry templateEntry = getEntryManager().getTemplateEntry(targetFile,
 								 null,null);
         Entry entry = null;
-
 
         if (templateEntry != null) {
             entry = templateEntry;
             entry.setId(synthId);
         }
-
 
         if (entry == null) {
             entry = (targetFile.isDirectory()
@@ -553,8 +414,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 entry.setIcon(ICON_SYNTH_FILE);
             }
         }
-
-
 
         String name = null;
         for (String pair : localFileInfo.getNames()) {
@@ -599,8 +458,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             //            System.err.println ("\tUsing other parent entry:" + parent);
         }
 
-
-
         String   desc   = "";
         Object[] values = null;
         if (templateEntry != null) {
@@ -618,10 +475,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	    getLogManager().logSpecial("ServerSideFile:" + targetFile+
 				       " file last modified date:" +
 				       getDateHandler().formatDate(new Date(fileDate)));
-				       
+
 				       }*/
-
-
 
 	long fromDate = fileDate;
 	String datePatterns = localFileInfo.getDatePatterns();
@@ -636,7 +491,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
 	    fromDate += delta.intValue()*1000;
 	}
 
-
         entry.initEntry(name, desc, parent,
                         getUserManager().getLocalFileUser(),
                         new Resource(targetFile, (targetFile.isDirectory()
@@ -644,7 +498,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
                 : Resource.TYPE_LOCAL_FILE)), "", Entry.DEFAULT_ORDER,
 			fileDate, fileDate,
 			fromDate, fromDate, values);
-
 
         if (templateEntry != null) {
             entry.initWith(templateEntry);
@@ -658,10 +511,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return entry;
 
     }
-
-
-
-
 
     public Entry makeSynthEntry(Request request, Entry mainEntry,
                                 List<String> entryNames)
@@ -679,7 +528,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             }
         };
 
-
         for (String filename : entryNames) {
             nameHolder[0] = filename;
             File[] files = file.listFiles(fnf);
@@ -688,7 +536,6 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             }
             file = files[0];
         }
-
 
         if ( !IO.isADescendentNonCanonical(localFileInfo.getRootDir(), file)) {
             throw new IllegalArgumentException("Bad file path:" + entryNames);
@@ -701,31 +548,11 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         return entry;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     public Entry createEntry(String id) {
         //Make the top level entry act like a group
         return new Entry(id, this, true);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public LocalFileInfo doMakeLocalFileInfo(Entry entry) throws Exception {
         return new LocalFileInfo(getRepository(), entry);
     }
@@ -769,9 +596,5 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
         }
         super.addWidgetHelp(request, entry, formBuffer, column, values);
     }
-
-
-
-
 
 }

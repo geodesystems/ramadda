@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -21,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * Class description
  *
@@ -31,32 +29,13 @@ import java.util.regex.Pattern;
  */
 public class GranuleTypeHandler extends GenericTypeHandler {
 
-    /** _more_ */
     String collectionId = null;
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception on badness
-     */
     public GranuleTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param parent _more_
-     * @param newEntry _more_
-     *
-     * @throws Exception on badness
-     */
     @Override
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
@@ -73,17 +52,6 @@ public class GranuleTypeHandler extends GenericTypeHandler {
         */
     }
 
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param fromImport _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public void initializeNewEntry(Request request, Entry entry,
                                    NewType newType)
@@ -95,14 +63,6 @@ public class GranuleTypeHandler extends GenericTypeHandler {
         initializeGranuleEntry(entry);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @throws Exception on badness
-     */
     public void initializeGranuleEntry(Entry entry) throws Exception {
         //        System.err.println("initializeGranuleEntry:" + entry.getName());
         collectionId = "";
@@ -130,17 +90,6 @@ public class GranuleTypeHandler extends GenericTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param column _more_
-     * @param tmpSb _more_
-     * @param values _more_
-     *
-     * @throws Exception on badness
-     */
     public void formatColumnHtmlValue(Request request, Entry entry,
                                       Column column, StringBuffer tmpSb,
                                       Object[] values)
@@ -167,14 +116,6 @@ public class GranuleTypeHandler extends GenericTypeHandler {
         }
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param granule _more_
-     *
-     * @return _more_
-     */
     public static Entry getCollectionEntry(Request request, Entry granule) {
         if (granule == null) {
             return null;
@@ -186,7 +127,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
 		    Entry collection =
 			granule.getTypeHandler().getEntryManager()
 			.getEntry(request, collectionEntryId);
-		    
+
 		    return collection;
 		} catch (Exception e) {
 		    return null;

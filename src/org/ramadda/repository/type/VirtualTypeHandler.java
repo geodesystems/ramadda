@@ -38,22 +38,11 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
                                                            List<String>>(5
                                                                * 60 * 1000);
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public VirtualTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     */
     public void clearCache() {
         super.clearCache();
         cachedIds.clearCache();
@@ -98,11 +87,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean isSynthType() {
         return true;
@@ -176,34 +160,12 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         return ids;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param id _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Entry makeSynthEntry(Request request, Entry parentEntry, String id)
             throws Exception {
         return getEntryManager().getEntry(request, id);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentEntry _more_
-     * @param entryNames _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Entry makeSynthEntry(Request request, Entry parentEntry,
                                 List<String> entryNames)
@@ -245,13 +207,6 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         return null;
     }
 
-    /**
-     * _more_
-     *
-     * @param id _more_
-     *
-     * @return _more_
-     */
     @Override
     public Entry createEntry(String id) {
         //Make the top level entry act like a group

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-
 /**
    https://platform.openai.com/docs/assistants/quickstart?context=without-streaming
 */
@@ -35,7 +34,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private static final String ACTION_UPLOAD = "llmassistant_upload";
     private static final String ARG_THREAD = "thread";
 
-
     private static final String URL_ASSISTANTS= "https://api.openai.com/v1//assistants";
     private static final String URL_VECTOR_STORES= "https://api.openai.com/v1/vector_stores";
     private static final String URL_VECTOR_STORES_FILES= "https://api.openai.com/v1/vector_stores/${vector_store_id}/files";
@@ -44,7 +42,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private static final String URL_THREADS = "https://api.openai.com/v1/threads";
     private static final String URL_MESSAGES= "https://api.openai.com/v1/threads/${thread}/messages";
     private static final String URL_RUNS= "https://api.openai.com/v1/threads/${thread}/runs";
-
 
     public LLMAssistantTypeHandler(Repository repository, Element entryNode)
 	throws Exception {
@@ -78,14 +75,13 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
        }'
     */
 
-
     private IO.Result call(Request request, Entry entry, URL url, String body) throws Exception {
 	return getLLMManager().call(getRepository().getLLMManager().getOpenAIJobManager(),
 				    url, body,
 				    "OpenAI-Beta","assistants=v2",
 				    "Content-Type","application/json",
 				    "Authorization","Bearer " +getKey(request, entry));
-    
+
     }
 
     @Override
@@ -139,7 +135,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
     }
 
-
     private IO.Result  uploadFile(Request request, Entry entry, File file) throws Exception {
 	List postArgs = new ArrayList();
 	Utils.add(postArgs,"purpose","assistants","file",file);
@@ -152,7 +147,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
     private String getId(String json) throws Exception {
 	return new JSONObject(json).getString("id");
     }
-
 
     private String getWikiError(String msg) {
 	return HU.span(msg,HU.cssClass("ramadda-wiki-error"));
@@ -175,12 +169,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    return getPageHandler().showDialogWarning("Sorry, you don't have the correct permissions to call the LLM Assistant");
 	}
 
-
 	String assistantId = entry.getStringValue(request,"assistant_id","");
 	if(!Utils.stringDefined(assistantId)) {
 	    return getWikiError("LLM Assistant: No assistant ID is specified");
 	}
-
 
 	StringBuilder sb = new StringBuilder();
 	if(request.isAdmin()) {
@@ -208,7 +200,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 			      JU.quote(ACTION_ASSISTANT),"null",JU.map(args)));
         return sb.toString();
     }
-
 
     private String getThread(Request request, Entry entry) throws Exception {
 	String thread  = request.getString(ARG_THREAD,null);
@@ -240,7 +231,6 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	}
 	return thread;
     }
-
 
     public Result processEntryAction(Request request, Entry entry)
 	throws Exception {
@@ -314,13 +304,10 @@ public class LLMAssistantTypeHandler extends GenericTypeHandler {
 	    return handleError(request,"Sorry, you don't have the correct permissions to call the LLM Assistant");
 	}
 
-
-
 	String assistantId = entry.getStringValue(request,"assistant_id","");
 	if(!Utils.stringDefined(assistantId)) {
 	    return handleError(request,"no assistant ID defined");
 	}
-
 
 	if(debug)
 	    System.err.println("LLM.getThread");

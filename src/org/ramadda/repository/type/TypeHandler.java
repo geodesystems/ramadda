@@ -709,7 +709,6 @@ public class TypeHandler extends RepositoryManager {
 			   + ContentMetadataHandler.TYPE_ALIAS,",");
     }
 
-
     public List<String> getMetadataTypes() {
 	if(allMetadataTypes==null) {
 	    allMetadataTypes = new ArrayList<String>();
@@ -741,15 +740,6 @@ public class TypeHandler extends RepositoryManager {
 	return sb.toString();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param sb _more_
-     * @param args may be empty but args[0]: ok to add the entry columns, args[1]: add the metadata text corpus
-     *
-     * @throws Exception _more_
-     */
     public void getTextCorpus(Entry entry, Appendable sb, boolean...args) throws Exception {
         if (getParent() != null) {
             getParent().getTextCorpus(entry, sb,args);
@@ -6346,7 +6336,6 @@ public class TypeHandler extends RepositoryManager {
 			       "\n\tclause:" + clause +" set:" + set);
 	}
 
-
         long t2 = System.currentTimeMillis();
         String[] values =
             SqlUtil.readString(
@@ -6422,7 +6411,6 @@ public class TypeHandler extends RepositoryManager {
         //TODO: support name, desc, etc.
         return null;
     }
-
 
     public void setCategory(String value) {
         this.category = value;

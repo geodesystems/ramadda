@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.type;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -26,7 +25,6 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 
-
 import java.io.File;
 
 import java.sql.Statement;
@@ -37,7 +35,6 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
-
 
 /**
  * Class description
@@ -115,7 +112,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, entryNode);
     }
 
-
     /**
      * Clear the cache
      */
@@ -141,7 +137,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         return bulkDownloadOutputHandler;
     }
-
 
     /**
      * Get the ZipOutputHandler
@@ -171,7 +166,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return granuleColumns;
     }
 
-
     /**
      * Get the collection id column
      *
@@ -182,7 +176,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
     public String getCollectionIdColumn(Column column) {
         return column.getTableName() + "." + FIELD_COLLECTION;
     }
-
 
     /**
      * Get the granule type handler
@@ -212,8 +205,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         return granuleTypeHandler;
     }
-
-
 
     /**
      * Get the metadata as json
@@ -259,7 +250,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return new Result(BLANK, json, JsonUtil.MIMETYPE);
     }
 
-
     /**
      * Make a metadata tree
      *
@@ -275,7 +265,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                  StringBuffer sb, int colIdx,
                                  List<Clause> clauses)
             throws Exception {}
-
 
     /**
      * Make a metadata tree
@@ -299,9 +288,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
         tree.append("</ul>");
     }
-
-
-
 
     /**
      * Get unique values for the search
@@ -341,7 +327,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return uniqueValues;
     }
 
-
     /**
      * Get the search clauses
      *
@@ -374,7 +359,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return clauses;
     }
 
-
     /**
      * Get the enumeration table for the column
      *
@@ -402,7 +386,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         return map;
     }
-
 
     /**
      * Get the values list
@@ -434,7 +417,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
 
         return tfos;
     }
-
 
     /**
      * Add the selectors to the form
@@ -495,7 +477,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-
     /**
      * Get unique column values
      *
@@ -550,7 +531,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         return values;
     }
 
-
     /**
      * Add the JSON selectors to the form
      *
@@ -566,7 +546,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                        Appendable sb, String formId,
                                        Appendable js)
             throws Exception {
-
 
         List firstValues = (List) cache.get("firstValues::" + entry.getId());
         if (firstValues == null) {
@@ -587,7 +566,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                             stmt), 1)), granuleColumns.get(0));
             cache.put("firstValues::" + entry.getId(), firstValues);
         }
-
 
         for (int selectIdx = 0; selectIdx < granuleColumns.size();
                 selectIdx++) {
@@ -616,7 +594,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                     HtmlUtils.squote("" + selectIdx))));
         }
     }
-
 
     /**
      * Process the request
@@ -700,7 +677,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
                                            false, false,false);
     }
 
-
     /**
      * Zip all the files
      *
@@ -717,8 +693,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         return getRepository().zipFiles(request, zipFileName, files);
     }
-
-
 
     /**
      * Get the HTML display for this type
@@ -772,12 +746,9 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         sb.append(HtmlUtils.script(js.toString()));
         sb.append(HtmlUtils.formClose());
 
-
         return new Result(msg(getLabel()), sb);
 
-
     }
-
 
     /**
      * Add clauses
@@ -810,7 +781,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         }
     }
 
-
     /**
      * Process the search request
      *
@@ -825,7 +795,6 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         return processSearch(request, group, false);
     }
-
 
     /**
      * Process the search
@@ -924,7 +893,5 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
             }
         }
     }
-
-
 
 }
