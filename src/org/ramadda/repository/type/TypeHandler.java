@@ -3816,8 +3816,14 @@ public class TypeHandler extends RepositoryManager {
 	    HU.formEntry(formBuffer, HU.div(subGroup,HU.clazz("ramadda-entry-subgroup")));
 	}
 
-        column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,
-                              formInfo, sourceTypeHandler);
+	if(sourceTypeHandler.canShowColumn(column)) {
+	    column.addToEntryForm(request, parentEntry, entry, formBuffer, values, state,
+				  formInfo, sourceTypeHandler);
+	}
+    }
+
+    public boolean canShowColumn(Column column) {
+	return getTypeProperty("column." + column.getName()+".show",true);
     }
 
     public String getFormWidget(Request request, Entry entry, Column column,

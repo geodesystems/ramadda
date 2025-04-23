@@ -809,6 +809,12 @@ public class GenericTypeHandler extends TypeHandler {
 	if(column.getAdminOnly()) {
 	    if(!request.isAdmin() &&!request.isOwner(entry)) return;
 	}
+	if(!entry.getTypeHandler().canShowColumn(column)) {
+	    return;
+	}
+
+
+
 
 	if (values != null) {
 	    formatColumnHtmlValue(request, entry, column, tmpSb, values);
