@@ -209,9 +209,9 @@ specimen_condition,,enumerationplus,values="unknown\,complete\,fragment" cansear
 seed_quantity,Seed Quantity,list,help="Enter quantity count over time" group="Seed Specimen" size="2000" \
 showempty="false" rows="5" columns="10"
 viability_test,,enumerationplus,values="germination\,tetrazolium staining\,cut tests\,x-ray" subgroup="Viability"
-viability_percentage,,double, unit="Percentage" help="Enter viability percentage or count"  showempty="false"
-viability_count,,int, unit="Count"  showempty="false" default=""
-total_seeds_tested,,int,unit="Total"  showempty="false" default=""
+viability_percentage,,double, displaysuffix="%" help="Enter viability percentage or count"  showempty="false"
+viability_count,,int,   showempty="false" default=""
+total_seeds_tested,,int,  showempty="false" default=""
 
 ##type_archive_insect_specimen
 
