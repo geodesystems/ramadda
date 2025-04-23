@@ -3396,6 +3396,12 @@ public class Column implements DataTypes, Constants, Cloneable {
         return name;
     }
 
+    public void setGroup(String group) {
+	displayGroup = group;
+	editGroup = group;
+	searchGroup = group;
+    }
+
     public String getDisplayGroup(){
         return displayGroup;
     }
