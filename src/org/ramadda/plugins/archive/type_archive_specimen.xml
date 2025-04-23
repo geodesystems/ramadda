@@ -14,7 +14,8 @@ foruser="false"
 >
 
 <!-- Columns-->
-<column  name="catalog_number"  label="Catalog Number"  type="string"  group="Specimen" />
+<column  name="accession_number"  label="Accession Number"  type="string"  group="Specimen" showempty="false" />
+<column  name="catalog_number"  label="Catalog Number"  type="string"  showempty="false" />
 <column  name="handling"  label="Handling"  type="string"  size="2000" rows="5" />
 <column  name="object_status"  label="Object Status"  type="enumerationplus" />
 <column  name="item_count"  label="Item Count"  type="int"  default="0" />
