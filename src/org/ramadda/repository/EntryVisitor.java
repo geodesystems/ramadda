@@ -31,7 +31,7 @@ public abstract class EntryVisitor implements Constants {
         this.recurse    = recurse;
 	this.maxDepth = maxDepth;
 	selectInfo = new SelectInfo(request);
-	selectInfo.setSyntheticOk(false);
+	//	selectInfo.setSyntheticOk(false);
     }
 
     public StringBuffer getMessageBuffer() {
