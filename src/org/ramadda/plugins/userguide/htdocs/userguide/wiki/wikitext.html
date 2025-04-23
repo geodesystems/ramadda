@@ -427,7 +427,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 Frame your content like this:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/frame.png?version=836"><img  src="images/frame.png?version=836" border=0 alt="images/frame.png?version=836" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/frame.png?version=152"><img  src="images/frame.png?version=152" border=0 alt="images/frame.png?version=152" ></a></div></div>
 
 With the +frame/-frame tags:
 <pre>
@@ -514,7 +514,7 @@ Embed  Github checkins with:
 
 
 To make a gridded box layout like this use  the +gridboxes/+gridbox tags.
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridbox.png?version=836"><img  src="images/gridbox.png?version=836" border=0 alt="images/gridbox.png?version=836" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/gridbox.png?version=152"><img  src="images/gridbox.png?version=152" border=0 alt="images/gridbox.png?version=152" ></a></div></div>
 
 These take the form of:
 <pre>
@@ -770,6 +770,44 @@ Accordion 2 content
 
 If decorate=false then no border or background is shown for the headers.
 </div>
+
+<a name=snippet></a>
+:heading Snippets
+A snippet is a substring of an entry's description and is used to show a tooltip in the grid view and 
+also used by the <a href=#twittercard>Twitter card</a> functionality.
+A snippet is specified in a number of ways-
+<ul>
+  <li> Using the "+note ... -note" or "+callout ... -callout" wiki tags:
+<pre>
++note
+This is the snippet
+-note
+
+or:
++callout-info
+This is the snippet
+-callout
+...
+</pre>
+
+<li> By the snippet tag:
+<pre>
+...
+&lt;snippet&gt;
+This is the snippet
+&lt;/snippet&gt;
+...
+</pre>
+
+<li>  If you want to include a snippet but not have it show up in the RAMADDA page then use snippet-hide:
+<pre>
+...
+&lt;snippet-hide&gt;
+The snippet
+&lt;/snippet&gt;
+...
+</pre>
+
 
 
 
