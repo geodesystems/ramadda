@@ -159,6 +159,7 @@ public class GenericTypeHandler extends TypeHandler {
 
 	boolean debug = false;
 	//	debug = getType().equals("db_boulder_county_voters");
+	String lastGroup =null;
         for (int colIdx = 0; colIdx < columnNodes.size(); colIdx++) {
             Element columnNode = (Element) columnNodes.get(colIdx);
             String className = XmlUtil.getAttribute(columnNode, ATTR_CLASS,
@@ -170,6 +171,16 @@ public class GenericTypeHandler extends TypeHandler {
             Column column = (Column) ctor.newInstance(new Object[] { this,
                     columnNode,
                     Integer.valueOf(valuesOffset + colNames.size() - COL_VALUE_OFFSET) });
+	    //check if we can show the column. if not then keep track of the group
+	    String key = this.getType()+"." + column.getName()+".show";
+	    if(!getRepository().getProperty(key,true)) {
+		String group = column.getDisplayGroup();
+		if(group!=null) {
+		    lastGroup = group;
+		}
+		continue;
+	    }
+
             myColumns.add(column);
             column.setColumnIndex(myColumns.size() - 1);
 	    if(debug) System.err.println("column:" +column+" offset:"+ column.getOffset());
@@ -183,6 +194,17 @@ public class GenericTypeHandler extends TypeHandler {
                 System.out.println("public static final int IDX_" + NAME
                                    + "  = " + colIdx + ";");
             }
+
+	    if(lastGroup!=null) {
+		String group = column.getDisplayGroup();
+		if(group==null) {
+		    column.setGroup(lastGroup);
+		}
+		lastGroup = null;
+	    }
+	    
+
+
         }
         getDatabaseManager().closeAndReleaseConnection(statement);
         //TODO: Run through the table and delete any columns and indices that aren't defined anymore
