@@ -2295,7 +2295,6 @@ public class MetadataManager extends RepositoryManager {
     }
 
     public void deleteMetadata(Entry entry,Metadata metadata) throws Exception {
-	System.err.println("deleteMetadata");
 	MetadataType type = getType(metadata);
 	if(type!=null) {
 	    List<String> files = type.getFiles(entry,metadata);
