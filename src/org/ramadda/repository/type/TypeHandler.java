@@ -2828,12 +2828,14 @@ public class TypeHandler extends RepositoryManager {
 
     public void addTypeToHtml(Request request, TypeHandler typeHandler,Entry entry,Appendable sb) throws Exception {
 	String icon = getPageHandler().getEntryIconImage(request,entry);
-	/* why is this commented out?
-	  String label =icon + HU.space(1)+HU.href(getSearchManager().getTypeSearchUrl(entry.getTypeHandler()),
-	  getFileTypeDescription(request,  entry),
-	  HU.attrs("title","Search for entries of this type"));
-	*/
-	String label =icon + HU.space(1)+ getFileTypeDescription(request,  entry);
+	String label =icon + HU.space(1)+ 
+	    getFileTypeDescription(request,  entry);
+	String typeLink="";
+	if(request.getExtraProperty("isinfo")!=null) 
+	    typeLink = HU.href(getRepository().getUrlPath("/entry/types.html?type=" + getType()),
+			       HU.getIconImage("fas fa-database"),HU.attrs("title","View data type"));
+
+	label+=HU.space(2) + typeLink;
 	addEntryProperty(request, sb,"Kind",label);
     }
 
@@ -6095,13 +6097,10 @@ public class TypeHandler extends RepositoryManager {
                 String searchUrl =
                     HU.href(
 			    getSearchManager().URL_SEARCH_TYPE + "/"
-			    + entry.getTypeHandler().getType(), desc,
+			    + entry.getTypeHandler().getType(), HU.getIconImage(ICON_SEARCH) + HU.space(1) +
+			    desc,
                             HU.cssClass("entry-type-search")
-                            + HU.attr(
-				      HU.ATTR_ALT,
-				      "Search for entries of this type") + HU.attr(
-										   HU.ATTR_TITLE,
-										   "Search for entries of this type"));
+                            + HU.attrs(HU.ATTR_TITLE, "Search for entries of this type"));
 
                 return searchUrl;
             }

@@ -366,8 +366,9 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMetadataXml(request, entry, false);
         }
 
-        return getHtmlResult(request, outputType, entry,
-                             !outputType.equals(OUTPUT_INFO));
+	boolean isInfo = outputType.equals(OUTPUT_INFO);
+	if(isInfo) request.putExtraProperty("isinfo","true");
+        return getHtmlResult(request, outputType, entry,  !isInfo);
     }
 
     public Result getHtmlResult(Request request, OutputType outputType,

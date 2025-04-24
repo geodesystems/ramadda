@@ -1007,6 +1007,9 @@ public class EntryManager extends RepositoryManager {
 		if(stringDefined(help)) {
 		    sb.append(getWikiManager().wikify(request, HU.div(help,HU.cssClass("ramadda-form-help"))));
 		}
+		sb.append(HU.b("Type ID:"));
+		sb.append(HU.space(1));
+		sb.append(typeHandler.getType());
 		sb.append("<br>");
 		List<Column> columns = typeHandler.getColumns();
 		if (columns != null && columns.size()>0) {
