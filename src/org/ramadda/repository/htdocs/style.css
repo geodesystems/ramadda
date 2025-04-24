@@ -2850,10 +2850,12 @@ label, .ramadda-clickable, .ramadda-noselect, .entry-toggleblock-label {
 .ramadda-action-result-warning {
     background:orange;
     border-bottom:1px solid #000;
+    padding:4px;
 }
 .ramadda-action-result-error {
-    background:orange;
-    border:var(--basic-border);
+    background:#f8d7da;
+    border-bottom:1px solid #000;
+    padding:4px;
 }
 
 .entry-confirm-header {

@@ -514,8 +514,10 @@ public class ExtEditor extends RepositoryManager {
 					}
 				    } catch(Exception exc) {
 					holder[0].cancel = true;
-					append("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+					append("<div class=ramadda-action-result-error>An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc+"</div>");
 					System.err.println("An error occurred processing entry:" + entry+" " + entry.getId()+"\n" + exc);
+					//Always exit on the first error
+					if(true) return false;
 					if(errorCount++>100) {
 					    append("Too many errors");
 					    System.err.println("Too many errors");
@@ -920,7 +922,10 @@ public class ExtEditor extends RepositoryManager {
 
 		String control =   divOpen +
 		    "//ctx is the context object\n" +
-		    "<span>ctx.print('message')</span> prints output\n" +
+		    "//prints output:\n" +
+		    "<span>ctx.print('message')</span>\n" +
+		    "<span>ctx.warning('warning message')</span>\n" +
+		    "<span>ctx.error('error message')</span>\n" +		    
 		    "<span>ctx.pause(seconds)</span> \n"+
 		    "//stop processing but still apply any changes\n" +
 		    "<span>ctx.stop()</span> \n"+
