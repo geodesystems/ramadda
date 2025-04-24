@@ -78,7 +78,8 @@ public class ExtEditor extends RepositoryManager {
     public static final String ARG_EXTEDIT_EXCLUDE = "excludeentries";
     public static final String ARG_EXTEDIT_THUMBNAIL= "extedit_thumbnail";    
     public static final String ARG_EXTEDIT_TYPE= "extedit_type";
-    public static final String ARG_EXTEDIT_THISONE= "extedit_thisone";    
+    public static final String ARG_EXTEDIT_THISONE= "extedit_thisone";
+    public static final String ARG_EXTEDIT_CHILDREN= "extedit_children";        
     public static final String ARG_EXTEDIT_URL_TO = "extedit_url_to";
     public static final String ARG_EXTEDIT_URL_PATTERN =   "extedit_url_pattern";
     public static final String ARG_EXTEDIT_URL_CHANGE = "extedit_url";
@@ -194,6 +195,7 @@ public class ExtEditor extends RepositoryManager {
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
 							       recurse) {
+				@Override
 				public boolean processEntry(Entry entry,  List<Entry> children)
 				    throws Exception {
 				    boolean changed = false;
@@ -383,8 +385,8 @@ public class ExtEditor extends RepositoryManager {
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
 							       true) {
-				public boolean processEntry(Entry entry,
-							    List<Entry> children)
+				@Override
+				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
 				    if (!oldType.equals("") &&
 					!oldType.equals(TypeHandler.TYPE_ANY) &&
@@ -432,11 +434,13 @@ public class ExtEditor extends RepositoryManager {
         } else if (request.exists(ARG_EXTEDIT_JS)) {
             getAuthManager().ensureAuthToken(request);
             final boolean forReal =  request.getCheckboxValue(ARG_EXTEDIT_JS_CONFIRM, false);
-	    final String js = request.getString(ARG_EXTEDIT_SOURCE,"");
-	    getSessionManager().putSessionProperty(request,"extedit",js);
+	    String javascript = request.getString(ARG_EXTEDIT_SOURCE,"");
+	    final String js = "function extEditEvaluate() {\n"+javascript+"\n}\nextEditEvaluate();\n";
+	    getSessionManager().putSessionProperty(request,"extedit",javascript);
 
             final String type = request.getString(ARG_EXTEDIT_TYPE, (String) null);
-	    final boolean thisOne = request.getCheckboxValue(ARG_EXTEDIT_THISONE,true);
+	    final boolean doThisOne = request.getCheckboxValue(ARG_EXTEDIT_THISONE,false);
+	    final boolean doChildren = request.getCheckboxValue(ARG_EXTEDIT_CHILDREN,false);	    
 	    final boolean anyFile = Misc.equals(TypeHandler.TYPE_ANY, type);
 	    String exc = request.getString(ARG_EXTEDIT_EXCLUDE,"");
 	    final HashSet<String> not = new HashSet<String>();
@@ -459,9 +463,20 @@ public class ExtEditor extends RepositoryManager {
 			final JsContext[] holder = new JsContext[1];
 			final List<EntryWrapper> wrappers = new ArrayList<EntryWrapper>();
 			final int[]cnt={0};
+			int depth=0;
+			boolean recurseDown = true;
+			if(recurse) {
+			    depth = -1;
+			}  else if(doChildren) {
+			    depth = 1;
+			} else if(doThisOne) {
+			    recurseDown = false;
+			    depth=1;
+			}
+
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
-							       true,recurse?-1:1) {
+							       recurseDown,depth) {
 				int errorCount = 0;
 				@Override
 				public boolean entryOk(Entry entry) {
@@ -469,14 +484,13 @@ public class ExtEditor extends RepositoryManager {
 				    if(not.contains(entry.getId())) return false;
 				    return true;
 				}
-				public boolean processEntry(Entry entry,
-							    List<Entry> children)
+				@Override
+				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
-				    if(!thisOne && entry.getId().equals(finalEntry.getId())) {
+				    if(!doThisOne && entry.getId().equals(finalEntry.getId())) {
 					return true;
 				    }
 
-				    //				Misc.sleepSeconds(1);				System.err.println("process:" + entry);
 				    if(anyFile) {
 					if(!entry.getResource().isFile()) {
 					    return true;
@@ -491,7 +505,7 @@ public class ExtEditor extends RepositoryManager {
 
 				    try {
 					cnt[0]++;
-					EntryWrapper wrapper = new EntryWrapper(request,getRepository(),holder[0],entry);
+					EntryWrapper wrapper = new EntryWrapper(request,getRepository(),holder[0],entry,forReal);
 					wrappers.add(wrapper);
 					scope.put("entry", scope, wrapper);
 					script.exec(ctx, scope);
@@ -582,8 +596,8 @@ public class ExtEditor extends RepositoryManager {
 			EntryVisitor walker = new EntryVisitor(request,
 							       getRepository(), actionId,
 							       true) {
-				public boolean processEntry(Entry entry,
-							    List<Entry> children)
+				@Override
+				public boolean processEntry(Entry entry, List<Entry> children)
 				    throws Exception {
 				    String path = entry.getResource().getPath();
 				    if (path == null) {
@@ -746,8 +760,7 @@ public class ExtEditor extends RepositoryManager {
 		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_THUMBNAIL, "true",
 						  request.get(ARG_EXTEDIT_THUMBNAIL,false), "Add image thumbnails"));	
 		buff[0].append(HU.br());
-		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",
-						  true, "Recurse"));
+		buff[0].append(HU.labeledCheckbox(ARG_EXTEDIT_RECURSE, "true",  true, "Recurse"));
 		closer.accept(form,"Set metadata");
 	    } else if(form.equals(ARG_EXTEDIT_REINDEX)){
 		opener.accept("Reindex");
@@ -837,61 +850,75 @@ public class ExtEditor extends RepositoryManager {
 	    } else if(form.equals(ARG_EXTEDIT_JS)){
 		opener.accept("Process with Javascript");
 		String saveCbx = request.addCheckbox(buff[0],ARG_EXTEDIT_JS_CONFIRM,"Save changes to entries",true);		
-		buff[0].append(HU.submit("Apply Javascript",form) +HU.space(1) + saveCbx);
+		String space = HU.space(2);
+		String helpLink = HU.href(getRepository().getUrlBase()+"/userguide/extendededit.html#javascript","Help", "target=_help");
+		buff[0].append(HU.submit("Apply Javascript",form) +space + saveCbx + space + helpLink);
 		buff[0].append(HU.formTable());
 		String cbx = request.addCheckbox(buff[0],ARG_EXTEDIT_THISONE,"Apply to this entry",true);
-		String cbx2 = request.addCheckbox(buff[0],ARG_EXTEDIT_RECURSE,"Recurse",true);
+		String cbx1 = request.addCheckbox(buff[0],ARG_EXTEDIT_CHILDREN,"Apply to children",true);		
+		String cbx2 = request.addCheckbox(buff[0],ARG_EXTEDIT_RECURSE,"Apply to all descendents",true);
 		String id = HU.getUniqueId("select");
+
 		HU.formEntry(buff[0], HU.b("Only apply to entries of type")+": "+
 			     HU.select(ARG_EXTEDIT_TYPE, tfos,request.getString(ARG_EXTEDIT_TYPE,null),
 				       HU.attrs("id",id))+
-			     "<br>" +cbx + HU.space(1) + cbx2);	
+			     "<br>" +cbx + space + cbx1 + space + cbx2);	
 		buff[0].append(HU.script(HU.call("HtmlUtils.makeSelectTagPopup",
 						 HU.quote("#"+id),
 						 popupArgs)));		
 
 		List<String> helpTitles= new ArrayList<String>();
 		List<String> helpTabs = new ArrayList<String>();		
-		String eg =
-		    "<div class=exteg>" +
-		    "<span>entry.getName()</span> <span>entry.setName()</span>\n" +
+		String divOpen = "<div class=exteg style='min-width:500px;min-height:350px;'>";
+		String basic =
+		    divOpen +
+		    "<span>entry.getName()</span>\n"+
+		    "<span>entry.setName()</span>\n" +
 		    "<span>entry.getType()</span>\n"+
-		    "<span>entry.getDescription()</span>  <span>entry.setDescription(String)</span>\n" +
-		    "<span>entry.getStartDate()</span> <span>entry.getEndDate()</span>\n" +
-		    "<span>entry.setStartDate('yyyy-MM-dd')</span> <span>entry.setEndDate('yyyy-MM-dd')</span>\n" +
-		    "<span>entry.hasLocationDefined()</span> <span>entry.setLocation(lat,lon)</span>\n"+
+		    "<span>entry.getDescription()</span>\n" +
+		    "<span>entry.setDescription(String)</span>\n" +
+		    "<span>entry.getStartDate()</span>\n"+
+		    "<span>entry.getEndDate()</span>\n" +
+		    "<span>entry.setStartDate('yyyy-MM-dd')</span>\n" +
+		    "<span>entry.setEndDate('yyyy-MM-dd')</span>\n" +
+		    "<span>entry.hasLocationDefined()</span>\n"+
+		    "<span>entry.setLocation(lat,lon)</span>\n"+
 		    "<span>entry.setOwner('username')</span>\n" +
 		    "<span>entry.getChildren()</span>\n" +
+		    "</div>";
+		String metadataCommands =
+		    divOpen +
 		    "<span>entry.setColumnValue('name',value)</span>\n" +
-		    "<span>entry.getValue('column_name')</span>\n" +
-		    "<span>entry.applyCommand('addthumbnail')</span>\n" +
-		    "<span>entry.hasMetadata('type')</span>\n" +
-		    "<span>entry.addMetadata('type','value1')</span>\n" +
+		    "<span>entry.getColumnValue('column_name')</span>\n" +
+		    "<span>entry.hasMetadata('type','opt value1','opt value2')</span>\n" +
+		    "<span>entry.findMetadata('type','optional value1','opt v2')</span>\n" +
 		    "<span>entry.listMetadata('type','match value')</span>\n" +
+		    "<span>entry.addMetadata('type','value1')</span>\n" +
+		    "<span>entry.deleteMetadata(list of object)</span>\n" +		    		    
 		    "<span>entry.changeMetadata('type','pattern','with')</span>\n" +		    		    
 		    "</div>";
-		String image = "<div class=exteg>" +
+
+		String image = 		    divOpen +
 		    "<span>entry.isImage()</span>\n<span>entry.resizeImage(400)</span>\n<span>entry.grayscaleImage()</span>\n" +
 		    "<span>entry.makeThumbnail(deleteExisting:boolean)</span>\n" +
 		    "</div>";
 
-		String llm =
-		    "<div class=exteg>" +
+		String llm =    divOpen +
 		    "//Set the LLM to be used for subsequent calls\n" +
 		    "<span>entry.setLLM('one of gpt3.5 gpt4 gemini claude')</span>\n" +
-		    "//apply llm. true=>skip if there is a description\n" +
+		    "\n//apply llm. true=>skip if there is a description\n" +
 		    "//title,summary, etc are varargs\n" +
 		    "<span>entry.applyLLM(true,'title','summary','keywords','latlon','include_date','authors')</span>\n" +
-		    "//extract a metadata value using the LLM\n" +
+		    "\n//extract a metadata value using the LLM\n" +
 		    "//for multiples ask the LLM to delimit the results with a semi-colon\n" +
 		    "//true -&gt; *check if the entry has the metadata element already\n" +
 		    "<span>entry.addLLMMetadata('metadata_type'  , 'prompt' , true )</span>\n" +
 		    "//e.g.: entry.addLLMMetadata('tribe_name','Extract the tribe name from the document');\n" +
-		    "//extract lat/lon\n"+
+		    "\n//extract lat/lon\n"+
 		    "<span>entry.addLLMGeo('optional prompt')</span>\n" +		    		    
 		    "</div>\n";
 
-		String control =   "<div class=exteg>" +
+		String control =   divOpen +
 		    "//ctx is the context object\n" +
 		    "<span>ctx.print('message')</span> prints output\n" +
 		    "<span>ctx.pause(seconds)</span> \n"+
@@ -901,7 +928,9 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>ctx.cancel()</span></div>\n";
 
 		helpTitles.add("Basic");
-		helpTabs.add(HU.pre(eg));
+		helpTabs.add(HU.pre(basic));
+		helpTitles.add("Metadata");
+		helpTabs.add(HU.pre(metadataCommands));		
 		helpTitles.add("Image");
 		helpTabs.add(HU.pre(image));		
 		helpTitles.add("LLM");
@@ -909,7 +938,6 @@ public class ExtEditor extends RepositoryManager {
 		helpTitles.add("Control");
 		helpTabs.add(HU.pre(control));				
 		StringBuilder helpSB = new StringBuilder();
-		helpSB.append(HU.href(getRepository().getUrlBase()+"/userguide/extendededit.html#javascript","Help", "target=_help"));
 		HU.makeTabs(helpSB,helpTitles,helpTabs);
 		helpSB.append(HU.script("Utils.initCopyable('.exteg span',{addNL:true,textArea:'" +ARG_EXTEDIT_SOURCE+"'});"));
 
@@ -1276,6 +1304,7 @@ public class ExtEditor extends RepositoryManager {
 	private Request request;
 	private Repository repository;
 	boolean changed = false;
+	boolean confirmed;
 	String name;
 	String description;
 	boolean startDateChanged=false;
@@ -1286,21 +1315,66 @@ public class ExtEditor extends RepositoryManager {
 	List<EntryWrapper> children;
 	JsContext ctx;
 
-	public EntryWrapper(Request request, Repository repository, JsContext ctx, Entry entry) {
+	public EntryWrapper(Request request, Repository repository, JsContext ctx, Entry entry,boolean confirmed) {
 	    this.repository = repository;
 	    this.request= request;
 	    this.entry = entry;
 	    this.ctx=ctx;
+	    this.confirmed = confirmed;
 	}
 
 	public List<EntryWrapper> getChildren() throws Exception {
 	    if(children==null) {
 		children  = new ArrayList<EntryWrapper>();
 		for(Entry e:repository.getEntryManager().getChildren(request, entry)) {
-		    children.add(new EntryWrapper(request, repository, ctx,entry));
+		    children.add(new EntryWrapper(request, repository, ctx,entry,confirmed));
 		}
 	    }
 	    return children;
+	}
+
+
+	public void deleteMetadata(Object obj) throws Exception {
+	    List<Metadata> list=null;
+	    if(obj instanceof Metadata) {
+		list = new ArrayList<Metadata>();
+		list.add((Metadata)obj);
+	    } else {
+		list=(List<Metadata>)obj;
+	    }
+	    if(list.size()==0) return;
+	    if(!confirmed) {
+		int cnt = 1;
+		String msg = list.size() + " metadata items would be deleted: " + entry.getName();
+		for(Metadata m:list)
+		    msg+=" #"+(cnt++)+" " + m.getAttr1();
+		ctx.print(msg);
+		return;
+	    }	    
+	    for(Metadata metadata: list) {
+		ctx.print("Metadata deleted:" + entry.getName() +" " + metadata.getAttr1());
+		repository.getMetadataManager().deleteMetadata(entry, metadata);
+	    }
+	    //	    changed=true;
+	    //	    entry.setMetadataChanged(true);
+	}
+
+	public List<Metadata> findMetadata(String type,String...values) throws Exception {
+	    List<Metadata> source =   repository.getMetadataManager().findMetadata(request,  entry,type,false);
+	    if(values.length==0) return source;
+	    List<Metadata> dest = new ArrayList<Metadata>();
+	    for(Metadata metadata: source) {
+		boolean ok = true;
+		for(int i=0;i<values.length;i++) {
+		    String v = metadata.getAttr(i+1);
+		    if(!Misc.equals(v,values[i])) {
+			ok = false;
+			break;
+		    }
+		}
+		if(ok) dest.add(metadata);
+	    }
+	    return dest;
 	}
 
 	public boolean isImage() {
@@ -1311,6 +1385,8 @@ public class ExtEditor extends RepositoryManager {
 	    if(!entry.isFile()) return -1;
 	    return entry.getResource().getTheFile().length();
 	}
+
+
 
 	public void makeThumbnail(boolean deleteExisting) throws Exception {
 	    if(entry.getTypeHandler().addThumbnail(request,entry,deleteExisting)) {
@@ -1357,7 +1433,7 @@ public class ExtEditor extends RepositoryManager {
 		      size +" new size:" +  getFileSize());
 	}
 
-	public Object getValue(String col) {
+	public Object getColumnValue(String col) {
 	    return entry.getValue(request, col);
 	}
 
@@ -1372,21 +1448,11 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public boolean hasMetadata(String type,String...values) throws Exception {
-	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
-
+	    //	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+	    List<Metadata> list = findMetadata(type,values);
 	    if(list==null || list.size()==0) {
 		return false;
 	    }
-
-	    if(values.length>0 && Utils.stringDefined(values[0])) {
-		for(Metadata mtd:list) {
-		    if(matchMetadata(values[0],mtd.getAttr1())) {
-			 return true;
-		    }
-		}
-		return false;
-	    }
-
 	    return true;
 	}
 
@@ -1407,7 +1473,6 @@ public class ExtEditor extends RepositoryManager {
 
 	public void listMetadata(String type,String match) throws Exception {
 	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
-
 	    boolean regexp = StringUtil.containsRegExp(match);
 	    String _match = match.toLowerCase();
 	    if(list!=null && list.size()>0) {
