@@ -1756,12 +1756,12 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void warning(Object msg) {
-	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-warning")));
+	    visitor.append(HU.div(msg==null?"null":msg.toString(),HU.cssClass("ramadda-action-result-warning")));
 
 	}	
 
 	public void error(Object msg) {
-	    visitor.append(HU.div(msg.toString(),HU.cssClass("ramadda-action-result-error")));
+	    visitor.append(HU.div(msg==null?"null":msg.toString(),HU.cssClass("ramadda-action-result-error")));
 
 	}	
 

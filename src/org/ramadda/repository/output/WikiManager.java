@@ -653,6 +653,7 @@ public class WikiManager extends RepositoryManager
 				  WikiUtil wikiUtil, Hashtable props,
 				  String entryId) throws Exception {
 
+
 	String url = HtmlUtils.url(server.getUrl() +"/wiki/findentryfromid");
 	String propString = Utils.encodeBase64(getRepository().encodeObject(props==null?new Hashtable():props));
 	//	System.err.println("url:" + url);
@@ -7065,7 +7066,7 @@ public class WikiManager extends RepositoryManager
 		continue;
 	    }
 
-	    if (entryId.startsWith("/repository/search/do")) {
+	    if (entryId.startsWith(getRepository().getUrlPath("/search/do"))) {
 		entryId = "searchurl:" + entryId;
 	    }
 
