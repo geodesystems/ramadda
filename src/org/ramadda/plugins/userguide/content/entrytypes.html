@@ -24,35 +24,49 @@ the property:
 &lt;property name="icon" value="/myplugin/example.png"/&gt;>
 </pre>
 
+There are many many plugins defined in the RAMADDA source that have types.xml file
+that can be used as reference: 
+<a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/plugins>
+https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/plugins</a>
+and 
+<a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata>
+https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/geodata</a>
 
 
-
-:heading Column Types
-Each entry can have any number of column attributes. Each column (see in the example above) has a name, label, type, etc:
+:heading Column Data Types
+Each entry can have any number of column attributes. Each column (see in the example above) has a name, label, type, etc.
+Here are the list of available data types.
 
 <ul>
-<li> <i> string</i> -  Use size="..." to specify the column size
-<li> <i> enumeration</i>  - See below to specify values
-<li> <i> enumerationplus</i>  - Just like enumeration but allows use to enter new text values
-<li> <i> list</i>  - A big string internally but shows a list of newline separated text values to the user
-<li> <i> password</i>  - A string but is shown in a password field
-<li> <i> clob</i>  - A big character large object
-<li> <i> int</i>  - Integer
-<li> <i> double</i>  - floating point number
-<li> <i> percentage</i> - floating point number shows as percentage
-<li> <i> boolean</i>  
-<li> <i> date</i>  - Just a date
-<li> <i> datetime</i>  - A date and a time
-<li> <i> email</i>  - Shows as an email address
-<li> <i> url</i>  - Shows as a URL
-<li> <i> latlonbbox</i> - spatial bounds
-<li> <i> latlon</i>  - A single point
+<li> <i>string</i> -  Use size="..." to specify the column size
+<li> <i>enumeration</i>  - See below to specify values
+<li> <i>enumerationplus</i>  - Just like enumeration but allows use to enter new text values
+<li> <i>list</i>  - A big string internally but shows a list of newline separated text values to the user
+<li> <i>password</i>  - A string but is shown in a password field and is not exported or otherwise accessible.
+<li> <i>int</i>  - Integer
+<li> <i>double</i>  - floating point number
+<li> <i>percentage</i> - floating point number shows as percentage
+<li> <i>boolean</i>   - true of false
+<li> <i>date</i>  - A date
+<li> <i>datetime</i>  - A date and a time
+<li> <i>clob</i>  - A big character large object
+<li> <i>email</i>  - Shows as an email address
+<li> <i>url</i>  - Shows as a URL
+<li> <i>latlon</i>  - A single geographic point
+<li> <i>latlonbbox</i> - Geographic spatial bounds
 </ul>
 
 For enumeration or  enumerationplus types you can specify a set of enumeration values. 
 <pre>
   &lt;column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" /&gt;
 </pre>
+
+If this is a large list you can define the values in an external file. This file can be contained in a plugin .zip file
+or can be stored in your RAMADDA home directory under a "resources" subdirectory.
+The rule is that the file path has to have a "resources" directory in it.
+For example, in the Archive plugin there is a resources directory under the full path:
+values="file:/org/ramadda/plugins/archive/resources/lithology.txt"  
+
 
 :heading Wiki Template
 An entry type can have a wiki tag that defines the wiki text template for the entry.
@@ -90,42 +104,98 @@ The example file above has an example of this wiki text, e.g.:
 
 
 :heading Create Entry Type Form
-All entries have a Create Entry Type form available. From the Entry popup menu
-select "Create Entry Type". Once defined you can hit Install Type to generate the entry
-type definition and install it into memory. This allows you to create an entry of this
-type to try it out. However, this does not permanently install the entry type definition.
-To do that press Download Type. This will generate a a plugin file
-(e.g., type_archive_seed_specimen.xml) which needs to be copied into the RAMADDA plugins directory
-or incorporated into a built plugin file.
-:p
+All entries have a Create Entry Type form available. 
 For example, let's say you have 100 CSV files of the same format and want to create a new entry type.
 Upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
 to data wrangle the CSV file, cleaning up the data, adding a header, etc. You can then edit the description
 of the CSV file and enter the appropriate <a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
 :p
-Once satisfied, go to the Create Entry Type form and specify:
-
+Once satisfied,  select "Create Entry Type" from the Entry popup menu.
+In this form you can specify a type ID, name, category, etc. If needed you can also specify
+any number of metadata columns. 
+Once defined you can hit Install Type to generate the entry
+type definition and install it into memory. This allows you to create an entry of this
+type to try it out. However, this does not permanently install the entry type definition.
+To do that press Download Type. This will generate a plugin file
+(e.g., &lt;some type&gt;_types.xml) which needs to be copied into the RAMADDA plugins directory
+or incorporated into a zipped up plugin file.
+This can then
+be placed in your RAMADDA's plugin directory and, once restarted, your RAMADDA will now have that new entry type where you
+can upload your files as that type, etc.
+:p
+If want to define a new entry type with a data file you can just create some arbitrary Folder entry (or any other type)
+and go to the Create Entry Type form. Note: the type definitions are saved as a regular RAMADDA metadata property
+associated with the entry. So, for example, you can copy the entry and the type specifications defined in this form
+will be copied over.
 
 [ht::screenshot images/createtype1.png]
 
 :heading2 Entry Type  - Basic
 [ht::screenshot images/createtype_basic.png]
 
-
 The Basic  section allows you to define the basic entry type information-
 <ul>
-<li> A type ID - this needs to start with type_, be lower case with no spaces or special characters
-<li> A name of the type
-<li> A "super type" - entry types in RAMADDA are hierarchical. If you want this to be point data the specify type_point. There is a link to the master list of all entry types  available.
+<li> A type ID - this needs to start with type_, be lower case with no spaces or special characters.
+    If there are columns defined then this will also be the database table name.
+<li> A human readable name for the type
+<li> A "super type" - entry types in RAMADDA are hierarchical.
+  So for example, in the Archive plugin we have a Site Collection  type that has geographic metadata.
+  Other types in that plugin (e.g, Geologic Specimen) have the Site Collection as their super type, thus inheriting
+  the geographic metadta.
+:p
+If you want this to be point data (e.g., CSV files) then specify type_point (e.g., CSV files). 
+:p
+There is a link to the master list of all entry types available.
 <li> Java handler - this is the Java class that handles this type.
-  If this is point data then specify "org.ramadda.data.services.PointTypeHandler".
-  If it is just some normal entry but you will specify metadata columns then
-  specify "org.ramadda.repository.type.GenericTypeHandler".
-  Else specify "org.ramadda.repository.type.TypeHandler"
+RAMADDA will try to figure out what this value should be but you can set it explicitly.
+If this is point data (e.g,CSV files) then specify "PointTypeHandler".
+If it is just some normal entry but you will specify metadata columns then
+specify "GenericTypeHandler".
+Else leave is as Default.
 <li> You can specify an optional Super Category and Category. This is used to organize the big list of types.
-<li> An icon. You can provide your own icon as described above or view the icons available on <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/icons>github</a>
+<li> An icon. You can provide your own icon as described above or view the icons available 
+  at <a target=_icons href="{{root}}//icons.html">{{root}}//icons.html</a>
 </ul>
 
+:heading2 Entry Type - Properties
+The Properties section provides a way to specify the myriad number of entry type properties.
+Examples of the available properties are listed in the right.
+[ht::screenshot images/createtype_properties.png]
+
+There are 2 sets of properties - the XML Attributes and the more general purpose Properties.
+Please don't ask why these are separate, there are some legacy issues when dealing with
+a software system that was first developed in 2008.
+:p
+The XML attributes have to be of the form:
+<pre>
+attribute_name="value"
+</pre>
+
+
+:heading2 Entry Type - Advanced Configuration
+The Advanced Configuration section allows you to put any other XML into the generated 
+types.xml file. TBD - specify what kinds of things can go in here.
+:p
+The Map Popup is the snippet of wiki text used when displaying an entry in the map. 
+
+[ht::screenshot images/createtype_advanced.png]
+
+:heading2 Entry Type - Columns
+The Columns section allows you to define the entry type columns.
+Each column consists of a column name, label, data type and any number
+of extra properties. 
+[ht::screenshot images/createtype_columns.png]
+
+The column name must be a valid database column name - lowercase, no spaces, no punctuation, etc.
+You can entry these directly into the form or keep them in a separate text file
+for easy editing then use the Bulk Upload.
+:p
+The "Show properties" link popups a Column Attributes dialog that allows you to add
+the many different properties that control the behavior of the Column.
+:p
+When editing you can right in any of the fields to insert, clear and delete rows.
+
+[ht::screenshot images/createtype_attributes.png]
 
 :heading2 Entry Type - Admin
 [ht::screenshot images/createtype_admin.png]
@@ -152,39 +222,6 @@ the whole database table is dropped and recreated from the Columns definiton.
 Be careful using this as any data might be lost. This is provided because sometimes the
 database data type of column definitions  has to be changed (e.g, a string to a double) and
 the change isn't allowed by the database.
-
-:heading2 Entry Type - Properties
-The Properties section provides a way to specify the myriad number of entry type properties.
-Examples of the available properties are listed in the right.
-[ht::screenshot images/createtype_properties.png]
-
-There are 2 sets of properties - the XML Attributes and the more general purpose Properties.
-The XML attributes have to be of the form:
-<pre>
-attribute_name="value"
-</pre>
-
-
-:heading2 Entry Type - Advanced Configuration
-The Advanced Configuration section allows you to put any other XML into the generated 
-types.xml file. TBD.
-
-[ht::screenshot images/createtype_advanced.png]
-
-:heading2 Entry Type - Columns
-The Columns section allows you to define the entry type columns.
-Each column consists of a column name, label, data type and any number
-of extra properties. 
-[ht::screenshot images/createtype_columns.png]
-
-The column name must be a valid database column name - lowercase, no spaces, no punctuation, etc.
-You can entry these directly into the form or keep them in a separate text file
-for easy editing then use the Bulk Upload.
-:p
-The "Show properties" link popups a Column Attributes dialog that allows you to add
-the many different properties that control the behavior of the Column.
-
-[ht::screenshot images/createtype_attributes.png]
 
 
 :heading2 Creating the entry type
