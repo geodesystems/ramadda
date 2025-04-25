@@ -122,39 +122,110 @@ The example file above has an example of this wiki text, e.g.:
 
 :heading Create Entry Type Form
 All entries have a Create Entry Type form available. From the Entry popup menu
-select "Create Entry Type"
-
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype1.png?version=216"><img  src="images/createtype1.png?version=216"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype1.png?version=216" ></a></div></div>
-
-Will give the below form (with examples filled in).
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype2.png?version=216"><img  src="images/createtype2.png?version=216"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype2.png?version=216" ></a></div></div>
-
+select "Create Entry Type". Once defined you can hit Install Type to generate the entry
+type definition and install it into memory. This allows you to create an entry of this
+type to try it out. However, this does not permanently install the entry type definition.
+To do that press Download Type. This will generate a a plugin file
+(e.g., type_archive_seed_specimen.xml) which needs to be copied into the RAMADDA plugins directory
+or incorporated into a built plugin file.
+:p
 For example, let's say you have 100 CSV files of the same format and want to create a new entry type.
 Upload one of the CSV files to your RAMADDA. You can use the <a href=seesv.html>SeeSV</a>  package
 to data wrangle the CSV file, cleaning up the data, adding a header, etc. You can then edit the description
 of the CSV file and enter the appropriate <a href=wiki/wiki.html>wiki text</a> to define the entry type's appearance.
 :p
 Once satisfied, go to the Create Entry Type form and specify:
+
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype1.png?version=882"><img  src="images/createtype1.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype1.png?version=882" ></a></div></div>
+
+:heading2 Entry Type  - Basic
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_basic.png?version=882"><img  src="images/createtype_basic.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_basic.png?version=882" ></a></div></div>
+
+
+The Basic  section allows you to define the basic entry type information-
 <ul>
 <li> A type ID - this needs to start with type_, be lower case with no spaces or special characters
 <li> A name of the type
 <li> A "super type" - entry types in RAMADDA are hierarchical. If you want this to be point data the specify type_point. There is a link to the master list of all entry types  available.
-<li> A handler - this is the Java class that handles this type. If this is point data then specify "org.ramadda.data.services.PointTypeHandler". If it is just some normal entry but you will specify metadata columns then specify "org.ramadda.repository.type.GenericTypeHandler". Else specify "org.ramadda.repository.type.TypeHandler"
+<li> Java handler - this is the Java class that handles this type.
+  If this is point data then specify "org.ramadda.data.services.PointTypeHandler".
+  If it is just some normal entry but you will specify metadata columns then
+  specify "org.ramadda.repository.type.GenericTypeHandler".
+  Else specify "org.ramadda.repository.type.TypeHandler"
 <li> You can specify an optional Super Category and Category. This is used to organize the big list of types.
 <li> An icon. You can provide your own icon as described above or view the icons available on <a href=https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/htdocs/icons>github</a>
-<li> Properties - these are flags to control what is shown, e.g., area, date, etc. Note: If this is point data based on a CSV file then make sure you include the record.file.class=org.ramadda.data.point.text.CsvFile
-<li> Columns - these are the columns as described above. For example, you can specify a "fruit" column whose tpye is enumeration and values are "Apple,Orange,Banana"
-</ul>  
+</ul>
 
-Once specified press Create Type. This will generate and download a types.xml file which you can install as a plugin. If you have any SeeSV commands specified for the entry then those are included in the generated
+
+:heading2 Entry Type - Admin
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_admin.png?version=882"><img  src="images/createtype_admin.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_admin.png?version=882" ></a></div></div>
+The Admin section allows you to specify a comment which gets included in the generated type.xml
+file.
+:p
+If the For Import is not checked then the generated will be of the form - e.g., type_archive_seed_specimen_types.xml and can be directly added as a plugin file.
+:p
+If For Import is checked then the  generated xml file
+is of the form &lt;type_the_type.xml&gt; and will not be recognized as a plugin file.
+(e.g., type_archive_seed_specimen.xml) as entry type files all end in "types.xml"
+You can import the file in a file, e.g., importtypes.xml,that contains, e.g., the below.
+This allows you to handle in order the entry types that inherit from other types
+<pre>
+&lt;types&gt;
+&lt;import resource="type_archive_site.xml"/&gt;
+&lt;import resource="type_archive_specimen.xml"/&gt;
+&lt;/types&gt;
+</pre>
+
+:p
+If the "Yes, drop the database table" is checked and your password is entered then
+the whole database table is dropped and recreated from the Columns definiton.
+Be careful using this as any data might be lost. This is provided because sometimes the
+database data type of column definitions  has to be changed (e.g, a string to a double) and
+the change isn't allowed by the database.
+
+:heading2 Entry Type - Properties
+The Properties section provides a way to specify the myriad number of entry type properties.
+Examples of the available properties are listed in the right.
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_properties.png?version=882"><img  src="images/createtype_properties.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_properties.png?version=882" ></a></div></div>
+
+There are 2 sets of properties - the XML Attributes and the more general purpose Properties.
+The XML attributes have to be of the form:
+<pre>
+attribute_name="value"
+</pre>
+
+
+:heading2 Entry Type - Advanced Configuration
+The Advanced Configuration section allows you to put any other XML into the generated 
+types.xml file. TBD.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_advanced.png?version=882"><img  src="images/createtype_advanced.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_advanced.png?version=882" ></a></div></div>
+
+:heading2 Entry Type - Columns
+The Columns section allows you to define the entry type columns.
+Each column consists of a column name, label, data type and any number
+of extra properties. 
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_columns.png?version=882"><img  src="images/createtype_columns.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_columns.png?version=882" ></a></div></div>
+
+The column name must be a valid database column name - lowercase, no spaces, no punctuation, etc.
+You can entry these directly into the form or keep them in a separate text file
+for easy editing then use the Bulk Upload.
+:p
+The "Show properties" link popups a Column Attributes dialog that allows you to add
+the many different properties that control the behavior of the Column.
+
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/createtype_attributes.png?version=882"><img  src="images/createtype_attributes.png?version=882"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/createtype_attributes.png?version=882" ></a></div></div>
+
+
+:heading2 Creating the entry type
+Once specified press Download Type.
+This will generate and download a types.xml file which you can install as a plugin
+or import into a types.xml file.
+:p
+If you have any SeeSV commands specified for the entry to convert CSV data
+then those are included in the generated
 types.xml. If you have wiki text specified then that too is included.
-
-+callout-info
-The form settings are not saved on the RAMADDA server. Rather, they will be saved in your browsers local
-data storage keyed on the specific entry ID your are viewing. So, when you return to this form the past fields
-should be filled out.
--callout
-
 
 
 </div>
