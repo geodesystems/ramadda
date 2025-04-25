@@ -1917,16 +1917,17 @@ public class ExtEditor extends RepositoryManager {
 
         extra.append(HU.formTableClose());	
 
+	StringBuilder props = processTypeProps(request,
+					       "/org/ramadda/repository/resources/colattrs.txt","colattributes",10);
 	StringBuilder cols = new StringBuilder();
 	cols.append(HU.span("",HU.attrs("id","colbuttons")));
 	cols.append(HU.space(1));
 	cols.append(HU.span("The name needs to be a valid database table ID so all lower case, no spaces or special characters",HU.clazz("ramadda-form-help")));
-        cols.append("<table width=100%>\n\n");
-	StringBuilder props = processTypeProps(request,
-					       "/org/ramadda/repository/resources/colattrs.txt","colattributes",10);					       
-
 	cols.append(HU.div(HU.div(props.toString(),HU.clazz("ramadda-dialog")),
 			   HU.attrs("id","colattrs","style",HU.css("display","none"))));
+        cols.append("<table width=100%>\n\n");
+
+	
 
 	StringBuilder js = new StringBuilder();
 	js.append("function showColumnAttrs(){\n");
@@ -1956,8 +1957,6 @@ public class ExtEditor extends RepositoryManager {
 	}
 
         cols.append("</table>\n");
-        cols.append(HU.formTable());	
-
 	cols.append(HU.script(js.toString()));
 
 	StringBuilder admin = new StringBuilder();
@@ -1976,9 +1975,13 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	String basicLabel = "Basic Configuration";
-	HU.makeAccordion(sb,new Object[]{HU.span(basicLabel, HU.attrs("id","basic_tab_label")),"Admin","Properties",
-					 "Advanced Configuration","Columns"},
-	    new Object[]{main,admin,properties,extra,cols});
+	HU.makeAccordion(sb,
+			 new Object[]{HU.span(basicLabel, HU.attrs("id","basic_tab_label")),
+				      "Properties",
+				      "Advanced Configuration",
+				      "Columns",
+				      "Admin"},
+			 new Object[]{main,properties,extra,cols,admin});
 	sb.append(HtmlUtils.formClose());
 
 	List<Metadata> metadataList =
