@@ -5,8 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.archive;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
@@ -27,8 +25,6 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,7 +36,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 
-
 @SuppressWarnings("unchecked")
 public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 
@@ -48,7 +43,6 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         super(repository, entryNode);
     }
-
 
     @Override
     public Result getHtmlDisplay(Request request, Entry group,
@@ -61,7 +55,6 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	String barcodes = entry.getStringValue(request,"barcodes","");
 	return Utils.split(barcodes,"\n",true,true);
     }
-
 
     @Override
     public Result getHtmlDisplay(Request request, Entry entry)
@@ -89,9 +82,7 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	    getEntryManager().updateEntry(request, entry);
 	}
 
-
         String formUrl   = request.makeUrl(getRepository().URL_ENTRY_SHOW);
-
 
 	if(canEdit) {
 	    sb.append(HU.uploadForm(formUrl,""));
@@ -113,7 +104,6 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	sb.append(HU.labeledCheckbox("download","true",false,"Download CSV"));
         sb.append(HU.formClose());
 
-	
 	if(request.exists("check")) {
 	    boolean download = request.get("download",false);
 	    List<Entry> entries = getEntryManager().getEntriesWithType(request, "type_archive_book");
@@ -158,7 +148,6 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 	    List<String>titles = new ArrayList<String>();
 	    List<String>contents = new ArrayList<String>();	    
 
-
 	    if(miss.size()>0) {
 		titles.add("Missing Books");
 		contents.add(Utils.join(miss,""));
@@ -183,8 +172,6 @@ public class InventoryTypeHandler extends ExtensibleGroupTypeHandler {
 		sb.append("</pre>");
 	    }
 	}
-
-
 
 	getPageHandler().entrySectionClose(request, entry, sb);
 	return new Result(entry.getName() +" - Inventory",sb);

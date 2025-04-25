@@ -5,8 +5,6 @@
 
 package org.ramadda.plugins.archive;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
@@ -30,8 +28,6 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -41,7 +37,6 @@ import java.util.List;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-
 
 @SuppressWarnings("unchecked")
 public class BookTypeHandler extends GenericTypeHandler  {
@@ -161,7 +156,7 @@ public class BookTypeHandler extends GenericTypeHandler  {
 			if(stringDefined(subject)) 
 			    getMetadataManager().addMetadata(request, entry, "archive_subject",false,subject);
 		    }
-	    
+
 		}
 
 		JSONObject ids= o.optJSONObject("identifiers");
@@ -194,9 +189,7 @@ public class BookTypeHandler extends GenericTypeHandler  {
 			state.thumbCredit = "Credit: openlibrary.org";
 		}
 
-
 	    }
-
 
 	}
     }
@@ -243,13 +236,9 @@ public class BookTypeHandler extends GenericTypeHandler  {
 		}
 	    }
 
-
 	}
 
     }
-
-
-
 
     private String getNames(JSONObject o,String key) {
 	JSONArray places = o.optJSONArray(key);
@@ -277,6 +266,5 @@ public class BookTypeHandler extends GenericTypeHandler  {
 		     HU.labeledCheckbox("initisbn","true", false,
 					"Initialize book from openlibrary.org and Google Books using ISBN"));
     }
-
 
 }

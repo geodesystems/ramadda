@@ -10,9 +10,9 @@ into some types.xml file
 >
 
 <!-- Columns-->
-<column  name="seed_quantity"  label="Seed Quantity"  type="list"  help="Enter quantity count over time" group="Seed Specimen" size="2000"  showempty="false" rows="5" columns="10" />
+<column  name="seed_quantity"  label="Seed Quantity"  type="list"  help="Enter quantity count over time" group="Seed Specimen"   size="2000" showempty="false" rows="5" columns="10" />
 <column  name="viability_test"  label="Viability Test"  type="enumerationplus"  values="germination,tetrazolium staining,cut tests,x-ray" subgroup="Viability" />
-<column  name="viability_percentage"  label="Viability Percentage"  type="double"  displaysuffix="%" help="Enter viability percentage or count"  showempty="false" />
+<column  name="viability_percentage"  label="Viability Percentage"  type="double"  numberformat="#0.0" displaysuffix="%" help="Enter viability percentage or count"  showempty="false" />
 <column  name="viability_count"  label="Viability Count"  type="int"  showempty="false" default="" />
 <column  name="total_seeds_tested"  label="Total Seeds Tested"  type="int"  showempty="false" default="" />
 <!-- Properties-->

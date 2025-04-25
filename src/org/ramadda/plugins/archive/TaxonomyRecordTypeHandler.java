@@ -5,10 +5,7 @@
 
 package org.ramadda.plugins.archive;
 
-
-
 import org.json.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
@@ -27,8 +24,6 @@ import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.StringUtil;
 
-
-
 import java.net.URL;
 
 import java.text.SimpleDateFormat;
@@ -43,7 +38,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.List;
 import java.util.Locale;
-
 
 /**
  */
@@ -61,7 +55,6 @@ public class TaxonomyRecordTypeHandler extends ExtensibleGroupTypeHandler {
                                      FormInfo formInfo,
                                      TypeHandler sourceTypeHandler)
 
-
     /*    public void addColumnToEntryForm(Request request, Column column,
                                      Appendable formBuffer, Entry parentEntry,Entry entry,
                                      Object[] values, Hashtable state,
@@ -78,8 +71,5 @@ public class TaxonomyRecordTypeHandler extends ExtensibleGroupTypeHandler {
 	HU.script(sb,HU.call("Itis.init"));
 	formBuffer.append(sb.toString());
     }
-
-
-
 
 }

@@ -5,39 +5,27 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.archive;
 
-
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
-
-
-
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
-
-
 import java.io.File;
 
-
 import java.sql.Statement;
-
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 
 /**
  *
@@ -47,9 +35,6 @@ import java.util.List;
  */
 public class ArchiveMetadataHandler extends MetadataHandler {
 
-
-
-
     public ArchiveMetadataHandler(Repository repository) throws Exception {
         super(repository);
     }
@@ -58,7 +43,6 @@ public class ArchiveMetadataHandler extends MetadataHandler {
             throws Exception {
         super(repository, node);
     }
-
 
     @Override
     public String[] getHtml(Request request, Entry entry, Metadata metadata)
@@ -114,7 +98,5 @@ public class ArchiveMetadataHandler extends MetadataHandler {
 	contents = HU.makeShowHideBlock(label, desc+contents,false);
 	return new String[]{"Archive Media",contents};
     }
-
-
 
 }
