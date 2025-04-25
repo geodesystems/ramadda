@@ -196,7 +196,7 @@ coloration,,string,size="2000" rows="5"
 
 ##botany_specimen Botany Specimen
 
-material_type,,enumerationplus,values="seeds\,leaves\,DNA\,herbarium specimen" \
+material_type,,enumerationplus,values="seeds\,leaves\,DNA\,herbarium specimen" \n\
 group="Botanical Specimen" cansearch="true"
 phenological_stage,,enumerationplus, cansearch="true"\
 values="Unknown\,Germination\,Vegetative\,Budding\,Flowering\,Fruiting\,Senescence\,Dormancy"
@@ -206,10 +206,10 @@ specimen_condition,,enumerationplus,values="unknown\,complete\,fragment" cansear
 
 
 ##seed_specimen Seed Specimen
-seed_quantity,Seed Quantity,list,help="Enter quantity count over time" group="Seed Specimen" size="2000" \
-showempty="false" rows="5" columns="10"
+seed_quantity,Seed Quantity,list,help="Enter quantity count over time" group="Seed Specimen" \
+size="2000" showempty="false" rows="5" columns="10"
 viability_test,,enumerationplus,values="germination\,tetrazolium staining\,cut tests\,x-ray" subgroup="Viability"
-viability_percentage,,double, displaysuffix="%" help="Enter viability percentage or count"  showempty="false"
+viability_percentage,,double, numberformat="#0.0" displaysuffix="%" help="Enter viability percentage or count"  showempty="false"
 viability_count,,int,   showempty="false" default=""
 total_seeds_tested,,int,  showempty="false" default=""
 
