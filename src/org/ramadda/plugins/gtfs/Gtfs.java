@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.gtfs;
 
-
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 
-
 import org.json.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
@@ -33,7 +30,6 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
@@ -46,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -55,7 +50,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 
-
 /**
  *
  *
@@ -63,37 +57,23 @@ import java.util.TimeZone;
 @SuppressWarnings("unchecked")
 public class Gtfs implements Constants {
 
-    /** _more_ */
     public static final String ARG_DATE = "date";
 
-    /** _more_ */
     public static final String ARG_ALLDATES = "alldates";
 
-    /** _more_ */
     public static String[] DAYS_FULL = {
         "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
         "Saturday"
     };
 
-
-    /** _more_ */
     public static String[] DAYS_MEDIUM = {
         "Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"
     };
 
-    /** _more_ */
     public static String[] DAYS_SHORT = {
         "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"
     };
 
-
-    /**
-     * _more_
-     *
-     * @param s _more_
-     *
-     * @return _more_
-     */
     public static String formatTime(String s) {
         List<String> toks = StringUtil.split(s, ":", true, true);
         if (toks.size() == 0) {
@@ -117,16 +97,6 @@ public class Gtfs implements Constants {
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param trip _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String formatDateRange(Request request, Entry trip)
             throws Exception {
         return request.getRepository().getDateHandler()
@@ -135,50 +105,20 @@ public class Gtfs implements Constants {
                     .formatYYYYMMDD(new Date(trip.getEndDate()));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static String getTimeRange(Request request,Entry entry) {
         return formatStartTime(request,entry) + " - " + formatEndTime(request,entry);
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static String formatStartTime(Request request,Entry entry) {
         return formatTime(entry.getStringValue(request,GtfsTripTypeHandler.IDX_STARTTIME,
                                          ""));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static String formatEndTime(Request request,Entry entry) {
         return formatTime(entry.getStringValue(request,GtfsTripTypeHandler.IDX_ENDTIME,
                                          ""));
     }
 
-    /**
-     * _more_
-     *
-     * @param week _more_
-     *
-     * @return _more_
-     */
     public static String getWeekString(boolean[] week) {
         if (week == null) {
             return "";
@@ -216,7 +156,6 @@ public class Gtfs implements Constants {
             }
         }
 
-
         if (firstOn >= 0) {
             boolean contiguous = true;
             for (int i = firstOn + 1; i < lastOn; i++) {
@@ -253,30 +192,10 @@ public class Gtfs implements Constants {
         return sked.toString();
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     public static String getRouteId(Request request,Entry entry) {
         return entry.getStringValue(request,GtfsRouteTypeHandler.IDX_ID, "");
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Date addDateLabel(Request request, Entry entry,
                                     Appendable sb)
             throws Exception {
@@ -313,22 +232,6 @@ public class Gtfs implements Constants {
         return now;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param trips _more_
-     * @param sb _more_
-     * @param now _more_
-     * @param stopEntry _more_
-     * @param showRoute _more_
-     * @param flags _more_
-     *
-     * @throws Exception _more_
-     */
     public static void displayTrips(final Request request, Entry entry,
                                     List<TripInfo> trips, Appendable sb,
                                     Date now, Entry stopEntry,
@@ -353,16 +256,13 @@ public class Gtfs implements Constants {
         final List<String> titles   = new ArrayList<String>();
         final List<String> contents = new ArrayList<String>();
 
-
         Hashtable<String, TripBlob> blobMap = new Hashtable<String,
                                                   TripBlob>();
         List<String>   blobs        = new ArrayList<String>();
 
-
         boolean        sawDir0      = false;
         boolean        sawDir1      = false;
         boolean        anyActive    = false;
-
 
         List<TripInfo> currentTrips = new ArrayList<TripInfo>();
 
@@ -383,7 +283,6 @@ public class Gtfs implements Constants {
                     || (now.getTime() > tripEntry.getEndDate())) {
                 inService = false;
             }
-
 
             boolean active = inService && tripInfo.getScheduleOk();
             if (active) {
@@ -483,8 +382,6 @@ public class Gtfs implements Constants {
             buff.append("</tr>\n");
         }
 
-
-
         if ( !anyActive) {
             //            sb.append(pageHandler.showDialogWarning("No active trips today"));
         }
@@ -574,7 +471,6 @@ public class Gtfs implements Constants {
                             nextSB.append(HtmlUtils.formTableClose());
                         }
 
-
                     }
                     tmp.append("</table>");
                     String stopsHtml =
@@ -632,8 +528,6 @@ public class Gtfs implements Constants {
         firstTitles.addAll(secondTitles);
         firstContents.addAll(secondContents);
 
-
-
         if (stopEntry != null) {
             if (nextSB.length() == 0) {
                 nextSB.append(
@@ -660,13 +554,11 @@ public class Gtfs implements Constants {
             }
         }
 
-
         if (nextSB.length() > 0) {
             sb.append("\n<nowiki>\n");
             sb.append(nextSB);
             sb.append("\n</nowiki>\n");
         }
-
 
         if ((stopEntry == null) && (currentTrips.size() > 0)) {
             for (TripInfo tripInfo : currentTrips) {
@@ -693,8 +585,6 @@ public class Gtfs implements Constants {
             }
         }
 
-
-
         sb.append(HtmlUtils.hr());
         /*
         if (nextTrips.size() > 0) {
@@ -702,7 +592,6 @@ public class Gtfs implements Constants {
             sb.append(HtmlUtils.br());
         }
         */
-
 
         if (open && (firstTitles.size() == 1)) {
             sb.append(firstTitles.get(0));
@@ -718,19 +607,6 @@ public class Gtfs implements Constants {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static boolean getUberInclude(Request request, Entry entry,
                                          Appendable sb)
             throws Exception {
@@ -798,20 +674,8 @@ public class Gtfs implements Constants {
         return true;
     }
 
-
-    /** _more_ */
     private static String lyftToken;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param force _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getLyftToken(Request request, boolean force)
             throws Exception {
         HttpURLConnection huc = null;
@@ -826,7 +690,6 @@ public class Gtfs implements Constants {
             String lyftSecret =
                 request.getRepository().getProperty("ramadda.lyft.secret",
                     null);
-
 
             if ((lyftId == null) || (lyftSecret == null)) {
                 //                System.err.println("No lyft secret");
@@ -872,18 +735,6 @@ public class Gtfs implements Constants {
         return null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     *
-     *
-     * @return _more_
-     * @throws Exception _more_
-     */
     public static boolean getLyftInclude(Request request, Entry entry,
                                          Appendable sb)
             throws Exception {
@@ -906,19 +757,6 @@ public class Gtfs implements Constants {
         return false;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param sb _more_
-     * @param token _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static boolean getLyftIncludeInner(Request request, Entry entry,
             Appendable sb, String token)
             throws Exception {
@@ -993,7 +831,6 @@ public class Gtfs implements Constants {
         return true;
     }
 
-
     /**
      * Class description
      *
@@ -1003,38 +840,22 @@ public class Gtfs implements Constants {
      */
     public static class TripBlob {
 
-        /** _more_ */
         TripInfo tripInfo;
 
-        /** _more_ */
         String title;
 
-        /** _more_ */
         String longTitle;
 
-        /** _more_ */
         StringBuilder header;
 
-        /** _more_ */
         StringBuilder buff1;
 
-        /** _more_ */
         StringBuilder buff2;
 
-        /** _more_ */
         boolean inService;
 
-        /** _more_ */
         TripInfo nextTrip;
 
-        /**
-         * _more_
-         *
-         * @param tripInfo _more_
-         * @param title _more_
-         * @param longTitle _more_
-         * @param inService _more_
-         */
         public TripBlob(TripInfo tripInfo, String title, String longTitle,
                         boolean inService) {
             this.tripInfo  = tripInfo;
@@ -1048,22 +869,6 @@ public class Gtfs implements Constants {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param trips _more_
-     * @param onlyToday _more_
-     * @param onlyFuture _more_
-     * @param now _more_
-     * @param filterNonTrips _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<TripInfo> sortTrips(Request request,
                                            List<Entry> trips, Date now,
                                            boolean onlyToday,
@@ -1119,7 +924,6 @@ public class Gtfs implements Constants {
                              + calendar.get(calendar.SECOND);
             }
         }
-
 
         Comparator comp  = new Utils.IntegerTupleComparator(0);
         Object[]   array = tuples.toArray();
@@ -1183,7 +987,6 @@ public class Gtfs implements Constants {
                 continue;
             }
 
-
             tripInfos.add(new TripInfo(child, week, scheduleOk, runningNow,
                                        inThePast, now, firstStop, lastStop));
         }
@@ -1203,62 +1006,35 @@ public class Gtfs implements Constants {
     public static class TripInfo {
 
 	private Request request;
-        /** _more_ */
+
         private Entry entry;
 
-        /** _more_ */
         private boolean[] week;
 
-        /** _more_ */
         private boolean inService;
 
-        /** _more_ */
         private boolean scheduleOk;
 
-        /** _more_ */
         private boolean inPast;
 
-        /** _more_ */
         private boolean runningNow;
 
-        /** _more_ */
         private String timeLabel;
 
-        /** _more_ */
         private String startTimeLabel = "";
 
-        /** _more_ */
         private String endTimeLabel = "";
 
-        /** _more_ */
         private Entry firstStop;
 
-        /** _more_ */
         private Entry lastStop;
 
-        /**
-         * _more_
-         *
-         * @param entry _more_
-         */
         public TripInfo(Request request,Entry entry) {
 	    this.request = request;
             this.entry     = entry;
             this.timeLabel = "";
         }
 
-        /**
-         *  _more_
-         *
-         *  @param entry _more_
-         *  @param week _more_
-         *  @param scheduleOk _more_
-         * @param runningNow _more_
-         *  @param inPast _more_
-         * @param now _more_
-         * @param firstStop _more_
-         * @param lastStop _more_
-         */
         public TripInfo(Entry entry, boolean[] week, boolean scheduleOk,
                         boolean runningNow, boolean inPast, Date now,
                         Entry firstStop, Entry lastStop) {
@@ -1289,24 +1065,13 @@ public class Gtfs implements Constants {
             return entry;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public Entry getFirstStop() {
             return firstStop;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public Entry getLastStop() {
             return lastStop;
         }
-
 
         /**
          *  Get the SchedulOek property.
@@ -1335,50 +1100,22 @@ public class Gtfs implements Constants {
             return runningNow;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public boolean[] getWeek() {
             return week;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getTimeLabel() {
             return timeLabel;
         }
 
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getStartTimeLabel() {
             return startTimeLabel;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getEndTimeLabel() {
             return endTimeLabel;
         }
 
-
-
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getCssClass() {
             if (runningNow) {
                 return "gtfs-trip-list-now";
@@ -1391,49 +1128,18 @@ public class Gtfs implements Constants {
                     : "gtfs-trip-list-inactive");
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getWeekString() {
             return Gtfs.getWeekString(week);
         }
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param doLink _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getRouteTitle(Request request, Entry entry,
                                        boolean doLink)
             throws Exception {
         return getRouteTitle(request, entry, doLink, true);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param doLink _more_
-     * @param full _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static String getRouteTitle(Request request, Entry entry,
                                        boolean doLink, boolean full)
             throws Exception {
@@ -1466,14 +1172,6 @@ public class Gtfs implements Constants {
         return link;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @return _more_
-     */
     public static String getColor(String c) {
         if (c.startsWith("#")) {
             return c;
@@ -1482,17 +1180,6 @@ public class Gtfs implements Constants {
         return "#" + c;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param host _more_
-     * @param prefix _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addHostAlias(Request request, Entry entry,
                                     String host, String prefix)
             throws Exception {
@@ -1501,16 +1188,6 @@ public class Gtfs implements Constants {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param alias _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addAlias(Request request, Entry entry, String alias)
             throws Exception {
         alias = alias.replaceAll(" ", "_");
@@ -1521,19 +1198,6 @@ public class Gtfs implements Constants {
                              alias.toLowerCase(), null, null, null, null));
     }
 
-    
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private static Entry getStopsEntry(Request request, Entry entry)
             throws Exception {
         Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
@@ -1554,18 +1218,6 @@ public class Gtfs implements Constants {
         return stopsEntry;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param stopMap _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<StopTime> getStopsForTrip(Request request,
             Entry entry, Hashtable<String, Entry> stopMap)
             throws Exception {
@@ -1587,7 +1239,6 @@ public class Gtfs implements Constants {
         List<String[]> tuples =
             (List<String[]>) request.getRepository().decodeObject(
                 Utils.uncompress(s));
-
 
         for (String[] tuple : tuples) {
             String stopId    = tuple[0];
@@ -1622,19 +1273,6 @@ public class Gtfs implements Constants {
         return stops;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param stopId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Entry getStop(Request request, Entry entry, String stopId)
             throws Exception {
         if (stopId == null) {
@@ -1655,18 +1293,6 @@ public class Gtfs implements Constants {
                : null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param routeId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Entry getRoute(Request request, Entry entry, String routeId)
             throws Exception {
         if (routeId == null) {
@@ -1687,18 +1313,6 @@ public class Gtfs implements Constants {
                : null;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param tripId _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static Entry getTrip(Request request, Entry entry, String tripId)
             throws Exception {
         if (tripId == null) {
@@ -1719,11 +1333,6 @@ public class Gtfs implements Constants {
                : null;
     }
 
-
-
-
-
-
     /**
      * Class description
      *
@@ -1733,22 +1342,12 @@ public class Gtfs implements Constants {
      */
     public static class StopTime {
 
-        /** _more_ */
         public Entry entry;
 
-        /** _more_ */
         public String startTime;
 
-        /** _more_ */
         public String endTime;
 
-        /**
-         * _more_
-         *
-         * @param entry _more_
-         * @param startTime _more_
-         * @param endTime _more_
-         */
         public StopTime(Entry entry, String startTime, String endTime) {
             this.entry     = entry;
             this.startTime = startTime;
@@ -1756,38 +1355,14 @@ public class Gtfs implements Constants {
         }
     }
 
-
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     */
     public static void main(String[] args) {
         String s = "hh:mm:ss";
         System.err.println(s.replaceAll(":[^:]+$", ""));
     }
 
-    /** _more_ */
     private static TTLCache<String, List<Entry>> vehicleCache =
         new TTLCache<String, List<Entry>>(1000 * 60);
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param agencyEntry _more_
-     * @param routeEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getVehiclesForRoute(Request request,
             Entry agencyEntry, Entry routeEntry)
             throws Exception {
@@ -1807,17 +1382,6 @@ public class Gtfs implements Constants {
         return routeVehicles;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param agencyEntry _more_
-     * @param stopEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getVehiclesForStop(Request request,
             Entry agencyEntry, Entry stopEntry)
             throws Exception {
@@ -1837,18 +1401,6 @@ public class Gtfs implements Constants {
         return stopVehicles;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param agencyEntry _more_
-     * @param tripEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getVehiclesForTrip(Request request,
             Entry agencyEntry, Entry tripEntry)
             throws Exception {
@@ -1868,17 +1420,6 @@ public class Gtfs implements Constants {
         return tripVehicles;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param agencyEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getVehicles(Request request, Entry agencyEntry)
             throws Exception {
 
@@ -1929,7 +1470,6 @@ public class Gtfs implements Constants {
                 urlConnection.setRequestProperty("Authorization",
                         "Basic " + authStringEnc);
             }
-
 
             FeedMessage feed =
                 FeedMessage.parseFrom(urlConnection.getInputStream());
@@ -2024,17 +1564,6 @@ public class Gtfs implements Constants {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getTripsForStop(Request request, Entry entry)
             throws Exception {
         Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
@@ -2067,16 +1596,6 @@ public class Gtfs implements Constants {
         return trips;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static List<Entry> getRoutesForStop(Request request, Entry entry)
             throws Exception {
 
@@ -2114,16 +1633,6 @@ public class Gtfs implements Constants {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param vehicles _more_
-     * @param map _more_
-     *
-     * @throws Exception _more_
-     */
     public static void addToMap(Request request, List<Entry> vehicles,
                                 MapInfo map)
             throws Exception {

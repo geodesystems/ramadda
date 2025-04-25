@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.gtfs;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
@@ -17,14 +16,12 @@ import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
-
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -36,13 +33,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
-
 
 /**
  *
@@ -50,93 +45,49 @@ import java.util.TimeZone;
  */
 public class GtfsTripTypeHandler extends GenericTypeHandler {
 
-    /** _more_ */
     public static final String TYPE_TRIP = "type_gtfs_trip";
 
-    /** _more_ */
     private static int IDX = 0;
 
-    /** _more_ */
     public static final int IDX_TRIP_ID = IDX++;
 
-    /** _more_ */
     public static final int IDX_DIRECTION = IDX++;
 
-    /** _more_ */
     public static final int IDX_HEADSIGN = IDX++;
 
-    /** _more_ */
     public static final int IDX_STARTTIME = IDX++;
 
-    /** _more_ */
     public static final int IDX_ENDTIME = IDX++;
 
-    /** _more_ */
     public static final int IDX_SERVICE_ID = IDX++;
 
-    /** _more_ */
     public static final int IDX_SERVICE_NAME = IDX++;
 
-    /** _more_ */
     public static final int IDX_WEEK = IDX++;
 
-
-    /** _more_ */
     public static final int IDX_STOPS = IDX++;
 
-    /** _more_ */
     public static final int IDX_STOP_IDS = IDX++;
 
-    /** _more_ */
     public static final int IDX_BLOCK_ID = IDX++;
 
-    /** _more_ */
     public static final int IDX_WHEELCHAIR_ACCESSIBLE = IDX++;
 
-    /** _more_ */
     public static final int IDX_BIKES_ALLOWED = IDX++;
 
-    /** _more_ */
     public static final int IDX_POINTS = IDX++;
 
-    /** _more_ */
     public static final int IDX_AGENCY_ID = IDX++;
 
-    /** _more_ */
     public static final int IDX_FIRST_STOP = IDX++;
 
-    /** _more_ */
     public static final int IDX_LAST_STOP = IDX++;
 
-
-
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     * @param entryNode _more_
-     *
-     * @throws Exception _more_
-     */
     public GtfsTripTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
 
-    /**
-     * _more_
-     *
-     * @param wikiUtil _more_
-     * @param request _more_
-     * @param originalEntry _more_
-     * @param entry _more_
-     * @param tag _more_
-     * @param props _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -152,7 +103,6 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                 HU.div(sb, Gtfs.getRouteTitle(request, route, true),
                               HU.cssClass("ramadda-page-title"));
             }
-
 
             String headsign =
                 (String) entry.getStringValue(request,GtfsTripTypeHandler.IDX_HEADSIGN,
@@ -328,16 +278,6 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                                     tag, props);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     * @param entry _more_
-     *
-     * @throws Exception On badness
-     */
     public void showSchedule(Request request, Appendable sb, Entry entry)
             throws Exception {
         boolean[] week =
@@ -366,25 +306,11 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
         sb.append("</table>\n");
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     *
-     * @return _more_
-     */
     @Override
     public String getEntryName(Entry entry) {
         return entry.getName();
     }
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param mapInfo _more_
-     * @param sb _more_
-     */
     @Override
     public void initMapAttrs(Entry entry, MapInfo mapInfo, StringBuilder sb) {
         super.initMapAttrs(entry, mapInfo, sb);
@@ -395,13 +321,6 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
         sb.append("'strokeColor':'" + color + "','strokeWidth':4");
     }
 
-    /**
-     * _more_
-     *
-     * @param c _more_
-     *
-     * @return _more_
-     */
     public String getColor(String c) {
         if (c.startsWith("#")) {
             return c;
@@ -448,21 +367,5 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
 
         return false;
     }
-
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param trips _more_
-     * @param onlyToday _more_
-     * @param onlyFuture _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
 
 }

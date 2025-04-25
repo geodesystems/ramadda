@@ -5,11 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.gtfs;
 
-
 import org.json.*;
 
 import org.ramadda.data.services.*;
-
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
@@ -32,7 +30,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 import java.awt.geom.Rectangle2D;
-
 
 import java.io.*;
 
@@ -57,38 +54,21 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
-
 /**
  */
 @SuppressWarnings("unchecked")
 public class GtfsImportHandler extends ImportHandler {
 
-    /** _more_ */
     private static boolean debug = false;
 
-    /**
-     * _more_
-     */
     public GtfsImportHandler() {
         super(null);
     }
 
-    /**
-     * _more_
-     *
-     * @param repository _more_
-     */
     public GtfsImportHandler(Repository repository) {
         super(repository);
     }
 
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -96,19 +76,6 @@ public class GtfsImportHandler extends ImportHandler {
         importTypes.add(new TwoFacedObject("GTFS Feed", "gtfs"));
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param file _more_
-     * @param parentEntry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public Result handleRequest(Request request, Repository repository,
                                 String file, Entry parentEntry)
@@ -151,24 +118,10 @@ public class GtfsImportHandler extends ImportHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param repository _more_
-     * @param props _more_
-     * @param file _more_
-     * @param parentEntry _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
     private void handleRequestInner(Request request, Repository repository,
                                     Hashtable props, String file,
                                     Entry parentEntry, Appendable sb)
             throws Exception {
-
 
         List<Entry>    entries = new ArrayList<Entry>();
         List<Entry>    stops   = new ArrayList<Entry>();
@@ -328,7 +281,6 @@ public class GtfsImportHandler extends ImportHandler {
             setBounds(routesEntry, routesEntry.getChildren());
         }
 
-
         for (Entry agencyEntry : agencies) {
             setBounds(agencyEntry, agencyEntry.getChildren());
         }
@@ -351,22 +303,6 @@ public class GtfsImportHandler extends ImportHandler {
         getEntryManager().addNewEntries(request, entries);
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param stopToAgency _more_
-     * @param dfltAgency _more_
-     * @param entries _more_
-     * @param stopsMap _more_
-     * @param is _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     private void processStops(final Request request,
                               final Hashtable<String, Entry> stopToAgency,
                               Entry dfltAgency, final List<Entry> entries,
@@ -473,15 +409,6 @@ public class GtfsImportHandler extends ImportHandler {
 
     }
 
-
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param children _more_
-     *
-     * @throws Exception _more_
-     */
     private void setBounds(Entry entry, List<Entry> children)
             throws Exception {
         Rectangle2D.Double rect = getEntryUtil().getBounds(getRepository().getAdminRequest(),children);
@@ -493,30 +420,8 @@ public class GtfsImportHandler extends ImportHandler {
         }
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param is _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     static int xcnt = 0;
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Hashtable<String,
                       List<float[]>> processShapes(final Request request,
                           File file)
@@ -572,7 +477,6 @@ public class GtfsImportHandler extends ImportHandler {
         Hashtable<String, List<float[]>> sorted = new Hashtable<String,
                                                       List<float[]>>();
 
-
         Comparator comp = new Utils.FloatTupleComparator(0);
 
         for (String id : ids) {
@@ -601,19 +505,6 @@ public class GtfsImportHandler extends ImportHandler {
         return sorted;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param is _more_
-     * @param stopToTrip _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Hashtable<String,
                       List<String[]>> processStopTimes(final Request request,
                           InputStream is,
@@ -621,7 +512,6 @@ public class GtfsImportHandler extends ImportHandler {
             throws Exception {
         final Hashtable<String, List<String[]>> stops = new Hashtable<String,
                                                             List<String[]>>();
-
 
         TextReader textReader = new TextReader();
         textReader.setInput(is);
@@ -666,17 +556,6 @@ public class GtfsImportHandler extends ImportHandler {
         return stops;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param file _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private Hashtable<String,
                       ServiceInfo> processCalendar(final Request request,
                           File file)
@@ -713,7 +592,6 @@ public class GtfsImportHandler extends ImportHandler {
                         getValue("saturday", map, toks, "0").equals("1"),
                     };
 
-
                     String start = getValue("start_date", map, toks, "");
                     String end   = getValue("end_date", map, toks, "");
                     cal.put(id,
@@ -732,21 +610,6 @@ public class GtfsImportHandler extends ImportHandler {
         return cal;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param props _more_
-     * @param agencyMap _more_
-     * @param entries _more_
-     * @param routeMap _more_
-     * @param is _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     private void processRoutes(final Request request,
                                final Hashtable<String, String> props,
                                final Hashtable<String, Entry> agencyMap,
@@ -787,7 +650,6 @@ public class GtfsImportHandler extends ImportHandler {
                     String longName = getValue("route_long_name", map, toks,
                                           shortName);
 
-
                     if ( !Utils.stringDefined(shortName)) {
                         shortName = id;
                         name      = longName;
@@ -807,9 +669,6 @@ public class GtfsImportHandler extends ImportHandler {
                             + getValue("route_text_color", map, toks,
                                        "000000");
                     values[GtfsRouteTypeHandler.IDX_STOP_NAMES] = "";
-
-
-
 
                     Resource resource    = Utils.stringDefined(url)
                                            ? new Resource(new URL(url))
@@ -850,7 +709,6 @@ public class GtfsImportHandler extends ImportHandler {
                     Gtfs.addAlias(request, entry,
                                   "gtfs." + agencyId + ".route." + id);
 
-
                     routeMap.put(id, entry);
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
@@ -863,25 +721,8 @@ public class GtfsImportHandler extends ImportHandler {
         Seesv csvUtil = new Seesv(new ArrayList<String>());
         csvUtil.process(textReader);
 
-
-
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param props _more_
-     * @param parentEntry _more_
-     * @param entries _more_
-     * @param agencyMap _more_
-     * @param is _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private List<Entry> processAgency(final Request request,
                                       final Hashtable<String, String> props,
                                       final Entry parentEntry,
@@ -889,7 +730,6 @@ public class GtfsImportHandler extends ImportHandler {
                                       final Hashtable<String,
                                           Entry> agencyMap, InputStream is)
             throws Exception {
-
 
         final List<Entry> agencies   = new ArrayList<Entry>();
         final Date        now        = new Date();
@@ -921,8 +761,6 @@ public class GtfsImportHandler extends ImportHandler {
                                            + rawAgencyId);
                     }
                     debug = false;
-
-
 
                     if (rawAgencyId.length() == 0) {
                         rawAgencyId = name.toLowerCase().replaceAll(" ", "_");
@@ -958,7 +796,7 @@ public class GtfsImportHandler extends ImportHandler {
                     if (Utils.stringDefined(timezone)) {
                         getMetadataManager().addMetadata(request,
                             entry,
-					 
+
                             new Metadata(
                                 request.getRepository().getGUID(),
                                 entry.getId(),
@@ -989,7 +827,6 @@ public class GtfsImportHandler extends ImportHandler {
                                             "type_gtfs_routes").createEntry(
                                             repository.getGUID());
 
-
                     entry.getChildren().add(routesEntry);
                     routesEntry.initEntry("Routes", "", entry, user,
                                           new Resource(), "",
@@ -1014,7 +851,6 @@ public class GtfsImportHandler extends ImportHandler {
                     entries.add(stopsEntry);
                     entry.putProperty("stopsEntry", stopsEntry);
 
-
                 } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
@@ -1031,19 +867,6 @@ public class GtfsImportHandler extends ImportHandler {
         return agencies;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param parentToChild _more_
-     * @param stopIds _more_
-     * @param is _more_
-     *
-     * @throws Exception _more_
-     */
     private void getParentToChild(
             final Request request,
             final Hashtable<String, List<String>> parentToChild,
@@ -1084,16 +907,6 @@ public class GtfsImportHandler extends ImportHandler {
         csvUtil.process(textReader);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param tripToRoute _more_
-     * @param is _more_
-     *
-     * @throws Exception _more_
-     */
     private void getTripToRoute(final Request request,
                                 final Hashtable<String, String> tripToRoute,
                                 InputStream is)
@@ -1127,15 +940,6 @@ public class GtfsImportHandler extends ImportHandler {
         csvUtil.process(textReader);
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param idMap _more_
-     * @param is _more_
-     *
-     * @throws Exception _more_
-     */
     private void getRouteToAgency(final Request request,
                                   final Hashtable<String, String> idMap,
                                   InputStream is)
@@ -1168,22 +972,6 @@ public class GtfsImportHandler extends ImportHandler {
         csvUtil.process(textReader);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entries _more_
-     * @param agencyMap _more_
-     * @param routeMap _more_
-     * @param pts _more_
-     * @param services _more_
-     * @param stopsMap _more_
-     * @param stopTimes _more_
-     * @param is _more_
-     *
-     * @throws Exception _more_
-     */
     private void processTrips(final Request request,
                               final List<Entry> entries,
                               final Hashtable<String, Entry> agencyMap,
@@ -1234,13 +1022,11 @@ public class GtfsImportHandler extends ImportHandler {
 
                     Entry route = routeMap.get(routeId);
 
-
                     if (route.getProperty("added_a_shape") == null) {
                         addPolygon(route, shapeId, pts,
                                    GtfsRouteTypeHandler.IDX_POINTS);
                         route.putProperty("added_a_shape", "");
                     }
-
 
                     ServiceInfo serviceInfo = services.get(serviceId);
                     if (serviceInfo == null) {
@@ -1272,7 +1058,6 @@ public class GtfsImportHandler extends ImportHandler {
                         serviceInfo.name;
                     values[GtfsTripTypeHandler.IDX_WEEK] =
                         getRepository().encodeObject(serviceInfo.week);
-
 
                     if (stops == null) {
                         stops = new ArrayList<String[]>();
@@ -1377,7 +1162,6 @@ public class GtfsImportHandler extends ImportHandler {
 
                     StringBuilder desc = new StringBuilder();
 
-
                     StringBuilder name = new StringBuilder();
                     if (Utils.stringDefined(routeId)) {
                         name.append("Rt. " + Gtfs.getRouteId(request,route));
@@ -1419,7 +1203,6 @@ public class GtfsImportHandler extends ImportHandler {
 
             }
 
-
         });
 
         Seesv csvUtil = new Seesv(new ArrayList<String>());
@@ -1427,20 +1210,8 @@ public class GtfsImportHandler extends ImportHandler {
 
     }
 
-
-    /** _more_ */
     private static int maxPts = 0;
 
-    /**
-     * _more_
-     *
-     * @param entry _more_
-     * @param shapeId _more_
-     * @param pts _more_
-     * @param index _more_
-     *
-     * @throws Exception _more_
-     */
     private void addPolygon(Entry entry, String shapeId,
                             Hashtable<String, List<float[]>> pts, int index)
             throws Exception {
@@ -1542,7 +1313,6 @@ public class GtfsImportHandler extends ImportHandler {
         }
     }
 
-
     /**
      * Class description
      *
@@ -1552,21 +1322,10 @@ public class GtfsImportHandler extends ImportHandler {
      */
     private static class MyProcessor extends Processor {
 
-        /** _more_ */
         Hashtable<String, Integer> map;
 
-        /** _more_ */
         List<String> header = new ArrayList<String>();
 
-        /**
-         * _more_
-         *
-         * @param row _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public boolean checkMap(Row row) throws Exception {
             if (map == null) {
                 List<String> toks = row.getValues();
@@ -1589,19 +1348,6 @@ public class GtfsImportHandler extends ImportHandler {
         }
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param id _more_
-     * @param map _more_
-     * @param toks _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
     private String getValue(String id, Hashtable<String, Integer> map,
                             List<String> toks, String dflt) {
         Integer idx = map.get(id);
@@ -1643,30 +1389,16 @@ public class GtfsImportHandler extends ImportHandler {
      */
     public static class ServiceInfo {
 
-        /** _more_ */
         String id;
 
-        /** _more_ */
         String name;
 
-        /** _more_ */
         boolean[] week;
 
-        /** _more_ */
         Date start;
 
-        /** _more_ */
         Date end;
 
-        /**
-         * _more_
-         *
-         * @param id _more_
-         * @param name _more_
-         * @param week _more_
-         * @param start _more_
-         * @param end _more_
-         */
         public ServiceInfo(String id, String name, boolean[] week,
                            Date start, Date end) {
             this.id    = id;
@@ -1676,11 +1408,6 @@ public class GtfsImportHandler extends ImportHandler {
             this.end   = end;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         public String getLabel() {
             if (Utils.stringDefined(name)) {
                 return name;
@@ -1689,12 +1416,6 @@ public class GtfsImportHandler extends ImportHandler {
             return Gtfs.getWeekString(this.week);
         }
 
-
     }
-
-
-
-
-
 
 }

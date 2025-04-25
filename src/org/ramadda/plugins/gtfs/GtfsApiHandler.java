@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.plugins.gtfs;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.harvester.*;
@@ -21,13 +20,11 @@ import ucar.unidata.ui.HttpFormEntry;
 
 import ucar.unidata.util.IOUtil;
 
-
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
-
 
 import java.net.*;
 
@@ -38,7 +35,6 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
-
 
 /**
  * Provides a top-level API
@@ -57,7 +53,6 @@ public class GtfsApiHandler extends RepositoryManager implements RequestHandler 
         super(repository);
     }
 
-
     /**
      * handle the request
      *
@@ -74,6 +69,5 @@ public class GtfsApiHandler extends RepositoryManager implements RequestHandler 
 
         return result;
     }
-
 
 }
