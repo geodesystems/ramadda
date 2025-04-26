@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Wiki Text</title>
+<title>Misc Wiki Displays</title>
   <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
 
 </head>
@@ -10,11 +10,11 @@
 <div class="ramadda-doc-header">
 <div style='padding-top:12px;margin-bottom:4px;'><a href="../toc.html#wiki/wikimisc.html"><span title="Table of contents"><i  style='font-size:16pt;'  class="fa fa-list "></i></span></a> &nbsp; <a href="../index.html">RAMADDA User Guide</a>  > <a href="../page_wikifacilities.html">Wiki Facilities</a> </div>
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><td valign=center><td><span title="Previous: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Display of Entries</td></tr></table></a></div></div></td>
+<tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidata.html"><table><td valign=center><td><span title="Previous: Derived Data"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Derived Data</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 5.4: Wiki Text</a></div>
+<div class="ramadda-page-title"><a href="#">Section 5.11: Misc Wiki Displays</a></div>
 </td>
-<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="entrytags.html"><table><tr valign=center><td>Entry Tags</td><td><span title="Next: Entry Tags"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><tr valign=center><td>Display Glyphs</td><td><span title="Next: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 
@@ -31,69 +31,38 @@ pre {
 
 
 
-
 :navtop
 
-<a name='codeembed'></a>
-:lheading Embedding Code
+:heading Metadata Property Cloud
+You can display a tag cloud of metadata properties with with the tagcloud tag:
++pre addCopy=true
+{{tagcloud  type="metadata type to display"
+types="optional comma separated list of types"
+width="100%" height="600px"
+threshold="number - minimal number of occurrences to display"
+colorTable="optional color table"
+style="css style of the word cloud background"
+delay="milliseconds to use to delay the drawing of each word"
+}}
+-pre
 
-To embed code do the following:
-<pre>
- ```&lt;option language&gt;
- code
- here
-```
-</pre>
-Currently only javascript is formatted.
-For example:
-<pre>
-```javascript
-let l = []; 
-for(let i=0;&lt;l.length;i++) {
-    console.log(l\[i\]);
-}
-var x = {}
-```
-</pre>
-
-
-<a name='vega'></a>
-:lheading Embedding Vega Charts
-
-You can embed charts defined in the vega-lite schema directly into a wiki page.
-More information onv vega-list is available <a href="https://vega.github.io/vega/examples/">here</a>
-
-The format is:
-<pre>
-```vega-lite
-You vega-lite schema here
-```
-</pre>
+The list of metadata types can be viewed at <a href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
+:br
+The list of color tables can be viewed at <a href="{{root}}/colortables">{{root}}/colortables</a>
+:p
+For example, here we are displaying a  number of the Archive metadata properties:
++pre addCopy=true
+{{tagcloud  type="archive_keyword" types="archive_keyword,archive_category,archive_subject,archive_term"
+width=100% height=600px threshold="0"  colorTable=plotly_blues
+style="background:#efefef;border:1px solid #ccc;" delay=1
+}}
+-pre
 
 e.g.:
-<pre>
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "description": "A simple bar chart with embedded data. An example vega-lite file.",
-  "width": 360,
-  "height":200,
-  "data": {
-    "values": \[
-      {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
-      {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
-      {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
-    \]
-  },
-  "mark": "bar",
-  "encoding": {
-    "x": {"field": "a", "type": "ordinal"},
-    "y": {"field": "b", "type": "quantitative"}
-  }
-}
-```
-</pre>
-
+{{tagcloud  type="archive_keyword" types="archive_keyword,archive_category,archive_subject,archive_term"
+width=100% height=600px threshold="0" xcolor=red colorTable=plotly_blues
+style="background:#efefef;border:1px solid #ccc;" delay=1
+}}
 
 
 
@@ -104,8 +73,8 @@ e.g.:
 
 <div class="ramadda-doc-footer">
 <table width=100% cellspacing=0 cellpadding=0 >
-<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikientries.html"><table><td valign=center><td><span title="Previous: Wiki Display of Entries"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Wiki Display of Entries</td></tr></table></a></div></div></td>
-<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="entrytags.html"><table><tr valign=center><td>Entry Tags</td><td><span title="Next: Entry Tags"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
+<tr><td width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="wikidata.html"><table><td valign=center><td><span title="Previous: Derived Data"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Derived Data</td></tr></table></a></div></div></td>
+<td align=right width=30%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="canvasglyphs.html"><table><tr valign=center><td>Display Glyphs</td><td><span title="Next: Display Glyphs"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
 </div>
 <p>

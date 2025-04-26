@@ -1,7 +1,37 @@
-[ht::head {Wiki Text} ]
-<%nochildlist%>
+[ht::head {Misc Wiki Displays} ]
 
 :navtop
+
+:heading Metadata Property Cloud
+You can display a tag cloud of metadata properties with with the tagcloud tag:
++pre addCopy=true
+{{tagcloud  type="metadata type to display"
+types="optional comma separated list of types"
+width="100%" height="600px"
+threshold="number - minimal number of occurrences to display"
+colorTable="optional color table"
+style="css style of the word cloud background"
+delay="milliseconds to use to delay the drawing of each word"
+}}
+-pre
+
+The list of metadata types can be viewed at <a href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
+:br
+The list of color tables can be viewed at <a href="{{root}}/colortables">{{root}}/colortables</a>
+:p
+For example, here we are displaying a  number of the Archive metadata properties:
++pre addCopy=true
+{{tagcloud  type="archive_keyword" types="archive_keyword,archive_category,archive_subject,archive_term"
+width=100% height=600px threshold="0"  colorTable=plotly_blues
+style="background:#efefef;border:1px solid #ccc;" delay=1
+}}
+-pre
+
+e.g.:
+{{tagcloud  type="archive_keyword" types="archive_keyword,archive_category,archive_subject,archive_term"
+width=100% height=600px threshold="0" xcolor=red colorTable=plotly_blues
+style="background:#efefef;border:1px solid #ccc;" delay=1
+}}
 
 
 [ht::foot]

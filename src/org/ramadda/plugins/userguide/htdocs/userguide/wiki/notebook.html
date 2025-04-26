@@ -12,7 +12,7 @@
 <table width=100% cellspacing=0 cellpadding=0 >
 <tr valign=center><td width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="tips.html"><table><td valign=center><td><span title="Previous: Tips and Tricks"><i  style='font-size:16pt;'  class="fa fa-caret-left "></i></span></td><td>Tips and Tricks</td></tr></table></a></div></div></td>
 <td width=50% align=center>
-<div class="ramadda-page-title"><a href="#">Section 5.15: RAMADDA Notebooks</a></div>
+<div class="ramadda-page-title"><a href="#">Section 5.16: RAMADDA Notebooks</a></div>
 </td>
 <td align=right width=25%><div class=ramadda-doc-nav-container><div class=ramadda-doc-nav><a href="pagestyle.html"><table><tr valign=center><td>Page Styles</td><td><span title="Next: Page Styles"><i  style='font-size:16pt;'  class="fa fa-caret-right "></i></span></td></tr></table></a> </div></div> </td>
 </tr></table>
@@ -40,7 +40,7 @@ The Notebook display provides an interactive notebook that can display html, exe
 -callout
 
 <a name="overview"></a>
-:heading 5.15.0 <label>Quick Overview</label>
+:heading 5.16.0 <label>Quick Overview</label>
 
 View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
 <br>
@@ -71,7 +71,7 @@ Notebooks are created with the wiki tag:
 
 
 <a name="creating"></a>
-:heading 5.15.1 <label>Creating a notebook</label>
+:heading 5.16.1 <label>Creating a notebook</label>
 
 
 A notebook can be created for any entry with the following wiki text:
@@ -100,7 +100,7 @@ A notebook is made up of a number of notebook cells. Initially there is just one
 Each cell has an input area, output area and cell menu. The menu can either be accessed through
 the Notebook menu or from the left side link that is shown on mouseover:
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/notebook1.png?version=340"><img  src="images/notebook1.png?version=340"  alt="Notebook Menu" ></a><br><span class="caption">Image 1: Notebook Menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/notebook1.png?version=795"><img  src="images/notebook1.png?version=795"  alt="Notebook Menu" ></a><br><span class="caption">Image 1: Notebook Menu</span></div></div>
 
 The icons on the left allow you to popup the cell menu, show the cell input, run the cell and run all cells.
 
@@ -109,7 +109,7 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 
 
 <a name="editing"></a>
-:heading 5.15.2 <label>Editing a notebook</label>
+:heading 5.16.2 <label>Editing a notebook</label>
 
 The menubar at the top of the input area is just RAMADADA's wiki text <a href='wiki.html#menubar'>menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
@@ -160,7 +160,7 @@ A command can be on the same line
 
 
 <a name="context"></a>
-:heading 5.15.3 <label>Cell Context</label>
+:heading 5.16.3 <label>Cell Context</label>
 
 Within a cell there is an entry context, a number of entries that can be accessed within the javascript
 input and that the wiki is created from. The following entries are available:
@@ -174,7 +174,7 @@ shell commands.
 
 
 <a name="html"></a>
-:heading 5.15.4 <label>Html Input</label>
+:heading 5.16.4 <label>Html Input</label>
 
 To specify html text start the input with "%% html".  
 <pre>
@@ -184,7 +184,7 @@ html text
 
 
 <a name="wiki"></a>
-:heading 5.15.5 <label>Wiki Input</label>
+:heading 5.16.5 <label>Wiki Input</label>
 
 To specify wiki text start the input with "%% wiki" - 
 <pre>
@@ -196,7 +196,7 @@ The wiki text is just regular RAMADDA wiki text. More information <a href='wikit
 
 
 <a name="markdown"></a>
-:heading 5.15.6 <label>Markdown Input</label>
+:heading 5.16.6 <label>Markdown Input</label>
 
 To specify markdown  text start the input with "%% md" - 
 <pre>
@@ -208,7 +208,7 @@ To specify markdown  text start the input with "%% md" -
 
 
 <a name="fetch"></a>
-:heading 5.15.7 <label>Fetch Input</label>
+:heading 5.16.7 <label>Fetch Input</label>
 
 The fetch command allow you to import javascript, css or html files
 
@@ -234,7 +234,7 @@ text: somevar=files/file.txt
 
 
 <a name="sh"></a>
-:heading 5.15.8 <label>Shell Input</label>
+:heading 5.16.8 <label>Shell Input</label>
 
 To specify shell text start the input with "%% sh" - 
 <pre>
@@ -295,7 +295,7 @@ cd /;pwd;ls;cd;pwd
 
 
 <a name="js"></a>
-:heading 5.15.9 <label>Javascript Input</label>
+:heading 5.16.9 <label>Javascript Input</label>
 
 To specify javascript start the input with "%% js" - 
 <pre>
@@ -382,7 +382,7 @@ state.wiki(":title {<noop>{name}}", root);
 
 
 <a name="py"></a>
-:heading 5.15.10 <label>Python Input</label>
+:heading 5.16.10 <label>Python Input</label>
 
 The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
 To specify python start the input with "%% py" - 
@@ -394,7 +394,7 @@ print "hello world"
 
 
 <a name="plugin"></a>
-:heading 5.15.11 <label>Defining new languages</label>
+:heading 5.16.11 <label>Defining new languages</label>
 
 The <i>plugin</i> chunk type allows you to define new languages.
 This follows the <a href="https://iodide-project.github.io/docs/language_plugins/">Iodide Plugins</a> model.
@@ -412,7 +412,7 @@ This follows the <a href="https://iodide-project.github.io/docs/language_plugins
 
 
 <a name="running"></a>
-:heading 5.15.12 <label>Running a notebook</label>
+:heading 5.16.12 <label>Running a notebook</label>
 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
@@ -421,11 +421,11 @@ command in the notebook menu.
 
 
 <a name="commands"></a>
-:heading 5.15.13 <label>Notebook Menu Commands</label>
+:heading 5.16.13 <label>Notebook Menu Commands</label>
 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/notebookmenu.png?version=340"><img  src="images/notebookmenu.png?version=340"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image2"></a><div><a href="images/notebookmenu.png?version=795"><img  src="images/notebookmenu.png?version=795"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div></div>
 
 <ul>
 <li> Cell name: Name the current cell. The name is shown in the header (see below)
@@ -451,7 +451,7 @@ with just the notebook output saved
 
 
 <a name="macros"></a>
-:heading 5.15.14 <label>Macros</label>
+:heading 5.16.14 <label>Macros</label>
 
 Cell values can be used as macros in other cells. There are 2 ways of doing this. 
 First, you can set the name of a cell (through the popup menu) to be some macro name, e.g., the_value.
