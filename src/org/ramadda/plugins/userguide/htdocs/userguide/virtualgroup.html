@@ -44,7 +44,7 @@ the [https://ramadda.org/repository/entry/show?entryid=a86d071a-f098-4354-839f-1
 :heading The Basics
 When editing a Virtual Group there is a list of Entry IDs. This can hold individual entry IDs or aliases, one per line.
 Comment out a line with "#".
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual1.png?version=444"><img  src="images/virtual1.png?version=444"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual1.png?version=444" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual1.png?version=240"><img  src="images/virtual1.png?version=240"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual1.png?version=240" ></a></div></div>
 
 One can also include the children of another entry with:
 +pre
@@ -55,13 +55,12 @@ children:&lt;other entry id&gt;
 :heading Adding Search URLs
 The line may be a search URL for a particular entry type. To use this:
 <ul>
-  <li> Go to the search form,
-    e.g.  for Archive Books
+  <li> Go to the search form,    e.g.  for Archive Books
     <a target=_other href=https://ramadda.org/repository/search/type/type_archive_book>https://ramadda.org/repository/search/type/type_archive_book</a>
   <li> Perform your search. Optionally adjust the "# Records" to the desired number
   <li> At the bottom of the search page press the Copy URL button:
     <span class="ramadda-search-link ramadda-clickable ui-button ui-corner-all ui-widget" id="copy1738847497002" data-copy="/repository/search/do?forsearch=true&amp;type=type_archive_book&amp;provider=this&amp;orderby=name&amp;ascending=true&amp;max=100&amp;skip=0" role="button"><span><i class="fas fa-clipboard"></i></span></span>
-  <li> Go to the Edit page of the Virtual entry and paste the URL into the list of entry IDS, e.g.:
+  <li> Go to the Edit page of the Virtual Group Entry and paste the URL into the list of entry IDS, e.g.:
 <pre>
 /repository/search/do?forsearch=true&type=type_archive_book&provider=this&orderby=name&ascending=true&max=100&skip=0
 </pre>
@@ -69,11 +68,9 @@ The line may be a search URL for a particular entry type. To use this:
    
 
 :heading Specifying Search Criteria
-The Entry IDs can also contain search criteria.
+The Entry IDs can also explicitly contain  search criteria.
 The parameters of the search are specified one per line and the search is evaluated when seeing the term "search" on
-a single line.
-
-For example, below is the specification  to search for any entry with the text "foobar":
+a single line. For example, below is the specification  to search for any entry with the text "foobar":
 
 +pre
 search.text=foobar
@@ -134,7 +131,7 @@ using the first 42 entries. The entries with IDs some_entry_id and some_other_en
 are being excluded.
 
 +pre
-search.group=2705cd9a-3d51-41be-86eb-c624506093ea| 5f2234d6-6332-441f-8bab-0076a8cc4d95
+search.group=2705cd9a-3d51-41be-86eb-c624506093ea|5f2234d6-6332-441f-8bab-0076a8cc4d95
 search.max=42
 search.orderby=createdate
 search.ascending=false
@@ -147,6 +144,28 @@ Any entries can be excluded with:
 not:some_entry_id
 not:some_other_entry_id
 -pre
+
+
+For the example showing the Latest entries under RAMADDA's
+[https://ramadda.org/repository/a/examples Example page]
+we use a  [https://ramadda.org/repository/entry/show?entryid=a86d071a-f098-4354-839f-1f58e2656854 Virtual Group entry]
+with the following search criteria (with comments):
++pre
+#search for children under each of these other entries.
+#These are the main Examples entries - Charts, IMDV Maps, Maps, Science Data, etc
+search.group=52644ac1-f6d6-45ea-88af-b5d2ec75742e|1012d4bb-5e57-460a-95f5-07c997bd04e8|3ebcb4f4-fa4d-4fb3-9ede-d42ec7e0aa9d | eb4102f8-720f-4ef3-9211-0ce5940da04d|b36bb6fc-b2c4-4d12-8c31-1f4dcff6881e|1d0fa3f5-407e-4a39-a3da-9a5ed7e1e687| ...
+#Only show at most 42
+search.max=42
+#Specify the search order to get the most recently created
+search.orderby=createdate
+search.ascending=false
+#apply the search
+search
+#exclude a couple of entries
+not:53f411f7-9390-4afc-9cb9-e7313030498b
+not:4624f63d-cd71-43e8-a558-83835c6b5541
+-pre
+
 
 
 
@@ -166,7 +185,7 @@ remote:https://sdn.ramadda.org/repository/a/aihec
 To do a search for a particular type on a remote RAMADDA go to that RAMADDA and do the entry type based search,
 e.g. for "CR1000 Data Logger" entries. Specify any search criteria, e.g. order by Create Data and get at most 5.
 Then open up the More... and copy the RAMADDA XML Export link:
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual2.png?version=444"><img  src="images/virtual2.png?version=444"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual2.png?version=444" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual2.png?version=240"><img  src="images/virtual2.png?version=240"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual2.png?version=240" ></a></div></div>
 
 Now go to your Virtual Group entry and enter the link on a line with the prefix "remote:search:", e.g.:
 +pre
@@ -174,7 +193,7 @@ remote:search:https://ramadda.org/repository/search/type/type_point_cr1000?datad
 -pre
 
 If you want to do a regular search (i.e., through the default Search form) go to that remote RAMADDA and enter your search, e.g. for "foobar":
-<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual3.png?version=444"><img  src="images/virtual3.png?version=444"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual3.png?version=444" ></a></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><div><a href="images/virtual3.png?version=240"><img  src="images/virtual3.png?version=240"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='display:none;'  alt="images/virtual3.png?version=240" ></a></div></div>
 
 Now, at the bottom of the form you can copy the full search link with the <i class="fas fa-clipboard"></i> link
 or view the full search link in your browser then copy the URL with the <i class="fas fa-link"></i> link.
