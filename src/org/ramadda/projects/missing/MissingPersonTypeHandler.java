@@ -162,8 +162,6 @@ public class MissingPersonTypeHandler extends ExtensibleGroupTypeHandler {
 	if(forSearch) {
 	    String line =  HU.leftRight(sb.toString(),image);
 	    line+="\n</div>";
-	    System.err.println(line);
-	    System.exit(0);
 	    return line;
 	} else {
 	    blocks.append("</div>");
