@@ -446,8 +446,7 @@ public class PageHandler extends RepositoryManager {
         Entry        currentEntry = getSessionManager().getLastEntry(request);
         HtmlTemplate parentTemplate = getTemplate(request, currentEntry);
 	if(parentTemplate==null) {
-	    System.err.println("GACK: "+request);
-	    System.exit(0);
+	    getLogManager().logError("Could not find page template:" + request);
 	}
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
             if ( !parentTemplate.getTemplateProperty("mobile", false)) {

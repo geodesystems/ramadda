@@ -322,7 +322,17 @@ var Utils =  {
 	    }
 
 	    link.click(()=>{
+		let prefix = $(this).attr('data-copy-prefix');
+		let suffix = $(this).attr('data-copy-suffix');		
 		let text = $(this).attr('data-copy')??$(this).html();
+		if(prefix) {
+		    prefix = prefix.replace(/\\n/g,'\n');
+		    text =prefix+text;
+		}
+		if(suffix) {
+		    suffix = suffix.replace(/\\n/g,'\n');
+		    text =text+suffix;
+		}		
 		text = text.replace(/<ramadda-copy-link.*<\/ramadda-copy-link.*>/,'');
 		if(opts.removeTags) {
 		    text = text.replace(/<br>/g,'\n').replace(/<p>/g,'\n\n').replace(/<[^>]+>/g,'');

@@ -1027,7 +1027,7 @@ public class GeoJson extends JsonUtil {
 		obj = command.apply(obj);
 	    }
 	}
-	System.exit(0);
+	Utils.exitTest(0);
     }
 
 

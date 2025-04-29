@@ -1211,7 +1211,7 @@ public class JsonUtil {
 	for(int i=0;i<results.size();i++) {
 	    System.out.print(Utils.columnsToString(results.get(i),",",true));
 	}
-	System.exit(0);
+	Utils.exitTest(0);
 	**/
     }
 

@@ -944,6 +944,9 @@ public class Admin extends RepositoryManager {
 
 
     private Result processShutdown(Request request) throws Exception {
+	if ( !request.isAdmin()) {
+	    return null;
+	}
         if ( !getRepository().getShutdownEnabled()) {
             throw new IllegalStateException("Shutdown not enabled");
         }

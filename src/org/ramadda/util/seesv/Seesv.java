@@ -5926,12 +5926,12 @@ public class Seesv implements SeesvCommands {
 	    seesv.run(null);
 	} catch(SeesvException cexc) {
 	    System.err.println(cexc.getFullMessage());
-	    System.exit(1);
+	    Utils.exitTest(1);
 	} catch(Exception exc) {
 	    Throwable inner = LogUtil.getInnerException(exc);
 	    System.err.println(exc.getMessage());
 	    inner.printStackTrace();
-	    System.exit(1);
+	    Utils.exitTest(1);
 	}
 	Utils.exitTest(0);
     }

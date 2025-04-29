@@ -895,9 +895,9 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.hasMetadata('type','opt value1','opt value2')</span>\n" +
 		    "<span>entry.findMetadata('type','optional value1','opt v2')</span>\n" +
 		    "<span>entry.listMetadata('type','match value')</span>\n" +
-		    "<span>entry.addMetadata('type','value1')</span>\n" +
-		    "<span>entry.deleteMetadata(list of object)</span>\n" +		    		    
-		    "<span>entry.changeMetadata('type','pattern','with')</span>\n" +		    		    
+		    "<span>entry.addMetadata('type','value1','value 2')</span>\n" +
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.changeMetadata(metadataObject,'pattern','with')</span>\n" +		    		    
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.deleteMetadata(metadataObject)</span>\n" +		    		    
 		    "</div>";
 
 		String image = 		    divOpen +
@@ -1339,14 +1339,22 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
-	public void deleteMetadata(Object obj) throws Exception {
+	private List<Metadata> getMetadata(Object obj) throws Exception {
 	    List<Metadata> list=null;
-	    if(obj instanceof Metadata) {
+	    if(obj instanceof String) {
+		list = repository.getMetadataManager().findMetadata(request,  entry,(String)obj,false);
+	    } else  if(obj instanceof Metadata) {
 		list = new ArrayList<Metadata>();
 		list.add((Metadata)obj);
 	    } else {
 		list=(List<Metadata>)obj;
 	    }
+	    return list;
+	}
+
+
+	public void deleteMetadata(Object obj) throws Exception {
+	    List<Metadata> list= getMetadata(obj);
 	    if(list.size()==0) return;
 	    if(!confirmed) {
 		int cnt = 1;
@@ -1496,14 +1504,15 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
-	public void changeMetadata(String type,String from, String to) throws Exception {
-	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
+	public void changeMetadata(Object object,String from, String to) throws Exception {
+	    List<Metadata> list =  getMetadata(object);
 	    if(list==null || list.size()==0) return;
 	    for(Metadata mtd:list) {
 		String v= mtd.getAttr1();
 		String newV = v.replaceAll(from,to);
 		if(!v.equals(newV)) {
 		    changed = true;
+		    entry.setMetadataChanged(true);
 		    mtd.setAttr1(newV);
 		    ctx.print("Entry:" + entry.getName() +" changed: " + v +" to: " + newV);
 		}

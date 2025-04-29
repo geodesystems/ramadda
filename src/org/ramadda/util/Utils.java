@@ -4762,12 +4762,12 @@ public class Utils extends IO {
 	    for(String s: args) {
 		System.err.println(makeLabel(s));
 	    }
-	    System.exit(0);
+            exitTest(0);
 	}
 
         if (true) {
 	    System.err.println("S:" + splitMacros("hello there ${how foo=bar} i am ${fine}"));
-	    System.exit(0);
+            exitTest(0);
 	}
 
         if (true) {

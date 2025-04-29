@@ -147,7 +147,7 @@ public class Test {
 		err  = inner;
 	    }
 	    System.out.println("read error:" + err);
-	    if(suddenDeath) System.exit(1);
+	    if(suddenDeath) Utils.exitTest(1);
 
 	    return true;
 	} else if(print) {
@@ -190,7 +190,7 @@ public class Test {
 	for(int i=0;i<args.length;i++) {
 	    if(args[i].equals("-help")) {
 		System.out.println("usage: -threads <# threads> -loops <#loops> -rando <some random URL> -t <time threshold> -verbose -quiet -noecho -suddendeath -skip <skip N urls> -sleep <pause after each call (ms)> <file> or <url>");
-		System.exit(0);
+		Utils.exitTest(0);
 	    }
 
 	    if(args[i].equals("-t")) {
@@ -265,7 +265,7 @@ public class Test {
 	    Misc.sleep(500);
 	}
 	System.out.println("Finished");
-	System.exit(0);
+	Utils.exitTest(0);
     }
 
 

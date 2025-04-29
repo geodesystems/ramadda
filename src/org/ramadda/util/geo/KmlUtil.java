@@ -1494,7 +1494,7 @@ public class KmlUtil {
 
         }
         System.out.println("Util::placemarkEnd");
-	System.exit(0);
+	Utils.exitTest(0);
     }
 
 
