@@ -1377,6 +1377,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return checkHuman;
     }
 
+
+    private TTLCache<String, Integer> humanIPs =
+	new TTLCache<String,Integer>(Utils.minutesToMillis(30));
+
+
     public Result checkForHuman(Request request) throws Exception  {
 	if(!checkHuman) {
 	    //	    System.err.println("human: not enabled");
@@ -1400,6 +1405,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return null;
 	}
 
+	Integer count = humanIPs.get(request.getIp());
+	if(count==null) {
+	    count = new Integer(0);
+	}
+	count = new Integer(count.intValue()+1);
+	humanIPs.put(request.getIp(),count);
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
 	String message = getProperty(PROP_ISHUMAN_MESSAGE,"");
@@ -1420,8 +1431,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
 	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
 	getPageHandler().sectionClose(request,sb);
-	getLogManager().logInfoAndPrint("Human check: checking for human:" + " IP:" + request.getIp() +" " + request.getUrlArgs());
-	return new Result("Prove you are a human",sb);
+	getLogManager().logInfoAndPrint("Human check: checking for human:" + " IP:" + request.getIp() +" count: " +count+" args:"+ request.getUrlArgs());
+	Result result =  new Result("Prove you are a human",sb);
+	if(count>3)
+	    result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+	return result;
     }
 
 
