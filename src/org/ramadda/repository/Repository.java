@@ -1400,8 +1400,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("Human check: verified is human:" + request.getIp());
-	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue()));
+	    getLogManager().logInfoAndPrint("Human check: verified:" + request.getIp());
+	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false));
 	    return null;
 	}
 
@@ -1434,8 +1434,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
 	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
 	getPageHandler().sectionClose(request,sb);
-	String logMessage = "Human check: checking for human:" + " IP:" + request.getIp() +" count: " +count+
-	    " user agent:" + request.getUserAgent("");
+	String logMessage = "Human check: checking:" + " IP:" + request.getIp() +" count: " +count;
 	String entryId = request.getString(ARG_ENTRYID,null);
 	if(entryId!=null) logMessage+=" entry:" + entryId;
 	getLogManager().logInfoAndPrint(logMessage);
@@ -3376,17 +3375,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 	request.addCookie(getSessionManager().getSessionCookieName(),
-			  makeCookie(request, path,sessionId));
+			  makeCookie(request, path,sessionId,true));
 
 
     }
 
-    public String makeCookie(Request request, String path,String id) {
-	return  id + "; path=" + path + "; expires="
+    public String makeCookie(Request request, String path,String id, boolean strict) {
+	String cookie =  id + "; path=" + path + "; expires="
 	    + cookieExpirationDate
 	    + (isSSLEnabled(request)
 	       ? "; secure"
-	       : "") + "; HttpOnly;SameSite=Strict";
+	       : "");
+	if(strict) cookie+= "; HttpOnly;SameSite=Strict";
+	return cookie;
     }
 
 

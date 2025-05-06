@@ -2633,7 +2633,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     public Result processEntrySearch(Request request) throws Exception {
 	//if it isn't a remote search then check for humans
 	if(!Misc.equals(request.getString(ARG_OUTPUT,""), XmlOutputHandler.OUTPUT_XML)) {
-	    System.err.println("search check:" +request.getString(ARG_OUTPUT,"") +" xml:" + XmlOutputHandler.OUTPUT_XML);
+	    //	    getLogManager().logInfoAndPrint("search check:" +request.getString(ARG_OUTPUT,"") +" xml:" + XmlOutputHandler.OUTPUT_XML);
 	    Result humanResult = getRepository().checkForHuman(request);
 	    if(humanResult!=null) {
 		return humanResult;
