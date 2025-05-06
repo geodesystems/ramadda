@@ -1431,7 +1431,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
 	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
 	getPageHandler().sectionClose(request,sb);
-	getLogManager().logInfoAndPrint("Human check: checking for human:" + " IP:" + request.getIp() +" count: " +count+" args:"+ request.getUrlArgs());
+	getLogManager().logInfoAndPrint("Human check: checking for human:" + " IP:" + request.getIp() +" count: " +count+
+					" user agent:" + request.getUserAgent("") +
+					" args:"+ request.getUrlArgs());
 	Result result =  new Result("Prove you are a human",sb);
 	if(count>3)
 	    result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
