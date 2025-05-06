@@ -2631,12 +2631,21 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
     public Result processEntrySearch(Request request) throws Exception {
-	//	System.err.println(request);
+	//if it isn't a remote search then check for humans
+	if(!Misc.equals(request.getString(ARG_OUTPUT,""), XmlOutputHandler.OUTPUT_XML)) {
+	    System.err.println("search check:" +request.getString(ARG_OUTPUT,"") +" xml:" + XmlOutputHandler.OUTPUT_XML);
+	    Result humanResult = getRepository().checkForHuman(request);
+	    if(humanResult!=null) {
+		return humanResult;
+	    }
+	}
+
 
         if (request.get(ARG_WAIT, false)) {
             return getRepository().getMonitorManager().processEntryListen(
 									  request);
         }
+	System.err.println("search:" + request);
         if (request.defined("submit_type.x")
 	    || request.defined(ARG_SEARCH_SUBSET)) {
             request.remove(ARG_OUTPUT);
@@ -2788,7 +2797,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                                  final boolean[] running,
                                  final int[] runnableCnt)
 	throws Exception {
-
         final Request request = theRequest.cloneMe();
         request.put(ARG_OUTPUT, XmlOutputHandler.OUTPUT_XML);
         final Entry parentEntry =

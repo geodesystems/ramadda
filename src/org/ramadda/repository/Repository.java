@@ -1405,12 +1405,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return null;
 	}
 
-	Integer count = humanIPs.get(request.getIp());
-	if(count==null) {
-	    count = new Integer(0);
+	Integer count = null;
+	synchronized(humanIPs) {
+	    count = humanIPs.get(request.getIp());
+	    if(count==null) {
+		count = new Integer(0);
+	    }
+	    count = new Integer(count.intValue()+1);
+	    humanIPs.put(request.getIp(),count);
 	}
-	count = new Integer(count.intValue()+1);
-	humanIPs.put(request.getIp(),count);
 	StringBuilder sb = new StringBuilder();
 	getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
 	String message = getProperty(PROP_ISHUMAN_MESSAGE,"");
@@ -1437,9 +1440,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(entryId!=null) logMessage+=" entry:" + entryId;
 	getLogManager().logInfoAndPrint(logMessage);
 	Result result =  new Result("Prove you are a human",sb);
+	result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
 	if(count>5) {
 	    Misc.sleepSeconds(5);
-	    result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
 	}
 	return result;
     }
@@ -3194,13 +3197,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         boolean debugMemory = false;
+        double mem1=0;
         if (debugMemory) {
             Runtime.getRuntime().gc();
+	    mem1 = Utils.getUsedMemory();
         }
-        double mem1 = Utils.getUsedMemory();
+
         if (debug) {
-            getLogManager().debug("user:" + request.getUser() + " -- "
-                                  + request.toString());
+            getLogManager().debug("user:" + request.getUser() + " -- " + request.toString());
         }
 
         //        logInfo("request:" + request);
