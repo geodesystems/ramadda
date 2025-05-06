@@ -5,17 +5,13 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
 import org.ramadda.util.Utils;
-
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
-
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -38,7 +34,6 @@ public class User {
     public static final String STATUS_INACTIVE = "inactive";
 
     public static Date DEFAULT_DATE;
-
 
     /** _more_ */
     public static final String PROP_CAN_CHANGE_PASSWORD =
@@ -82,10 +77,8 @@ public class User {
     /** _more_ */
     private List<FavoriteEntry> favorites;
 
-
     /** _more_ */
     private String language = "";
-
 
     /** _more_ */
     private String template;
@@ -108,7 +101,6 @@ public class User {
         this.anonymous = true;
         this.name      = UserManager.USER_ANONYMOUS;
     }
-
 
     /**
      * _more_
@@ -140,7 +132,6 @@ public class User {
         this.admin = admin;
     }
 
-
     /**
      * _more_
      *
@@ -152,8 +143,6 @@ public class User {
         this(id, admin);
         this.name = name;
     }
-
-
 
     public User(String id,
 		String status,
@@ -206,7 +195,6 @@ public class User {
 
         return null;
     }
-
 
     /**
      * _more_
@@ -261,7 +249,6 @@ public class User {
 	    putProperty(PROP_AVATAR,s);
     }            
 
-
     /**
      * _more_
      *
@@ -290,8 +277,6 @@ public class User {
 
         return Misc.equals(this.id, that.id);
     }
-
-
 
     /**
      * Set the Id property.
@@ -334,9 +319,6 @@ public class User {
 	return status;
     }
 
-
-
-
     /**
      * _more_
      *
@@ -350,7 +332,6 @@ public class User {
         return name;
 
     }
-
 
     /**
      * Set the Name property.
@@ -398,7 +379,6 @@ public class User {
         anonymous = value;
     }
 
-
     /**
      * Get the Anonymous property.
      *
@@ -412,8 +392,6 @@ public class User {
         return anonymous;
     }
 
-
-
     /**
      * _more_
      *
@@ -422,7 +400,6 @@ public class User {
     public String toString() {
         return "" + id;
     }
-
 
     /**
      * Set the Email property.
@@ -480,8 +457,6 @@ public class User {
     public String getCountry () {
 	return country;
     }
-
-
 
     /**
      * Set the Question property.
@@ -547,10 +522,6 @@ public class User {
         return description;
     }
 
-
-
-
-
     /**
      * Set the Password property.
      *
@@ -568,7 +539,6 @@ public class User {
     public String getPassword() {
         return getHashedPassword();
     }
-
 
     /**
      * Set the HashedPassword property.
@@ -630,7 +600,6 @@ public class User {
 	}
 	return roleText;
     }
-
 
     /**
      * _more_
@@ -705,7 +674,6 @@ public class User {
         return false;
     }
 
-
     /**
      * _more_
      *
@@ -738,7 +706,6 @@ public class User {
     public String getLanguage() {
         return language;
     }
-
 
     /**
      *  Set the Template property.
@@ -780,7 +747,6 @@ public class User {
     public boolean canEditFavorites() {
         return !(getAnonymous() || getIsGuest());
     }
-
 
     /**
      * _more_
@@ -878,9 +844,6 @@ public class User {
 	}
 	return accountCreationDate;
     }
-
-
-
 
     /**
      *  Set the CanChangePassword property.

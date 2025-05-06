@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
-
 
 /**
  * Class AccessException _more_
@@ -20,7 +18,6 @@ public class AccessException extends RuntimeException {
 
     /** _more_ */
     Request request;
-
 
     /**
      * _more_
@@ -50,8 +47,5 @@ public class AccessException extends RuntimeException {
     public Request getRequest() {
         return this.request;
     }
-
-
-
 
 }

@@ -37,8 +37,6 @@ import java.awt.Font;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-
-
 /**
  * Handles auth stuff
  *
@@ -55,7 +53,6 @@ public class AuthManager extends RepositoryManager {
     private boolean doCaptcha;
     private boolean doPassword;
 
-
     /** store the number of bad captcha attempts for each user. clear every hour */
     private TTLCache<String,Integer> badCaptchaCount =
 	new TTLCache<String,Integer>(60*60*1000);
@@ -66,7 +63,6 @@ public class AuthManager extends RepositoryManager {
     private static Object HASH_MUTEX = new Object();
 
     private Properties captchaMap;
-
 
     /**
      * ctor
@@ -82,8 +78,6 @@ public class AuthManager extends RepositoryManager {
     private static final int IMAGE_WIDTH = 140;
     private static final int IMAGE_HEIGHT =70;
     private static final int TEXTSIZE=24;
-
-
 
     public boolean isRecaptchaEnabled() {
 	String siteKey = getRepository().getProperty(PROP_RECAPTCHA_SITEKEY,null);
@@ -147,7 +141,6 @@ public class AuthManager extends RepositoryManager {
 	return true;
     }
 
-
     /**
      *  Convert the sessionId into a authorization token that is used to verify form
      *  submissions, etc.
@@ -181,11 +174,9 @@ public class AuthManager extends RepositoryManager {
 	return RepositoryUtil.hashString(s);
     }
 
-
     public String getVerification(Request request)  {
 	return getVerification(request, null, false);
     }
-
 
     public String getVerification(Request request, String msg, boolean forcePassword,boolean...addRecaptcha) {
 	StringBuilder  sb = new StringBuilder();
@@ -202,7 +193,6 @@ public class AuthManager extends RepositoryManager {
 	addAuthToken(request, sb);
 	return sb.toString();
     }
-
 
     public void addAuthToken(Request request, Appendable sb,String ...extra) {	
         try {
@@ -232,7 +222,6 @@ public class AuthManager extends RepositoryManager {
             request.put(ARG_AUTHTOKEN, authToken);
         }
     }
-    
 
     /**
      * _more_
@@ -287,7 +276,6 @@ public class AuthManager extends RepositoryManager {
                 System.err.println("\tnot OK arg session id != session id");
             }
         }
-	
 
         //If we are publishing anonymously then don't look for a auth token
         if (request.get(ARG_ANONYMOUS, false) && request.isAnonymous()) {
@@ -303,7 +291,5 @@ public class AuthManager extends RepositoryManager {
 
         throw new IllegalArgumentException("Bad authentication token:" + authToken);
     }
-
-
 
 }

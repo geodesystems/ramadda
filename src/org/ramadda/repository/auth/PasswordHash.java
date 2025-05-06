@@ -5,13 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import java.math.BigInteger;
 
 import java.security.NoSuchAlgorithmException;
-
-
-
 
 /*
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
@@ -46,7 +42,6 @@ import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-
 
 /*
  * PBKDF2 salted password hashing.

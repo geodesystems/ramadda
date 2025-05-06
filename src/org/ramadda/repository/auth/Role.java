@@ -6,7 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 package org.ramadda.repository.auth;
 import org.ramadda.repository.Repository;
 
-
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
@@ -14,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  *
@@ -46,8 +44,6 @@ public class Role {
     /** _more_ */
     public static final Role ROLE_INHERIT = new Role("inherit");
 
-
-    
     /**  */
     boolean negated = false;
 
@@ -63,7 +59,6 @@ public class Role {
     String userRole;
 
     Date date;
-
 
     private static final SimpleDateFormat sdf1;
     private static final SimpleDateFormat sdf2;
@@ -153,11 +148,9 @@ public class Role {
         return roles;
     }
 
-
     public boolean isAdmin() {
 	return equals(ROLE_ADMIN);
     }
-
 
     /**
      *
@@ -171,11 +164,9 @@ public class Role {
         return r;
     }
 
-
     public String getUserRole() {
 	return userRole;
     }
-
 
     /**
      *
@@ -268,6 +259,5 @@ public class Role {
     public int hashCode() {
 	return role.hashCode();
     }
-
 
 }

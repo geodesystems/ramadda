@@ -5,13 +5,10 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
-
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Base implementation of the UserAuthenticator interface
@@ -29,7 +26,6 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
      */
     public UserAuthenticatorImpl() {}
 
-
     /**
      * _more_
      *
@@ -39,14 +35,12 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
         this.repository = repository;
     }
 
-
     /**
      * _more_
      *
      * @throws Exception _more_
      */
     public void initUsers() throws Exception {}
-
 
     /**
      * _more_
@@ -141,7 +135,6 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
                                           StringBuffer loginFormExtra,
                                           String userId, String password);
 
-
     /**
      * This is used to list out the roles for display in the access pages
      *
@@ -150,7 +143,6 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
     public List<String> getAllRoles() {
         return new ArrayList<String>();
     }
-
 
     /**
      * this can be used to list out all of the users and display them
@@ -162,8 +154,6 @@ public abstract class UserAuthenticatorImpl implements UserAuthenticator {
     public List<User> getAllUsers() {
         return new ArrayList<User>();
     }
-
-
 
     /**
      * This will be used to allow this authenticator to add options

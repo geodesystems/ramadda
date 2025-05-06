@@ -5,10 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Permission {
 
@@ -36,7 +34,6 @@ public class Permission {
 	//ACTION_TYPE1, ACTION_TYPE2
     };
 
-
     public static final String[] ACTION_NAMES = {
         "View", "File", "Export",
 	"Geographic",
@@ -45,7 +42,6 @@ public class Permission {
         "View Children", 
 	//"Type specific 1", "Type specific 2"
     };
-
 
     private String dataPolicyId;
     private String action;
@@ -67,9 +63,6 @@ public class Permission {
         this.dataPolicyId = dataPolicyId;
     }
 
-
-
-    
     public static boolean isValidActions(List actions) {
         for (int i = 0; i < actions.size(); i++) {
             if ( !isValidAction((String) actions.get(i))) {
@@ -80,8 +73,6 @@ public class Permission {
         return true;
     }
 
-
-    
     public static boolean isValidAction(String action) {
         for (int i = 0; i < ACTIONS.length; i++) {
             if (ACTIONS[i].equals(action)) {
@@ -96,46 +87,35 @@ public class Permission {
         return false;
     }
 
-    
     public String toString() {
         return "action:" + action + " roles:" + roles + " data policy:"
                + dataPolicyId;
     }
 
-
-    
     public void setDataPolicyId(String value) {
         dataPolicyId = value;
     }
 
-    
     public String getDataPolicyId() {
         return dataPolicyId;
     }
 
-
-
-    
     public void setAction(String value) {
         action = value;
     }
 
-    
     public String getAction() {
         return action;
     }
 
-    
     public String getLabel() {
         return action + " " + roles;
     }
 
-    
     public boolean isAction(String action) {
         return this.action.equals(action);
     }
 
-    
     public List<Role> getRoles() {
         return roles;
     }

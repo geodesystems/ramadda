@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.json.*;
 
 import org.ramadda.repository.*;
@@ -15,7 +14,6 @@ import org.ramadda.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  *
@@ -51,7 +49,6 @@ public class DataPolicy {
 
     /**  */
     public static final String FIELD_ROLES = "roles";
-
 
     /**  */
     private String mainUrl;
@@ -163,7 +160,6 @@ public class DataPolicy {
                 continue;
             }
 
-
             if (debug) {
                 System.err.println("\t\taction:" + action);
             }
@@ -186,7 +182,6 @@ public class DataPolicy {
     public String toString() {
         return id + ":" + name;
     }
-
 
     /**
      *  Set the Id property.
@@ -224,7 +219,6 @@ public class DataPolicy {
         return name;
     }
 
-
     /**
      *  Get the Citation property.
      *
@@ -242,8 +236,6 @@ public class DataPolicy {
     public List<License> getLicenses() {
         return licenses;
     }
-
-
 
     /**
      *  @return _more_
@@ -284,7 +276,6 @@ public class DataPolicy {
         return label;
     }
 
-
     /**
      * Set the Permissions property.
      *
@@ -310,9 +301,6 @@ public class DataPolicy {
 
         return permissions;
     }
-
-
-
 
     /**
      * Set the FromName property.
@@ -350,7 +338,6 @@ public class DataPolicy {
         return description;
     }
 
-
     /**
      * Set the MainUrl property.
      *
@@ -386,6 +373,5 @@ public class DataPolicy {
     public String getMyUrl() {
         return myUrl;
     }
-
 
 }

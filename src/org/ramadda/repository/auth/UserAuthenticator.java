@@ -5,12 +5,9 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
 
-
 import java.util.List;
-
 
 /**
  * UserAuthenticator _more_
@@ -38,7 +35,6 @@ public interface UserAuthenticator {
      */
     public User findUser(Repository repository, String userId);
 
-
     /**
      * this gets called when we want to autheticate the given user/password
      * return null if user/password is unknown or incorrect
@@ -55,8 +51,6 @@ public interface UserAuthenticator {
                                  StringBuffer loginFormExtra, String userId,
                                  String password);
 
-
-
     /**
      * This is used to list out the roles for display in the access pages
      *
@@ -72,8 +66,6 @@ public interface UserAuthenticator {
      * @return _more_
      */
     public List<User> getAllUsers();
-
-
 
     /**
      * This will be used to allow this authenticator to add options

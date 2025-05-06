@@ -5,9 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
-
 
 /**
  *
@@ -43,7 +41,6 @@ public class AuthorizationMethod {
     private AuthorizationMethod(String type) {
         this.type = type;
     }
-
 
     /**
      * _more_

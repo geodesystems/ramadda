@@ -10,7 +10,6 @@ import org.ramadda.util.Utils;
 import java.util.Date;
 import java.util.Hashtable;
 
-
 /**
  * Class UserSession _more_
  *
@@ -186,6 +185,5 @@ public class UserSession {
     public Date getLastActivity() {
         return lastActivity;
     }
-
 
 }

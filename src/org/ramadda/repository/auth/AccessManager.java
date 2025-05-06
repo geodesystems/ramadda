@@ -5,7 +5,6 @@
 
 package org.ramadda.repository.auth;
 
-
 import org.json.*;
 
 import org.ramadda.repository.*;
@@ -22,7 +21,6 @@ import org.ramadda.util.sql.Clause;
 import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
-
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -55,9 +53,6 @@ import java.util.TimeZone;
 import java.util.regex.*;
 import java.util.zip.*;
 
-
-
-
 /**
  *
  *
@@ -74,33 +69,25 @@ public class AccessManager extends RepositoryManager {
     public static final String ATTR_ROLE = "role";
     public static final String ATTR_DATAPOLICY = "datapolicy";    
 
-
-
-
     /** _more_ */
     public RequestUrl URL_ACCESS_FORM = new RequestUrl(getRepository(),
 						       "/access/form", "Permissions");
-
 
     /** _more_ */
     public RequestUrl URL_ACCESS_CHANGE = new RequestUrl(getRepository(),
 							 "/access/change");
 
-
     /** _more_ */
     private Object MUTEX_PERMISSIONS = new Object();
-
 
     /** _more_ */
     private TTLCache<String, Object[]> recentPermissions =
         new TTLCache<String, Object[]>(5 * 60 * 1000,
 				       "Access Manager Permissions");
 
-
     /** _more_ */
     public static final String PROP_STOPATFIRSTROLE =
         "ramadda.auth.stopatfirstrole";
-
 
     /**  */
     public static final String DATAPOLICY_PREFIX = "datapolicy:";
@@ -142,7 +129,6 @@ public class AccessManager extends RepositoryManager {
 
     public static boolean debugAll = false;
 
-
     /**
      * _more_
      *
@@ -164,7 +150,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-
     /**
      */
     public void updateLocalDataPolicies() {
@@ -179,10 +164,6 @@ public class AccessManager extends RepositoryManager {
 		}
 	    });
     }
-
-
-
-
 
     /**
      *
@@ -207,7 +188,6 @@ public class AccessManager extends RepositoryManager {
             Misc.sleepSeconds(60 * minutes);
         }
     }
-
 
     /**
      * @return _more_
@@ -346,8 +326,6 @@ public class AccessManager extends RepositoryManager {
 	    action.equals(Permission.ACTION_EXPORT);
     }
 
-
-
     public void applyEntryXml(Entry entry,  Element node) throws Exception {
         List<Permission> permissions = new ArrayList<Permission>();
 	for(Element permissionNode: (List<Element>) XmlUtil.findChildren(node,TAG_PERMISSION)) {
@@ -377,7 +355,6 @@ public class AccessManager extends RepositoryManager {
         insertPermissions(null, entry, permissions);
     }
 
-
     public void addEntryXml(Entry entry, Document doc, Element node) throws Exception {
 	Element permissionsNode = null;
 
@@ -389,7 +366,6 @@ public class AccessManager extends RepositoryManager {
 	    if(permissionsNode==null) {
 		permissionsNode= XmlUtil.create(doc, TAG_PERMISSIONS, node);
 	    }
-
 
 	    Element actionNode = XmlUtil.create(doc, TAG_PERMISSION, permissionsNode);
 
@@ -406,12 +382,10 @@ public class AccessManager extends RepositoryManager {
 	    for(Role role: roles) {
 		Element roleNode = XmlUtil.create(doc, TAG_ROLE, actionNode);
 		roleNode.setAttribute(ATTR_ROLE, role.getRole());
-		
+
 	    }
 	}
     }
-
-
 
     /**
      * _more_
@@ -427,7 +401,6 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-
     /**
      */
     @Override
@@ -436,7 +409,6 @@ public class AccessManager extends RepositoryManager {
         stopAtFirstRole = getRepository().getProperty(PROP_STOPATFIRSTROLE,  true);
         debugAction = getRepository().getProperty("ramadda.debugaction",   false);
     }
-
 
     /**
      * _more_
@@ -461,7 +433,6 @@ public class AccessManager extends RepositoryManager {
         mainEntry.setPermissions(permissions);
         insertPermissions(null, mainEntry, permissions);
     }
-
 
     /**
      * _more_
@@ -553,7 +524,6 @@ public class AccessManager extends RepositoryManager {
 
                 return false;
 
-
             }
         }
 
@@ -561,12 +531,6 @@ public class AccessManager extends RepositoryManager {
 						       "Could not find entry or folder");
         //        return false;
     }
-
-
-
-
-
-
 
     /**
      * _more_
@@ -583,7 +547,6 @@ public class AccessManager extends RepositoryManager {
 	throws Exception {
         return canDoAction(request, entry, action, false);
     }
-
 
     public boolean canDoAction(Request request, Entry entry, String action,
                                boolean log)
@@ -602,7 +565,6 @@ public class AccessManager extends RepositoryManager {
                 return false;
             }
         }
-
 
         String requestIp = null;
         User   user      = null;
@@ -660,14 +622,11 @@ public class AccessManager extends RepositoryManager {
             }
         }
 
-
-
         if (user == null) {
             logInfo("Upload:canDoAction: user is null");
 	    if(debugFail) System.err.println("** AccessManager: no user specified:" + entry);
             return false;
         }
-
 
         //The admin can do anything
         if (user.getAdmin()) {
@@ -677,7 +636,6 @@ public class AccessManager extends RepositoryManager {
 	    if(debugFail) System.err.println("AccessManager: ok: user is admin");
             return true;
         }
-
 
         //If user is owner then they can do anything
         if ( !user.getAnonymous() && Misc.equals(user, entry.getUser())) {
@@ -723,7 +681,7 @@ public class AccessManager extends RepositoryManager {
 	}
 
 	if(debug) System.err.println("\tresult:" + result);
-	    
+
         if (debug) {
             //      System.err.println("CANDO:" + entry +" " + result);
             //      System.err.println(Utils.getStack(10));
@@ -735,7 +693,6 @@ public class AccessManager extends RepositoryManager {
         recentPermissions.put(key, new Object[] { now, Boolean.valueOf(result) });
 
         return result;
-
 
     }
 
@@ -758,8 +715,6 @@ public class AccessManager extends RepositoryManager {
         return false;
 
     }
-
-
 
     /**
      * _more_
@@ -854,7 +809,6 @@ public class AccessManager extends RepositoryManager {
             }
         }
 
-
         //LOOK: make sure we pass in false here which says do not check for access control
         Entry parent = getEntryManager().getParent(request, entry, false);
         if (parent != null) {
@@ -863,14 +817,11 @@ public class AccessManager extends RepositoryManager {
 	//A hack so the default for accessing GEO is true
 	if(action.equals(Permission.ACTION_GEO))  return true;
 
-
-
 	if(entry.isFile() && getStorageManager().isProcessFile(entry.getFile())) {
 	    if(debug)
 		System.err.println("isProcessFile:" + entry);
 	    return true;
 	}
-
 
 	if(entry.getTypeHandler().equals(getRepository().getProcessFileTypeHandler())) {
 	    if(debug)
@@ -884,11 +835,6 @@ public class AccessManager extends RepositoryManager {
 
         return false;
     }
-
-
-
-
-
 
     /**
      * _more_
@@ -916,7 +862,6 @@ public class AccessManager extends RepositoryManager {
 
         return roles;
     }
-
 
     /**
      * _more_
@@ -961,7 +906,6 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_VIEW, false);
     }
 
-
     /**
      * _more_
      *
@@ -990,7 +934,6 @@ public class AccessManager extends RepositoryManager {
             return false;
         }
 
-
         //        System.err.println ("type: " + entry.getTypeHandler().getClass().getName());
         if ( !entry.getTypeHandler().canDownload(request, entry)) {
 	    if(debug) System.err.println("\tcanDownload: typeHandler disallows:" +
@@ -1008,8 +951,6 @@ public class AccessManager extends RepositoryManager {
 	return can;
     }
 
-
-
     /**
      * _more_
      *
@@ -1020,7 +961,6 @@ public class AccessManager extends RepositoryManager {
             logInfo(msg);
         }
     }
-
 
     /**
      * _more_
@@ -1063,7 +1003,6 @@ public class AccessManager extends RepositoryManager {
         long t2 = System.currentTimeMillis();
         //        System.err.println ("time to filter:" + (t2-t1));
 
-
         Entry parent = entry.getParentEntry();
         if ((parent != null)
 	    && !canDoAction(request, parent,
@@ -1078,10 +1017,8 @@ public class AccessManager extends RepositoryManager {
             }
         }
 
-
         return entry;
     }
-
 
     /**
      * _more_
@@ -1107,8 +1044,6 @@ public class AccessManager extends RepositoryManager {
         return filtered;
     }
 
-
-
     /**
      * _more_
      *
@@ -1124,7 +1059,6 @@ public class AccessManager extends RepositoryManager {
 	if(entry!=null && getEntryManager().isSynthEntry(entry.getId())) return false;
         return canDoAction(request, entry, Permission.ACTION_EDIT);
     }
-
 
     public boolean canDoGeo(Request request, Entry entry)  {
         //        if(entry.getIsLocalFile()) return false;
@@ -1185,7 +1119,6 @@ public class AccessManager extends RepositoryManager {
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_EXPORT);
     }
-
 
     /**
      *
@@ -1265,7 +1198,6 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_VIEWCHILDREN);
     }
 
-
     /**
      * _more_
      *
@@ -1281,7 +1213,6 @@ public class AccessManager extends RepositoryManager {
         return canDoAction(request, entry, Permission.ACTION_TYPE1);
     }
 
-
     /**
      * _more_
      *
@@ -1296,8 +1227,6 @@ public class AccessManager extends RepositoryManager {
 	throws Exception {
         return canDoAction(request, entry, Permission.ACTION_TYPE2);
     }
-
-
 
     /**
      * _more_
@@ -1373,7 +1302,6 @@ public class AccessManager extends RepositoryManager {
 					      entry.getParentEntryId()), sb,!even);
     }
 
-
     /**
      * _more_
      *
@@ -1406,7 +1334,6 @@ public class AccessManager extends RepositoryManager {
         entry.setPermissions(permissions);
     }
 
-
     /**
      * _more_
      *
@@ -1427,7 +1354,6 @@ public class AccessManager extends RepositoryManager {
 
         return false;
     }
-
 
     /**
      *
@@ -1525,8 +1451,6 @@ public class AccessManager extends RepositoryManager {
         return getUpdatedPermissions(entry, permissions);
     }
 
-
-
     /**
      *
      * @param entry _more_
@@ -1606,7 +1530,6 @@ public class AccessManager extends RepositoryManager {
         return dataPoliciesMap.get(id);
     }
 
-
     /**
      *
      * @param request _more_
@@ -1628,8 +1551,6 @@ public class AccessManager extends RepositoryManager {
 
         return new Result("Data Policies", sb);
     }
-
-
 
     /**
      *
@@ -1698,7 +1619,6 @@ public class AccessManager extends RepositoryManager {
                 buff.append(HU.makeShowHideBlock("Licenses", tmp, true));
             }
 
-
             //If they are logged then show the access
             if (includePermissions && !request.isAnonymous()) {
                 if (dataPolicy.getPermissions().size() > 0) {
@@ -1741,7 +1661,6 @@ public class AccessManager extends RepositoryManager {
         }
         sb.append("</ul>");
     }
-
 
     public void getCurrentAccess(Request request, Entry entry,StringBuilder currentAccess)
 	throws Exception {
@@ -1812,7 +1731,7 @@ public class AccessManager extends RepositoryManager {
         if (debug) {
             System.err.println("dp map:" + dpMap);
         }
-	
+
 	HU.center(sb,getWikiManager().wikifyEntry(request, entry,"{{access_status}}"));
         request.formPostWithAuthToken(sb, URL_ACCESS_CHANGE, "");
         sb.append(HU.hidden(ARG_ENTRYID, entry.getId()));
@@ -1928,8 +1847,6 @@ public class AccessManager extends RepositoryManager {
         HU.importJS(sb, getRepository().getUrlBase() + "/accessform.js");
         HU.script(sb, "Ramadda.initAccessForm();");
 
-
-
         //        sb.append("</td><td>&nbsp;&nbsp;&nbsp;</td><td>");
         //        sb.append("All Roles:<br>");
         //        sb.append(StringUtil.join("<br>",getUserManager().getStandardRoles()));
@@ -1941,7 +1858,6 @@ public class AccessManager extends RepositoryManager {
 
         return getEntryManager().makeEntryEditResult(request, entry,
 						     msg("Edit Permissions"), sb);
-
 
     }
 
@@ -2061,7 +1977,5 @@ public class AccessManager extends RepositoryManager {
             return false;
         }
     }
-
-
 
 }

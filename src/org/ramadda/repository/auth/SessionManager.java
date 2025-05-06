@@ -5,18 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.repository.auth;
 
-
 import org.ramadda.repository.*;
-
 
 import org.ramadda.repository.database.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
 
-
 import org.ramadda.util.sql.Clause;
-
 
 import org.ramadda.util.sql.SqlUtil;
 
@@ -32,16 +28,13 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.File;
 
-
 import java.io.UnsupportedEncodingException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,14 +43,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
-
-
 @SuppressWarnings("unchecked")
 public class SessionManager extends RepositoryManager {
 
-
-
     public static final String SESSION_PROPERTY_MESSAGES = "messages";
+
+
+
 
     /** The number of days a session is active in the database */
     private static final double SESSION_DAYS = 2.0;
@@ -75,11 +67,8 @@ public class SessionManager extends RepositoryManager {
         new TTLCache<String, UserSession>(1000 * 3600 * 24, 1000,
                      "Anonymous Session Map");
 
-
-
     private Cache<Object, Object> sessionExtra = new Cache<Object,
                                                      Object>(5000);
-
 
     private boolean addAnonymousCookie  = true;
 
@@ -101,8 +90,6 @@ public class SessionManager extends RepositoryManager {
             }
         });
     }
-
-
 
     @Override
     public void initAttributes() {
@@ -138,7 +125,6 @@ public class SessionManager extends RepositoryManager {
     public Object getSessionExtra(Object key) {
         return sessionExtra.get(key);
     }
-
 
     private void cullSessions() {
         //Wait a while before starting
@@ -205,8 +191,6 @@ public class SessionManager extends RepositoryManager {
                                latitude + ";" + longitude);
         }
     }
-
-
 
     public void setArea(Request request, double north, double west,
                         double south, double east)
@@ -294,7 +278,6 @@ public class SessionManager extends RepositoryManager {
         return session.getProperty(key);
     }
 
-
     public List<SessionMessage> getSessionMessages(Request request,Object key) throws Exception {
 	List<SessionMessage> messages=(List<SessionMessage>)
 	    getSessionProperty(request,SessionManager.SESSION_PROPERTY_MESSAGES);
@@ -342,11 +325,9 @@ public class SessionManager extends RepositoryManager {
 	}
     }
 
-
     public void clearSessionMessage(Request request, Object key,String msg)   {
 	clearSessionMessages(request, false,key,msg);
     }
-
 
     public void clearSessionMessages(Request request) {
 	clearSessionMessages(request, true,null,null);
@@ -370,7 +351,6 @@ public class SessionManager extends RepositoryManager {
 	    return message;
 	}
     }
-
 
     public void addRawSessionMessage(Request request, String message,Object key) {
 	addSessionMessage(request, message, key,false,true);
@@ -405,7 +385,6 @@ public class SessionManager extends RepositoryManager {
 	}
 	throw new IllegalArgumentException(msg);
     }
-
 
     public UserSession getSession(Request request, String sessionId)
             throws Exception {
@@ -463,7 +442,6 @@ public class SessionManager extends RepositoryManager {
         return session;
     }
 
-    
     private UserSession makeSession(ResultSet results) throws Exception {
         int    col       = 1;
         String sessionId = results.getString(col++);
@@ -483,8 +461,6 @@ public class SessionManager extends RepositoryManager {
         return new UserSession(sessionId, user, createDate, lastActiveDate);
     }
 
-
-    
     public void removeUserSession(Request request, User user) throws Exception {
         List<UserSession> sessions = getSessions();
         for (UserSession session : sessions) {
@@ -493,7 +469,6 @@ public class SessionManager extends RepositoryManager {
 	    }
 	}
     }
-
 
     public void removeSession(Request request, String sessionId)
             throws Exception {
@@ -505,7 +480,6 @@ public class SessionManager extends RepositoryManager {
                                         sessionId));
     }
 
-    
     private void addSession(UserSession session) throws Exception {
         debugSession(null, "addSession:" + session);
         sessionMap.put(session.getId(), session);
@@ -516,8 +490,6 @@ public class SessionManager extends RepositoryManager {
                 "" });
     }
 
-
-    
     private List<UserSession> getSessions() throws Exception {
         List<UserSession> sessions = new ArrayList<UserSession>();
         Statement stmt = getDatabaseManager().select(Tables.SESSIONS.COLUMNS,
@@ -531,10 +503,6 @@ public class SessionManager extends RepositoryManager {
         return sessions;
     }
 
-
-
-
-    
     public void checkSession(Request request) throws Exception {
 
         //        debugSession(request, "RAMADDA: checkSession");
@@ -561,7 +529,6 @@ public class SessionManager extends RepositoryManager {
                 }
             }
         }
-
 
         if (request.defined(ARG_SESSIONID)) {
             if (user != null) {
@@ -672,7 +639,6 @@ public class SessionManager extends RepositoryManager {
             }
         }
 
-
         //Make sure we have the current user state
         user = getUserManager().getCurrentUser(user);
 
@@ -701,10 +667,11 @@ public class SessionManager extends RepositoryManager {
         request.setUser(user);
     }
 
+    public List<String> getCookies(Request request) throws Exception {
+	return getCookies(request,getSessionCookieName());
+    }
 
-
-    
-    private List<String> getCookies(Request request) throws Exception {
+    public List<String> getCookies(Request request,String lookForCookieName) throws Exception {	
         List<String> cookies = new ArrayList<String>();
         String       cookie  = request.getHeaderArg("Cookie");
         if (cookie == null) {
@@ -721,27 +688,18 @@ public class SessionManager extends RepositoryManager {
             }
             String cookieName  = (String) subtoks.get(0);
             String cookieValue = (String) subtoks.get(1);
-            if (cookieName.equals(getSessionCookieName())) {
+            if (lookForCookieName == null || cookieName.equals(lookForCookieName)) {
                 cookies.add(cookieValue);
             }
         }
 
-
         return cookies;
     }
 
-
-
-    
     public String getSessionCookieName() {
         return cookieName;
     }
 
-
-
-
-
-    
     public String createSessionId() {
 	String session = getRepository().getGUID() + "_" + Math.random();
 	//	System.err.println("create session id:" + Utils.clip(session,10,"..."));
@@ -749,8 +707,6 @@ public class SessionManager extends RepositoryManager {
 	return session;
     }
 
-
-    
     public UserSession createSession(Request request, User user)
             throws Exception {
         if (request.getSessionId() == null) {
@@ -764,8 +720,6 @@ public class SessionManager extends RepositoryManager {
         return session;
     }
 
-
-    
     public void removeUserSession(Request request) throws Exception {
         if (request.getSessionId() != null) {
             removeSession(request, request.getSessionId());
@@ -777,7 +731,6 @@ public class SessionManager extends RepositoryManager {
         request.setUser(getUserManager().getAnonymousUser());
     }
 
-    
     public StringBuffer getSessionList(Request request) throws Exception {
         List<UserSession> sessions = getSessions();
         StringBuffer sessionHtml   = new StringBuffer(HtmlUtils.formTable());
@@ -803,10 +756,5 @@ public class SessionManager extends RepositoryManager {
 
         return sessionHtml;
     }
-
-
-
-
-
 
 }
