@@ -896,10 +896,26 @@ public class EntryManager extends RepositoryManager {
     }
 
     public Result processEntryShow(Request request) throws Exception {
+	if(getRepository().getCheckIfHuman()) {
+            OutputHandler handler = getRepository().getOutputHandler(request);
+	    OutputType outputType = request.getOutput();
+	    if(handler.checkForHuman(request,outputType)) {
+		Result humanResult = getRepository().checkForHuman(request);
+		if(humanResult!=null) {
+		    return humanResult;
+		}
+	    }
+	}
+
+
+
         if (request.getCheckingAuthMethod()) {
             OutputHandler handler = getRepository().getOutputHandler(request);
             return new Result(handler.getAuthorizationMethod(request));
         }
+
+
+
 
 	request.setIsEntryShow(true);
 
@@ -1466,8 +1482,7 @@ public class EntryManager extends RepositoryManager {
     public Result processEntryShow(Request request, Entry entry)
 	throws Exception {
 	Result result = null;
-        OutputHandler outputHandler =
-            getRepository().getOutputHandler(request);
+        OutputHandler outputHandler =       getRepository().getOutputHandler(request);
         if (request.getIsRobot()) {
             if ( !outputHandler.allowRobots()) {
                 return getRepository().getNoRobotsResult(request);
@@ -1478,10 +1493,6 @@ public class EntryManager extends RepositoryManager {
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
 
-	if(outputHandler.checkForHuman(request,outputType)) {
-	    Result humanResult = getRepository().checkForHuman(request);
-	    if(humanResult!=null) return humanResult;
-	}
 	
 
 

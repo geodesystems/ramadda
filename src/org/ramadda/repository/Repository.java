@@ -1363,9 +1363,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    if(humanCookie==null) {
 		synchronized(this) {
 		    if(humanCookie==null) {
-			humanCookie = HU.getUniqueId("ishuman");
+			humanCookie = getGUID();
 			writeGlobal(PROP_ISHUMAN_COOKIE_VALUE,humanCookie);
-			System.err.println("*** human cookie:"  + humanCookie);
+			getLogManager().logInfoAndPrint("Human check: created cookie value:"  + humanCookie);
 		    }
 		}
 	    }
@@ -1373,15 +1373,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	return humanCookie;
     }
 
+    public boolean  getCheckIfHuman() {
+	return checkHuman;
+    }
+
     public Result checkForHuman(Request request) throws Exception  {
-	if(!checkHuman) return null;
+	if(!checkHuman) {
+	    //	    System.err.println("human: not enabled");
+	    return null;
+
+	}
+	if(!request.isAnonymous()) {
+	    //	    System.err.println("human: not anon");
+	    return null;
+	}
+	    
 	List<String> cookies = getSessionManager().getCookies(request,COOKIE_ISHUMAN);
 	if(cookies.size()!=0) {
+	    //	    System.err.println("cookies:" + cookies);
 	    if(cookies.contains(getIsHumanCookieValue()))  return null;
 	}
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("RAMADDA: verified is human:" + request.getIp());
+	    getLogManager().logInfoAndPrint("Human check: verified is human:" + request.getIp());
 	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue()));
 	    return null;
 	}
@@ -1406,7 +1420,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
 	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
 	getPageHandler().sectionClose(request,sb);
-	getLogManager().logInfoAndPrint("RAMADDA: checking for human:" + " IP:" + request.getIp() +" " + request.getUrlArgs());
+	getLogManager().logInfoAndPrint("Human check: checking for human:" + " IP:" + request.getIp() +" " + request.getUrlArgs());
 	return new Result("Prove you are a human",sb);
     }
 
