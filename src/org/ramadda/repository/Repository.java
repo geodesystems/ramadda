@@ -1437,8 +1437,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(entryId!=null) logMessage+=" entry:" + entryId;
 	getLogManager().logInfoAndPrint(logMessage);
 	Result result =  new Result("Prove you are a human",sb);
-	if(count>3)
+	if(count>5) {
+	    Misc.sleepSeconds(5);
 	    result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
+	}
 	return result;
     }
 
