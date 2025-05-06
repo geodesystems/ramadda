@@ -174,6 +174,10 @@ public class OutputHandler extends RepositoryManager implements OutputConstants 
         return false;
     }
 
+    public boolean checkForHuman(Request request,OutputType outputType) {
+	return false;
+    }
+
     /**
      * Find the output type matching the id
      *

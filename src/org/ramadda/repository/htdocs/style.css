@@ -1962,6 +1962,8 @@ mapheader {
     border-radius: var(--default-radius);
     border:var(--basic-border);
     margin:10px;
+    margin-left:0px;
+    margin-right:0px;    
     padding:5px;
     min-width: 400px;
 }

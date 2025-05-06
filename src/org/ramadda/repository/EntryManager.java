@@ -1,4 +1,3 @@
-
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
    SPDX-License-Identifier: Apache-2.0
@@ -9,6 +8,7 @@ package org.ramadda.repository;
 import org.ramadda.repository.auth.AccessException;
 import org.ramadda.repository.auth.AccessManager;
 import org.ramadda.repository.auth.AuthorizationMethod;
+import org.ramadda.repository.auth.SessionManager;
 import org.ramadda.repository.auth.User;
 import org.ramadda.repository.search.SearchManager;
 import org.ramadda.repository.database.DatabaseManager;
@@ -1474,8 +1474,17 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
         outputHandler.incrNumberOfConnections();
         OutputType outputType = request.getOutput();
+
+	if(outputHandler.checkForHuman(request,outputType)) {
+	    Result humanResult = getRepository().checkForHuman(request);
+	    if(humanResult!=null) return humanResult;
+	}
+	
+
+
         outputType.incrNumberOfCalls();
         boolean handleAsGroup = handleEntryAsGroup(entry);
 

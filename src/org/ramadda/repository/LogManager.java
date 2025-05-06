@@ -123,7 +123,6 @@ public class LogManager extends RepositoryManager {
 
     public static boolean debug = true;
     private PrintWriter testLogWriter;
-    private List<LogEntry> log = new ArrayList<LogEntry>();
     private int requestCount = 0;
     private SimpleDateFormat sdf;
 
@@ -162,14 +161,6 @@ public class LogManager extends RepositoryManager {
     public void logRequest(Request request, int response) {
         int count = 0;
         requestCount++;
-        //Keep the size of the log at 200
-        synchronized (log) {
-            while (log.size() > 200) {
-                log.remove(0);
-            }
-            log.add(new LogEntry(request));
-        }
-
         String ip        = request.getIp();
         String uri       = request.getRequestPath();
 	String id = request.getString(ARG_ENTRYID,null);
@@ -314,11 +305,6 @@ public class LogManager extends RepositoryManager {
         }
     }
 
-    public List<LogEntry> getLog() {
-        synchronized (log) {
-            return new ArrayList<LogEntry>(log);
-        }
-    }
 
     public int getRequestCount() {
         return requestCount;
@@ -539,83 +525,6 @@ public class LogManager extends RepositoryManager {
         return s;
     }
 
-    public class LogEntry {
-
-        User user;
-
-        Date date;
-
-        String path;
-
-        String ip;
-
-        String userAgent;
-
-        String url;
-
-        public LogEntry(Request request) {
-            this.user = request.getUser();
-            this.path = request.getRequestPath();
-
-            String entryPrefix = getRepository().URL_ENTRY_SHOW.toString();
-            if (this.path.startsWith(entryPrefix)) {
-                url       = request.getUrl();
-                this.path = this.path.substring(entryPrefix.length());
-                if (path.trim().length() == 0) {
-                    path = "/entry/show";
-                }
-
-            }
-
-            this.date      = new Date();
-            this.ip        = request.getIp();
-            this.userAgent = request.getUserAgent();
-        }
-
-        public void setIp(String value) {
-            ip = value;
-        }
-
-        public String getIp() {
-            return ip;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUserAgent(String value) {
-            userAgent = value;
-        }
-
-        public String getUserAgent() {
-            return userAgent;
-        }
-
-        public void setUser(User value) {
-            user = value;
-        }
-
-        public User getUser() {
-            return user;
-        }
-
-        public void setDate(Date value) {
-            date = value;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public void setPath(String value) {
-            path = value;
-        }
-
-        public String getPath() {
-            return path;
-        }
-    }
 
     public Result adminLog(Request request) throws Exception {
         StringBuffer sb       = new StringBuffer();
@@ -699,14 +608,8 @@ public class LogManager extends RepositoryManager {
 	    sb.append(HU.br());
 	}
 
-        if (log.equals("access")) {
-            getAccessLog(request, sb);
-        } else {
-            getErrorLog(request, sb, theFile);
-        }
-
+	getErrorLog(request, sb, theFile);
         sb.append(HtmlUtils.sectionClose());
-
         return getAdmin().makeResult(request, msg("RAMADDA-Admin-Logs"), sb);
     }
 
@@ -1215,63 +1118,6 @@ public class LogManager extends RepositoryManager {
 
     }
 
-    private void getAccessLog(Request request, StringBuffer sb)
-            throws Exception {
-
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_TABLE));
-        sb.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.b(msg("User")),
-                HtmlUtils.b(msg("Date")), HtmlUtils.b(msg("Path")),
-                HtmlUtils.b(msg("IP")), HtmlUtils.b(msg("User agent")))));
-        List<LogManager.LogEntry> log = getLogManager().getLog();
-        for (int i = log.size() - 1; i >= 0; i--) {
-            LogManager.LogEntry logEntry = log.get(i);
-            //Encode the path just in case the user does a XSS attack
-            String path = logEntry.getPath();
-            if (path.length() > 50) {
-                path = path.substring(0, 49) + "...";
-            }
-            path = HtmlUtils.entityEncode(path);
-            String userAgent = logEntry.getUserAgent();
-            if (userAgent == null) {
-                userAgent = "";
-            }
-            boolean isBot = true;
-            if (userAgent.indexOf("Googlebot") >= 0) {
-                userAgent = "Googlebot";
-            } else if (userAgent.indexOf("Slurp") >= 0) {
-                userAgent = "Yahoobot";
-            } else if (userAgent.indexOf("msnbot") >= 0) {
-                userAgent = "Msnbot";
-            } else {
-                isBot = false;
-		userAgent = HU.strictSanitizeString(userAgent);
-                String full = userAgent;
-                int    idx  = userAgent.indexOf("(");
-                if (idx > 0) {
-                    userAgent = userAgent.substring(0, idx);
-                    userAgent = HtmlUtils.makeShowHideBlock(
-                        HtmlUtils.entityEncode(userAgent), full, false);
-                }
-            }
-
-            String dttm = getDateHandler().formatDate(logEntry.getDate());
-            dttm = dttm.replace(" ", "&nbsp;");
-            String user = (logEntry.getUser() != null)
-                          ? logEntry.getUser().getLabel()
-                          : "anonymous";
-            user = user.replace(" ", "&nbsp;");
-            String cols = HtmlUtils.cols(HU.strictSanitizeStrings(user, dttm, path, logEntry.getIp()));
-	    cols+=HU.cols(userAgent);
-            sb.append(HtmlUtils.row(cols,
-                                    HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,
-                                        "top") + ( !isBot
-                    ? ""
-                    : HtmlUtils.attr(HtmlUtils.ATTR_BGCOLOR, "#eeeeee"))));
-
-        }
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_TABLE));
-
-    }
 
     public static class LogId {
 

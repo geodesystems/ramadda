@@ -79,6 +79,8 @@ public class ApiMethod {
 
     private boolean requiresAuthToken = false;
 
+    private boolean checkIsHuman = false;
+
     private RequestHandler requestHandler;
 
     private Method method;
@@ -104,6 +106,8 @@ public class ApiMethod {
                      boolean mustBeAdmin, boolean mustBeUser,
                      boolean requiresAuthToken, boolean needsSsl,
                      String authMethod, boolean checkAuthMethod,
+		     boolean checkIsHuman,
+		     
                      boolean isTopLevel, String icon) {
         this.repository        = repository;
         this.requestHandler    = requestHandler;
@@ -115,6 +119,7 @@ public class ApiMethod {
         this.needsSsl          = needsSsl;
         this.authMethod        = authMethod;
         this.checkAuthMethod   = checkAuthMethod;
+	this.checkIsHuman      = checkIsHuman;
         this.method            = method;
         this.isTopLevel        = isTopLevel;
         this.icon              = icon;
@@ -271,6 +276,11 @@ public class ApiMethod {
     public void setIsTopLevel(boolean value) {
         isTopLevel = value;
     }
+
+    public boolean getCheckIsHuman() {
+	return checkIsHuman;
+    }
+
 
     /**
      * Get the IsTopLevel property.

@@ -176,6 +176,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public static final String PROP_CACHE_RESOURCES = "ramadda.cacheresources";
     public static final String PROP_CACHE_HTDOCS = "ramadda.cachehtdocs";    
 
+
+    public static final String PROP_ISHUMAN_COOKIE_VALUE = "ramadda.ishuman.cookie";
+    public static final String PROP_ISHUMAN_CHECK = "ramadda.ishuman.check";    
+    public static final String PROP_ISHUMAN_MESSAGE = "ramadda.ishuman.message";
+    public static final String ATTR_ISHUMAN = "ishuman";
+    public static final String COOKIE_ISHUMAN= "ramadda_ishuman";
+
     /** Entry edit URLs */
     protected List<RequestUrl> entryEditUrls;
 
@@ -461,6 +468,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean allSsl = false;
 
     private boolean sslIgnore = false;
+
+    private boolean checkHuman = false;
+
+    private String humanCookie;
+
 
     private boolean cacheResources = false;
 
@@ -1344,6 +1356,60 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public HttpClient getHttpClient() {
         return httpClient;
     }
+
+    private String getIsHumanCookieValue() throws Exception {
+	if(humanCookie==null) {
+	    humanCookie = getProperty(PROP_ISHUMAN_COOKIE_VALUE,null);
+	    if(humanCookie==null) {
+		synchronized(this) {
+		    if(humanCookie==null) {
+			humanCookie = HU.getUniqueId("ishuman");
+			writeGlobal(PROP_ISHUMAN_COOKIE_VALUE,humanCookie);
+			System.err.println("*** human cookie:"  + humanCookie);
+		    }
+		}
+	    }
+	}
+	return humanCookie;
+    }
+
+    public Result checkForHuman(Request request) throws Exception  {
+	if(!checkHuman) return null;
+	List<String> cookies = getSessionManager().getCookies(request,COOKIE_ISHUMAN);
+	if(cookies.size()!=0) {
+	    if(cookies.contains(getIsHumanCookieValue()))  return null;
+	}
+	String isHuman = request.getString(ATTR_ISHUMAN,null);
+	if(isHuman!=null && isHuman.equals("yes")) {
+	    getLogManager().logInfoAndPrint("RAMADDA: verified is human:" + request.getIp());
+	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue()));
+	    return null;
+	}
+
+	StringBuilder sb = new StringBuilder();
+	getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
+	String message = getProperty(PROP_ISHUMAN_MESSAGE,"");
+	if(Utils.stringDefined(message)) {
+	    sb.append(getPageHandler().showDialogNote(message.replace("\\n","<br>")));
+	}
+
+	if(isHuman!=null) {
+	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
+	}
+
+	sb.append(HU.formPost(request.getRequestPath()));
+	sb.append(HU.submit("Yes, I am a human","submit"));
+	sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
+	request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
+	sb.append(HU.formClose());
+	sb.append("\n");
+	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
+	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
+	getPageHandler().sectionClose(request,sb);
+	getLogManager().logInfoAndPrint("RAMADDA: checking for human:" + " IP:" + request.getIp() +" " + request.getUrlArgs());
+	return new Result("Prove you are a human",sb);
+    }
+
 
     protected void initServer() throws Exception {
 	if(Repository.debugInit)   System.err.println("Repository.initServer");
@@ -3256,7 +3322,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 				   + DateUtil.daysToMillis(365 * 4));
 	    SimpleDateFormat sdf =
 		new SimpleDateFormat("EEE, dd-MMM-yyyy");
-	    cookieExpirationDate = sdf.format(future);
+	    cookieExpirationDate = sdf.format(future)+ " 23:59:59 GMT";
 	}
 	//            System.err.println (getUrlBase() +" setting cookie:" + sessionId);
 	if (debugSession) {
@@ -3272,13 +3338,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 	request.addCookie(getSessionManager().getSessionCookieName(),
-			  sessionId + "; path=" + path + "; expires="
-			  + cookieExpirationDate + " 23:59:59 GMT"
-			  + (isSSLEnabled(request)
-			     ? "; secure"
-			     : "") + "; HttpOnly;SameSite=Strict");
+			  makeCookie(request, path,sessionId));
+
 
     }
+
+    public String makeCookie(Request request, String path,String id) {
+	return  id + "; path=" + path + "; expires="
+	    + cookieExpirationDate
+	    + (isSSLEnabled(request)
+	       ? "; secure"
+	       : "") + "; HttpOnly;SameSite=Strict";
+    }
+
 
     public String handleError(Request request, Throwable exc,
                               String message) {
@@ -3454,6 +3526,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
             debugSession(request, "redirecting to ssl:" + request.getUrl());
             return sslRedirect;
         }
+
+	if(apiMethod.getCheckIsHuman()) {
+	    Result humanResult = checkForHuman(request);
+	    if(humanResult!=null) return humanResult;
+	}
+
+
 
 	callCnt++;
 	/*
@@ -3870,6 +3949,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
 	defaultMaxEntries     = getProperty("ramadda.defaultmaxentries",defaultMaxEntries);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
+	checkHuman            = getProperty(PROP_ISHUMAN_CHECK,false);
 	alwaysHttps           = getProperty(PROP_ALWAYS_HTTPS, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);

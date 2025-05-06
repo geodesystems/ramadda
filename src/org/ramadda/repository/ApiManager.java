@@ -112,6 +112,8 @@ public class ApiManager extends RepositoryManager {
                                ApiMethod.ATTR_NEEDS_SSL, false);
         boolean checkAuthMethod = XmlUtil.getAttributeFromTree(node,
                                       ApiMethod.ATTR_CHECKAUTHMETHOD, false);
+        boolean checkIsHuman = XmlUtil.getAttributeFromTree(node,
+                                      "checkishuman", false);	
 
         String authMethod = XmlUtil.getAttributeFromTree(node,
                                 ApiMethod.ATTR_AUTHMETHOD, "");
@@ -251,7 +253,8 @@ public class ApiManager extends RepositoryManager {
                               request), method, admin, mustBeUser,
                                         requiresAuthToken, needsSsl,
                                         authMethod, checkAuthMethod,
-                                        XmlUtil.getAttribute(node,
+			  checkIsHuman,
+			  XmlUtil.getAttribute(node,
                                             ApiMethod.ATTR_TOPLEVEL,
                                             false), icon);
         List actions = Utils.split(XmlUtil.getAttribute(node,

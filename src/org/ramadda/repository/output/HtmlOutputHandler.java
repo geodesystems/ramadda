@@ -142,6 +142,12 @@ public class HtmlOutputHandler extends OutputHandler {
         return true;
     }
 
+    @Override
+    public boolean checkForHuman(Request request,OutputType outputType) {
+	return true;
+    }
+
+
     /**
      *  override base method. This tells the EntryManager not to prefetch the children entries
      *

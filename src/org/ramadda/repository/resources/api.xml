@@ -114,15 +114,15 @@
   </group>
 
   <group handler="searchmanager">
-    <api request="/search/form"            method="processSearchForm"     name="Search" icon="/icons/magnifier.png"/>
+    <api request="/search/form"            method="processSearchForm"     name="Search" icon="/icons/magnifier.png" checkishuman="true"/>
     <api request="/search/do"              method="processEntrySearch"/>
-    <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>
+    <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse" checkishuman="true"/>
     <api request="/search/suggest"          method="processEntrySuggest"/>
     <api request="/search/info"            method="processSearchInfo"/>
     <api request="/search/providers"       method="processSearchProviders"/>
     <api request="/search/wadl"            method="processSearchWadl"/>
     <api request="/search/entrylist"       method="processEntryList"/>
-    <api request="/search/type/*"          method="processSearchType"/>
+    <api request="/search/type/*"          method="processSearchType" checkishuman="true"/>
     <api request="/search/remote/do"       method="processRemoteSearch"            name="Remote Search" />
     <api request="/search/opensearch.xml"  method="processOpenSearch"              name="Open Search Descriptor"/>
     <api request="/search/capabilities.xml"  method="processCapabilities"          name="Search Capabilities"/>

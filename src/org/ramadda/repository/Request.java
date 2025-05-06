@@ -2292,33 +2292,18 @@ public class Request implements Constants, Cloneable {
         return result;
     }
 
-    /**  */
     boolean cookieWasAdded = false;
 
-    /**
-     *  @return _more_
-     */
     public boolean getCookieWasAdded() {
         return cookieWasAdded;
     }
 
-    /**
-     *
-     * @param name _more_
-     * @param value _more_
-     */
     public void addCookie(String name, String value) {
-        //      System.err.println("\taddCookie:"+ value.substring(0,10));
         cookieWasAdded = true;
-        httpServletResponse.setHeader(HtmlUtils.HTTP_SET_COOKIE,
-                                      name + "=" + value);
+        httpServletResponse.addHeader(HtmlUtils.HTTP_SET_COOKIE, name + "=" + value);
     }
 
-    /**
-     *
-     * @param name _more_
-     * @param value _more_
-     */
+
     public Request setHeader(String name, String value) {
         httpServletResponse.setHeader(name, value);
 	return this;
