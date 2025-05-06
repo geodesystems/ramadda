@@ -54,6 +54,20 @@ ramadda.user.agree=I have read and agree to the terms of use ...
 
 -pre
 
+:heading Screening Bots
+You can configure your RAMADDA to check if the client is actually a human by setting the below property:
++pre addCopy=true
+ramadda.ishuman.check=true
+-pre
+
+This will show a form that, when submitted and verified, sets a cookie that verifies that the client is a human.
+The default message shown can be set with the property:
++pre addCopy=true
+ramadda.ishuman.message=Due to the proliferation of AI crawlers we need to check if you are a real person
+-pre
+
+
+
 :heading Google Recaptcha
 Google Recaptcha can be used for verifying non-bot access to some services (below).
 To enable Recaptcha you must obtain a sitekey and secret from google. See:
