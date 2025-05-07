@@ -2645,7 +2645,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             return getRepository().getMonitorManager().processEntryListen(
 									  request);
         }
-	System.err.println("search:" + request);
         if (request.defined("submit_type.x")
 	    || request.defined(ARG_SEARCH_SUBSET)) {
             request.remove(ARG_OUTPUT);
