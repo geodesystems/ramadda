@@ -732,7 +732,11 @@ public class Admin extends RepositoryManager {
 					 getUserManager().hashPassword(
 								       password1), "", true, "", "",
 				    false, new Date(),null);
+		    
                     getUserManager().makeOrUpdateUser(user, false);
+
+
+
                     installStep(ARG_ADMIN_ADMINCREATED);
                     installStep(ARG_ADMIN_INSTALLCOMPLETE);
                     //Make  sure to clear this so it gets read again
@@ -931,10 +935,8 @@ public class Admin extends RepositoryManager {
     }
 
     public void addInitEntries(User user) throws Exception {
-	
 	Entry root = getEntryManager().getRootEntry();
 	String resourcePath = "/org/ramadda/repository/resources/install/initentries.zip";
-	//	String resourcePath = "/org/ramadda/repository/resources/install/initentries.xml";	
 	InputStream fis = getStorageManager().getInputStream(resourcePath);
 	Request tmpRequest = getRepository().getRequest(user);
 	getEntryManager().processEntryImportInner(tmpRequest, root,resourcePath,fis);
