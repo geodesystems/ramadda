@@ -2187,7 +2187,7 @@ public class UserManager extends RepositoryManager {
             sb.append(messageNote(
 				  "You have no favorite entries defined.<br>When you see an  entry or folder just click on the "
 				  + HU.img(getIconUrl(ICON_FAVORITE))
-				  + " icon to add it to your list of favorites"));
+				  + " Add as favorite icon in the entry popup menu"));
         }
         sb.append(HU.sectionClose());
 
