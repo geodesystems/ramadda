@@ -2282,7 +2282,11 @@ public class EntryManager extends RepositoryManager {
 								   "Error: The entry you are editing has been edited since the time you began the edit:<br> "
 								   + dateRange+"<p>Below is the text you were editing")));
 
-		    sb.append(HU.textArea("",request.getString(ARG_DESCRIPTION,""),10,100));
+		    boolean isWiki      = request.get(ARG_ISWIKI, false);
+		    String  description = request.getAnonymousEncodedString(isWiki
+									    ? ARG_WIKITEXT
+									    : ARG_DESCRIPTION, "");
+		    sb.append(HU.textArea("",description,10,100));
                     getPageHandler().entrySectionClose(request, entry, sb);
 
                     return addEntryHeader(request, entry,
@@ -2941,6 +2945,14 @@ public class EntryManager extends RepositoryManager {
     private List<Entry.EntryHistory> getEntryHistory(Entry entry) {
 	if(entry==null) return null;
 	return entryHistories.get(entry.getId());
+    }
+
+    public List<String> getIds(List<Entry> entries) {
+	List<String> ids = new ArrayList<String>();
+	for(Entry entry: entries) {
+	    ids.add(entry.getId());
+	}
+	return ids;
     }
 
     private void unzipResource(Request request, Entry parentEntry, User user,
