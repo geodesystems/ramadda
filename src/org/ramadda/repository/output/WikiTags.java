@@ -43,7 +43,7 @@ public class WikiTags implements  OutputConstants,WikiConstants,Constants {
                             new WikiTag(WIKI_TAG_TYPENAME,null,ATTR_TT,"Entry type name"), 
                             new WikiTag(WIKI_TAG_CHILDREN_COUNT,"Children count",ATTR_TT,"Show the # of children",
 					"template","${count}"),			    
-                            new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
+                            new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false","#action","edit|access"),
                             new WikiTag(WIKI_TAG_HTML,null,"showTitle","false"),
                             new WikiTag(WIKI_TAG_IMPORT, null, ATTR_TT,"Import display of another entry",
 					ATTR_ENTRY,"","showTitle","false"),

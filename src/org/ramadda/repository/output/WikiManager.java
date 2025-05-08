@@ -2371,15 +2371,22 @@ public class WikiManager extends RepositoryManager
             boolean linkResource = getProperty(wikiUtil, props,
 					       ATTR_LINKRESOURCE, false);
             String name  = getEntryDisplayName(entry);
-            String title = getProperty(wikiUtil, props, ATTR_TITLE, name);
             String action = getProperty(wikiUtil, props, "action",null);
-            title = title.replace("${name}", name);
             String url;
-	    if(action!=null) {
-		if(action.equals("edit"))
+            String title = name;
+	    if(stringDefined(action)) {
+		if(action.equals("edit")) {
 		    url = request.entryUrl(getRepository().URL_ENTRY_FORM, entry);
-	    else
-		return "Unknown action: " + action;
+		    title="edit";
+		} else if(action.equals("access")) {
+		    url = request.entryUrl(getRepository().URL_ACCESS_FORM, entry);
+		    title="access";
+		} else if(action.equals("properties")) {
+		    url = request.entryUrl(getRepository().getMetadataManager().URL_METADATA_FORM, entry);		  
+		    title="edit properties";
+		} else {
+		    return "Unknown link action:" + action;
+		}
 	    } else  if (linkResource
 		&& (entry.getTypeHandler().isType("link")
 		    || entry.isFile() || entry.getResource().isUrl())) {
@@ -2392,6 +2399,9 @@ public class WikiManager extends RepositoryManager
                 url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                        ARG_OUTPUT, output);
             }
+
+	    title = getProperty(wikiUtil, props, ATTR_TITLE, name);
+            title = title.replace("${name}", name);
 
             if (getProperty(wikiUtil, props, "button", false)) {
 		String buttonClass= getProperty(wikiUtil, props, "buttonClass",""); 
