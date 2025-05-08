@@ -1201,8 +1201,8 @@ a.ramadda-menubar-button:hover {
     border-left: 4px solid #aaa;
 
     padding:8px;
-    padding-top:0.75em;
-    padding-bottom:0.75em;        
+    padding-top:0.5em;
+    padding-bottom:0.5em;        
     border-radius:var(--default-radius);
     background:rgb(250,250,250);
 }
