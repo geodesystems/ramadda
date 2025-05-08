@@ -1217,8 +1217,9 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-callout-icon {
-    display:inline;
-    margin-right:30px;
+    display:inline-block;
+    margin-right:10px;
+    margin-top:5px;
     vertical-align:top;
 }
 
@@ -1257,8 +1258,6 @@ a.ramadda-menubar-button:hover {
 
 .ramadda-callout-inner {
     display:inline-block;
-    /* a hack for alignment */
-    margin-top:-0.5em;
 }
 
 .ramadda-callout-inner i {
@@ -1394,7 +1393,7 @@ a.ramadda-menubar-button:hover {
     display:inline-block;
     z-index:1000;
     position:fixed;
-    top:0px;
+    top:5px;
     left:50%;
     transform: translateX(-50%);
 }

@@ -2214,6 +2214,7 @@ WikiEditor.prototype = {
 		{p:'linkresource',ex:'true',tt:'Link to the resource'},
 		{p:'button',ex:'true',tt:'Make a button'},
 		{p:'title',ex:'',tt:'Title to use'},
+		{p:'action',tt:'Entry action',ex:'edit|access'},
 		{p:'output',ex:'output type',tt:'Link to the given output'},
 	    ],
 	    daterange: [
