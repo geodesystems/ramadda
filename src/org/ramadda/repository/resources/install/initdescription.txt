@@ -1,10 +1,10 @@
 <wiki>
++section title="{{name}}" 
 +skip
 This is RAMADDA's wiki text. 
 Documentation here: {{root}}/userguide/wiki/wikitext.html
 Feel free to delete any of this intro up to the content up to the ":rem **** main page content ****"
 -skip
-+section title="{{name}}" 
 {{import entry=tophelp showTitle=false}}
 :p
 +skip
