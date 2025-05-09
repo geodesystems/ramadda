@@ -1534,6 +1534,7 @@ public abstract class Converter extends Processor {
 
             defaultType = Seesv.getDbProp(props, "default", "type",
 					  defaultType);
+	    
             defaultTypeFromProperties = Seesv.getDbProp(props, "default",
 							"type", null);
             defaultChartable = Seesv.getDbProp(props, "default",
@@ -1715,7 +1716,6 @@ public abstract class Converter extends Processor {
 		    : defaultType;
 		//		System.err.println("id:"  + id  + " default:" + type);
                 boolean isGeo = false;
-
                 boolean chartable = Seesv.getDbProp(props, id, "chartable", defaultChartable);
 		boolean searchable =  Seesv.getDbProp(props, id, "searchable", dfltSearchable);
                 if (id.equals("date")) {
@@ -1796,6 +1796,9 @@ public abstract class Converter extends Processor {
                 }
 
                 attrs.append(" type=\"" + type + "\"");
+
+		
+
                 String enumeratedValues = Seesv.getDbProp(props, id, i,
 							  "enumeratedValues", null);
                 if (enumeratedValues != null) {
@@ -2476,7 +2479,12 @@ public abstract class Converter extends Processor {
                     pattern = pattern.substring(4);
                     s       = s.replaceFirst(pattern, value);
                 } else {
-                    String tmp = s.replaceAll(pattern, value);
+		    String tmp;
+		    if(isRegex) {
+			tmp = s.replaceAll(pattern, value);
+		    } else {
+			tmp = s.replace(pattern, value);
+		    }
 		    //		    System.out.println(rowCnt + " V:" + value +" string:" + s +" to:" + tmp);
 		    s = tmp;
                 }
