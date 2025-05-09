@@ -1193,6 +1193,7 @@ function DisplayThing(argId, argProperties) {
 	    let skipEmpty=props.skipEmpty=='true';
 	    let group = null;
 	    let includeDesc = this.getIncludeFieldDescriptionInTooltip();
+	    let showTooltipUnit= this.getTooltipShowUnit();
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -1272,7 +1273,8 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    labelValue = this.getProperty('label.'+field.getId(),labelValue);
-		    value = value + field.getUnitSuffix();
+		    if(showTooltipUnit)
+			value = value + field.getUnitSuffix();
 		    let tt;
 		    if(!includeDesc) {
 			tt = field.getDescription();
@@ -1802,6 +1804,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
+	{p:'tooltipShowUnit',d:true,ex:'false'},
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
 	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
