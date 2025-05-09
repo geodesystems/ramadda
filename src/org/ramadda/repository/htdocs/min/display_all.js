@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May  9 09:27:47 MDT 2025";
+var build_date="RAMADDA build date: Fri May  9 14:27:47 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -19850,12 +19850,22 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:"trendlineLineWidth",ex:"2"},
 	{p:"trendlineOpacity",ex:"0.3"},		    		    		    
 
-	{p:'Annotations'},
-	{p:'annotations',ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+	{label:'Annotations'},
+	{p:'annotations',
+	 ex:'date,label,desc;date,label,desc;',tt:'e.g. 2008-09-29,A,Start of housing crash;2008-11-04,B,Obama elected;'},
+	{p:'showAnnotationsLegend',ex:true},
  	{p:'annotationFields',ex:'',tt:'Set of fields to add an annotation to the line chart'},
  	{p:'annotationStride',ex:10,tt:'Only show every N annotations'},
  	{p:'annotationLabelField',ex:'field',tt:'Field to use for annotation label'},		
+ 	{p:'annotationTemplate',ex:'"${field}',tt:'Template to use'},		
  	{p:'annotationLabelTemplate',ex:'"${field}',tt:'Template to use for label'},		
+	{p:'annotationStyle',d:'point',ex:'line|point'},
+	{p:'annotationSize',ex:'18'},
+	{p:'annotationColor',d:'black',ex:'red'},
+	{p:'annotationAuraColor',ex:'gray'},
+	{p:'annotationBold',ex:true},
+	{p:'annotationItalic',ex:true},
+	{p:'annotationStemColor',d:'red'}
 	
 
 
@@ -20526,9 +20536,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	getAddStyle: function() {
 	    return true;
 	},
-	getAnnotationTemplate: function() {
-	    return this.getProperty("annotationTemplate");
-	},
 	getFormatNumbers: function() {
 	    return false;
 	},
@@ -20741,8 +20748,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     	    let addStyle= this.getAddStyle();
 	    let annotationTemplate = this.getAnnotationTemplate();
 	    let formatNumbers = this.getFormatNumbers();
-
-
             if (dataList.length == 1) {
 		return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -20959,7 +20964,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 	    let annotationStride = this.getAnnotationStride(0);
 	    let annotationLabelTemplate = this.getAnnotationLabelTemplate();
-
 	    let annotationCnt = 0;	    
 	    if(Utils.stringDefined(this.getProperty("annotations")) ||
 	       Utils.stringDefined(this.getProperty("annotationFields"))) {
@@ -20990,9 +20994,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		if(this.annotations.getShowLegend()) {
 		    //Pad the left to align with  the chart axis
 		    this.jq(ID_LEGEND).html("<table width=100%><tr valign=top><td width=10%></td><td width=90%>" +
-					    HU.div([CLASS, "display-chart-legend"],this.annotations.getLegend())
+					    HU.div([ATTR_CLASS, "display-chart-legend"],this.annotations.getLegend())
 					    +"</td></tr></table>");
 		}
+//xxxx
+
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
@@ -21181,7 +21187,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    console.log("\t desc:" + desc);
 			}
 
-			debug =false;
+
 			if(annotationStride<=0 || (annotationCnt%annotationStride)==0) {
 			    newRow.push(label);
 			    newRow.push(desc);
@@ -21252,6 +21258,20 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         makeChartOptions: function(dataList, props, selectedFields) {
             let chartOptions = {
+		annotations: {
+		    style: this.getAnnotationStyle(),
+		    textStyle: {
+			fontSize: this.getAnnotationSize(16),
+			color: this.getAnnotationColor(),
+			auraColor: this.getAnnotationAuraColor(),
+			bold: this.getAnnotationBold(),
+			italic: this.getAnnotationItalic(),
+		    },
+		    stem: {
+			color: this.getAnnotationStemColor(),
+			length: 100
+		    }
+		},
 		interpolateNulls: this.getInterpolateNulls(),
                 tooltip: {
                     isHtml: true,
