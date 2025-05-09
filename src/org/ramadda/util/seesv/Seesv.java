@@ -4066,10 +4066,6 @@ public class Seesv implements SeesvCommands {
 		return i;
 	    });
 
-	defineFunction(CMD_CHANGE,3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
-		return i;
-	    });
 	defineFunction(CMD_CLEANWHITESPACE,1,(ctx,args,i) -> {
 		ctx.addProcessor(new Converter.CleanWhitespace(getCols(args.get(++i))));
 		return i;
@@ -4288,6 +4284,11 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(
 				 new Converter.Truncater(col, length, suffix));
 
+		return i;
+	    });
+
+	defineFunction(CMD_CHANGE,3,(ctx,args,i) -> {
+		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
 		return i;
 	    });
 
