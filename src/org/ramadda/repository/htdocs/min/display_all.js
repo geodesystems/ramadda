@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu May  8 06:10:47 MDT 2025";
+var build_date="RAMADDA build date: Fri May  9 09:27:47 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5220,6 +5220,7 @@ function DisplayThing(argId, argProperties) {
 	    let skipEmpty=props.skipEmpty=='true';
 	    let group = null;
 	    let includeDesc = this.getIncludeFieldDescriptionInTooltip();
+	    let showTooltipUnit= this.getTooltipShowUnit();
             for (let doDerived = 0; doDerived < 2; doDerived++) {
                 for (let i = 0; i < fields.length; i++) {
                     let field = fields[i];
@@ -5299,7 +5300,8 @@ function DisplayThing(argId, argProperties) {
 		    }
 		    let labelValue = field.getLabel();
 		    labelValue = this.getProperty('label.'+field.getId(),labelValue);
-		    value = value + field.getUnitSuffix();
+		    if(showTooltipUnit)
+			value = value + field.getUnitSuffix();
 		    let tt;
 		    if(!includeDesc) {
 			tt = field.getDescription();
@@ -5829,6 +5831,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'tooltipPositionMy',ex:'left top'},
 	{p:'tooltipPositionAt',ex:'left bottom+2'},		
 	{p:'tooltipCollision'},
+	{p:'tooltipShowUnit',d:true,ex:'false'},
 	{p:'tooltipFields',canCache:true},
 	{p:'tooltipNotFields',d:''},
 	{p:'tooltipShowGeo',tt:'show the record lat/lon in the tooltip',ex:'true'},
@@ -19791,6 +19794,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'highlight.labelInLegend',d:null,ex:'label',canCache:true},
 	{p:'nohighlight.labelInLegend',d:null,ex:'label',canCache:true},	
 	{p:'some_field.labelInLegend',d:null,ex:'label',canCache:true},
+	{p:'tooltipStyle',ex:'min-width:600px;'},
+	{p:'tooltipX',tt:'Fix the tooltip position',ex:'0'},
+	{p:'tooltipY',tt:'Fix the tooltip position',ex:'0'},		
 
 	{p:'highlightFields',d:null,ex:'fields'},
 	{p:'highlightShowFields',d:null,ex:'true'},
@@ -19826,6 +19832,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
 
+	{p:'showUnit',ex:false},
 	{p:'dynamicTooltip',ex:'true',d:true,tt:'Dynamically create the tooltips'},
 
 	{p:'skipMissing',d:false,ex:'true',tt:'skip rows  that have any missing values'},
@@ -21134,7 +21141,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 				tooltip += HU.b(label) + ":" + SPACE + value;
 			    }
 			}
-			tooltip = HU.div([STYLE,HU.css('padding','8px')],tooltip);
+			tooltip = HU.div([ATTR_STYLE,HU.css('padding','8px')],tooltip);
 			newRow.push(tooltip);
 			if(debug && rowIdx<debugRows)
 			    console.log("\t added tooltip");
@@ -21868,7 +21875,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		document.body.appendChild(tooltip);
 	    }
 	    let tt = this.getProperty("tooltip");
-	    let content =   HU.div([ATTR_CLASS,'ui-tooltip',ATTR_STYLE,HU.css('font-size','80%')],
+	    let style = HU.css('font-size','80%') +this.getTooltipStyle('');
+	    let content =   HU.div([ATTR_CLASS,'ui-tooltip',ATTR_STYLE,style],
 				   this.getRecordHtml(record, null, tt));
 
 	    tooltip.innerHTML = content;
@@ -21876,9 +21884,14 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let chartRect = chartContainer.getBoundingClientRect();
 	    let pageX = this.tooltipEvent.pageX;
             let pageY = this.tooltipEvent.pageY;
+	    pageX = +this.getTooltipX(pageX);
+	    pageY = +this.getTooltipY(pageY);	    
+	    let right = chartRect.left+chartRect.width;
+	    if(pageX+400>right) pageX=right-400;
 	    tooltip.style.left = pageX+'px';
 	    tooltip.style.top =(pageY+20)+'px';
 	    tooltip.style.display = 'block';
+	    
 	},
 
 	getDoDyamicTooltip: function() {
