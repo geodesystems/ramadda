@@ -279,6 +279,31 @@ public class GeoUtils {
     }
 
 
+    public static double metersToFeet(double meters) {
+	return meters*3.28084;
+    }
+
+    public static double kilometersToMiles(double km) {
+	return km*0.621371;
+    }
+    public static double metersToMiles(double m) {
+	return m*0.000621371;
+    }    
+
+    public static double kilometersToMeters(double km) {
+	return km*1000;
+    }
+    
+
+    public static int estimateWindowSize(double avgPointSpacingMeters, double smoothDistanceMeters) {
+	int size = (int)Math.round(smoothDistanceMeters / avgPointSpacingMeters);
+	// Ensure it's at least 3 and odd
+	if (size < 3) size = 3;
+	if (size % 2 == 0) size += 1;
+	return size;
+    }
+
+
     /**
      * Taken from the C WGS84_xyz_to_geo  in postion.c
      *
@@ -833,6 +858,18 @@ public class GeoUtils {
     private static String cleanAddress(String s) {
 	return s.toLowerCase().replaceAll("[-_]+"," ").replaceAll("\\s\\s+"," ");
     }
+
+    public static double haversineDistance(double lat1,double lon1,double lat2, double lon2) {
+        final double R = 6371000; // Earth radius in meters
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+	    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+	    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
 
     public static class TiledObject {
 	public double latitude;
