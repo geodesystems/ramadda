@@ -228,6 +228,10 @@ h6 {
     text-decoration:underline;
 }
 
+.underline {
+    text-decoration:underline !important;
+}
+
 .ramadda-page-ltitle  {
     font-size:200%;
     text-align:left;
