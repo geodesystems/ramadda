@@ -1216,6 +1216,9 @@ public interface Constants {
     public static final String PROP_OUTPUTHANDLERS = "ramadda.outputhandlers";
 
     public static final String PROP_PORT = "ramadda.port";
+    public static final String PROP_SSLPORT = "ramadda.sslport";    
+    public static final String PROP_EXTERNAL_PORT = "ramadda.external.port";    
+    public static final String PROP_EXTERNAL_SSLPORT = "ramadda.external.sslport";    
 
     public static final String PROP_USE_FIXED_HOSTNAME =
         "ramadda.usefixedhostname";

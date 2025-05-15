@@ -743,7 +743,10 @@ public class Admin extends RepositoryManager {
                     installationComplete = null;
 
                     String[] propArgs = new String[] { PROP_REPOSITORY_NAME,
-                            PROP_HOSTNAME, PROP_PORT, PROP_REPOSITORY_NAME,
+						       PROP_HOSTNAME, 
+						       PROP_EXTERNAL_PORT,
+						       PROP_EXTERNAL_SSLPORT,
+						       PROP_REPOSITORY_NAME,
                             PROP_REPOSITORY_DESCRIPTION };
 
 
@@ -1302,7 +1305,7 @@ public class Admin extends RepositoryManager {
         csb.append(HU.formTable());
         csb.append(
             HU.row(
-                HU.colspan(msgHeader("Site Information"), 2)));
+                HU.colspan(msgHeader("Server Information"), 2)));
         String allSslCbx =
             HU.space(3)
             + HU.labeledCheckbox(
@@ -1311,21 +1314,23 @@ public class Admin extends RepositoryManager {
 		"Force all connections to be secure");
 
         String sslMsg =
-            "Note: To enable ssl see the <a target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
+            "Note: To enable ssl see the <a class=underline target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
+        csb.append(HU.formEntryTop("",
+				   getPageHandler().showDialogNote(sslMsg)));
+	csb.append(HU.formEntry(msgLabel("SSL"),  allSslCbx));
         csb.append(
-            HU.formEntryTop(
-                msgLabel("SSL"),
-                getPageHandler().showDialogNote(sslMsg) + HU.br()
-                + allSslCbx));
-
-
+		   HU.formEntryTop("",
+				   getPageHandler().showDialogNote("If you are proxying RAMADDA through an external service (e.g., Apache) you can define different HTTP and HTTTP ports to use when RAMADDA creates absolute URLs")));
 	HU.formEntry(csb,
 			    msgLabel("Hostname"),
 			    HU.input(PROP_HOSTNAME,formPropValue(request,PROP_HOSTNAME,""), HU.SIZE_40));
 
 	HU.formEntry(csb,
-			    msgLabel("HTTP Port"),
-			    HU.input(PROP_PORT, formPropValue(request,PROP_PORT,""), HU.SIZE_5));
+			    msgLabel("External HTTP Port"),
+			    HU.input(PROP_EXTERNAL_PORT, formPropValue(request,PROP_EXTERNAL_PORT,""), HU.SIZE_5));
+	HU.formEntry(csb,
+			    msgLabel("External HTTPS Port"),
+			    HU.input(PROP_EXTERNAL_SSLPORT, formPropValue(request,PROP_EXTERNAL_SSLPORT,""), HU.SIZE_5));	
 
         String cbx = HU.labeledCheckbox(
 					       PROP_USE_FIXED_HOSTNAME, "true",
@@ -1736,8 +1741,8 @@ public class Admin extends RepositoryManager {
 
 
 
-        getRepository().writeGlobal(request, PROP_HOSTNAME);
-        getRepository().writeGlobal(request, PROP_PORT);
+        getRepository().writeGlobal(request, PROP_EXTERNAL_PORT);
+        getRepository().writeGlobal(request, PROP_EXTERNAL_SSLPORT);
 
         String useFixed = "" + request.get(PROP_USE_FIXED_HOSTNAME, false);
 

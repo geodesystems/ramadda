@@ -524,14 +524,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	throws Exception {
         super(port);
         this.parentRepository = parentRepository;
-        init(args, port);
+        init(args, port,-1);
     }
 
     public Repository(String[] args, int port) throws Exception {
         this(null, args, port);
     }
 
-    public void init(String[] args, int port) throws Exception {
+    public void init(String[] args, int port,int sslPort) throws Exception {
         //NOTE: Only do this for now so we can have snotel data
         trustAllCertificates();
 
@@ -541,6 +541,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	javax.naming.spi.NamingManager.setInitialContextFactoryBuilder(env -> { throw new javax.naming.NamingException("JNDI disabled"); });
 
         setPort(port);
+	if(sslPort>0) {
+	    setHttpsPort(sslPort);
+	}
         LogUtil.setTestMode(true);
         //This takes a second or two so do it in a thread
         Misc.run(new Runnable() {
@@ -1118,6 +1121,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else if (arg.equals("-port")) {
                 //skip
                 i++;
+            } else if (arg.equals("-sslport")) {
+                //skip
+                i++;		
             } else if (arg.equals("-home") || arg.equals("-ramadda_home")) {
                 String homeDir = args[++i];
                 cmdLineProperties.put(PROP_REPOSITORY_HOME, homeDir);
@@ -1248,13 +1254,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         readOnly = getProperty(PROP_READ_ONLY, false);
         doCache  = getProperty(PROP_DOCACHE, true);
 
-        int sslPort = -1;
-        String ssls = getPropertyValue(PROP_SSL_PORT,
-				       (String) null, false);
-        if ((ssls != null) && (ssls.trim().length() > 0)) {
-            sslPort = Integer.parseInt(ssls.trim());
-        }
-	if(sslPort>0) setHttpsPort(sslPort);
+        int sslPort = getHttpsPort();
+	if(sslPort<=0) {
+	    String ssls = getPropertyValue(PROP_SSL_PORT,
+					   (String) null, false);
+	    if ((ssls != null) && (ssls.trim().length() > 0)) {
+		sslPort = Integer.parseInt(ssls.trim());
+	    }
+	    if(sslPort>0) setHttpsPort(sslPort);
+	}
 
         if (readOnly) {
             println("RAMADDA: running in readonly mode");
@@ -5210,6 +5218,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public String getRepositoryEmail() {
         return getProperty(PROP_ADMIN_EMAIL, "");
     }
+
+    public int getExternalHttpsPort() {
+	String ext = getProperty(PROP_EXTERNAL_SSLPORT,null);
+	if(ext!=null) return Integer.parseInt(ext);
+        return getHttpsPort();
+    }
+
+    public int getExternalHttpPort(int dflt) {
+	String ext = getProperty(PROP_EXTERNAL_PORT,null);
+	if(ext!=null) return Integer.parseInt(ext);
+        return dflt;
+    }    
 
     public ServerInfo getServerInfo() throws Exception {
         int    sslPort = getHttpsPort();

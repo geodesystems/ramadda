@@ -580,14 +580,23 @@ public class Request implements Constants, Cloneable {
 
     public String getAbsoluteUrl(RequestUrl url) {
         String path = repository.getUrlBase() + url.getPath();
-
         return getAbsoluteUrl(path);
     }
+
+    private String absoluteUrlPrefix;
 
     public String getAbsoluteUrl(String url) {
         if (url.startsWith("http:") || url.startsWith("https:")) {
             return url;
         }
+	if(absoluteUrlPrefix==null) {
+	    absoluteUrlPrefix = getAbsoluteUrlPrefix();
+	    //	System.err.println("Request.getAbsoluteUrl:" + absoluteUrlPrefix);
+	}
+	return absoluteUrlPrefix + url;
+    }
+
+    private String getAbsoluteUrlPrefix() {
         int     port;
         String  protocol;
         boolean alwaysHttps = repository.getAlwaysHttps();
@@ -606,19 +615,20 @@ public class Request implements Constants, Cloneable {
                 }
             }
         }
-	if(protocol.equals("http"))
-	    port     = getServerPort();
-	else
-            port     = getRepository().getHttpsPort();
 
-	//	System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
+	if(protocol.equals("http"))
+	    port     = getExternalHttpPort();
+	else
+            port     = getExternalHttpsPort();
+
+
         if (port == 80) {
-            return protocol + "://" + getServerName() + url;
+            return protocol + "://" + getServerName();
         } else {
             if (protocol.equals("https") && (port == 443)) {
-                return protocol + "://" + getServerName() + url;
+                return protocol + "://" + getServerName();
             }
-            return protocol + "://" + getServerName() + ":" + port + url;
+            return protocol + "://" + getServerName() + ":" + port;
         }
     }
 
@@ -1921,6 +1931,16 @@ public class Request implements Constants, Cloneable {
 
         return serverName;
     }
+
+
+    public int getExternalHttpsPort() {
+	return getRepository().getExternalHttpsPort();
+    }
+
+    public int getExternalHttpPort() {
+	return getRepository().getExternalHttpPort(getServerPort());
+    }
+
 
     public int getServerPort() {
         if ( !repository.useFixedHostnameForAbsoluteUrls()) {
