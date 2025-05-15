@@ -20,6 +20,11 @@ if [ -z "$RAMADDA_PORT" ]; then
     RAMADDA_PORT=8080
 fi
 
+#SSL Port RAMADDA runs on
+if [ -z "$RAMADDA_SSL_PORT" ]; then
+    RAMADDA_PORT=443
+fi
+
 #Java settings
 if [ -z "$JAVA" ]; then
     JAVA=java
@@ -45,9 +50,9 @@ fi
 
 ## Add -Djava.awt.headless=true if there are problems running remotely on a Mac
 
-echo "Running RAMADDA: ${JAVA} -Xmx${JAVA_MEMORY}   -DLC_CTYPE=UTF-8 -Dsun.jnu.encoding=UTF-8  -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -Dramadda_home=${RAMADDA_HOME} $* " > ${RAMADDA_PARENT_DIR}/service.out
+echo "Running RAMADDA: ${JAVA} -Xmx${JAVA_MEMORY}   -DLC_CTYPE=UTF-8 -Dsun.jnu.encoding=UTF-8  -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -sslport ${RAMADDA_SSL_PORT} -Dramadda_home=${RAMADDA_HOME} $* " > ${RAMADDA_PARENT_DIR}/service.out
 
-${JAVA} -Xmx${JAVA_MEMORY}   -DLC_CTYPE=UTF-8 -Dsun.jnu.encoding=UTF-8  -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -Dramadda_home=${RAMADDA_HOME} $* 
+${JAVA} -Xmx${JAVA_MEMORY}   -DLC_CTYPE=UTF-8 -Dsun.jnu.encoding=UTF-8  -Dfile.encoding=utf-8 -jar ${RAMADDA_DIR}/lib/ramadda.jar -port ${RAMADDA_PORT} -sslport ${RAMADDA_SSL_PORT}  -Dramadda_home=${RAMADDA_HOME} $* 
 
 
 
