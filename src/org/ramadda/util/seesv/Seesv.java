@@ -4404,6 +4404,7 @@ public class Seesv implements SeesvCommands {
 			dttm = new Date();
 		    } else {
 			SimpleDateFormat sdf = Utils.findDateFormat(date);
+			if(sdf==null) throw new IllegalArgumentException("Unable to find date format for:"  +date);
 			dttm = sdf.parse(date);
 		    }
 		    ctx.addProcessor(new DateOps.DateAfter(col,  dttm));
