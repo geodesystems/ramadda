@@ -5,8 +5,12 @@ if {0} {
     to set this up:
 
     create a download, processed and echo directory
+
     the echo directory should  contain a sdecho.csv which holds the echo facility data:
     FAC_NAME,FAC_CITY,FAC_STATE,FAC_COUNTY,FAC_LAT,FAC_LONG,NPDES_IDS
+
+    The ECHO facilities can be downloaded from
+    https://ramadda.org/repository/entry/show?entryid=fa7ecc74-17df-4dbd-b0bf-a532a9970050
 
     this sources an sdids.tcl which sets a global array to a list of npdes IDS
     set ::ids 
