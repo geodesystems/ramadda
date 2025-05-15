@@ -2510,7 +2510,7 @@ var Utils =  {
             return  HU.href(url,url);
         } 
         let id = toks[1];
-        let autoplay  = attrs["autoplay"]||"false";
+        let autoplay  = Utils.getBoolean(attrs["autoplay"]);
         let playerId = "video_1";
         let embedUrl = "//www.youtube.com/embed/" + id +
             "?enablejsapi=1&autoplay=" + (autoplay=="true"?"1":"0") +"&playerapiid=" + playerId;
