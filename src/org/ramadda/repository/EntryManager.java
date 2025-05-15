@@ -5095,7 +5095,7 @@ public class EntryManager extends RepositoryManager {
             encoded = new String(Utils.decodeBase64(encoded));
         }
 
-        String extraDesc = request.getString(ARG_DESCRIPTION + "_extra",
+        String extraDesc = request.getSanitizedString(ARG_DESCRIPTION + "_extra",
                                              (String) null);
 
         String textFromUser = request.getString(ARG_DESCRIPTION,
