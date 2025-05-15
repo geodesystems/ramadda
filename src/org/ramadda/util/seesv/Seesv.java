@@ -4656,7 +4656,7 @@ public class Seesv implements SeesvCommands {
 		ctx.addProcessor(new Converter.ColumnScaler(getCols(args.get(++i)),
 							    parseDouble(args.get(++i),0),
 							    parseDouble(args.get(++i),1),
-							    parseDouble(args.get(++i),1)));
+							    parseDouble(args.get(++i),0)));
 
 		return i;
 	    });
@@ -5804,11 +5804,12 @@ public class Seesv implements SeesvCommands {
 	}
     }
 
-    public static double parseDouble(String s, double ...dflt) {
+    public static double parseDouble(String s, double ...dflts) {
 	try {
 	    s = s.trim();
-	    if(s.length()==0) return Double.NaN;
-	    if(s.equals("null")) return Double.NaN;	    
+	    double dflt = dflts.length>0?dflts[0]:Double.NaN;
+	    if(s.length()==0) return dflt;
+	    if(s.equals("null")) return dflt;
 	    if(s.startsWith("random:")) {
 		List<String> toks = Utils.split(s,":",true,true);
 		if(toks.size()==1) {
@@ -5822,8 +5823,8 @@ public class Seesv implements SeesvCommands {
 	    }
 	    return Double.parseDouble(s.trim());
 	} catch(NumberFormatException nfe) {
-	    if(dflt.length>0)
-		return dflt[0];
+	    if(dflts.length>0)
+		return dflts[0];
 	    throw new RuntimeException("Error parsing:" +s);
 	}
     }
