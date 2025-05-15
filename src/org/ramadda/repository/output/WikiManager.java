@@ -1604,7 +1604,7 @@ public class WikiManager extends RepositoryManager
     }
 
     public Result processWikify(Request request) throws Exception {
-        String wiki = request.getUnsafeString("wikitext", "");
+        String wiki = request.getSanitizedString("wikitext", "");
 	wiki = Request.cleanXSS(wiki);
         if (request.defined(ARG_ENTRYID)) {
             if ( !request.get("doImports", true)) {
