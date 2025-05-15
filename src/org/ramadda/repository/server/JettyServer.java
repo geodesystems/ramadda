@@ -36,37 +36,30 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.Properties;
 
-/**
- */
 public class JettyServer implements Constants {
-
     private String[] args;
-
     private int port;
-
     private int sslPort = -1;
-
     private Server server;
-
     private RepositoryServlet baseServlet;
-
     private ServletContextHandler context;
-
     private Repository baseRepository;
-
     private Hashtable<RepositoryServlet, ServletHolder> servletToHolder =
         new Hashtable<RepositoryServlet, ServletHolder>();
 
     public JettyServer(String[] args) throws Throwable {
         this.args = args;
-
         boolean hadPort = false;
         port = 8080;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
                 hadPort = true;
-                port    = Integer.parseInt(args[i + 1]);
-            }
+		i++;
+                port    = Integer.parseInt(args[i]);
+            } else if (args[i].equals("-sslport")) {
+		i++;
+		sslPort =  Integer.parseInt(args[i]);
+	    }
         }
 
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -91,7 +84,6 @@ public class JettyServer implements Constants {
         constraintSecurityHandler.addConstraintMapping(mappingEnableEverythingButTrace);
 
         GzipHandler gzipHandler = new GzipHandler();
-        //        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz");
         gzipHandler.addIncludedMethods("GET", "POST");
         context.setGzipHandler(gzipHandler);
         baseServlet    = addServlet();
@@ -101,7 +93,8 @@ public class JettyServer implements Constants {
             port = baseRepository.getProperty("ramadda.port", port);
         }
         baseRepository.setPort(port);
-        sslPort = baseRepository.getHttpsPort();
+	if(sslPort<0)
+	    sslPort = baseRepository.getHttpsPort();
 	QueuedThreadPool threadPool = new QueuedThreadPool();
 	int threads = baseRepository.getProperty("ramadda.server.threadcount",-1);
 	if(threads>0) {
@@ -134,7 +127,7 @@ public class JettyServer implements Constants {
         Properties properties  = new Properties();
         String[]   cmdLineArgs = args;
 
-        return addServlet(new RepositoryServlet(this, cmdLineArgs, port,
+        return addServlet(new RepositoryServlet(this, cmdLineArgs, port,sslPort,
 						properties));
     }
 
@@ -236,11 +229,14 @@ public class JettyServer implements Constants {
             sslContextFactory.setCertAlias(certAlias);
         }
 
+	sslContextFactory.setIncludeProtocols("TLSv1.2", "TLSv1.3");
         sslContextFactory.setIncludeCipherSuites(
 						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
 						 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
 						 "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
 						 "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_AES_128_GCM_SHA256",
+						 "TLS_AES_256_GCM_SHA384",
 						 "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
 						 "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256",
 						 "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
@@ -279,7 +275,12 @@ public class JettyServer implements Constants {
 						 "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
 						 "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA");
 
+
+	// Prefer server ciphers over client preference
+	sslContextFactory.setUseCipherSuitesOrder(true);
         sslContextFactory.setExcludeCipherSuites(
+						 "^.*_(MD5|RC4|DES|3DES)_.*$",
+						 "^TLS_RSA_.*$",
 						 "SSL_RSA_WITH_3DES_EDE_CBC_SHA", "SSL_DHE_RSA_WITH_DES_CBC_SHA",
 						 "SSL_DHE_DSS_WITH_DES_CBC_SHA", "EXP-RC4-MD5",
 						 "EDH-RSA-DES-CBC-SHA", "EXP-EDH-RSA-DESCBC-SHA", "DES-CBC-SHA",
