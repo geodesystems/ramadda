@@ -1891,13 +1891,13 @@ public class ImageOutputHandler extends OutputHandler {
 	Utils.add(playerArgs,"id",JsonUtil.quote(playerId));
 
         if (request.get("loopdelay", 0) > 0) {
-            Utils.add(playerArgs,"delay", request.getString("loopdelay", "0"));
+            Utils.add(playerArgs,"delay", request.get("loopdelay", 0));
         } else {
             Object v = mainEntry.getValue(request, "delay");
             if (v != null) {
                 int delay =  Integer.parseInt(v.toString());
                 if (delay > 0) {
-		    Utils.add(playerArgs,"delay","" + delay);
+		    Utils.add(playerArgs,"delay",delay);
                 }
             }
         }
@@ -1910,20 +1910,33 @@ public class ImageOutputHandler extends OutputHandler {
 	if(small!=null)
 	    Utils.add(playerArgs,"smallButtons",small);
 	for(String[] attr:new String[][]{
-		{"autoPlay",autoPlay},
-		{"showControls","true"},
-		{"showButtons","true"},
-		{"boxesPosition",null},
-		{"boxHeight",null},		
-		{"showLabel","true"},
-		{"showDate","true"},
-		{"compact","false"},
-		{"lazyLoading",null},
-		{"currentImage",null},		
-		{"imageHeight",null}
+		{"autoPlay",autoPlay,"^(true|false)$"},
+		{"showControls","true","^(true|false)$"},
+		{"showButtons","true","^(true|false)$"},
+		{"boxesPosition",null,"^(top|bottom|none)$"},
+		{"showLabel","true","^(true|false)$"},
+		{"showDate","true","^(true|false)$"},
+		{"compact","false","^(true|false)$"},
+		{"lazyLoading",null,"^(true|false)$"},
+		{"currentImage",null,"^[0-9]+$"},		
+		{"imageHeight",null},
+		{"boxHeight",null}
 	    }) {
+	    //Only get the arg from the request if there is also a regexp to verify
 	    String key = attr[0];
-	    String v  = request.getString(key,null);
+	    String v  = null;
+	    if(attr.length>2)
+		v = request.getUnsafeString(key,null);
+	    if(v!=null) {
+		v=v.trim();
+		if(attr.length>2) {
+		    if(!v.matches(attr[2])) {
+			throw new IllegalArgumentException("Bad request value:" + key+"=" + v);
+		    }
+		}
+	    }
+
+
 	    if(v==null)
 		v  = Utils.getProperty(props,key,attr[1]);
 	    if(v!=null)
@@ -1934,7 +1947,7 @@ public class ImageOutputHandler extends OutputHandler {
         playerTemplate = playerTemplate.replaceAll("\\$\\{imageArgs\\}",
                 JsonUtil.map(playerArgs));
 
-        String width     = Utils.getProperty(props,"width",request.getString(ARG_WIDTH, ""));
+        String width     = Utils.getProperty(props,"width","");
 	String imageHtml = HU.div("",HU.attr("id",playerId+"animation") +
 				  HU.cssClass("imageplayer-image"));
 
