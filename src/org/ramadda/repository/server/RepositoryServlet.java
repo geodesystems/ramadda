@@ -19,15 +19,11 @@ import org.ramadda.util.IO;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
-
 import ucar.unidata.util.Misc;
 
 import java.io.*;
-
 import java.net.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -40,48 +36,34 @@ import java.util.Properties;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-/**
- *
- *
- * @author RAMADDA Development Team
- * @version $Revision: 1.3 $
- */
+
 @SuppressWarnings("unchecked")
 public class RepositoryServlet extends HttpServlet implements Constants {
-
-    /**  */
     public static boolean debugRequests = false;
-
-    /**  */
     public static boolean debugMultiPart = false;
-
     private SimpleDateFormat sdf =
         RepositoryUtil.makeDateFormat("E, d M yyyy HH:m Z");
-
     private String[] args;
 
     /** Repository object that will be instantiated */
     private Repository repository;
-
     private Object standAloneServer;
 
-    public RepositoryServlet() {
-        //        System.err.println("RepositoryServlet:ctor");
-    }
+    public RepositoryServlet() {}
 
     public RepositoryServlet(Object standAloneServer, String[] args,
-                             int port, Properties properties)
+                             int port, int sslPort, Properties properties)
             throws Exception {
         this.standAloneServer = standAloneServer;
         this.args             = args;
-        createRepository(port, properties, false);
+        createRepository(port, sslPort, properties, false);
     }
 
     public RepositoryServlet(String[] args, Repository repository)
             throws Exception {
         this.args       = args;
         this.repository = repository;
-        initRepository(this.repository, false);
+        initRepository(this.repository, false,-1);
     }
 
     public Repository getRepository() {
@@ -106,7 +88,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 webAppProperties.load(is);
             }
         }
-        createRepository(request.getServerPort(), webAppProperties, true);
+        createRepository(request.getServerPort(), -1,webAppProperties, true);
     }
 
     /**
@@ -119,7 +101,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
      * @throws Exception _more_
      */
     private synchronized void createRepository(int port,
-            Properties webAppProperties, boolean checkSsl)
+					       int sslPort,
+					       Properties webAppProperties, boolean checkSsl)
             throws Exception {
         if (repository != null) {
             return;
@@ -131,25 +114,27 @@ public class RepositoryServlet extends HttpServlet implements Constants {
         }
         Class      repositoryClass = Misc.findClass(repositoryClassName);
         Repository tmpRepository = (Repository) repositoryClass.getDeclaredConstructor().newInstance();
-        tmpRepository.init(getInitParams(), port);
+        tmpRepository.init(getInitParams(), port,sslPort);
         //        Repository tmpRepository = new Repository(getInitParams(), port);
         tmpRepository.init(webAppProperties);
-        initRepository(tmpRepository, checkSsl);
+
+
+        initRepository(tmpRepository, checkSsl,sslPort);
         repository = tmpRepository;
 	repository.setRunningStandalone(true);
     }
 
-    private void initRepository(Repository tmpRepository, boolean checkSsl) {
+    private void initRepository(Repository tmpRepository, boolean checkSsl,int sslPort) {
         if (checkSsl) {
-            int sslPort = -1;
             String ssls = tmpRepository.getPropertyValue(PROP_SSL_PORT,
                               (String) null, false);
-            if ((ssls != null) && (ssls.trim().length() > 0)) {
-                sslPort = Integer.parseInt(ssls.trim());
-            }
+	    if(sslPort<0) {
+		if ((ssls != null) && (ssls.trim().length() > 0)) {
+		    sslPort = Integer.parseInt(ssls.trim());
+		}
+	    }
             if (sslPort >= 0) {
-                tmpRepository.getLogManager().logInfo("SSL: using port:"
-                        + sslPort);
+                tmpRepository.getLogManager().logInfo("SSL: using port:" + sslPort);
                 tmpRepository.setHttpsPort(sslPort);
             }
         }
