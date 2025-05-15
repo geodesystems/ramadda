@@ -1295,6 +1295,9 @@ public class Request implements Constants, Cloneable {
         String scriptPattern = "(?i)script";
         s = s.replaceAll(scriptPattern, "_NA_");
 
+	//iframes
+	s = s.replaceAll("(?i)<\\s*iframe","_NA_");
+
         return s;
     }
 
