@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.geodata.model;
 
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.ImportHandler;
 import org.ramadda.repository.Repository;
@@ -17,7 +16,6 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -26,31 +24,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-/**
- */
 public class OpendapImporter extends ImportHandler {
-
-    /** _more_ */
     public static final String TYPE_OPENDAP = "OPENDAP";
 
-
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     */
     public OpendapImporter(Repository repository) {
         super(repository);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -60,20 +40,9 @@ public class OpendapImporter extends ImportHandler {
     }
 
 
-    /**
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param fileName _more_
-     * @param stream _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     @Override
     public InputStream getStream(Request request, Entry parent,
-                                 String fileName, InputStream stream)
+                                 String fileName, InputStream stream,StringBuilder message)
             throws Exception {
         if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_OPENDAP)) {
             return null;
@@ -93,19 +62,6 @@ public class OpendapImporter extends ImportHandler {
 
     }
 
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param parent _more_
-     * @param sb _more_
-     * @param csv _more_
-     *
-     * @throws Exception _more_
-     */
     private void processLinks(Request request, Entry parent, StringBuffer sb,
                               String csv)
             throws Exception {
@@ -191,7 +147,5 @@ public class OpendapImporter extends ImportHandler {
         }
 
     }
-
-
 
 }

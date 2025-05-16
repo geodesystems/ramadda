@@ -64,7 +64,7 @@ public class OwlConverter extends ImportHandler {
      */
     @Override
     public InputStream getStream(Request request, Entry parent,
-                                 String fileName, InputStream stream)
+                                 String fileName, InputStream stream, StringBuilder message)
             throws Exception {
         String  ext   = IOUtil.getFileExtension(fileName);
         boolean isOwl = ext.equals(".rdf") || ext.equals(".owl");
