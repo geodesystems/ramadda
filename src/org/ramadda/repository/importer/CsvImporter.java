@@ -227,9 +227,26 @@ public class CsvImporter extends ImportHandler {
 			    if(!row.indexOk(idx)) continue;
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
-			    String newAttrs=XU.attrs("type",newType,"name",v,"parent",id);
-			    sb.append(XU.openTag("entry",newAttrs));
-			    sb.append(XU.closeTag("entry"));
+			    for(String name:Utils.split(v,";",true,true)) {
+				String newAttrs="";
+				StringBuffer contents=null;
+				int index = name.toLowerCase().indexOf("description:");
+				if(index>=0) {
+				    String desc = name.substring(index+1).substring("description".length()).trim();
+				    name = name.substring(0,index).trim();
+				    if(Utils.stringDefined(desc)) {
+					contents= new StringBuffer();
+					contents.append(XU.openTag("description",""));
+					XU.appendCdata(contents, desc);
+					contents.append(XU.closeTag("description"));
+				    }
+				}
+				newAttrs=XU.attrs("type",newType,"name",name,"parent",id);
+
+				sb.append(XU.openTag("entry",newAttrs));
+				if(contents!=null) sb.append(contents);
+				sb.append(XU.closeTag("entry"));
+			    }
 			}
 			return row;
 		    } catch (Exception exc) {
@@ -256,7 +273,7 @@ public class CsvImporter extends ImportHandler {
         sb.append("</entries>\n");
 	source.close();
 	if(myMessage.length()>0) {
-	    message.append(getPageHandler().showDialogWarning("Some columns we not processed:" +
+	    message.append(getPageHandler().showDialogWarning("Some columns were not processed:" +
 							      myMessage));
 	}
 
