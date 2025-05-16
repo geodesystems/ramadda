@@ -5452,6 +5452,7 @@ public class EntryManager extends RepositoryManager {
 
     public  Result processEntryImportInner(Request request, Entry parent, String file, InputStream fis) throws Exception {	
 
+	StringBuilder msg = new StringBuilder();
         String entriesXml = null;
         Hashtable<String, File> origFileToStorage = new Hashtable<String,
 	    File>();
@@ -5470,7 +5471,7 @@ public class EntryManager extends RepositoryManager {
 				 getRepository().getImportHandlers()) {
                             InputStream newStream =
                                 importHandler.getStream(request, parent,
-							entryName, entriesStream);
+							entryName, entriesStream,msg);
                             if (newStream != null) {
                                 entriesStream = newStream;
 
@@ -5504,7 +5505,7 @@ public class EntryManager extends RepositoryManager {
                 for (ImportHandler importHandler :
 			 getRepository().getImportHandlers()) {
                     InputStream newStream = importHandler.getStream(request,
-								    parent, file, entriesStream);
+								    parent, file, entriesStream,msg);
                     if ((newStream != null) && (newStream != entriesStream)) {
                         entriesStream = newStream;
 
@@ -5528,7 +5529,6 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
-	StringBuilder msg = new StringBuilder();
         List<Entry> newEntries = processEntryXml(request, root, parent,
 						 origFileToStorage,msg);
 
