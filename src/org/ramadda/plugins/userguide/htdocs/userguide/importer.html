@@ -35,7 +35,6 @@ pre {
 
 :navtop
 
-:heading CSV Importer
 You can define one or more entries in a spreadsheet and import them.
 The steps are:
 <ul>
@@ -46,7 +45,7 @@ The steps are:
 <li> Press Submit
 </ul>
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=8"><img  src="images/csvimporter.png?version=8"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=710"><img  src="images/csvimporter.png?version=710"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
 :p
 
 :heading The Spreadsheet
@@ -110,8 +109,9 @@ defined in the column header. e.g.:
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1;Item 2;...</td></tr>
 </table>
 
+This results in an entry "Collection 1" that has multiple children entries of type type_archive_item - "Item 1", "Item 2", etc.
 
-:heading Entry columns
+:heading Entry Columns
 Entries may have fixed columns.
 For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.
 These properties can be set by having a column of the form:
@@ -127,13 +127,13 @@ For example:
 <tr><td>type</td><td>name</td><td>column:type_archive_collection.shelf_location</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
 </table>
-
+:p
 Or without the entry type prefix:
 <table class=ex>
 <tr><td>type</td><td>name</td><td>column:shelf_location</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
 </table>
-
+:p
 The column names can be viewed from the 
 <a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
 Click on an entry label to see the entry type details, e.g.
@@ -144,9 +144,11 @@ Click on an entry label to see the entry type details, e.g.
 
 :heading Metadata Types
 One or more metadata types can be added. Create a column of the form:
-:br
-metadata:<i>metadata type ID</i>
-:br
+
+<pre>
+metadata:<i>&lt;metadata type ID&gt;</i>
+</pre>
+
 The available metadata can be viewed at
 <a target=_other href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
 Clicking on the type ID
@@ -162,6 +164,17 @@ are adding one archive_note with type="Scope" and note="Some scope".
 </table>
 
 
+
+:heading Specifying Permissions
+You  can add  <a href=access.html>entry permissions </a> by having a "private" column.
+The values of this column can be "true", "yes", "false" or blank. 
+If this is set for an entry then it's "view" permission is set to "none".
+<table class=ex>
+<tr><td>type</td><td>name</td><td>private</td><tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>true</td></tr>
+<tr><td></td><td>collection 2</td><td>false</td></tr>
+<tr><td></td><td>collection 3</td><td></td></tr>
+</table>
 
 
 
