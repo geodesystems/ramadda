@@ -8,9 +8,7 @@ package org.ramadda.repository;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.TwoFacedObject;
-
 import java.io.InputStream;
-
 import java.util.List;
 
 public abstract class ImportHandler extends RepositoryManager {
@@ -39,7 +37,7 @@ public abstract class ImportHandler extends RepositoryManager {
     }
 
     public InputStream getStream(Request request, Entry parent,
-                                 String fileName, InputStream stream)
+                                 String fileName, InputStream stream,StringBuilder message)
             throws Exception {
         return null;
     }
