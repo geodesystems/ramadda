@@ -10,15 +10,16 @@ The steps are:
 <ul>
 <li> Prepare your spreadsheet (below). 
 <li> Navigate to the entry you want to import under
-<li>  From the entry popup menu select "Import"
+<li> From the entry popup menu select "Import"
 <li> Under "Type:" select "CSV Import". You can either provide an XLSX spreadsheet or a CSV file.
 <li> Press Submit
 </ul>
+
+[ht::screenshot images/csvimporter.png {CSV Import} {border=1}]
 :p
 
 :heading The Spreadsheet
-The upload can either be an XLSX or a CSV. Here is an
-example 
+The upload can either be an XLSX or a CSV. Here is an example 
 <a href="examples/collections2.xlsx">collections2.xlsx</a> spreadsheeet.
 :p
 <ul>
@@ -64,6 +65,52 @@ The parent of the "file 2" entry is the series "s2".
 <tr><td></td><td>file 2</td><td></td><td>s2</td></tr>
 </table>
 
+:heading Adding Children
+You can add one or more children entries to the given row entry by having a column with a header of the form:
+<pre>
+new:&lt;entry type&gt;
+Child entry name 1;Child entry name 2;...
+</pre>
+The values in the "new:" column are ";" separated names of the entry. The type is
+defined in the column header. e.g.:
+
+<table class=ex>
+<tr><td>type</td><td>name</td><td>new:type_archive_item</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1;Item 2;...</td></tr>
+</table>
+
+
+:heading Entry columns
+Entries may have fixed columns.
+For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.
+These properties can be set by having a column of the form:
+:br
+<i>column:&lt;entry_type.column&gt;</i>
+:br
+The <i>&lt;entry_type.&gt;</i> prefix is optional.
+:br
+If an entry created does not have that property then it is ignored.
+:p
+For example:
+<table class=ex>
+<tr><td>type</td><td>name</td><td>column:type_archive_collection.shelf_location</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
+</table>
+
+Or without the entry type prefix:
+<table class=ex>
+<tr><td>type</td><td>name</td><td>column:shelf_location</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
+</table>
+
+The column names can be viewed from the 
+<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
+Click on an entry label to see the entry type details, e.g.
+<a target=_other href="{{root}}/entry/types.html?type=type_archive_collection">
+  {{root}}/entry/types.html?type=type_archive_collection</a>.
+
+
+
 :heading Metadata Types
 One or more metadata types can be added. Create a column of the form:
 :br
@@ -83,24 +130,8 @@ are adding one archive_note with type="Scope" and note="Some scope".
 <tr><td>type_archive_collection</td><td>collection 1</td><td>subject1;subject 2</td><td>Scope:Some scope</td></tr>
 </table>
 
-:heading Entry properties
-Entries may have fixed properties. For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.
-These properties can be set by having a column of the form:
-:br
-<i>entry_type.column</i>
-:br
-The <i>entry_type.</i> prefix is optional. If an entry created does not have that property then it is ignored.
-:p
-For example:
-<table class=ex>
-<tr><td>type</td><td>name</td><td>type_archive_collection.shelf_location</td></tr>
-<tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
-</table>
 
-The column names can be viewed from the 
-<a target=_other href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
-Click on an entry label to see the entry type details, e.g.
-<a target=_other href="{{root}}/entry/types.html?type=type_archive_collection">
-  {{root}}/entry/types.html?type=type_archive_collection</a>.
+
+
 
 [ht::foot]
