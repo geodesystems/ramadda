@@ -5221,13 +5221,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     public int getExternalHttpsPort() {
 	String ext = getProperty(PROP_EXTERNAL_SSLPORT,null);
-	if(ext!=null) return Integer.parseInt(ext);
+	if(Utils.stringDefined(ext)) return Integer.parseInt(ext);
         return getHttpsPort();
     }
 
     public int getExternalHttpPort(int dflt) {
 	String ext = getProperty(PROP_EXTERNAL_PORT,null);
-	if(ext!=null) return Integer.parseInt(ext);
+	if(Utils.stringDefined(ext)) return Integer.parseInt(ext);
         return dflt;
     }    
 
