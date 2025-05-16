@@ -244,6 +244,7 @@ h6 {
 
 .ramadda-heading-outer  {
     text-align:center;
+    margin-top:0.5em;
 }
 
 ramadda-heading, .ramadda-page-heading a, a.ramadda-page-heading, .ramadda-heading, .ramadda-lheading, .ramadda-blurb {
