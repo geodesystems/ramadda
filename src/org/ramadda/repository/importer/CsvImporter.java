@@ -1,6 +1,6 @@
 /**
-Copyright (c) 2008-2025 Geode Systems LLC
-SPDX-License-Identifier: Apache-2.0
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.repository.importer;
@@ -45,35 +45,18 @@ import java.util.Hashtable;
 import java.util.List;
 
 
-/**
- */
+
 @SuppressWarnings("unchecked")
 public class CsvImporter extends ImportHandler {
-
     public static final XmlUtil XU = null;    
-
-    /** _more_ */
     public static final String TYPE_CSV = "CSV";
-
-    /** _more_ */
     public static final String ARG_CSV_TYPE = "csv.type";
 
-    /**
-     * ctor
-     *
-     * @param repository _more_
-     */
     public CsvImporter(Repository repository) {
         super(repository);
     }
 
 
-    /**
-     * _more_
-     *
-     * @param importTypes _more_
-     * @param formBuffer _more_
-     */
     @Override
     public void addImportTypes(List<TwoFacedObject> importTypes,
                                Appendable formBuffer) {
@@ -84,27 +67,32 @@ public class CsvImporter extends ImportHandler {
 
     @Override
     public InputStream getStream(Request request, Entry parent,
-                                 String fileName, InputStream stream)
-            throws Exception {
+                                 String fileName, InputStream stream,
+				 StringBuilder message)
+	throws Exception {
         if ( !request.getString(ARG_IMPORT_TYPE, "").equals(TYPE_CSV)) {
             return null;
         }
 
+	StringBuilder myMessage =new StringBuilder();
         final StringBuffer sb = new StringBuffer("<entries>\n");
 	Processor myProcessor = new Processor() {
+		int entryCnt=0;
 		Row headerRow;
 		int typeIdx=-1;
 		int nameIdx=-1;
+		int privateIdx=-1;
 		int descIdx=-1;
 		int idIdx=-1;
 		int parentIdx=-1;
 		Hashtable<String,Integer> metadataIdx= new Hashtable<String,Integer>();
+		Hashtable<String,Integer> newIdx= new Hashtable<String,Integer>();
 		Hashtable<String,Integer> propertyIdx= new Hashtable<String,Integer>();		
 		String currentType="";
 		int cnt=0;
 		@Override
 		public org.ramadda.util.seesv.Row handleRow(TextReader textReader,
-							   org.ramadda.util.seesv.Row row) {
+							    org.ramadda.util.seesv.Row row) {
 		    try {
 			//Check for comments
 			if(row.size()>0 && row.getString(0,"").trim().startsWith("#")) return row;
@@ -121,17 +109,29 @@ public class CsvImporter extends ImportHandler {
 				    nameIdx=i;
 				} else if(_field.equals("type")) {
 				    typeIdx=i;
+				} else if(_field.equals("private")) {
+				    privateIdx=i;				    
 				} else if(_field.equals("description")) {
 				    descIdx=i;
 				} else if(_field.equals("id")) {
 				    idIdx=i;
 				} else if(_field.equals("parent")) {
 				    parentIdx=i;
+
+				} else if(_field.startsWith("new:")) {
+				    String type= _field.substring("new:".length()).trim();
+				    newIdx.put(type,i);				    
 				} else if(_field.startsWith("metadata:")) {
-				    String mtd= _field.substring("metadata:".length());
+				    String mtd= _field.substring("metadata:".length()).trim();
 				    metadataIdx.put(mtd,i);
+				} else if(_field.startsWith("property:")) {
+				    String mtd= _field.substring("property:".length()).trim();
+				    metadataIdx.put(mtd,i);				    
+				} else if(_field.startsWith("column:")) {
+				    String prop= _field.substring("column:".length()).trim();
+				    propertyIdx.put(prop,i);
 				} else {
-				    propertyIdx.put(_field,i);
+				    myMessage.append(HU.div("Column: " + field));
 				}
 			    }
 			    if(typeIdx==-1) throw new IllegalArgumentException("input data must have a \"type\" column");
@@ -149,13 +149,18 @@ public class CsvImporter extends ImportHandler {
 			String attrs = "";
 			if(row.indexOk(nameIdx)) {
 			    String name = row.getString(nameIdx,"");
-			     attrs += XU.attrs("name",name, "type",currentType);
+			    attrs += XU.attrs("name",name, "type",currentType);
 			}
+			entryCnt++;
+			String id = null;
 			if(idIdx>=0 && row.indexOk(idIdx)) {
-			    String id = row.getString(idIdx,"");
-			    if(!stringDefined(id)) id = "id" + cnt;
-			    attrs+=XU.attrs("id",id);
+			    id = row.getString(idIdx,"");
 			}
+			if(!stringDefined(id)) {
+			    id   = "entry_" + (entryCnt);
+			}
+			attrs+=XU.attrs("id",id);
+
 			if(parentIdx>=0 && row.indexOk(parentIdx)) {
 			    String parent = row.getString(parentIdx,"");
 			    if(Utils.stringDefined(parent)) {
@@ -188,6 +193,13 @@ public class CsvImporter extends ImportHandler {
 			    sb.append(XU.closeTag(prop));
 			}
 
+			if(privateIdx>=0 && row.indexOk(privateIdx)) {
+			    String v = row.getString(privateIdx,"").toLowerCase();
+			    if(v.equals("true") || v.equals("yes")) {			    
+				sb.append("<permissions><permission action=\"view\"><role role=\"none\"/></permission></permissions>\n");
+			    }
+			}
+
 			for (String mtdType : metadataIdx.keySet()) {
 			    int idx = metadataIdx.get(mtdType);
 			    if(!row.indexOk(idx)) continue;
@@ -201,20 +213,24 @@ public class CsvImporter extends ImportHandler {
 				for(String mtdValue: subToks) {
 				    index++;
 				    sb.append(XU.openTag("attr",
-						     XU.attrs("index",""+index,
-							      "encoded","false")));
+							 XU.attrs("index",""+index,
+								  "encoded","false")));
 				    XU.appendCdata(sb,mtdValue);
 				    sb.append(XU.closeTag("attr"));
 				}
 				sb.append(XU.closeTag("metadata"));
-
 			    }
 			}
-			
-
-
-
 			sb.append(XU.closeTag("entry"));
+			for (String newType : newIdx.keySet()) {
+			    int idx = newIdx.get(newType);
+			    if(!row.indexOk(idx)) continue;
+			    String v = row.getString(idx,"");
+			    if(!Utils.stringDefined(v)) continue;
+			    String newAttrs=XU.attrs("type",newType,"name",v,"parent",id);
+			    sb.append(XU.openTag("entry",newAttrs));
+			    sb.append(XU.closeTag("entry"));
+			}
 			return row;
 		    } catch (Exception exc) {
 			fatal(textReader, "Processing CSV import", exc);
@@ -237,9 +253,14 @@ public class CsvImporter extends ImportHandler {
 	DataProvider.CsvDataProvider provider =
 	    new DataProvider.CsvDataProvider(textReader,0);
 	csvUtil.process(textReader, provider,0);
-        sb.append("</entries>");
+        sb.append("</entries>\n");
 	source.close();
-	//	System.out.println(sb);
+	if(myMessage.length()>0) {
+	    message.append(getPageHandler().showDialogWarning("Some columns we not processed:" +
+							      myMessage));
+	}
+
+	message.append(HU.div("New entries:"));
         return new ByteArrayInputStream(sb.toString().getBytes());
     }
 
