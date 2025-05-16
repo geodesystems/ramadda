@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri May  9 14:27:47 MDT 2025";
+var build_date="RAMADDA build date: Fri May 16 05:48:49 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -1066,6 +1066,7 @@ function Annotations(display,records) {
     if(prop) this.fields = [];
     this.map = {}
     let add = (record,index,annotation)=>{
+	console.log(record.getDate());
 	annotation.record = record;
 	if(!this.map[index])
 	    this.map[index] = [];
@@ -1074,106 +1075,104 @@ function Annotations(display,records) {
 	    this.map[record.getId()] = [];
 	this.map[record.getId()].push(annotation);	
     }
-    if(prop) {
-	this.annotations=[];
-	this.legend = "";
-	let labelCnt = 0;
-	let toks = prop.split(";");
-	this.hasRange = false;
-	for(let i=0;i<toks.length;i++) {
-	    let toks2 = toks[i].split(",");
-	    //index,label,description,url
-	    if(toks2.length<2) continue;
-	    let index = toks2[0].trim();
-	    let label = toks2[1];
-	    if(label.trim() == "") {
-		labelCnt++;
-		label  =""+labelCnt;
-	    }
-	    let desc = toks2.length<2?"":toks2[2];
-	    let url = toks2.length<3?null:toks2[3];
-	    let isDate = false;
-	    let annotation = {label: label,description: desc,toString:function() {return this.label+" " + this.description;}   };
-	    this.annotations.push(annotation);
-	    if(index.match(/^[0-9]+$/)) {
-		index = parseFloat(index);
-	    } else {
-		let index2 = null;
-		if(index.indexOf(":")>=0) {
-		    index2 = index.split(":")[1];
-		    index = index.split(":")[0];
-		}
-		let desc2=null;
-		
-		if(index=="today") {
-		    index = new Date();
-		} else {
-		    index = Utils.parseDate(index,false);
-		}
-		if(index2) {
-		    this.hasRange = true;
- 		    if(index2=="today") {
-			index2 = Utils.formatDateYYYYMMDD(new Date());
-		    } else {
-			index2 = Utils.parseDate(index2,false);
-		    }
-		    desc  = desc||(this.display.formatDate(index)+"-"+ this.display.formatDate(index2));
-		    annotation.index2 = index2.getTime();
-		} else {
-		    desc  = desc||this.display.formatDate(index)
-		}
-		isDate = true;
-	    }
-	    annotation.index = isDate?index.getTime():index;
-	    let legendLabel = desc;
-
-	    if(url!=null) {
-		legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
-	    }
-	    this.legend+= HU.b(label)+":" + legendLabel+" ";
+    if(!prop) return;
+    this.annotations=[];
+    this.legend = "";
+    let labelCnt = 0;
+    let toks = prop.split(";");
+    this.hasRange = false;
+    for(let i=0;i<toks.length;i++) {
+	let toks2 = toks[i].split(",");
+	//index,label,description,url
+	if(toks2.length<2) continue;
+	let index = toks2[0].trim();
+	let label = toks2[1];
+	if(label.trim() == "") {
+	    labelCnt++;
+	    label  =""+labelCnt;
 	}
-	for(let aidx=0;aidx<this.annotations.length;aidx++) {
-	    let annotation = this.annotations[aidx];
-	    let minIndex = null;
-	    let minRecord = null;
-	    let minDistance = null;
-	    for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
-		let ele = records[rowIdx];
-		let record = ele.record?ele.record:ele;
-		let row = this.display.getDataValues(records[rowIdx]);
-		let index = row[0];
-		if(index.v) index=  index.v;
-		if(record) index = record.getTime();
-		let distance =  Number.MAX_VALUE;
-		if(annotation.index2) {
-		    //range
- 		    if(index>=annotation.index && index<=annotation.index2) {
-			distance = 0;
-		    } else {
-			distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
-		    }
-		    if(distance==0) {
-			add(record,rowIdx,annotation);
-		    }
+	let desc = toks2.length<2?"":toks2[2];
+	let url = toks2.length<3?null:toks2[3];
+	let isDate = false;
+	let annotation = {label: label,description: desc,toString:function() {return this.label+" " + this.description;}   };
+	this.annotations.push(annotation);
+	if(index.match(/^#[0-9]+$/)) {
+	    index = parseFloat(index);
+	} else {
+	    let index2 = null;
+	    if(index.indexOf(":")>=0) {
+		index2 = index.split(":")[1];
+		index = index.split(":")[0];
+	    }
+	    let desc2=null;
+	    if(index=="today") {
+		index = new Date();
+	    } else {
+		index = Utils.parseDate(index,false);
+	    }
+	    if(index2) {
+		this.hasRange = true;
+ 		if(index2=="today") {
+		    index2 = Utils.formatDateYYYYMMDD(new Date());
 		} else {
-		    distance = Math.abs(annotation.index-index);
+		    index2 = Utils.parseDate(index2,false);
 		}
-		if(minIndex == null) {
+		desc  = desc||(this.display.formatDate(index)+"-"+ this.display.formatDate(index2));
+		annotation.index2 = index2.getTime();
+	    } else {
+		desc  = desc||this.display.formatDate(index)
+	    }
+	    isDate = true;
+	}
+	annotation.index = isDate?index.getTime():index;
+	let legendLabel = desc;
+
+	if(url!=null) {
+	    legendLabel = HU.href(url, legendLabel,["target","_annotation"]);
+	}
+	this.legend+= HU.b(label)+":" + legendLabel+" ";
+    }
+    for(let aidx=0;aidx<this.annotations.length;aidx++) {
+	let annotation = this.annotations[aidx];
+	let minIndex = null;
+	let minRecord = null;
+	let minDistance = null;
+	for (let rowIdx = 0; rowIdx < records.length; rowIdx++) {
+	    let ele = records[rowIdx];
+	    let record = ele.record?ele.record:ele;
+	    let row = this.display.getDataValues(records[rowIdx]);
+	    let index = row[0];
+	    if(index.v) index=  index.v;
+	    if(record) index = record.getTime();
+	    let distance =  Number.MAX_VALUE;
+	    if(annotation.index2) {
+		//range
+ 		if(index>=annotation.index && index<=annotation.index2) {
+		    distance = 0;
+		} else {
+		    distance = Math.min(Math.abs(annotation.index-index),Math.abs(annotation.index2-index));
+		}
+		if(distance==0) {
+		    add(record,rowIdx,annotation);
+		}
+	    } else {
+		distance = Math.abs(annotation.index-index);
+	    }
+	    if(minIndex == null) {
+		minIndex = rowIdx;
+		minDistance = distance;
+		minRecord = record;
+	    } else {
+		if(distance<minDistance) {
 		    minIndex = rowIdx;
 		    minDistance = distance;
 		    minRecord = record;
-		} else {
-		    if(distance<minDistance) {
-			minIndex = rowIdx;
-			minDistance = distance;
-			minRecord = record;
-		    }
 		}
 	    }
-	    if(minIndex!=null) {
-		add(minRecord,minIndex,annotation);
+	}
+	if(minIndex!=null) {
+	    add(minRecord,minIndex,annotation);
 
-	    }
 	}
     }
 }
