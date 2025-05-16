@@ -22,7 +22,7 @@ fi
 
 #SSL Port RAMADDA runs on
 if [ -z "$RAMADDA_SSL_PORT" ]; then
-    RAMADDA_PORT=443
+    RAMADDA_SSL_PORT=8443
 fi
 
 #Java settings
