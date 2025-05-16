@@ -80,6 +80,15 @@ defined in the column header. e.g.:
 
 This results in an entry "Collection 1" that has multiple children entries of type type_archive_item - "Item 1", "Item 2", etc.
 
+You can specify a description for the new child entry
+by adding a "description:&lt;....&gt;", e.g.:
+<table class=ex>
+<tr><td>type</td><td>name</td><td>new:type_archive_item</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1 description: some description;Item 2;...</td></tr>
+</table>
+
+
+
 :heading Entry Columns
 Entries may have fixed columns.
 For example, the Archive Collection entry type has a Collection number, a Form number, a Shelf location and a Size.

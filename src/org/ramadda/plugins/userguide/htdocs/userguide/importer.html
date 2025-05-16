@@ -45,7 +45,7 @@ The steps are:
 <li> Press Submit
 </ul>
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=710"><img  src="images/csvimporter.png?version=710"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=1000"><img  src="images/csvimporter.png?version=1000"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
 :p
 
 :heading The Spreadsheet
@@ -110,6 +110,15 @@ defined in the column header. e.g.:
 </table>
 
 This results in an entry "Collection 1" that has multiple children entries of type type_archive_item - "Item 1", "Item 2", etc.
+
+You can specify a description for the new child entry
+by adding a "description:&lt;....&gt;", e.g.:
+<table class=ex>
+<tr><td>type</td><td>name</td><td>new:type_archive_item</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1 description: some description;Item 2;...</td></tr>
+</table>
+
+
 
 :heading Entry Columns
 Entries may have fixed columns.
