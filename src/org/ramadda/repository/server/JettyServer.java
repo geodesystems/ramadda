@@ -8,6 +8,9 @@ package org.ramadda.repository.server;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Repository;
 
+import org.ramadda.util.Utils;
+
+
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -53,12 +56,16 @@ public class JettyServer implements Constants {
         port = 8080;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-port")) {
-                hadPort = true;
 		i++;
-                port    = Integer.parseInt(args[i]);
+		if(Utils.stringDefined(args[i])) {
+		    hadPort = true;
+		    port    = Integer.parseInt(args[i]);
+		}
             } else if (args[i].equals("-sslport")) {
 		i++;
-		sslPort =  Integer.parseInt(args[i]);
+		if(Utils.stringDefined(args[i])) {
+		    sslPort =  Integer.parseInt(args[i]);
+		}
 	    }
         }
 
