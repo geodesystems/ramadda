@@ -1,9 +1,58 @@
 
+
+###################################################################
+Java
+###################################################################
+RAMADDA requires Java 1.8 or above to run.
+
+
+###################################################################
+Initial setup on Un*x systems
+###################################################################
+Here is the recommended setup to run RAMADDA stand-alone.
+Create a ramadda directory to hold the @RELEASE@ release 
+and copy the ramaddaenv.sh file from the release directory
+to the ramadda directory. 
+
+Looks like:
+ramadda
+      @RELEASE@
+      ramaddaenv.sh
+
+The ramaddaenv.sh gets sourced and contains
+the location of Java and the ports that RAMADDA should run on.
+This way when you reinstall RAMADDA the local configuration
+does not get lost. Edit the copied ramaddaenv.sh to point to
+where Java is located, what port to run RAMADDA on and the location
+of the RAMADDA home directory.
+
+To run RAMADDA just do:
+
+   sh @RELEASE@/ramadda.sh
+
+By default this  will run RAMADDA on port HTTP 8080 with the RAMADDA
+home directory (where it stores everything) set to
+<user home>/.ramadda and will use a local Java Derby database.
+
+See the Configuration section below for more details but an easy way to 
+change these settings is with command line arguments:
+
+    sh @RELEASE@/ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
+
+See the Database section below on how to change the database
+
+You need to complete the configuration at:
+http://localhost:8080/repository
+
+For more information see:
+http://ramadda.org/repository/userguide/installing.html
+
+
 ###################################################################
 RAMADDA Home Directory
 ###################################################################
-RAMADDA, on both Un*x and Windows, requires a home directory where it creates the database,
-saves files, etc. There is documentation here:
+RAMADDA, on both Unix, Mac or Windows, requires a home directory where it creates
+the database, saves files, etc. There is documentation here:
 https://ramadda.org/repository/userguide/installing.html
 
 You will need to create this directory. By default RAMADDA looks for:
@@ -28,47 +77,6 @@ You will need this password when doing the final web-based  RAMADDA configuratio
 
 
 ###################################################################
-Initial setup on Un*x systems
-###################################################################
-
-Here is the recommended setup to run RAMADDA stand-alone.
-Create a ramadda directory to hold the @RELEASE@ release 
-and copy the ramaddaenv.sh file from the release directory
-to the ramadda directory.
-
-Looks like:
-ramadda
-      @RELEASE@
-      ramaddaenv.sh
-
-Edit the copied ramaddaenv.sh to point to where Java is located, what port to run 
-RAMADDA on and where is the RAMADDA home directory.
-
-RAMADDA requires Java 1.8 or above to run.
-
-To run RAMADDA just do:
-
-   sh @RELEASE@/ramadda.sh
-
-By default this  will run RAMADDA on port 8080 with the RAMADDA home 
-directory (where it stores everything) set to <user home>/.ramadda and 
-will use a local Java Derby database.
-
-See the Configuration section below for more details but an easy way to 
-change these settings is with command line arguments:
-
-    sh @RELEASE@/ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
-
-See the Database section below on how to change the database
-
-You need to complete the configuration at:
-http://localhost:8080/repository
-
-For more information see:
-http://ramadda.org/repository/userguide/installing.html
-
-
-###################################################################
 Running as a service in the background
 ###################################################################
 
@@ -84,12 +92,10 @@ sh ramaddaService.sh status
 
 
 For Windows it looks like running the Non-Sucking Service Manager
-is an easy way to set up RAMADDA as a service. It appears that
-you can specify environment variables and command line arguments
-through the service
-
+is an easy way to set up RAMADDA as a service.
 https://nssm.cc/
-
+It appears that you can specify environment variables and command line arguments
+through the service
 
 
 
