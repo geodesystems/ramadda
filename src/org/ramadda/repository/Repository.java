@@ -1470,6 +1470,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 	if(isHuman!=null) {
+	    getLogManager().logInfoAndPrint("Human check:", "failed: " + request.getIp());
 	    sb.append(getPageHandler().showDialogWarning("Sorry, we could not verify that you are a human"));
 	}
 
