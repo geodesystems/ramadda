@@ -1303,6 +1303,8 @@ public class Admin extends RepositoryManager {
         sb.append(HU.vspace());
         StringBuffer csb = new StringBuffer();
         csb.append(HU.formTable());
+	/*********
+		  Don't put this in the admin interface as it can be set in install.properties
         csb.append(
             HU.row(
                 HU.colspan(msgHeader("Server Information"), 2)));
@@ -1338,18 +1340,12 @@ public class Admin extends RepositoryManager {
 					       "Use the fixed hostname:port in absolute URLs instead of the request's info");
 	HU.formEntry(csb, msgLabel("Absolute URLs"),  cbx);
 
+	***********/
+
         //Force the creation of some of the managers
         getRepository().getMailManager();
         //        getRepository().getFtpManager();
         getRepository().getMapManager();
-
-
-        for (RepositoryManager manager :
-                getRepository().getRepositoryManagers()) {
-            manager.addAdminSettings(request, csb);
-        }
-
-
 	HU.row(csb, HU.colspan(msgHeader("Extra Properties"), 2));
         csb.append(
             HU.formEntryTop(
@@ -1358,6 +1354,12 @@ public class Admin extends RepositoryManager {
                     PROP_PROPERTIES,
                     formPropValue(request,PROP_PROPERTIES,
 				 "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 10, 80)));
+
+        for (RepositoryManager manager :
+                getRepository().getRepositoryManagers()) {
+            manager.addAdminSettings(request, csb);
+        }
+
 
 
 
