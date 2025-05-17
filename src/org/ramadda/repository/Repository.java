@@ -1413,7 +1413,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		    if(humanCookie==null) {
 			humanCookie = getGUID();
 			writeGlobal(PROP_ISHUMAN_COOKIE_VALUE,humanCookie);
-			getLogManager().logInfoAndPrint("Human check: created cookie value:"  + humanCookie);
+			getLogManager().logInfoAndPrint("Human check:","created cookie value:"  + humanCookie);
 		    }
 		}
 	    }
@@ -1448,7 +1448,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	String isHuman = request.getString(ATTR_ISHUMAN,null);
 	if(isHuman!=null && isHuman.equals("yes")) {
-	    getLogManager().logInfoAndPrint("Human check: verified:" + request.getIp());
+	    getLogManager().logInfoAndPrint("Human check:", "verified: " + request.getIp());
 	    request.addCookie(COOKIE_ISHUMAN, getRepository().makeCookie(request, "/",getIsHumanCookieValue(),false));
 	    return null;
 	}
@@ -1482,10 +1482,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
 	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
 	getPageHandler().sectionClose(request,sb);
-	String logMessage = "Human check: checking:" + " IP:" + request.getIp() +" count: " +count;
+	String logMessage = "checking:" + " IP:" + request.getIp() +" count: " +count;
 	String entryId = request.getString(ARG_ENTRYID,null);
 	if(entryId!=null) logMessage+=" entry:" + entryId;
-	getLogManager().logInfoAndPrint(logMessage);
+	getLogManager().logInfoAndPrint("Human check:",logMessage);
 	Result result =  new Result("Prove you are a human",sb);
 	result.setResponseCode(Result.RESPONSE_UNAUTHORIZED);
 	if(count>5) {

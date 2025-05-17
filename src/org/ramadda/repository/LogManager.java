@@ -314,6 +314,14 @@ public class LogManager extends RepositoryManager {
         logInfo("user:" + request.getUser() + " -- " + message);
     }
 
+    /**
+       add in the date between the prefix and suffix
+     */
+    public void logInfoAndPrint(String prefix,String suffix) {
+	logInfoAndPrint(prefix+sdf.format(new Date()) +" " + suffix);
+    }
+
+
     public void logInfoAndPrint(String message) {
         logInfo(message);
         System.err.println(message);
