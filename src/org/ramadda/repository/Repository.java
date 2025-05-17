@@ -98,6 +98,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+import java.util.function.Consumer;
+
 import org.json.*;
 
 import java.awt.Image;
@@ -609,22 +611,60 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    System.err.println("RAMADDA: install password: "
 			       + installPassword);
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("#This is a generated password used in the install process\n");
-	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword + "\n\n");
-	    sb.append("#If you have a certificate for https access installed uncomment and set these property values\n");
-	    sb.append("#ramadda.ssl.password=<the password>\n");
-	    sb.append("#ramadda.ssl.keypassword=<the keystore password>\n");
-	    sb.append("#ramadda.ssl.port=443\n");
+	    Consumer<String> header = label->{
+		sb.append("\n");
+		sb.append("\n##############################\n");
+		sb.append("#" +label);
+		sb.append("\n##############################\n");
+	    };
+	    Consumer<String> ex = label->{
+		sb.append("#" +label+"\n");
+	    };
+
+	    header.accept("Note: other properties can be configured in repository.properties");
+
+	    header.accept("Install password");
+	    ex.accept("This is a generated password used in the install process");
+	    sb.append(PROP_INSTALL_PASSWORD + "=" + installPassword + "\n");
+	    header.accept("HTTPS configuration");
+	    ex.accept("If you have a https certificate installed uncomment and set these property values");
+	    ex.accept("ramadda.ssl.password=<the password>");
+	    ex.accept("ramadda.ssl.keypassword=<the keystore password>");
+	    ex.accept("ramadda.ssl.port=443");
 	    sb.append("\n");	    
-	    sb.append("#You can override the location of the keystore. The default is: <this directory>/keystore.jks\n");
-	    sb.append("#ramadda.ssl.keystore=alternative path to keystore\n");
+	    ex.accept("You can override the location of the keystore. The default is: <this directory>/keystore.jks");
+	    ex.accept("ramadda.ssl.keystore=alternative path to keystore");
 	    sb.append("\n");	    
-	    sb.append("#If you want to disable ssl set this to true\n");
-	    sb.append("#ramadda.ssl.ignore=true\n");
-	    sb.append("\n\n");	    
-	    sb.append("#If you need to reset the admin password then uncomment the below\n");
-	    sb.append("#ramadda.admin=admin:some_password\n");
-	    sb.append("\n\n");	    
+	    ex.accept("Force all connections to be https");
+	    ex.accept(PROP_ACCESS_ALLSSL+"=true");
+	    sb.append("\n");	    
+	    ex.accept("If you want to disable ssl set this to true");
+	    ex.accept("ramadda.ssl.ignore=true");
+
+	    header.accept("Admin password");
+	    ex.accept("If you need to reset the admin password then uncomment the below");
+	    ex.accept("ramadda.admin=admin:some_password");
+    
+	    header.accept("Proxying");
+	    ex.accept("If you are proxying (e.g., through Apache) to a RAMADDA running stand-alone");
+	    ex.accept("This RAMADDA can run on internal HTTP and HTTPS ports but sometimes it generates");	    
+	    ex.accept("absolute urls that need to reference the external ports (e.g., 80 and 443)");
+	    ex.accept("Uncomment the below and set them to the appropriate external ports");
+	    ex.accept("And set the use fixed hostname property to true");	    
+	    ex.accept(PROP_EXTERNAL_PORT+"=80");
+	    ex.accept(PROP_EXTERNAL_SSLPORT+"=443");
+	    ex.accept(PROP_USE_FIXED_HOSTNAME+"=true");	    
+	    sb.append("\n");	    
+	    ex.accept("Set this to the external hostname");	    
+	    ex.accept(PROP_HOSTNAME+"=somesite.org");	    
+
+	    header.accept("Email server");
+	    ex.accept("To configure email specify the SMTP user and password");
+	    ex.accept("ramadda.admin.smtp.user=");
+	    ex.accept("ramadda.admin.smtp.password=");
+
+	    sb.append("\n\n\n\n");	    
+
 
 	    try (FileOutputStream fos = new FileOutputStream(install)) {
 		IOUtil.write(fos, sb.toString());
