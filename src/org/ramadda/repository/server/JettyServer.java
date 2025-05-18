@@ -33,9 +33,12 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.security.Constraint;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.LogUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -241,16 +244,28 @@ public class JettyServer implements Constants {
 	sslContextFactory.setUseCipherSuitesOrder(true);
 	// Prefer server ciphers over client preference
         sslContextFactory.setRenegotiationAllowed(false);
-	sslContextFactory.setIncludeCipherSuites(
-					 // Preferred AEAD ciphers (TLS 1.2)
-						 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-						 "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-						 "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-						 // Safe fallback CBC ciphers for Java 8 compatibility
-						 "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-						 "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
-						 );
+	File ciphers = new File(baseRepository.getStorageManager().localizePath("%repositorydir%/ciphers.txt"));
+	if(ciphers.exists()) {
+	    List<String> list = new ArrayList<String>();
+	    for (String cipher :  Utils.split(IOUtil.readContents(ciphers), "\n",true, true)) {
+		if(cipher.startsWith("#")) continue;
+		System.err.println("Adding:" + cipher);
+		list.add(cipher);
+	    }
+	    //	    System.err.println("LIST:" + list);
+	    sslContextFactory.setIncludeCipherSuites(Utils.toStringArray(list));
+	} else {
+	    sslContextFactory.setIncludeCipherSuites(
+						     // Preferred AEAD ciphers (TLS 1.2)
+						     "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+						     "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+						     "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+						     "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+						     // Safe fallback CBC ciphers for Java 8 compatibility
+						     "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+						     "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+						     );
+	}
 
 	/* old suites
         sslContextFactory.setIncludeCipherSuites(
