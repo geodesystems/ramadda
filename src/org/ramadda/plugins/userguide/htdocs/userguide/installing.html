@@ -440,15 +440,14 @@ your browser will alert you to a security warning which you need to accept.
 Both of these methods use Java's  <i>keytool</i> program which comes with the standard Java install.
 :p
 To generate a self-signed certificate from the command line run:
+
 +pre addCopy=true
 keytool -genkey -keyalg RSA -keystore keystore.jks
 -pre
 
 This will prompt you for some information and a password.
 There is more information <a href="http://docs.oracle.com/javase/tutorial/security/toolsign/step3.html">here</a>.
-
-
-
+:p
 If you have an existing certificate  you need both the keytool and
 <a href=https://www.openssl.org/>openssl </a> installed.
 Consult <a href=https://stackoverflow.com/questions/11952274/how-can-i-create-keystore-from-an-existing-certificate-abc-crt-and-abc-key-fil>web documentation</a> on how to generate the keystore.jks file from your existing
@@ -471,6 +470,17 @@ ramadda.ssl.port=443
 #ramadda.ssl.ignore=true
 
 </pre>
+
+
+<a name="allssl"></a>
+<h3>Forcing SSL</h3>
+You can force all connections to be HTTPS with the following property in a .properties file:
+
++pre addCopy=true
+ramadda.access.allssl=true
+-pre
+
+
 
 
 <a name="letsencrypt"></a>
