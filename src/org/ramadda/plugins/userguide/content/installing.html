@@ -441,13 +441,7 @@ ramadda.ssl.port=443
 </pre>
 
 
-<a name="allssl"></a>
-<h3>Forcing SSL</h3>
-You can force all connections to be HTTPS with the following property in a .properties file:
 
-+pre addCopy=true
-ramadda.access.allssl=true
--pre
 
 
 
@@ -494,6 +488,15 @@ ramadda.usefixedhostname=true
 #Set this to the external hostname
 ramadda.hostname=somesite.org
 -pre
+
+
+<a name="allssl"></a>
+You can also force all connections to be HTTPS with the following property in a .properties file:
+
++pre addCopy=true
+ramadda.access.allssl=true
+-pre
+
 
 +note
 Please note: Prior to  May 2025 the above properties would get added to RAMADDA's
