@@ -742,12 +742,8 @@ public class Admin extends RepositoryManager {
                     //Make  sure to clear this so it gets read again
                     installationComplete = null;
 
-                    String[] propArgs = new String[] { PROP_REPOSITORY_NAME,
-						       PROP_HOSTNAME, 
-						       PROP_EXTERNAL_PORT,
-						       PROP_EXTERNAL_SSLPORT,
-						       PROP_REPOSITORY_NAME,
-                            PROP_REPOSITORY_DESCRIPTION };
+                    String[] propArgs = new String[] {PROP_REPOSITORY_NAME,
+						      PROP_REPOSITORY_DESCRIPTION };
 
 
                     for (String propArg : propArgs) {
@@ -873,15 +869,7 @@ public class Admin extends RepositoryManager {
             sb.append(
                 HU.row(
                     HU.colspan(msgHeader("Server Information"), 2)));
-            String hostname = "";
             String port     = "";
-            if (request.getHttpServletRequest() != null) {
-                hostname = request.getHttpServletRequest().getServerName();
-                //Don't do this because the install can be running under https
-                //and this port is the httpport
-                //port = "" + request.getHttpServletRequest().getServerPort();
-            }
-            hostname = request.getString(PROP_HOSTNAME, hostname);
             port     = request.getString(PROP_PORT, port);
 
             sb.append(
@@ -1303,44 +1291,6 @@ public class Admin extends RepositoryManager {
         sb.append(HU.vspace());
         StringBuffer csb = new StringBuffer();
         csb.append(HU.formTable());
-	/*********
-		  Don't put this in the admin interface as it can be set in install.properties
-        csb.append(
-            HU.row(
-                HU.colspan(msgHeader("Server Information"), 2)));
-        String allSslCbx =
-            HU.space(3)
-            + HU.labeledCheckbox(
-                PROP_ACCESS_ALLSSL, "true",
-                formPropValue(request,PROP_ACCESS_ALLSSL, false),
-		"Force all connections to be secure");
-
-        String sslMsg =
-            "Note: To enable ssl see the <a class=underline target=\"_help\" href=\"http://ramadda.org/repository/userguide/installing.html#ssl\">installation guide</a>";
-        csb.append(HU.formEntryTop("",
-				   getPageHandler().showDialogNote(sslMsg)));
-	csb.append(HU.formEntry(msgLabel("SSL"),  allSslCbx));
-        csb.append(
-		   HU.formEntryTop("",
-				   getPageHandler().showDialogNote("If you are proxying RAMADDA through an external service (e.g., Apache) you can define different HTTP and HTTTP ports to use when RAMADDA creates absolute URLs")));
-	HU.formEntry(csb,
-			    msgLabel("Hostname"),
-			    HU.input(PROP_HOSTNAME,formPropValue(request,PROP_HOSTNAME,""), HU.SIZE_40));
-
-	HU.formEntry(csb,
-			    msgLabel("External HTTP Port"),
-			    HU.input(PROP_EXTERNAL_PORT, formPropValue(request,PROP_EXTERNAL_PORT,""), HU.SIZE_5));
-	HU.formEntry(csb,
-			    msgLabel("External HTTPS Port"),
-			    HU.input(PROP_EXTERNAL_SSLPORT, formPropValue(request,PROP_EXTERNAL_SSLPORT,""), HU.SIZE_5));	
-
-        String cbx = HU.labeledCheckbox(
-					       PROP_USE_FIXED_HOSTNAME, "true",
-					       formPropValue(request, PROP_USE_FIXED_HOSTNAME, false),
-					       "Use the fixed hostname:port in absolute URLs instead of the request's info");
-	HU.formEntry(csb, msgLabel("Absolute URLs"),  cbx);
-
-	***********/
 
         //Force the creation of some of the managers
         getRepository().getMailManager();
@@ -1733,30 +1683,12 @@ public class Admin extends RepositoryManager {
 
 
         getRepository().writeGlobal(request, PROP_GOOGLEAPIKEYS, true);
-        //        getRepository().writeGlobal(request, PROP_FACEBOOK_CONNECT_KEY);
         getRepository().writeGlobal(PROP_NOSTYLE,
                                     "" + request.get(PROP_NOSTYLE, false));
 
 
         String ratings = "" + request.get(PROP_RATINGS_ENABLE, false);
         getRepository().writeGlobal(PROP_RATINGS_ENABLE, ratings);
-
-
-
-        getRepository().writeGlobal(request, PROP_EXTERNAL_PORT);
-        getRepository().writeGlobal(request, PROP_EXTERNAL_SSLPORT);
-
-        String useFixed = "" + request.get(PROP_USE_FIXED_HOSTNAME, false);
-
-        getRepository().writeGlobal(PROP_USE_FIXED_HOSTNAME, useFixed);
-
-        getRepository().writeGlobal(PROP_ACCESS_ALLSSL,
-                                    "" + request.get(PROP_ACCESS_ALLSSL,
-                                        false));
-
-
-
-
         getRepository().writeGlobal(PROP_UPLOAD_MAXSIZEGB,
                                     request.getString(PROP_UPLOAD_MAXSIZEGB,
                                         "10").trim());
@@ -1769,8 +1701,6 @@ public class Admin extends RepositoryManager {
         getRepository().writeGlobal(PROP_SYSTEM_MESSAGE,
                                     request.getString(PROP_SYSTEM_MESSAGE,
                                         ""));
-
-
 
 
         getRepository().writeGlobal(PROP_LOCALFILEPATHS,
