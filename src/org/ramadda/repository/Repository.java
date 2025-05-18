@@ -4074,6 +4074,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 		System.err.println("Bad httpheader property:" + prop);
 	    }
 	}
+	if(allSsl) {
+	    tmpHttpHeaders.add(new String[]{"Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload"});
+	}
+
+
+
 	httpHeaders = tmpHttpHeaders;
     }
 
