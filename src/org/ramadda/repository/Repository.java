@@ -2496,9 +2496,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
     public Properties readDatabaseProperties() {
-	//	System.err.println("readDatabaseProperties");
-	//	System.err.println(Utils.getStack(10));
+	//Clear the stored properties as we now just get these from .property files
         try {
+	    clearGlobals(PROP_ACCESS_ALLSSL,PROP_HOSTNAME,PROP_USE_FIXED_HOSTNAME,PROP_EXTERNAL_PORT,PROP_EXTERNAL_SSLPORT);
+
             Statement statement =
                 getDatabaseManager().select(Tables.GLOBALS.COLUMNS,
                                             Tables.GLOBALS.NAME,
@@ -4560,12 +4561,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
     }
 
+    public void clearGlobals(String ...names) throws Exception  {
+	for(String name:names)
+	    getDatabaseManager().delete(Tables.GLOBALS.NAME,
+					Clause.eq(Tables.GLOBALS.COL_NAME, name));
+    }
+
     public void writeGlobal(String name, String value) throws Exception {
-        getDatabaseManager().delete(Tables.GLOBALS.NAME,
-                                    Clause.eq(Tables.GLOBALS.COL_NAME, name));
-        getDatabaseManager().executeInsert(Tables.GLOBALS.INSERT,
-                                           new Object[] { name,
-							  value });
+	clearGlobals(name);
+	if(value!=null) {
+	    getDatabaseManager().executeInsert(Tables.GLOBALS.INSERT,
+					       new Object[] { name,
+							      value });
+	}
 
         if (name.equals(PROP_PROPERTIES)) {
             getDbProperties().load(
