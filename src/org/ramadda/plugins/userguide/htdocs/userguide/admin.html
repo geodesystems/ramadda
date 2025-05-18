@@ -33,23 +33,32 @@ pre {
 
 :navtop
 
+
+
+
 If you are a site administator there should be an &quot;Admin&quot; link should be shown in RAMADDA. This takes you to a set of Site Administration pages.
 <p>
 The main admin settings page consists of:
 
+
+
+
 <a name="contact"></a>
 :heading 9.16.0 <label>Site and Contact Information</label>
 
+The Site and Contact Information section lets you define extra properties, configure the
+server registry and email servers.
+:p
+The Extra Properties section allows you to specify any properties that may also be
+specified in the external .properties files in your RAMADDA home directory. The most common
+setting is configuring the site wide page template to use, e.g.:
++pre
+ramadda.html.template.default=fixedmapheader
+-pre
 
-For information regarding SSL see the <a href='faq.html#ssl'>FAQ</a>.
-
-<a name="hostname"></a>
-The Hostname and HTTP port should be set. RAMADDA uses these when it creates an absolute URL in some content  (e.g.,
-a generated THREDDS catalog).
-<p>
+:p
 For information on the Server Registry settings  see <a href='remoteservers.html'>remoteservers.html</a>.
-
-<p>
+:p
 Specify the RAMADDA administator email for when RAMADDA sends email to users.
 The Mail Server is the smtp mail server that RAMADDA can use to send email.
 If this is not defined then user's cannot reset their passwords via email.

@@ -466,6 +466,27 @@ sh  letsencrypt.sh -help
 The only downside to using a certificate from letsencrypt is that you need to update it every 3 months.
 
 
+:heading External Ports
+Sometimes a RAMADDA install runs behind a proxy server on a set of
+non-standard HTTP and HTTPS ports, e.g., through an Apache proxy.
+In this case you can set the HTTP and HTTPS ports as described above but,
+in some cases RAMADDA will create absolute urls that need to reference the
+external ports (e.g., 80 and 443). You can configure RAMADDA to uses those external
+ports and an external hostname when creating these absolute URLs with the following
+properties (note: in an initial install these will be in the install.properties file):
+
+
++pre addCopy=true
+ramadda.external.port=80
+ramadda.external.sslport=443
+ramadda.usefixedhostname=true
+
+#Set this to the external hostname
+ramadda.hostname=somesite.org
+-pre
+
+
+
 <h3>Building RAMADDA from source</h3>
 It is easy to build and run RAMADDA from Github.
 The RAMADDA Gihub site is at <a href="https://github.com/geodesystems/ramadda">https://github.com/geodesystems/ramadda</a>. 
