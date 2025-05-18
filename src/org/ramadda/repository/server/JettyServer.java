@@ -237,6 +237,22 @@ public class JettyServer implements Constants {
         }
 
 	sslContextFactory.setIncludeProtocols("TLSv1.2", "TLSv1.3");
+        sslContextFactory.setExcludeProtocols("SSLv3");
+	sslContextFactory.setUseCipherSuitesOrder(true);
+	// Prefer server ciphers over client preference
+        sslContextFactory.setRenegotiationAllowed(false);
+	sslContextFactory.setIncludeCipherSuites(
+					 // Preferred AEAD ciphers (TLS 1.2)
+						 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+						 "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+						 "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+						 // Safe fallback CBC ciphers for Java 8 compatibility
+						 "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+						 "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+						 );
+
+	/* old suites
         sslContextFactory.setIncludeCipherSuites(
 						 "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
 						 "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
@@ -281,10 +297,9 @@ public class JettyServer implements Constants {
 						 "TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA",
 						 "TLS_DHE_DSS_WITH_CAMELLIA_128_CBC_SHA",
 						 "TLS_RSA_WITH_CAMELLIA_128_CBC_SHA");
+	*/
 
 
-	// Prefer server ciphers over client preference
-	sslContextFactory.setUseCipherSuitesOrder(true);
         sslContextFactory.setExcludeCipherSuites(
 						 "^.*_(MD5|RC4|DES|3DES)_.*$",
 						 "^TLS_RSA_.*$",
@@ -294,9 +309,7 @@ public class JettyServer implements Constants {
 						 "EXP-DES-CBC-SHA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
 						 "TLS_DHE_RSA_WITH_AES_256_CBC_SHA");
 
-        sslContextFactory.setExcludeProtocols("SSLv3");
 
-        sslContextFactory.setRenegotiationAllowed(false);
 
         HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
         httpsConfig.addCustomizer(new SecureRequestCustomizer());
