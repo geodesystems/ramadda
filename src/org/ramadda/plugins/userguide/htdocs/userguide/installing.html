@@ -424,11 +424,11 @@ ramadda.ssl.port=&lt;the ssl port&gt;
 to a properties file in the RAMADDA home directory (See <a href="#properties">above</a>).
 <p>
 
-<div class="ramadda-box-yellow">
++note
 Note: When you define an SSL port then RAMADDA will automatically redirect all login and admin requests
 to that port. If your Tomcat server is not really configured for SSL then you will not be able to access RAMADDA. 
 See the <a href='faq.html#fixssl'>FAQ</a> for how to fix this.
-</div>
+-note
 
 
 <a name="ssljetty"></a>
@@ -515,6 +515,14 @@ ramadda.usefixedhostname=true
 #Set this to the external hostname
 ramadda.hostname=somesite.org
 -pre
+
++note
+Please note: Prior to  May 2025 the above properties would get added to RAMADDA's
+internal database storage and be available to be set through the Admin web interface.
+It was decided that any configuration for network access should be done solely through the
+.properties files. If you had these properties set through the Admin interface then they will
+now be ignored and will have to be set in a .properties file.
+-note
 
 
 
