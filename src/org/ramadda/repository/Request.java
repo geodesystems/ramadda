@@ -50,83 +50,44 @@ import javax.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("unchecked")
 public class Request implements Constants, Cloneable {
-
     public static final RequestArgument[] AREA_NWSE = { REQUESTARG_NORTH,
 							REQUESTARG_WEST, REQUESTARG_SOUTH, REQUESTARG_EAST };
 
     private static int COUNTER = 0;
-
     public int count = COUNTER++;
-
     private Hashtable fileUploads;
-
     private String urlPath;
-
     private Hashtable parameters;
-
     private Hashtable originalParameters;
-
     private Hashtable extraProperties = new Hashtable();
-
     private Repository repository;
-
     private Hashtable httpHeaderArgs;
-
     private String sessionId;
-
     private OutputStream outputStream;
-
     private User user;
-
     private String ip;
-
     //    private Entry collectionEntry;
-
     private Entry rootEntry;
-
     private Entry currentEntry;
-
     private HttpServletRequest httpServletRequest;
-
     private HttpServletResponse httpServletResponse;
-
     private HttpServlet httpServlet;
-
     private StringBuilder prefixHtml = new StringBuilder();
-
     private StringBuilder suffixHtml = new StringBuilder();
-
     private StringBuilder headContent = null;
-
     private boolean checkingAuthMethod = false;
-
     private boolean isEntryShow = false;    
-
     private ApiMethod apiMethod;
-
     private boolean isMobile = false;
-
     private boolean isRobot = false;
-
     private boolean isGoogleBot = false;
-
     private boolean makeAbsoluteUrls = false;
-
     private String htmlTemplateId;
-
     private PageStyle pageStyle;
-
     private boolean sessionIdWasSet = false;
-
     private boolean sessionHasBeenHandled = false;
-
-    /**  */
     private boolean canStreamResult = true;
-
-    /**  */
     private boolean cloned = false;
-
-    /**  */
     private boolean embedded = false;
 
     /**
