@@ -65,7 +65,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
 	double bottom = Utils.getDouble(entry.getValue(request, "bottom_depth"));	
 	//	System.err.println("top:" + top +" " + bottom);
 	if(!Double.isNaN(top) && !Double.isNaN(bottom)) {
-	    return;
+	    //	    return;
 	}
 	//a bit of a hack - put this in a thread so the EntryManager has a chance to store the children entries
 	Misc.runInABit(2000,new Runnable(){

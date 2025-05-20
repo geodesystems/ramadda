@@ -23,9 +23,10 @@ import org.json.*;
 import org.w3c.dom.*;
 
 import ucar.unidata.ui.HttpFormEntry;
-
+import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
 
+import org.w3c.dom.*;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -58,6 +59,10 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
         super(repository);
     }
 
+
+    public Element getRoot(Entry entry) throws Exception {
+	return XU.getRoot(entry.getFile().toString(),CoreApiHandler.class);
+    }
 
     public String makeEntriesJson(Request request, Entry entry,List<Entry> children)  throws Exception {
 	List<String> collection = new ArrayList<String>();
@@ -107,13 +112,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	    for(Box box:_boxes) {
 		if(boxes==null)boxes=new ArrayList<String>();
+		String stroke = box.stroke==null?"null":JU.quote(box.stroke);
+		String fill = box.fill==null?"null":JU.quote(box.fill);		
 		if(box.poly!=null) {
 		    boxes.add(JU.map("label",JU.quote(box.label),
 				     "polygon",JU.list(box.poly),
 				     "top",JU.quote(box.top),
-				     "bottom",JU.quote(box.bottom)));
+				     "bottom",JU.quote(box.bottom),
+				     "fill",fill,"stroke",stroke));
 		} else {
 		    boxes.add(JU.map("label",JU.quote(box.label),
+				     "marker",box.marker,
+				     "fill",fill,"stroke",stroke,
 				     "x",JU.quote(box.x),
 				     "y",JU.quote(box.y),
 				     "width",JU.quote(box.width),
@@ -134,6 +144,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
     public Entry findCoreboxEntry(Request request, Entry entry) throws Exception {
 	for(Entry child:  getEntryManager().getChildren(request, entry)) {
+	    if(isPrediktera(child)) return child;
 	    if(child.isFile() && child.getFile().getName().endsWith("corebox.json")) {
 		return child;
 	    }
@@ -219,6 +230,65 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		exc.printStackTrace();
 	    }
 	}
+
+	Entry child  = findCoreboxEntry(request,entry);
+	if(child!=null && isPrediktera(child)) {
+	    Element root = getRoot(child);
+	    List depths = XU.findChildren(root,"depth");
+	    for (int depthIdx = 0; depthIdx < depths.size(); depthIdx++) {
+		Element depthNode = (Element) depths.get(depthIdx);
+		String direction = XU.getAttribute(depthNode,"direction","Vertical");
+		double width = XU.getAttribute(depthNode,"width",-1.0);
+		double width2 = width/2.0;
+		double height=width;
+		double height2=width2;		
+		
+		List lines = XU.findChildren(depthNode,"line");
+		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
+		    Element lineNode = (Element) lines.get(lineIdx);
+		    double linePosition = XU.getAttribute(lineNode,"position",-1);
+		    double top = linePosition-width2;
+		    List areas = XU.findChildren(lineNode,"area");
+		    
+		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
+			Element areaNode = (Element) areas.get(areaIdx);
+			//			System.err.println(XU.toString(areaNode).trim());
+			int aposition = XU.getAttribute(areaNode,"position",-1);
+			int start = XU.getAttribute(areaNode,"start",-1);
+			int end = XU.getAttribute(areaNode,"end",-1);			
+			double d1=Double.NaN;
+			double d2 = Double.NaN;
+			if(aposition >=0) {
+			    d1 = d2 = XU.getAttribute(areaNode,"depth",Double.NaN);
+			    String label = "";
+			    if(!Double.isNaN(d1)) {
+				d1 = Utils.decimals(d1/1000,2);
+				label  =d1+"";
+			    }
+			    Box box = new Box(label,aposition,
+					      linePosition-height2,5,10,d1,d2);
+
+			    box.fill="rgba(0,255,255,0.9)";
+			    box.stroke="rgba(0,0,0,0)";
+			    box.marker = true;
+			    boxes.add(box);
+			} else 	if(linePosition>=0 && start>=0 && end >=0) {
+			    String type = XU.getAttribute(areaNode,"type","");
+			    Box box = new Box("",start,
+					      linePosition-height2,end-start,height,d1,d2);
+
+			    if(type.equals("Ruble")) box.fill="rgba(0,255,255,0.3)";
+			    else if(type.equals("Core")) box.fill="rgba(255,255,0,0.3)";			    
+			    boxes.add(box);
+			}
+			
+		    }
+		}
+		
+	    }
+	}
+
+
 	/**
 	   these don't have the correct box dimensions
 	Entry corebox = findCoreboxEntry(request,entry);
@@ -281,7 +351,74 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	return new Result("", sb, JU.MIMETYPE);
     }
 
+
+    public boolean isPrediktera(Entry entry) {
+	return entry.getTypeHandler().isType("type_geo_corebox_prediktera_xml");
+    }
+
     public void processCorebox(Request request, Entry entry, Entry corebox) throws Exception {
+	if(corebox.isFile() && corebox.getFile().getName().endsWith("corebox.json")) {
+	    processCoreboxJson(request, entry,corebox);
+	}
+	if(isPrediktera(corebox)) {
+	    processCoreboxPrediktera(request, entry,corebox);
+	}	
+    }
+	
+
+    public void processCoreboxPrediktera(Request request, Entry entry, Entry corebox) throws Exception {
+	boolean changed = false;
+	double min= Double.NaN;
+	double max= Double.NaN;	
+	Element root = getRoot(corebox);
+	Element settings =  XU.findChild(root,"settings");
+	if(settings !=null) {
+	    Element logging =  XU.findChild(settings,"logging");
+	    if(logging!=null) {
+		try {
+		    min = Double.parseDouble(XU.getGrandChildText(logging,"startDepth"));
+		    max = Double.parseDouble(XU.getGrandChildText(logging,"endDepth"));
+		} catch(Exception exc) {
+		    getLogManager().logError("Extracting depth from:" + entry,exc);
+		}
+	    }
+	}
+
+	System.err.println("min/max:" + min +" " + max); 
+	if(!Double.isNaN(min)){
+	    entry.setValue("top_depth",new Double(min/1000));
+	    entry.setValue("bottom_depth",new Double(max/1000));	    
+	    changed = true;
+	}
+
+	Element metadata =  XU.findChild(root,"metadata");	
+	if(metadata!=null) {
+	    List data = XU.findChildren(metadata,"data");
+	    for (int dataIdx = 0; dataIdx < data.size(); dataIdx++) {
+		Element dataNode  = (Element)data.get(dataIdx);
+		String name = XU.getAttribute(dataNode,"name");
+		String value = XU.getChildText(dataNode);
+		if(Utils.stringDefined(name) && Utils.stringDefined(value)) {
+		    getMetadataManager().addMetadata(request,entry, "property",true,name,value);
+		    changed = true;
+		}
+	    }
+
+	}
+
+	if(changed) {
+	    entry.setMetadataChanged(true);
+	    getEntryManager().updateEntry(request, entry);
+	}
+
+    }
+
+
+
+
+    public void processCoreboxJson(Request request, Entry entry, Entry corebox) throws Exception {
+
+
 	double min= Double.NaN;
 	double max= Double.NaN;	
 	JSONObject obj     = new JSONObject(IO.readInputStream(new FileInputStream(corebox.getFile())));
@@ -334,6 +471,9 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	public double  top;
 	public double  bottom;
 	public List<Double> poly;
+	public String stroke;
+	public String fill;	
+	public boolean marker=false;
 
 	Box(Metadata m) {
 	    this(m.getAttr(1),

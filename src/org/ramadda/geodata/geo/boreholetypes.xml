@@ -511,6 +511,7 @@ useAttachmentIfNeeded=true
 </type>
 
 <type name="type_borehole_coreimage"   description="Geo Core Image" isgroup="true"
+      childtypes="type_geo_corebox_prediktera_xml,type_geo_corebox_json"
       pattern="(?i).*annotated-core-photo.*\.jpg"
       handler="org.ramadda.geodata.geo.CoreImageTypeHandler">      
   <action name="applyboxes"
@@ -764,6 +765,29 @@ csvcommands1=-tab,-skiplines,1
 :vspace 1em
 :heading Information
 {{information  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service"  #menusTitle="Services"  }}
+-section]]></wiki>
+</type>
+
+
+<type  name="type_geo_corebox_prediktera_xml"  description="Geo Prediktera XML"
+       handler="org.ramadda.repository.type.TypeHandler"
+       priority="50"
+       pattern=".*measurement.xml"
+       supercategory="Geoscience"  category="Borehole Data" >
+
+<!-- Properties-->
+<property  name="icon"  value="/geo/drilling-rig.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+:vspace 1em
+----
+:vspace 1em
+:heading Information
+{{information  showDetails="true"  showTitle="false"    }}
 -section]]></wiki>
 </type>
 

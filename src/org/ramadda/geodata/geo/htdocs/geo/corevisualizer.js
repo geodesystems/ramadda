@@ -65,7 +65,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    let depthField;
 	    record.fields.every(f=>{
 		let id = f.getId();
-		if(id=='depth') {
+		if(id=='depth' || id=='section_depth') {
 		    depthField=f;
 		    return false;
 		}
@@ -687,7 +687,7 @@ RamaddaCoreDisplay.prototype = {
 
     addDisplayEntry:function(entryId) {
 	let toks=[];
-	let html = 'Enter display properties. e.g.:<pre>fields:&lt;field id&gt;\ntitle:Some title\netc.</pre>';
+	let html = 'Enter display properties. e.g.:<pre>indexField:&lt;field id&gt;\nfields:&lt;field id&gt;\ntitle:Some title\netc.</pre>';
 	html+=HU.textarea('',this.lastDisplayProps??'',[ATTR_ID,this.domId('displayprops'),ATTR_STYLE,HU.css('width','400px'),'rows','5']);
 	let buttons = [HU.div([ATTR_ID,this.domId('cancel')],'Cancel'),	
 		       ' '+   HU.div([ATTR_ID,this.domId('add_display')],'Create Display')];
@@ -722,7 +722,9 @@ RamaddaCoreDisplay.prototype = {
 	let props = {
 	    'displayType':'profile',
 	    "profileMode":"lines",
-	    "indexField":"depth",
+	    "indexField":"depth|section_depth",
+	    //Use second numeric field
+	    "fields":"@2",
 	    "showLegend":false,
 	    "showTitle":true,
 	    "width":"100%",
@@ -743,6 +745,7 @@ RamaddaCoreDisplay.prototype = {
 	    if(key=='fields') value = value.split(',');
 	    props[key] = value; 
 	}
+	console.log(props);
 	return props;
     },
 
@@ -1342,6 +1345,7 @@ RamaddaCoreDisplay.prototype = {
 		check(entry.topDepth,entry.bottomDepth);
 		if(entry.boxes) {
 		    entry.boxes.forEach(box=>{
+			if(box.marker) return;
 			if(Utils.isNumber(box.top) && Utils.isNumber(box.bottom)) {
 			    entry.hasBoxes=true;
 			    this.setHasBoxes(true);
@@ -1730,13 +1734,44 @@ RamaddaCoreDisplay.prototype = {
 			    stroke: 'red',
 			    strokeWidth: 1,
 			}
+			if(box.stroke) boxAttrs.stroke = box.stroke;
+			if(box.fill) boxAttrs.fill = box.fill;			
 			if(doRotation) {
 			    boxAttrs =  this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
 			    boxAttrs.x=boxAttrs.x - rotOffset.x;
 			    boxAttrs.y=boxAttrs.y - rotOffset.y;
 			}
-			let boxRect = new Konva.Rect(boxAttrs);
-			group.add(boxRect);
+			let mark;
+			if(box.marker) {
+			    let b = boxAttrs;
+			    let h = 16;
+			    let w=16;
+			    boxAttrs.points = [
+				b.x, b.y+h/2,                    
+				b.x-w, b.y,      
+				b.x, b.y - h/2
+			    ];
+			    boxAttrs.xpoints = [
+				b.x,b.y-h,b.x+100,b.y
+			    ]
+			    
+			    let markerAttrs = {
+				points:boxAttrs.points,
+				closed:true,
+				stroke:boxAttrs.stroke,
+				fill:boxAttrs.fill,
+				strokeWidth:1				
+			    }
+
+			    mark = new Konva.Line(markerAttrs);
+			} else {
+			    mark = new Konva.Rect(boxAttrs);
+			}
+			if(Utils.stringDefined(box.label)) {
+			    let styleObj = {fill:'white'};
+			    let l = this.makeText(group,box.label,boxAttrs.x+4,boxAttrs.y, styleObj);
+			}
+			group.add(mark);
 		    }
 		});
 	    }
