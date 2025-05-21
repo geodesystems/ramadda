@@ -783,12 +783,12 @@ csvcommands1=-tab,-skiplines,1
 +section title={{name}}
 :navtop
 {{description wikify=true}}
-:vspace 1em
-----
-:vspace 1em
+:heading XML Metadata
+{{embed  entry=""  skipLines="0"  maxLines="5000"  style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }} 
 :heading Information
-{{information  showDetails="true"  showTitle="false"    }}
--section]]></wiki>
+{{information  showBase="true"  showDetails="true"  showTitle="false"  }} 
+-section
+]]></wiki>
 </type>
 
 
