@@ -257,50 +257,50 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		    Element lineNode = (Element) lines.get(lineIdx);
 		    double linePosition = XU.getAttribute(lineNode,"position",-1);	
 		    List areas = XU.findChildren(lineNode,"area");
+		    double lineDepth=Double.NaN;
+		    double lineDepthPixel= Double.NaN;
 		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
 			Element areaNode = (Element) areas.get(areaIdx);
-			//			System.err.println(XU.toString(areaNode).trim());
 			int aposition = XU.getAttribute(areaNode,"position",-1);
+			if(aposition<0) continue;
+			double d1=XU.getAttribute(areaNode,"depth",Double.NaN);
+			String label = "";
+			if(!Double.isNaN(d1)) {
+			    d1 = Utils.decimals(d1/1000,2);
+			    label  =d1+"";
+			}
+			double x=aposition;
+			double y = linePosition-depthWidth2;
+			if(vertical) {
+			    x = imageWidth-linePosition+depthWidth2;
+			    y = aposition;
+			}
+			lineDepth=d1;
+			lineDepthPixel=x;
+			Box box = new Box(label,x,y,5,10,d1,d1);
+			box.fill="rgba(0,255,255,0.9)";
+			box.stroke="rgba(0,0,0,0)";
+			box.marker = true;
+			boxes.add(box);
+		    }
+
+		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
+			Element areaNode = (Element) areas.get(areaIdx);
+			int aposition = XU.getAttribute(areaNode,"position",-1);
+			if(aposition>=0) continue;
 			int start = XU.getAttribute(areaNode,"start",-1);
 			int end = XU.getAttribute(areaNode,"end",-1);			
-			double d1=Double.NaN;
-			double d2 = Double.NaN;
-			if(aposition >=0) {
-			    d1 = d2 = XU.getAttribute(areaNode,"depth",Double.NaN);
-			    String label = "";
-			    if(!Double.isNaN(d1)) {
-				d1 = Utils.decimals(d1/1000,2);
-				label  =d1+"";
-			    }
-			    double x=aposition;
-			    double y = linePosition-depthWidth2;
-			    /*
-			      iw: 384
-			      x:
-			     */
-			    if(vertical) {
-				//left:calc(var(--imagewidth) - var(--line1-position) - var(--depth-width2) );
-				x = imageWidth-linePosition + depthWidth;
-				x = imageWidth-linePosition+depthWidth2;
-				
-				//				x = imageWidth-linePosition + depthWidth2;				
-				y = aposition;
-			    }
-			    Box box = new Box(label,x,y,5,10,d1,d2);
-
-			    box.fill="rgba(0,255,255,0.9)";
-			    box.stroke="rgba(0,0,0,0)";
-			    box.marker = true;
-			    System.err.println(box);
-			    boxes.add(box);
-			} else 	if(linePosition>=0 && start>=0 && end >=0) {
+			if(linePosition>=0 && start>=0 && end >=0) {
+			    double d1=Double.NaN;
+			    double d2=Double.NaN;			    
 			    String type = XU.getAttribute(areaNode,"type","");
 			    double x=start;
 			    double y =linePosition-depthWidth2;
 			    double width = end-start;
 			    double height = depthWidth;
-			    //left:calc(var(--imagewidth) - var(--line1-position) - var(--depth-width2) );
-			    //  <div class="line1 box" style="height:calc(var(--line1-area2-end) - 18px);top:var(--line1-area2-start);"></div>
+			    if(!Double.isNaN(lineDepth)) {
+				
+			    }
 			    if(vertical) {
 				x = imageWidth - linePosition - depthWidth2;
 				y = start;
@@ -308,21 +308,16 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				width = depthWidth;
 			    }
 
-			    
-			    
-			    Box box = new Box("",x,y,width,height,d1,d2);
 
+			    Box box = new Box("",x,y,width,height,d1,d2);
 			    if(type.equals("Ruble")) box.fill="rgba(0,255,255,0.3)";
 			    else if(type.equals("Core")) box.fill="rgba(255,255,0,0.3)";			    
 			    boxes.add(box);
 			}
-			
 		    }
 		}
-		
 	    }
 	}
-
 
 	/**
 	   these don't have the correct box dimensions
@@ -331,7 +326,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    makeBoxesFromJson(request,entry, corebox,boxes);
 	}
 	*/
-	//	for(Box box: boxes)	    System.err.println("box:" + box);
 	return boxes;
     }
 
