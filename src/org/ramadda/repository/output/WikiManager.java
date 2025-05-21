@@ -2957,6 +2957,7 @@ public class WikiManager extends RepositoryManager
             int maxLines = getProperty(wikiUtil, props, ATTR_MAX_LINES, 1000);
             String maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, null);
 	    boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
+	    boolean highlight = getProperty(wikiUtil, props, "highlight",true);
             String  as = getProperty(wikiUtil, props, "as",null);
 
             int    lineNumber = 0;
@@ -2989,9 +2990,35 @@ public class WikiManager extends RepositoryManager
                 }
             }
             IO.close(fis);
+	    if(as!=null && as.equals("xml")) {
+		String formatted;
+		try {
+		    Element root = XU.getRoot(txt.toString());
+		    formatted= XU.toString(root);
+		    formatted = formatted.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		    formatted = formatted.replaceAll("\n\n+","\n");
+		} catch(Exception exc) {
+		    System.err.println("Error processing xml:" + entry +" " + exc);
+		    formatted = txt.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		}
+		if(highlight) {
+		    formatted=formatted.replaceAll("\\s+([^\\s=]+)\\s*=\\s*"," <span style='color:blue;'>$1</span>=");
+		    //<tag >
+		    formatted=formatted.replaceAll("&lt;([^\\s&]+)\\s+","&lt;<span style='color:green;'>$1</span> ");
+		    //</tag>
+		    formatted=formatted.replaceAll("&lt;/([^/\\s&]+)&gt;","&lt;/<span style='color:green;'>$1</span>&gt;");
+		    //<tag/>
+		    formatted=formatted.replaceAll("&lt;([^/\\s&]+)/&gt;","&lt;<span style='color:green;'>$1</span>/&gt;");				
+		    //<tag>
+		    formatted=formatted.replaceAll("&lt;([^\\s&/]+)&gt;","&lt;<span style='color:green;'>$1</span>&gt;");
+		}
+		txt= new StringBuilder(formatted);
+		as = null;
+	    } 
+
 	    if(as!=null) {
 		boolean doFile = false;
-		if(as.equals("file")) {
+	     	if(as.equals("file")) {
 		    doFile = true;
 		    String ext = IO.getFileExtension(entry.getResource().getPath()).toLowerCase();
 		    ext = ext.replace(".","");
