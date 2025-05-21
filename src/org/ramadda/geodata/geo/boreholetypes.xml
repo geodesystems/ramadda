@@ -784,7 +784,8 @@ csvcommands1=-tab,-skiplines,1
 :navtop
 {{description wikify=true}}
 :heading XML Metadata
-{{embed  entry=""  skipLines="0"  maxLines="5000"  style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }} 
+{{embed  entry=""  skipLines="0"  maxLines="10000" highlight="true" as="xml"
+style=""  force="false"  maxheight="70vh" convertTags=true raw="true"   }} 
 :heading Information
 {{information  showBase="true"  showDetails="true"  showTitle="false"  }} 
 -section
