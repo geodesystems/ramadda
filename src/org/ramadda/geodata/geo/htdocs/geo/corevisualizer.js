@@ -1412,6 +1412,7 @@ RamaddaCoreDisplay.prototype = {
 	let y2 = 0;	
 	let range = this.opts.range;
 	let bottom = range.max+(0.5*(range.max-range.min));
+	step = (range.max-range.min)/6;
 	for(let i=0;i<=bottom;i+=step) {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
@@ -1747,20 +1748,17 @@ RamaddaCoreDisplay.prototype = {
 			    let h = 16;
 			    let w=16;
 			    boxAttrs.points = [
-				b.x, b.y+h/2,                    
-				b.x-w, b.y,      
-				b.x, b.y - h/2
+				b.x+w, b.y+h/2,                    
+				b.x, b.y,      
+				b.x+w, b.y - h/2
 			    ];
-			    boxAttrs.xpoints = [
-				b.x,b.y-h,b.x+100,b.y
-			    ]
-			    
+
 			    let markerAttrs = {
 				points:boxAttrs.points,
 				closed:true,
 				stroke:boxAttrs.stroke,
 				fill:boxAttrs.fill,
-				strokeWidth:1				
+				strokeWidth:0				
 			    }
 
 			    mark = new Konva.Line(markerAttrs);
