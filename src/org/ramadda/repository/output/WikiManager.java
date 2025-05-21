@@ -58,6 +58,8 @@ import org.ramadda.util.WikiPageHandler;
 
 import org.json.*;
 
+import org.w3c.dom.*;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -2949,12 +2951,12 @@ public class WikiManager extends RepositoryManager
             BufferedReader br =
                 new BufferedReader(new InputStreamReader(fis));
             boolean raw = getProperty(wikiUtil, props, "raw",   false);
+            boolean convertTags = getProperty(wikiUtil, props, "convertTags",   false);
             boolean embedWikify = getProperty(wikiUtil, props, "wikify", false);
             int skipLines = getProperty(wikiUtil, props, ATTR_SKIP_LINES, 0);
             int maxLines = getProperty(wikiUtil, props, ATTR_MAX_LINES, 1000);
             String maxHeight = getProperty(wikiUtil, props, ATTR_MAXHEIGHT, null);
-
-            boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
+	    boolean annotate = getProperty(wikiUtil, props, ATTR_ANNOTATE, false);
             String  as = getProperty(wikiUtil, props, "as",null);
 
             int    lineNumber = 0;
@@ -2971,7 +2973,7 @@ public class WikiManager extends RepositoryManager
 		size+=line.length();
 		if(maxSize>=0 && size>maxSize) break;
                 cnt++;
-		if(!embedWikify && !raw) {
+		if(convertTags || (!embedWikify && !raw)) {
 		    line = line.replaceAll("<", "&lt;");
 		    line = line.replaceAll(">", "&gt;");
 		    if (annotate) {
