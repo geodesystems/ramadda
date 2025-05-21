@@ -1743,10 +1743,12 @@ RamaddaCoreDisplay.prototype = {
 			    boxAttrs.y=boxAttrs.y - rotOffset.y;
 			}
 			let mark;
+			let labelOffset=0;
 			if(box.marker) {
 			    let b = boxAttrs;
 			    let h = 16;
 			    let w=16;
+			    labelOffset=w;
 			    boxAttrs.points = [
 				b.x+w, b.y+h/2,                    
 				b.x, b.y,      
@@ -1765,11 +1767,11 @@ RamaddaCoreDisplay.prototype = {
 			} else {
 			    mark = new Konva.Rect(boxAttrs);
 			}
+			group.add(mark);
 			if(Utils.stringDefined(box.label)) {
 			    let styleObj = {fill:'white'};
-			    let l = this.makeText(group,box.label,boxAttrs.x+4,boxAttrs.y, styleObj);
+			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
 			}
-			group.add(mark);
 		    }
 		});
 	    }
