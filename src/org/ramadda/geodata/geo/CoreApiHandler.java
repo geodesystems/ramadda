@@ -22,7 +22,9 @@ import org.ramadda.util.IO;
 import org.json.*;
 import org.w3c.dom.*;
 
+
 import ucar.unidata.ui.HttpFormEntry;
+import org.ramadda.util.ImageUtils;
 import ucar.unidata.xml.XmlUtil;
 import ucar.unidata.util.IOUtil;
 
@@ -33,8 +35,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
-
-
+import java.awt.Image;
 import java.net.*;
 
 import java.util.ArrayList;
@@ -233,23 +234,29 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	Entry child  = findCoreboxEntry(request,entry);
 	if(child!=null && isPrediktera(child)) {
+	    Image image = ImageUtils.readImage(entry.getResource().getPath());
+	    if (image.getWidth(null) <0) {
+                ImageUtils.waitOnImage(image);
+	    }
+	    double imageWidth = image.getWidth(null);
+	    double imageHeight = image.getHeight(null);
+	    if(imageHeight<0 || imageWidth<0) {
+		getLogManager().logSpecial("CoreApiHandler: image width/height bad:" + entry);
+	    }
 	    Element root = getRoot(child);
 	    List depths = XU.findChildren(root,"depth");
 	    for (int depthIdx = 0; depthIdx < depths.size(); depthIdx++) {
 		Element depthNode = (Element) depths.get(depthIdx);
-		String direction = XU.getAttribute(depthNode,"direction","Vertical");
-		double width = XU.getAttribute(depthNode,"width",-1.0);
-		double width2 = width/2.0;
-		double height=width;
-		double height2=width2;		
+		boolean vertical = XU.getAttribute(depthNode,"direction","Vertical").toLowerCase().equals("vertical");
+		double depthWidth = XU.getAttribute(depthNode,"width",-1.0);
+		double depthWidth2 = depthWidth/2.0;
 		
 		List lines = XU.findChildren(depthNode,"line");
+		System.err.println("image:" + imageWidth +"x" + imageHeight);
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
 		    Element lineNode = (Element) lines.get(lineIdx);
-		    double linePosition = XU.getAttribute(lineNode,"position",-1);
-		    double top = linePosition-width2;
+		    double linePosition = XU.getAttribute(lineNode,"position",-1);	
 		    List areas = XU.findChildren(lineNode,"area");
-		    
 		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
 			Element areaNode = (Element) areas.get(areaIdx);
 			//			System.err.println(XU.toString(areaNode).trim());
@@ -265,17 +272,45 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				d1 = Utils.decimals(d1/1000,2);
 				label  =d1+"";
 			    }
-			    Box box = new Box(label,aposition,
-					      linePosition-height2,5,10,d1,d2);
+			    double x=aposition;
+			    double y = linePosition-depthWidth2;
+			    /*
+			      iw: 384
+			      x:
+			     */
+			    if(vertical) {
+				//left:calc(var(--imagewidth) - var(--line1-position) - var(--depth-width2) );
+				x = imageWidth-linePosition + depthWidth;
+				x = imageWidth-linePosition+depthWidth2;
+				
+				//				x = imageWidth-linePosition + depthWidth2;				
+				y = aposition;
+			    }
+			    Box box = new Box(label,x,y,5,10,d1,d2);
 
 			    box.fill="rgba(0,255,255,0.9)";
 			    box.stroke="rgba(0,0,0,0)";
 			    box.marker = true;
+			    System.err.println(box);
 			    boxes.add(box);
 			} else 	if(linePosition>=0 && start>=0 && end >=0) {
 			    String type = XU.getAttribute(areaNode,"type","");
-			    Box box = new Box("",start,
-					      linePosition-height2,end-start,height,d1,d2);
+			    double x=start;
+			    double y =linePosition-depthWidth2;
+			    double width = end-start;
+			    double height = depthWidth;
+			    //left:calc(var(--imagewidth) - var(--line1-position) - var(--depth-width2) );
+			    //  <div class="line1 box" style="height:calc(var(--line1-area2-end) - 18px);top:var(--line1-area2-start);"></div>
+			    if(vertical) {
+				x = imageWidth - linePosition - depthWidth2;
+				y = start;
+				height = end - start;
+				width = depthWidth;
+			    }
+
+			    
+			    
+			    Box box = new Box("",x,y,width,height,d1,d2);
 
 			    if(type.equals("Ruble")) box.fill="rgba(0,255,255,0.3)";
 			    else if(type.equals("Core")) box.fill="rgba(255,255,0,0.3)";			    
