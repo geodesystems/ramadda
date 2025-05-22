@@ -219,6 +219,8 @@ xbox.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.ti
     <property name="html.owner.show" value="false"/>                
     <column name="file_number" type="string"  label="File Number" columns="8"/>
     <column name="shelf_location" type="string"  label="Shelf Location"   cansearch="false" columns="20" size="1000" changetype="true"/>
+    <column name="item_count" type="int"  label="Item Count"
+	    cansearch="false" />
     <column name="barcode" type="string"  label="Bar Code" columns="30"  showinhtml="false"/>
 </type>
 
