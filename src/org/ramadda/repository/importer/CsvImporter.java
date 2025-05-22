@@ -188,6 +188,7 @@ public class CsvImporter extends ImportHandler {
 			    }
 
 			    String v = row.getString(idx,"");
+			    if(!Utils.stringDefined(v)) continue;
 			    sb.append(XU.openTag(prop,""));
 			    XU.appendCdata(sb,v);
 			    sb.append(XU.closeTag(prop));
@@ -205,19 +206,35 @@ public class CsvImporter extends ImportHandler {
 			    if(!row.indexOk(idx)) continue;
 			    String v = row.getString(idx,"");
 			    if(!Utils.stringDefined(v)) continue;
+			    //<access><![CDATA[admin,user]]></access>
+			    //<access:admin,user>
+			    String access = StringUtil.findPattern(v,"(<access:[^>]*>)");
+			    if(access!=null) {
+				v = v.replace(access,"");
+				access = access.replace("<access:","").replace(">","");
+				System.err.println("V:" + v +" access:" + access);
+			    }
+
+			    v = v.replace("\\:","_semicolon_").replace("_blank_","");
 			    List<String> toks = Utils.split(v,";",true,true);
 			    for(String tok: toks) {
 				List<String> subToks = Utils.split(tok,":");
 				sb.append(XU.openTag("metadata",XU.attrs("type",mtdType)));
 				int index=0;
 				for(String mtdValue: subToks) {
+				    mtdValue =  mtdValue.replace("_semicolon_",":");
 				    index++;
 				    sb.append(XU.openTag("attr",
 							 XU.attrs("index",""+index,
 								  "encoded","false")));
 				    XU.appendCdata(sb,mtdValue);
 				    sb.append(XU.closeTag("attr"));
-				}
+				} 
+				if(access!=null) {
+				    sb.append(XU.openTag("access",""));				    
+				    XU.appendCdata(sb,access);
+				    sb.append(XU.closeTag("access"));
+				}				    
 				sb.append(XU.closeTag("metadata"));
 			    }
 			}
