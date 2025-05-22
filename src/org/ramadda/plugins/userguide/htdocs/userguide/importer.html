@@ -45,7 +45,7 @@ The steps are:
 <li> Press Submit
 </ul>
 
-<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=314"><img  src="images/csvimporter.png?version=314"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
+<div style='text-align:center;' class='ramadda-docs-image'><a name="image1"></a><div><a href="images/csvimporter.png?version=122"><img  src="images/csvimporter.png?version=122"  onload='HtmlUtils.initScreenshot(this);this.onload=null;' style='border=1display:none;'  alt="CSV Import" ></a><br><span class="caption">Image 1: CSV Import</span></div></div>
 :p
 
 :heading The Spreadsheet
@@ -60,11 +60,21 @@ The upload can either be an XLSX or a CSV. Here is an example
 Here is an example:
 +css
 .ex {margin-left:40px;}
+.ex td {
+padding-left:4px;
+padding-right:4px;
+}
+.hdr {
+text-align:center;
+background:#efefef;
+font-weight:bold;
+color:#000;
+}
 .ex td {border:1px solid #ccc;}
 -css
 <table class=ex>
 <tr><td>#this is a comment</td><td></td><td></td></tr>
-<tr><td>type</td><td>name</td><td>description</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>description</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some description</td></tr>
 <tr><td>type_archive_series</td><td>series 1</td><td>Some other description</td></tr>
 <tr><td></td><td>series 2</td><td>Some more description</td></tr>
@@ -87,7 +97,7 @@ So here we have a collection with id "c1". The parent of the series entries "s1"
 is the collection. The parent of the "file 1" entry is the series "s1".
 The parent of the "file 2" entry is the series "s2".
 <table class=ex>
-<tr><td>type</td><td>name</td><td>id</td><td>parent</td></tr>
+<tr><td class=hdr>type</td><td  class=hdr>name</td><td class=hdr>id</td><td class=hdr>parent</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>c1</td><td></td></tr>
 <tr><td>type_archive_series</td><td>series 1</td><td>s1</td><td>c1</td></tr>
 <tr><td></td><td>series 2</td><td>s2</td><td>c1</td></tr>
@@ -105,7 +115,7 @@ The values in the "new:" column are ";" separated names of the entry. The type i
 defined in the column header. e.g.:
 
 <table class=ex>
-<tr><td>type</td><td>name</td><td>new:type_archive_item</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>new:type_archive_item</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1;Item 2;...</td></tr>
 </table>
 
@@ -114,7 +124,7 @@ This results in an entry "Collection 1" that has multiple children entries of ty
 You can specify a description for the new child entry
 by adding a "description:&lt;....&gt;", e.g.:
 <table class=ex>
-<tr><td>type</td><td>name</td><td>new:type_archive_item</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>new:type_archive_item</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Item 1 description: some description;Item 2;...</td></tr>
 </table>
 
@@ -133,13 +143,13 @@ If an entry created does not have that property then it is ignored.
 :p
 For example:
 <table class=ex>
-<tr><td>type</td><td>name</td><td>column:type_archive_collection.shelf_location</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>column:type_archive_collection.shelf_location</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
 </table>
 :p
 Or without the entry type prefix:
 <table class=ex>
-<tr><td>type</td><td>name</td><td>column:shelf_location</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>column:shelf_location</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>Some shelf collection</td></tr>
 </table>
 :p
@@ -151,27 +161,45 @@ Click on an entry label to see the entry type details, e.g.
 
 
 
-:heading Metadata Types
+:heading Adding Metadata
 One or more metadata types can be added. Create a column of the form:
 
 <pre>
 metadata:<i>&lt;metadata type ID&gt;</i>
 </pre>
 
+Or:
+<pre>
+property:<i>&lt;metadata type ID&gt;</i>
+</pre>
+
 The available metadata can be viewed at
 <a target=_other href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
-Clicking on the type ID
-
+Clicking on the type ID to copy the ID.
+:p
 Here we are defining an archive_subject and an archive_note.
 The values can be ";" delimited, so, e.g., we are adding two subjects - "subject 1" and "subject 2".
-If the metadata has multiple fields then seperated the field values with a ":".
+If the metadata has multiple fields then seperate the field values with a ":".
+:p
 For example, the archive_note metadata takes two values - the note type and the note. So here we
 are adding one archive_note with type="Scope" and note="Some scope".
 <table class=ex>
-<tr><td>type</td><td>name</td><td>metadata:archive_subject</td><td>metadata:archive_note</td></tr>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>metadata:archive_subject</td><td class=hdr>metadata:archive_note</td></tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>subject1;subject 2</td><td>Scope:Some scope</td></tr>
 </table>
+:p
+If the text value contains a ":" then you can escape the ":" with "\:", e.g.:
+<table class=ex>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>metadata:archive_subject</td><td class=hdr>metadata:archive_note</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>subject1\:test;subject 2</td><td>Scope:Some scope</td></tr>
+</table>
 
+:p
+You can add an access specifier with "&lt;access:...&gt;" tags:
+<table class=ex>
+<tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>metadata:archive_subject</td><td class=hdr>metadata:archive_note</td></tr>
+<tr><td>type_archive_collection</td><td>collection 1</td><td>&lt;access:admin,user&gt;subject1</td><td>&lt;access:admin&gt;Scope:Some scope</td></tr>
+</table>
 
 
 :heading Specifying Permissions
@@ -179,7 +207,7 @@ You  can add  <a href=access.html>entry permissions </a> by having a "private" c
 The values of this column can be "true", "yes", "false" or blank. 
 If this is set for an entry then it's "view" permission is set to "none".
 <table class=ex>
-<tr><td>type</td><td>name</td><td>private</td><tr>
+tr><td class=hdr>type</td><td class=hdr>name</td><td class=hdr>private</td><tr>
 <tr><td>type_archive_collection</td><td>collection 1</td><td>true</td></tr>
 <tr><td></td><td>collection 2</td><td>false</td></tr>
 <tr><td></td><td>collection 3</td><td></td></tr>
