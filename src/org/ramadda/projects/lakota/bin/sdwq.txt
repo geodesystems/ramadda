@@ -1,0 +1,12 @@
+From the WQ map at-
+https://apps.sd.gov/NR92WQMAP
+Click on a site and go to the "Water Quality Dashboard" link to show the time series chart
+e.g.
+https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-LITTLE_WHITE_01
+https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-LITTLE_WHITE_02_USGS
+
+in the firefox Javascript console do:
+console.log(JSON.stringify(modelParameters))
+
+Then open the results and copy the message. Paste it (on mac pbpaste > sdwq.json) into
+a file then upload the file as a South Dakota Water Quality entry type
