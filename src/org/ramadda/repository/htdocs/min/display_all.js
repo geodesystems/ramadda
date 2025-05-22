@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Wed May 21 08:10:05 MDT 2025";
+var build_date="RAMADDA build date: Thu May 22 05:31:37 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -19809,9 +19809,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars',canCache:true},	
 	{p:'some_field.seriesType',d:null,ex:'line|area|bars'},	
 
-	{p:'pointSize',d:null,ex:'0'},
-	{p:'highlight.pointSize',d:'0',ex:'4'},
-	{p:'nohighlight.pointSize',d:'0',ex:'4'},	
+	{p:'pointSize',d:0,ex:'0'},
+	{p:'highlight.pointSize',d:0,ex:'4'},
+	{p:'nohighlight.pointSize',d:0,ex:'4'},	
 	{p:'some_field.pointSize',d:'4',ex:'4'},
 
 	{p:'lineWidth',d:null,ex:null},
@@ -19823,10 +19823,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
 
-	{p:'pointShape',d:null,ex:null},
-	{p:'highlight.pointShape',d:null,ex:null},
-	{p:'nohighlight.pointShape',d:null,ex:null},	
-	{p:'some_field.pointShape',d:null,ex:null},
+
+	{p:'pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
+	{p:'highlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
+	{p:'nohighlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},	
+	{p:'some_field.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
@@ -20595,12 +20596,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		};
 		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
-		    let value = this.getProperty(id+"." + a,dflt);
+		    if(a=='pointSize') dflt = this.getPointSize();
+		    let value = this.getProperty(id+"." + a,null);
+
+		    if(!Utils.isDefined(value)) {
+			value = this.getProperty(id.replace(/_/g,'')+"." + a,null);
+		    }
+
+		    if(!Utils.isDefined(value))
+			value = dflt;
+
+
 		    if(extraMap[id] && extraMap[id][a]) {
 			value =extraMap[id][a];
 		    }
 		    
-		    if(value && a=="lineDashStyle") {
+
+		    if(Utils.isDefined(value) && a=="lineDashStyle") {
 			let tmp = [];
 			let delim = ",";
 			if(value.indexOf(";")>=0) delim=";";
@@ -20627,6 +20639,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 		seriesInfo[idx] = s;
 	    });
+
 
 
 	    if(this.getProperty("highlightShowFields",false)) {
@@ -21292,6 +21305,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
+
 
             chartOptions.backgroundColor = {};
             chartOptions.chartArea = {};
@@ -61834,6 +61848,8 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         {p:'showUnique',ex:'false',canCache:true},
         {p:'showType',ex:'false',canCache:true},
         {p:'showText',ex:'false',canCache:true},
+	{p:'showFieldType',d:true},
+	{p:'showTableHeader',d:true},	
 	{p:"sortStatsBy",ex:'min|max|total|average'},
 	{p:"sortStatsAscending",ex:'false'},
 	{p:'doValueSelection',ex:'false'},
@@ -61981,8 +61997,9 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 		attrs.push("width");
 		attrs.push(tableWidth);
 	    }
-            let html = HU.open(TABLE, attrs);
-	    html+=HU.open(THEAD);
+	    let showTableHeader = this.getShowTableHeader();
+            let html = HU.open(TAG_TABLE, attrs);
+	    html+=HU.open(TAG_THEAD);
             if (!justOne) {
                 header = [this.getFieldHeaderLabel("")];
                 if (this.getShowCount(dflt)) 
@@ -62005,7 +62022,9 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("# Unique","Top","Freq.");
                 if (this.getShowMissing(dflt)) 
                     header.push("Not&nbsp;Missing","Missing")
-                html += HU.tr(["valign", "bottom"], HU.ths([ATTR_CLASS, "display-stats-header", "align", "center"], header));
+
+                if(showTableHeader)
+		    html += HU.tr(["valign", "bottom"], HU.ths([ATTR_CLASS, "display-stats-header", "align", "center"], header));
             }
 	    html+=HU.close(THEAD);
 	    html+=HU.open(TBODY);
@@ -62052,9 +62071,16 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 		    return;
                 }
                 let values = [];
+		let addValue=(v,label) =>{
+		    if(label && !showTableHeader)
+			v = HU.b(label)+': '+ v;
+		    values.push(HU.div(['style','white-space:nowrap;'],v));
+		}
+
+
                 if (!stat.isNumber && this.getShowText(dflt)) {
                     if (this.getShowCount(dflt))
-                        values.push(stat.count);
+                        addValue(stat.count,'Count');
                     if (this.getShowMin(dflt))
                         values.push("-");
                     if (this.getShowPercentile(dflt)) 
@@ -62068,15 +62094,16 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                         values.push("-");
                     if (this.getShowStd(dflt)) 
                         values.push("-");
-                    if (this.getShowUnique(dflt)) 
+                    if (this.getShowUnique(dflt)) {
                         values.push(stat.unique,stat.uniqueValue,stat.uniqueMax);
+		    }
                     if (this.getShowMissing(dflt)) 
                         values.push(stat.numNotMissing,stat.numMissing);
                 } else {
                     if (this.getShowCount(dflt)) 
-                        values.push(stat.count);
+                        addValue(stat.count,'Count');
                     if (this.getShowMin(dflt)) 
-                        values.push(this.formatNumber(stat.min));
+			addValue(this.formatNumber(stat.min),"Min");
                     if (this.getShowPercentile(dflt)) {
                         let range = stat.max - stat.min;
 			let tmp =p=> {
@@ -62084,32 +62111,34 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
 			    if(doValueSelection) {
 				s = HU.span([ATTR_CLASS,"display-stats-value","data-type", "percentile","data-value", p],s);
 			    }
-                            values.push(s);
+                            addValue(s,'Percentile '+p);
 			}
 			let percs = [.25,.5,.75];
 			percs.map(v=>tmp(v));
                     }
                     if (this.getShowMax(dflt)) 
-                        values.push(this.formatNumber(stat.max));
+                        addValue(this.formatNumber(stat.max),'Max');
                     if (this.getShowRange()) 
-                        values.push(this.formatNumber(stat.max-stat.min));		    
+                        addValue(this.formatNumber(stat.max-stat.min),'Range');		    
                     if (this.getShowTotal(dflt)) 
-                        values.push(total);
+                        addValue(total,'Total');
                     if (this.getShowAverage(dflt)) 
-                        values.push(avg);
+                        addValue(avg,'Average');
                     if (this.getShowStd(dflt)) 
-                        values.push(this.formatNumber(stat.std));
+                        addValue(this.formatNumber(stat.std),'Std. Dev.');
                     if (this.getShowUnique(dflt)) {
-                        values.push(stat.unique);
+                        addValue(stat.unique,'Unique');
                         if (Utils.isNumber(stat.uniqueValue)) {
-                            values.push(this.formatNumber(stat.uniqueValue));
+                            addValue(this.formatNumber(stat.uniqueValue),'Unique');
                         } else {
-                            values.push(stat.uniqueValue);
+                            addValue(stat.uniqueValue,'Unique');
                         }
-                        values.push(stat.uniqueMax);
+                        addValue(stat.uniqueMax,'Unique max');
                     }
-                    if (this.getShowMissing(dflt)) 
-                        values.push(stat.numNotMissing,stat.numMissing);
+                    if (this.getShowMissing(dflt)) {
+                        addValue(stat.numNotMissing,'Not missing');
+			addValue(stat.numMissing,'Missing');
+		    }
                 }
                 right = HU.tds(["align", "right"], values);
                 let align = (justOne ? "right" : "left");
@@ -62126,13 +62155,18 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 if (justOne) 
                     label += ":";
                 label = label.replace(/ /g, SPACE)
-                let row = HU.tr([], HU.td(["nowrap","true","align", align], field.getTypeLabel() +SPACE + HU.b(HU.span([ATTR_TITLE, tooltip], label))) + right);
+		let type =field.getTypeLabel() +SPACE;	
+		if(!this.getShowFieldType())
+		    type='';
+		if(!showTableHeader) label=label+":";
+                let row = HU.tr(['valign','top'], HU.td(["nowrap","true","align", align], type + HU.b(HU.span([ATTR_TITLE, tooltip], label))) + right);
                 html += row;
             });
-            html += HU.close(TBODY, TABLE);
+            html += HU.close(TAG_TBODY, TAG_TABLE);
             this.setContents(html);
 	    //the aaSorting turns off the inital sorting
-	    HU.formatTable("#" +this.getDomId("statstable"),{ordering:true,"aaSorting": []});	    
+            if(showTableHeader)
+		HU.formatTable("#" +this.getDomId("statstable"),{ordering:true,"aaSorting": []});	    
             this.initTooltip();
 
 	    if(doValueSelection) {
