@@ -2113,7 +2113,7 @@ public class ExtEditor extends RepositoryManager {
 	if(stringDefined(extraHandler)) handler =extraHandler;
 	if(!Utils.stringDefined(handler)) handler="org.ramadda.repository.type.TypeHandler";
 	if(handler.equals("---")) handler="TypeHandler";
-	if(handler.equals("PointTypeHandler")) handler="org.ramadda.data.services" +handler;
+	if(handler.equals("PointTypeHandler")) handler="org.ramadda.data.services." +handler;
 	else if(handler.matches("^(TypeHandler|GenericTypeHandler|ExtensibleGroupTypeHandler)$")) {
 	    handler = "org.ramadda.repository.type."+handler;
 	}
