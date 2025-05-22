@@ -309,9 +309,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.seriesType',d:null,ex:'line|area|bars',canCache:true},	
 	{p:'some_field.seriesType',d:null,ex:'line|area|bars'},	
 
-	{p:'pointSize',d:null,ex:'0'},
-	{p:'highlight.pointSize',d:'0',ex:'4'},
-	{p:'nohighlight.pointSize',d:'0',ex:'4'},	
+	{p:'pointSize',d:0,ex:'0'},
+	{p:'highlight.pointSize',d:0,ex:'4'},
+	{p:'nohighlight.pointSize',d:0,ex:'4'},	
 	{p:'some_field.pointSize',d:'4',ex:'4'},
 
 	{p:'lineWidth',d:null,ex:null},
@@ -323,10 +323,11 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.color',d:null,ex:null},
 	{p:'some_field.color',d:null,ex:null},
 
-	{p:'pointShape',d:null,ex:null},
-	{p:'highlight.pointShape',d:null,ex:null},
-	{p:'nohighlight.pointShape',d:null,ex:null},	
-	{p:'some_field.pointShape',d:null,ex:null},
+
+	{p:'pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
+	{p:'highlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
+	{p:'nohighlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},	
+	{p:'some_field.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
@@ -1095,12 +1096,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		};
 		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
-		    let value = this.getProperty(id+"." + a,dflt);
+		    if(a=='pointSize') dflt = this.getPointSize();
+		    let value = this.getProperty(id+"." + a,null);
+
+		    if(!Utils.isDefined(value)) {
+			value = this.getProperty(id.replace(/_/g,'')+"." + a,null);
+		    }
+
+		    if(!Utils.isDefined(value))
+			value = dflt;
+
+
 		    if(extraMap[id] && extraMap[id][a]) {
 			value =extraMap[id][a];
 		    }
 		    
-		    if(value && a=="lineDashStyle") {
+
+		    if(Utils.isDefined(value) && a=="lineDashStyle") {
 			let tmp = [];
 			let delim = ",";
 			if(value.indexOf(";")>=0) delim=";";
@@ -1127,6 +1139,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		}
 		seriesInfo[idx] = s;
 	    });
+
 
 
 	    if(this.getProperty("highlightShowFields",false)) {
@@ -1792,6 +1805,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		pointSize: this.getProperty("pointSize"),
                 vAxis: {}
             });
+
 
             chartOptions.backgroundColor = {};
             chartOptions.chartArea = {};
