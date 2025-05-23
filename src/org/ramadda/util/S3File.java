@@ -10,6 +10,8 @@ import com.amazonaws.auth.*;
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.client.builder.AwsClientBuilder;
 
 import java.io.*;
 import java.net.*;
@@ -19,48 +21,24 @@ import java.util.Date;
 import java.util.List;
 
 
-/**
- *
- *
- * @version        $version$, Sun, Aug 7, '22
- * @author         Enter your name here...
- */
+
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class S3File extends FileWrapper {
 
     public static final int SEARCH_MAX_CALLS = 25;
     public static final int SEARCH_MAX_FOUND = 500;
-
-    /**  */
     public static final int PERCENT_THRESHOLD = 1000;
-
-    /**  */
     public static final String S3PREFIX = "s3:";
-
-    /**  */
     public static boolean debug = false;
-
-    /**  */
     private String bucket;
-
-    /**  */
     private AmazonS3 s3;
-
     private String accessKey;
     private String secretKey;
+    private String endPoint; 
+    private String endPointRegion;
 
-    /**
-     *
-     *
-     * @param bucket _more_
-     */
     public S3File(String bucket) {
         this(bucket, true);
-    }
-
-    public S3File(String bucket,String accesskey, String secretKey) {
-	this(bucket);
-	setKey(accessKey, secretKey);
     }
 
     public S3File(String bucket,String key) {
@@ -68,11 +46,21 @@ public class S3File extends FileWrapper {
 	setKey(key);
     }
 
-    /**
-     *
-     * @param bucket _more_
-     * @param isDirectory _more_
-     */
+
+    public S3File(String bucket,String accesskey, String secretKey) {
+	this(bucket);
+	setKey(accessKey, secretKey);
+    }
+
+
+    public S3File(String bucket,String key, String secret,String endPoint, String region) {
+	this(bucket,key, secret);
+	this.endPoint = endPoint;
+	this.endPointRegion = region;
+    }
+
+
+
     public S3File(String bucket, boolean isDirectory) {
         setBucket(bucket);
         Date d = new Date();
@@ -81,13 +69,6 @@ public class S3File extends FileWrapper {
     }
 
 
-    /**
-     *
-     * @param bucket _more_
-     * @param name _more_
-     * @param size _more_
-     * @param d _more_
-     */
     public S3File(String bucket, String name, long size, Date d) {
         this(bucket);
         init(bucket, name, false, size, d.getTime());
@@ -124,7 +105,19 @@ public class S3File extends FileWrapper {
 		//		System.err.println("****** Using anonymous credentials");
 		credentials = new AnonymousAWSCredentials();
 	    }
-            s3 = new AmazonS3Client(credentials);
+	    if(Utils.stringDefined(endPoint)) {
+		s3 = AmazonS3ClientBuilder.standard()
+		.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endPoint, endPointRegion))
+		.withCredentials(new AWSStaticCredentialsProvider(credentials))
+		.withPathStyleAccessEnabled(true) // Required for many S3-compatible services
+		.build();
+
+	    } else {
+		s3 = new AmazonS3Client(credentials);
+	    }
+
+
+
         }
 
         return s3;
@@ -1112,6 +1105,7 @@ public class S3File extends FileWrapper {
 	return secretKey;
     }
 
-
+    public static final class S3Info {
+    }
 
 }
