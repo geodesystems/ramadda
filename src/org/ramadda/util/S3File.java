@@ -41,20 +41,9 @@ public class S3File extends FileWrapper {
         this(bucket, true);
     }
 
-    public S3File(String bucket,String key) {
-	this(bucket);
-	setKey(key);
-    }
-
-
-    public S3File(String bucket,String accesskey, String secretKey) {
-	this(bucket);
-	setKey(accessKey, secretKey);
-    }
-
-
     public S3File(String bucket,String key, String secret,String endPoint, String region) {
-	this(bucket,key, secret);
+	this(bucket);
+	setKey(key,secret);
 	this.endPoint = endPoint;
 	this.endPointRegion = region;
     }
@@ -204,11 +193,11 @@ public class S3File extends FileWrapper {
      * @throws Exception _more_
      */
     public static S3File createFile(String bucket) throws Exception {
-	return createFile(bucket, null);
+	return createFile(bucket, null,null,null);
     }
 
-    public static S3File createFile(String bucket, String key) throws Exception {	
-        S3File       tmp   = new S3File(bucket, key);
+    public static S3File createFile(String bucket, String key, String endpoint,String region) throws Exception {	
+        S3File       tmp   = new S3File(bucket, key,null,endpoint,region);
         List<S3File> files = tmp.doList(true).files;
         if ((files != null) && (files.size() > 0)) {
             return files.get(0);
@@ -453,7 +442,7 @@ public class S3File extends FileWrapper {
         if (p.equals("s3://")) {
             return null;
         }
-        return new S3File(p,accessKey,secretKey);
+        return new S3File(p,accessKey,secretKey,endPoint,endPointRegion);
     }
 
 
@@ -898,6 +887,9 @@ public class S3File extends FileWrapper {
         double       percent     = -1;
         int          sizeLimit   = -1;
 	String key = null;
+	String endpoint =null;
+	String region = null;
+	    
         for (int i = 0; i < args.length; i++) {
             String path = args[i];
             if (path.startsWith("--")) {
@@ -938,6 +930,20 @@ public class S3File extends FileWrapper {
 		key = args[++i];
                 continue;
             }
+            if (path.equals("-endpoint")) {
+                if (i == args.length - 1) {
+                    usage("Bad endpoint arg");
+                }
+		endpoint = args[++i];
+                continue;
+            }
+            if (path.equals("-region")) {
+                if (i == args.length - 1) {
+                    usage("Bad region arg");
+                }
+		region = args[++i];
+                continue;
+            }	    	    
 
             if (path.equals("-maxcalls")) {
                 if (i == args.length - 1) {
@@ -993,7 +999,7 @@ public class S3File extends FileWrapper {
             }
 
             if (doSelf) {
-                S3File file = createFile(path,key);
+                S3File file = createFile(path,key,endpoint,region);
                 if (file != null) {
                     System.out.println("Got:" + file.toStringVerbose());
                 } else {
@@ -1002,7 +1008,7 @@ public class S3File extends FileWrapper {
                 continue;
             }
             if (search != null) {
-                S3File file = new S3File(path,key);
+                S3File file = new S3File(path,key,null,endpoint,region);
                 S3Results results = file.doSearch(search, null, maxCalls,
 						      verbose,null);
                 if (results.files.size() == 0) {
@@ -1013,7 +1019,7 @@ public class S3File extends FileWrapper {
                 continue;
             }
 
-            S3File  f = new S3File(path,key);
+            S3File  f = new S3File(path,key,null,endpoint,region);
             if (doRecursive) {
                 FileWrapper.walkDirectory(f, new MyFileViewer(doDownload,
                         makeDirs, overWrite, sizeLimit, percent, verbose,

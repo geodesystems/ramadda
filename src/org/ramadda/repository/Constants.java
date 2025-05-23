@@ -1421,6 +1421,8 @@ public interface Constants {
     public static final String PROP_ENCRYPT_CIPHER = "ramadda.encrypt.cipher";
 
     public static final String PROP_AWS_KEY = "ramadda.aws.key";
+    public static final String PROP_S3_ENDPOINT = "ramadda.aws.endpoint";
+    public static final String PROP_S3_ENDPOINT_REGION = "ramadda.aws.endpoint.region";        
 
     public static final String BREADCRUMB_SEPARATOR = "&raquo;";
 

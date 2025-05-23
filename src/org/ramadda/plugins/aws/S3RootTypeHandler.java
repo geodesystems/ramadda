@@ -533,6 +533,10 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         if (key != null) {
             bucketEntry.putTransientProperty(PROP_AWS_KEY,
                                              getAwsKey(request,rootEntry));
+            bucketEntry.putTransientProperty(PROP_S3_ENDPOINT,
+					     getS3Endpoint(request,rootEntry));
+            bucketEntry.putTransientProperty(PROP_S3_ENDPOINT_REGION,
+					     getS3Region(request,rootEntry));	    
         }
         for (Propper locProps :
                 getConvertProperties(request, rootEntry, "location")) {
@@ -675,7 +679,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
                     s3File = cache.get(spath);
                 }
                 if (s3File == null) {
-                    s3File = S3File.createFile(spath, getAwsKey(request,rootEntry));
+                    s3File = S3File.createFile(spath, getAwsKey(request,rootEntry),
+					       getS3Endpoint(request, rootEntry),
+					       getS3Region(request, rootEntry));
                 }
                 long t2 = System.currentTimeMillis();
                 if (s3File == null) {
@@ -757,7 +763,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return rootEntry.getStringValue(request,IDX_AWS_ENDPOINT, null);
     }
 
-    private String getS3EndpointRegion(Request request,Entry rootEntry) {
+    private String getS3Region(Request request,Entry rootEntry) {
         return rootEntry.getStringValue(request,IDX_AWS_ENDPOINT_REGION, null);
     }        
 
@@ -770,7 +776,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
     private S3File createS3File(Request request, Entry rootEntry, String path) {
         return new S3File(path, getAwsKey(request,rootEntry),null,
 			  getS3Endpoint(request,rootEntry),
-			  getS3EndpointRegion(request,rootEntry));
+			  getS3Region(request,rootEntry));
     }
 
     /**
