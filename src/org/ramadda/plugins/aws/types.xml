@@ -10,6 +10,12 @@
 	    help="Optional. Either &quot;access_key:private_key&quot; or &quot;environment_variable&quot; where the value of the environment_variable is of the form &quot;access_key:private_key&quot;"/>
 
 
+    <column name="s3_endpoint"  type="string"  label="S3 Endpoint" size="1000"
+	    help="Optional. S3 compatible endpoint"/>
+    <column name="s3_endpoint_region"  type="string"  label="S3 Endpoint Region" size="1000"
+	    help="Optional. S3 compatible endpoint region"/>    
+    
+
     <column name="do_cache" type="boolean" default="true"  label="Enable caching" suffix="Turn caching  off if you are working on configuring this entries. Cache is flushed after 90 seconds"/>
     <column name="exclude_patterns" type="string"  rows="5" size="5000" label="Exclude Patterns" columns="80"
 	    suffix="Patterns to exclude. One per line."/>

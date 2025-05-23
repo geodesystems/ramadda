@@ -96,6 +96,8 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 
     /**  */
     public static final int IDX_AWS_KEY = IDX++;
+    public static final int IDX_AWS_ENDPOINT = IDX++;
+    public static final int IDX_AWS_ENDPOINT_REGION = IDX++;        
 
 
     /**  */
@@ -228,7 +230,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
 					createS3File(request,rootEntry, synthId), null,
                                       max, percent, maxSize);
         long t2 = System.currentTimeMillis();
-        Utils.printTimes("ls:" + synthId, t1, t2);
+	//        Utils.printTimes("ls:" + synthId, t1, t2);
 
         String currentMarker = request.getString(ARG_MARKER, null);
         String prevMarkers   = request.getString(ARG_PREVMARKERS, null);
@@ -751,6 +753,14 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
         return rootEntry.getStringValue(request,IDX_AWS_KEY, null);
     }
 
+    private String getS3Endpoint(Request request,Entry rootEntry) {
+        return rootEntry.getStringValue(request,IDX_AWS_ENDPOINT, null);
+    }
+
+    private String getS3EndpointRegion(Request request,Entry rootEntry) {
+        return rootEntry.getStringValue(request,IDX_AWS_ENDPOINT_REGION, null);
+    }        
+
     /**
      *
      * @param rootEntry _more_
@@ -758,7 +768,9 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
       * @return _more_
      */
     private S3File createS3File(Request request, Entry rootEntry, String path) {
-        return new S3File(path, getAwsKey(request,rootEntry));
+        return new S3File(path, getAwsKey(request,rootEntry),null,
+			  getS3Endpoint(request,rootEntry),
+			  getS3EndpointRegion(request,rootEntry));
     }
 
     /**
@@ -783,8 +795,7 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
             throws Exception {
         S3File newFile = createS3File(request,rootEntry, getS3Path(base, path));
 
-        System.err.println("doLs: " + base + " marker="
-                           + Utils.X(request.getString(ARG_MARKER, null)));
+	//        System.err.println("doLs: " + base + " marker=" + Utils.X(request.getString(ARG_MARKER, null)));
         //      System.err.println(Utils.getStack(5));
 
         return newFile.doList(false, max, percent, maxSize,
