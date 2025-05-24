@@ -35,7 +35,8 @@ start() {
     then
         echo "ramadda.service: RAMADDA already started. PID: [$( cat $PID )]" >>$LOG
     else
-        echo "ramadda.service: START: Running $COMMAND" >>$LOG
+	##Overwrite the log file on service start
+        echo "ramadda.service: START: Running $COMMAND" >$LOG
         touch $PID
         nohup $COMMAND >>$LOG 2>&1 &
 	RAMADDA_PID=$!
