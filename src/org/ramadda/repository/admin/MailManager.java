@@ -116,11 +116,11 @@ public class MailManager extends RepositoryManager {
 	HU.formEntry(sb,msgLabel("Test Message"),
 		     HU.b("To: ")+
 		     HU.input("mailtest_to",request.getString("mailtest_to","")) +
-		     HU.space(1) +
+		     HU.br() +
 		     HU.b("Subject: ")+
 		     HU.input("mailtest_subject",
 			      request.getString("mailtest_subject","This is a test")) +
-		     HU.space(1) +
+		     HU.br() +
 		     HU.b("Message: ")+
 		     HU.input("mailtest_message",
 			      request.getString("mailtest_message","Test message")));
@@ -138,7 +138,7 @@ public class MailManager extends RepositoryManager {
         getRepository().writeGlobal(request, PROP_ADMIN_SMTP, true);
         getRepository().writeGlobal(request, PROP_ADMIN_EMAIL, true);
 	if(!isEmailEnabled()) {
-	    getSessionManager().addSessionMessage(request,"Email is not enabled");
+	    //	    getSessionManager().addSessionMessage(request,"Email is not enabled");
 	    return;
 	}
 
