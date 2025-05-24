@@ -1628,7 +1628,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	    seen.add(id);
             Entry entry = getEntryManager().getEntry(request, id);
             if (entry == null) {
-		getLogManager().logSpecial("SearchManager.processLuceneSearch - unable to find entry from id:" + id);
+		//This usually happens because of access control
+		//		getLogManager().logSpecial("SearchManager.processLuceneSearch - unable to find entry from id:" + id);
                 continue;
             }
 	    if(hasArea && !entry.isGeoreferenced(request)) {
