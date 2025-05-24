@@ -735,13 +735,15 @@ public class EntryUtil extends RepositoryManager {
 	    return 0;
 	} else {
 	    //	    if(true) throw new IllegalStateException("SOrt order:" + on.on);
-	    System.err.println("Unknown sort order:" + on.on);
+	    /*
+	      System.err.println("Unknown sort order:" + on.on);
 	    if(!didit) {
 		didit = true;
 		System.err.println("e1:" + e1.getName() +" " + e1.getId());
 		System.err.println("e2:" + e2.getName() +" " + e2.getId());
 		System.err.println(Utils.getStack(20));
 	    }
+	    */
 	}
 
         return 0;
