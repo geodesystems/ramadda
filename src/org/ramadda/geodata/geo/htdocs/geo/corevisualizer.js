@@ -238,9 +238,11 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    } else	if(action=='down') {
 		let pos = _this.stage.position();
 		_this.stage.position({x:pos.x,y:pos.y-50});
+		_this.positionChanged();
 	    } else	if(action=='up') {
 		let pos = _this.stage.position();
 		_this.stage.position({x:pos.x,y:pos.y+50});
+		_this.positionChanged();
 	    }
 	    
 	})
@@ -267,6 +269,9 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	    width: container.offsetWidth,
 	    height: this.getScreenHeight(),
 	    draggable: true 
+	});
+	this.stage.on('dragmove',()=>{
+	    this.updateCollectionLabels();
 	});
 	this.stage.offsetY(this.opts.offsetY);
 
@@ -397,7 +402,7 @@ RamaddaCoreDisplay.prototype = {
     },    
 
     getXOffset:function(column) {
-	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+100);
+	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+200);
     },
     goToWorld:function(world) {
 	let scale = this.stage.scale().y;
@@ -406,6 +411,7 @@ RamaddaCoreDisplay.prototype = {
 	//Offset a bit
 	y-=20;
 	this.stage.position({ x: 0, y: -y });
+	this.positionChanged();
     },
 
     worldToCanvas:function(w,debug) {
@@ -488,7 +494,8 @@ RamaddaCoreDisplay.prototype = {
 	this.clearRecordSelection();
 	let y = this.worldToCanvas(depth);	    
 	let displays = this.getDisplayManager().getDisplays();
-	let html = '';
+	let html =
+	    HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
 	if(!this.recordSelect) {
 	    this.recordSelect={
 	    }
@@ -536,8 +543,6 @@ RamaddaCoreDisplay.prototype = {
 			 recordHtml);
 	});
 	if(Utils.stringDefined(html)) {
-	    html = HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr'])+
-		html;
 	    html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
 	    if(this.sampleDialog) this.sampleDialog.remove();
 	    this.sampleDialog =
@@ -545,7 +550,7 @@ RamaddaCoreDisplay.prototype = {
 			       callback:()=>{
 				   this.clearRecordSelection();
 			       },
-			       title:'Record',
+			       title:'Sample',
 			       decorate:true,
 			       at:'right top',
 			       my:'right top',
@@ -947,6 +952,12 @@ RamaddaCoreDisplay.prototype = {
 	    tabs.init();
 	}
     },
+    getViewportTopY:function() {
+	const scale = this.stage.scaleY();     // assume uniform scaling unless using scaleX/scaleY separately
+	const pos = this.stage.position();     // current stage position (pan offset)
+	return -pos.y / scale;
+    },
+
     getScreenHeight:function() {
 	return this.opts.screenHeight;
     },
@@ -1021,53 +1032,60 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	});
 	this.jq(ID_CV_COLLECTIONS).html(html);
-	this.jq(ID_CV_COLLECTIONS).find('.ramadda-button').button().click(function() {
+	this.jq(ID_CV_COLLECTIONS).find('.ramadda-button').button().click(function(event) {
 	    let collection = _this.collections[+$(this).attr('collection-index')];
-	    let html = '';
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-			  'action','view'],'View Entry');
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-			  'action','goto'],'Scroll To');	    
-
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-			  'action','toggle'],collection.visible?'Hide':'Show');
-
-	    html+=HU.div([ATTR_CLASS,'ramadda-clickable',
-			  'action','delete'],'Delete');
-	    html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
-	    let dialog =  HU.makeDialog({anchor:$(this),
+	    _this.showCollectionMenu(collection, $(this));
+	});
+	this.drawLegend();
+	this.updateCollectionLabels();
+    },
+    showCollectionMenu:function(collection, target,args) {
+	let _this = this;
+	let html = '';
+	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+		      'action','view'],'View Entry');
+	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+		      'action','goto'],'Scroll To');	    
+	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+		      'action','toggle'],collection.visible?'Hide':'Show');
+	html+=HU.div([ATTR_CLASS,'ramadda-clickable',
+		      'action','delete'],'Delete');
+	html=HU.div([ATTR_STYLE,HU.css('min-width','200px','padding','5px')], html);
+	let opts = {anchor:target,
 				     decorate:true,
 				     at:'left bottom',
 				     my:'left top',
 				     content:html,
-				     draggable:false});
-
-	    dialog.find('.ramadda-clickable').click(function() {
-		let action = $(this).attr('action');
-		if(action=='delete') {
-		    _this.removeCollection(collection);
-		} else if(action=='toggle') {
-		    collection.visible=!collection.visible;
-		    _this.drawCollections();
-		} else if(action=='goto') {
-		    let y = _this.worldToCanvas(collection.range.min)-50;
-		    let x =  collection.xPosition-200;
-		    //not sure what x to use
-		    let scale = _this.stage.scaleY();
-		    let pos = _this.stage.position();
-		    x = x*scale;
-		    y = y*scale;
-		    x=0;
-		    _this.stage.position({x:-x,y:-y});
-		} else if(action=='view') {
-		    let url = RamaddaUtils.getEntryUrl(collection.entryId);
-		    window.open(url, '_entry');
-		}
-		dialog.remove();
-	    });
+				     draggable:false}
+	if(args) $.extend(opts,args);
+	let dialog =  HU.makeDialog(opts);
+	
+	dialog.find('.ramadda-clickable').click(function() {
+	    let action = $(this).attr('action');
+	    if(action=='delete') {
+		_this.removeCollection(collection);
+	    } else if(action=='toggle') {
+		collection.visible=!collection.visible;
+		_this.drawCollections();
+	    } else if(action=='goto') {
+		let y = _this.worldToCanvas(collection.range.min)-50;
+		let x =  collection.xPosition-200;
+		//not sure what x to use
+		let scale = _this.stage.scaleY();
+		let pos = _this.stage.position();
+		x = x*scale;
+		y = y*scale;
+		x=0;
+		_this.stage.position({x:-x,y:-y});
+		_this.positionChanged();
+	    } else if(action=='view') {
+		let url = RamaddaUtils.getEntryUrl(collection.entryId);
+		window.open(url, '_entry');
+	    }
+	    dialog.remove();
 	});
-	this.drawLegend();
     },
+
     addCollection:function(collection) {
 	collection.visible= true;
 	if(!Utils.isDefined(window.cv_collection_id))
@@ -1085,10 +1103,14 @@ RamaddaCoreDisplay.prototype = {
 	let x = this.getXOffset(column);
 	let l = this.makeText(this.layer,collection.name,x,this.worldToCanvas(collection.range.min)-20,
 			      {fontStyle:'bold'});
+	collection.nameText = l;
 	l.collectionId = collection.collectionId;
-	this.addClickHandler(l,(e)=>{
-	    if(!confirm('Do you want to remove this collection?')) return;
-	    this.removeCollection(collection);
+	this.addClickHandler(l,(event)=>{
+	    let canvas = jqid(this.domId(ID_CV_MENUBAR));
+	    let dx = event.evt.layerX;
+	    let dy = event.evt.layerY+15;	    
+	    let args = 	    {at:'left+'+  dx +' bottom+' + dy};
+	    this.showCollectionMenu(collection, canvas,args);
 	});
 	this.checkRange();
 	let range =  this.opts.range;
@@ -1182,6 +1204,64 @@ RamaddaCoreDisplay.prototype = {
 
 	if(obj) obj.dialog=dialog;
     },
+    positionChanged:function() {
+	this.updateCollectionLabels();
+    },
+    zoomChanged:function() {
+	const textNodes = this.stage.find('Text');
+	let scale = this.stage.scaleX();
+	let s = {
+		x: 1 / scale,
+		y: 1 / scale,
+	};
+	textNodes.forEach(text=>{
+	    text.scale(s);
+	    if(text.backgroundRect) {
+		let rect= text.backgroundRect;
+		rect.scale(s);
+		rect.width(text.width());
+		rect.height(text.height());
+		rect.position(text.position());
+	    }
+	});
+
+	if(this.legendText) {
+	    let skip=1;
+	    if (scale < 0.005) skip= 100;
+	    else if (scale < 0.007) skip= 15;
+	    else if (scale < 0.01) skip= 13;
+	    else if (scale < 0.013) skip= 12;
+	    else if (scale < 0.018) skip= 9;
+	    else if (scale < 0.025) skip= 8;
+	    else if (scale < 0.04) skip= 7;
+	    else if (scale < 0.07) skip= 6;
+	    else if (scale < 0.1) skip= 5;
+	    else if (scale < 0.4) skip= 4;
+	    else if (scale < 0.6) skip= 3;
+	    else if (scale < 0.8) skip= 2;	    
+//	    console.log(scale,skip);
+	    this.legendText.forEach((text,idx)=>{
+		if(scale>0.9) text.setVisible(true);
+		else text.visible(idx % skip === 0);
+	    });
+	}
+	this.updateCollectionLabels();
+    },
+    updateCollectionLabels:function() {
+	//Keep the collection labels at the top of the viewport
+	let top = this.getViewportTopY();
+	let scale = this.stage.scaleX();
+	let margin=10;
+	if(scale>1)  margin = margin/scale;
+	this.collections.forEach(collection=>{
+	    if(collection.nameText) {
+		let text =collection.nameText; 
+		let pos = text.position();
+		text.position({ x: pos.x, y: top+margin });
+	    }		
+	});
+    },
+
     zoom:function(scaleBy) {
 	let mousePos = this.stage.getPointerPosition();
 	let oldScale = this.stage.scaleX();
@@ -1202,6 +1282,7 @@ RamaddaCoreDisplay.prototype = {
 	this.stage.scale({ x: newScale, y: newScale });
 	this.stage.position(newPos);
 	this.stage.batchDraw();
+	this.zoomChanged();
     },
     addEventListeners:function() {
 	window.addEventListener('resize', () => {
@@ -1217,7 +1298,7 @@ RamaddaCoreDisplay.prototype = {
 	    e.evt.preventDefault(); 
 	    let scale = this.stage.scaleX();
 	    const pointer = this.stage.getPointerPosition();
-	    const zoomSpeed = 0.1;
+	    const zoomSpeed = 0.05;
 	    const direction = e.evt.deltaY > 0 ? -1 : 1;
 	    scale += direction * zoomSpeed;
 	    scale = Math.max(0.005, Math.min(100, scale));
@@ -1228,6 +1309,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.stage.scale({ x: scale, y: scale });
 	    this.stage.position(newPos);
 	    this.stage.batchDraw();
+	    this.zoomChanged();
 	});
 
 
@@ -1272,6 +1354,8 @@ RamaddaCoreDisplay.prototype = {
 	this.stage.position({ x: 0, y: 0 });
 	this.drawLegend();
 	this.stage.batchDraw();
+	this.zoomChanged();
+	this.positionChanged();
     },
     makeText:function(layer,t,x,y,args) {
 	let opts = {
@@ -1293,6 +1377,12 @@ RamaddaCoreDisplay.prototype = {
 	    fill: opts.fill,
 	});
 
+	let scale = this.stage.scaleX();
+	text.scale({
+	    x: 1 / scale,
+	    y: 1 / scale,
+	});
+
 	let textX  = text.x();
 	if(opts.doOffsetWidth) {
 	    text.offsetX(text.width());
@@ -1310,7 +1400,13 @@ RamaddaCoreDisplay.prototype = {
 		strokeWidth: opts.strokeWidth,
 		cornerRadius: 0 
 	    });
+	    
 	    layer.add(bg);
+	    bg.scale({
+		x: 1 / scale,
+		y: 1 / scale,
+	    });
+
 	    text.backgroundRect = bg;
 	}
 
@@ -1413,12 +1509,14 @@ RamaddaCoreDisplay.prototype = {
 	let range = this.opts.range;
 	let bottom = range.max+(0.5*(range.max-range.min));
 	step = (range.max-range.min)/6;
+	this.legendText = [];
 	for(let i=0;i<=bottom;i+=step) {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
 	    y2=y;
 	    let l1 = this.makeText(this.legendLayer,Utils.formatNumber(i),
 				   axisWidth-tickWidth,y,{doOffsetWidth:true});
+	    this.legendText.push(l1);
 	    let tick1 = new Konva.Line({
 		points: [axisWidth-tickWidth, y, axisWidth, y],
 		stroke: CV_LINE_COLOR,
@@ -1769,7 +1867,7 @@ RamaddaCoreDisplay.prototype = {
 			}
 			group.add(mark);
 			if(Utils.stringDefined(box.label)) {
-			    let styleObj = {fill:'white'};
+			    let styleObj = {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL};
 			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
 			}
 		    }
