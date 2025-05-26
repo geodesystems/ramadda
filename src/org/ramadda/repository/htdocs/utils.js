@@ -2623,11 +2623,11 @@ var Utils =  {
         if (anumber > 1000) {
             return number_format(number, 0);
         } else if (anumber > 100) {
-            return number_format(number, 1);
-        } else if (anumber > 10) {
             return number_format(number, 2);
-        } else if (anumber > 1) {
+        } else if (anumber > 10) {
             return number_format(number, 3);
+        } else if (anumber > 1) {
+            return number_format(number, 4);
         } else {
             let decimals = "" + (number - Math.floor(number));
             let s = number_format(number, Math.min(decimals.length - 2, 5),debug);
