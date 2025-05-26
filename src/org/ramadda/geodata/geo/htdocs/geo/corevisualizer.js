@@ -1,5 +1,4 @@
 
-
 const DISPLAY_CORE = "core";
 addGlobalDisplayType({
     type: DISPLAY_CORE,
@@ -489,13 +488,16 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-
+    format:function(n) {
+	let f =  Utils.formatNumber(n);
+	return f;
+    },
     sampleAtDepth:function(depth) {
 	this.clearRecordSelection();
 	let y = this.worldToCanvas(depth);	    
 	let displays = this.getDisplayManager().getDisplays();
 	let html =
-	    HU.div([],HU.b('Selected depth: ') + Utils.formatNumber(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
+	    HU.div([],HU.b('Selected depth: ') + this.format(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
 	if(!this.recordSelect) {
 	    this.recordSelect={
 	    }
@@ -605,9 +607,9 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	    this.drawLayer.add(this.measureState.line);
 	    let world  =this.canvasToWorld(pos.y);	    
-//	    console.log('rel:',pos.y,' pos:', this.stage.getPointerPosition().y,' world:',world,'format:',Utils.formatNumber(world));
+//	    console.log('rel:',pos.y,' pos:', this.stage.getPointerPosition().y,' world:',world,'format:',this.format(world));
 	    this.measureState.text1 = this.makeText(this.drawLayer,
-						    Utils.formatNumber(world),
+						    this.format(world),
 						    this.measureState.start.x+5,
 						    pos.y,
 						    {fontSize: 12,	background:'#fff',fill: 'black',});
@@ -620,7 +622,7 @@ RamaddaCoreDisplay.prototype = {
 	    const pos = this.stage.getRelativePointerPosition();
 	    if(this.measureState.text2)this.destroy(this.measureState.text2);
 	    this.measureState.text2 = this.makeText(this.drawLayer,
-					       Utils.formatNumber(this.canvasToWorld(pos.y)),
+					       this.format(this.canvasToWorld(pos.y)),
 					       this.measureState.start.x+5,
 					       pos.y,
 					       {fontSize: 12,	background:'#fff',fill: 'black',});
@@ -918,7 +920,7 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	    sorted.forEach(entry=>{
 		let label = entry.label;
-		label+=' ' +Utils.formatNumber(entry.topDepth) +' - ' +Utils.formatNumber(entry.bottomDepth);
+		label+=' ' +this.format(entry.topDepth) +' - ' +this.format(entry.bottomDepth);
 		let url = RamaddaUtil.getEntryUrl(entry.entryId);
 		label = HU.href(url,label,['target','_entry']);
 
@@ -999,6 +1001,7 @@ RamaddaCoreDisplay.prototype = {
 		console.log('Error loading collection:' + entryId +' error:' + data.error);
 		return;
 	    }
+
 	    _this.addCollection(data);
 	}).fail((data)=>{
 	    window.alert('Failed to load entries');
@@ -1207,13 +1210,14 @@ RamaddaCoreDisplay.prototype = {
     positionChanged:function() {
 	this.updateCollectionLabels();
     },
-    zoomChanged:function() {
+    scaleChanged:function() {
 	const textNodes = this.stage.find('Text');
 	let scale = this.stage.scaleX();
 	let s = {
 		x: 1 / scale,
 		y: 1 / scale,
 	};
+
 	textNodes.forEach(text=>{
 	    text.scale(s);
 	    if(text.backgroundRect) {
@@ -1282,7 +1286,7 @@ RamaddaCoreDisplay.prototype = {
 	this.stage.scale({ x: newScale, y: newScale });
 	this.stage.position(newPos);
 	this.stage.batchDraw();
-	this.zoomChanged();
+	this.scaleChanged();
     },
     addEventListeners:function() {
 	window.addEventListener('resize', () => {
@@ -1309,7 +1313,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.stage.scale({ x: scale, y: scale });
 	    this.stage.position(newPos);
 	    this.stage.batchDraw();
-	    this.zoomChanged();
+	    this.scaleChanged();
 	});
 
 
@@ -1354,7 +1358,7 @@ RamaddaCoreDisplay.prototype = {
 	this.stage.position({ x: 0, y: 0 });
 	this.drawLegend();
 	this.stage.batchDraw();
-	this.zoomChanged();
+	this.scaleChanged();
 	this.positionChanged();
     },
     makeText:function(layer,t,x,y,args) {
@@ -1514,7 +1518,7 @@ RamaddaCoreDisplay.prototype = {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
 	    y2=y;
-	    let l1 = this.makeText(this.legendLayer,Utils.formatNumber(i),
+	    let l1 = this.makeText(this.legendLayer,this.format(i),
 				   axisWidth-tickWidth,y,{doOffsetWidth:true});
 	    this.legendText.push(l1);
 	    let tick1 = new Konva.Line({
@@ -1568,8 +1572,8 @@ RamaddaCoreDisplay.prototype = {
     editEntry:function(entry,y1,y2) {
 	let _this = this;
 	let html = '';
-	y1 = Utils.formatNumber(y1);
-	y2 = Utils.formatNumber(y2);	
+	y1 = this.format(y1);
+	y2 = this.format(y2);	
 	html+=HU.formTable();
 	html+=HU.formEntry('Name:',HU.input('',entry.label,  [ATTR_ID,this.domId('editname')]));
 	html+=HU.formEntry('Top:',HU.input('',y1,  [ATTR_ID,this.domId('edittop')]));
@@ -1694,7 +1698,7 @@ RamaddaCoreDisplay.prototype = {
 
     makeTicks:function(group,top,bottom,x,y1,y2) {
 	let tickWidth=CV_TICK_WIDTH;
-	let l1 = this.makeText(group,Utils.formatNumber(top),
+	let l1 = this.makeText(group,this.format(top),
 			       x-tickWidth,y1,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick1 = new Konva.Line({
 	    points: [x-tickWidth, y1, x, y1],
@@ -1702,7 +1706,7 @@ RamaddaCoreDisplay.prototype = {
 	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick1);
-	let l2 = this.makeText(group,Utils.formatNumber(bottom),
+	let l2 = this.makeText(group,this.format(bottom),
 			       x-tickWidth,y2, {doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick2 = new Konva.Line({
 	    points: [x-tickWidth, y2, x, y2],
@@ -1834,7 +1838,8 @@ RamaddaCoreDisplay.prototype = {
 			    strokeWidth: 1,
 			}
 			if(box.stroke) boxAttrs.stroke = box.stroke;
-			if(box.fill) boxAttrs.fill = box.fill;			
+			if(box.fill) boxAttrs.fill = box.fill;
+			if(Utils.stringDefined(box.strokeWidth)) boxAttrs.strokeWidth = box.strokeWidth;
 			if(doRotation) {
 			    boxAttrs =  this.rotateAroundPoint(boxAttrs, 90,origImageCenter);
 			    boxAttrs.x=boxAttrs.x - rotOffset.x;
@@ -1888,6 +1893,7 @@ RamaddaCoreDisplay.prototype = {
 	if(showPieces && entry.boxes) {
 	    entry.boxes.forEach(box=>{
 		if(!this.isValidBox(box)) return;
+		if(box.marker) return;
 		let boxGroup = new Konva.Group({
 		    xclip: {
 		    x: imageX+scale(box.x),
@@ -1898,7 +1904,7 @@ RamaddaCoreDisplay.prototype = {
 		group.add(boxGroup);
 		let x = imageX;
 		let y = this.worldToCanvas(box.top);
-		let width = scale(box.width)*8;
+		let width = scale(box.width);
 		let height=this.worldToCanvas(box.bottom)-y;
 		let boxImage = entry.image.clone({
 /*		    x: x,
@@ -1987,8 +1993,8 @@ RamaddaCoreDisplay.prototype = {
 	group.on('dragmove', (e)=> {
 	    let pos  = getPos(e.target);
 //	    console.log(pos.top,pos.bottom);
-	    group.ticks.l1.text(Utils.formatNumber(pos.top));
-	    group.ticks.l2.text(Utils.formatNumber(pos.bottom));	    
+	    group.ticks.l1.text(this.format(pos.top));
+	    group.ticks.l2.text(this.format(pos.bottom));	    
 	});
 
 	group.on('dragend', (e)=> {

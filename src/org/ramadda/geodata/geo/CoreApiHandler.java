@@ -114,17 +114,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    for(Box box:_boxes) {
 		if(boxes==null)boxes=new ArrayList<String>();
 		String stroke = box.stroke==null?"null":JU.quote(box.stroke);
+		String strokeWidth = box.strokeWidth==null?"null":JU.quote(box.strokeWidth);		
 		String fill = box.fill==null?"null":JU.quote(box.fill);		
 		if(box.poly!=null) {
 		    boxes.add(JU.map("label",JU.quote(box.label),
 				     "polygon",JU.list(box.poly),
 				     "top",JU.quote(box.top),
 				     "bottom",JU.quote(box.bottom),
-				     "fill",fill,"stroke",stroke));
+				     "fill",fill,"stroke",stroke,"strokeWidth",strokeWidth));
 		} else {
 		    boxes.add(JU.map("label",JU.quote(box.label),
 				     "marker",box.marker,
-				     "fill",fill,"stroke",stroke,
+				     "fill",fill,"stroke",stroke,"strokeWidth",strokeWidth,
 				     "x",JU.quote(box.x),
 				     "y",JU.quote(box.y),
 				     "width",JU.quote(box.width),
@@ -170,7 +171,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	//	System.out.println(annotations);
 	if(stringDefined(annotations)) {
 	    try {
-		//		System.out.println(annotations);
+		System.out.println(annotations);
 
 		JSONArray a = new JSONArray(annotations);
 		for(int i=0;i<a.length();i++) {
@@ -179,6 +180,10 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		    String top=null;
 		    String bottom=null;		    
 		    String label = "";
+		    String stroke=null;
+		    String strokeWidth=null;
+		    String fill=null;		    		    
+
 		    if(bodyArray!=null) {
 			for(int bidx=0;bidx<bodyArray.length();bidx++) {
 			    JSONObject body = bodyArray.getJSONObject(bidx);
@@ -189,8 +194,14 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    } else if(purpose.equals("tagging")) {
 				String v = body.optString("value",null);
 				if(v==null) continue;
-				if(v.trim().startsWith("top:")) top = v.substring(4).trim();
-				else if(v.trim().startsWith("bottom:")) bottom= v.substring(7).trim();
+				v = v.trim();
+				if(v.startsWith("c:")) stroke = v.substring("c:".length()).trim();
+				else if(v.startsWith("color:")) stroke = v.substring("color:".length()).trim();
+				else if(v.startsWith("fill:")) fill= v.substring("fill:".length()).trim();
+				else if(v.startsWith("w:")) strokeWidth = v.substring("w:".length()).trim();
+				else if(v.startsWith("width:")) strokeWidth = v.substring("width:".length()).trim();				
+				else if(v.startsWith("top:")) top = v.substring(4).trim();
+				else if(v.startsWith("bottom:")) bottom= v.substring(7).trim();
 			    }
 			}
 		    }
@@ -198,6 +209,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		    if(value==null) continue;
 		    //xywh=pixel:428.0892028808594,54.38945770263672,373.4395446777344,74.16742706298828"
 		    int idx = value.indexOf("pixel:");
+		    Box  box=null;
 		    if(idx<0) {
 			String points = StringUtil.findPattern(value,"points=\"(.*)\"");
 			if(points==null)  continue;
@@ -209,7 +221,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    poly.add(new Double(tuple.get(0)));
 			    poly.add(new Double(tuple.get(1)));			    
 			}
-			boxes.add(new Box(label,
+			boxes.add(box=new Box(label,
 					  poly,
 					  top==null?Double.NaN:Double.parseDouble(top),
 					  bottom==null?Double.NaN:Double.parseDouble(bottom)));
@@ -218,13 +230,18 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		    value = value.substring(idx+"pixel:".length());
 		    List<String> toks = Utils.split(value);
 		    if(toks.size()!=4) continue;
-		    boxes.add(new Box(label,
+		    boxes.add(box=new Box(label,
 				      Double.parseDouble(toks.get(0)),
 				      Double.parseDouble(toks.get(1)),
 				      Double.parseDouble(toks.get(2)),
 				      Double.parseDouble(toks.get(3)),
 				      top==null?Double.NaN:Double.parseDouble(top),
 				      bottom==null?Double.NaN:Double.parseDouble(bottom)));
+		    if(box!=null) {
+			if(stroke!=null) box.stroke = stroke;
+			box.fill =fill;
+			box.strokeWidth = strokeWidth;
+		    }
 		}
 	    } catch(Exception exc) {
 		System.err.println(exc);
@@ -501,6 +518,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	public double  bottom;
 	public List<Double> poly;
 	public String stroke;
+	public String strokeWidth;	
 	public String fill;	
 	public boolean marker=false;
 

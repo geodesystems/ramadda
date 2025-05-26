@@ -573,12 +573,12 @@ useAttachmentIfNeeded=true}}
 -if
 +if show_visualizer=true
 +tabs
++tab Core Visualizer
+{{core_visualizer}}
+-tab
 +tab Annotated Image
 {{zoomify singleFile=true annotationsField="type_borehole_coreimage_annotations_json"
 useAttachmentIfNeeded=true}}
--tab
-+tab Core Visualizer
-{{core_visualizer}}
 -tab
 -tabs
 -if
