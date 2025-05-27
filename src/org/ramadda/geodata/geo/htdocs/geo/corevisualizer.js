@@ -1,4 +1,4 @@
-var xxx=0;
+
 const DISPLAY_CORE = "core";
 addGlobalDisplayType({
     type: DISPLAY_CORE,
@@ -1124,7 +1124,6 @@ RamaddaCoreDisplay.prototype = {
 	this.toggleBoxes();
     },
     addEntries:function(collection,forceNewImages) {
-	collection.name = collection.name +' ' + (xxx++);
 	let column = collection.displayIndex;
 	collection.xPosition =  this.getXOffset(column);
 
