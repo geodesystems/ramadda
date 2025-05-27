@@ -1,4 +1,4 @@
-
+var xxx=0;
 const DISPLAY_CORE = "core";
 addGlobalDisplayType({
     type: DISPLAY_CORE,
@@ -25,6 +25,7 @@ var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
 var ID_CV_SCALE = 'scale';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
+var ID_CV_SHOWBOXES = 'showboxes';
 var ID_CV_SHOWPIECES='showpieces';
 var ID_CV_GOTO = 'goto';
 var ID_CV_RELOAD = 'reload';
@@ -138,14 +139,14 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	menuItemsLeft.push(HU.space(1));
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Reset zoom (\'=\')','action','home',ATTR_ID,'home',ATTR_CLASS,'ramadda-clickable'],HU.getIconImage('fas fa-house')));
 
 
-	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out','action','zoomout',
+	menuItemsLeft.push(HU.span([ATTR_TITLE,'Zoom out (\'-\')','action','zoomout',
 				    ATTR_CLASS,'ramadda-clickable'],
 				   HU.getIconImage('fas fa-magnifying-glass-minus')));
 
-	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in','action','zoomin',
+	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('zoomin'),ATTR_TITLE,'Zoom in (\'+\')','action','zoomin',
 				    ATTR_CLASS,'ramadda-clickable'],
 				   HU.getIconImage('fas fa-magnifying-glass-plus')));
 	menuItemsLeft.push(HU.span([ATTR_ID,this.domId('down'),ATTR_TITLE,'Pan down','action','down',
@@ -206,7 +207,13 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	},this.domId(ID_CV_DISPLAYS_ADD));	
 
 	$(document).on('keydown', (event) =>{
-	    if (event.key === 'Escape' || event.keyCode === 27) {
+	    if(event.key=='=') {
+		this.resetZoomAndPan();
+	    } else    if(event.key=='+') {
+		this.zoom(1.1);
+	    } else  if(event.key=='-') {
+		this.zoom(0.9);
+	    } else if (event.key === 'Escape' || event.keyCode === 27) {
 		this.clearRecordSelection();
 		this.toggleSampling(false);
 		this.toggleMeasure(false);
@@ -349,9 +356,9 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	showLegend:true,
 	showLabels:true,
+	showBoxes:true,
 	showHighlight:false,
 	showMenuBar:true,
-
     }
 
     Utils.split('showPieces,hasBoxes',',').forEach(prop=>{
@@ -401,7 +408,7 @@ RamaddaCoreDisplay.prototype = {
     },    
 
     getXOffset:function(column) {
-	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+200);
+	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+100);
     },
     goToWorld:function(world) {
 	let scale = this.stage.scale().y;
@@ -766,6 +773,9 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.opts.showLabels,'Show Labels'));
 
 	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
+				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.opts.showBoxes,'Show Boxes'));    
+	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWHIGHLIGHT),
 				 [ATTR_ID,this.domId(ID_CV_SHOWHIGHLIGHT)],this.opts.showHighlight,'Show Highlight'));    
 	if(this.getHasBoxes()) {
@@ -823,6 +833,12 @@ RamaddaCoreDisplay.prototype = {
 	    _this.setShowPieces($(this).is(':checked'));
 	    _this.drawCollections(true);
 	});
+
+	this.jq(ID_CV_SHOWBOXES).change(function(){
+	    _this.opts.showBoxes = $(this).is(':checked');
+	    _this.toggleBoxes();
+	});
+
 
 	this.jq(ID_CV_SHOWHIGHLIGHT).change(function(){
 	    _this.opts.showHighlight = $(this).is(':checked');
@@ -1008,17 +1024,19 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-    drawCollections:function(forceNewImages) {
+    drawCollections:function(forceNewImages,args) {
+	let opts = {
+	}
+	if(args) $.extend(opts,args);
 	if(this.loadingMessage) {
 	    this.loadingMessage.destroy();
 	    this.loadingMessage=null;
 	}
 	let _this=this;
+
 	this.clear();
 	this.checkRange();
-	this.stage.scale({ x: 1, y: 1 });
 	let html = '';
-
 	let displayIndex=0;
 	this.collections.forEach((collection,idx)=>{
 	    collection.collectionIndex = idx;
@@ -1041,6 +1059,10 @@ RamaddaCoreDisplay.prototype = {
 	});
 	this.drawLegend();
 	this.updateCollectionLabels();
+
+
+
+
     },
     showCollectionMenu:function(collection, target,args) {
 	let _this = this;
@@ -1098,8 +1120,11 @@ RamaddaCoreDisplay.prototype = {
 	this.collections.push(collection);
 	this.addAnnotations(collection);
 	this.drawCollections();
+	this.toggleLabels();
+	this.toggleBoxes();
     },
     addEntries:function(collection,forceNewImages) {
+	collection.name = collection.name +' ' + (xxx++);
 	let column = collection.displayIndex;
 	collection.xPosition =  this.getXOffset(column);
 
@@ -1118,7 +1143,8 @@ RamaddaCoreDisplay.prototype = {
 	this.checkRange();
 	let range =  this.opts.range;
 //	console.log(collection.name,'range',range.min,range.max,collection.data.length);
-	collection.data.forEach(entry=>{
+	collection.data.forEach((entry,idx)=>{
+	    entry.collection = collection;
 	    entry.displayIndex = column;
 	    this.addCoreEntry(entry,forceNewImages);
 	});
@@ -1145,10 +1171,23 @@ RamaddaCoreDisplay.prototype = {
 	}		
     },
 
+    applyToggle:function(entry) {
+	this.toggleBoxes(entry);
+	this.toggleLabels(entry);	
+    },
 
-    toggleLabels: function() {
+    toggleBoxes: function(entry) {
+	let show = this.opts.showBoxes;
+	let entries = entry?[entry]:this.entries;
+	entries.forEach(e=>{
+	    this.toggleAll(e.boxShapes,show);
+	});
+    },
+
+    toggleLabels: function(entry) {
 	let show = this.getShowLabels();
-	this.entries.forEach(e=>{
+	let entries = entry?[entry]:this.entries;
+	entries.forEach(e=>{
 	    this.toggleAll(e.labels,show);
 	});
     },
@@ -1302,7 +1341,7 @@ RamaddaCoreDisplay.prototype = {
 	    e.evt.preventDefault(); 
 	    let scale = this.stage.scaleX();
 	    const pointer = this.stage.getPointerPosition();
-	    const zoomSpeed = 0.05;
+	    const zoomSpeed = 0.005;
 	    const direction = e.evt.deltaY > 0 ? -1 : 1;
 	    scale += direction * zoomSpeed;
 	    scale = Math.max(0.005, Math.min(100, scale));
@@ -1644,6 +1683,7 @@ RamaddaCoreDisplay.prototype = {
 		this.entries.push(entry);
 		entry.image = image;
 		this.addEntryImage(entry);
+		this.applyToggle(entry);
 	    });
 	}
 				
@@ -1717,9 +1757,9 @@ RamaddaCoreDisplay.prototype = {
 	return {l1:l1,l2:l2,tick1:tick1,tick2:tick2};
     },
     addEntryImage:function(entry,debug) {
-	
 	if(isNaN(entry.topDepth)|| isNaN(entry.bottomDepth)) return;
 	entry.labels = [];
+	entry.boxShapes = [];
 
 	let showPieces= this.getShowPieces();
 	let maxWidth=+this.opts.maxColumnWidth;
@@ -1771,7 +1811,6 @@ RamaddaCoreDisplay.prototype = {
 	image.setAttrs(imageAttrs);
 	let imageRect = image.getClientRect();
 	let imageScale = canvasHeight/imageRect.height;
-
 	image.scale({x:imageScale,y:imageScale});
 	imageRect = image.getClientRect({ relativeTo: this.layer});
 
@@ -1803,6 +1842,7 @@ RamaddaCoreDisplay.prototype = {
 	    }
 	    if(entry.boxes) {
 		entry.boxes.forEach(box=>{
+//		    if(!this.opts.showBoxes) return;
 		    if(showPieces && this.isValidBox(box)) {
 			return;
 		    }
@@ -1827,6 +1867,7 @@ RamaddaCoreDisplay.prototype = {
 			    strokeWidth: 2,
 			    closed: true,
 			});
+			entry.boxShapes.push(polygon);
 			group.add(polygon);
 		    } else {
 			let boxAttrs = {
@@ -1870,10 +1911,12 @@ RamaddaCoreDisplay.prototype = {
 			} else {
 			    mark = new Konva.Rect(boxAttrs);
 			}
+			entry.boxShapes.push(mark);
 			group.add(mark);
 			if(Utils.stringDefined(box.label)) {
 			    let styleObj = {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL};
 			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
+			    entry.boxShapes.push(l);
 			}
 		    }
 		});
@@ -1884,7 +1927,6 @@ RamaddaCoreDisplay.prototype = {
 					   {strokeWidth:0.4,outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
 	    this.definePopup(imageLabel,entry.label,entry.text);
 	    this.toggle(imageLabel,this.getShowLabels());
-	    entry.image = image;
 	    entry.highlight = rect;
 	    entry.labels.push(imageLabel);
 	}
