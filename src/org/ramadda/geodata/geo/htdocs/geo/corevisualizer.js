@@ -24,6 +24,7 @@ var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
 var ID_CV_SCALE = 'scale';
+var ID_CV_SCALE_LABEL = 'scalelabel';
 var ID_CV_SHOWHIGHLIGHT = 'showhighlight';
 var ID_CV_SHOWBOXES = 'showboxes';
 var ID_CV_SHOWPIECES='showpieces';
@@ -32,6 +33,8 @@ var ID_CV_RELOAD = 'reload';
 var ID_CV_COLLECTIONS= 'collections';
 var CV_LINE_COLOR='#aaa';
 var CV_HIGHLIGHT_COLOR = 'red';
+var CV_SAMPLE_COLOR = 'red';
+var CV_BOX_COLOR = 'red';
 var CV_STROKE_WIDTH = 0.4;
 var CV_AXIS_WIDTH=100;
 var CV_ANNOTATIONS_WIDTH=200;
@@ -341,18 +344,16 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	scaleY:1,
 	//This is the initial canvas scale
 	initScale:1.0,
+	imageWidthScale:1.0,
 	legendWidth:0,
 	hadLegendWidth:Utils.isDefined(args.legendWidth),
-
 	showPieces:false,
 	showAnnotations:true,	
 	axisWidth:CV_AXIS_WIDTH,
 	hadAxisWidth:Utils.isDefined(args.axisWidth),	
 	top:0,
-
 	range: {
 	},
-
 
 	showLegend:true,
 	showLabels:true,
@@ -407,8 +408,16 @@ RamaddaCoreDisplay.prototype = {
 	this.opts[key] = v;
     },    
 
+    getImageWidthScale:function() {
+	return this.opts.imageWidthScale;
+    },
+    setImageWidthScale:function(v) {
+	this.opts.imageWidthScale = +v;
+	return this.opts.imageWidthScale;
+    },
     getXOffset:function(column) {
-	return this.opts.axisWidth+100+column*(+this.opts.maxColumnWidth+100);
+	let max = +this.opts.maxColumnWidth*this.getImageWidthScale();
+	return this.opts.axisWidth+100+column*(max+100);
     },
     goToWorld:function(world) {
 	let scale = this.stage.scale().y;
@@ -511,7 +520,7 @@ RamaddaCoreDisplay.prototype = {
 	}
 	this.recordSelect.line = new Konva.Line({
 	    points: [this.getAxisWidth(), y, 2000,y],
-	    stroke: 'red',
+	    stroke: CV_SAMPLE_COLOR,
 	    strokeWidth: 2,
 	    lineCap: 'round',
 	    lineJoin: 'round',
@@ -607,7 +616,7 @@ RamaddaCoreDisplay.prototype = {
 	    this.measureState.start = pos;
 	    this.measureState.line = new Konva.Line({
 		points: [pos.x, pos.y, pos.x, pos.y],
-		stroke: 'red',
+		stroke: CV_SAMPLE_COLOR,
 		strokeWidth: 2,
 		lineCap: 'round',
 		lineJoin: 'round',
@@ -770,7 +779,7 @@ RamaddaCoreDisplay.prototype = {
 	let html = '';
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWLABELS),
-				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.opts.showLabels,'Show Labels'));
+				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.getShowLabels(),'Show Labels'));
 
 	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
@@ -792,21 +801,32 @@ RamaddaCoreDisplay.prototype = {
 
 
 
+	/*
+	html+= HU.div([],
+	'Image Scale: ' + HU.input('',this.getImageWidthScale(),
+		      [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));
+		      */
+
+	html+= HU.div([ATTR_STYLE,HU.css('margin-bottom','0.5em')],
+		      'Image Scale: ' + HU.span([ATTR_ID,this.domId(ID_CV_SCALE_LABEL)],
+						this.getImageWidthScale()) +
+		      HU.div([ATTR_STYLE,HU.css('margin-top','0.5em')],HU.div([ATTR_TITLE,'Shift-key: apply while dragging',
+									       ATTR_ID,this.domId(ID_CV_SCALE)])));
+
 	html+= HU.div([],
 		      'Column width: ' + HU.input('',this.opts.maxColumnWidth,
 						  [ATTR_ID,this.domId(ID_CV_COLUMN_WIDTH),ATTR_STYLE,'width:40px']));
-	html+= HU.div([],
-		      'Scale: ' + HU.input('',this.opts.scaleY,
-					       [ATTR_ID,this.domId(ID_CV_SCALE),ATTR_STYLE,'width:40px']));	
 
-	html=HU.div([ATTR_STYLE,HU.css('padding','5px')], html);
-	let dialog =  HU.makeDialog({anchor:anchor,
-				     decorate:true,
-				     at:'right bottom',
-				     my:'right top',
-				     header:true,
-				     content:html,
-				     draggable:true});
+
+	html=HU.div([ATTR_STYLE,HU.css('padding','10px')], html);
+	if(this.settingsDialog) this.settingsDialog.remove();
+	let dialog =  this.settingsDialog = HU.makeDialog({anchor:anchor,
+							   decorate:true,
+							   at:'right bottom',
+							   my:'right top',
+							   header:true,
+							   content:html,
+							   draggable:true});
 
 	
 	HU.onReturn(this.jq(ID_CV_COLUMN_WIDTH),obj=>{
@@ -815,10 +835,33 @@ RamaddaCoreDisplay.prototype = {
 	});
 
 
+	this.jq(ID_CV_SCALE).slider({
+	    //range: true,
+	    min: 0.1,
+	    max: 10,
+	    step:0.1,
+	    value:this.getImageWidthScale(),
+//	    xvalues:[(this.range.low.min+1)*100,(this.range.low.max+1)*100],
+	    slide: function( event, ui ) {
+		_this.setImageWidthScale(+ui.value);
+		_this.jq(ID_CV_SCALE_LABEL).html(_this.getImageWidthScale());
+		if(event?.originalEvent?.originalEvent?.shiftKey) {
+		    _this.drawCollections();
+		}
+	    },
+	    stop: function(event,ui) {
+		_this.drawCollections();
+
+	    }
+	});
+
+
+	/*
 	HU.onReturn(this.jq(ID_CV_SCALE),obj=>{
-	    _this.opts.scaleY=+obj.val();
+	_this.setImageWidthScale(obj.val());
 	    _this.drawCollections();
 	});
+*/
 
 	this.jq(ID_CV_SHOWLABELS).change(function(){
 	    _this.opts.showLabels = $(this).is(':checked');
@@ -904,9 +947,12 @@ RamaddaCoreDisplay.prototype = {
 		styleObj[pair[0]] = pair[1];
 	    }
 	    if(styleObj.fontColor && !styleObj.fill) styleObj.fill = styleObj.fontColor;
+	    styleObj.flag=true;
 	    let l = this.makeText(this.annotationLayer,label,x,y-5, styleObj);
 	    if(Utils.stringDefined(desc)) {
 		this.addClickHandler(l,(e,obj)=>{
+		    console.log(l.getClientRect());
+		    console.log(l.backgroundRect.getClientRect());
 		    let y = l.getAbsolutePosition().y;
 		    let world = this.canvasToWorld(y);
 		    desc  =desc.replace(/\n/g,'<br>');
@@ -1257,13 +1303,23 @@ RamaddaCoreDisplay.prototype = {
 	};
 
 	textNodes.forEach(text=>{
-	    text.scale(s);
+//	    text.scale(s);
 	    if(text.backgroundRect) {
 		let rect= text.backgroundRect;
-		rect.scale(s);
+		rect.scale(1);
+		text.scale(1);
+//		rect.scale(s);
 		rect.width(text.width());
 		rect.height(text.height());
 		rect.position(text.position());
+		if(text.flag)  {
+		    setTimeout(()=>{
+			console.log(text.getClientRect().x);
+			console.log(text.position());
+			console.log(rect.getClientRect().x);
+			console.log(rect.position());
+		    },2000);
+		}
 	    }
 	});
 
@@ -1406,7 +1462,8 @@ RamaddaCoreDisplay.prototype = {
 	    fontSize:CV_FONT_SIZE,
 	    background:null,
 	    fontStyle:'',
-	    strokeWidth:1
+	    strokeWidth:1,
+	    flag:null
 	}
 	if(args) $.extend(opts,args);
 	let text=  new Konva.Text({
@@ -1419,6 +1476,7 @@ RamaddaCoreDisplay.prototype = {
 	    fill: opts.fill,
 	});
 
+	text.flag=args.flag;
 	let scale = this.stage.scaleX();
 	text.scale({
 	    x: 1 / scale,
@@ -1735,7 +1793,7 @@ RamaddaCoreDisplay.prototype = {
 	return Utils.isNumber(box.top) && Utils.isNumber(box.bottom);
     },
 
-    makeTicks:function(group,top,bottom,x,y1,y2) {
+    makeTicks:function(entry,group,top,bottom,x,y1,y2) {
 	let tickWidth=CV_TICK_WIDTH;
 	let l1 = this.makeText(group,this.format(top),
 			       x-tickWidth,y1,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
@@ -1753,6 +1811,8 @@ RamaddaCoreDisplay.prototype = {
 	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick2);
+	entry.labels.push(l1);
+	entry.labels.push(l2);
 	return {l1:l1,l2:l2,tick1:tick1,tick2:tick2};
     },
     addEntryImage:function(entry,debug) {
@@ -1792,11 +1852,12 @@ RamaddaCoreDisplay.prototype = {
 	});
 	this.layer.add(group);
 	entry.group = group;
-
+	
+	let imageWidth = image.width()*this.getImageWidthScale();
 	let imageAttrs = {
 	    x: imageX,
 	    y: imageY,
-	    width:image.width(),
+	    width:imageWidth,
 	    height:image.height(),
         };
 
@@ -1816,6 +1877,11 @@ RamaddaCoreDisplay.prototype = {
 	let dx = imageRect.x-imageX;
 	let dy = imageRect.y-canvasY1;
 	image.position({x:image.x()-dx,y:image.y()-dy});
+	let imageWidthScale = imageScale * this.getImageWidthScale();
+	let scaleX =v=>{
+	    return (+v)*imageWidthScale;
+	}
+
 	let scale =v=>{
 	    return (+v)*imageScale;
 	}
@@ -1825,7 +1891,7 @@ RamaddaCoreDisplay.prototype = {
 	}
 	if(!showPieces || !entry.hasBoxes) {
 	    group.add(image);
-	    group.ticks = this.makeTicks(group,entry.topDepth,entry.bottomDepth,imageX,imageY,imageY+newHeight);
+	    group.ticks = this.makeTicks(entry,group,entry.topDepth,entry.bottomDepth,imageX,imageY,imageY+newHeight);
 	    let ir = image.getClientRect({relativeTo: this.layer});
 	    let rect = new Konva.Rect({
 		x: ir.x,
@@ -1850,7 +1916,7 @@ RamaddaCoreDisplay.prototype = {
 			for(let i=0;i<box.polygon.length;i+=2) {
 			    let x =box.polygon[i];
 			    let y =box.polygon[i+1];			    
-			    x = imageX+scale(x);
+			    x = imageX+scaleX(x);
 			    y = imageY+scale(y);
 			    if(doRotation) {
 				let boxAttrs =  {x:x,y:y};
@@ -1862,7 +1928,7 @@ RamaddaCoreDisplay.prototype = {
 			}
 			const polygon = new Konva.Line({
 			    points: convertedPolygon,
-			    stroke: 'red',
+			    stroke: CV_BOX_COLOR,
 			    strokeWidth: 2,
 			    closed: true,
 			});
@@ -1870,11 +1936,11 @@ RamaddaCoreDisplay.prototype = {
 			group.add(polygon);
 		    } else {
 			let boxAttrs = {
-			    x: imageX+scale(box.x),
+			    x: imageX+scaleX(box.x),
 			    y: imageY+scale(box.y),
-			    width: scale(box.width),
+			    width: scaleX(box.width),
 			    height:scale(box.height),
-			    stroke: 'red',
+			    stroke: CV_BOX_COLOR,
 			    strokeWidth: 1,
 			}
 			if(box.stroke) boxAttrs.stroke = box.stroke;
@@ -1885,6 +1951,7 @@ RamaddaCoreDisplay.prototype = {
 			    boxAttrs.x=boxAttrs.x - rotOffset.x;
 			    boxAttrs.y=boxAttrs.y - rotOffset.y;
 			}
+//			boxAttrs.x*=imageScale;
 			let mark;
 			let labelOffset=0;
 			if(box.marker) {
@@ -1925,6 +1992,7 @@ RamaddaCoreDisplay.prototype = {
 	    let imageLabel = this.makeText(group,entry.label,imageX+4,imageY+4,
 					   {strokeWidth:0.4,outline:'#000',fontSize:CV_FONT_SIZE_SMALL,background:'#fff'});
 	    this.definePopup(imageLabel,entry.label,entry.text);
+	    this.toggleLabels();
 	    this.toggle(imageLabel,this.getShowLabels());
 	    entry.highlight = rect;
 	    entry.labels.push(imageLabel);
@@ -1947,12 +2015,8 @@ RamaddaCoreDisplay.prototype = {
 		let y = this.worldToCanvas(box.top);
 		let width = scale(box.width);
 		let height=this.worldToCanvas(box.bottom)-y;
+//		console.log(box.top,box.bottom);
 		let boxImage = entry.image.clone({
-/*		    x: x,
-		    y: y,
-		    width: width,
-		    height:height,
-		    */
 		    crop:{
 			x: box.x,
 			y: box.y,
@@ -1960,6 +2024,16 @@ RamaddaCoreDisplay.prototype = {
 			height:box.height,
 		    }
 		});
+		width = width*this.getImageWidthScale();
+		boxGroup.add(new Konva.Rect({
+		    stroke:CV_BOX_COLOR,
+		    strokeWidth:1,
+		    x: x,
+		    y: y,
+		    width: width,
+		    height:height,
+		}));
+
 		const croppedImageDataURL = boxImage.toDataURL();
 		let newImage = new Image();
 		newImage.src = croppedImageDataURL;
@@ -1975,18 +2049,17 @@ RamaddaCoreDisplay.prototype = {
 			boxImage.rotate(90);
 			boxImage.width(height);
 		    } else {
-
 			boxImage.width(width);
 		    }
-
 		    let bir = boxImage.getClientRect({relativeTo: this.layer});
 		    let dx = imageX-bir.x;
 		    let dy = bir.y-canvasY1;
 		    boxImage.x(boxImage.x()+dx);
-
 		    bir = boxImage.getClientRect({relativeTo: this.layer});
-		    this.makeTicks(boxGroup,box.top,box.bottom,x,y,y+height);
+		    this.makeTicks(entry,boxGroup,box.top,box.bottom,x,y,y+height);
 		    boxGroup.add(boxImage);
+		    boxImage.moveToBottom();
+		    this.toggleLabels();
 		};
 
 		/*
@@ -2001,7 +2074,7 @@ RamaddaCoreDisplay.prototype = {
 		boxImage.x(boxImage.x()+dx);
 		bir = boxImage.getClientRect({relativeTo: this.layer});
 		console.dir(bir)
-		this.makeTicks(boxGroup,box.top,box.bottom,x,y,y+height);
+		this.makeTicks(entry,boxGroup,box.top,box.bottom,x,y,y+height);
 		boxGroup.add(boxImage);
 		group.add(boxGroup);
 		let br = new Konva.Rect({
