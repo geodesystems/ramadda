@@ -2556,7 +2556,7 @@ public class TypeHandler extends RepositoryManager {
 				    ARG_ENTRYID,
 				    entry.getId() }), ICON_EXPORT,
 			 "Deep Export", OutputType.TYPE_FILE);
-	    l.setTooltip("Deep export");
+	    l.setTooltip("Include entries this entry links to");
             links.add(l);	    
 
 
