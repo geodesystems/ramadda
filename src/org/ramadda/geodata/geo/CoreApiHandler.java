@@ -262,61 +262,69 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	    Element root = getRoot(child);
 	    List depths = XU.findChildren(root,"depth");
+	    double mmPerPixel  = entry.getDoubleValue(request,"resolution",Double.NaN);
+	    double lastDepth = entry.getDoubleValue(request,"top_depth",Double.NaN);
+	    int lastPixel = 0;
 	    for (int depthIdx = 0; depthIdx < depths.size(); depthIdx++) {
 		Element depthNode = (Element) depths.get(depthIdx);
 		boolean vertical = XU.getAttribute(depthNode,"direction","Vertical").toLowerCase().equals("vertical");
 		double depthWidth = XU.getAttribute(depthNode,"width",-1.0);
 		double depthWidth2 = depthWidth/2.0;
-		
 		List lines = XU.findChildren(depthNode,"line");
-		System.err.println("image:" + imageWidth +"x" + imageHeight);
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
+		    //		    if(lineIdx>=1) break;
 		    Element lineNode = (Element) lines.get(lineIdx);
-		    double linePosition = XU.getAttribute(lineNode,"position",-1);	
+		    double linePosition = XU.getAttribute(lineNode,"position",Double.NaN);	
+		    if(Double.isNaN(linePosition)) continue;
 		    List areas = XU.findChildren(lineNode,"area");
 		    double lineDepth=Double.NaN;
 		    double lineDepthPixel= Double.NaN;
 		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
 			Element areaNode = (Element) areas.get(areaIdx);
 			int aposition = XU.getAttribute(areaNode,"position",-1);
-			if(aposition<0) continue;
-			double d1=XU.getAttribute(areaNode,"depth",Double.NaN);
-			String label = "";
-			if(!Double.isNaN(d1)) {
-			    d1 = Utils.decimals(d1/1000,2);
-			    label  =d1+"";
-			}
-			double x=aposition;
-			double y = linePosition-depthWidth2;
-			if(vertical) {
-			    x = imageWidth-linePosition+depthWidth2;
-			    y = aposition;
-			}
-			lineDepth=d1;
-			lineDepthPixel=x;
-			Box box = new Box(label,x,y,5,10,d1,d1);
-			box.fill="rgba(0,255,255,0.9)";
-			box.stroke="rgba(0,0,0,0)";
-			box.marker = true;
-			boxes.add(box);
-		    }
-
-		    for (int areaIdx = 0; areaIdx < areas.size(); areaIdx++) {
-			Element areaNode = (Element) areas.get(areaIdx);
-			int aposition = XU.getAttribute(areaNode,"position",-1);
-			if(aposition>=0) continue;
-			int start = XU.getAttribute(areaNode,"start",-1);
-			int end = XU.getAttribute(areaNode,"end",-1);			
-			if(linePosition>=0 && start>=0 && end >=0) {
-			    double d1=Double.NaN;
-			    double d2=Double.NaN;			    
+			if(aposition>=0) {
+			    double d1=XU.getAttribute(areaNode,"depth",Double.NaN);
+			    String label = "";
+			    if(!Double.isNaN(d1)) {
+				label  =Utils.decimals(d1/1000,2)+"";
+			    }
+			    lastDepth=d1;
+			    lastPixel = aposition;
+			    double x=aposition;
+			    double y = linePosition-depthWidth2;
+			    if(vertical) {
+				x = imageWidth-linePosition+depthWidth2;
+				y = aposition;
+			    }
+			    lineDepth=d1;
+			    lineDepthPixel=x;
+			    Box box = new Box(label,x,y,5,10,d1,d1);
+			    box.fill="rgba(0,255,255,0.9)";
+			    box.stroke="rgba(0,0,0,0)";
+			    box.marker = true;
+			    boxes.add(box);
+			} else {
+			    int start = XU.getAttribute(areaNode,"start",-1);
+			    int end = XU.getAttribute(areaNode,"end",-1);			
+			    if(start<0 || end<0) continue;
+			    double d1=lastDepth+(start-lastPixel)*mmPerPixel;
+			    double d2=d1+(end-start)*mmPerPixel;
+			    System.err.println("start:" + start+ " end:" + end +
+					       " last depth:" + Utils.decimals(lastDepth/1000,2) +
+					       " depth:" + Utils.decimals(d1/1000,2) +" - " + Utils.decimals(d2/1000,2));
+			    lastPixel=end;
+			    lastDepth=d2;
+			    
+			    //			    d1 =d2 = Double.NaN;
+			    d1=d1/1000;
+			    d2 = d2/1000;
+			    //			    System.err.println(start+ " " + end +" " + d1 +" " + d2);
 			    String type = XU.getAttribute(areaNode,"type","");
 			    double x=start;
 			    double y =linePosition-depthWidth2;
 			    double width = end-start;
 			    double height = depthWidth;
 			    if(!Double.isNaN(lineDepth)) {
-				
 			    }
 			    if(vertical) {
 				x = imageWidth - linePosition - depthWidth2;
@@ -324,8 +332,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				height = end - start;
 				width = depthWidth;
 			    }
-
-
 			    Box box = new Box("",x,y,width,height,d1,d2);
 			    if(type.equals("Ruble")) box.fill="rgba(0,255,255,0.3)";
 			    else if(type.equals("Core")) box.fill="rgba(255,255,0,0.3)";			    
@@ -445,6 +451,10 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		String name = XU.getAttribute(dataNode,"name");
 		String value = XU.getChildText(dataNode);
 		if(Utils.stringDefined(name) && Utils.stringDefined(value)) {
+		    if(name.equals("Resolution")) {
+			double d = Double.parseDouble(value);
+			entry.setValue("resolution",new Double(d));
+		    }
 		    getMetadataManager().addMetadata(request,entry, "property",true,name,value);
 		    changed = true;
 		}
