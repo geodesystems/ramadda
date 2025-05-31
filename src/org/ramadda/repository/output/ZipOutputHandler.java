@@ -81,7 +81,12 @@ public class ZipOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_EXPORT_SHALLOW =
         new OutputType("Shallow Export", "zip.export.shallow",
                        OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
-                       "fa-file-export");    
+                       "fa-file-export");
+
+    public static final OutputType OUTPUT_EXPORT_DEEP =
+        new OutputType("Deep Export", "zip.export.deep",
+                       OutputType.TYPE_FILE | OutputType.TYPE_ACTION, "",
+                       "fa-file-export");        
 
     public ZipOutputHandler(Repository repository, Element element)
             throws Exception {
@@ -92,7 +97,8 @@ public class ZipOutputHandler extends OutputHandler {
         addType(OUTPUT_CORPUS);
         addType(OUTPUT_THUMBNAILS);
         addType(OUTPUT_EXPORT);
-        addType(OUTPUT_EXPORT_SHALLOW);	
+        addType(OUTPUT_EXPORT_SHALLOW);
+        addType(OUTPUT_EXPORT_DEEP);		
     }
 
     public AuthorizationMethod getAuthorizationMethod(Request request) {
@@ -117,7 +123,8 @@ public class ZipOutputHandler extends OutputHandler {
         if ((state.group != null) && state.group.isDummy()) {
             if ( !request.isAnonymous()) {
                 links.add(makeLink(request, state.entry, OUTPUT_EXPORT));
-                links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));		
+                links.add(makeLink(request, state.entry, OUTPUT_EXPORT_SHALLOW));
+                links.add(makeLink(request, state.entry, OUTPUT_EXPORT_DEEP));
             }
         }
 
@@ -191,6 +198,8 @@ public class ZipOutputHandler extends OutputHandler {
             return toZip(request, group.getName(), children, true, true,false);
 	} else  if (output.equals(OUTPUT_EXPORT_SHALLOW)) {
 	    return toZip(request, group.getName(), children, false, true,false);
+	} else  if (output.equals(OUTPUT_EXPORT_DEEP)) {
+	    return toZip(request, group.getName(), children, false, true,false);	    
         } else {
             return toZip(request, group.getName(), children, false, false,false);
         }
@@ -205,10 +214,12 @@ public class ZipOutputHandler extends OutputHandler {
     }
 
     public Result toZip(Request request, String prefix, List<Entry> entries,
-                        boolean recurse, boolean forExport,boolean thumbnails)
+                        boolean recurse, boolean forExport,boolean thumbnails,boolean...deep)
             throws Exception {
         OutputStream os         = null;
         boolean      doingFile  = false;
+	boolean doDeep = deep.length>0?deep[0]:false;
+
         File         tmpFile    = null;
         boolean      isInternal = false;
         Element      root       = null;
@@ -216,7 +227,7 @@ public class ZipOutputHandler extends OutputHandler {
         //First recurse down without a zos to check the size
         try {
             processZip(request, entries, recurse, 0, null, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,null);
+                       new int[] { 0 }, forExport, thumbnails,null,doDeep,new HashSet<String>());
         } catch (IllegalArgumentException iae) {
             ok = false;
         }
@@ -284,7 +295,7 @@ public class ZipOutputHandler extends OutputHandler {
 
             }
             processZip(request, entries, recurse, 0, fileWriter, prefix, 0,
-                       new int[] { 0 }, forExport, thumbnails,root);
+                       new int[] { 0 }, forExport, thumbnails,root,doDeep,new HashSet<String>());
 
             if (root != null) {
                 String xml = XmlUtil.toString(root);
@@ -354,7 +365,9 @@ public class ZipOutputHandler extends OutputHandler {
                               boolean recurse, int level,
                               FileWriter fileWriter, String prefix,
                               long sizeSoFar, int[] counter,
-                              boolean forExport, boolean thumbnails,Element entriesRoot)
+                              boolean forExport, boolean thumbnails,
+			      Element entriesRoot,boolean deep,
+			      HashSet<String>seenEntry)
             throws Exception {
 
         long      sizeProcessed = 0;
@@ -373,6 +386,8 @@ public class ZipOutputHandler extends OutputHandler {
 	if(debug)
 	    System.err.println("toZip: recurse:" + recurse +" entries: " + entries);
         for (Entry entry : entries) {
+	    if(seenEntry.contains(entry.getId())) continue;
+	    seenEntry.add(entry.getId());
 	    if(debug)
 		System.err.println("\tentry:" + entry +" is Group:" + entry.isGroup());
             //Check for access
@@ -407,17 +422,19 @@ public class ZipOutputHandler extends OutputHandler {
             Request tmpRequest = request;
             Element entryNode  = null;
             if (forExport && (entriesRoot != null)) {
+		boolean includeParentId = level != 0;
+		//		System.err.println("entry:" + entry +" level:" + level +" includ:" + includeParentId);
                 entryNode = getRepository().getXmlOutputHandler().getEntryTag(
                     tmpRequest, entry, fileWriter,
                     entriesRoot.getOwnerDocument(), entriesRoot, true,
-                    level != 0);
+                    includeParentId);
                 //                System.err.println ("exporting:" + XmlUtil.toString(entryNode));
             }
 
+
             if (entry.isGroup() && recurse) {
 		SelectInfo info = new SelectInfo(request, entry,isSynthOk&&!forExport);
-                List<Entry> children = getEntryManager().getChildren(request,
-								     entry,info);
+                List<Entry> children = getEntryManager().getChildren(request, entry,info);
                 String path = entry.getName();
                 if (prefix.length() > 0) {
                     path = prefix + "/" + path;
@@ -425,12 +442,36 @@ public class ZipOutputHandler extends OutputHandler {
                 sizeProcessed += processZip(request, children, recurse,
                                             level + 1, fileWriter, path,
                                             sizeProcessed + sizeSoFar,
-                                            counter, forExport, thumbnails,entriesRoot);
+                                            counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
             }
 
+	    if(forExport && deep) {
+		List<Entry> deepEntries = new ArrayList<Entry>();
+		//Hard code hack for now
+		if(entry.getTypeHandler().isType("geo_imdv")) {
+		    try {
+			String json = getStorageManager().readEntry(entry);
+			deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(json),seenEntry));
+		    } catch(Exception exc) {
+			getLogManager().logError("reading deep entries from imdv:" + entry,exc);
+		    }
+		}
+		deepEntries.addAll(getEntryManager().getEntries(request, getEntryUtil().extractIDs(entry.getDescription()),seenEntry));
+		if(deepEntries.size()>0) {
+		    String path = entry.getName();
+		    if (prefix.length() > 0) {
+			path = prefix + "/" + path;
+		    }
+		    //Pass in level=0 so the parent ID of these deep entries doesn't get set in the entry.xml
+		    sizeProcessed += processZip(request, deepEntries, recurse,
+						0, fileWriter, path,
+						sizeProcessed + sizeSoFar,
+						counter, forExport, thumbnails,entriesRoot,deep,seenEntry);
+		}
+	    }
+
             if (!thumbnails &&  !getAccessManager().canDownload(request, entry,debug)) {
-		if(debug)
-		    System.err.println("No download:" + entry);
+		if(debug)   System.err.println("No download:" + entry);
                 continue;
             }
 

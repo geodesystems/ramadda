@@ -2544,12 +2544,21 @@ public class TypeHandler extends RepositoryManager {
 			       "Export", OutputType.TYPE_FILE));
 	    Link l = new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
 				     + IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
-					 ARG_SHALLOW,"true",
+					 ARG_EXPORT_SHALLOW,"true",
 					 ARG_ENTRYID,
 					 entry.getId() }), ICON_EXPORT,
 			      "Shallow Export", OutputType.TYPE_FILE);
 	    l.setTooltip("Just export this entry, not it's children");
             links.add(l);	    
+	    l = new Link(HU.url(getRepository().URL_ENTRY_EXPORT.toString() + "/"
+				+ IO.stripExtension(Entry.encodeName(getEntryName(entry))) + ".zip", new String[] {
+				    ARG_EXPORT_DEEP,"true",
+				    ARG_ENTRYID,
+				    entry.getId() }), ICON_EXPORT,
+			 "Deep Export", OutputType.TYPE_FILE);
+	    l.setTooltip("Deep export");
+            links.add(l);	    
+
 
         }
 

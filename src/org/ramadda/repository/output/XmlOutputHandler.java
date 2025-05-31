@@ -155,7 +155,7 @@ public class XmlOutputHandler extends OutputHandler {
             throws Exception {
 
 	boolean encode  = request.get("encode",true);
-
+	//	System.err.println("xml:" + entry);
         Element node = XmlUtil.create(doc, TAG_ENTRY, parent, new String[] {
             ATTR_ID, entry.getId(), ATTR_NAME, entry.getName(), ATTR_PARENT,
             (includeParentId
