@@ -1085,4 +1085,13 @@ public class EntryUtil extends RepositoryManager {
 	}
     }
 
+    public static List<String> extractIDs(String input) {
+	return Utils.extractPatterns(input,
+				     "\\b([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\\b");
+    }
+
+
+
+
+
 }
