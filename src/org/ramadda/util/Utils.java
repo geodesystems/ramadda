@@ -1602,9 +1602,9 @@ public class Utils extends IO {
         }
     }
 
-    public static List<String> extractPatterns(String text, String pattern)
-	throws Exception {
+    public static List<String> extractPatterns(String text, String pattern) {
         List<String> values = new ArrayList<String>();
+	if(text==null) return values;
         Pattern      p      = Pattern.compile(pattern);
         Matcher      m      = p.matcher(text);
         while (m.find()) {
