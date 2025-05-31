@@ -31,7 +31,7 @@
     
     <type id="geo_core_annotation" name="Geo Core Annotation"> 
       <element id="label" name="Label" datatype="string"/>
-      <element name="Depth" datatype="int"/>
+      <element name="Depth" datatype="double"/>
       <element name="Style" datatype="string" suffix="e.g., background:red;outline:block;fontSize:20;fontStyle:italic;fontColor:white;"/>      <element name="Description" datatype="string" rows="5"/>
       
     </type>
