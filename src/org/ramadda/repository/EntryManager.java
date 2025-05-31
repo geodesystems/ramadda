@@ -5286,7 +5286,8 @@ public class EntryManager extends RepositoryManager {
         entries.add(entry);
 
         return getRepository().getZipOutputHandler().toZip(request, entry.getName(),
-							   entries, !request.get(ARG_SHALLOW,false), true,false);
+							   entries, !request.get(ARG_EXPORT_SHALLOW,false), true,false,
+							   request.get(ARG_EXPORT_DEEP,false));
     }
 
     public Result processEntryImport(Request request) throws Exception {
@@ -8267,6 +8268,16 @@ public class EntryManager extends RepositoryManager {
 	    childrenCache.remove(parent.getId());
 	    parent.getTypeHandler().childrenChanged(parent,isNew);
 	}
+    }
+
+    public List<Entry> getEntries(Request request, List<String> ids,HashSet<String> seen) throws Exception  {
+	List<Entry> entries=  new ArrayList<Entry>();
+	for(String id: ids) {
+	    if(seen!=null && seen.contains(id)) continue;
+	    Entry entry =getEntry(request, id);
+	    if(entry!=null) entries.add(entry);
+	}
+	return entries;
     }
 
     public List<String> getChildIdsFromDatabase(Request request, Entry group,
