@@ -32,13 +32,17 @@ import java.net.URL;
 
 import java.sql.*;
 
+
 import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,28 +61,12 @@ public abstract class DataProvider extends SeesvOperator {
 
     TextReader ctx;
 
-    /** _more_ */
     private Seesv seesv;
 
-    /**
-     * _more_
-     */
     public DataProvider() {}
 
-    /**
-     * _more_
-     */
     public DataProvider(TextReader ctx) {this.ctx=ctx;}    
 
-    /**
-     * _more_
-     *
-     *
-     * @param seesv _more_
-     * @param ctx _more_
-     *
-     * @throws Exception _more_
-     */
     public void initialize(Seesv seesv, TextReader ctx) throws Exception {
 	this.ctx = ctx;
 	if (ctx != null) {
@@ -116,18 +104,8 @@ public abstract class DataProvider extends SeesvOperator {
 
     }
 
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public abstract Row readRow() throws Exception;
 
-    /**
-     * _more_
-     */
     public void finish() {}
 
     /**
@@ -139,27 +117,14 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public abstract static class BulkDataProvider extends DataProvider {
 
-        /** _more_ */
         private List<Row> rows = new ArrayList<Row>();
 
-        /** _more_ */
         private int index = 0;
 
-        /**
-         * _more_
-         *
-         */
         public BulkDataProvider() {
             super();
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             if (index >= rows.size()) {
                 return null;
@@ -168,13 +133,6 @@ public abstract class DataProvider extends SeesvOperator {
             return rows.get(index++);
         }
 
-        /**
-         * _more_
-         *
-         * @param row _more_
-         *
-         * @return _more_
-         */
 	int debugCnt=0;
         protected boolean addRow(Row row) {
             rows.add(row);
@@ -182,23 +140,10 @@ public abstract class DataProvider extends SeesvOperator {
             return true;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         */
         protected List<Row> getRows() {
             return rows;
         }
 
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param textReader _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Seesv seesv, TextReader textReader)
                 throws Exception {
             super.initialize(seesv, textReader);
@@ -206,14 +151,6 @@ public abstract class DataProvider extends SeesvOperator {
             tokenize(textReader, s);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public abstract void tokenize(TextReader ctx, String s)
          throws Exception;
 
@@ -228,22 +165,12 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class HtmlDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private int skip;
 
-        /** _more_ */
         private String pattern;
 
-        /** _more_ */
         private Dictionary<String, String> props;
 
-        /**
-         * _more_
-         *
-         * @param sSkip _more_
-         * @param htmlPattern _more_
-         * @param props _more_
-         */
         public HtmlDataProvider(String sSkip, String htmlPattern,
                                 Dictionary<String, String> props) {
             super();
@@ -289,14 +216,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
             int count = Utils.getProperty(props, "numTables", 1);
@@ -470,26 +389,12 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class Harvester extends BulkDataProvider {
 
-        /** _more_ */
         private String pattern;
 
-        /**
-         * _more_
-         *
-         * @param pattern _more_
-         */
         public Harvester(String pattern) {
             this.pattern = pattern;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             List<HtmlUtils.Link> links;
 	    if(new File(ctx.getInputFile()).exists()) {
@@ -524,26 +429,14 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class HtmlPatternDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private String cols;
 
-        /** _more_ */
         private String start;
 
-        /** _more_ */
         private String end;
 
-        /** _more_ */
         private String pattern;
 
-        /**
-         * _more_
-         *
-         * @param cols _more_
-         * @param start _more_
-         * @param end _more_
-         * @param pattern _more_
-         */
         public HtmlPatternDataProvider(String cols, String start, String end,
                                        String pattern) {
             super();
@@ -553,14 +446,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.pattern = pattern;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             int numLines = ctx.getMaxRows();
             pattern = Utils.convertPattern(pattern);
@@ -628,32 +513,16 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class JsonDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private String arrayPath;
 
-        /** _more_ */
         private String objectPath;
 
-        /**
-         * _more_
-         *
-         * @param arrayPath _more_
-         * @param objectPath _more_
-         */
         public JsonDataProvider(String arrayPath, String objectPath) {
             super();
             this.arrayPath  = arrayPath;
             this.objectPath = objectPath;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
 	    Row firstRow = ctx.getFirstRow();
@@ -890,10 +759,8 @@ public abstract class DataProvider extends SeesvOperator {
 
     public static class JsonJoinDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private String arrayPaths;
 
-        /** _more_ */
         private String key;
 
 	private String pattern;
@@ -902,10 +769,6 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private String missing; 
 
-        /**
-         * _more_
-         *
-         */
         public JsonJoinDataProvider(String arrayPaths, String key, String pattern,
 				    String replace,String missing) {
             super();
@@ -916,14 +779,6 @@ public abstract class DataProvider extends SeesvOperator {
 	    this.missing = missing;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
             boolean    debug = false;
@@ -955,11 +810,6 @@ public abstract class DataProvider extends SeesvOperator {
         /**  */
         GeoJson.Iterator iterator;
 
-        /**
-         * _more_
-         *
-         * @param addPolygon _more_
-         */
         public GeoJsonDataProvider(boolean addPolygon) {
             super();
             this.addPolygon = addPolygon;
@@ -1004,10 +854,8 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class SqlDataProvider extends DataProvider {
 
-        /** _more_ */
         private String db;
 
-        /** _more_ */
         private String table;
 
         /**  */
@@ -1016,40 +864,22 @@ public abstract class DataProvider extends SeesvOperator {
         /**  */
         private String where;
 
-        /** _more_ */
         private Dictionary<String, String> props;
 
-        /** _more_ */
         private Connection connection;
 
-        /** _more_ */
         private Statement statement;
 
-        /** _more_ */
         private SqlUtil.Iterator iter;
 
-        /** _more_ */
         private int columnCount;
 
-        /** _more_ */
         private Row headerRow;
 
-        /** _more_ */
         private int rowCnt = 0;
 
-        /** _more_ */
         private int maxRows;
 
-        /**
-         * _more_
-         *
-         * @param columns _more_
-         * @param where _more_
-         *
-         * @param db _more_
-         * @param table _more_
-         * @param props _more_
-         */
         public SqlDataProvider(String db, String table, String columns,
                                String where,
                                Dictionary<String, String> props) {
@@ -1060,14 +890,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.props   = props;
         }
 
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
@@ -1125,12 +947,6 @@ public abstract class DataProvider extends SeesvOperator {
             maxRows   = ctx.getMaxRows();
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             rowCnt++;
             if (rowCnt == 1) {
@@ -1159,9 +975,6 @@ public abstract class DataProvider extends SeesvOperator {
             return makeRow(values);
         }
 
-        /**
-         * _more_
-         */
         @Override
         public void finish() {
             super.finish();
@@ -1180,30 +993,15 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class XmlDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private String arrayPath;
 
-        /** _more_ */
         private String objectPath;
 
-        /**
-         * _more_
-         *
-         * @param arrayPath _more_
-         */
         public XmlDataProvider(String arrayPath) {
             super();
             this.arrayPath = arrayPath;
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
 
             Element root   = XmlUtil.getRoot(s);
@@ -1320,10 +1118,6 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class KmlDataProvider extends BulkDataProvider {
 
-        /**
-         * _more_
-         *
-         */
         public KmlDataProvider() {
             super();
         }
@@ -1357,12 +1151,6 @@ public abstract class DataProvider extends SeesvOperator {
          */
         public void tokenize(TextReader ctx, String s) throws Exception {}
 
-        /**
-         * _more_
-         * @param root _more_
-         *
-         * @throws Exception _more_
-         */
         private void read(Element root) throws Exception {
             List<Element> placemarks = KmlUtil.findPlacemarks(root);
             List<Element> lookAts =
@@ -1521,35 +1309,18 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class PatternDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         private List<String> header;
 
-        /** _more_ */
         private String pattern;
 
-        /** _more_ */
         private String objectPath;
 
-        /**
-         * _more_
-         *
-         * @param header _more_
-         * @param pattern _more_
-         */
         public PatternDataProvider(List<String> header, String pattern) {
             super();
             this.header  = header;
             this.pattern = Utils.convertPattern(pattern);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             addRow(makeRow(header));
             if (pattern.length() == 0) {
@@ -1584,22 +1355,12 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class Pattern2DataProvider extends BulkDataProvider {
 
-        /** _more_ */
         String header;
 
-        /** _more_ */
         String chunkPattern;
 
-        /** _more_ */
         String tokenPattern;
 
-        /**
-         * _more_
-         *
-         * @param header _more_
-         * @param chunkPattern _more_
-         * @param tokenPattern _more_
-         */
         public Pattern2DataProvider(String header, String chunkPattern,
                                     String tokenPattern) {
             super();
@@ -1608,14 +1369,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = makeRow();
             addRow(headerRow);
@@ -1678,18 +1431,10 @@ public abstract class DataProvider extends SeesvOperator {
 
     public static class PatternExtractDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         String header;
 
-        /** _more_ */
         String tokenPattern;
 
-        /**
-         * _more_
-         *
-         * @param header _more_
-         * @param tokenPattern _more_
-         */
         public PatternExtractDataProvider(String header,
                                           String tokenPattern) {
             super();
@@ -1697,14 +1442,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = makeRow();
             addRow(headerRow);
@@ -1769,22 +1506,12 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class TextDataProvider extends BulkDataProvider {
 
-        /** _more_ */
         String header;
 
-        /** _more_ */
         String chunkPattern;
 
-        /** _more_ */
         String tokenPattern;
 
-        /**
-         * _more_
-         *
-         * @param header _more_
-         * @param chunkPattern _more_
-         * @param tokenPattern _more_
-         */
         public TextDataProvider(String header, String chunkPattern,
                                 String tokenPattern) {
             super();
@@ -1793,14 +1520,6 @@ public abstract class DataProvider extends SeesvOperator {
             this.tokenPattern = Utils.convertPattern(tokenPattern);
         }
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param s _more_
-         *
-         * @throws Exception _more_
-         */
         public void tokenize(TextReader ctx, String s) throws Exception {
             Row headerRow = makeRow();
             addRow(headerRow);
@@ -1873,16 +1592,12 @@ public abstract class DataProvider extends SeesvOperator {
      */
     public static class CsvDataProvider extends DataProvider {
 
-        /** _more_ */
         int cnt = 0;
 
-        /** _more_ */
         int rawLines = 0;
 
-        /** _more_ */
         int rowCnt = 0;
 
-        /** _more_ */
         boolean deHeader = false;
 
         /**  */
@@ -1893,12 +1608,6 @@ public abstract class DataProvider extends SeesvOperator {
 	private boolean guessDelimiter = false;	
 	private List<String> delimiters;
 
-        /**
-         * _more_
-         *
-         * @param ctx _more_
-         * @param rawLines _more_
-         */
         public CsvDataProvider(TextReader ctx, int rawLines) {
 	    super(ctx);
             if (ctx != null) {
@@ -1932,15 +1641,6 @@ public abstract class DataProvider extends SeesvOperator {
             return tokenizer;
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
@@ -1948,13 +1648,6 @@ public abstract class DataProvider extends SeesvOperator {
 
 	private int lineCnt=0;
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             while (true) {
                 String line = ctx.readLine();
@@ -2071,18 +1764,8 @@ public abstract class DataProvider extends SeesvOperator {
         /**  */
         boolean didFirst = false;
 
-        /**
-         * _more_
-         */
         public Lines() {}
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             Row row = makeRow();
             if ( !didFirst) {
@@ -2122,7 +1805,7 @@ public abstract class DataProvider extends SeesvOperator {
         List<String> header;
 
         /**  */
-        List<String> values;
+        List<Value> values;
 
         /**  */
         int rows = 10;
@@ -2130,41 +1813,85 @@ public abstract class DataProvider extends SeesvOperator {
         /**  */
         int count = 0;
 
-        /**
-         * _more_
-         *
-         * @param header _more_
-         * @param values _more_
-         * @param rows _more_
-         */
         public Synthetic(String header, String values, int rows) {
             this.header = Utils.split(header, ",", true, true);
-            this.values = Utils.split(values, ",", true, true);
+	    this.values = new ArrayList<Value>();
+	    for(String  v: Utils.split(values, ",", true, true)) {
+		this.values.add(new Value(v));
+	    }
             this.rows   = rows;
-	    while(this.values.size()<this.header.size()) this.values.add("");
+	    while(this.values.size()<this.header.size()) this.values.add(new Value(""));
         }
 
-        /**
-         * _more_
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
+	private static class Value {
+	    String value;
+	    double from = Double.NaN;
+	    double to = Double.NaN;	
+	    boolean random = false;
+	    boolean sine=false;
+	    double amplitude = 10.0;     // Amplitude of sine wave
+	    double period = 50.0;        // Number of steps for one full wave (in x units)
+	    double noiseLevel = 1.0;
+
+
+	    public Value(String s) {
+		if(s.startsWith("range:")) {
+		    s = s.substring("range:".length());
+		    List<String> toks = Utils.split(s,";",true,true);
+		    if(toks.size()!=2) throw new IllegalArgumentException("-synthetic range error:" + s+" value must be from;to");
+		    from  = Double.parseDouble(toks.get(0));
+		    to  = Double.parseDouble(toks.get(1));		    
+		} else if(s.startsWith("sine:")) {
+		    sine = true;
+		    s = s.substring("sine:".length());
+		    List<String> toks = Utils.split(s,";",true,true);
+		    if(toks.size()>0 && toks.size()!=3) {
+			throw new IllegalArgumentException("-synthetic sine error:" + s+" value must be amplitude;period;noise e.g. 10;50;1");
+		    }
+		    if(toks.size()==3) {
+			amplitude = Double.parseDouble(toks.get(0));
+			period  = Double.parseDouble(toks.get(1));
+			noiseLevel  = Double.parseDouble(toks.get(2));			
+		    }
+
+		} else if(s.startsWith("rand:")) {
+		    random = true;
+		    s = s.substring("rand:".length());
+		    List<String> toks = Utils.split(s,";",true,true);
+		    if(toks.size()==2) {
+			from  = Double.parseDouble(toks.get(0));
+			to  = Double.parseDouble(toks.get(1));
+		    }
+		} else {
+		    value = s;
+		}
+	    }
+	    public String getValue(int step,int max) {
+		if(value!=null) return value;
+		if(random) {
+		    if(!Double.isNaN(from)) {
+			return Double.toString(ThreadLocalRandom.current().nextDouble(from,to));
+		    }
+		    return Double.toString(ThreadLocalRandom.current().nextDouble());
+		}
+		if(sine) {
+		    double angle = 2 * Math.PI * step / period;
+		    double sineValue = amplitude * Math.sin(angle);
+		    double noise = ThreadLocalRandom.current().nextDouble(-noiseLevel, noiseLevel);
+		    double noisyValue = sineValue + noise;
+		    return Double.toString(noisyValue);
+		}
+		double percent = step/(double)max;
+		return Double.toString(from+(to-from)*percent);
+	    }
+	}
+
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
             this.ctx = ctx;
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             if (count > rows) {
                 return null;
@@ -2177,7 +1904,10 @@ public abstract class DataProvider extends SeesvOperator {
                 }
 		return row;
             } else {
-		Row row = makeRow(new ArrayList(values));
+		Row row = new Row();
+		for(Value v: values) {
+		    row.add(v.getValue(count-2,rows));
+		}
 		return row;
             }
         }
@@ -2211,10 +1941,6 @@ public abstract class DataProvider extends SeesvOperator {
         /**  */
         private int rowCnt = 0;
 
-        /**
-         * _more_
-         * @param seesv _more_
-         */
         public Pdf(Seesv seesv) {
 
             tokenizer = StringTokenizer.getCSVInstance();
@@ -2225,15 +1951,6 @@ public abstract class DataProvider extends SeesvOperator {
             }
         }
 
-        /**
-         * _more_
-         *
-         *
-         * @param seesv _more_
-         * @param ctx _more_
-         *
-         * @throws Exception _more_
-         */
         public void initialize(Seesv seesv, TextReader ctx)
                 throws Exception {
             super.initialize(seesv, ctx);
@@ -2259,13 +1976,6 @@ public abstract class DataProvider extends SeesvOperator {
             */
         }
 
-        /**
-         * _more_
-         *
-         * @return _more_
-         *
-         * @throws Exception _more_
-         */
         public Row readRow() throws Exception {
             String line = null;
 
