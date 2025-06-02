@@ -106,10 +106,13 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
 	    List<String> attrs = new ArrayList<String>();
+	    double top  = child.getDoubleValue(request,"top_depth",Double.NaN);
+	    double bottom  = child.getDoubleValue(request,"bottom_depth",Double.NaN);	    
+	    if(Double.isNaN(top) || Double.isNaN(bottom)) continue;
 	    Utils.add(attrs,"url",JU.quote(url),"label",JU.quote(child.getName()),
 		      "entryId",JU.quote(child.getId()),
-		      "topDepth",JU.quote(child.getStringValue(request,"top_depth","")),
-		      "bottomDepth",JU.quote(child.getStringValue(request,"bottom_depth","")),
+		      "topDepth",JU.quote(Double.toString(top)),
+		      "bottomDepth",JU.quote(Double.toString(bottom)),
 		      "doRotation",child.getStringValue(request,"do_rotation","false"),
 		      "text",JU.quote(info));
 	    List<String>boxes = null;
