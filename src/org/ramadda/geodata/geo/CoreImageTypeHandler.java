@@ -238,6 +238,7 @@ public class CoreImageTypeHandler extends ExtensibleGroupTypeHandler implements 
     private static final  WikiTags.WikiTag wikiTag = new WikiTags.WikiTag("core_visualizer",null,
 									  "tt","Core Visualizer",
 									  "otherEntries","comma separated list of other image collections",
+									  "displayEntries","comma separated list of data entries",
 									  "canvasHeight","400",
 									  "top","0",
 									  "showLegend","true",

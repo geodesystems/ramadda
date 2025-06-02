@@ -131,7 +131,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	this.jq(ID_DISPLAY_CONTENTS).html(html);
 
-	let displaysBar = HU.div([ATTR_TITLE,'Add display','action',ID_CV_DISPLAYS_ADD,
+	let displaysBar = HU.div([ATTR_TITLE,'Add data display','action',ID_CV_DISPLAYS_ADD,
 				  ATTR_ID,this.domId(ID_CV_DISPLAYS_ADD),ATTR_CLASS,'ramadda-clickable'],
 				 HU.getIconImage('fas fa-chart-line'));
 	this.jq(ID_CV_DISPLAYSBAR).html(displaysBar);
@@ -285,14 +285,15 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	this.stage.offsetY(this.opts.offsetY);
 
 	this.stage.scale({ x: this.opts.initScale, y: this.opts.initScale });
-	this.annotationLayer = new Konva.Layer();
-	this.stage.add(this.annotationLayer);
 	this.layer = new Konva.Layer();
 	this.legendLayer = new Konva.Layer();    
 	this.drawLayer = new Konva.Layer();
 	this.stage.add(this.legendLayer);
 	this.stage.add(this.layer);
 	this.stage.add(this.drawLayer);
+	this.annotationLayer = new Konva.Layer();
+	this.stage.add(this.annotationLayer);
+
 	this.addEventListeners();
 	this.collections = [];
 	
@@ -360,6 +361,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 	showBoxes:true,
 	showHighlight:false,
 	showMenuBar:true,
+	bgPadding:2
     }
 
     Utils.split('showPieces,hasBoxes',',').forEach(prop=>{
@@ -390,6 +392,7 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
     $.extend(this.opts,args);
     this.opts.top =+this.opts.top;
+
 }
 
 
@@ -417,7 +420,10 @@ RamaddaCoreDisplay.prototype = {
     },
     getXOffset:function(column) {
 	let max = +this.opts.maxColumnWidth*this.getImageWidthScale();
-	return this.opts.axisWidth+100+column*(max+100);
+	return this.getAxisWidth()+100+column*(max+100);
+    },
+    getAxisWidth:function() {
+	return this.opts.axisWidth;
     },
     goToWorld:function(world) {
 	let scale = this.stage.scale().y;
@@ -727,17 +733,21 @@ RamaddaCoreDisplay.prototype = {
 	this.jq('add_display').button().click(()=>{
 	    this.lastDisplayProps = this.jq('displayprops').val();
 	    let props = Utils.split(this.lastDisplayProps,'\n',true,true);
-	    props = this.parseDisplayProps(props);
 	    dialog.remove();
-	    this.displayEntries.push({
-		display:null,
-		entryId:entryId,
-		props:props
-	    });
-	    this.loadDisplays();
+	    this.processDisplayEntry(entryId,props);
 	});
 
 
+    },
+
+    processDisplayEntry:function(entryId,props) {
+	props = this.parseDisplayProps(props);
+	this.displayEntries.push({
+	    display:null,
+	    entryId:entryId,
+	    props:props
+	});
+	this.loadDisplays();
     },
 
 
@@ -911,14 +921,17 @@ RamaddaCoreDisplay.prototype = {
 		    setPosition(l.image);
 		    return;
 		}
-		if(l.pending) {return;}
-		l.pending=true;
-		Konva.Image.fromURL(l.url,  (image) =>{
-		    l.image = image;
-		    setPosition(image);
-		    this.annotationLayer.add(image);
-		    collection.legendObjects.push(image);
-		});
+
+		if(Utils.stringDefined(l.url)) {
+		    if(l.pending) {return;}
+		    l.pending=true;
+		    Konva.Image.fromURL(l.url,  (image) =>{
+			l.image = image;
+			setPosition(image);
+			this.annotationLayer.add(image);
+			collection.legendObjects.push(image);
+		    });
+		}
 	    });
 	}
 
@@ -937,22 +950,29 @@ RamaddaCoreDisplay.prototype = {
 	    let label = tuple[1]??'';
 	    let style = Utils.convertText(tuple[2]??'');
 	    let desc = Utils.convertText(tuple[3]);
-	    let x= this.opts.axisWidth-50;
+	    let x= this.opts.axisWidth-75;
 	    let y = this.worldToCanvas(+depth);
 	    let styleObj = {doOffsetWidth:true};
 	    let styles = style.split(';');
+	    let lineColor = null;
+	    let lineWidth=1;
 	    for(let i=0;i<styles.length;i++) {
 		let pair = styles[i].split(':');
 		if(pair.length!=2) continue;
-		styleObj[pair[0]] = pair[1];
+		if(pair[0]=='lineColor') {
+		    lineColor  = pair[1];
+		} else 	if(pair[0]=='lineWidth') {
+		    lineWidth  = +pair[1];		    
+		} else {
+		    styleObj[pair[0]] = pair[1];
+		}
 	    }
 	    if(styleObj.fontColor && !styleObj.fill) styleObj.fill = styleObj.fontColor;
 	    styleObj.flag=true;
-	    let l = this.makeText(this.annotationLayer,label,x,y-5, styleObj);
+	    let pad =5;
+	    let l = this.makeText(this.annotationLayer,label,x+pad,y-5, styleObj);
 	    if(Utils.stringDefined(desc)) {
 		this.addClickHandler(l,(e,obj)=>{
-		    console.log(l.getClientRect());
-		    console.log(l.backgroundRect.getClientRect());
 		    let y = l.getAbsolutePosition().y;
 		    let world = this.canvasToWorld(y);
 		    desc  =desc.replace(/\n/g,'<br>');
@@ -960,11 +980,22 @@ RamaddaCoreDisplay.prototype = {
 		});
 	    }
 	    let tick = new Konva.Line({
-		points: [x+3, y, this.opts.axisWidth, y],
-		stroke: CV_LINE_COLOR,
-		strokeWidth: 0.5,
+		points: [x+pad, y, this.opts.axisWidth, y],
+		stroke: lineColor??CV_LINE_COLOR,
+		strokeWidth: lineWidth,
 	    });
 	    this.annotationLayer.add(tick);
+	    if(lineColor) {
+		let line = new Konva.Line({
+		    points: [this.opts.axisWidth, y,this.opts.axisWidth+10000,y],
+		    stroke: lineColor,
+		    strokeWidth: lineWidth,
+		});
+		this.annotationLayer.add(line);
+		
+	    }
+
+
 	    collection.annotationObjects.push(l);
 	    collection.annotationObjects.push(tick);
 	    if(!collection.visible) {
@@ -1297,29 +1328,22 @@ RamaddaCoreDisplay.prototype = {
     scaleChanged:function() {
 	const textNodes = this.stage.find('Text');
 	let scale = this.stage.scaleX();
+	let _scale = 1/scale;
 	let s = {
-		x: 1 / scale,
-		y: 1 / scale,
+	    x: _scale,
+	    y:_scale
 	};
 
 	textNodes.forEach(text=>{
-//	    text.scale(s);
+	    text.scale(s);
 	    if(text.backgroundRect) {
 		let rect= text.backgroundRect;
-		rect.scale(1);
-		text.scale(1);
-//		rect.scale(s);
-		rect.width(text.width());
-		rect.height(text.height());
-		rect.position(text.position());
-		if(text.flag)  {
-		    setTimeout(()=>{
-			console.log(text.getClientRect().x);
-			console.log(text.position());
-			console.log(rect.getClientRect().x);
-			console.log(rect.position());
-		    },2000);
-		}
+		let padding=this.opts.bgPadding;
+		rect.width(text.width()+padding*2);
+		rect.height(text.height()+padding*2);
+		rect.y(text.y()-text.offsetY()-padding);
+		rect.x(text.x()-text.offsetX()*_scale-padding);
+		rect.scale(s);
 	    }
 	});
 
@@ -1489,12 +1513,12 @@ RamaddaCoreDisplay.prototype = {
 	    textX-=text.width();
 	}
 	if(opts.background || opts.outline)  {
-	    let pad = 2;
+	    let padding=this.opts.bgPadding;;
 	    let bg = new Konva.Rect({
-		x: textX-pad,
-		y: text.y()-pad,
-		width: text.width()+pad*2,
-		height: text.height()+pad*2,
+		x: textX-padding,
+		y: text.y()-padding,
+		width: text.width()+padding*2,
+		height: text.height()+padding*2,
 		fill: opts.background,
 		stroke:opts.outline,
 		strokeWidth: opts.strokeWidth,
@@ -1517,10 +1541,17 @@ RamaddaCoreDisplay.prototype = {
 	let min =null;
 	let max =null;    
 	let haveLegend = false;
+	let maxLegendWidth=-1;
 	let haveAnnotation = false;	
 	this.collections.forEach(collection=>{
 	    if(this.opts.showLegend && collection.legends && collection.legends.length>0) {
 		haveLegend = true;
+		collection.legends.forEach(l=>{
+		    if(Utils.stringDefined(l.width)) {
+			let w = +l.width;
+			if(w>maxLegendWidth) maxLegendWidth=w;
+		    }
+		});
 	    }
 	    if(this.opts.showAnnotations && collection.annotations && collection.annotations.length>0) {
 		haveAnnotation = true;
@@ -1573,8 +1604,11 @@ RamaddaCoreDisplay.prototype = {
 
 
 	if(!this.opts.hadLegendWidth && haveLegend) {
-	    this.opts.legendWidth=CV_LEGEND_WIDTH;
+	    if(maxLegendWidth>0) this.opts.legendWidth=maxLegendWidth;
+	    else this.opts.legendWidth=CV_LEGEND_WIDTH;
 	}
+
+
 	if(!this.opts.hadAxisWidth) {
 	    if(haveAnnotation) {
 		this.opts.axisWidth=CV_ANNOTATIONS_WIDTH+(haveLegend?this.opts.legendWidth:0);
@@ -1582,13 +1616,16 @@ RamaddaCoreDisplay.prototype = {
 		this.opts.axisWidth=CV_AXIS_WIDTH+this.opts.legendWidth;
 	    }
 	}
+
+
+
+
+
 //	console.log('legend:',haveLegend,this.opts.legendWidth,'axis:',haveAnnotation,this.opts.axisWidth);
     },
 
 
-    getAxisWidth:function() {
-	return this.opts.axisWidth;
-    },
+
     drawLegend:function() {
 	this.legendLayer.clear();
 	this.legendLayer.destroyChildren() 

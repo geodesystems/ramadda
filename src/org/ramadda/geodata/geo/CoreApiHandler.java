@@ -71,11 +71,14 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	List<String> legends=new ArrayList<String>();
 	for(Metadata mtd: getMetadataManager().findMetadata(request, entry, new String[]{"geo_core_legend"}, true)) {
 	    String[]tuple=  getMetadataManager().getFileUrl(request, entry, mtd);
-	    if(tuple==null) continue;
+	    //	    if(tuple==null) continue;
 	    List<String>obj = new ArrayList<String>();
-	    String url = tuple[1];
-	    Utils.add(obj,"url",JU.quote(url),"top",JU.quote(mtd.getAttr2()),"bottom",
-		      JU.quote(mtd.getAttr3()));
+	    String url = tuple==null?"":tuple[1];
+	    Utils.add(obj,
+		      "url",JU.quote(url),
+		      "top",     JU.quote(mtd.getAttr2()),
+		      "bottom",   JU.quote(mtd.getAttr3()),
+		      "width",   JU.quote(mtd.getAttr4()));
 
 	    legends.add(JU.map(obj));
 	}
@@ -99,6 +102,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 
 	List<String> entries = new ArrayList<String>();
 	for(Entry child: children) {
+	    if(!child.getTypeHandler().isType("type_borehole_coreimage")) continue;
 	    String info =getMapManager().encodeText(getMapManager().makeInfoBubble(request, child));
 	    String url = getEntryManager().getEntryResourceUrl(request, child);
 	    List<String> attrs = new ArrayList<String>();
@@ -309,9 +313,11 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    if(start<0 || end<0) continue;
 			    double d1=lastDepth+(start-lastPixel)*mmPerPixel;
 			    double d2=d1+(end-start)*mmPerPixel;
+			    /*
 			    System.err.println("start:" + start+ " end:" + end +
 					       " last depth:" + Utils.decimals(lastDepth/1000,2) +
 					       " depth:" + Utils.decimals(d1/1000,2) +" - " + Utils.decimals(d2/1000,2));
+			    */
 			    lastPixel=end;
 			    lastDepth=d2;
 			    
