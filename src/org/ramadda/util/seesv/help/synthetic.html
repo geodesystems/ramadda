@@ -27,4 +27,11 @@ name,value
 
 
 You can also specify a numeric range with:
-seesv:seesv -synthetic "depth,value" "range:10;20,v2" 6 -p
+seesv:seesv -synthetic "depth,value" "range:10;20,v2" 300 -p
+
+You can also generate a sine wave with a random noise with:
+seesv:seesv -synthetic "depth,value" "range:10;20,sine:amplitude;period;noise" 300 -p
+
+e.g.:
+
+seesv:seesv -synthetic "depth,value" "range:10;20,sine:10;50;1" 300 -p
