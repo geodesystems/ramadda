@@ -3748,6 +3748,16 @@ public class Utils extends IO {
 	    return Utils.getProperty(properties, key,dflt);
 	}
 
+	public double getProperty(String key, double dflt) {
+	    if(properties==null) return dflt;
+	    return Utils.getProperty(properties, key,dflt);
+	}
+
+	public int getProperty(String key, int dflt) {
+	    if(properties==null) return dflt;
+	    return Utils.getProperty(properties, key,dflt);
+	}		
+
 	public Hashtable getProperties() {
 	    return properties;
 	}
