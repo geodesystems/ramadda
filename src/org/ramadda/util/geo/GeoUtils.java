@@ -293,6 +293,10 @@ public class GeoUtils {
     public static double kilometersToMeters(double km) {
 	return km*1000;
     }
+
+    public static double mmToMeters(double mm) {
+	return mm/1000;
+    }    
     
 
     public static int estimateWindowSize(double avgPointSpacingMeters, double smoothDistanceMeters) {
