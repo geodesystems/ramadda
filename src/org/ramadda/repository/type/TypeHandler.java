@@ -1271,6 +1271,55 @@ public class TypeHandler extends RepositoryManager {
 	    }
 	    if(macro.getId().equals("value")) {
 		String dateFormat = macro.getProperty("dateFormat",null);
+		String prefix = macro.getProperty("prefix",null);
+		String suffix = macro.getProperty("suffix",null);
+		String unit = macro.getProperty("unit",null);				
+		boolean showMissing = macro.getProperty("showMissing",true);
+		double scale =  macro.getProperty("scale",Double.NaN);
+		double offset1 =  macro.getProperty("offset1",Double.NaN);
+		double offset2 =  macro.getProperty("offset2",Double.NaN);				
+		int decimals = macro.getProperty("decimals",-1);
+		if(!Double.isNaN(offset1)) {
+		    String sv = value!=null?value.toString():null;
+		    double v = stringDefined(sv)?Double.parseDouble(sv):Double.NaN;
+		    value = new Double(v+offset1);
+		    s = value.toString();
+		}
+
+		if(!Double.isNaN(scale)) {
+		    String sv = value!=null?value.toString():null;
+		    double v = stringDefined(sv)?Double.parseDouble(sv):Double.NaN;
+		    value = new Double(v*scale);
+		    s = value.toString();
+		}		    
+
+		if(!Double.isNaN(offset2)) {
+		    String sv = value!=null?value.toString():null;
+		    double v = stringDefined(sv)?Double.parseDouble(sv):Double.NaN;
+		    value = new Double(v+offset2);
+		    s = value.toString();
+		}
+
+
+		if(!showMissing && value!=null) {
+		    if(value instanceof Double) {
+			double d = (Double) value;
+			if(Double.isNaN(d)) continue;
+		    }
+		}
+
+
+		if(decimals>=0) {
+		    if(value instanceof Double) {
+			double d = (Double) value;
+			value  =new Double(Utils.decimals(d,decimals));
+			s = value.toString();
+		    }
+		}		
+
+
+		if(prefix!=null) tmp.append(prefix);
+
 		if(dateFormat!=null) {
 		    SimpleDateFormat sdf2 = RepositoryUtil.makeDateFormat(dateFormat);
 		    Date d = (Date) value;
@@ -1306,7 +1355,8 @@ public class TypeHandler extends RepositoryManager {
 			}
 		    }
 		} else if(macro.getProperty("inchesToFeet",false)) {
-		    Integer i = (Integer) value;
+		    if(value==null) value="0";
+		    int i = Integer.parseInt(value.toString());
 		    if(i==0) {
 			tmp.append("NA");
 		    } else {
@@ -1319,6 +1369,22 @@ public class TypeHandler extends RepositoryManager {
 		} else {
 		    tmp.append(s);
 		}
+
+		if(unit!=null&& value!=null) {
+		    boolean ok = true;
+		    if(value instanceof Double) {
+			double d = (Double) value;
+			if(Double.isNaN(d)) ok  =false;
+		    }
+		    if(ok) {
+			tmp.append(" ");
+			tmp.append(unit);
+		    }
+		}
+		
+
+
+		if(suffix!=null) tmp.append(suffix);
 	    } else {
 		Column otherColumn = findColumn(macro.getId());
 		if(otherColumn!=null && values!=null) {
