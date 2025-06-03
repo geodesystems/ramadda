@@ -2965,6 +2965,7 @@ public class WikiManager extends RepositoryManager
             String line;
 	    int maxSize = Utils.getProperty(props,"maxSize",-1);
 	    int size = 0;
+	    boolean asXml = as!=null && as.equals("xml");
             while ((line = br.readLine()) != null) {
                 lineNumber++;
                 if (skipLines > 0) {
@@ -2974,7 +2975,7 @@ public class WikiManager extends RepositoryManager
 		size+=line.length();
 		if(maxSize>=0 && size>maxSize) break;
                 cnt++;
-		if(convertTags || (!embedWikify && !raw)) {
+		if(!asXml&&(convertTags || (!embedWikify && !raw))) {
 		    line = line.replaceAll("<", "&lt;");
 		    line = line.replaceAll(">", "&gt;");
 		    if (annotate) {
@@ -2990,7 +2991,7 @@ public class WikiManager extends RepositoryManager
                 }
             }
             IO.close(fis);
-	    if(as!=null && as.equals("xml")) {
+	    if(asXml) {
 		String formatted;
 		try {
 		    Element root = XU.getRoot(txt.toString());
@@ -2998,7 +2999,9 @@ public class WikiManager extends RepositoryManager
 		    formatted = formatted.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		    formatted = formatted.replaceAll("\n\n+","\n");
 		} catch(Exception exc) {
-		    System.err.println("Error processing xml:" + entry +" " + exc);
+		    System.err.println("Error processing xml for entry:" + entry +" error: " + exc);
+		    System.err.println("xml:" + txt.substring(0,100));
+		    exc.printStackTrace();
 		    formatted = txt.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 		}
 		if(highlight) {
