@@ -3722,6 +3722,7 @@ public class HtmlUtils implements HtmlUtilsConstants {
         //      System.err.println("pattern:" + linkPattern);
         while (matcher.find()) {
             String href = matcher.group(2);
+	    if(href.startsWith("#")) continue;
             href = href.replaceAll(" ", "");
             String label = images
                            ? ""
@@ -3798,25 +3799,15 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
     
     public static class Link {
-
-        
         private String link;
-
-        
         private URL url;
-
-        
         private String label;
-
-        
         private long size = -1;
-
         
         public Link(String link, URL url, String label, long size) {
             this(link, url, label);
             this.size = size;
         }
-
         
         public Link(String link, URL url, String label) {
             this.link  = link;
@@ -3824,7 +3815,6 @@ public class HtmlUtils implements HtmlUtilsConstants {
             this.label = label;
         }
 
-        
         public boolean matches(String pattern) {
             if ( !Utils.stringDefined(pattern)) {
                 return true;
@@ -3842,17 +3832,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
             url = value;
         }
 
-        
         public String getLink() {
             return link;
         }
-
-
         
         public URL getUrl() {
             return url;
         }
-
         
         @Override
         public int hashCode() {
