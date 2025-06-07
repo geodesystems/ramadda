@@ -49,6 +49,8 @@ import java.util.TimeZone;
 public class DwmlFeedTypeHandler extends PointTypeHandler {
 
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
+    private static int IDX_HAZARD_TEXT = IDX++;
+    private static int IDX_NOHAZARD_TEXT = IDX++;    
     private static int IDX_TIMEZONE = IDX++;
 
     private TTLCache<String, Weather> forecastCache = new TTLCache<String,
@@ -67,6 +69,14 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	throws Exception {
         super(repository, entryNode);
     }
+
+
+    @Override
+    public void getWikiTags(List<String[]> tags, Entry entry) {
+	super.getWikiTags(tags, entry);
+        tags.add(new String[]{"Feed Label","zoomify_collection"});
+    }
+
 
 
     public static boolean defined(String s) {
@@ -242,9 +252,9 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         boolean showHazard = getWikiManager().getProperty(wikiUtil, props,
 							   "showHazard", false);		
         if (tag.equals("nws.hazards")) {
-            addHazard(request, entry, sb, showHeader);
+            addHazard(request, entry, sb, showHeader,props);
         } else if (tag.equals("nws.current")) {
-            addCurrent(request, entry, sb, showHeader, vertical, showDetails,showLabel,showHazard);
+            addCurrent(request, entry, sb, showHeader, vertical, showDetails,showLabel,showHazard,props);
         } else if (tag.equals("nws.forecast")) {
             addForecast(request, entry, sb, showHeader, cnt);
             if (showDetails) {
@@ -254,13 +264,13 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
             addDetails(request, entry, sb, showHeader, cnt);
         } else if (tag.equals("nws.weather")) {
 	    sb.append("<div class='nws-weather'>");
-            addCurrent(request, entry, sb, showHeader, vertical, showDetails,showLabel,showHazard);
+            addCurrent(request, entry, sb, showHeader, vertical, showDetails,showLabel,showHazard,props);
             addForecast(request, entry, sb, showHeader, cnt);
 	    sb.append("</div>");
         } else if (tag.equals("nws.all")) {
-            addHazard(request, entry, sb, showHeader);
+            addHazard(request, entry, sb, showHeader,props);
             sb.append("<br>");
-            addCurrent(request, entry, sb, showHeader, vertical, true,showLabel,showHazard);
+            addCurrent(request, entry, sb, showHeader, vertical, true,showLabel,showHazard,props);
             addForecast(request, entry, sb, showHeader, 1000);
             addDetails(request, entry, sb, showHeader, 1000);
         } else {
@@ -289,14 +299,19 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     }
 
     private void addHazard(Request request, Entry entry, Appendable sb,
-                           boolean showHeader)
+                           boolean showHeader,Hashtable props)
 	throws Exception {
         Weather forecast = getForecast(request,entry);
         if (forecast == null) {
             sb.append("No forecast defined");
             return;
         }
-        if (forecast.hazards == null) {
+	String text = HU.div(Utils.getProperty(props,"text",""));
+        if (forecast.hazards == null || forecast.hazards.length()==0) {
+	    String noHazardText = Utils.getProperty(props,"noHazardText",
+						    entry.getStringValue(request,IDX_NOHAZARD_TEXT, ""));
+	    if(stringDefined(noHazardText)) sb.append(HU.div(noHazardText));
+	    sb.append(text);
             return;
         }
         HU.open(sb, "div", HU.cssClass("nws-block"));
@@ -312,6 +327,13 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
 	link = link.replace("<a ","<a target='_wx' ");
 	sb.append(link);
         sb.append("</ul>");
+	String hazardText = Utils.getProperty(props,"hazardText",
+						entry.getStringValue(request,IDX_HAZARD_TEXT, ""));
+	if(stringDefined(hazardText)) sb.append(HU.div(hazardText));
+	sb.append(text);
+
+
+
         HU.close(sb, "div");
         if (showHeader) {
             HU.close(sb, "div");
@@ -322,7 +344,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
     }
     private void addCurrent(Request request, Entry entry, Appendable sb,
                             boolean showHeader, boolean vertical,
-                            boolean showDetails,boolean showLabel, boolean showHazard)
+                            boolean showDetails,boolean showLabel, boolean showHazard, Hashtable props)
 	throws Exception {
         Weather current = getCurrent(request,entry);
         if ((current == null) || (current.times.size() == 0)) {
@@ -355,7 +377,7 @@ public class DwmlFeedTypeHandler extends PointTypeHandler {
         }
 
 	if(showHazard) {
-            addHazard(request, entry, sb, false);
+            addHazard(request, entry, sb, false,props);
 	}
 	String blockClass=  HU.cssClass("nws-block");
 	List<String> hboxes = new ArrayList<String>();

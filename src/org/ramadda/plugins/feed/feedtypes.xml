@@ -24,20 +24,33 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="true"/>
      <property name="form.location.show" value="true"/>
-     <wikimacro name="nws.hazards" label="NWS Hazards"><![CDATA[{{nws.hazards showHeader=false}}]]></wikimacro>
+     <wikimacro name="nws.hazards" label="NWS Hazards"><![CDATA[{{nws.hazards showHeader=false #hazardText="Hazard text" #noHazardText="No hazard"}}]]></wikimacro>
      <wikimacro name="nws.current" label="NWS Current Conditions"><![CDATA[{{nws.current showHeader=false showDetails=true}}]]></wikimacro>
      <wikimacro name="nws.forecast" label="NWS Forecast"><![CDATA[{{nws.forecast showHeader=false showDetails=true count=1000}}]]></wikimacro>
      <wikimacro name="nws.details" label="NWS Forecast Details"><![CDATA[{{nws.details showHeader=false}}]]></wikimacro>
      <wikimacro name="nws.all" label="NWS Forecast All"><![CDATA[{{nws.all showHeader=false}}]]></wikimacro>
+     <column name="hazard_text" type="string" label="Hazard Text" size="1000" rows="5" columns="60"
+	     showinhtml="false" editable="true" help="Text to show when there is a hazard"/>
+     <column name="nohazard_text" type="string" label="No Hazard Text" size="1000" rows="5" columns="60"
+	     showinhtml="false" editable="true" help="Text to show when there are no hazards"/>     
      <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
  <property name="record.properties">
    xxxfields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],dewpoint[type=double],precipitation[type=double],humidity[type=double],pressure[type=double],wind_speed[type=double],wind_gust[type=double],description[type=string],icon[type=image]
 fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double label="Min Temperature"],max_temperature[type=double label="Max Temperature"],description[type=string],icon[type=image]   
 </property>
-     <wiki><![CDATA[
-+section title={{name}}
+     <wiki><![CDATA[+section title={{name}}
 {{description}}
-{{nws.all}}
++row
++col-6
+{{nws.current showHeader=false showDetails=true}}
+-col
++col-6
+{{nws.hazards showHeader=true #hazardText="" #noHazard="" #text=""}}
+-col
+-row
+----
+:heading Extended Forecast
+{{nws.forecast showDetails=true showHeader=false}}
 -section
 ]]>
 </wiki>
