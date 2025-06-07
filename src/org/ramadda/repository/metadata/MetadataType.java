@@ -941,10 +941,14 @@ public class MetadataType extends MetadataTypeBase implements Comparable {
 	String msg ="<br>Comma separated list - e.g.: <i>admin</i>, <i>user</i>, <i>user:&lt;user id&gt;, <i>&lt;userrole&gt;</i>";
 	msg+=" " +HU.href(getRepository().getUrlBase()+"/userguide/editing.html#property_access","Help",
 			  HU.attrs("target","_help"));
+
 	sb.append(HU.formEntry(msgLabel("Permissions"),
 			       HU.input(ARG_METADATA_ACCESS+suffix,metadata.getAccess(),HU.attrs("size","40")) +
 			       msg));
 
+	sb.append(HU.formEntry(msgLabel("Type ID"),
+			       HU.span(getId(),HU.attrs("title","Click to copy type ID",
+							"class","ramadda-copyable ramadda-clickable"))));
         String argtype = ARG_METADATA_TYPE + suffix;
         String argid   = ARG_METADATAID + suffix;
         sb.append(HU.hidden(argtype, getId())

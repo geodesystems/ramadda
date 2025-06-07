@@ -2033,6 +2033,7 @@ public class MetadataManager extends RepositoryManager {
             HU.makeAccordion(sb, titles, contents);
             sb.append(HU.endInset());
             sb.append(buttons);
+	    HU.script(sb,"Utils.initCopyable('.ramadda-copyable');");
 	    HU.addFormChangeListener(sb,formId);
 
             HU.comment(sb, "Metadata form end");
