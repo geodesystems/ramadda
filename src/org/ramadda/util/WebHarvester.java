@@ -5,7 +5,6 @@ SPDX-License-Identifier: Apache-2.0
 
 package org.ramadda.util;
 
-
 import org.apache.commons.lang3.text.StrTokenizer;
 
 import org.w3c.dom.*;
@@ -61,9 +60,6 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.imageio.*;
 
-
-
-
 /**
  * A collection of utilities
  *
@@ -72,137 +68,67 @@ import javax.imageio.*;
 
 @SuppressWarnings("unchecked")
 public class WebHarvester {
-
-    /**  */
     private URL url;
-
-    /**  */
     private List<Replace> replaceList = new ArrayList<Replace>();
-
-    /**  */
     private List<Replace> imageReplace = new ArrayList<Replace>();
-
-    /**  */
     private String title;
-
-    /**  */
     private String body;
-
-    /**  */
     private Hashtable<String, Page> seen = new Hashtable<String, Page>();
-
-    /**  */
     private HashSet seenImage = new HashSet();
-
-    /**  */
     private Page page;
-
-    /**  */
     private int cnt = 0;
+    private int goodCnt=0;
+    private List<String[]> badUrls = new ArrayList<String[]>();
 
-    /**  */
     private int maxCnt = -1;
-
-    /**  */
     private int maxDepth = -1;
-
-    /**  */
     private List<String> images = new ArrayList<String>();
-
-    /**  */
+    private boolean addOriginalUrl =false;
     private boolean wrapWithSection = true;
+    private boolean writeFiles = true;
+    private boolean addTable = false;
+    private static SimpleDateFormat mmmyyyysdf =      new SimpleDateFormat("MMMMM yyyy");
+    private static SimpleDateFormat mmmyyyysdf2 =    new SimpleDateFormat("yyyy-MM");
+    private PrintWriter log;
 
-    /**  */
-    private static SimpleDateFormat mmmyyyysdf =
-        new SimpleDateFormat("MMMMM yyyy");
+    public WebHarvester(PrintWriter log) throws Exception {
+	this.log = log;
+    }
 
-    /**  */
-    private static SimpleDateFormat mmmyyyysdf2 =
-        new SimpleDateFormat("yyyy-MM");
-
-    /**
-     *
-     */
-    public WebHarvester() {}
-
-
-    /**
-     *
-     *
-     * @param url _more_
-     *
-     * @throws Exception _more_
-     */
     public WebHarvester(String url) throws Exception {
         this.url = new URL(url);
     }
 
-    /**
-     *
-     * @param d _more_
-     */
+
+    public void log(String msg) {
+	log.println(msg);
+	System.err.println(msg);
+    }
+
     public void setMaxDepth(int d) {
         maxDepth = d;
     }
 
-    /**
-     *
-     * @param url _more_
-     *
-     * @throws Exception _more_
-     */
     public void setUrl(String url) throws Exception {
         this.url = new URL(url);
     }
 
-
-
-    /**
-     *  Get the Title property.
-     *  @return The Title
-     */
     public String getTitle() {
         return title;
     }
 
-
-    /**
-     *  Get the Body property.
-     *
-     *  @return The Body
-     */
     public String getBody() {
         return body;
     }
 
-    /**
-     *
-     * @param pattern _more_
-     * @param with _more_
-     */
     public void addReplace(String pattern, String with) {
         replaceList.add(new Replace(pattern, with));
     }
 
-    /**
-     *
-     * @param pattern _more_
-     * @param with _more_
-     */
     public void addImageReplace(String pattern, String with) {
         imageReplace.add(new Replace(pattern, with));
     }
 
-    /**
-     *
-     * @param recurse _more_
-     * @param pattern _more_
-     * @param notpattern _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Page harvest(boolean recurse, String pattern, String notpattern)
             throws Exception {
         page = harvest(null, url, null, null, recurse, pattern, notpattern,
@@ -211,22 +137,6 @@ public class WebHarvester {
         return page;
     }
 
-    /**
-     *
-     * @param parent _more_
-     * @param url _more_
-     * @param label _more_
-     * @param link _more_
-     * @param recurse _more_
-     * @param linkPattern _more_
-     * @param notpattern _more_
-     * @param indent _more_
-     * @param depth _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public Page harvest(Page parent, URL url, String label, String link,
                         boolean recurse, String linkPattern,
                         String notpattern, String indent, int depth)
@@ -249,7 +159,7 @@ public class WebHarvester {
 
         String surl = url.toString();
         if (ImageUtils.isImage(surl) || surl.toLowerCase().endsWith("pdf")) {
-            System.err.println(indent + "RESOURCE:" + url);
+            log(indent + "RESOURCE:" + url);
             page = new Page(url);
             if (parent != null) {
                 parent.addChild(page);
@@ -263,8 +173,8 @@ public class WebHarvester {
         try {
             html = IO.readContents(url.toString());
         } catch (Exception exc) {
-            System.err.println(indent + "BAD URL:" + url + " " + exc);
-
+	    log(indent + "BAD URL:" + url + " " + exc +" PARENT:" + parent);
+	    badUrls.add(new String[]{url.toString(),parent.url.toString()});
             return null;
         }
         title = StringUtil.findPattern(html,
@@ -284,30 +194,17 @@ public class WebHarvester {
 
         title = title.replaceAll("–", "-");
 
-
-        body = StringUtil.findPattern(html,
-                                      "(?s)(?i)<body[^>]*>(.*?)</body>");
+        body = StringUtil.findPattern(html,  "(?s)(?i)<body[^>]*>(.*?)</body>");
         if (body == null) {
             body = html;
         }
-        for (Replace replace : replaceList) {
-            body = body.replaceAll("(?s)(?i)" + replace.pattern,
-                                   replace.with);
-            //      if(replace.pattern.startsWith("<p>")) {
-            //          int index = body.indexOf("<p>&nbsp;</p>");
-            //          System.err.println(replace.pattern + " " + index);
-            //          System.err.println(body.substring(0,500));
-            //      }
-        }
 
-        /*
-          <p><a href="f800track.gif">Flight track&nbsp; <br>
-          <a href="800summary.htm">T
-        */
-
+	String ogBody = body;
+	//	System.out.println("******** OGBODY:" + title +"\n"+body+"\n\n");
+	body = Replace.replace(replaceList, body);
+	//	System.out.println("******** BODY:" + title +"\n"+body+"\n\n");
         body = fixUnclosedHrefs(body);
         int maxLength = 256000;
-
         if (body.length() > maxLength) {
             body = body.replaceAll(">\n+", ">");
         }
@@ -315,13 +212,29 @@ public class WebHarvester {
             body = body.replaceAll("<tr[^>]+>", "<tr>");
         }
         if (body.length() > maxLength) {
-            System.err.println("***** bad length: " + url + " "
-                               + body.length());
+	    //Try to clean up the really long styles
+	    for(int l:new int[]{500,400,300,200,100,50,25}) {
+		String regex = "(?s)(?i)style=['\"]([^'\"]{" + l+",}?)['\"]";
+		body = body.replaceAll(regex," ");
+		if(body.length()<maxLength) break;
+	    }
+	}
+
+        if (body.length() > maxLength) {
+            log("***** bad length: " + url + " "               + body.length());
             body = body.replaceAll(">\n+", ">");
+	    FileOutputStream fos = new FileOutputStream("badtext.html");
+	    PrintWriter          writer    = new PrintWriter(fos);
+	    writer.print(body);
+	    writer.close();
+
+	    throw new IllegalArgumentException("bad length:" + body.length() +" url:" + url);
             //      body = body.substring(0,29000);
         }
-        System.err.println(indent + "URL:" + url + " " + label);  // +" label:"  + label+" " +body.length());
+	log(indent + "URL:" + url + " " + label);  // +" label:"  + label+" " +body.length());
+	goodCnt++;
         //      System.err.println(indent +"URL:" + url +" link:" + link);
+
         if ( !Utils.stringDefined(title)) {
             title = StringUtil.findPattern(body, "(?s)(?i)<h1.*?>(.*?)<.h1>");
             if (title == null) {
@@ -333,31 +246,46 @@ public class WebHarvester {
             }
             title = StringUtil.stripTags(title).trim();
         }
+	//	boolean debug = title.indexOf("Research Projects")>=0;
+	boolean debug = false;
+	if(debug) {
+	    System.out.println("TITLE:" + title);
+	    //	    System.out.println("*******\n" + ogBody +"\n*********");
+	}
+
         page           = new Page(url, title, body);
         page.href      = link;
         page.hrefLabel = label;
         seen.put(url.toString(), page);
 
+
+
+
+
         if (parent != null) {
             parent.addChild(page);
         }
 
+	
+	body = Replace.replace(imageReplace,body);
+
+
         for (HtmlUtils.Link childLink :
                 HtmlUtils.extractLinks(url, body, ".*", true)) {
             String l = childLink.getLink().replace("\\", "\\\\");
-            //      System.err.println("IMG:" + l);
+	    //	    System.out.println("IMG:" + l);
             String fullPath    = childLink.getUrl().toString();
             String replacePath = fullPath;
-            for (Replace replace : imageReplace) {
-                replacePath = replacePath.replaceAll("(?s)(?i)"
-                        + replace.pattern, replace.with);
-            }
+	    replacePath = Replace.replace(imageReplace,replacePath);
             page.body = page.body.replaceAll(l, replacePath);
             if ( !seenImage.contains(fullPath)) {
                 seenImage.add(fullPath);
                 images.add(fullPath);
             }
         }
+
+	//	page.body = Replace.replace(imageReplace,page.body);
+	//	System.out.println("title:" + title);
 
         if (recurse) {
             for (HtmlUtils.Link childLink :
@@ -368,6 +296,7 @@ public class WebHarvester {
                     continue;
                 }
 
+		if(debug) System.out.println("link:" + childLink);
                 if (childLink.matches(linkPattern)) {
                     Page child = harvest(page, childLink.getUrl(),
                                          childLink.getLabel(),
@@ -375,23 +304,33 @@ public class WebHarvester {
                                          linkPattern, notpattern,
                                          indent + "  ", depth + 1);
                     if (child == null) {
-                        //                      System.err.println(indent +" " +"NO CHILD:"  + childLink.getUrl());
+			if(debug) System.out.println(indent +" " +"NO CHILD:"  + childLink.getUrl());
                         continue;
                     }
                     String l = childLink.getLink().replace("\\", "\\\\");
-                    //              System.out.println("Link:" + l);
-                    page.body = page.body.replaceAll("(?i)<a +href=\"" + l
-                            + "\" *>([^<>]*?)</a>", "[[" + child.id
-                                + "|$1]]");
+		    String linkUrl = childLink.getUrl().toString();
+		    //		    System.out.println(title + " Link:" + l);
+		    if(childLink.toString().indexOf("steps.htm")>=0) {
+			System.out.println("replace:" + childLink);
+			System.out.println("replace URL:" + linkUrl);			
+		    }
+		    String p =  "(?i)<a\\s+href=\"?" + linkUrl + "\"?[^>]*>(.*?)</a>";
+		    page.body = page.body.replaceAll(p, "[[" + child.id+ "|$1]]");		    
+		    //		    p = "(?i)<a\\s+href=\"?" + l + "\"? *>((?!</a>\\s*</a>).*)";
+		    p = "(?i)<a\\s+href=\"?" + l + "\"?[^>]*>(.*?)</a>";
+                    page.body = page.body.replaceAll(p, "[[" + child.id+ "|$1]]");
                     page.body = page.body.replaceAll("(?i)href=\"" + l
                             + "\"", "href=\"/repository/entry/show?entryid="
                                     + child.id + "\"");
-                    page.body = page.body.replaceAll("(?i)href=\'" + l
+                    page.body = page.body.replaceAll("(?i)href=\'" +linkUrl
                             + "\'", "href=\"/repository/entry/show?entryid="
                                     + child.id + "\"");
                     page.body = page.body.replaceAll("(?i)href=" + l,
                             "href=\"/repository/entry/show?entryid="
                             + child.id + "\"");
+                    page.body = page.body.replaceAll("(?i)href=" + linkUrl,
+                            "href=\"/repository/entry/show?entryid="
+                            + child.id + "\"");		    
                     //              System.out.println(page.body);
                     //              Utils.exitTest(0);
                 } else {
@@ -409,21 +348,17 @@ public class WebHarvester {
             }
         }
 
+	if(addOriginalUrl)
+	    page.body = HtmlUtils.href(url.toString(), "ORIGINAL URL") +"\n<br>" + page.body;
         return page;
 
     }
 
-    /**
-     *
-     * @throws Exception _more_
-     */
+
     public void fetchImages() throws Exception {
         for (String path : images) {
             String replacePath = path;
-            for (Replace replace : imageReplace) {
-                replacePath = replacePath.replaceAll("(?s)(?i)"
-                        + replace.pattern, replace.with);
-            }
+	    replacePath = Replace.replace(imageReplace, replacePath);
             replacePath = "." + replacePath;
             File f      = new File(replacePath);
             File parent = f.getParentFile();
@@ -437,10 +372,9 @@ public class WebHarvester {
                     IOUtil.writeTo(is, fos);
                     IOUtil.close(is);
                     IOUtil.close(fos);
-                    System.err.println("Fetched image:" + path);
+                    log("Fetched image:" + path);
                 } catch (Exception exc) {
-                    System.err.println("ERROR fetching image:" + path + " "
-                                       + exc);
+                    log("ERROR fetching image:" + path + " "  + exc);
                 }
                 //              f.mkdirs();
             }
@@ -449,22 +383,15 @@ public class WebHarvester {
     }
 
 
-    /**
-     *
-     * @return _more_
-     */
     public Page getPage() {
         return page;
     }
 
-    /**
-     */
     public void addReplaceMS() {
         //Non ascii
-        addReplace("<strong>([^<]+)</a>", "$1</a>");
         addReplace(" ", " ");
-        addReplace("[^\\x00-\\x7F]", "");
-        addReplace("style *= *'.*?'", "");
+	addReplace("[^\\x00-\\x7F]", "");
+	addReplace("<msnavigation[^>]*?>"," ");
         addReplace("class=MsoNormal", "");
         addReplace("class=SpellE", "");
         addReplace("class=GramE", "");
@@ -476,82 +403,55 @@ public class WebHarvester {
         addReplace("<!--msnavigation-->", "");
         addReplace("<o\\:p>", "");
         addReplace("</o\\:p>", "");
-        addReplace("<span\\s+>", "<span>");
-        addReplace("<span>\\s*</span>", "");
-        addReplace("<span>\\s*</span>", "");
-        addReplace("<span>(.*?)</span>", "$1");
-        addReplace("<tr\\s+>", "<tr>");
-        addReplace("<p\\s+>", "<p>");
         addReplace("<v:shape.*?</v:shape>", "");
-        addReplace("<i *>\\s*</i>", "");
-        addReplace("<i +>", "<i>");
-        addReplace("<td.*?>(.*?)</td>", "<td>$1</td>");
-        addReplace("([^\\s]+)<h", "$1\n<h");
-        addReplace(">\\n", ">");
-        addReplace("<table", "\n<table");
-        addReplace("<h", "\n<h");
-        addReplace("<tr", "\n<tr");
-        addReplace("/tr>", "/tr>\n");
-        addReplace("/div>", "/div>\n");
-        addReplace("<td><p>(.*?)</p></td>", "<td>$1</td>");
         addReplace("<font.*?>", "");
         addReplace("</font>", "");
-        addReplace("<p> *&nbsp; *</p>", "");
-        addReplace("–", "-");
-        addReplace("\\r", "\n");
-        addReplace("\\s*\\n\\s*", "\n");
-        addReplace("\\n\\n+", "\n");
-        addReplace("(<a[^>]*>)\\n", "$1");
+	addReplace("<span\\s+>", "<span>");
+	addReplace("<span>\\s*</span>", "");
+	addReplace("<span>\\s*</span>", "");
+	addReplace("<span>(.*?)</span>", "$1");
+	addReplace("<tr\\s+>", "<tr>");
+	addReplace("<p\\s+>", "<p>");
+	addReplace("<i *>\\s*</i>", "");
+	addReplace("<i +>", "<i>");
+	addReplace("<!--\\[if gte mso 9\\]>.*?<!\\[endif\\]-->","");
+	//        addReplace("<td.*?>(.*?)</td>", "<td>$1</td>");
+
+	//        addReplace("([^\\s]+)<h", "$1\n<h");
+	//        addReplace(">\\n", ">");
+	//        addReplace("<table", "\n<table");
+	//        addReplace("<h", "\n<h");
+	//        addReplace("<tr", "\n<tr");
+	//        addReplace("/tr>", "/tr>\n");
+	//        addReplace("/div>", "/div>\n");
+	//        addReplace("<td><p>(.*?)</p></td>", "<td>$1</td>");
+	//        addReplace("<p> *&nbsp; *</p>", "");
+
+	addReplace("–", "-");
+        addReplace("\\r\\n", "\n");
+        addReplace("\\r", "\n");	
+	//	addReplace("\\s*\\n\\s*", "\n");
+	addReplace("[\\s&&[^\\n]]*\\n[\\s&&[^\\n]]*", "\n");
+	//Not sure why there are two new lines but it seems to work
+	addReplace("\\n\\n+", "\n");	
+	addReplace("\\n{2,}", "\n");
+	addReplace("\\n","\n");
     }
 
-    /**  */
     private static int idCnt = 0;
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Page {
-
-        /**  */
         boolean isResource = false;
-
-        /**  */
         Page parent = null;
-
-        /**  */
         boolean processed = false;
-
-        /**  */
-        String id = "page_" + (idCnt++);
-
-        /**  */
+        String id = "webharvesterpage_" + (idCnt++);
         String href;
-
-        /**  */
         String hrefLabel;
-
-        /**  */
         URL url;
-
-        /**  */
         String title;
-
-        /**  */
         String body;
-
-        /**  */
         List<Page> children = new ArrayList<Page>();
 
-        /**
-         *
-         *
-         * @param url _more_
-         */
         public Page(URL url) {
             isResource = true;
             this.url   = url;
@@ -559,24 +459,12 @@ public class WebHarvester {
                 IOUtil.stripExtension(IOUtil.getFileTail(url.toString()));
         }
 
-
-        /**
-         *
-         *
-         * @param url _more_
-         * @param title _more_
-         * @param body _more_
-         */
         public Page(URL url, String title, String body) {
             this.url   = url;
             this.title = title;
             this.body  = body;
         }
 
-        /**
-         *
-         * @param child _more_
-         */
         public void addChild(Page child) {
             if (child.parent != null) {
                 return;
@@ -585,105 +473,63 @@ public class WebHarvester {
             child.parent = this;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public URL getUrl() {
             return url;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public boolean isResource() {
             return isResource;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public String getHref() {
             return href;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public String getTitle() {
             return title;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public String getBody() {
             return body;
         }
 
-        /**
-         *
-         * @return _more_
-         */
         public List<Page> getChildren() {
             return children;
         }
 
-        /**
-         *
-         * @return _more_
-         */
+
         public String toString() {
             return title + " " + url;
         }
     }
 
-
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Thu, Nov 4, '21
-     * @author         Enter your name here...
-     */
     public static class Replace {
-
-        /**  */
         String pattern;
-
-        /**  */
         String with;
 
-        /**
-         *
-         *
-         * @param pattern _more_
-         * @param with _more_
-         */
         public Replace(String pattern, String with) {
             this.pattern = pattern;
             this.with    = with;
         }
+	public static String replace(List<Replace> list,String s) {
+            for (Replace replace : list) {
+		//		System.out.println("PATTERN:" + replace.pattern +" WITH:" + replace.with);
+                s = s.replaceAll("(?s)(?i)"   + replace.pattern, replace.with);
+            }
+	    return s;
+	}
     }
 
-    /**
-     *
-     * @param page _more_
-     * @param parent _more_
-     *
-     * @throws Exception _more_
-     */
-    private void writeEntryXml(Page page, Page parent) throws Exception {
+
+
+    private void writeEntryXml(PrintWriter          writer,Page page, Page parent) throws Exception {
 
         //      System.out.println("TITLE:" + page.title  +" " + page.href +" " + page.url);
         StringBuilder sb    = new StringBuilder();
         String        type  = "wikipage";
         String        attrs = "";
         if (page.isResource) {
+	    if(!writeFiles) return;
             String surl = page.url.toString().toLowerCase();
             if (surl.endsWith("pdf")) {
                 type = "type_document_pdf";
@@ -703,10 +549,9 @@ public class WebHarvester {
                     IOUtil.writeTo(is, fos);
                     IOUtil.close(is);
                     IOUtil.close(fos);
-                    System.err.println("Fetched resource:" + page.url
-                                       + " as:" + f);
+                    log("Fetched resource:" + page.url  + " as:" + f);
                 } catch (Exception exc) {
-                    System.err.println("ERROR: fetching resource:" + page.url
+                    log("ERROR: fetching resource:" + page.url
                                        + " " + exc + " parent:"
                                        + page.parent.url);
 
@@ -715,6 +560,7 @@ public class WebHarvester {
             }
         }
         attrs += XmlUtil.attr("type", type) + XmlUtil.attr("id", page.id)
+	    +XmlUtil.attr("isnew","true") 
                  + ((parent == null)
                     ? ""
                     : XmlUtil.attr("parent", parent.id));
@@ -733,7 +579,6 @@ public class WebHarvester {
                 Date dttm = mmmyyyysdf.parse(mmmyyyy[0] + " " + mmmyyyy[1]);
                 date = mmmyyyysdf2.format(dttm);
             }
-
 
             if (date == null) {
                 String[] mmddyy =
@@ -760,15 +605,19 @@ public class WebHarvester {
         }
         sb.append(XmlUtil.openTag("entry", attrs));
         sb.append("\n");
-
+	//	log("TITLE:" +page.title +" URL:"  + page.url);
         sb.append(XmlUtil.tag("name", "", XmlUtil.getCdata(page.title)));
         sb.append("\n");
         if ( !page.isResource) {
             //      String content = HtmlUtils.href(page.url.toString(),"Source") +"<br>" + page.body;
+	    String contents = page.body;
+	    if(addTable) {
+		contents = contents +"\n\n{{tabletree  message=\"\"   prefix=\":heading Contents\" }} \n";
+	    }
             String content = wrapWithSection
-                             ? ("+section title={{name}}\n" + page.body
-                                + "\n-section\n")
-                             : page.body;
+		? ("+section title={{name}}\n" + contents
+		   + "\n-section\n")
+		: contents;
             //      if(page.children.size()>0)
             //          content+="\n----\n:heading Links\n{{tree details=false}}";
             //If we are creating something other than a wikipage then set the description
@@ -776,17 +625,13 @@ public class WebHarvester {
             sb.append(XmlUtil.tag("wikitext", "", XmlUtil.getCdata(content)));
         }
         sb.append("</entry>");
-        System.out.println(sb);
+        writer.println(sb);
         for (Page child : page.children) {
-            writeEntryXml(child, page);
+            writeEntryXml(writer,child, page);
         }
 
     }
 
-    /**
-     *
-     * @param msg _more_
-     */
     public static void usage(String msg) {
         System.err.println(msg);
         System.err.println("usage:");
@@ -796,6 +641,10 @@ public class WebHarvester {
         System.err.println(
             "\t-replacems (clean up the extra cruft MS Word generates)");
         System.err.println("\t-doimages (download images)");
+        System.err.println("\t-addtable (add entry table wiki tag)");	
+        System.err.println("\t-addurl (add link to original page)");	
+        System.err.println(
+            "\t-replace <url pattern> <with> (convert text)");
         System.err.println(
             "\t-imagereplace <url pattern> <with> (convert image links)");
         System.err.println("\t-entries (generate the RAMADDA entry xml)");
@@ -803,12 +652,6 @@ public class WebHarvester {
         Utils.exitTest(0);
     }
 
-    /**
-     *
-     * @param html _more_
-     *
-     * @return _more_
-     */
     public static String fixUnclosedHrefs(String html) {
         //This is a hack to replace '</a' with a single character that probably won't show up in the html
         //That way we can use a negate pattern with the single replace chart [^c]
@@ -821,14 +664,18 @@ public class WebHarvester {
         return html;
     }
 
-    /**
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
-        WebHarvester harvester  = new WebHarvester();
+	/*
+	String s = "<a href=texarc.htm <strong>TEXARC</a> - ";
+	String  p ="(<a\\s+[^<>]+)\\s*<strong>";
+	System.err.println("S:" + s);
+	System.err.println("D:" + s.replaceAll(p,"$1>"));
+	if(true) return;
+	*/
+
+	FileOutputStream logfos = new FileOutputStream("log.txt");
+	PrintWriter log = new PrintWriter(logfos);
+        WebHarvester harvester  = new WebHarvester(log);
         String       pattern    = null;
         String       notpattern = null;
         boolean      doImages   = false;
@@ -866,6 +713,19 @@ public class WebHarvester {
                 doEntries = true;
                 continue;
             }
+            if (arg.equals("-nofiles")) {
+		harvester.writeFiles = false;
+		continue;
+	    }
+
+	    if(arg.equals("-addurl")) {
+		harvester.addOriginalUrl = true;
+		continue;
+	    }
+	    if(arg.equals("-addtable")) {
+		harvester.addTable = true;
+		continue;
+	    }	    
             if (arg.equals("-replacems")) {
                 harvester.addReplaceMS();
                 continue;
@@ -875,23 +735,51 @@ public class WebHarvester {
                 harvester.addReplaceMS();
                 continue;
             }
+            if (arg.equals("-replace")) {
+		harvester.addReplace(args[++i], args[++i]);
+                continue;
+            }
             if (arg.startsWith("-")) {
                 usage("Unknown argument:" + arg);
             }
             harvester.setUrl(arg);
         }
 
-
         Page page = harvester.harvest(true, pattern, notpattern);
 
         if (doEntries) {
-            System.out.println("<entries>");
-            harvester.writeEntryXml(page, null);
-            System.out.println("</entries>");
-        }
+	    FileOutputStream fos = new FileOutputStream("entries.xml");
+	    PrintWriter          writer    = new PrintWriter(fos);
+            writer.println("<entries>");
+            harvester.writeEntryXml(writer,page, null);
+            writer.println("</entries>");
+	    writer.close();
+	    fos.close();
+	}
         if (doImages) {
             harvester.fetchImages();
         }
+	if(doEntries) {
+	    System.err.println("RAMADDA entries.xml written");
+	}
+	System.err.println("#pages harvested:" + harvester.goodCnt);
+	if(harvester.badUrls.size()>0) {
+	    PrintWriter          w2    = new PrintWriter(new FileOutputStream("failed.txt"));
+	    for(String []tuple: harvester.badUrls) {
+		String url = tuple[0];
+		String parent = tuple[1];
+		w2.println("  from:" + parent);
+		w2.println("failed:" + url);
+		w2.println("");
+	    }
+	    w2.close();
+	    System.err.println("#pages failed:" + harvester.badUrls.size() +" urls written to failed.txt");
+	}
+
+	log.close();
+
+
+
     }
 }
 
@@ -899,7 +787,4 @@ public class WebHarvester {
  * {{tree entries.filter="name:Flight.*" details=false
  * treePrefix="<h3>Flights</h3>" message="" nameTemplate="${name} - ${date}" sort="date" sortdir=up}}
  */
-
-
-
 
