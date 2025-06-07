@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Mon Jun  2 07:09:08 MDT 2025";
+var build_date="RAMADDA build date: Sat Jun  7 07:23:03 PDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36759,16 +36759,23 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 		    });
 		}
 		if(value) {
+		    let values = Utils.split(value,",",true,true);
 		    textOk = false;
 		    let html = Utils.stripTags($(this).html());
-		    html+=$(this).attr('data-corpus')??'';
-		    html+=$(this).attr('entryid')??'';		    
+		    let corpus = $(this).attr('data-corpus')??' ';
+		    html+=corpus+' ';
+		    html+=$(this).attr('entryid')??' ';		    
 		    html = html.toLowerCase();
-		    if(html.indexOf(value)>=0) {
-			textOk=true;
-		    } else if(regExp) {
-			if(html.match(regExp)) textOk = true;
-		    }
+		    textOk = true;
+		    values.every(v=>{
+			textOk = false;
+			if(html.indexOf(v)>=0) {
+			    textOk = true;
+			} else if(regExp) {
+			    if(html.match(regExp)) textOk = true;
+			}
+			return textOk;
+		    });
 		}
 		if(!tagOk || !textOk) {
 		    $(this).fadeOut();
