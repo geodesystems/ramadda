@@ -532,7 +532,8 @@ public class ExtEditor extends RepositoryManager {
 				    if(forReal) {
 					boolean haveReset = false;
 					try {
-					    for(EntryWrapper wrapper:  wrappers) {
+					    holder[0].entryProcessed(wrappers);
+					    for(EntryWrapper wrapper:  holder[0].processedEntries) {
 						Entry entry = wrapper.entry;
 						boolean changed = wrapper.getChanged();
 						if(wrapper.name!=null) {
@@ -559,7 +560,6 @@ public class ExtEditor extends RepositoryManager {
 						if(changed) {
 						    getEntryManager().removeFromCache(entry);
 						    if(!haveReset) {
-							//						    resetMessageBuffer();
 							haveReset = true;
 						    }
 						    append("Updated entry:" + entry+"\n");
@@ -1328,13 +1328,41 @@ public class ExtEditor extends RepositoryManager {
 	    this.confirmed = confirmed;
 	}
 
-	public List<EntryWrapper> getChildren() throws Exception {
-	    if(children==null) {
-		children  = new ArrayList<EntryWrapper>();
-		for(Entry e:repository.getEntryManager().getChildren(request, entry)) {
-		    children.add(new EntryWrapper(request, repository, ctx,entry,confirmed));
+	public List<EntryWrapper> getChildren(String...args) throws Exception {
+	    List<Entry> entries = repository.getEntryManager().getChildren(request, entry);
+	    boolean descending = true;
+	    for(String arg: args) {
+		if(arg.startsWith("type:")) {
+		    String type = arg.substring("type:".length());
+		    entries = repository.getEntryUtil().getEntriesOfType(entries, type);
+		} else if(arg.startsWith("sort:")) {
+		    String sort = arg.substring("sort:".length());
+		    if(sort.endsWith("_descending")) {
+			sort = sort.replace("_descending","");
+			descending =true;
+		    } else if(sort.endsWith("_ascending")) {
+			sort = sort.replace("_ascending","");
+			descending =false;
+		    } else if(sort.endsWith("_up")) {
+			sort = sort.replace("_up","");
+			descending =false;
+		    } else if(sort.endsWith("_down")) {
+			sort = sort.replace("_down","");
+			descending =true;
+		    }
+		    //		    System.err.println("sort:" + sort +" descending:" + descending);
+		    entries = repository.getEntryUtil().sortEntriesOn(entries, sort,descending);
+		}  else {
+		    throw new IllegalArgumentException("Unknown sort argument:" + arg);
 		}
+
 	    }
+
+	    List<EntryWrapper> children  = new ArrayList<EntryWrapper>();
+	    for(Entry child:entries) {
+		children.add(new EntryWrapper(request, repository, ctx,child,confirmed));
+	    }
+	    ctx.entryProcessed(children);
 	    return children;
 	}
 
@@ -1352,6 +1380,19 @@ public class ExtEditor extends RepositoryManager {
 	    return list;
 	}
 
+
+	@Override
+	public int hashCode() {
+	    return entry.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+	    if(o instanceof EntryWrapper) {
+		EntryWrapper that = (EntryWrapper) o;
+		return this.entry.equals(that.entry);
+	    }
+	    return false;
+	}
 
 	public void deleteMetadata(Object obj) throws Exception {
 	    List<Metadata> list= getMetadata(obj);
@@ -1732,7 +1773,7 @@ public class ExtEditor extends RepositoryManager {
 
     public static class JsContext {
 	private StringBuilder msg = new StringBuilder();
-	private List<EntryWrapper> changedEntries = new ArrayList<EntryWrapper>();	
+	private HashSet<EntryWrapper> processedEntries = new HashSet<EntryWrapper>();
 	private EntryVisitor visitor;
 	private boolean confirm;
 	private boolean okToRun = true;
@@ -1742,6 +1783,14 @@ public class ExtEditor extends RepositoryManager {
 	public JsContext(EntryVisitor visitor, boolean confirm) {
 	    this.visitor= visitor;
 	    this.confirm = confirm;
+	}
+
+	public void entryProcessed(EntryWrapper wrapper) {
+	    processedEntries.add(wrapper);
+	}
+
+	public void entryProcessed(List<EntryWrapper> wrappers) {
+	    processedEntries.addAll(wrappers);
 	}
 
 	public void pause(int seconds) {
