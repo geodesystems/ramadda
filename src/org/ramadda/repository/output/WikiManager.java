@@ -1836,7 +1836,8 @@ public class WikiManager extends RepositoryManager
                           "" + getProperty(wikiUtil, props, ATTR_SHOWTITLE,
                                            false));
             boolean details = getProperty(wikiUtil, props, ATTR_DETAILS,
-                                          false);
+					  getProperty(wikiUtil, props, "showDetails",
+						      false));
             boolean showResource = getProperty(wikiUtil, props,
 					       "showResource", true);
 	    String macros = getProperty(wikiUtil,props,"macros",null);
@@ -6111,7 +6112,8 @@ public class WikiManager extends RepositoryManager
 	}
 
 	if ((prefix.length() > 0) || showRoot) {
-	    HU.open(sb, "li");
+	    String corpus = entry.getTypeHandler().getType();
+	    HU.open(sb, "li",HU.attrs("class","search-component","data-corpus",corpus));
             String label = Utils.clipTo(getEntryManager().getEntryDisplayName(entry),labelWidth,"...");
 	    if(showIcon)
 		label = getPageHandler().getEntryIconImage(request, entry) + HU.SPACE + label;
@@ -6119,6 +6121,7 @@ public class WikiManager extends RepositoryManager
 	    if(addPrefix) link = prefix +" " + link;
 	    if(asMenu) link = HU.div(link);
             sb.append(link);
+	    HU.close(sb, "li");
 	    if(top && showRoot) sb.append("<ul>");
 	    sb.append("\n");
         }
@@ -8214,12 +8217,14 @@ public class WikiManager extends RepositoryManager
 		    if(stringDefined(props)) tag+=" " + props;
 		    tag+="}}";
 		    tag =  Utils.encodeBase64(tag,true);
-		    String js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
-			+ "," + HU.squote(tag) + ",'');";
-		    HU.div(fromTypeBuff,HU.href(js, macro.getLabel()+" - macro"),"");
+		    String js;
 		    js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
 			+ "," + HU.squote(Utils.encodeBase64(macro.getWikiText(),true)) + ",'');";
 		    HU.div(fromTypeBuff,HU.href(js, macro.getLabel()+" - text"),"");
+		    js = "javascript:WikiUtil.insertTags(" + HU.squote(textAreaId)
+			+ "," + HU.squote(tag) + ",'');";
+		    HU.div(fromTypeBuff,HU.href(js, macro.getLabel()+" - macro"),"");
+
 		}
 	    }
 
