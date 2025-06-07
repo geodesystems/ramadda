@@ -11,6 +11,7 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.geo.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JsonUtil;
 
@@ -56,6 +57,9 @@ import java.util.regex.Pattern;
  */
 public class CoreApiHandler extends RepositoryManager implements RequestHandler {
 
+    public static final GeoUtils GU = null;
+
+    
     public CoreApiHandler(Repository repository) throws Exception {
         super(repository);
     }
@@ -269,7 +273,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	    Element root = getRoot(child);
 	    List depths = XU.findChildren(root,"depth");
-	    double mmPerPixel  = entry.getDoubleValue(request,"resolution",Double.NaN);
+	    double resolution  = entry.getDoubleValue(request,"resolution",Double.NaN);
 	    double lastDepth = entry.getDoubleValue(request,"top_depth",Double.NaN);
 	    int lastPixel = 0;
 	    for (int depthIdx = 0; depthIdx < depths.size(); depthIdx++) {
@@ -290,10 +294,10 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			Element areaNode = (Element) areas.get(areaIdx);
 			int aposition = XU.getAttribute(areaNode,"position",-1);
 			if(aposition>=0) {
-			    double d1=XU.getAttribute(areaNode,"depth",Double.NaN);
+			    double d1=convertPrediktera(resolution, XU.getAttribute(areaNode,"depth",Double.NaN));
 			    String label = "";
 			    if(!Double.isNaN(d1)) {
-				label  =Utils.decimals(d1/1000,2)+"";
+				label  =Utils.decimals(d1,2)+"";
 			    }
 			    lastDepth=d1;
 			    lastPixel = aposition;
@@ -303,6 +307,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 				x = imageWidth-linePosition+depthWidth2;
 				y = aposition;
 			    }
+			    System.err.println("marker:" + GU.metersToFeet(d1));
 			    lineDepth=d1;
 			    lineDepthPixel=x;
 			    Box box = new Box(label,x,y,5,10,d1,d1);
@@ -314,20 +319,23 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    int start = XU.getAttribute(areaNode,"start",-1);
 			    int end = XU.getAttribute(areaNode,"end",-1);			
 			    if(start<0 || end<0) continue;
-			    double d1=lastDepth+(start-lastPixel)*mmPerPixel;
-			    double d2=d1+(end-start)*mmPerPixel;
-			    /*
-			    System.err.println("start:" + start+ " end:" + end +
-					       " last depth:" + Utils.decimals(lastDepth/1000,2) +
-					       " depth:" + Utils.decimals(d1/1000,2) +" - " + Utils.decimals(d2/1000,2));
+			    double d1=lastDepth+GU.mmToMeters((start-lastPixel)*resolution);
+			    double d2=d1+GU.mmToMeters((end-start)*resolution);
+			    /*			    System.err.println("start:" + start+ " end:" + end +
+					       " last depth:" + Utils.decimals(GU.metersToFeet(GU.mmToMeters(lastDepth)),2) +
+					       " depth:" + Utils.decimals(GU.metersToFeet(GU.mmToMeters(d1)),2) +" - " +
+					       Utils.decimals(GU.metersToFeet(GU.mmToMeters(d2)),2));
 			    */
 			    lastPixel=end;
 			    lastDepth=d2;
 			    
 			    //			    d1 =d2 = Double.NaN;
-			    d1=d1/1000;
-			    d2 = d2/1000;
-			    //			    System.err.println(start+ " " + end +" " + d1 +" " + d2);
+			    //			    d1=GU.mmToMeters(d1);
+			    //			    d2 = GU.mmToMeters(d2);
+			    System.err.println("box:" + GU.metersToFeet(d1) +" " +
+					       GU.metersToFeet(d2));
+			    //			    System.err.println(start+ " " + end +" " + GU.metersToFeet(d1) +" " +
+			    //					       GU.metersToFeet(d2));
 			    String type = XU.getAttribute(areaNode,"type","");
 			    double x=start;
 			    double y =linePosition-depthWidth2;
@@ -426,11 +434,16 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	}	
     }
 	
+    private double convertPrediktera(double resolution, double v) {
+	//mm/pixel * pixel = mm
+	return  GU.mmToMeters(resolution*v);
+    }
 
     public void processCoreboxPrediktera(Request request, Entry entry, Entry corebox) throws Exception {
 	boolean changed = false;
 	double min= Double.NaN;
 	double max= Double.NaN;	
+	double resolution = Double.NaN;
 	Element root = getRoot(corebox);
 	Element settings =  XU.findChild(root,"settings");
 	if(settings !=null) {
@@ -445,13 +458,6 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    }
 	}
 
-	System.err.println("min/max:" + min +" " + max); 
-	if(!Double.isNaN(min)){
-	    entry.setValue("top_depth",new Double(min/1000));
-	    entry.setValue("bottom_depth",new Double(max/1000));	    
-	    changed = true;
-	}
-
 	Element metadata =  XU.findChild(root,"metadata");	
 	if(metadata!=null) {
 	    List data = XU.findChildren(metadata,"data");
@@ -461,15 +467,24 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 		String value = XU.getChildText(dataNode);
 		if(Utils.stringDefined(name) && Utils.stringDefined(value)) {
 		    if(name.equals("Resolution")) {
-			double d = Double.parseDouble(value);
-			entry.setValue("resolution",new Double(d));
+			resolution = Double.parseDouble(value);
+			entry.setValue("resolution",new Double(resolution));
 		    }
 		    getMetadataManager().addMetadata(request,entry, "property",true,name,value);
 		    changed = true;
 		}
 	    }
-
 	}
+
+	if(!Double.isNaN(min) && !Double.isNaN(resolution)){
+	    min = convertPrediktera(resolution,min);
+	    max = convertPrediktera(resolution,max);
+	    entry.setValue("top_depth",new Double(min));
+	    entry.setValue("bottom_depth",new Double(max));	    
+	    System.err.println("top:" + min  +" bottom:" + max);
+	    changed = true;
+	}
+
 
 	if(changed) {
 	    entry.setMetadataChanged(true);
@@ -524,7 +539,7 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 	    if(Double.isNaN(max) || bottom>max) max=bottom;		
 	}
 	//The json is in millimeters. the boxes are in meters
-	return new double[]{min/1000,max/1000};
+	return new double[]{GU.mmToMeters(min),GU.mmToMeters(max)};
     }
 
     public static class Box {
