@@ -526,8 +526,13 @@ useAttachmentIfNeeded=true
   <filename_metadata pattern="^[^_]+_(\d\d\d\d)" column="date"/>  
   <filename_metadata pattern="^[^_]+_\d\d\d\d_([^\.]+)\." metadata_type="geo_site"/>
   <filename_metadata pattern="(?i)(B[\d+]+)\." metadata_type="geo_box_number"/>
-  <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true" />
-  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true" />
+  <column name="top_depth" type="double" label="Top Depth" showinhtml="true" doinlineedit="true"
+	  suffix="meters"
+	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"/>
+  <column name="bottom_depth" type="double" label="Bottom Depth" showinhtml="true" doinlineedit="true"
+	  suffix="meters"
+	  htmltemplate="${value unit=meters} ${value decimals=3 showMissing=false prefix=&quot;(&quot; suffix=&quot; feet) &quot; scale=3.28084}"	  
+/>
   <column name="resolution" type="double"
 	  label="Resolution" default="NaN" showinhtml="true" showempty="false"/>  
   <column name="do_rotation" type="boolean" label="Do Rotation" showinhtml="true" doinlineedit="true" default="false"/>         
