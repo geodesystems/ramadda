@@ -897,7 +897,10 @@ public class ExtEditor extends RepositoryManager {
 		    "<span>entry.listMetadata('type','match value')</span>\n" +
 		    "<span>entry.addMetadata('type','value1','value 2')</span>\n" +
 		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.changeMetadata(metadataObject,'pattern','with')</span>\n" +		    		    
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.setMetadataPermission(metadataObject,\"admin\")</span>\n" +		    		    
 		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.deleteMetadata(metadataObject)</span>\n" +		    		    
+		    HU.href(getRepository().getUrlPath("/metadata/types.html"),"List metadata types",HU.attrs("target","_types")) +
+
 		    "</div>";
 
 		String image = 		    divOpen +
@@ -1560,6 +1563,17 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	}
 
+	public void setMetadataPermission(Object object,String to) throws Exception {
+	    List<Metadata> list =  getMetadata(object);
+	    if(list==null || list.size()==0) return;
+	    for(Metadata mtd:list) {
+		changed = true;
+		mtd.setAccess(to);
+		entry.setMetadataChanged(true);
+		ctx.print("Entry:" + entry.getName() +" changed metadata permissions");
+	    }
+	}
+	
 	public void addLLMMetadata(String type,String prompt,boolean...check)  throws Exception {
 	    try {
 		Column column = entry.getTypeHandler().getColumn(type);
