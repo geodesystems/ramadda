@@ -923,9 +923,7 @@ public class IO {
                 return getInputStream(new URL(newUrl), tries + 1);
             }
             if ( !("" + response).substring(0, 1).equals("2")) {
-                System.err.println("Error reading URL:" + url
-                                   + " Error code:" + response + " "
-                                   + huc.getResponseMessage());
+		//                System.err.println("Error reading URL:" + url                                   + " Error code:" + response + " "                                   + huc.getResponseMessage());
 
                 throw new IOException("Error code:" + response + " "
                                       + huc.getResponseMessage());
