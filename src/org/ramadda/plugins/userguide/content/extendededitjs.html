@@ -1,0 +1,263 @@
+[ht::head {Extended Edit - Javascript}]
+
+<%nochildlist%>
+:navtop
+
++callout-info
+You can process entries with Javascript through the Edit-&gt;Extended Edit -&gt; Process with Javascript form.
+This enables you to do complex changes across an entire tree of entries.
+-callout
+
+
+
+:heading Processing
++callout-warning
+Note: This facility has the potential to change a large number of entries and their properties.
+When processing make sure you test your code by checking off the  "Save changes to entries" checkbox.
+-callout
+
+The Javascript form allows you to select which entries to process -
+<ul>
+<li> The initial entry
+<li> The children of the initial entry 
+<li> All of the descendents entries
+<li> You can also specify that only entries of a certain type are processed
+</ul>
+
+
+
+:p
+The tabs on the right are code snippets that, when clicked on, are added to the Javascript form.
+When processing there is always a current "entry" variable whose state can be accessed and changed.
+[ht::screenshot images/extedit_js.png]
+
+
+The Javascript code with if/else, looping etc.
+The ctx object is the context of the call and allows you to
+print a message when running, to pause for a given time, to stop
+processing or to cancel the processing.
+The ctx functions are listed under the Control tab. 
+e.g.:
++pre addCopy=true
+if(entry.getName()=='') {	
+     entry.setName('This entry has no name');
+} else {
+    ctx.print('entry has a name:',entry);
+}
+-pre
+
+
+
+:heading  Basic Commands
+These commands allow you to access and/or set the name, description, dates and location
+of the entry.
+For example, you can check if the name matches a certain pattern and then set the name
+to something else:
+
++pre addCopy=true
+if (entry.getName().matches('.*Mining Issues.*')) {
+    entry.setName('Some text:' + entry.getName());
+    ctx.print('Processing: ' + entry.getName());
+}
+-pre
+
+The entry.getChildren() returns a list of the entry's children entries. This list can then be
+iterated on:
++pre addCopy=true
+var children = entry.getChildren();
+for(var i=0;i&lt;children.size();i++) {
+     var child = children.get(i);
+     ctx.print("Child:" + child.getName());
+}
+-pre
+
+The entry.getChildren() function can also have a number of arguments. To access children entries of
+a certain type do by passing in "type:&lt;some entry type&gt;"
+where "some entry type" is the entry types identifiers that are listed on the 
+<a target=_listing href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
++pre addCopy=true
+var children = entry.getChildren('type:some entry type');
+-pre
+
+For example if you wanted to select only Archive Items do:
++pre addCopy=true
+var children = entry.getChildren('type:type_archive_item');
+-pre
+
+
+
+The children can be sorted with
++pre addCopy=true
+var children = entry.getChildren('sort:some sort field');
+-pre
+
+Where "some sort field" can be one of:
+-pre
+name
+date
+fromdate
+todate
+changedate
+size
+type
+entryorder
+number
+-pre
+
+e.g.:
++pre addCopy=true
+var children = entry.getChildren('sort:name');
+-pre
+
+The sort order can be specified by appending an "_up" or "_down":
+e.g.:
++pre addCopy=true
+var children = entry.getChildren('sort:name_up');
+var children = entry.getChildren('sort:name_down');
+-pre
+
+You can specify a child entry type and a sort order with:
++pre addCopy=true
+var children = entry.getChildren('type:stype_archive_item','sort:name');
+-pre
+
+
+:heading Metadata Commands
+These commands allow you to access the columns of an entry and the attached metadata properties.
+When accessing the columns you need to have the column ID which can be viewed through the
+<a target=_listing href="{{root}}/entry/types.html">{{root}}/entry/types.html</a> page.
+:p
+For example, here we are accessing a column value "size" and setting it if it is 0.
+
++pre addCopy=true
+var size = entry.getColumnValue('size');
+if(size!=0) return;
+size=22;
+entry.setColumnValue('size',size);
+ctx.print(entry.getName() +" size:" + size);
+-pre
+
+
+Here we check if the entry has metadata of a certain type.
+You can always list the available metadata types at - 
+<a target=_listing href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>
+
++pre addCopy=true
+if(entry.hasMetadata('archive_note')) {
+     ctx.print('Has metadata: '+ entry.getName());
+}
+-pre
+
+Here we check if the entry has metadata of a certain type that also has
+a value of "History" for its first element.
+
++pre addCopy=true
+if(entry.hasMetadata('archive_note','History')) {
+     ctx.print('Has metadata: '+ entry.getName());
+}
+-pre
+
+Here we are accessing the list of archive_note metadata with first value of "History"
+
++pre addCopy=true
+var list = entry.findMetadata('archive_note','History');
+ctx.print('Metadata count: '+ entry.getName() +' ' + list.size());
+-pre
+
+
+Here we are finding the list of metadata and deleting the elements.
+
++callout-warning
+As noted this will delete the metadata so it is best to click off the
+"Save changes to entries" checkbox first then evaluate the script to
+ensure it is doing what you intend
+-callout
+
++pre addCopy=true
+var list = entry.findMetadata('archive_note','History');
+//Be careful because this will actually delete the metadata 
+//if the Save changes to entries is checked
+entry.deleteMetadata(list);
+-pre
+
+
+The permissions associated with a metadata element can be set, e.g.:
++pre addCopy=true
+var list = entry.findMetadata('archive_note');
+entry.setMetadataPermission(list,"admin")
+-pre
+
+
+
+:heading Image Commands
+The image commands allow you to apply operations on the image (scale and grayscale)
+as well as generate a thumbnail image if one does not exist.
+
++pre addCopy=true
+//Make a thumbnail and delete the existing one
+if(entry.isImage()) {
+     entry.makeThumbnail(true);
+}
+-pre
+
+
+:heading LLM Commands
+If you have an LLM AI API configured (e.g., ChatGPT, Google Gemini, Anthropic Claude)
+you can use the following Extended Edit Javascript commands:
+
++pre addCopy=true
+  entry.addLLMMetadata('metadata_type','prompt',check_if_exists)
+-pre
+
+<b> metadata_type:</b>
+The metadata type can be found by going to the Add Properties, looking for the type
+and looking at the form URL for metadata_type="the type"
+:p
+
+<b>prompt:</b> The prompt has to be crafted to tell the LLM  to only return the text
+that you desire for the metadata element.
+If there are multiple metadata elements specify that they should be separated by a semi-colon.
+You have to be stern sometimes. Something to the effect:
+
++pre
+Extract no more than three keywords from the document. 
+Only return the keywords in your response. Do not return anything else except the keyword.
+If there are multiple keywords then they must be separated by a semi-colon ;
+-pre
+
+A good way of figuring out the prompt to use is to use the Document Chat facility on the
+entry. Go to the Entry Popup Menu and choose "Document Chat". This is an interactive facility
+where you can try out the prompt and see the result. Once you have a prompt that gives an
+acceptable result 
+:p
+<b>check_if_exists:</b> true or false. If true check if there already is a 
+metadata on the entry. If there is do not add a new one.
+:p
+For example there is a metadata type "tribe_name". The below call extracts the  tribe name from
+the document
+
++pre addCopy=true
+entry.addLLMMetadata('tribe_name',
+'Extract the native american tribe names that are mentioned by  the document. Only return the tribe names in your response. Do not return anything else except the names. If there are multiple names  then they must be separated by a semi-colon ;',true)
+-pre
+
+
+:heading2 Using LLM to add location
+If you have an LLM AI API configured (e.g., ChatGPT, Google Gemini, Anthropic Claude)
+you can extract the geographic location (lat/lon) from a document with the command:
+
++pre addCopy=true
+entry.addLLMGeo('')
+-pre
+
+The default prompt if one is not given is:
++pre 
+Give the latitude and longitude of the area that this document describes.
+Just give the 2 numbers, nothing else. Give it in the form
+&lt;latitude&gt;,&lt;longitude&gt;
+-pre
+
+
+
+
+[ht::foot]
