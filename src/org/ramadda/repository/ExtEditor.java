@@ -891,13 +891,11 @@ public class ExtEditor extends RepositoryManager {
 		    divOpen +
 		    "<span>entry.setColumnValue('name',value)</span>\n" +
 		    "<span>entry.getColumnValue('column_name')</span>\n" +
-		    "<span>entry.hasMetadata('type','opt value1','opt value2')</span>\n" +
-		    "<span>entry.findMetadata('type','optional value1','opt v2')</span>\n" +
-		    "<span>entry.listMetadata('type','match value')</span>\n" +
+		    "<span>entry.getMetadata('type','optional value1','opt v2')</span>\n" +
 		    "<span>entry.addMetadata('type','value1','value 2')</span>\n" +
-		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.changeMetadata(metadataObject,'pattern','with')</span>\n" +		    		    
-		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.setMetadataPermission(metadataObject,\"admin\")</span>\n" +		    		    
-		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.findMetadata(...)\n'>entry.deleteMetadata(metadataObject)</span>\n" +		    		    
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.changeMetadata(metadataObject,'pattern','with')</span>\n" +		    		    
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.setMetadataPermission(metadataObject,\"admin\")</span>\n" +		    		    
+		    "<span data-copy-prefix='//metadataObject is either a string metadata type or use entry.getMetadata(...)\n'>entry.deleteMetadata(metadataObject)</span>\n" +		    		    
 		    HU.href(getRepository().getUrlPath("/metadata/types.html"),"List metadata types",HU.attrs("target","_types")) +
 
 		    "</div>";
@@ -1369,7 +1367,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 
-	private List<Metadata> getMetadata(Object obj) throws Exception {
+	private List<Metadata> getMetadataList(Object obj) throws Exception {
 	    List<Metadata> list=null;
 	    if(obj instanceof String) {
 		list = repository.getMetadataManager().findMetadata(request,  entry,(String)obj,false);
@@ -1397,7 +1395,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void deleteMetadata(Object obj) throws Exception {
-	    List<Metadata> list= getMetadata(obj);
+	    List<Metadata> list= getMetadataList(obj);
 	    if(list.size()==0) return;
 	    if(!confirmed) {
 		int cnt = 1;
@@ -1415,14 +1413,17 @@ public class ExtEditor extends RepositoryManager {
 	    //	    entry.setMetadataChanged(true);
 	}
 
-	public List<Metadata> findMetadata(String type,String...values) throws Exception {
+	public List<Metadata> getMetadata(String...values) throws Exception {
+	    String type = values.length>0?values[0]:null;
 	    List<Metadata> source =   repository.getMetadataManager().findMetadata(request,  entry,type,false);
-	    if(values.length==0) return source;
+	    System.err.println("type:"  +type +" mtd:" + source);
+
+	    if(values.length<=1) return source;
 	    List<Metadata> dest = new ArrayList<Metadata>();
 	    for(Metadata metadata: source) {
 		boolean ok = true;
-		for(int i=0;i<values.length;i++) {
-		    String v = metadata.getAttr(i+1);
+		for(int i=1;i<values.length;i++) {
+		    String v = metadata.getAttr(i);
 		    if(!Misc.equals(v,values[i])) {
 			ok = false;
 			break;
@@ -1503,14 +1504,6 @@ public class ExtEditor extends RepositoryManager {
 	    repository.getSearchManager().entriesModified(request, entries);
 	}
 
-	public boolean hasMetadata(String type,String...values) throws Exception {
-	    //	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
-	    List<Metadata> list = findMetadata(type,values);
-	    if(list==null || list.size()==0) {
-		return false;
-	    }
-	    return true;
-	}
 
 	public boolean matchMetadata(String match,String value) throws Exception {
 	    boolean regexp = StringUtil.containsRegExp(match);
@@ -1527,28 +1520,10 @@ public class ExtEditor extends RepositoryManager {
 	    changed=true;
 	}
 
-	public void listMetadata(String type,String match) throws Exception {
-	    List<Metadata> list = repository.getMetadataManager().findMetadata(request,  entry,type,false);
-	    boolean regexp = StringUtil.containsRegExp(match);
-	    String _match = match.toLowerCase();
-	    if(list!=null && list.size()>0) {
-		for(Metadata mtd:list) {
-		    if(Utils.stringDefined(match)) {
-			if(regexp) {
-			    if(mtd.getAttr1().matches(match)) 
-				continue;
-			} else {
-			    if(mtd.getAttr1().toLowerCase().indexOf(_match)<0)
-				continue;
-			}
-		    }
-		    ctx.print("Entry:" + entry.getName() +" metadata:" + mtd.getAttr1());
-		}
-	    }
-	}
+
 
 	public void changeMetadata(Object object,String from, String to) throws Exception {
-	    List<Metadata> list =  getMetadata(object);
+	    List<Metadata> list =  getMetadataList(object);
 	    if(list==null || list.size()==0) return;
 	    for(Metadata mtd:list) {
 		String v= mtd.getAttr1();
@@ -1563,7 +1538,7 @@ public class ExtEditor extends RepositoryManager {
 	}
 
 	public void setMetadataPermission(Object object,String to) throws Exception {
-	    List<Metadata> list =  getMetadata(object);
+	    List<Metadata> list =  getMetadataList(object);
 	    if(list==null || list.size()==0) return;
 	    for(Metadata mtd:list) {
 		if(!confirmed) {
@@ -1859,11 +1834,20 @@ public class ExtEditor extends RepositoryManager {
 	    }
 	    if(msg instanceof Metadata) {
 		Metadata mtd = (Metadata)msg;
-		return  HU.italics(mtd.getAttr1());
+		MetadataType mtdType = mtd.getMetadataType();
+		List<MetadataElement> children = mtdType.getChildren();
+		String s = mtd.getAttr1();
+		if(children.size()>1) {
+		    String v = mtd.getAttr2();
+		    if(v.length()>30) v = v.substring(0,29)+"...";
+		    s+=" - " +v; 
+		}
+		return  HU.b(mtdType.getName())+": "+ HU.italics(s);
 	    }
 	    if(!(msg instanceof List)) return msg.toString();
 	    StringBuilder sb = new StringBuilder();
 	    List l = (List) msg;
+	    if(l.size()==0) sb.append("&lt;empty list&gt; ");
 	    for(Object o: l) {
 		sb.append(getString(o));
 		sb.append(" ");
