@@ -160,7 +160,7 @@ if(entry.hasMetadata('archive_note','History')) {
 Here we are accessing the list of archive_note metadata with first value of "History"
 
 +pre addCopy=true
-var list = entry.findMetadata('archive_note','History');
+var list = entry.getMetadata('archive_note','History');
 ctx.print('Metadata count: '+ entry.getName() +' ' + list.size());
 -pre
 
@@ -174,7 +174,7 @@ ensure it is doing what you intend
 -callout
 
 +pre addCopy=true
-var list = entry.findMetadata('archive_note','History');
+var list = entry.getMetadata('archive_note','History');
 //Be careful because this will actually delete the metadata 
 //if the Save changes to entries is checked
 entry.deleteMetadata(list);
@@ -183,14 +183,14 @@ entry.deleteMetadata(list);
 
 The permissions associated with a metadata element can be set, e.g.:
 +pre addCopy=true
-var list = entry.findMetadata('archive_note');
+var list = entry.getMetadata('archive_note');
 entry.setMetadataPermission(list,"admin")
 -pre
 
 
 
 :heading Image Commands
-The image commands allow you to apply operations on the image (scale and grayscale)
+The image commands allow you to apply operations on the image 
 as well as generate a thumbnail image if one does not exist.
 
 +pre addCopy=true
@@ -198,6 +198,12 @@ as well as generate a thumbnail image if one does not exist.
 if(entry.isImage()) {
      entry.makeThumbnail(true);
 }
+-pre
+
+You can resize the image or convert it to gray scale with:
++pre addCopy=true
+entry.resizeImage(400)
+entry.grayscaleImage()
 -pre
 
 
@@ -210,8 +216,8 @@ you can use the following Extended Edit Javascript commands:
 -pre
 
 <b> metadata_type:</b>
-The metadata type can be found by going to the Add Properties, looking for the type
-and looking at the form URL for metadata_type="the type"
+The metadata type can be found by viewing the
+<a target=_listing href="{{root}}/metadata/types.html">{{root}}/metadata/types.html</a>.
 :p
 
 <b>prompt:</b> The prompt has to be crafted to tell the LLM  to only return the text
