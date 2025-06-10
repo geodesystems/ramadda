@@ -5282,15 +5282,8 @@ RepositoryMap.prototype = {
     },
 
     showMarkerPopupInner:  function(marker, fromClick, simplePopup,markerText,inputProps) {
-	let html = markerText;
-	if(this.params.displayDiv) {
-	    this.showText(markerText);
-	    if(debugPopup) console.log("\thad displayDiv");
-	    return;
-	}
-
         if (fromClick && marker.locationKey != null) {
-            markers = this.seenMarkers[marker.locationKey];
+            let markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
 	    if(debugPopup)
 		console.log('showMarkerPopup: seenMarkers:', markers.length);
@@ -5310,6 +5303,14 @@ RepositoryMap.prototype = {
         }
 
 	
+	if(this.params.displayDiv) {
+	    this.showText(markerText);
+	    if(debugPopup) console.log("\thad displayDiv");
+	    return;
+	}
+
+
+
         // set marker text as the location
         let location = marker.location;
 
