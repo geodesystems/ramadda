@@ -197,14 +197,16 @@ public class GeoJson extends JsonUtil {
 
         JSONArray             features = readArray(obj, "features");
         LinkedHashSet<String> names    = new LinkedHashSet<String>();
-        for (int i = 0; i < features.length(); i++) {
-            JSONObject feature = features.getJSONObject(i);
-            JSONObject props   = feature.getJSONObject("properties");
-	    String[] nameList = JSONObject.getNames(props);
-	    if(nameList!=null) {
-		for (String name : nameList) {
-		    if ( !names.contains(name)) {
-			names.add(name);
+	if(features!=null) {
+	    for (int i = 0; i < features.length(); i++) {
+		JSONObject feature = features.getJSONObject(i);
+		JSONObject props   = feature.getJSONObject("properties");
+		String[] nameList = JSONObject.getNames(props);
+		if(nameList!=null) {
+		    for (String name : nameList) {
+			if ( !names.contains(name)) {
+			    names.add(name);
+			}
 		    }
 		}
 	    }
@@ -509,6 +511,7 @@ public class GeoJson extends JsonUtil {
     public static Bounds getBounds(JSONObject obj,List<String> names) throws Exception {
         Bounds bounds = null;
         JSONArray    features = readArray(obj, "features");
+	if(features==null) return bounds;
 	
         for (int i = 0; i < features.length(); i++) {
             JSONObject feature = features.getJSONObject(i);
@@ -1093,7 +1096,7 @@ public class GeoJson extends JsonUtil {
 		featureIdx=0;
                 return makeHeader();
             }
-            if (featureIdx >= features.length()) {
+            if (features==null || featureIdx >= features.length()) {
                 return null;
             }
             List<String>      values  = new ArrayList<String>();
