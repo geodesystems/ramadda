@@ -562,7 +562,7 @@ public class ExtEditor extends RepositoryManager {
 						    if(!haveReset) {
 							haveReset = true;
 						    }
-						    append("Updated entry:" + entry+"\n");
+						    append("Updated entry: " + holder[0].getString(entry)+"\n");
 						    incrementProcessedCnt(1);
 						    getEntryManager().updateEntry(request, entry);
 						}
@@ -702,7 +702,6 @@ public class ExtEditor extends RepositoryManager {
 	sb.append(prefix);
 	if(actionId!=null) {
 	    String url = getRepository().getUrlBase() +"/status?actionid=" + actionId +"&output=json";
-
 	    sb.append(HU.b("Results"));
 	    HU.div(sb,"",HU.attrs("class","ramadda-action-results", "id",actionId.toString()));
 	    if(canCancel) {
@@ -853,7 +852,7 @@ public class ExtEditor extends RepositoryManager {
 		opener.accept("Process with Javascript");
 		String saveCbx = request.addCheckbox(buff[0],ARG_EXTEDIT_JS_CONFIRM,"Save changes to entries",true);		
 		String space = HU.space(2);
-		String helpLink = HU.href(getRepository().getUrlBase()+"/userguide/extendededit.html#javascript","Help", "target=_help");
+		String helpLink = HU.href(getRepository().getUrlBase()+"/userguide/extendededitjs.html","Help", "target=_help");
 		buff[0].append(HU.submit("Apply Javascript",form) +space + saveCbx + space + helpLink);
 		buff[0].append(HU.formTable());
 		String cbx = request.addCheckbox(buff[0],ARG_EXTEDIT_THISONE,"Apply to this entry",true);
@@ -952,7 +951,7 @@ public class ExtEditor extends RepositoryManager {
 		String ex =  (String) getSessionManager().getSessionProperty(request,"extedit");
 		if(ex==null)
 		    ex = "//Include any javascript here\n" +
-			"ctx.print('Processing: ' + entry.getName());\n";
+			"ctx.print('Processing:', entry);\n";
 		ex = request.getString(ARG_EXTEDIT_SOURCE, ex);
 		String exclude = "<br>"+HU.b("Exclude entries") +":<br>"+
 		    HU.textArea(ARG_EXTEDIT_EXCLUDE, request.getString(ARG_EXTEDIT_EXCLUDE,""),5,40,HU.attr("placeholder","entry ids, one per line"));
@@ -1402,14 +1401,14 @@ public class ExtEditor extends RepositoryManager {
 	    if(list.size()==0) return;
 	    if(!confirmed) {
 		int cnt = 1;
-		String msg = list.size() + " metadata items would be deleted: " + entry.getName();
+		String msg = list.size() + " metadata items would be deleted: " + ctx.getString(entry);
 		for(Metadata m:list)
 		    msg+=" #"+(cnt++)+" " + m.getAttr1();
 		ctx.print(msg);
 		return;
 	    }	    
 	    for(Metadata metadata: list) {
-		ctx.print("Metadata deleted:" + entry.getName() +" " + metadata.getAttr1());
+		ctx.print("Metadata deleted:" + ctx.getString(entry) +" " + metadata.getAttr1());
 		repository.getMetadataManager().deleteMetadata(entry, metadata);
 	    }
 	    //	    changed=true;
@@ -1567,10 +1566,19 @@ public class ExtEditor extends RepositoryManager {
 	    List<Metadata> list =  getMetadata(object);
 	    if(list==null || list.size()==0) return;
 	    for(Metadata mtd:list) {
+		if(!confirmed) {
+		    int cnt = 1;
+		    String msg =  ctx.getString(entry) + " would change " + list.size()+": ";
+		    for(Metadata m:list)
+			msg+=" #"+(cnt++)+" " + ctx.getString(m);
+		    ctx.print(msg);
+		    return;
+		}	    
+
 		changed = true;
 		mtd.setAccess(to);
 		entry.setMetadataChanged(true);
-		ctx.print("Entry:" + entry.getName() +" changed metadata permissions");
+		ctx.print("Entry: " + ctx.getString(entry) +" changed permissions: "+ctx.getString(mtd));
 	    }
 	}
 	
@@ -1677,6 +1685,12 @@ public class ExtEditor extends RepositoryManager {
 	public boolean getChanged() {
 	    return changed;
 	}
+
+	public boolean isType(String s) {
+	    return entry.getTypeHandler().isType(s);
+	}
+
+
 
 	public String getName() {
 	    return entry.getName();
@@ -1823,19 +1837,60 @@ public class ExtEditor extends RepositoryManager {
 	public Date getDate(String d) throws Exception {
 	    return Utils.parseDate(d);
 	}
-	public void print(Object msg) {
-	    visitor.append(msg+"\n");
+
+	public String getString(Object msg) throws Exception {
+	    Request request = visitor.getRequest();
+	    if(msg==null) return "null";
+	    if((msg instanceof EntryWrapper)) {
+		msg =((EntryWrapper) msg).entry;
+	    }
+	    if((msg instanceof Entry)) {
+		Entry e  = (Entry) msg;
+		String tt = "View type definition: " + e.getTypeHandler().getLabel();
+		String        entryIcon = HU.img(visitor.getRepository().getPageHandler().getIconUrl(request, e),
+						 "",  HU.attrs("title",tt,
+							       HU.ATTR_WIDTH,ICON_WIDTH));
+		String typeUrl=HU.href(visitor.getRepository().getUrlBase()+"/entry/types.html?type="+e.getTypeHandler().getType(),
+				       entryIcon,"target=_types");
+		return typeUrl+HU.space(1) +
+		    HU.href(visitor.getRepository().getEntryManager().getEntryURL(request, e),
+			       e.getName(),
+			       HU.attrs("target","_entry"));
+	    }
+	    if(msg instanceof Metadata) {
+		Metadata mtd = (Metadata)msg;
+		return  HU.italics(mtd.getAttr1());
+	    }
+	    if(!(msg instanceof List)) return msg.toString();
+	    StringBuilder sb = new StringBuilder();
+	    List l = (List) msg;
+	    for(Object o: l) {
+		sb.append(getString(o));
+		sb.append(" ");
+	    }
+	    return sb.toString();
 	}
 
-	public void warning(Object msg) {
-	    visitor.append(HU.div(msg==null?"null":msg.toString(),HU.cssClass("ramadda-action-result-warning")));
+	public void print(Object ...msgs) throws Exception {
+	    for(Object msg: msgs)
+		visitor.append(getString(msg)+" ");
+	    visitor.append("\n");
+	}
 
+	public void warning(Object ...msgs) throws Exception {
+	    StringBuilder sb = new StringBuilder();
+	    for(Object msg: msgs)
+		sb.append(HU.div(getString(msg)));
+	    visitor.append(HU.div(sb.toString(),HU.cssClass("ramadda-action-result-warning")));
 	}	
 
-	public void error(Object msg) {
-	    visitor.append(HU.div(msg==null?"null":msg.toString(),HU.cssClass("ramadda-action-result-error")));
-
+	public void error(Object ...msgs) throws Exception {
+	    StringBuilder sb = new StringBuilder();
+	    for(Object msg: msgs)
+		sb.append(HU.div(getString(msg)));
+	    visitor.append(HU.div(sb.toString(),HU.cssClass("ramadda-action-result-error")));
 	}	
+
 
 	public int log(int cnt,Object msg) {
 	    if((count++%cnt)==0) {
