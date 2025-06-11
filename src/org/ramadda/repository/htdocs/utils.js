@@ -3193,7 +3193,7 @@ var Utils =  {
 	let typeLink = 
 	    HU.link(RamaddaUtil.getUrl('/search/type'),
 		    HU.span([ATTR_TITLE, 'Go to type search form',
-			     ATTR_CLASS,CLASS_CLICKABLE],  /*HU.getIconImage('fa-solid fa-t')+' '+*/'Types'));
+			     ATTR_CLASS,CLASS_CLICKABLE],  'By Type'));
 
         let links =  HU.div([ATTR_ID, linksId,ATTR_STYLE,HU.css('text-align','right','font-size','12px')],
 			    formLink+HU.space(1)+'|'+HU.space(1)+typeLink);
