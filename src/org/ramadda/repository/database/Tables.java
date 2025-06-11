@@ -153,6 +153,33 @@ public abstract class Tables {
 
 
 
+    public static class ENTRY_HISTORY extends Tables {
+        public static final String NAME = "entry_history";
+
+        public String getName() {return NAME;}
+        public String getColumns() {return COLUMNS;}
+        public static final String COL_ID =  NAME + ".id";
+        public static final String COL_NODOT_ID =   "id";
+        public static final String COL_CONTENTS =  NAME + ".contents";
+        public static final String COL_NODOT_CONTENTS =   "contents";
+        public static final String COL_CHANGEDATE =  NAME + ".changedate";
+        public static final String COL_NODOT_CHANGEDATE =   "changedate";
+        public static final String COL_USER_ID =  NAME + ".user_id";
+        public static final String COL_NODOT_USER_ID =   "user_id";
+        public static final String COL_CHANGE =  NAME + ".change";
+        public static final String COL_NODOT_CHANGE =   "change";
+
+        public static final String[] ARRAY = new String[] {
+            COL_ID,COL_CONTENTS,COL_CHANGEDATE,COL_USER_ID,COL_CHANGE
+        };
+        public static final String COLUMNS = SqlUtil.comma(ARRAY);
+        public static final String NODOT_COLUMNS = SqlUtil.commaNoDot(ARRAY);
+        public static final String INSERT =SqlUtil.makeInsert(NAME, NODOT_COLUMNS,SqlUtil.getQuestionMarks(ARRAY.length));
+    public static final ENTRY_HISTORY table  = new  ENTRY_HISTORY();
+    }
+
+
+
     public static class ENTRY_ACTIVITY extends Tables {
        public static final String NAME = "entry_activity";
 

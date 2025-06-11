@@ -81,6 +81,16 @@ DROP INDEX ENTRIES_INDEX_DATATYPE ON ENTRIES;
 #endif
 
 
+CREATE TABLE entry_history (
+       id varchar(200),
+       contents  ramadda.bigclob,
+       changedate ramadda.datetime, 
+       user_id varchar(200),
+       change varchar(500));
+
+CREATE INDEX ENTRY_HISTORY_INDEX_ID ON entry_history (ID);
+
+
 --- We used to have an ancestors table but it was never used
 DROP TABLE ancestors;
 
