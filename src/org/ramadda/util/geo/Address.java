@@ -85,12 +85,18 @@ public class Address {
     public void decode(String s) {
 	List<String> toks = Utils.split(s,DELIM);
 	int i=0;
-        address=toks.get(i++);
-	city=toks.get(i++);
-	postalCode=toks.get(i++);
-	county=toks.get(i++);	
-	state=toks.get(i++);
-	country=toks.get(i++);
+	if(toks.size()>0)
+	    address=toks.get(i++);
+	if(toks.size()>1)
+	    city=toks.get(i++);
+	if(toks.size()>2)
+	    postalCode=toks.get(i++);
+	if(toks.size()>3)
+	    county=toks.get(i++);	
+	if(toks.size()>4)
+	    state=toks.get(i++);
+	if(toks.size()>5)
+	    country=toks.get(i++);
     }    
 
 
