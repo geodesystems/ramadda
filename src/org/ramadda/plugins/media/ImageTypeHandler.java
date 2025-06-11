@@ -52,9 +52,9 @@ public class ImageTypeHandler extends GenericTypeHandler {
 	sb.append("Width:");
 	sb.append(HU.space(1));
 	sb.append(HU.input(ARG_IMAGE_WIDTH,"600",HU.SIZE_5));
-	sb.append("<br>");
-        sb.append(HU.labeledCheckbox(ARG_STRIP_METADATA, "true", false,"Strip metadata"));
-	sb.append("<br>");
+	//	sb.append("<br>");
+	//        sb.append(HU.labeledCheckbox(ARG_STRIP_METADATA, "true", false,"Strip metadata"));
+	//	sb.append("<br>");
 	/*
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    sb.append(HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from image"));
