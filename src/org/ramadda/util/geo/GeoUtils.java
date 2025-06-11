@@ -402,6 +402,11 @@ public class GeoUtils {
 
 
 
+    public static boolean reverseGeocodeEnabled() {
+        return  (googleKey != null || hereKey != null || geocodeioKey != null);
+    }
+
+
 
     /**
      * _more_
@@ -1618,6 +1623,9 @@ public class GeoUtils {
         return  nameObject.getString("value");
     }
     
+
+
+
 
 
     private static boolean checkGoogleComponent(JSONObject obj, String type) {
