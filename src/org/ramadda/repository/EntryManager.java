@@ -38,6 +38,7 @@ import org.ramadda.util.IO;
 import org.ramadda.util.JsonUtil;
 import org.ramadda.util.NamedList;
 import org.ramadda.util.geo.GeoUtils;
+import org.ramadda.util.geo.Address;
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
@@ -2380,6 +2381,7 @@ public class EntryManager extends RepositoryManager {
             String urlArgument = request.getAnonymousEncodedString(ARG_URL,
 								   BLANK);
             boolean unzipArchive = false;
+
             boolean stripExif = request.get(ARG_STRIPEXIF,false);
             boolean isFile       = false;
             boolean hasZip = false;
@@ -2697,6 +2699,7 @@ public class EntryManager extends RepositoryManager {
                     initUploadedEntry(request, entry, info.parent);
                 }
 
+
                 setEntryState(request, entry, info.parent, newEntry);
                 entries.add(entry);
             }
@@ -2802,6 +2805,17 @@ public class EntryManager extends RepositoryManager {
                 } else if (request.get(ARG_METADATA_ADDSHORT, false)) {
                     addInitialMetadata(request, entries, newEntry, true);
                 }
+
+		boolean reverseGeocode = request.get(ARG_REVERSEGEOCODE,false);
+		if(reverseGeocode && entry.hasLocationDefined(request)) {
+		    double[] latlon = entry.getLocation(request);
+		    Address address = GeoUtils.getAddress(latlon[0],latlon[1]);
+		    if(address!=null) {
+			entry.setName(address.getCity() +" - " + address.getState());
+		    }
+		}
+		
+
             }
 
 	    List<String> tags = request.get(ARG_TAGS,new ArrayList<String>());

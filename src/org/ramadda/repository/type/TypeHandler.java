@@ -32,6 +32,7 @@ import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.GroupedBuffers;
+import org.ramadda.util.geo.GeoUtils;
 
 import org.ramadda.util.IO;
 import org.ramadda.util.JQuery;
@@ -4732,6 +4733,14 @@ public class TypeHandler extends RepositoryManager {
 					       "Strip metadata from images");
 
 	addExtra(extras,"Images:",images);
+
+	if(GeoUtils.reverseGeocodeEnabled()) {
+	    String geocode = HU.labeledCheckbox(ARG_REVERSEGEOCODE, "true",
+						request.get(ARG_REVERSEGEOCODE,false),
+						"Set name from location");
+	    addExtra(extras,"Geocode:",geocode);
+	}
+
 	if(getRepository().getSearchManager().isImageIndexingEnabled()) {
 	    String ocr = "";
 	    ocr += HU.labeledCheckbox(ARG_DOOCR, "true", false,"Extract text from images");
