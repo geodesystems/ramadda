@@ -213,7 +213,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (state.getEntry() != null) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_HTML));
             links.add(makeLink(request, state.getEntry(), OUTPUT_INFO));
-            if (entries.size() > 1) {
+            if (entries.size() >= 1) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_TABLE));
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_FRAMES));
