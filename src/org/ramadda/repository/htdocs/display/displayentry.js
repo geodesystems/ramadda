@@ -2788,7 +2788,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'placeholder'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true',tt:'Just search in the page'},
-	{p:'autoFocus',d:true,ex:'false',tt:'auto focus on the search input field'},	
+	{p:'autoFocus',d:false,ex:'false',tt:'auto focus on the search input field'},	
 	{p:'doTagSearch',ex:'true'},
 	{p:'tagShowGroup',d:true},
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
