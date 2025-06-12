@@ -688,7 +688,7 @@ public class PageHandler extends RepositoryManager {
 		String link = HU.href(_link.getUrl(),_link.getLabel());
 		link = link.replace("${tooltip}", Utils.getNonNull(_link.getTooltip(),"").toString());
 		//		link = link.replace("${extra}", "");
-		pageLinks.add("<span class='ramadda-page-link-simple'>" +link+"</span>");
+		pageLinks.add("<span class='ramadda-button ramadda-page-link-simple'>" +link+"</span>");
 	    }
 	}
 
@@ -699,7 +699,9 @@ public class PageHandler extends RepositoryManager {
 	if(extra.length()>0)
 	    pageLinks.add(wrapPageLink(extra.toString()));
 	pageLinks.add(wrapPageLink(HU.span("",HU.id("ramadda_links_suffix"))));
-        menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
+	//        menuHtml = HU.span(Utils.join(pageLinks,""),HU.clazz("ramadda-user-menu"));
+        menuHtml = HU.table(HU.row(HU.tds(pageLinks,HU.cssClass(""))),HU.clazz("ramadda-user-menu"));
+	
 
         String[] macros = new String[] {
 	    MACRO_PAGEHEADER,pageHeader,
@@ -1580,7 +1582,6 @@ public class PageHandler extends RepositoryManager {
         if (user.getAnonymous()) {
             if (getUserManager().canDoLogin(request)) {
                 String url;
-
                 String path = request.getRequestPath();
                 //If it was  a post or  if this was a user access request 
                 //then don't include the redirect back to this page
@@ -1596,10 +1597,10 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 _links.add(new Link(url,  "",
-				    HU.faIcon("fa-sign-in-alt") + " " + msg("Login"),"Login"));
+				    HU.faIcon("fa-sign-in-alt") + " " + msg("Sign in"),"Sign in"));
 		if(getUserManager().isRegistrationEnabled()) {
 		    _links.add(new Link(getRepository().getUrlPath("/user/register"),"",
-					HU.faIcon("fas fa-user-plus") + " " + msg("Register")));
+					/*HU.faIcon("fas fa-user-plus") + " " +*/ msg("Register")));
 		}
             }
         } else {
