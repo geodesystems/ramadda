@@ -1157,6 +1157,17 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     
+
+    public static String tds(List content,String...attrs) {
+	StringBuilder sb = new StringBuilder();
+	String a = attrs.length>0?attrs[0]:"";
+	for(Object c:content) {
+	    sb.append(td(c.toString(), a));
+	    sb.append("\n");
+	}
+	return sb.toString();
+    }
+
     public static String td(String content) {
         return td(content, "");
     }
