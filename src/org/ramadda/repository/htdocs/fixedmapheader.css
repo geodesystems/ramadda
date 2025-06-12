@@ -1,5 +1,5 @@
 :root {
-    --header-height:60px;
+    --header-height:80px;
 }
 
 .ramadda-header {
@@ -45,18 +45,16 @@
 }
 .ramadda-header-fixedtitle a {
     text-decoration:none;
-    font-weight:bold;
-    font-size:120%
+    font-size:200%
 
 }
 .ramadda-header-fixedtitle  {
-    position:absolute;top:1px;left:120px;xtransform: translateX(-50%);
-    font-size:80%;
+    position:absolute;top:4px;left:50%;transform: translateX(-50%);
 }
 
 .ramadda-pageheader {
     position:absolute;
-    top:1px;
+    top:4px;
     right:8px;
     font-size:80%;
 }
@@ -66,13 +64,13 @@
 .ramadda-logo-image {
     height:50px;
 }
-/* the margin  should be a little more than the height of the logo image */
+
 .ramadda-outercontents {
-    padding-top:60px;
+    padding-top:var(--header-height);
 }
 
 .ramadda-system-message {
-    padding-top:60px;
+    padding-top:var(--header-height);
 }
 
 /* this is for the left side navigation */

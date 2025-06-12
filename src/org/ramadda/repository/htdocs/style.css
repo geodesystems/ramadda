@@ -4298,8 +4298,11 @@ label {
     border-bottom : var(--basic-border);
     position:relative;
 }
+
+
 .ramadda-user-menu {
     margin-right:0px;
+    margin-top:4px;
 }
 
 .ramadda-user-profile {
@@ -4609,12 +4612,26 @@ td .ramadda-role {
     padding-left:5px;
     padding-right:5px;
     display:inline-block;
-    display: table-cell;
     vertical-align: middle;
 }
 
 .ramadda-page-link:hover {
     transform: scale(1.25);
+}
+
+
+.ramadda-button.ramadda-page-link-simple  i {
+    color:#aaa;
+}
+
+
+.ramadda-button.ramadda-page-link-simple {
+    margin-left:4px;
+    margin-right:4px;
+    margin-top:4px;
+    margin-top:4px;
+    margin-bottom:4px;        
+    display:block;
 }
 
 .ramadda-user-menu-image {
