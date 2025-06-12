@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Tue Jun 10 08:52:03 PDT 2025";
+var build_date="RAMADDA build date: Thu Jun 12 05:51:04 PDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -36409,7 +36409,7 @@ function RamaddaSimplesearchDisplay(displayManager, id, properties) {
 	{p:'placeholder'},
 	{p:'searchEntryType',ex:'',tt:'Constrain search to entries of this type'},		
 	{p:'doPageSearch',ex:'true',tt:'Just search in the page'},
-	{p:'autoFocus',d:true,ex:'false',tt:'auto focus on the search input field'},	
+	{p:'autoFocus',d:false,ex:'false',tt:'auto focus on the search input field'},	
 	{p:'doTagSearch',ex:'true'},
 	{p:'tagShowGroup',d:true},
 	{p:'tagSearchLimit',tt:'Show the inline search box for tags when the #tags exceeds the limit',d:15},
@@ -39573,6 +39573,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelFontFamily',ex:'\'Open Sans\', Helvetica Neue, Arial, Helvetica, sans-serif'},
 	{p:'labelFontWeight',ex:'plain'},
 	{p:'labelBackground',ex:'green'},
+	{p:'labelStrokeColor',ex:'#000'},
+	{p:'labelStrokeWidth',d:1},
 	{p:'labelAlign',ex:'l|c|r t|m|b'},
 	{p:'labelXOffset',ex:'0'},
 	{p:'labelYOffset',ex:'0'},
@@ -43864,9 +43866,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    if(labelKeyField) labelTemplate= "${_key}";
 	    labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
 	    let labelStyle = {
-		//xlabel : labelTemplate,
                 fontColor: this.getProperty("labelFontColor","#000"),
 		textBackgroundFillColor:this.getLabelBackground(),
+		textBackgroundStrokeColor:this.getLabelStrokeColor(),
+		textBackgroundStrokeWidth:this.getLabelStrokeWidth(),				
                 fontSize: this.getProperty("labelFontSize","10pt"),
                 fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
                 fontWeight: this.getProperty("labelFontWeight","plain"),
