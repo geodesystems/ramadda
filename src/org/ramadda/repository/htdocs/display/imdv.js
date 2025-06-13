@@ -2409,7 +2409,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    }
 		    inner = inner.replace(dr,"");
 		    inner = inner.replace(/,\s*\}/,"}");
-		    inner = inner.replace(/,\s+,/,"");		    
+		    inner = inner.replace(/,\s*,/,"");		    
 		    try {
 			attrs = JSON.parse(inner);
 			if(ff && !attrs.filterFields) attrs.filterFields=ff[1];
