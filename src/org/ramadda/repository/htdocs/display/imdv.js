@@ -3143,7 +3143,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 			attrs+=key+"="+ displayAttrs[key]+"\n";
 		    }
 		});
-		let textarea = HU.textarea("",attrs,[ATTR_ID,this.domId('displayattrs'),"rows",10,"cols", 60]);
+		let textarea = HU.textarea("",attrs,[ATTR_ID,this.domId('displayattrs'),"rows",15,"cols", 60]);
 		content.push({header:"Display Properties", contents: HU.hbox([textarea, menuBar])});
 	    }// else {
 		let r =  this.makeStyleForm(style,mapGlyph);
