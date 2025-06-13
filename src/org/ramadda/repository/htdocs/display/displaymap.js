@@ -1133,9 +1133,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelYOffset',ex:'0'},
 	{p:'labelOutlineColor',ex:'#fff'},
 	{p:'labelOutlineWidth',ex:'0'},
-
-
-
+	{p:'labelDeclutterPadding',d:1},
+	{p:'labelDeclutterGranularity',d:1},
+	{p:'labelDeclutterPixelsPerLine'},
+	{p:'labelDeclutterPixelsPerCharacter'},
 	{label:'Map Glyphs'},
 	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars',canCache:true},
 	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
