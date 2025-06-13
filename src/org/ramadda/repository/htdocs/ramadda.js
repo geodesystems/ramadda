@@ -170,7 +170,7 @@ var Ramadda = RamaddaUtils = RamaddaUtil  = {
             }
             let keycode = (event.keyCode ? event.keyCode : event.which);
             if(keycode == 13) {
-                let searchLink =  ramaddaBaseUrl + "/search/do?text=" + encodeURIComponent(value) +"&output=json";
+                let searchLink =  ramaddaBaseUrl + "/search/do?orderby=createdate&ascending=false&text=" + encodeURIComponent(value) +"&output=json";
 		if(Utils.stringDefined(entryType)) searchLink=HU.url(searchLink,["type",entryType]);
                 results.html(HU.getIconImage(icon_wait) + " Searching...");
                 results.show();
