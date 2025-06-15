@@ -48,7 +48,7 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
     private static String productCodes;
 
     @Override
-    public Object getWikiProperty(Request request,Entry entry, String id)  {
+    public Object getWikiProperty(Request request,Entry entry, String id,Hashtable props)  {
 	try {
 	    if(id.equals("neon.productcodes")) {
 		if(productCodes==null) {
@@ -73,7 +73,7 @@ public class BaseNeonTypeHandler extends PointTypeHandler {
 		}
 		return siteCodes;
 	    } else {
-		return super.getWikiProperty(request,entry, id);
+		return super.getWikiProperty(request,entry, id,props);
 	    }
 	} catch(Exception exc) {
 	    throw new RuntimeException(exc);
