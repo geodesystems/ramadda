@@ -217,7 +217,7 @@ public class WikiManager extends RepositoryManager
             Entry   entry    = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
 	    Object o = null;
 	    if(entry!=null) {
-		o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,id);
+		o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,id,props);
 	    } 
 	    if(o==null) {
 		getLogManager().logSpecial("Could not find property:" + value);
@@ -9010,7 +9010,7 @@ public class WikiManager extends RepositoryManager
 	    }
 	    if(svalue.startsWith("property:")) {
 		String prop =svalue.substring("property:".length());
-		Object o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,prop);
+		Object o = entry.getTypeHandler().getWikiProperty(getAdminRequest(),entry,prop,props);
 		if(o==null) o="Could not find property:" + prop;
 		svalue=o.toString();
 		change=true;
