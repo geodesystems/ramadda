@@ -24,9 +24,13 @@ click on "Show Details". The ID is in the URL,
 e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/232797</a>
 -callout]]></property>
      <column name="location_id" label="Sensor ID"/>
+     <column  name="locality"  label="Locality" type="enumerationplus" cansearch="true"/>
      <column  name="country"  type="enumerationplus" label="Country" cansearch="true"/>
-     <column  name="city"  label="City" cansearch="true"/>
-     <column  name="sensor"  label="Sensor" type="enumerationplus" default="" cansearch="true"/>
+     <column  name="provider"  label="Provider" type="enumerationplus" cansearch="true"/>
+     <column  name="sensors"  label="Sensors" type="list" rows="5" size="500"  cansearch="false"/>
+     <column  name="sensorindex"  label="Sensor Index" type="enumeration" values="0,1,2,3,4,5,6"
+	      default="0"
+	      suffix="Index of the sensor to use in the list of sensors" cansearch="false"/>
      <column  name="stationary"  label="Stationary" type="boolean" default="true" cansearch="true"/>
      <column  name="hours_offset"  label="Offset Hours" type="int" default="168" cansearch="true"
 	      suffix="How many hours back in time"/>
@@ -38,7 +42,8 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explo
 <![CDATA[
 +section  title="OpenAQ Air Quality: {{name}}"
 {{group showMenu="true" }}
-{{display_linechart fields="pm2_5|pm10_0|pm1_0" vAxisMinValue="0"}}
+{{display_linechart fields="#1" vAxisMinValue="0"
+}}
 ]]></property>
 
 <wiki>
@@ -49,8 +54,15 @@ e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explo
 +row
 +col-md-9
 {{group showMenu="true"}}
-{{display_linechart fields="pm2_5|pm10_0|pm1_0" vAxisMinValue="0"}}
-{{display_linechart fields="temperature|o3|s03|co"}}
+{{display_linechart fields="#1" vAxisMinValue="0"
+requestFieldsShow=true
+requestFields="instrument"
+request.instrument.includeNone=false
+request.instrument.includeDefault=true
+request.instrument.label="Instrument"
+request.instrument.type=enumeration
+request.instrument.values="property:openaq.instruments"
+}}
 {{display_download showMenu="false"}}
 {{display_table showMenu="false"}}
 -col
@@ -59,10 +71,9 @@ This data is provided by <a href="https://openaq.org/">OpenAQ</a><br>
 <a target=_openaq href="https://explore.openaq.org/locations/{{field name=location_id}}">View data source</a>
 {{map showSearchLocation="false" }}
 <table class="formtable">
-     {{field name="location_id"  row.label="Sensor ID:"}}
-     {{field name="city"  row.label="City:"}}
+     {{field name="location_id"  row.label="Site ID:"}}
+     {{field name="locality"  row.label="Locality:"}}
      {{field name="country"  row.label="Country:"}}
-     {{field name="sensor"  row.label="Sensor:"}}     
      {{field name="stationary"  row.label="Is Stationary:"}}     
 </table>
 -col

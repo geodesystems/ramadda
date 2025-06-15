@@ -26,6 +26,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Date;
 
 import java.util.GregorianCalendar;
@@ -36,28 +37,26 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
     private static int IDX_LOCATION_ID = IDX++;
+    private static int IDX_LOCALITY = IDX++;
     private static int IDX_COUNTRY = IDX++;
-    private static int IDX_CITY = IDX++;
-    private static int IDX_SENSOR = IDX++;    
+    private static int IDX_PROVIDER = IDX++;    
+    private static int IDX_SENSORS = IDX++;
+    private static int IDX_SENSOR_INDEX = IDX++;        
     private static int IDX_STATIONARY = IDX++;    
     private static int IDX_HOURS_OFFSET = IDX++;
     private SimpleDateFormat dateSDF;
 
     private static final String[]
 	SEESV_ARGS = new String[] {
-	"-indateformat", "yyyy-MM-dd'T'HH:mm:ss", "",
-	"-columns", "utc,parameter,value,latitude,longitude",
-	"-unfurl", "parameter", "value", "utc","latitude,longitude",
-	"-set","utc", "0","date",
+	"-json", "results", "value,period.datetimeFrom.utc",
+	"-set","value", "0","${name}",
+	"-set","period_datetimefrom_utc", "0","date",
 	//normalize the params
-	"-changerow","0","*","^pm10$","pm10.0",	
-	"-changerow","0","*","^pm1$","pm1.0",
-	"-changerow","0","*","^pm.*25$","pm2.5",
 	"-sortby","date","up","date",
-	"-addheader","o3.type double co.type double pm2_5.type double pm1_0.type double pm10_0.type double o3.label O3 co.label CO pm2_5.label \"PM 2.5\"  pm1_0.label \"PM 1.0\" pm10_0.label \"PM 10.0\" date.format yyyy-MM-dd'T'HH:mm:ss",
+	"-addheader","${name}.label {${displayname}} ${name}.unit {${unit}} ${name}.type double date.format yyyy-MM-dd'T'HH:mm:ss",
 	"-print"
     };
-
+    
     public OpenAQTypeHandler(Repository repository, Element node)
 	throws Exception {
         super(repository, node);
@@ -74,7 +73,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	    throw new IllegalStateException("No OpenAQ API key is defined");
 	}
 
-	String url = HU.url("https://api.openaq.org/v2/locations/" + id,"limit","100","page","1","offset","0");
+	String url = HU.url("https://api.openaq.org/v3/locations/" + id,"limit","100","page","1","offset","0");
 	IO.Path path  =new IO.Path(url);
 	path.setRequestArgs(new String[]{"X-API-Key",key});
 	IO.Result result = IO.getHttpResult(path);
@@ -87,16 +86,25 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	JSONObject coords = location.getJSONObject("coordinates");
 
 	entry.setName(location.getString("name"));
-	entry.setValue(IDX_COUNTRY,location.optString("country",""));
-	entry.setValue(IDX_CITY,location.optString("city",""));	
+	entry.setValue(IDX_LOCALITY,location.optString("locality",""));	
+	entry.setValue(IDX_COUNTRY,JU.readValue(location,"country.name",""));
+	entry.setValue(IDX_PROVIDER,JU.readValue(location,"provider.name",""));	
 	entry.setValue(IDX_STATIONARY,new Boolean(!location.optBoolean("isMobile",false)));
 	entry.setLatitude(coords.getDouble("latitude"));
 	entry.setLongitude(coords.getDouble("longitude"));	
 
-	JSONArray manu = location.optJSONArray("manufacturers");	
-	if(manu!=null && manu.length()>0) {
-	    entry.setValue(IDX_SENSOR,manu.getJSONObject(0).optString("modelName",""));
+	List<String>ss=new ArrayList<String>();
+	JSONArray sensors = location.getJSONArray("sensors");
+	for(int i=0;i<sensors.length();i++)  {
+	    JSONObject sensor = sensors.getJSONObject(i);
+	    JSONObject parameter = sensor.getJSONObject("parameter");
+	    ss.add(sensor.getInt("id")+
+		   ";"+parameter.getString("name")+
+		   ";"+parameter.getString("units")+
+		   ";"+parameter.getString("displayName"));
+													     
 	}
+	entry.setValue(IDX_SENSORS,Utils.join(ss,","));
     }
 
     @Override
@@ -109,8 +117,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	if(key==null) {
 	    throw new IllegalStateException("No OpenAQ API key is defined");
 	}
-	path.setRequestArgs(new String[]{"X-API-Key",key});
-	return new OpenAQRecordFile(entry, path);
+	return new OpenAQRecordFile(entry, path,getSensor(request, entry,request.getString("instrument",null)));
     }
 
     @Override
@@ -128,7 +135,8 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
         if (dateSDF == null) {
-            dateSDF = Utils.makeDateFormat("yyyy-MM-dd'T'HH:mm");
+	    //            dateSDF = Utils.makeDateFormat("yyyy-MM-dd'T'HH:mm");
+	    dateSDF = Utils.makeDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         }
         String endDate = Utils.format(dateSDF,cal.getTime());
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
@@ -137,35 +145,94 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 	if(key==null) {
 	    throw new IllegalStateException("No OpenAQ API key is defined");
 	}
-	String url  = HU.url("https://api.openaq.org/v2/measurements",
-			     "format","csv",
+	Sensor sensor =getSensor(request, entry,request.getString("instrument",null));
+	String url  = HU.url("https://api.openaq.org/v3/sensors/" + sensor.id+"/measurements",
 			     "limit","1000",
 			     "page","1",
-			     "offset","0",
-			     "sort","desc",
-			     "order_by","datetime",
-			     "date_from", startDate,
-			     "date_to", endDate,			     
-			     "location_id",location);
+			     //			     "offset","0",
+			     //			     "sort","desc",
+			     //			     "order_by","datetime",
+			     "datetime_from", startDate,
+			     "datetime_to", endDate);
 
 	IO.Path path = new IO.Path(url);
-	System.err.println(url);
+	//	System.err.println("URL:"+url);
 	path.setRequestArgs(new String[]{"X-API-Key",key});
         return path;
     }
 
+    @Override
+    public Object getWikiProperty(Request request,Entry entry, String id,Hashtable props)  {
+	if(!id.equals("openaq.instruments")) {
+	    return super.getWikiProperty(request, entry, id,props);
+	}
+	StringBuilder sb = new StringBuilder();
+	for(Sensor sensor:getSensors(request,  entry)) {
+	    if(sb.length()>0) sb.append(",");
+	    sb.append(sensor.id+":" + sensor.name);
+	}
+	System.err.println(sb);
+	return sb.toString();
+    }
+
+
+    public Sensor getSensor(Request request, Entry entry,String id) {
+	if(id!=null)  {
+	    for(Sensor sensor: getSensors(request, entry)) {
+		if(sensor.id.equals(id)) return sensor;
+	    }
+	}
+	String s = entry.getStringValue(request, "sensors","");
+	List<String> toks = Utils.split(s,",",true,true);
+	if(toks.size()==0) throw new IllegalStateException("No sensors defined");
+	int index = Integer.parseInt(entry.getStringValue(request,"sensorindex","0"));
+	List<String> tuple = Utils.split(toks.get(index),";",true,true);
+	return new Sensor(tuple.get(0),tuple.get(1),tuple.get(2),tuple.get(3));
+    }
+
+    public List<Sensor> getSensors(Request request, Entry entry) {
+	String s = entry.getStringValue(request, "sensors","");
+	List<Sensor> sensors = new ArrayList<Sensor>();
+	List<String> toks = Utils.split(s,",",true,true);
+	if(toks.size()==0) return sensors;
+	for(String t: toks) {
+	    List<String> tuple = Utils.split(t,";",true,true);
+	    sensors.add(new Sensor(tuple.get(0),tuple.get(1),tuple.get(2),tuple.get(3)));
+	}
+	return sensors;
+    }
+
+    public static class Sensor {
+	String id;
+	String name;
+	String unit;
+	String displayName;
+	Sensor(String id, String name,String unit, String displayName) {
+	    this.id=id;
+	    this.name  = name;
+	    this.unit=unit;
+	    this.displayName=displayName;
+	}
+    }
+
     public static class OpenAQRecordFile extends CsvFile {
 	Entry entry;
-
-        public OpenAQRecordFile(Entry _entry, IO.Path path) throws IOException {
+	Sensor sensor;
+        public OpenAQRecordFile(Entry _entry, IO.Path path,Sensor sensor) throws IOException {
             super(path);
 	    this.entry  = _entry;
+	    this.sensor = sensor;
         }
 
         @Override
         public InputStream doMakeInputStream(boolean buffered)
 	    throws Exception {
-	    return applySeesv(entry,SEESV_ARGS);
+	    String[]args = new String[SEESV_ARGS.length];
+	    for(int i=0;i<args.length;i++) {
+		args[i]=SEESV_ARGS[i].replace("${name}",sensor.name).replace("${unit}",sensor.unit).replace("${displayname}",sensor.displayName);
+		
+	    }
+	    return applySeesv(entry,args);
 	}
     }
 }
