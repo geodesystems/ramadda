@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jun 13 06:41:45 PDT 2025";
+var build_date="RAMADDA build date: Sun Jun 15 05:04:00 PDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -17757,6 +17757,9 @@ function RequestMacro(display, macro) {
 	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
 	    values.push([VALUE_NONE,"None"]);
 	}
+	if(this.getProperty("request." + macro+".includeDefault",this.getProperty("request.includeDefault",true))) {
+	    values.push([VALUE_NONE,"Default"]);
+	}	
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
@@ -39580,9 +39583,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	{p:'labelYOffset',ex:'0'},
 	{p:'labelOutlineColor',ex:'#fff'},
 	{p:'labelOutlineWidth',ex:'0'},
-
-
-
+	{p:'labelDeclutterPadding',d:1},
+	{p:'labelDeclutterGranularity',d:1},
+	{p:'labelDeclutterPixelsPerLine'},
+	{p:'labelDeclutterPixelsPerCharacter'},
 	{label:'Map Glyphs'},
 	{p:'doGridPoints',ex:'true',tt:'Display a image showing shapes or bars',canCache:true},
 	{p:'gridWidth',ex:'800',tt:'Width of the canvas'},
