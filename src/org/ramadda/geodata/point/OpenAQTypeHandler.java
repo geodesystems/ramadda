@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Date;
 
 import java.util.GregorianCalendar;
@@ -68,6 +69,25 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         super.initializeNewEntry(request, entry, newType);
 	if(!isNew(newType)) return;
 	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
+	if(Utils.stringDefined(id)) {
+	    initializeNewEntryInner(request, entry);
+	}
+	String  bulkFile = request.getUploadedFile(ARG_BULKUPLOAD,true);
+	if(!stringDefined(bulkFile) || !new File(bulkFile).exists()) return;
+	HashSet<String> seen = new HashSet<String>();
+	List<Entry> entries = handleBulkUpload(request, entry.getParentEntry(),bulkFile,"location_id",seen,null,null);
+	for(Entry newEntry: entries) {
+	    initializeNewEntryInner(request,newEntry);
+	}
+	getEntryManager().insertEntriesIntoDatabase(request,  entries,true, true);	
+
+    }
+
+    private void initializeNewEntryInner(Request request, Entry entry) throws Exception {
+	String id = (String)entry.getValue(request,IDX_LOCATION_ID);
+	if(!Utils.stringDefined(id)) {
+	    return;
+	}
 	String key = getRepository().getProperty("openaq.api.key",null);
 	if(key==null) {
 	    throw new IllegalStateException("No OpenAQ API key is defined");

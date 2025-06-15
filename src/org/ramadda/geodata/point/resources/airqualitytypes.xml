@@ -2,8 +2,10 @@
 <types supercategory="Geoscience">
 
   <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler"
-	newfields="location_id,name,description,hours_offset,quit"
+	bulkuploadhelp="Or upload a file of site ids. One per line. No header label."
+	addbulkupload="true"	newfields="location_id,name,description,hours_offset,quit"
 >
+
     <property name="search.tabs" value="map,list"/>
     <property name="icon" value="/point/openaq.png"/>
     <property name="form.resource.show" value="false"/>
@@ -21,7 +23,7 @@ You just need to enter the Sensor ID.
 To find the ID view the map at
 <a target=_map href=https://explore.openaq.org/>https://explore.openaq.org/</a>, select the station then
 click on "Show Details". The ID is in the URL, 
-e.g. 232797 in <a href=https://explore.openaq.org/locations/270997>https://explore.openaq.org/locations/232797</a>
+e.g. 232797 in <a href=https://explore.openaq.org/locations/424>https://explore.openaq.org/locations/424</a>
 -callout]]></property>
      <column name="location_id" label="Sensor ID"/>
      <column  name="locality"  label="Locality" type="enumerationplus" cansearch="true"/>
