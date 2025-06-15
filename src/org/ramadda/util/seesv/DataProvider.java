@@ -605,9 +605,11 @@ public abstract class DataProvider extends SeesvOperator {
 		//		System.err.println("ROW:"+ arrayIdx);
                 if (objectPathList != null) {
                     JSONObject jrow = array.getJSONObject(arrayIdx);
-		    if(debug && arrayIdx<5) System.err.println("ROW:" + jrow);
+		    boolean debugit = debug && arrayIdx<5;
+		    //		    if(debug && arrayIdx<5) System.err.println("ROW:" + jrow);
                     for (String tok : objectPathList) {
 			//			System.err.println("\ttok:" + tok);
+			if(debugit) System.err.println("Token:" + tok);
                         if (tok.equals("*")) {
                             primary.putAll(JU.getHashtable(jrow, true, arrayKeys));
                         } else if (tok.endsWith("[]")) {
@@ -620,29 +622,43 @@ public abstract class DataProvider extends SeesvOperator {
                                         a.getJSONObject(j), true, arrayKeys));
                             }
                         } else {
+			    Object o =null;
                             try {
-                                Object o = JsonUtil.readObject(jrow, tok);
+				if(debugit) System.err.println("\ttrying object");
+                                o = JsonUtil.readObject(jrow, tok);
                                 if (o != null) {
-                                    primary.putAll(JsonUtil.getHashtable(o,
-                                            false, arrayKeys));
+                                    primary.putAll(JsonUtil.getHashtable(o, false, arrayKeys));
+				    continue;
                                 }
                             } catch (Exception exc) {
+			    }
+			    try {
+				if(debugit) System.err.println("\ttrying array");
+				o = JsonUtil.readArray(jrow, tok);
+				if(debugit) System.err.println("\tgot array:" +o);
+				if (o != null) {
+				    primary.putAll(JsonUtil.getHashtable(o,
+									 true, arrayKeys));
+				    continue;
+				}
+                            } catch (Exception exc) {
+			    }
+			    try {
+				if(debugit) System.err.println("\ttrying string");
+				o = JU.readValue(jrow,tok,null);
+				if(debugit) System.err.println("\tgot:" + o);
+				if(o!=null) {
+				    primary.put(tok,o);
+				    //				    primary.put(tok,jrow.getString(tok));
+				    continue;
+				}
+			    } catch(Exception exc3) {
 				try {
-				    Object o = JsonUtil.readArray(jrow, tok);
-				    if (o != null) {
-					primary.putAll(JsonUtil.getHashtable(o,
-									     true, arrayKeys));
-				    }
-				} catch (Exception exc2) {
-				    try {
-					primary.put(tok,jrow.getString(tok));
-				    } catch(Exception exc3) {
-					try {
-					    primary.put(tok,jrow.getDouble(tok));
-					} catch(Exception exc4) {
-					    primary.put(tok,jrow.getBoolean(tok));
-					}
-				    }
+				    if(debugit) System.err.println("\ttrying double");
+				    primary.put(tok,jrow.getDouble(tok));
+				} catch(Exception exc4) {
+				    if(debugit) System.err.println("\ttrying boolean");
+				    primary.put(tok,jrow.getBoolean(tok));
 				}
                             }
                         }
