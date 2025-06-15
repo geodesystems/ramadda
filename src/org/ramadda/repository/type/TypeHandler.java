@@ -616,7 +616,7 @@ public class TypeHandler extends RepositoryManager {
 	actionMap.put(action.id,action);
     }
 
-    public Object getWikiProperty(Request request,Entry entry, String id)  {
+    public Object getWikiProperty(Request request,Entry entry, String id, Hashtable props)  {
 	return  entry.getValue(request,id,true);
     }
 
