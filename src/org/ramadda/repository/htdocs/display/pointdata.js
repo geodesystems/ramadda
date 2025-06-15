@@ -3388,6 +3388,9 @@ function RequestMacro(display, macro) {
 	if(this.getProperty("request." + macro+".includeNone",this.getProperty("request.includeNone",true))) {
 	    values.push([VALUE_NONE,"None"]);
 	}
+	if(this.getProperty("request." + macro+".includeDefault",this.getProperty("request.includeDefault",true))) {
+	    values.push([VALUE_NONE,"Default"]);
+	}	
 	Utils.split(enums,",").forEach(tok=>{
 	    let toks = tok.split(":");
 	    let id = toks[0];
