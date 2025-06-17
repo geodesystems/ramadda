@@ -689,8 +689,11 @@ RepositoryMap.prototype = {
     setCenter:function(to) {
 	if(debugBounds)
 	    console.log("setCenter");
-//	this.getMap().panTo(this.transformLLPoint(to));
-        this.getMap().setCenter(this.transformLLPoint(to));
+	let point = this.transformLLPoint(to);
+        this.getMap().setCenter(point);
+    },
+    getMapCenterLatLon: function() {
+	return  this.transformProjPoint(this.getMap().getCenter())
     },
     getZoom: function() {
 	return this.getMap().getZoom();
@@ -3822,8 +3825,12 @@ RepositoryMap.prototype = {
     transformLLPoint:  function(point) {
         if (!point)
             return null;
+	if(!point.clone && Utils.isDefined(point.lat) && Utils.isDefined(point.lon)) {
+	    point = MapUtils.createLonLat(point.lon,point.lat);
+	}
         let llpoint = point.clone();
-        return llpoint.transform(this.displayProjection, this.sourceProjection);
+        let transformedPoint =  llpoint.transform(this.displayProjection, this.sourceProjection);
+	return transformedPoint;
     },
 
     transformProjBounds:  function(bounds) {
