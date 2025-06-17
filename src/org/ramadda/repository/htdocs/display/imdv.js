@@ -15,6 +15,7 @@ addGlobalDisplayType({
 
 var GLYPH_FIXED = 'fixed';
 var GLYPH_GROUP = 'group';
+var GLYPH_ZOOM = 'zoom';
 var GLYPH_MARKER = 'marker';
 var GLYPH_POINT = 'point';
 var GLYPH_LABEL = 'label';
@@ -77,6 +78,9 @@ var IMDV_PROPERTY_HINTS= ['filter.live=true','filter.show=false',
 			  'inMapLabel=',			  			  
 			  'showLegendInMap=true',			  
 			  PROP_DONT_SHOW_IN_LEGEND +'=true',
+			  'showDisplayHeader=false',
+			  'showInHeader=true',			  
+			  'showIconInHeader=true',
 			  'mapLegendHeight=300px',
 			  'showLegendBox=true',
 			  'showButtons=false',
@@ -342,6 +346,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
     const ID_MESSAGE2  ='message2';    
     const ID_MESSAGE3  ='message3';
     const ID_GLYPH_LABELS  ='glyphlabels';
+    const ID_MAP_HEADER  ='mapheader';
     const ID_ADDRESS  ='address';
     const ID_ADDRESS_INPUT  ='address_input';
     const ID_ADDRESS_WAIT  ='address_wait';
@@ -1191,9 +1196,9 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 	    let tmpMapOptions =  tmpStyle.mapOptions = {
 		type:glyphType.type
 	    }
-	    if(glyphType.isFixed() || glyphType.isGroup()) {
+	    if(glyphType.isZoom() || glyphType.isFixed() || glyphType.isGroup()) {
 		let text = args.text;
-		if(!text) text = prompt(glyphType.isFixed()?'Text:':'Name:');
+		if(!text) text = prompt(glyphType.isZoom()?'Enter zoom to label':glyphType.isFixed()?'Text:':'Name:');
 		if(!text) return;
 		let style = Utils.clone({},tmpStyle);
 		let mapOptions = Utils.clone({},tmpMapOptions);
@@ -1203,6 +1208,11 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 		    mapOptions.name = text;
 		}
 		this.clearCommands();
+		if(glyphType.isZoom()) {
+		    mapOptions.name = text;
+		    delete  style.text;
+		    this.setZoomOptions(mapOptions);
+		}
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		this.addGlyph(mapGlyph);
 		this.clearMessage2(1000);
@@ -1604,6 +1614,10 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 	},
 	
+	setZoomOptions:function(mapOptions) {
+	    mapOptions.zoomLevel = this.getCurrentLevel();
+	    mapOptions.mapCenter = this.getMap().getMapCenterLatLon();
+	},
 	setOSMLabel:function(l,hide) {
 	    this.jq(ID_OSM_LABEL).html(l);
 	    this.jq(ID_OSM_LABEL).show();
@@ -2338,7 +2352,7 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 				      ATTR_BUTTON_COMMAND,'popup'],
 				     icon('fas fa-arrow-up-from-bracket')));
 	    }
-	    if(true||(this.canChange() && includeEdit)) {
+	    if((this.canChange() && includeEdit)) {
 		buttons.push(HU.span([ATTR_CLASS,CLASS_CLICKABLE,ATTR_TITLE,'Settings',ID_GLYPH_ID,mapGlyph.getId(),
 				      ATTR_BUTTON_COMMAND,'edit'],
 				     icon('fas fa-cog')));
@@ -2723,7 +2737,6 @@ function RamaddaImdvDisplay(displayManager, id, properties) {
 
 
 //		mapGlyph.applyStyle(style);
-
 		mapGlyph.makeLegend();
 		mapGlyph.initLegend();
 		this.showMapLegend();
@@ -3873,13 +3886,16 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		mapGlyph.addFixed();
 		return mapGlyph;
 	    }
+	    if(glyphType.isZoom()) {
+		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
+		return mapGlyph;
+	    }	    
 	    if(glyphType.isGroup()) {
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		mapGlyph.loadJson(jsonObject);
 		return mapGlyph;
 	    }
 	    if(glyphType.isMap()) { 
-		
 		let mapGlyph = new MapGlyph(this,mapOptions.type, mapOptions, null,style);
 		mapGlyph.checkMapLayer(false);
 		return mapGlyph;
@@ -3927,7 +3943,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		HU.checkbox(this.domId('showmouseposition'), [],
 			    this.getMapProperty('showMousePosition',false),'Show Mouse Position'),
 		HU.checkbox(this.domId('showaddress'), [],
-			    this.getMapProperty('showAddress',false),'Show Address'),
+			    this.getMapProperty('showAddress',false),'Show Address Search'),
 		HU.checkbox(this.domId('usercanchange'),[ATTR_TITLE,'Non logged in users can add glyphs and change styles but can\'t save'],
 			    this.getMapProperty('userCanChange',false),'Anon. users can change'),
 		
@@ -4943,7 +4959,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      textBackgroundStyle,
 			      {transform:'', clippath:'', imagefilter:'',imagecss:''}), 
 			  MyEntryPoint,
-			  {isGroup:true, tooltip:'Add group',			  
+			      {isGroup:true,
+			       tooltip:'Add group',			  
 			   icon:Ramadda.getUrl("/icons/chart_organisation.png")});
 	    this.markerGlyphType =
 		new GlyphType(this,GLYPH_MARKER,"Marker",
@@ -5146,7 +5163,13 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			  MyEntryPoint,
 			  {isOsm:true,
 			   tooltip:'Query Open Stree Map for locations',
-			   icon:Ramadda.getUrl("/icons/osm.png")});	    
+			   icon:Ramadda.getUrl("/icons/osm.png")});
+	    new GlyphType(this,GLYPH_ZOOM,"Zoom To",
+ 			  {},
+			  MyEntryPoint,
+			  {isZoom:true,
+			   tooltip:'Add a zoom to location',
+			   icon:Ramadda.getUrl("/nps/birding-wildlife-viewing-black-22.svg")});	    	    
 
 	},
 	clearMessage2:function(time) {
@@ -5364,9 +5387,7 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		this.jq(ID_ADDRESS).hide();
 	    }
 	    this.checkGlyphLayers();
-
-
-
+	    //xxxxxx
 	    this.inMapLegend='';
 	    if(glyphs.length)
 		html+=HU.div([ATTR_ID,this.domId(ID_DROP_BEGINNING),ATTR_STYLE,'width:100%;height:1px;'],'');
@@ -5624,8 +5645,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let labels = HU.div([ATTR_ID,this.domId(ID_GLYPH_LABELS),ATTR_CLASS,'imdv-inmap-labels'],'');
 	    this.jq(ID_MAP_CONTAINER).append(labels);
 
-
-
 	    this.makeMenuBar();
 	    this.makeControls();
 
@@ -5812,8 +5831,8 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 			      ATTR_ID,this.domId(ID_ADDRESS)], address);	    
 	    
 	    let message = HU.div([ATTR_ID,this.domId(ID_MESSAGE),ATTR_CLASS,'imdv-message']);
-	    let mapHeader = HU.div([STYLE,HU.css('margin-left','10px'),
-				    ATTR_ID,this.domId(ID_MAP)+'_header']);
+	    let mapHeader = HU.div([ATTR_STYLE,HU.css('margin-left','10px'),
+				    ATTR_ID,this.domId(ID_MAP_HEADER)]);
 	    if(this.canChange()) {
 		menuBar=  HU.table([ATTR_ID,this.domId(ID_MAP_MENUBAR),ATTR_WIDTH,'100%'],HU.tr([ATTR_VALIGN,'bottom'],HU.td([],menuBar) +
 											 HU.td([ATTR_WIDTH,'50%'], message) +
@@ -5823,7 +5842,6 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 											 HU.td([ATTR_WIDTH,'50%'], message) +
 											 HU.td(['align','right',ATTR_STYLE,'padding-right:10px;',ATTR_WIDTH,'50%'],mapHeader+address)));
 	    }
-	    
 
 
 	    this.jq(ID_TOP_LEFT).html(menuBar);
@@ -6296,6 +6314,9 @@ GlyphType.prototype = {
     isFixed:  function() {
 	return this.options.isFixed;
     },
+    isZoom:  function() {
+	return this.options.isZoom;
+    },    
     isGroup:  function() {
 	return this.options.isGroup;
     },	        

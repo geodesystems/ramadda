@@ -1650,6 +1650,15 @@ MapGlyph.prototype = {
 	return this.style;
     },
     panMapTo: function(andZoomIn) {
+	if(this.isZoom()) {
+	    if(this.attrs.mapCenter) {
+		this.getMap().setCenter(this.attrs.mapCenter);
+	    }
+	    if(andZoomIn && Utils.isDefined(this.attrs.zoomLevel)) {
+		this.getMap().setZoom(this.attrs.zoomLevel);
+	    }
+	    return;
+	}
 	let bounds;
 	if(this.attrs.bounds) {
 	    //wsen
@@ -1846,7 +1855,7 @@ MapGlyph.prototype = {
 	}
 
 	if(glyphType) {
-	    let icon = Utils.getStringDefined(this.style.externalGraphic,this.attrs.icon,glyphType.getIcon());
+	    let icon = Utils.getStringDefined(this.getProperty('icon'),this.style.externalGraphic,this.attrs.icon,glyphType.getIcon());
 	    if(icon.startsWith('data:')) icon = this.attrs.icon;
 	    if(icon && icon.endsWith('blank.gif')) icon = glyphType.getIcon();
 	    icon = HU.image(icon,[ATTR_WIDTH,'18px']);
@@ -2190,6 +2199,16 @@ MapGlyph.prototype = {
 				ATTR_CLASS,CLASS_CLICKABLE],
 			       HU.getIconImage('fas fa-table',[],BUTTON_IMAGE_ATTRS)) +buttons;
 	}
+
+	if(this.isZoom()) {
+	    if(buttons!=null) buttons = HU.space(1)+buttons;
+	    this.setLocationId = HU.getUniqueId('setlocation');
+	    buttons =  HU.span([ATTR_ID,this.setLocationId,ATTR_TITLE,'Set location',
+				ATTR_CLASS,CLASS_CLICKABLE],
+			       HU.getIconImage('fas fa-binoculars',[],BUTTON_IMAGE_ATTRS)) +buttons;
+	}
+
+
 
 	if(this.attrs.entryId) {
 	    if(buttons!=null) buttons = HU.space(1)+buttons;
@@ -2588,6 +2607,13 @@ MapGlyph.prototype = {
 	if(this.isMultiEntry() && this.entries) {
 	    this.showMultiEntries();
 	}
+	if(this.setLocationId) {
+	    jqid(this.setLocationId).click(()=> {
+		this.display.setZoomOptions(this.attrs);
+	    });
+
+	}
+
 	if(this.showFeatureTableId) {
 	    $('#'+ this.showFeatureTableId).click(function() {
 		_this.showFeaturesTable($(this));
@@ -2868,6 +2894,9 @@ MapGlyph.prototype = {
     isGroup:function() {
 	return this.getType() ==GLYPH_GROUP;
     },
+    isZoom:function() {
+	return this.getType() ==GLYPH_ZOOM;
+    },    
     isEntry:function() {
 	return this.getType() ==GLYPH_ENTRY;
     },
@@ -4326,6 +4355,9 @@ MapGlyph.prototype = {
 	let debug = false;
 	if(debug)
 	    console.log("KEY:" + key);
+	//Check the IMDV display
+	let v = this.display.getMapProperty(key);
+	if(Utils.isDefined(v))return v;
 	if(this.attrs.properties) {
 	    if(!this.parsedProperties) {
 		this.parsedProperties = Utils.parseMap(this.attrs.properties,"\n","=")??{};
@@ -4343,6 +4375,13 @@ MapGlyph.prototype = {
 	}
 	return this.display.getMapProperty(key,dflt);
     },
+    getTopHeader:function() {
+	if(!this.topHeaderId) {
+	    this.topHeaderId = HU.getUniqueId('topheader');
+	    this.display.appendHeader(HU.div([ATTR_CLASS,'imdv-legend-top',ATTR_STYLE,HU.css('display','inline-block'),ATTR_ID,this.topHeaderId]));
+	}
+	return jqid(this.topHeaderId);
+    },
     makeFeatureFilters:function() {
 	let _this = this;
 	let contents = {
@@ -4352,6 +4391,7 @@ MapGlyph.prototype = {
 	    strings:'',
 	    top:[]
 	}
+
 	let showTop;
 	let add=(info,type,line)=>{
 	    if(showTop)   contents.top.push(line);
@@ -4422,8 +4462,6 @@ MapGlyph.prototype = {
 		    let size = info.filterSize();
 		    let line=label+":<br>" +
 			HU.select("",[ATTR_STYLE,'width:90%;','filter-property',info.property,ATTR_CLASS,'imdv-filter-enum',ATTR_ID,this.domId('enum_'+ id),'multiple',null,'size',size??Math.min(info.samples.length,showTop?3:5)],options,filter.enumValues,50)+"<br>";
-
-
 		    add(info,'enums',line);
 		}
 		return;
@@ -4477,16 +4515,13 @@ MapGlyph.prototype = {
 	if(this.topHeaderId) {
 	    jqid(this.topHeaderId).html('');
 	}	
+	if(this.getProperty('showInHeader',false)) {
+	    if(contents.top.length==0) contents.top.push('');
+	}
 	if(contents.top.length) {
-	    if(!this.topHeaderId) {
-		this.topHeaderId = HU.getUniqueId('topheader');
-		this.display.appendHeader(HU.div([ATTR_CLASS,'imdv-legend-top',ATTR_STYLE,HU.css('display','inline-block'),ATTR_ID,this.topHeaderId]));
-	    }
-
-	    let label =  this.getLabel({addIcon:false,forLegend:true})[0];
-	    //HU.b(this.getName()+':'))
+	    let label =  this.getLabel({addIcon:this.getProperty('showIconInHeader',false),forLegend:true})[0];
 	    let top = HU.div([ATTR_STYLE,HU.css('font-weight','bold','text-align','center')], label) +HU.hbox(contents.top.map(c=>{return HU.div([ATTR_STYLE,'margin-right:15px;'], c);}));
-	    jqid(this.topHeaderId).html(top);
+	    this.getTopHeader().html(top);
 	}
 
 
@@ -5740,6 +5775,10 @@ MapGlyph.prototype = {
     },
 
     setVisible:function(visible,callCheck,highlighted,skipChildren) {
+	if(this.isZoom()) {
+	    this.panMapTo(true);
+	    return;
+	}
 	this.highlighted = highlighted;
 	if(!visible) {
 	    if(this.stepMarker) {
@@ -6106,7 +6145,7 @@ MapGlyph.prototype = {
 	let divId   = HU.getUniqueId("display_");
 	let outerDivId   = HU.getUniqueId("outerdisplay_");	
 	let bottomDivId   = HU.getUniqueId("displaybottom_");	    
-	let headerDiv = HU.div([ID,outerDivId],HU.div([ID,divId]));
+	let headerDiv = HU.div([ATTR_ID,outerDivId],HU.div([ID,divId]));
 	this.display.jq(ID_HEADER1).append(headerDiv);
 	this.display.jq(ID_BOTTOM).append(HU.div([ID,bottomDivId]));	    
 	let attrs = {"externalMap":this.display.getMap(),
@@ -6156,7 +6195,11 @@ MapGlyph.prototype = {
 	//For now don't toggle the class because if there isn't any thing shown we have a grey bar
 	let div = jqid(this.displayInfo.divId);
 	let outerDiv = jqid(this.displayInfo.outerDivId);	
+	if(!this.getProperty('showDisplayHeader',true)) {
+	    visible=false;
+	}
 	if(visible) {
+	    console.log(outerDiv.html());
 	    outerDiv.show();
 //	    outerDiv.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 //	    outerDiv.find('input').prop('disabled',false);
