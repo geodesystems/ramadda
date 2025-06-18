@@ -1,0 +1,22 @@
+function NwsCap(url,div,opts) {
+    $.extend(this,{
+	url:url,
+	div:div
+    });
+    if(opts) $.extend(this,opts);
+    this.init();
+  
+}
+
+NwsCap.prototype = {
+    init:function() {
+        $.getJSON(this.url), data=>{
+	}).fail(data=>{
+	    console.log('failed to get macros');
+
+	});
+
+    }
+}
+
+
