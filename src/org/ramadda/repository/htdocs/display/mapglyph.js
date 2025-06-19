@@ -6199,7 +6199,6 @@ MapGlyph.prototype = {
 	    visible=false;
 	}
 	if(visible) {
-	    console.log(outerDiv.html());
 	    outerDiv.show();
 //	    outerDiv.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 //	    outerDiv.find('input').prop('disabled',false);
