@@ -54,7 +54,7 @@ csvcommands4=-addheader, temp.unit F maxt24.unit F mint24.unit F mint.unit F max
 props:iconSize:75,canvasWidth:600,canvasHeight:150,fill:#efefef,borderWidth:2,borderColor:#000,font:bold 36px sans-serif
 image,pos:nw,dx:10,dy:-ch+10,width:60,height:60,url:${icon}
 label,pady:5,pos:nw,dx:80,dy:-ch+10,label:${entryname}  
-label,pady:10,pos:nw,dx:20,dy:-ch+80,font:36px sans-serif,label:Temp_colon_ ${temp scale=1.8 offset2=32 decimals=1 } Wind_colon_ ${wspd decimals=1 xsuffix=" ${unit}" xprefixLabel=true} Press_colon_ ${slp xsuffix=" ${unit}" scale=0.01 decimals=1}
+label,pady:10,pos:nw,dx:20,dy:-ch+80,font:36px sans-serif,label:Temp_colon_ ${temp decimals=1 } Wind_colon_ ${wspd decimals=1 xsuffix=" ${unit}" xprefixLabel=true} Press_colon_ ${slp xsuffix=" ${unit}" scale=0.01 decimals=1}
 ]]></property>
 
 
