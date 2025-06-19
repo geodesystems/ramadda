@@ -100,6 +100,11 @@ The areas or zones can be overwritten with:
 {<foo>{nws_alerts areas="CO,SD" zones="KSZ081,SDZ049"}}
 </pre>
 
+There can be multiple alerts. To only show unique alerts do:
+<pre>
+{<foo>{nws_alerts alertsUnique=true}}
+</pre>
+
 Header labels can be specified with "alertLabel.&lt;area or zone&gt;", e.g.:
 
 <pre>

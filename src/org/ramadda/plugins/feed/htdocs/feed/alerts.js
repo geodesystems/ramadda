@@ -4,6 +4,7 @@ function NwsAlerts(div,opts) {
     $.extend(this.opts,{
 	debug:false,
 	all:false,
+	alertsUnique:false,
 	urls:[],
 	zones:[],
 	areas:[],
@@ -82,6 +83,7 @@ NwsAlerts.prototype = {
 	if(this.allUrls.length==0) {
 	    this.finish();
 	}
+	this.seen={};
 	this.allUrls.forEach(item=>{
 	    if(Utils.stringDefined(item.url)) {
 		this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
@@ -109,8 +111,14 @@ NwsAlerts.prototype = {
 	    let warnings = [];
 	    let watches = [];
 	    let other = [];
+	    let myAlertCount=0;
 	    data.features.forEach((alert,idx)=>{
 		let props = alert.properties;
+		if(this.seen[props.id] && this.opts.alertsUnique) {
+		    return;
+		}
+		this.seen[props.id]=true;
+		myAlertCount++;
 		let pre = props.description??'';
 		pre = pre.replace(/^\* */gm,'&bull; ');
 		pre = pre.replace(/(HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
@@ -178,6 +186,10 @@ NwsAlerts.prototype = {
 		this.alertCount++;
 		//		console.log(props.severity,props.certainty);
 	    });
+	    if(myAlertCount==0) {
+		this.finish();
+		return;
+	    }
 	    let list = Utils.mergeLists(warnings,watches,other);
 	    let accordion;
 	    let label = this.getFullProperty('alertLabel',type,value,data.title);
