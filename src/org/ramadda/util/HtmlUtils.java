@@ -4486,19 +4486,13 @@ public class HtmlUtils implements HtmlUtilsConstants {
 
 
     public static void addPageSearch(Appendable buff, String sel1, String sel2, String label,List<String>args) {
-	try {
-	    buff.append("<center>");
-	    String opts = args==null?"{}":JsonUtil.map(args);
-	    HtmlUtils.script(buff,HtmlUtils.call("HtmlUtils.initPageSearch",
-						 HtmlUtils.squote(sel1), 
-						 sel2==null?"null":HtmlUtils.squote(sel2),
-						 label==null?"null":HtmlUtils.squote(label),
-						 "false",
-						 opts));
-	    buff.append("</center>");
-        } catch (java.io.IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+	String opts = args==null?"{}":JsonUtil.map(args);
+	HtmlUtils.script(buff,HtmlUtils.call("HtmlUtils.initPageSearch",
+					     HtmlUtils.squote(sel1), 
+					     sel2==null?"null":HtmlUtils.squote(sel2),
+					     label==null?"null":HtmlUtils.squote(label),
+					     "false",
+					     opts));
     }
 
 
