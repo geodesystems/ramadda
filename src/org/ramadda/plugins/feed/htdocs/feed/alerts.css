@@ -2,6 +2,21 @@
 .alerts {
 }
 
+.alerts-contents {
+    margin-left:20px;
+    border : var(--basic-border);
+/*    background:rgb(245,245,245);*/
+    padding:0.5em;
+    border-radius: var(--default-radius);
+}
+
+.alerts-contents p {
+    margin-top:0.5em;
+    margin-bottom:0.5em;
+    margin-top:1em;
+    margin-bottom:1em;    
+}    
+
 .alerts .ramadda-toggleblock {
     background:#e8e8e8;
     border-top-right-radius:var(--default-radius);

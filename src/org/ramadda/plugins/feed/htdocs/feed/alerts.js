@@ -2,7 +2,7 @@ function NwsAlerts(div,opts) {
     this.opts={};
     this.div = div;
     $.extend(this.opts,{
-	debug:true,
+	debug:false,
 	all:false,
 	urls:[],
 	zones:[],
@@ -85,6 +85,12 @@ NwsAlerts.prototype = {
     },
     loadAlert:function(url,type,value,multiples) {    
 	if(!Utils.stringDefined(url)) return;
+	let  collapseShortLines= function(input, maxLength = 100) {
+	    return input;
+	    return input.replace(/\n(?=([^\n]{1,100})(\n|$))/g, (_, match) => {
+		return match.length < maxLength ? '' : '\n';
+	    });
+	}
         $.getJSON(url, data=>{
 	    this.loadedCount++;
 	    let now = new Date();
@@ -99,15 +105,18 @@ NwsAlerts.prototype = {
 	    let watches = [];
 	    let other = [];
 	    data.features.forEach((alert,idx)=>{
-		let contents = '';
 		let props = alert.properties;
-		let pre = props.description;
+		let pre = props.description??'';
+		pre = pre.replace(/^\* */gm,'&bull; ');
+		pre = pre.replace(/(HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
+//		pre = collapseShortLines(pre);
+		pre = pre.replace(/(HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)/g,(_,match)=>{return Utils.camelCase(match);});
 		if(Utils.stringDefined(props.instruction)) {
-		    pre+='\n\n' + HU.b('Instructions')+'\n';
+		    pre+='\n\n' + '&bull; '+ HU.b('Instructions')+': ';
 		    pre+=props.instruction;
 		}
 		if(Utils.stringDefined(props.areaDesc)) {
-		    pre+='\n\n' + HU.b('Area')+'\n';
+		    pre+='\n\n' + '&bull; '+ HU.b('Area')+': ';
 		    pre+=props.areaDesc;
 		}		
 		let title = props.headline;
@@ -139,7 +148,22 @@ NwsAlerts.prototype = {
 		    let sent = new Date(props.sent);
 		    //		    console.log(Utils.formatDate(sent) +" " + sent);
 		}
-		contents += HU.pre([],pre);
+		pre = pre.trim();
+		pre = pre.replace(/\n\n/g,'<p>');
+		let contents = '';
+		if(props?.geocode?.UGC) {
+		    let zone = props.geocode.UGC['0'];
+		    if(zone) {
+			let link = HU.href('https://forecast.weather.gov/MapClick.php?zoneid='+zone,'View Forecast',['target','_forecast']);
+			contents += HU.center(link);
+		    }
+		}
+		contents += pre;
+		contents = HU.div([ATTR_CLASS,'alerts-contents'],contents);
+		
+
+
+//		contents += HU.pre([],pre);
 		let l = (significance=='W'?warnings:(significance=='A'?watches:other));
 		if(code=='SPS') l=warnings;
 

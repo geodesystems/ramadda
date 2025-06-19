@@ -77,6 +77,17 @@ public class AlertsTypeHandler extends GenericTypeHandler {
 	sb.append(HU.div("",HU.attrs("id",id,"class","alerts")));
 	
 	String url = null;
+	String tagProperties =  entry.getStringValue(request,"tag_properties","");
+	if(stringDefined(tagProperties)) {
+	    Hashtable tagProps = HU.parseHtmlProperties(tagProperties);
+	    for (Object key : tagProps.keySet()) {
+		if(!props.containsKey(key)) {
+		    Object v = tagProps.get(key);
+		    props.put(key,v);
+		}
+	    }
+	}
+
 	List attrs = new ArrayList();
 	for (Object key : props.keySet()) {
 	    Object v = props.get(key);
@@ -100,6 +111,7 @@ public class AlertsTypeHandler extends GenericTypeHandler {
 
 	String headerMessages = entry.getStringValue(request,"header_messages","");
 	if(stringDefined(headerMessages)) {
+	    headerMessages = headerMessages.replaceAll("\\\\\\s*\n"," ");
 	    for(String line:Utils.split(headerMessages,"\n",true,true)) {
 		if(line.startsWith("#")) continue;
 		List<String> toks = Utils.splitUpTo(line,":",2);

@@ -83,6 +83,22 @@ AQ:Some message for air quality
 </pre>
 ]]></suffix>
      </column>
+     <column name="tag_properties" type="string" label="Wiki Tag Properties" size="10000" rows="10" columns="60"
+	     help="See &lt;a target=_help href='${root}/feed/alerts.html#wiki_tag'&gt;alerts.html&lt;/a&gt; for help"
+	     >
+       <suffix><![CDATA[e.g.:
+<pre>
+headerMessage.heat="Some message"
+alertLabel="Label for all alerts"
+alertLabel.SD="All South Dakota Alerts"
+toggleOpen=false
+toggleOpen.SD=false
+showToggle=false
+showToggle.SD=false 
+</pre>
+]]></suffix>
+     </column>
+
      <wiki><![CDATA[+section title={{name}}
 {{description}}
 {{nws_alerts}}
