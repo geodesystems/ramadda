@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jun 19 13:16:33 MDT 2025";
+var build_date="RAMADDA build date: Thu Jun 19 13:20:19 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -58087,7 +58087,6 @@ MapGlyph.prototype = {
 	    visible=false;
 	}
 	if(visible) {
-	    console.log(outerDiv.html());
 	    outerDiv.show();
 //	    outerDiv.removeClass(CLASS_LEGEND_LABEL_INVISIBLE);
 //	    outerDiv.find('input').prop('disabled',false);
