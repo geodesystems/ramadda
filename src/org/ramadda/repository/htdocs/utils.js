@@ -277,6 +277,7 @@ var Utils =  {
 	}
     },
     initCopyable: function(selector,args) {
+
 	let opts = {
 	    title:null,
 	    ack:null,
@@ -290,6 +291,7 @@ var Utils =  {
 	    input:null
 	}
 	if(args) $.extend(opts,args);
+
 
 	$(selector).each(function(){
 	    let title = $(this).attr(ATTR_TITLE);
@@ -3918,7 +3920,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     initPageSearch:function(select,parentSelect,label,hideAll,opts) {
 
 	let args = {
-	    focus:true,
+	    focus:false,
 	    inputSize:'15',
 	    target:null,
 	    hideAll:hideAll,
@@ -4764,12 +4766,16 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	    html+=HU.div([ATTR_ID,HU.getUniqueId('accordion_'),ATTR_CLASS,'ramadda-accordion-contents'],item.contents);
 	})
 	html+='</div>';
-	return {id:id,contents:html,init:()=>{
-	    HU.makeAccordion('#'+id);
+	return {id:id,contents:html,init:(args)=>{
+	    HU.makeAccordion('#'+id,args);
 	}};
     },
     makeAccordion: function(id, args) {
-        if(args == null) args = {heightStyle: "content", collapsible: true, active: 0, decorate: false, animate:200};
+        if(args == null) {
+	    args = {
+		heightStyle: "content", collapsible: true, active: 0,
+		decorate: false, animate:200};
+	}
 	var icons = {
             header: "iconClosed",    // custom icon class
             activeHeader: "iconOpen" // custom icon class
@@ -4793,6 +4799,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
                 }
             }
             $.extend(ctorArgs, args);
+
             if(!ctorArgs.decorate) {
                 var header = $(id +" .ui-accordion-header");
                 header.css("padding","0em 0em 0em 0em");
@@ -6532,12 +6539,13 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
     },
     toggleBlock: function(label, contents, visible, args,result) {
         let opts = {
-            headerClass:'ramadda-noselect entry-toggleblock-label ramadda-hoverable ' + CLASS_CLICKABLE,
+            headerClass:'ramadda-noselect ramadda-toggleblock entry-toggleblock-label ramadda-hoverable ' + CLASS_CLICKABLE,
             headerStyle:'',
 	    orientation:'h',
 	    imgopen:'fas fa-caret-down',
 	    imgclosed:'fas fa-caret-right',	    
         };
+
 
         if(args) $.extend(opts, args);
 	let horizontal = opts.orientation=='horizontal';
