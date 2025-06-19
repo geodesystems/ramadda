@@ -4846,7 +4846,7 @@ RepositoryMap.prototype = {
             this.textFeature = feature;
             let callback = function() {
                 if (_this.textFeature == feature) {
-                    _this.showText(_this.textFeature.text);
+                    _this.showText(_this.getMarkerText(_this.textFeature, _this.textFeature.text));
                 }
             }
             setTimeout(callback, 1000);
@@ -5288,17 +5288,21 @@ RepositoryMap.prototype = {
 
     },
 
-    showMarkerPopupInner:  function(marker, fromClick, simplePopup,markerText,inputProps) {
-        if (fromClick && marker.locationKey != null) {
+
+
+
+    getMarkerText:function(marker,markerText) {
+        if (marker.locationKey != null) {
             let markers = this.seenMarkers[marker.locationKey];
             if (markers && markers.length > 1) {
-	    if(debugPopup)
-		console.log('showMarkerPopup: seenMarkers:', markers.length);
+		let div = HU.div([ATTR_STYLE,HU.css('border-bottom:1px solid #ccc;margin-top:8px;margin-bottom:8px;')]);
+		if(debugPopup)
+		    console.log('showMarkerPopup: seenMarkers:', markers.length);
                 markerText = "";
                 for (let i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
                     if (i > 0)
-                        markerText += '<hr>';
+                        markerText += div;
                     if (otherMarker.inputProps) {
 			otherMarker.text = otherMarker.textGetter?otherMarker.textGetter(marker):this.getPopupText(otherMarker.inputProps.text);
                     }
@@ -5307,8 +5311,14 @@ RepositoryMap.prototype = {
                     if (i > 10) break;
                 }
             }
-        }
+	}
+	return markerText;
+    },
 
+    showMarkerPopupInner:  function(marker, fromClick, simplePopup,markerText,inputProps) {
+        if (fromClick) {
+	    markerText =this.getMarkerText(marker, markerText);
+	}	    
 	
 	if(this.params.displayDiv) {
 	    this.showText(markerText);
