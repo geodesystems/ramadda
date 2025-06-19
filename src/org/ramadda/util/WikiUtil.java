@@ -2873,7 +2873,7 @@ public class WikiUtil implements HtmlUtilsConstants {
 							     ? toks.get(1)
 							     : "");
 		    List<String> opts = new ArrayList<String>();
-		    String sel1 = Utils.getProperty(props,"selector",TAG_DIV);
+		    String sel1 = Utils.getProperty(props,"selector",".search-component,.entry-list-row-data");
 		    String sel2 = Utils.getProperty(props,"parentSelector",null);
 		    String label = Utils.getProperty(props,"label",null);
 		    String hideAll = Utils.getProperty(props,"hideAll","false");
