@@ -147,7 +147,8 @@ NwsAlerts.prototype = {
 
 		    this.debug('alert: type='+ type +' value:' + value +' phenomena:' + phenon +(info.label?' ' + info.label:'') +' event:'+ props.event);
 		    let headerMessage=this.getProperty('headerMessage.'+phenon,
-						       this.getProperty('headerMessage.'+info.type,null));
+						       this.getProperty('headerMessage.'+info.type,
+									this.getProperty('headerMessage',null)));
 		    if(headerMessage) this.addHeader(headerMessage);
 		    let expires = props.expires?new Date(props.expires):null;
 		    let sent = new Date(props.sent);
