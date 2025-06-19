@@ -1743,7 +1743,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 	indexEntries(entries, request, false);
     }
 
-    private void commit(IndexWriter indexWriter) throws Exception {
+    private synchronized void  commit(IndexWriter indexWriter) throws Exception {
 	luceneSearcher = null;
 	indexWriter.commit();
     }
