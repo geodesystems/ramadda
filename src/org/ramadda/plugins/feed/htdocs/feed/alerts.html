@@ -3,75 +3,226 @@
 +section title="NWS Alerts"
 :navtop
 
+RAMADDA's NWS Alert entry type allows you to specify any number of NWS areas or zones.
+
+
+
+
+
+:heading Areas
+The areas can be any number of state 2-character identifiers, one per line.
++toggle View Areas
+<pre>
+<span class=area>AL</span> - Alabama
+<span class=area>AK</span> - Alaska
+<span class=area>AZ</span> - Arizona
+<span class=area>AR</span> - Arkansas
+<span class=area>CA</span> - California
+<span class=area>CO</span> - Colorado
+<span class=area>CT</span> - Connecticut
+<span class=area>DE</span> - Delaware
+<span class=area>DC</span> - District of Columbia
+<span class=area>FL</span> - Florida
+<span class=area>GU</span> - Guam
+<span class=area>GA</span> - Georgia
+<span class=area>HI</span> - Hawaii
+<span class=area>ID</span> - Idaho
+<span class=area>IL</span> - Illinois
+<span class=area>IN</span> - Indiana
+<span class=area>IA</span> - Iowa
+<span class=area>KS</span> - Kansas
+<span class=area>KY</span> - Kentucky
+<span class=area>LA</span> - Louisiana
+<span class=area>ME</span> - Maine
+<span class=area>MD</span> - Maryland
+<span class=area>MA</span> - Massachusetts
+<span class=area>MI</span> - Michigan
+<span class=area>MN</span> - Minnesota
+<span class=area>MS</span> - Mississippi
+<span class=area>MO</span> - Missouri
+<span class=area>MT</span> - Montana
+<span class=area>NE</span> - Nebraska
+<span class=area>NV</span> - Nevada
+<span class=area>NH</span> - New Hampshire
+<span class=area>NJ</span> - New Jersey
+<span class=area>NM</span> - New Mexico
+<span class=area>NY</span> - New York
+<span class=area>NC</span> - North Carolina
+<span class=area>ND</span> - North Dakota
+<span class=area>OH</span> - Ohio
+<span class=area>OK</span> - Oklahoma
+<span class=area>OR</span> - Oregon
+<span class=area>PA</span> - Pennsylvania
+<span class=area>RI</span> - Rhode Island
+<span class=area>SC</span> - South Carolina
+<span class=area>SD</span> - South Dakota
+<span class=area>TN</span> - Tennessee
+<span class=area>TX</span> - Texas
+<span class=area>UT</span> - Utah
+<span class=area>VT</span> - Vermont
+<span class=area>VA</span> - Virginia
+<span class=area>VI</span> - US Virgin Islands
+<span class=area>WA</span> - Washington
+<span class=area>WV</span> - West Virginia
+<span class=area>WI</span> - Wisconsin
+<span class=area>WY</span> - Wyoming
+<span class=area>PR</span> - Puerto Rico
+</pre>
+-toggle
+
+
+:heading Zones
+Zones can be any number of NWS forecast zones, fire zones or county UGC codes.
+More documentation is available at <a href=https://www.weather.gov/media/documentation/docs/NWS_Geolocation.pdf>weather.gov</a>.
+<ul>
+<li> The Forecast Fire Zones map can  be viewed at
+<a href=https://ramadda.org/repository/a/nws_fire_weather_map>https://ramadda.org/repository/a/nws_fire_weather_map</a>.
+<li> The Forecast Zones map can be viewed at
+<a href=https://ramadda.org/repository/a/nws_forecast_zones_map>https://ramadda.org/repository/a/nws_forecast_zones_map</a>.
+<li> The county UGC codes can be viewed at
+<a href=https://ramadda.org/repository/a/nws_ugccodes>https://ramadda.org/repository/a/nws_ugccodes</a>.
+</ul>
+
+
 
 :heading Geolocation
 You can set the geolocation of the Alerts entry to a point that will be used to show alerts.
+When editing the entry simply set the latitude/longitude.
 
-:heading Areas
-The areas can be any number of state 2-character identifiers, one pre line:
+
+
+:heading Wiki Tag
+The display of the alerts can be embedded in other pages with the <i>nws_alerts</i> wiki tag.
+<pre>{<foo>{nws_alerts  entry="the alert entry"}}</pre>
+
+The areas or zones can be overwritten with:
 <pre>
-AL - Alabama
-AK - Alaska
-AZ - Arizona
-AR - Arkansas
-CA - California
-CO - Colorado
-CT - Connecticut
-DE - Delaware
-DC - District of Columbia
-FL - Florida
-GU - Guam
-GA - Georgia
-HI - Hawaii
-ID - Idaho
-IL - Illinois
-IN - Indiana
-IA - Iowa
-KS - Kansas
-KY - Kentucky
-LA - Louisiana
-ME - Maine
-MD - Maryland
-MA - Massachusetts
-MI - Michigan
-MN - Minnesota
-MS - Mississippi
-MO - Missouri
-MT - Montana
-NE - Nebraska
-NV - Nevada
-NH - New Hampshire
-NJ - New Jersey
-NM - New Mexico
-NY - New York
-NC - North Carolina
-ND - North Dakota
-OH - Ohio
-OK - Oklahoma
-OR - Oregon
-PA - Pennsylvania
-RI - Rhode Island
-SC - South Carolina
-SD - South Dakota
-TN - Tennessee
-TX - Texas
-UT - Utah
-VT - Vermont
-VA - Virginia
-VI - US Virgin Islands
-WA - Washington
-WV - West Virginia
-WI - Wisconsin
-WY - Wyoming
-PR - Puerto Rico
+{<foo>{nws_alerts areas="CO,SD" zones="KSZ081,SDZ049"}}
 </pre>
 
-:heading Zones
-Zones can be any number of NWS forecast zones or county FIPS codes.
-More documentation is available at <a href=https://www.weather.gov/media/documentation/docs/NWS_Geolocation.pdf>weather.gov</a>.
-:p
-The county FIPS codes are can be viewed <a href=counties.csv>here</a>.
+Header labels can be specified with "alertLabel.&lt;area or zone&gt;", e.g.:
 
+<pre>
+{<foo>{nws_alerts
+alertLabel.SD="All South Dakota Alerts"
+alertLabel.point="Boulder Area Alerts"
+alertLabel="Label for all alerts"}}
+</pre>
+
+You can specify that the toggle is not shown with:
+<pre>
+{<foo>{nws_alerts 
+showToggle.SD=false 
+showToggle.point=false
+showToggle=false
+}}
+</pre>
+
+You can specify that the toggle is open or closed with:
+<pre>
+{<foo>{nws_alerts 
+toggleOpen.SD=false 
+toggleOpen.point=false
+toggleOpen=false
+}}
+</pre>
+
+
+
+:heading Header Messages
+The NWS classifies alerts with the following phenomena types.
+You can specify a message that will be displayed in the header in two ways.
+First, there is a Header Messages property of the Alert entry where you can add, one per line, messages of the form:
+<br>&lt;event&gt;:&lt;message&gt;<br>
+Where event is either one of the IDs listed below  or one of the Event Types.
+e.g.:
+<pre>
+heat:Some message when heat
+AQ:Some message for air quality
+</pre>
+
+Also, when using a custom  <i>nws_alerts</i> wiki tag you can specify the properties with, e.g.:
+<pre>{<foo>{nws_alerts 
+headerMessage.heat="There are heat related alerts. Please see..."
+headerMessage.AQ="Some Air quality message"
+}}</pre>
+
+
+:heading Event Types
+
+:p
+Click on an event to copy.
+:br
+:pagesearch label="Search for event type"
+:p
+<table>
+<tr ><td ><b >ID</b></td><td  style="padding-left:1em;padding-right:1em;" ><b >Event Type</b></td><td ><b >Description</b></td></tr>
+<tr  class="search-component" ><td  class="eventtype" >AQ</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Air Quality</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >AV</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Avalanche</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >BH</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Beach Hazards</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >BZ</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Blizzard</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SP</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Special Weather</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >DS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Dust Storm</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >DU</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Blowing Dust</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >EC</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >cold</td><td  align="left" >Extreme Cold</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >EH</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >heat</td><td  align="left" >Excessive Heat</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >XH</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >heat</td><td  align="left" >Extreme Heat</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >HT</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >heat</td><td  align="left" >Heat</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >CF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Coastal Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FA</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Areal Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Flash Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FL</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >LS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Lakeshore Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >UW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >flood</td><td  align="left" >Urban and Small Stream Flood</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FG</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Dense Fog</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FR</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Frost</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Fire Weather</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >AF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Ashfall</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >FZ</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Freeze</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >GL</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Gale</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >HF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >Hurricane Force Wind</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >HU</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Hurricane</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >HZ</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Hard Freeze</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >IP</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Sleet</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >IS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Ice Storm</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >LB</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Lake Effect Snow and Blowing Snow</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >LE</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Lake Effect Snow</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >LO</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Low Water</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >MA</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Marine</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >RB</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Small Craft for Rough Bar</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >RD</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Radiological Hazard</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >RF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Small Craft for Rough Waters</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SC</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Small Craft</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SE</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Hazardous Seas</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SI</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >Small Craft for Winds</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SM</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Dense Smoke</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SN</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Snow</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SQ</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Snow Squall</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SR</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Storm Surge</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Storm Surge</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SU</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Blowing Snow</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SV</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Severe Thunderstorm</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >SW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Small Craft for Hazardous Seas</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >TO</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Tornado</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >TR</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Tropical Storm</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >TS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Tsunami</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >TY</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Typhoon</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >UP</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Unknown Precipitation</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >VO</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Volcano</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >WC</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Wind Chill</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >WI</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >Wind</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >HW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >High Wind</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >BW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >Brisk Wind</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >EW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >wind</td><td  align="left" >Extreme Wind</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >WS</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >cold</td><td  align="left" >Winter Storm</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >WW</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" >cold</td><td  align="left" >Winter Weather</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >ZF</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Freezing Fog</td></tr>
+<tr  class="search-component" ><td  class="eventtype" >ZR</td><td  class="eventtype"  style="padding-left:1em;padding-right:1em;" ></td><td  align="left" >Freezing Rain</td></tr>
+</table>
+
++javascript
+Utils.initCopyable('.eventtype,.area');
+-javascript
 
 
 </body>

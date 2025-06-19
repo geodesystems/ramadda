@@ -1,0 +1,3223 @@
+UGC,County,State
+ALC001,Autauga County,Alabama
+ALC003,Baldwin County,Alabama
+ALC005,Barbour County,Alabama
+ALC007,Bibb County,Alabama
+ALC009,Blount County,Alabama
+ALC011,Bullock County,Alabama
+ALC013,Butler County,Alabama
+ALC015,Calhoun County,Alabama
+ALC017,Chambers County,Alabama
+ALC019,Cherokee County,Alabama
+ALC021,Chilton County,Alabama
+ALC023,Choctaw County,Alabama
+ALC025,Clarke County,Alabama
+ALC027,Clay County,Alabama
+ALC029,Cleburne County,Alabama
+ALC031,Coffee County,Alabama
+ALC033,Colbert County,Alabama
+ALC035,Conecuh County,Alabama
+ALC037,Coosa County,Alabama
+ALC039,Covington County,Alabama
+ALC041,Crenshaw County,Alabama
+ALC043,Cullman County,Alabama
+ALC045,Dale County,Alabama
+ALC047,Dallas County,Alabama
+ALC049,DeKalb County,Alabama
+ALC051,Elmore County,Alabama
+ALC053,Escambia County,Alabama
+ALC055,Etowah County,Alabama
+ALC057,Fayette County,Alabama
+ALC059,Franklin County,Alabama
+ALC061,Geneva County,Alabama
+ALC063,Greene County,Alabama
+ALC065,Hale County,Alabama
+ALC067,Henry County,Alabama
+ALC069,Houston County,Alabama
+ALC071,Jackson County,Alabama
+ALC073,Jefferson County,Alabama
+ALC075,Lamar County,Alabama
+ALC077,Lauderdale County,Alabama
+ALC079,Lawrence County,Alabama
+ALC081,Lee County,Alabama
+ALC083,Limestone County,Alabama
+ALC085,Lowndes County,Alabama
+ALC087,Macon County,Alabama
+ALC089,Madison County,Alabama
+ALC091,Marengo County,Alabama
+ALC093,Marion County,Alabama
+ALC095,Marshall County,Alabama
+ALC097,Mobile County,Alabama
+ALC099,Monroe County,Alabama
+ALC101,Montgomery County,Alabama
+ALC103,Morgan County,Alabama
+ALC105,Perry County,Alabama
+ALC107,Pickens County,Alabama
+ALC109,Pike County,Alabama
+ALC111,Randolph County,Alabama
+ALC113,Russell County,Alabama
+ALC115,St. Clair County,Alabama
+ALC117,Shelby County,Alabama
+ALC119,Sumter County,Alabama
+ALC121,Talladega County,Alabama
+ALC123,Tallapoosa County,Alabama
+ALC125,Tuscaloosa County,Alabama
+ALC127,Walker County,Alabama
+ALC129,Washington County,Alabama
+ALC131,Wilcox County,Alabama
+ALC133,Winston County,Alabama
+AKC013,Aleutians East Borough,Alaska
+AKC016,Aleutians West Census Area,Alaska
+AKC020,Anchorage Municipality,Alaska
+AKC050,Bethel Census Area,Alaska
+AKC060,Bristol Bay Borough,Alaska
+AKC063,Chugach Census Area,Alaska
+AKC066,Copper River Census Area,Alaska
+AKC068,Denali Borough,Alaska
+AKC070,Dillingham Census Area,Alaska
+AKC090,Fairbanks North Star Borough,Alaska
+AKC100,Haines Borough,Alaska
+AKC105,Hoonah-Angoon Census Area,Alaska
+AKC110,Juneau City and Borough,Alaska
+AKC122,Kenai Peninsula Borough,Alaska
+AKC130,Ketchikan Gateway Borough,Alaska
+AKC150,Kodiak Island Borough,Alaska
+AKC158,Kusilvak Census Area,Alaska
+AKC164,Lake and Peninsula Borough,Alaska
+AKC170,Matanuska-Susitna Borough,Alaska
+AKC180,Nome Census Area,Alaska
+AKC185,North Slope Borough,Alaska
+AKC188,Northwest Arctic Borough,Alaska
+AKC195,Petersburg Borough,Alaska
+AKC198,Prince of Wales-Hyder Census Area,Alaska
+AKC220,Sitka City and Borough,Alaska
+AKC230,Skagway Municipality,Alaska
+AKC240,Southeast Fairbanks Census Area,Alaska
+AKC275,Wrangell City and Borough,Alaska
+AKC282,Yakutat City and Borough,Alaska
+AKC290,Yukon-Koyukuk Census Area,Alaska
+AZC001,Apache County,Arizona
+AZC003,Cochise County,Arizona
+AZC005,Coconino County,Arizona
+AZC007,Gila County,Arizona
+AZC009,Graham County,Arizona
+AZC011,Greenlee County,Arizona
+AZC012,La Paz County,Arizona
+AZC013,Maricopa County,Arizona
+AZC015,Mohave County,Arizona
+AZC017,Navajo County,Arizona
+AZC019,Pima County,Arizona
+AZC021,Pinal County,Arizona
+AZC023,Santa Cruz County,Arizona
+AZC025,Yavapai County,Arizona
+AZC027,Yuma County,Arizona
+ARC001,Arkansas County,Arkansas
+ARC003,Ashley County,Arkansas
+ARC005,Baxter County,Arkansas
+ARC007,Benton County,Arkansas
+ARC009,Boone County,Arkansas
+ARC011,Bradley County,Arkansas
+ARC013,Calhoun County,Arkansas
+ARC015,Carroll County,Arkansas
+ARC017,Chicot County,Arkansas
+ARC019,Clark County,Arkansas
+ARC021,Clay County,Arkansas
+ARC023,Cleburne County,Arkansas
+ARC025,Cleveland County,Arkansas
+ARC027,Columbia County,Arkansas
+ARC029,Conway County,Arkansas
+ARC031,Craighead County,Arkansas
+ARC033,Crawford County,Arkansas
+ARC035,Crittenden County,Arkansas
+ARC037,Cross County,Arkansas
+ARC039,Dallas County,Arkansas
+ARC041,Desha County,Arkansas
+ARC043,Drew County,Arkansas
+ARC045,Faulkner County,Arkansas
+ARC047,Franklin County,Arkansas
+ARC049,Fulton County,Arkansas
+ARC051,Garland County,Arkansas
+ARC053,Grant County,Arkansas
+ARC055,Greene County,Arkansas
+ARC057,Hempstead County,Arkansas
+ARC059,Hot Spring County,Arkansas
+ARC061,Howard County,Arkansas
+ARC063,Independence County,Arkansas
+ARC065,Izard County,Arkansas
+ARC067,Jackson County,Arkansas
+ARC069,Jefferson County,Arkansas
+ARC071,Johnson County,Arkansas
+ARC073,Lafayette County,Arkansas
+ARC075,Lawrence County,Arkansas
+ARC077,Lee County,Arkansas
+ARC079,Lincoln County,Arkansas
+ARC081,Little River County,Arkansas
+ARC083,Logan County,Arkansas
+ARC085,Lonoke County,Arkansas
+ARC087,Madison County,Arkansas
+ARC089,Marion County,Arkansas
+ARC091,Miller County,Arkansas
+ARC093,Mississippi County,Arkansas
+ARC095,Monroe County,Arkansas
+ARC097,Montgomery County,Arkansas
+ARC099,Nevada County,Arkansas
+ARC101,Newton County,Arkansas
+ARC103,Ouachita County,Arkansas
+ARC105,Perry County,Arkansas
+ARC107,Phillips County,Arkansas
+ARC109,Pike County,Arkansas
+ARC111,Poinsett County,Arkansas
+ARC113,Polk County,Arkansas
+ARC115,Pope County,Arkansas
+ARC117,Prairie County,Arkansas
+ARC119,Pulaski County,Arkansas
+ARC121,Randolph County,Arkansas
+ARC123,St. Francis County,Arkansas
+ARC125,Saline County,Arkansas
+ARC127,Scott County,Arkansas
+ARC129,Searcy County,Arkansas
+ARC131,Sebastian County,Arkansas
+ARC133,Sevier County,Arkansas
+ARC135,Sharp County,Arkansas
+ARC137,Stone County,Arkansas
+ARC139,Union County,Arkansas
+ARC141,Van Buren County,Arkansas
+ARC143,Washington County,Arkansas
+ARC145,White County,Arkansas
+ARC147,Woodruff County,Arkansas
+ARC149,Yell County,Arkansas
+CAC001,Alameda County,California
+CAC003,Alpine County,California
+CAC005,Amador County,California
+CAC007,Butte County,California
+CAC009,Calaveras County,California
+CAC011,Colusa County,California
+CAC013,Contra Costa County,California
+CAC015,Del Norte County,California
+CAC017,El Dorado County,California
+CAC019,Fresno County,California
+CAC021,Glenn County,California
+CAC023,Humboldt County,California
+CAC025,Imperial County,California
+CAC027,Inyo County,California
+CAC029,Kern County,California
+CAC031,Kings County,California
+CAC033,Lake County,California
+CAC035,Lassen County,California
+CAC037,Los Angeles County,California
+CAC039,Madera County,California
+CAC041,Marin County,California
+CAC043,Mariposa County,California
+CAC045,Mendocino County,California
+CAC047,Merced County,California
+CAC049,Modoc County,California
+CAC051,Mono County,California
+CAC053,Monterey County,California
+CAC055,Napa County,California
+CAC057,Nevada County,California
+CAC059,Orange County,California
+CAC061,Placer County,California
+CAC063,Plumas County,California
+CAC065,Riverside County,California
+CAC067,Sacramento County,California
+CAC069,San Benito County,California
+CAC071,San Bernardino County,California
+CAC073,San Diego County,California
+CAC075,San Francisco County,California
+CAC077,San Joaquin County,California
+CAC079,San Luis Obispo County,California
+CAC081,San Mateo County,California
+CAC083,Santa Barbara County,California
+CAC085,Santa Clara County,California
+CAC087,Santa Cruz County,California
+CAC089,Shasta County,California
+CAC091,Sierra County,California
+CAC093,Siskiyou County,California
+CAC095,Solano County,California
+CAC097,Sonoma County,California
+CAC099,Stanislaus County,California
+CAC101,Sutter County,California
+CAC103,Tehama County,California
+CAC105,Trinity County,California
+CAC107,Tulare County,California
+CAC109,Tuolumne County,California
+CAC111,Ventura County,California
+CAC113,Yolo County,California
+CAC115,Yuba County,California
+COC001,Adams County,Colorado
+COC003,Alamosa County,Colorado
+COC005,Arapahoe County,Colorado
+COC007,Archuleta County,Colorado
+COC009,Baca County,Colorado
+COC011,Bent County,Colorado
+COC013,Boulder County,Colorado
+COC014,Broomfield County,Colorado
+COC015,Chaffee County,Colorado
+COC017,Cheyenne County,Colorado
+COC019,Clear Creek County,Colorado
+COC021,Conejos County,Colorado
+COC023,Costilla County,Colorado
+COC025,Crowley County,Colorado
+COC027,Custer County,Colorado
+COC029,Delta County,Colorado
+COC031,Denver County,Colorado
+COC033,Dolores County,Colorado
+COC035,Douglas County,Colorado
+COC037,Eagle County,Colorado
+COC039,Elbert County,Colorado
+COC041,El Paso County,Colorado
+COC043,Fremont County,Colorado
+COC045,Garfield County,Colorado
+COC047,Gilpin County,Colorado
+COC049,Grand County,Colorado
+COC051,Gunnison County,Colorado
+COC053,Hinsdale County,Colorado
+COC055,Huerfano County,Colorado
+COC057,Jackson County,Colorado
+COC059,Jefferson County,Colorado
+COC061,Kiowa County,Colorado
+COC063,Kit Carson County,Colorado
+COC065,Lake County,Colorado
+COC067,La Plata County,Colorado
+COC069,Larimer County,Colorado
+COC071,Las Animas County,Colorado
+COC073,Lincoln County,Colorado
+COC075,Logan County,Colorado
+COC077,Mesa County,Colorado
+COC079,Mineral County,Colorado
+COC081,Moffat County,Colorado
+COC083,Montezuma County,Colorado
+COC085,Montrose County,Colorado
+COC087,Morgan County,Colorado
+COC089,Otero County,Colorado
+COC091,Ouray County,Colorado
+COC093,Park County,Colorado
+COC095,Phillips County,Colorado
+COC097,Pitkin County,Colorado
+COC099,Prowers County,Colorado
+COC101,Pueblo County,Colorado
+COC103,Rio Blanco County,Colorado
+COC105,Rio Grande County,Colorado
+COC107,Routt County,Colorado
+COC109,Saguache County,Colorado
+COC111,San Juan County,Colorado
+COC113,San Miguel County,Colorado
+COC115,Sedgwick County,Colorado
+COC117,Summit County,Colorado
+COC119,Teller County,Colorado
+COC121,Washington County,Colorado
+COC123,Weld County,Colorado
+COC125,Yuma County,Colorado
+CTC110,Capitol Planning Region,Connecticut
+CTC120,Greater Bridgeport Planning Region,Connecticut
+CTC130,Lower Connecticut River Valley Planning Region,Connecticut
+CTC140,Naugatuck Valley Planning Region,Connecticut
+CTC150,Northeastern Connecticut Planning Region,Connecticut
+CTC160,Northwest Hills Planning Region,Connecticut
+CTC170,South Central Connecticut Planning Region,Connecticut
+CTC180,Southeastern Connecticut Planning Region,Connecticut
+CTC190,Western Connecticut Planning Region,Connecticut
+DEC001,Kent County,Delaware
+DEC003,New Castle County,Delaware
+DEC005,Sussex County,Delaware
+DCC001,District of Columbia,District of Columbia
+FLC001,Alachua County,Florida
+FLC003,Baker County,Florida
+FLC005,Bay County,Florida
+FLC007,Bradford County,Florida
+FLC009,Brevard County,Florida
+FLC011,Broward County,Florida
+FLC013,Calhoun County,Florida
+FLC015,Charlotte County,Florida
+FLC017,Citrus County,Florida
+FLC019,Clay County,Florida
+FLC021,Collier County,Florida
+FLC023,Columbia County,Florida
+FLC027,DeSoto County,Florida
+FLC029,Dixie County,Florida
+FLC031,Duval County,Florida
+FLC033,Escambia County,Florida
+FLC035,Flagler County,Florida
+FLC037,Franklin County,Florida
+FLC039,Gadsden County,Florida
+FLC041,Gilchrist County,Florida
+FLC043,Glades County,Florida
+FLC045,Gulf County,Florida
+FLC047,Hamilton County,Florida
+FLC049,Hardee County,Florida
+FLC051,Hendry County,Florida
+FLC053,Hernando County,Florida
+FLC055,Highlands County,Florida
+FLC057,Hillsborough County,Florida
+FLC059,Holmes County,Florida
+FLC061,Indian River County,Florida
+FLC063,Jackson County,Florida
+FLC065,Jefferson County,Florida
+FLC067,Lafayette County,Florida
+FLC069,Lake County,Florida
+FLC071,Lee County,Florida
+FLC073,Leon County,Florida
+FLC075,Levy County,Florida
+FLC077,Liberty County,Florida
+FLC079,Madison County,Florida
+FLC081,Manatee County,Florida
+FLC083,Marion County,Florida
+FLC085,Martin County,Florida
+FLC086,Miami-Dade County,Florida
+FLC087,Monroe County,Florida
+FLC089,Nassau County,Florida
+FLC091,Okaloosa County,Florida
+FLC093,Okeechobee County,Florida
+FLC095,Orange County,Florida
+FLC097,Osceola County,Florida
+FLC099,Palm Beach County,Florida
+FLC101,Pasco County,Florida
+FLC103,Pinellas County,Florida
+FLC105,Polk County,Florida
+FLC107,Putnam County,Florida
+FLC109,St. Johns County,Florida
+FLC111,St. Lucie County,Florida
+FLC113,Santa Rosa County,Florida
+FLC115,Sarasota County,Florida
+FLC117,Seminole County,Florida
+FLC119,Sumter County,Florida
+FLC121,Suwannee County,Florida
+FLC123,Taylor County,Florida
+FLC125,Union County,Florida
+FLC127,Volusia County,Florida
+FLC129,Wakulla County,Florida
+FLC131,Walton County,Florida
+FLC133,Washington County,Florida
+GAC001,Appling County,Georgia
+GAC003,Atkinson County,Georgia
+GAC005,Bacon County,Georgia
+GAC007,Baker County,Georgia
+GAC009,Baldwin County,Georgia
+GAC011,Banks County,Georgia
+GAC013,Barrow County,Georgia
+GAC015,Bartow County,Georgia
+GAC017,Ben Hill County,Georgia
+GAC019,Berrien County,Georgia
+GAC021,Bibb County,Georgia
+GAC023,Bleckley County,Georgia
+GAC025,Brantley County,Georgia
+GAC027,Brooks County,Georgia
+GAC029,Bryan County,Georgia
+GAC031,Bulloch County,Georgia
+GAC033,Burke County,Georgia
+GAC035,Butts County,Georgia
+GAC037,Calhoun County,Georgia
+GAC039,Camden County,Georgia
+GAC043,Candler County,Georgia
+GAC045,Carroll County,Georgia
+GAC047,Catoosa County,Georgia
+GAC049,Charlton County,Georgia
+GAC051,Chatham County,Georgia
+GAC053,Chattahoochee County,Georgia
+GAC055,Chattooga County,Georgia
+GAC057,Cherokee County,Georgia
+GAC059,Clarke County,Georgia
+GAC061,Clay County,Georgia
+GAC063,Clayton County,Georgia
+GAC065,Clinch County,Georgia
+GAC067,Cobb County,Georgia
+GAC069,Coffee County,Georgia
+GAC071,Colquitt County,Georgia
+GAC073,Columbia County,Georgia
+GAC075,Cook County,Georgia
+GAC077,Coweta County,Georgia
+GAC079,Crawford County,Georgia
+GAC081,Crisp County,Georgia
+GAC083,Dade County,Georgia
+GAC085,Dawson County,Georgia
+GAC087,Decatur County,Georgia
+GAC089,DeKalb County,Georgia
+GAC091,Dodge County,Georgia
+GAC093,Dooly County,Georgia
+GAC095,Dougherty County,Georgia
+GAC097,Douglas County,Georgia
+GAC099,Early County,Georgia
+GAC101,Echols County,Georgia
+GAC103,Effingham County,Georgia
+GAC105,Elbert County,Georgia
+GAC107,Emanuel County,Georgia
+GAC109,Evans County,Georgia
+GAC111,Fannin County,Georgia
+GAC113,Fayette County,Georgia
+GAC115,Floyd County,Georgia
+GAC117,Forsyth County,Georgia
+GAC119,Franklin County,Georgia
+GAC121,Fulton County,Georgia
+GAC123,Gilmer County,Georgia
+GAC125,Glascock County,Georgia
+GAC127,Glynn County,Georgia
+GAC129,Gordon County,Georgia
+GAC131,Grady County,Georgia
+GAC133,Greene County,Georgia
+GAC135,Gwinnett County,Georgia
+GAC137,Habersham County,Georgia
+GAC139,Hall County,Georgia
+GAC141,Hancock County,Georgia
+GAC143,Haralson County,Georgia
+GAC145,Harris County,Georgia
+GAC147,Hart County,Georgia
+GAC149,Heard County,Georgia
+GAC151,Henry County,Georgia
+GAC153,Houston County,Georgia
+GAC155,Irwin County,Georgia
+GAC157,Jackson County,Georgia
+GAC159,Jasper County,Georgia
+GAC161,Jeff Davis County,Georgia
+GAC163,Jefferson County,Georgia
+GAC165,Jenkins County,Georgia
+GAC167,Johnson County,Georgia
+GAC169,Jones County,Georgia
+GAC171,Lamar County,Georgia
+GAC173,Lanier County,Georgia
+GAC175,Laurens County,Georgia
+GAC177,Lee County,Georgia
+GAC179,Liberty County,Georgia
+GAC181,Lincoln County,Georgia
+GAC183,Long County,Georgia
+GAC185,Lowndes County,Georgia
+GAC187,Lumpkin County,Georgia
+GAC189,McDuffie County,Georgia
+GAC191,McIntosh County,Georgia
+GAC193,Macon County,Georgia
+GAC195,Madison County,Georgia
+GAC197,Marion County,Georgia
+GAC199,Meriwether County,Georgia
+GAC201,Miller County,Georgia
+GAC205,Mitchell County,Georgia
+GAC207,Monroe County,Georgia
+GAC209,Montgomery County,Georgia
+GAC211,Morgan County,Georgia
+GAC213,Murray County,Georgia
+GAC215,Muscogee County,Georgia
+GAC217,Newton County,Georgia
+GAC219,Oconee County,Georgia
+GAC221,Oglethorpe County,Georgia
+GAC223,Paulding County,Georgia
+GAC225,Peach County,Georgia
+GAC227,Pickens County,Georgia
+GAC229,Pierce County,Georgia
+GAC231,Pike County,Georgia
+GAC233,Polk County,Georgia
+GAC235,Pulaski County,Georgia
+GAC237,Putnam County,Georgia
+GAC239,Quitman County,Georgia
+GAC241,Rabun County,Georgia
+GAC243,Randolph County,Georgia
+GAC245,Richmond County,Georgia
+GAC247,Rockdale County,Georgia
+GAC249,Schley County,Georgia
+GAC251,Screven County,Georgia
+GAC253,Seminole County,Georgia
+GAC255,Spalding County,Georgia
+GAC257,Stephens County,Georgia
+GAC259,Stewart County,Georgia
+GAC261,Sumter County,Georgia
+GAC263,Talbot County,Georgia
+GAC265,Taliaferro County,Georgia
+GAC267,Tattnall County,Georgia
+GAC269,Taylor County,Georgia
+GAC271,Telfair County,Georgia
+GAC273,Terrell County,Georgia
+GAC275,Thomas County,Georgia
+GAC277,Tift County,Georgia
+GAC279,Toombs County,Georgia
+GAC281,Towns County,Georgia
+GAC283,Treutlen County,Georgia
+GAC285,Troup County,Georgia
+GAC287,Turner County,Georgia
+GAC289,Twiggs County,Georgia
+GAC291,Union County,Georgia
+GAC293,Upson County,Georgia
+GAC295,Walker County,Georgia
+GAC297,Walton County,Georgia
+GAC299,Ware County,Georgia
+GAC301,Warren County,Georgia
+GAC303,Washington County,Georgia
+GAC305,Wayne County,Georgia
+GAC307,Webster County,Georgia
+GAC309,Wheeler County,Georgia
+GAC311,White County,Georgia
+GAC313,Whitfield County,Georgia
+GAC315,Wilcox County,Georgia
+GAC317,Wilkes County,Georgia
+GAC319,Wilkinson County,Georgia
+GAC321,Worth County,Georgia
+HIC001,Hawaii County,Hawaii
+HIC003,Honolulu County,Hawaii
+HIC005,Kalawao County,Hawaii
+HIC007,Kauai County,Hawaii
+HIC009,Maui County,Hawaii
+IDC001,Ada County,Idaho
+IDC003,Adams County,Idaho
+IDC005,Bannock County,Idaho
+IDC007,Bear Lake County,Idaho
+IDC009,Benewah County,Idaho
+IDC011,Bingham County,Idaho
+IDC013,Blaine County,Idaho
+IDC015,Boise County,Idaho
+IDC017,Bonner County,Idaho
+IDC019,Bonneville County,Idaho
+IDC021,Boundary County,Idaho
+IDC023,Butte County,Idaho
+IDC025,Camas County,Idaho
+IDC027,Canyon County,Idaho
+IDC029,Caribou County,Idaho
+IDC031,Cassia County,Idaho
+IDC033,Clark County,Idaho
+IDC035,Clearwater County,Idaho
+IDC037,Custer County,Idaho
+IDC039,Elmore County,Idaho
+IDC041,Franklin County,Idaho
+IDC043,Fremont County,Idaho
+IDC045,Gem County,Idaho
+IDC047,Gooding County,Idaho
+IDC049,Idaho County,Idaho
+IDC051,Jefferson County,Idaho
+IDC053,Jerome County,Idaho
+IDC055,Kootenai County,Idaho
+IDC057,Latah County,Idaho
+IDC059,Lemhi County,Idaho
+IDC061,Lewis County,Idaho
+IDC063,Lincoln County,Idaho
+IDC065,Madison County,Idaho
+IDC067,Minidoka County,Idaho
+IDC069,Nez Perce County,Idaho
+IDC071,Oneida County,Idaho
+IDC073,Owyhee County,Idaho
+IDC075,Payette County,Idaho
+IDC077,Power County,Idaho
+IDC079,Shoshone County,Idaho
+IDC081,Teton County,Idaho
+IDC083,Twin Falls County,Idaho
+IDC085,Valley County,Idaho
+IDC087,Washington County,Idaho
+ILC001,Adams County,Illinois
+ILC003,Alexander County,Illinois
+ILC005,Bond County,Illinois
+ILC007,Boone County,Illinois
+ILC009,Brown County,Illinois
+ILC011,Bureau County,Illinois
+ILC013,Calhoun County,Illinois
+ILC015,Carroll County,Illinois
+ILC017,Cass County,Illinois
+ILC019,Champaign County,Illinois
+ILC021,Christian County,Illinois
+ILC023,Clark County,Illinois
+ILC025,Clay County,Illinois
+ILC027,Clinton County,Illinois
+ILC029,Coles County,Illinois
+ILC031,Cook County,Illinois
+ILC033,Crawford County,Illinois
+ILC035,Cumberland County,Illinois
+ILC037,DeKalb County,Illinois
+ILC039,De Witt County,Illinois
+ILC041,Douglas County,Illinois
+ILC043,DuPage County,Illinois
+ILC045,Edgar County,Illinois
+ILC047,Edwards County,Illinois
+ILC049,Effingham County,Illinois
+ILC051,Fayette County,Illinois
+ILC053,Ford County,Illinois
+ILC055,Franklin County,Illinois
+ILC057,Fulton County,Illinois
+ILC059,Gallatin County,Illinois
+ILC061,Greene County,Illinois
+ILC063,Grundy County,Illinois
+ILC065,Hamilton County,Illinois
+ILC067,Hancock County,Illinois
+ILC069,Hardin County,Illinois
+ILC071,Henderson County,Illinois
+ILC073,Henry County,Illinois
+ILC075,Iroquois County,Illinois
+ILC077,Jackson County,Illinois
+ILC079,Jasper County,Illinois
+ILC081,Jefferson County,Illinois
+ILC083,Jersey County,Illinois
+ILC085,Jo Daviess County,Illinois
+ILC087,Johnson County,Illinois
+ILC089,Kane County,Illinois
+ILC091,Kankakee County,Illinois
+ILC093,Kendall County,Illinois
+ILC095,Knox County,Illinois
+ILC097,Lake County,Illinois
+ILC099,LaSalle County,Illinois
+ILC101,Lawrence County,Illinois
+ILC103,Lee County,Illinois
+ILC105,Livingston County,Illinois
+ILC107,Logan County,Illinois
+ILC109,McDonough County,Illinois
+ILC111,McHenry County,Illinois
+ILC113,McLean County,Illinois
+ILC115,Macon County,Illinois
+ILC117,Macoupin County,Illinois
+ILC119,Madison County,Illinois
+ILC121,Marion County,Illinois
+ILC123,Marshall County,Illinois
+ILC125,Mason County,Illinois
+ILC127,Massac County,Illinois
+ILC129,Menard County,Illinois
+ILC131,Mercer County,Illinois
+ILC133,Monroe County,Illinois
+ILC135,Montgomery County,Illinois
+ILC137,Morgan County,Illinois
+ILC139,Moultrie County,Illinois
+ILC141,Ogle County,Illinois
+ILC143,Peoria County,Illinois
+ILC145,Perry County,Illinois
+ILC147,Piatt County,Illinois
+ILC149,Pike County,Illinois
+ILC151,Pope County,Illinois
+ILC153,Pulaski County,Illinois
+ILC155,Putnam County,Illinois
+ILC157,Randolph County,Illinois
+ILC159,Richland County,Illinois
+ILC161,Rock Island County,Illinois
+ILC163,St. Clair County,Illinois
+ILC165,Saline County,Illinois
+ILC167,Sangamon County,Illinois
+ILC169,Schuyler County,Illinois
+ILC171,Scott County,Illinois
+ILC173,Shelby County,Illinois
+ILC175,Stark County,Illinois
+ILC177,Stephenson County,Illinois
+ILC179,Tazewell County,Illinois
+ILC181,Union County,Illinois
+ILC183,Vermilion County,Illinois
+ILC185,Wabash County,Illinois
+ILC187,Warren County,Illinois
+ILC189,Washington County,Illinois
+ILC191,Wayne County,Illinois
+ILC193,White County,Illinois
+ILC195,Whiteside County,Illinois
+ILC197,Will County,Illinois
+ILC199,Williamson County,Illinois
+ILC201,Winnebago County,Illinois
+ILC203,Woodford County,Illinois
+INC001,Adams County,Indiana
+INC003,Allen County,Indiana
+INC005,Bartholomew County,Indiana
+INC007,Benton County,Indiana
+INC009,Blackford County,Indiana
+INC011,Boone County,Indiana
+INC013,Brown County,Indiana
+INC015,Carroll County,Indiana
+INC017,Cass County,Indiana
+INC019,Clark County,Indiana
+INC021,Clay County,Indiana
+INC023,Clinton County,Indiana
+INC025,Crawford County,Indiana
+INC027,Daviess County,Indiana
+INC029,Dearborn County,Indiana
+INC031,Decatur County,Indiana
+INC033,DeKalb County,Indiana
+INC035,Delaware County,Indiana
+INC037,Dubois County,Indiana
+INC039,Elkhart County,Indiana
+INC041,Fayette County,Indiana
+INC043,Floyd County,Indiana
+INC045,Fountain County,Indiana
+INC047,Franklin County,Indiana
+INC049,Fulton County,Indiana
+INC051,Gibson County,Indiana
+INC053,Grant County,Indiana
+INC055,Greene County,Indiana
+INC057,Hamilton County,Indiana
+INC059,Hancock County,Indiana
+INC061,Harrison County,Indiana
+INC063,Hendricks County,Indiana
+INC065,Henry County,Indiana
+INC067,Howard County,Indiana
+INC069,Huntington County,Indiana
+INC071,Jackson County,Indiana
+INC073,Jasper County,Indiana
+INC075,Jay County,Indiana
+INC077,Jefferson County,Indiana
+INC079,Jennings County,Indiana
+INC081,Johnson County,Indiana
+INC083,Knox County,Indiana
+INC085,Kosciusko County,Indiana
+INC087,LaGrange County,Indiana
+INC089,Lake County,Indiana
+INC091,LaPorte County,Indiana
+INC093,Lawrence County,Indiana
+INC095,Madison County,Indiana
+INC097,Marion County,Indiana
+INC099,Marshall County,Indiana
+INC101,Martin County,Indiana
+INC103,Miami County,Indiana
+INC105,Monroe County,Indiana
+INC107,Montgomery County,Indiana
+INC109,Morgan County,Indiana
+INC111,Newton County,Indiana
+INC113,Noble County,Indiana
+INC115,Ohio County,Indiana
+INC117,Orange County,Indiana
+INC119,Owen County,Indiana
+INC121,Parke County,Indiana
+INC123,Perry County,Indiana
+INC125,Pike County,Indiana
+INC127,Porter County,Indiana
+INC129,Posey County,Indiana
+INC131,Pulaski County,Indiana
+INC133,Putnam County,Indiana
+INC135,Randolph County,Indiana
+INC137,Ripley County,Indiana
+INC139,Rush County,Indiana
+INC141,St. Joseph County,Indiana
+INC143,Scott County,Indiana
+INC145,Shelby County,Indiana
+INC147,Spencer County,Indiana
+INC149,Starke County,Indiana
+INC151,Steuben County,Indiana
+INC153,Sullivan County,Indiana
+INC155,Switzerland County,Indiana
+INC157,Tippecanoe County,Indiana
+INC159,Tipton County,Indiana
+INC161,Union County,Indiana
+INC163,Vanderburgh County,Indiana
+INC165,Vermillion County,Indiana
+INC167,Vigo County,Indiana
+INC169,Wabash County,Indiana
+INC171,Warren County,Indiana
+INC173,Warrick County,Indiana
+INC175,Washington County,Indiana
+INC177,Wayne County,Indiana
+INC179,Wells County,Indiana
+INC181,White County,Indiana
+INC183,Whitley County,Indiana
+IAC001,Adair County,Iowa
+IAC003,Adams County,Iowa
+IAC005,Allamakee County,Iowa
+IAC007,Appanoose County,Iowa
+IAC009,Audubon County,Iowa
+IAC011,Benton County,Iowa
+IAC013,Black Hawk County,Iowa
+IAC015,Boone County,Iowa
+IAC017,Bremer County,Iowa
+IAC019,Buchanan County,Iowa
+IAC021,Buena Vista County,Iowa
+IAC023,Butler County,Iowa
+IAC025,Calhoun County,Iowa
+IAC027,Carroll County,Iowa
+IAC029,Cass County,Iowa
+IAC031,Cedar County,Iowa
+IAC033,Cerro Gordo County,Iowa
+IAC035,Cherokee County,Iowa
+IAC037,Chickasaw County,Iowa
+IAC039,Clarke County,Iowa
+IAC041,Clay County,Iowa
+IAC043,Clayton County,Iowa
+IAC045,Clinton County,Iowa
+IAC047,Crawford County,Iowa
+IAC049,Dallas County,Iowa
+IAC051,Davis County,Iowa
+IAC053,Decatur County,Iowa
+IAC055,Delaware County,Iowa
+IAC057,Des Moines County,Iowa
+IAC059,Dickinson County,Iowa
+IAC061,Dubuque County,Iowa
+IAC063,Emmet County,Iowa
+IAC065,Fayette County,Iowa
+IAC067,Floyd County,Iowa
+IAC069,Franklin County,Iowa
+IAC071,Fremont County,Iowa
+IAC073,Greene County,Iowa
+IAC075,Grundy County,Iowa
+IAC077,Guthrie County,Iowa
+IAC079,Hamilton County,Iowa
+IAC081,Hancock County,Iowa
+IAC083,Hardin County,Iowa
+IAC085,Harrison County,Iowa
+IAC087,Henry County,Iowa
+IAC089,Howard County,Iowa
+IAC091,Humboldt County,Iowa
+IAC093,Ida County,Iowa
+IAC095,Iowa County,Iowa
+IAC097,Jackson County,Iowa
+IAC099,Jasper County,Iowa
+IAC101,Jefferson County,Iowa
+IAC103,Johnson County,Iowa
+IAC105,Jones County,Iowa
+IAC107,Keokuk County,Iowa
+IAC109,Kossuth County,Iowa
+IAC111,Lee County,Iowa
+IAC113,Linn County,Iowa
+IAC115,Louisa County,Iowa
+IAC117,Lucas County,Iowa
+IAC119,Lyon County,Iowa
+IAC121,Madison County,Iowa
+IAC123,Mahaska County,Iowa
+IAC125,Marion County,Iowa
+IAC127,Marshall County,Iowa
+IAC129,Mills County,Iowa
+IAC131,Mitchell County,Iowa
+IAC133,Monona County,Iowa
+IAC135,Monroe County,Iowa
+IAC137,Montgomery County,Iowa
+IAC139,Muscatine County,Iowa
+IAC141,O'Brien County,Iowa
+IAC143,Osceola County,Iowa
+IAC145,Page County,Iowa
+IAC147,Palo Alto County,Iowa
+IAC149,Plymouth County,Iowa
+IAC151,Pocahontas County,Iowa
+IAC153,Polk County,Iowa
+IAC155,Pottawattamie County,Iowa
+IAC157,Poweshiek County,Iowa
+IAC159,Ringgold County,Iowa
+IAC161,Sac County,Iowa
+IAC163,Scott County,Iowa
+IAC165,Shelby County,Iowa
+IAC167,Sioux County,Iowa
+IAC169,Story County,Iowa
+IAC171,Tama County,Iowa
+IAC173,Taylor County,Iowa
+IAC175,Union County,Iowa
+IAC177,Van Buren County,Iowa
+IAC179,Wapello County,Iowa
+IAC181,Warren County,Iowa
+IAC183,Washington County,Iowa
+IAC185,Wayne County,Iowa
+IAC187,Webster County,Iowa
+IAC189,Winnebago County,Iowa
+IAC191,Winneshiek County,Iowa
+IAC193,Woodbury County,Iowa
+IAC195,Worth County,Iowa
+IAC197,Wright County,Iowa
+KSC001,Allen County,Kansas
+KSC003,Anderson County,Kansas
+KSC005,Atchison County,Kansas
+KSC007,Barber County,Kansas
+KSC009,Barton County,Kansas
+KSC011,Bourbon County,Kansas
+KSC013,Brown County,Kansas
+KSC015,Butler County,Kansas
+KSC017,Chase County,Kansas
+KSC019,Chautauqua County,Kansas
+KSC021,Cherokee County,Kansas
+KSC023,Cheyenne County,Kansas
+KSC025,Clark County,Kansas
+KSC027,Clay County,Kansas
+KSC029,Cloud County,Kansas
+KSC031,Coffey County,Kansas
+KSC033,Comanche County,Kansas
+KSC035,Cowley County,Kansas
+KSC037,Crawford County,Kansas
+KSC039,Decatur County,Kansas
+KSC041,Dickinson County,Kansas
+KSC043,Doniphan County,Kansas
+KSC045,Douglas County,Kansas
+KSC047,Edwards County,Kansas
+KSC049,Elk County,Kansas
+KSC051,Ellis County,Kansas
+KSC053,Ellsworth County,Kansas
+KSC055,Finney County,Kansas
+KSC057,Ford County,Kansas
+KSC059,Franklin County,Kansas
+KSC061,Geary County,Kansas
+KSC063,Gove County,Kansas
+KSC065,Graham County,Kansas
+KSC067,Grant County,Kansas
+KSC069,Gray County,Kansas
+KSC071,Greeley County,Kansas
+KSC073,Greenwood County,Kansas
+KSC075,Hamilton County,Kansas
+KSC077,Harper County,Kansas
+KSC079,Harvey County,Kansas
+KSC081,Haskell County,Kansas
+KSC083,Hodgeman County,Kansas
+KSC085,Jackson County,Kansas
+KSC087,Jefferson County,Kansas
+KSC089,Jewell County,Kansas
+KSC091,Johnson County,Kansas
+KSC093,Kearny County,Kansas
+KSC095,Kingman County,Kansas
+KSC097,Kiowa County,Kansas
+KSC099,Labette County,Kansas
+KSC101,Lane County,Kansas
+KSC103,Leavenworth County,Kansas
+KSC105,Lincoln County,Kansas
+KSC107,Linn County,Kansas
+KSC109,Logan County,Kansas
+KSC111,Lyon County,Kansas
+KSC113,McPherson County,Kansas
+KSC115,Marion County,Kansas
+KSC117,Marshall County,Kansas
+KSC119,Meade County,Kansas
+KSC121,Miami County,Kansas
+KSC123,Mitchell County,Kansas
+KSC125,Montgomery County,Kansas
+KSC127,Morris County,Kansas
+KSC129,Morton County,Kansas
+KSC131,Nemaha County,Kansas
+KSC133,Neosho County,Kansas
+KSC135,Ness County,Kansas
+KSC137,Norton County,Kansas
+KSC139,Osage County,Kansas
+KSC141,Osborne County,Kansas
+KSC143,Ottawa County,Kansas
+KSC145,Pawnee County,Kansas
+KSC147,Phillips County,Kansas
+KSC149,Pottawatomie County,Kansas
+KSC151,Pratt County,Kansas
+KSC153,Rawlins County,Kansas
+KSC155,Reno County,Kansas
+KSC157,Republic County,Kansas
+KSC159,Rice County,Kansas
+KSC161,Riley County,Kansas
+KSC163,Rooks County,Kansas
+KSC165,Rush County,Kansas
+KSC167,Russell County,Kansas
+KSC169,Saline County,Kansas
+KSC171,Scott County,Kansas
+KSC173,Sedgwick County,Kansas
+KSC175,Seward County,Kansas
+KSC177,Shawnee County,Kansas
+KSC179,Sheridan County,Kansas
+KSC181,Sherman County,Kansas
+KSC183,Smith County,Kansas
+KSC185,Stafford County,Kansas
+KSC187,Stanton County,Kansas
+KSC189,Stevens County,Kansas
+KSC191,Sumner County,Kansas
+KSC193,Thomas County,Kansas
+KSC195,Trego County,Kansas
+KSC197,Wabaunsee County,Kansas
+KSC199,Wallace County,Kansas
+KSC201,Washington County,Kansas
+KSC203,Wichita County,Kansas
+KSC205,Wilson County,Kansas
+KSC207,Woodson County,Kansas
+KSC209,Wyandotte County,Kansas
+KYC001,Adair County,Kentucky
+KYC003,Allen County,Kentucky
+KYC005,Anderson County,Kentucky
+KYC007,Ballard County,Kentucky
+KYC009,Barren County,Kentucky
+KYC011,Bath County,Kentucky
+KYC013,Bell County,Kentucky
+KYC015,Boone County,Kentucky
+KYC017,Bourbon County,Kentucky
+KYC019,Boyd County,Kentucky
+KYC021,Boyle County,Kentucky
+KYC023,Bracken County,Kentucky
+KYC025,Breathitt County,Kentucky
+KYC027,Breckinridge County,Kentucky
+KYC029,Bullitt County,Kentucky
+KYC031,Butler County,Kentucky
+KYC033,Caldwell County,Kentucky
+KYC035,Calloway County,Kentucky
+KYC037,Campbell County,Kentucky
+KYC039,Carlisle County,Kentucky
+KYC041,Carroll County,Kentucky
+KYC043,Carter County,Kentucky
+KYC045,Casey County,Kentucky
+KYC047,Christian County,Kentucky
+KYC049,Clark County,Kentucky
+KYC051,Clay County,Kentucky
+KYC053,Clinton County,Kentucky
+KYC055,Crittenden County,Kentucky
+KYC057,Cumberland County,Kentucky
+KYC059,Daviess County,Kentucky
+KYC061,Edmonson County,Kentucky
+KYC063,Elliott County,Kentucky
+KYC065,Estill County,Kentucky
+KYC067,Fayette County,Kentucky
+KYC069,Fleming County,Kentucky
+KYC071,Floyd County,Kentucky
+KYC073,Franklin County,Kentucky
+KYC075,Fulton County,Kentucky
+KYC077,Gallatin County,Kentucky
+KYC079,Garrard County,Kentucky
+KYC081,Grant County,Kentucky
+KYC083,Graves County,Kentucky
+KYC085,Grayson County,Kentucky
+KYC087,Green County,Kentucky
+KYC089,Greenup County,Kentucky
+KYC091,Hancock County,Kentucky
+KYC093,Hardin County,Kentucky
+KYC095,Harlan County,Kentucky
+KYC097,Harrison County,Kentucky
+KYC099,Hart County,Kentucky
+KYC101,Henderson County,Kentucky
+KYC103,Henry County,Kentucky
+KYC105,Hickman County,Kentucky
+KYC107,Hopkins County,Kentucky
+KYC109,Jackson County,Kentucky
+KYC111,Jefferson County,Kentucky
+KYC113,Jessamine County,Kentucky
+KYC115,Johnson County,Kentucky
+KYC117,Kenton County,Kentucky
+KYC119,Knott County,Kentucky
+KYC121,Knox County,Kentucky
+KYC123,Larue County,Kentucky
+KYC125,Laurel County,Kentucky
+KYC127,Lawrence County,Kentucky
+KYC129,Lee County,Kentucky
+KYC131,Leslie County,Kentucky
+KYC133,Letcher County,Kentucky
+KYC135,Lewis County,Kentucky
+KYC137,Lincoln County,Kentucky
+KYC139,Livingston County,Kentucky
+KYC141,Logan County,Kentucky
+KYC143,Lyon County,Kentucky
+KYC145,McCracken County,Kentucky
+KYC147,McCreary County,Kentucky
+KYC149,McLean County,Kentucky
+KYC151,Madison County,Kentucky
+KYC153,Magoffin County,Kentucky
+KYC155,Marion County,Kentucky
+KYC157,Marshall County,Kentucky
+KYC159,Martin County,Kentucky
+KYC161,Mason County,Kentucky
+KYC163,Meade County,Kentucky
+KYC165,Menifee County,Kentucky
+KYC167,Mercer County,Kentucky
+KYC169,Metcalfe County,Kentucky
+KYC171,Monroe County,Kentucky
+KYC173,Montgomery County,Kentucky
+KYC175,Morgan County,Kentucky
+KYC177,Muhlenberg County,Kentucky
+KYC179,Nelson County,Kentucky
+KYC181,Nicholas County,Kentucky
+KYC183,Ohio County,Kentucky
+KYC185,Oldham County,Kentucky
+KYC187,Owen County,Kentucky
+KYC189,Owsley County,Kentucky
+KYC191,Pendleton County,Kentucky
+KYC193,Perry County,Kentucky
+KYC195,Pike County,Kentucky
+KYC197,Powell County,Kentucky
+KYC199,Pulaski County,Kentucky
+KYC201,Robertson County,Kentucky
+KYC203,Rockcastle County,Kentucky
+KYC205,Rowan County,Kentucky
+KYC207,Russell County,Kentucky
+KYC209,Scott County,Kentucky
+KYC211,Shelby County,Kentucky
+KYC213,Simpson County,Kentucky
+KYC215,Spencer County,Kentucky
+KYC217,Taylor County,Kentucky
+KYC219,Todd County,Kentucky
+KYC221,Trigg County,Kentucky
+KYC223,Trimble County,Kentucky
+KYC225,Union County,Kentucky
+KYC227,Warren County,Kentucky
+KYC229,Washington County,Kentucky
+KYC231,Wayne County,Kentucky
+KYC233,Webster County,Kentucky
+KYC235,Whitley County,Kentucky
+KYC237,Wolfe County,Kentucky
+KYC239,Woodford County,Kentucky
+LAC001,Acadia Parish,Louisiana
+LAC003,Allen Parish,Louisiana
+LAC005,Ascension Parish,Louisiana
+LAC007,Assumption Parish,Louisiana
+LAC009,Avoyelles Parish,Louisiana
+LAC011,Beauregard Parish,Louisiana
+LAC013,Bienville Parish,Louisiana
+LAC015,Bossier Parish,Louisiana
+LAC017,Caddo Parish,Louisiana
+LAC019,Calcasieu Parish,Louisiana
+LAC021,Caldwell Parish,Louisiana
+LAC023,Cameron Parish,Louisiana
+LAC025,Catahoula Parish,Louisiana
+LAC027,Claiborne Parish,Louisiana
+LAC029,Concordia Parish,Louisiana
+LAC031,De Soto Parish,Louisiana
+LAC033,East Baton Rouge Parish,Louisiana
+LAC035,East Carroll Parish,Louisiana
+LAC037,East Feliciana Parish,Louisiana
+LAC039,Evangeline Parish,Louisiana
+LAC041,Franklin Parish,Louisiana
+LAC043,Grant Parish,Louisiana
+LAC045,Iberia Parish,Louisiana
+LAC047,Iberville Parish,Louisiana
+LAC049,Jackson Parish,Louisiana
+LAC051,Jefferson Parish,Louisiana
+LAC053,Jefferson Davis Parish,Louisiana
+LAC055,Lafayette Parish,Louisiana
+LAC057,Lafourche Parish,Louisiana
+LAC059,LaSalle Parish,Louisiana
+LAC061,Lincoln Parish,Louisiana
+LAC063,Livingston Parish,Louisiana
+LAC065,Madison Parish,Louisiana
+LAC067,Morehouse Parish,Louisiana
+LAC069,Natchitoches Parish,Louisiana
+LAC071,Orleans Parish,Louisiana
+LAC073,Ouachita Parish,Louisiana
+LAC075,Plaquemines Parish,Louisiana
+LAC077,Pointe Coupee Parish,Louisiana
+LAC079,Rapides Parish,Louisiana
+LAC081,Red River Parish,Louisiana
+LAC083,Richland Parish,Louisiana
+LAC085,Sabine Parish,Louisiana
+LAC087,St. Bernard Parish,Louisiana
+LAC089,St. Charles Parish,Louisiana
+LAC091,St. Helena Parish,Louisiana
+LAC093,St. James Parish,Louisiana
+LAC095,St. John the Baptist Parish,Louisiana
+LAC097,St. Landry Parish,Louisiana
+LAC099,St. Martin Parish,Louisiana
+LAC101,St. Mary Parish,Louisiana
+LAC103,St. Tammany Parish,Louisiana
+LAC105,Tangipahoa Parish,Louisiana
+LAC107,Tensas Parish,Louisiana
+LAC109,Terrebonne Parish,Louisiana
+LAC111,Union Parish,Louisiana
+LAC113,Vermilion Parish,Louisiana
+LAC115,Vernon Parish,Louisiana
+LAC117,Washington Parish,Louisiana
+LAC119,Webster Parish,Louisiana
+LAC121,West Baton Rouge Parish,Louisiana
+LAC123,West Carroll Parish,Louisiana
+LAC125,West Feliciana Parish,Louisiana
+LAC127,Winn Parish,Louisiana
+MEC001,Androscoggin County,Maine
+MEC003,Aroostook County,Maine
+MEC005,Cumberland County,Maine
+MEC007,Franklin County,Maine
+MEC009,Hancock County,Maine
+MEC011,Kennebec County,Maine
+MEC013,Knox County,Maine
+MEC015,Lincoln County,Maine
+MEC017,Oxford County,Maine
+MEC019,Penobscot County,Maine
+MEC021,Piscataquis County,Maine
+MEC023,Sagadahoc County,Maine
+MEC025,Somerset County,Maine
+MEC027,Waldo County,Maine
+MEC029,Washington County,Maine
+MEC031,York County,Maine
+MDC001,Allegany County,Maryland
+MDC003,Anne Arundel County,Maryland
+MDC005,Baltimore County,Maryland
+MDC009,Calvert County,Maryland
+MDC011,Caroline County,Maryland
+MDC013,Carroll County,Maryland
+MDC015,Cecil County,Maryland
+MDC017,Charles County,Maryland
+MDC019,Dorchester County,Maryland
+MDC021,Frederick County,Maryland
+MDC023,Garrett County,Maryland
+MDC025,Harford County,Maryland
+MDC027,Howard County,Maryland
+MDC029,Kent County,Maryland
+MDC031,Montgomery County,Maryland
+MDC033,Prince George's County,Maryland
+MDC035,Queen Anne's County,Maryland
+MDC037,St. Mary's County,Maryland
+MDC039,Somerset County,Maryland
+MDC041,Talbot County,Maryland
+MDC043,Washington County,Maryland
+MDC045,Wicomico County,Maryland
+MDC047,Worcester County,Maryland
+MDC510,Baltimore city,Maryland
+MAC001,Barnstable County,Massachusetts
+MAC003,Berkshire County,Massachusetts
+MAC005,Bristol County,Massachusetts
+MAC007,Dukes County,Massachusetts
+MAC009,Essex County,Massachusetts
+MAC011,Franklin County,Massachusetts
+MAC013,Hampden County,Massachusetts
+MAC015,Hampshire County,Massachusetts
+MAC017,Middlesex County,Massachusetts
+MAC019,Nantucket County,Massachusetts
+MAC021,Norfolk County,Massachusetts
+MAC023,Plymouth County,Massachusetts
+MAC025,Suffolk County,Massachusetts
+MAC027,Worcester County,Massachusetts
+MIC001,Alcona County,Michigan
+MIC003,Alger County,Michigan
+MIC005,Allegan County,Michigan
+MIC007,Alpena County,Michigan
+MIC009,Antrim County,Michigan
+MIC011,Arenac County,Michigan
+MIC013,Baraga County,Michigan
+MIC015,Barry County,Michigan
+MIC017,Bay County,Michigan
+MIC019,Benzie County,Michigan
+MIC021,Berrien County,Michigan
+MIC023,Branch County,Michigan
+MIC025,Calhoun County,Michigan
+MIC027,Cass County,Michigan
+MIC029,Charlevoix County,Michigan
+MIC031,Cheboygan County,Michigan
+MIC033,Chippewa County,Michigan
+MIC035,Clare County,Michigan
+MIC037,Clinton County,Michigan
+MIC039,Crawford County,Michigan
+MIC041,Delta County,Michigan
+MIC043,Dickinson County,Michigan
+MIC045,Eaton County,Michigan
+MIC047,Emmet County,Michigan
+MIC049,Genesee County,Michigan
+MIC051,Gladwin County,Michigan
+MIC053,Gogebic County,Michigan
+MIC055,Grand Traverse County,Michigan
+MIC057,Gratiot County,Michigan
+MIC059,Hillsdale County,Michigan
+MIC061,Houghton County,Michigan
+MIC063,Huron County,Michigan
+MIC065,Ingham County,Michigan
+MIC067,Ionia County,Michigan
+MIC069,Iosco County,Michigan
+MIC071,Iron County,Michigan
+MIC073,Isabella County,Michigan
+MIC075,Jackson County,Michigan
+MIC077,Kalamazoo County,Michigan
+MIC079,Kalkaska County,Michigan
+MIC081,Kent County,Michigan
+MIC083,Keweenaw County,Michigan
+MIC085,Lake County,Michigan
+MIC087,Lapeer County,Michigan
+MIC089,Leelanau County,Michigan
+MIC091,Lenawee County,Michigan
+MIC093,Livingston County,Michigan
+MIC095,Luce County,Michigan
+MIC097,Mackinac County,Michigan
+MIC099,Macomb County,Michigan
+MIC101,Manistee County,Michigan
+MIC103,Marquette County,Michigan
+MIC105,Mason County,Michigan
+MIC107,Mecosta County,Michigan
+MIC109,Menominee County,Michigan
+MIC111,Midland County,Michigan
+MIC113,Missaukee County,Michigan
+MIC115,Monroe County,Michigan
+MIC117,Montcalm County,Michigan
+MIC119,Montmorency County,Michigan
+MIC121,Muskegon County,Michigan
+MIC123,Newaygo County,Michigan
+MIC125,Oakland County,Michigan
+MIC127,Oceana County,Michigan
+MIC129,Ogemaw County,Michigan
+MIC131,Ontonagon County,Michigan
+MIC133,Osceola County,Michigan
+MIC135,Oscoda County,Michigan
+MIC137,Otsego County,Michigan
+MIC139,Ottawa County,Michigan
+MIC141,Presque Isle County,Michigan
+MIC143,Roscommon County,Michigan
+MIC145,Saginaw County,Michigan
+MIC147,St. Clair County,Michigan
+MIC149,St. Joseph County,Michigan
+MIC151,Sanilac County,Michigan
+MIC153,Schoolcraft County,Michigan
+MIC155,Shiawassee County,Michigan
+MIC157,Tuscola County,Michigan
+MIC159,Van Buren County,Michigan
+MIC161,Washtenaw County,Michigan
+MIC163,Wayne County,Michigan
+MIC165,Wexford County,Michigan
+MNC001,Aitkin County,Minnesota
+MNC003,Anoka County,Minnesota
+MNC005,Becker County,Minnesota
+MNC007,Beltrami County,Minnesota
+MNC009,Benton County,Minnesota
+MNC011,Big Stone County,Minnesota
+MNC013,Blue Earth County,Minnesota
+MNC015,Brown County,Minnesota
+MNC017,Carlton County,Minnesota
+MNC019,Carver County,Minnesota
+MNC021,Cass County,Minnesota
+MNC023,Chippewa County,Minnesota
+MNC025,Chisago County,Minnesota
+MNC027,Clay County,Minnesota
+MNC029,Clearwater County,Minnesota
+MNC031,Cook County,Minnesota
+MNC033,Cottonwood County,Minnesota
+MNC035,Crow Wing County,Minnesota
+MNC037,Dakota County,Minnesota
+MNC039,Dodge County,Minnesota
+MNC041,Douglas County,Minnesota
+MNC043,Faribault County,Minnesota
+MNC045,Fillmore County,Minnesota
+MNC047,Freeborn County,Minnesota
+MNC049,Goodhue County,Minnesota
+MNC051,Grant County,Minnesota
+MNC053,Hennepin County,Minnesota
+MNC055,Houston County,Minnesota
+MNC057,Hubbard County,Minnesota
+MNC059,Isanti County,Minnesota
+MNC061,Itasca County,Minnesota
+MNC063,Jackson County,Minnesota
+MNC065,Kanabec County,Minnesota
+MNC067,Kandiyohi County,Minnesota
+MNC069,Kittson County,Minnesota
+MNC071,Koochiching County,Minnesota
+MNC073,Lac qui Parle County,Minnesota
+MNC075,Lake County,Minnesota
+MNC077,Lake of the Woods County,Minnesota
+MNC079,Le Sueur County,Minnesota
+MNC081,Lincoln County,Minnesota
+MNC083,Lyon County,Minnesota
+MNC085,McLeod County,Minnesota
+MNC087,Mahnomen County,Minnesota
+MNC089,Marshall County,Minnesota
+MNC091,Martin County,Minnesota
+MNC093,Meeker County,Minnesota
+MNC095,Mille Lacs County,Minnesota
+MNC097,Morrison County,Minnesota
+MNC099,Mower County,Minnesota
+MNC101,Murray County,Minnesota
+MNC103,Nicollet County,Minnesota
+MNC105,Nobles County,Minnesota
+MNC107,Norman County,Minnesota
+MNC109,Olmsted County,Minnesota
+MNC111,Otter Tail County,Minnesota
+MNC113,Pennington County,Minnesota
+MNC115,Pine County,Minnesota
+MNC117,Pipestone County,Minnesota
+MNC119,Polk County,Minnesota
+MNC121,Pope County,Minnesota
+MNC123,Ramsey County,Minnesota
+MNC125,Red Lake County,Minnesota
+MNC127,Redwood County,Minnesota
+MNC129,Renville County,Minnesota
+MNC131,Rice County,Minnesota
+MNC133,Rock County,Minnesota
+MNC135,Roseau County,Minnesota
+MNC137,St. Louis County,Minnesota
+MNC139,Scott County,Minnesota
+MNC141,Sherburne County,Minnesota
+MNC143,Sibley County,Minnesota
+MNC145,Stearns County,Minnesota
+MNC147,Steele County,Minnesota
+MNC149,Stevens County,Minnesota
+MNC151,Swift County,Minnesota
+MNC153,Todd County,Minnesota
+MNC155,Traverse County,Minnesota
+MNC157,Wabasha County,Minnesota
+MNC159,Wadena County,Minnesota
+MNC161,Waseca County,Minnesota
+MNC163,Washington County,Minnesota
+MNC165,Watonwan County,Minnesota
+MNC167,Wilkin County,Minnesota
+MNC169,Winona County,Minnesota
+MNC171,Wright County,Minnesota
+MNC173,Yellow Medicine County,Minnesota
+MSC001,Adams County,Mississippi
+MSC003,Alcorn County,Mississippi
+MSC005,Amite County,Mississippi
+MSC007,Attala County,Mississippi
+MSC009,Benton County,Mississippi
+MSC011,Bolivar County,Mississippi
+MSC013,Calhoun County,Mississippi
+MSC015,Carroll County,Mississippi
+MSC017,Chickasaw County,Mississippi
+MSC019,Choctaw County,Mississippi
+MSC021,Claiborne County,Mississippi
+MSC023,Clarke County,Mississippi
+MSC025,Clay County,Mississippi
+MSC027,Coahoma County,Mississippi
+MSC029,Copiah County,Mississippi
+MSC031,Covington County,Mississippi
+MSC033,DeSoto County,Mississippi
+MSC035,Forrest County,Mississippi
+MSC037,Franklin County,Mississippi
+MSC039,George County,Mississippi
+MSC041,Greene County,Mississippi
+MSC043,Grenada County,Mississippi
+MSC045,Hancock County,Mississippi
+MSC047,Harrison County,Mississippi
+MSC049,Hinds County,Mississippi
+MSC051,Holmes County,Mississippi
+MSC053,Humphreys County,Mississippi
+MSC055,Issaquena County,Mississippi
+MSC057,Itawamba County,Mississippi
+MSC059,Jackson County,Mississippi
+MSC061,Jasper County,Mississippi
+MSC063,Jefferson County,Mississippi
+MSC065,Jefferson Davis County,Mississippi
+MSC067,Jones County,Mississippi
+MSC069,Kemper County,Mississippi
+MSC071,Lafayette County,Mississippi
+MSC073,Lamar County,Mississippi
+MSC075,Lauderdale County,Mississippi
+MSC077,Lawrence County,Mississippi
+MSC079,Leake County,Mississippi
+MSC081,Lee County,Mississippi
+MSC083,Leflore County,Mississippi
+MSC085,Lincoln County,Mississippi
+MSC087,Lowndes County,Mississippi
+MSC089,Madison County,Mississippi
+MSC091,Marion County,Mississippi
+MSC093,Marshall County,Mississippi
+MSC095,Monroe County,Mississippi
+MSC097,Montgomery County,Mississippi
+MSC099,Neshoba County,Mississippi
+MSC101,Newton County,Mississippi
+MSC103,Noxubee County,Mississippi
+MSC105,Oktibbeha County,Mississippi
+MSC107,Panola County,Mississippi
+MSC109,Pearl River County,Mississippi
+MSC111,Perry County,Mississippi
+MSC113,Pike County,Mississippi
+MSC115,Pontotoc County,Mississippi
+MSC117,Prentiss County,Mississippi
+MSC119,Quitman County,Mississippi
+MSC121,Rankin County,Mississippi
+MSC123,Scott County,Mississippi
+MSC125,Sharkey County,Mississippi
+MSC127,Simpson County,Mississippi
+MSC129,Smith County,Mississippi
+MSC131,Stone County,Mississippi
+MSC133,Sunflower County,Mississippi
+MSC135,Tallahatchie County,Mississippi
+MSC137,Tate County,Mississippi
+MSC139,Tippah County,Mississippi
+MSC141,Tishomingo County,Mississippi
+MSC143,Tunica County,Mississippi
+MSC145,Union County,Mississippi
+MSC147,Walthall County,Mississippi
+MSC149,Warren County,Mississippi
+MSC151,Washington County,Mississippi
+MSC153,Wayne County,Mississippi
+MSC155,Webster County,Mississippi
+MSC157,Wilkinson County,Mississippi
+MSC159,Winston County,Mississippi
+MSC161,Yalobusha County,Mississippi
+MSC163,Yazoo County,Mississippi
+MOC001,Adair County,Missouri
+MOC003,Andrew County,Missouri
+MOC005,Atchison County,Missouri
+MOC007,Audrain County,Missouri
+MOC009,Barry County,Missouri
+MOC011,Barton County,Missouri
+MOC013,Bates County,Missouri
+MOC015,Benton County,Missouri
+MOC017,Bollinger County,Missouri
+MOC019,Boone County,Missouri
+MOC021,Buchanan County,Missouri
+MOC023,Butler County,Missouri
+MOC025,Caldwell County,Missouri
+MOC027,Callaway County,Missouri
+MOC029,Camden County,Missouri
+MOC031,Cape Girardeau County,Missouri
+MOC033,Carroll County,Missouri
+MOC035,Carter County,Missouri
+MOC037,Cass County,Missouri
+MOC039,Cedar County,Missouri
+MOC041,Chariton County,Missouri
+MOC043,Christian County,Missouri
+MOC045,Clark County,Missouri
+MOC047,Clay County,Missouri
+MOC049,Clinton County,Missouri
+MOC051,Cole County,Missouri
+MOC053,Cooper County,Missouri
+MOC055,Crawford County,Missouri
+MOC057,Dade County,Missouri
+MOC059,Dallas County,Missouri
+MOC061,Daviess County,Missouri
+MOC063,DeKalb County,Missouri
+MOC065,Dent County,Missouri
+MOC067,Douglas County,Missouri
+MOC069,Dunklin County,Missouri
+MOC071,Franklin County,Missouri
+MOC073,Gasconade County,Missouri
+MOC075,Gentry County,Missouri
+MOC077,Greene County,Missouri
+MOC079,Grundy County,Missouri
+MOC081,Harrison County,Missouri
+MOC083,Henry County,Missouri
+MOC085,Hickory County,Missouri
+MOC087,Holt County,Missouri
+MOC089,Howard County,Missouri
+MOC091,Howell County,Missouri
+MOC093,Iron County,Missouri
+MOC095,Jackson County,Missouri
+MOC097,Jasper County,Missouri
+MOC099,Jefferson County,Missouri
+MOC101,Johnson County,Missouri
+MOC103,Knox County,Missouri
+MOC105,Laclede County,Missouri
+MOC107,Lafayette County,Missouri
+MOC109,Lawrence County,Missouri
+MOC111,Lewis County,Missouri
+MOC113,Lincoln County,Missouri
+MOC115,Linn County,Missouri
+MOC117,Livingston County,Missouri
+MOC119,McDonald County,Missouri
+MOC121,Macon County,Missouri
+MOC123,Madison County,Missouri
+MOC125,Maries County,Missouri
+MOC127,Marion County,Missouri
+MOC129,Mercer County,Missouri
+MOC131,Miller County,Missouri
+MOC133,Mississippi County,Missouri
+MOC135,Moniteau County,Missouri
+MOC137,Monroe County,Missouri
+MOC139,Montgomery County,Missouri
+MOC141,Morgan County,Missouri
+MOC143,New Madrid County,Missouri
+MOC145,Newton County,Missouri
+MOC147,Nodaway County,Missouri
+MOC149,Oregon County,Missouri
+MOC151,Osage County,Missouri
+MOC153,Ozark County,Missouri
+MOC155,Pemiscot County,Missouri
+MOC157,Perry County,Missouri
+MOC159,Pettis County,Missouri
+MOC161,Phelps County,Missouri
+MOC163,Pike County,Missouri
+MOC165,Platte County,Missouri
+MOC167,Polk County,Missouri
+MOC169,Pulaski County,Missouri
+MOC171,Putnam County,Missouri
+MOC173,Ralls County,Missouri
+MOC175,Randolph County,Missouri
+MOC177,Ray County,Missouri
+MOC179,Reynolds County,Missouri
+MOC181,Ripley County,Missouri
+MOC183,St. Charles County,Missouri
+MOC185,St. Clair County,Missouri
+MOC186,Ste. Genevieve County,Missouri
+MOC187,St. Francois County,Missouri
+MOC189,St. Louis County,Missouri
+MOC195,Saline County,Missouri
+MOC197,Schuyler County,Missouri
+MOC199,Scotland County,Missouri
+MOC201,Scott County,Missouri
+MOC203,Shannon County,Missouri
+MOC205,Shelby County,Missouri
+MOC207,Stoddard County,Missouri
+MOC209,Stone County,Missouri
+MOC211,Sullivan County,Missouri
+MOC213,Taney County,Missouri
+MOC215,Texas County,Missouri
+MOC217,Vernon County,Missouri
+MOC219,Warren County,Missouri
+MOC221,Washington County,Missouri
+MOC223,Wayne County,Missouri
+MOC225,Webster County,Missouri
+MOC227,Worth County,Missouri
+MOC229,Wright County,Missouri
+MOC510,St. Louis city,Missouri
+MTC001,Beaverhead County,Montana
+MTC003,Big Horn County,Montana
+MTC005,Blaine County,Montana
+MTC007,Broadwater County,Montana
+MTC009,Carbon County,Montana
+MTC011,Carter County,Montana
+MTC013,Cascade County,Montana
+MTC015,Chouteau County,Montana
+MTC017,Custer County,Montana
+MTC019,Daniels County,Montana
+MTC021,Dawson County,Montana
+MTC023,Deer Lodge County,Montana
+MTC025,Fallon County,Montana
+MTC027,Fergus County,Montana
+MTC029,Flathead County,Montana
+MTC031,Gallatin County,Montana
+MTC033,Garfield County,Montana
+MTC035,Glacier County,Montana
+MTC037,Golden Valley County,Montana
+MTC039,Granite County,Montana
+MTC041,Hill County,Montana
+MTC043,Jefferson County,Montana
+MTC045,Judith Basin County,Montana
+MTC047,Lake County,Montana
+MTC049,Lewis and Clark County,Montana
+MTC051,Liberty County,Montana
+MTC053,Lincoln County,Montana
+MTC055,McCone County,Montana
+MTC057,Madison County,Montana
+MTC059,Meagher County,Montana
+MTC061,Mineral County,Montana
+MTC063,Missoula County,Montana
+MTC065,Musselshell County,Montana
+MTC067,Park County,Montana
+MTC069,Petroleum County,Montana
+MTC071,Phillips County,Montana
+MTC073,Pondera County,Montana
+MTC075,Powder River County,Montana
+MTC077,Powell County,Montana
+MTC079,Prairie County,Montana
+MTC081,Ravalli County,Montana
+MTC083,Richland County,Montana
+MTC085,Roosevelt County,Montana
+MTC087,Rosebud County,Montana
+MTC089,Sanders County,Montana
+MTC091,Sheridan County,Montana
+MTC093,Silver Bow County,Montana
+MTC095,Stillwater County,Montana
+MTC097,Sweet Grass County,Montana
+MTC099,Teton County,Montana
+MTC101,Toole County,Montana
+MTC103,Treasure County,Montana
+MTC105,Valley County,Montana
+MTC107,Wheatland County,Montana
+MTC109,Wibaux County,Montana
+MTC111,Yellowstone County,Montana
+NEC001,Adams County,Nebraska
+NEC003,Antelope County,Nebraska
+NEC005,Arthur County,Nebraska
+NEC007,Banner County,Nebraska
+NEC009,Blaine County,Nebraska
+NEC011,Boone County,Nebraska
+NEC013,Box Butte County,Nebraska
+NEC015,Boyd County,Nebraska
+NEC017,Brown County,Nebraska
+NEC019,Buffalo County,Nebraska
+NEC021,Burt County,Nebraska
+NEC023,Butler County,Nebraska
+NEC025,Cass County,Nebraska
+NEC027,Cedar County,Nebraska
+NEC029,Chase County,Nebraska
+NEC031,Cherry County,Nebraska
+NEC033,Cheyenne County,Nebraska
+NEC035,Clay County,Nebraska
+NEC037,Colfax County,Nebraska
+NEC039,Cuming County,Nebraska
+NEC041,Custer County,Nebraska
+NEC043,Dakota County,Nebraska
+NEC045,Dawes County,Nebraska
+NEC047,Dawson County,Nebraska
+NEC049,Deuel County,Nebraska
+NEC051,Dixon County,Nebraska
+NEC053,Dodge County,Nebraska
+NEC055,Douglas County,Nebraska
+NEC057,Dundy County,Nebraska
+NEC059,Fillmore County,Nebraska
+NEC061,Franklin County,Nebraska
+NEC063,Frontier County,Nebraska
+NEC065,Furnas County,Nebraska
+NEC067,Gage County,Nebraska
+NEC069,Garden County,Nebraska
+NEC071,Garfield County,Nebraska
+NEC073,Gosper County,Nebraska
+NEC075,Grant County,Nebraska
+NEC077,Greeley County,Nebraska
+NEC079,Hall County,Nebraska
+NEC081,Hamilton County,Nebraska
+NEC083,Harlan County,Nebraska
+NEC085,Hayes County,Nebraska
+NEC087,Hitchcock County,Nebraska
+NEC089,Holt County,Nebraska
+NEC091,Hooker County,Nebraska
+NEC093,Howard County,Nebraska
+NEC095,Jefferson County,Nebraska
+NEC097,Johnson County,Nebraska
+NEC099,Kearney County,Nebraska
+NEC101,Keith County,Nebraska
+NEC103,Keya Paha County,Nebraska
+NEC105,Kimball County,Nebraska
+NEC107,Knox County,Nebraska
+NEC109,Lancaster County,Nebraska
+NEC111,Lincoln County,Nebraska
+NEC113,Logan County,Nebraska
+NEC115,Loup County,Nebraska
+NEC117,McPherson County,Nebraska
+NEC119,Madison County,Nebraska
+NEC121,Merrick County,Nebraska
+NEC123,Morrill County,Nebraska
+NEC125,Nance County,Nebraska
+NEC127,Nemaha County,Nebraska
+NEC129,Nuckolls County,Nebraska
+NEC131,Otoe County,Nebraska
+NEC133,Pawnee County,Nebraska
+NEC135,Perkins County,Nebraska
+NEC137,Phelps County,Nebraska
+NEC139,Pierce County,Nebraska
+NEC141,Platte County,Nebraska
+NEC143,Polk County,Nebraska
+NEC145,Red Willow County,Nebraska
+NEC147,Richardson County,Nebraska
+NEC149,Rock County,Nebraska
+NEC151,Saline County,Nebraska
+NEC153,Sarpy County,Nebraska
+NEC155,Saunders County,Nebraska
+NEC157,Scotts Bluff County,Nebraska
+NEC159,Seward County,Nebraska
+NEC161,Sheridan County,Nebraska
+NEC163,Sherman County,Nebraska
+NEC165,Sioux County,Nebraska
+NEC167,Stanton County,Nebraska
+NEC169,Thayer County,Nebraska
+NEC171,Thomas County,Nebraska
+NEC173,Thurston County,Nebraska
+NEC175,Valley County,Nebraska
+NEC177,Washington County,Nebraska
+NEC179,Wayne County,Nebraska
+NEC181,Webster County,Nebraska
+NEC183,Wheeler County,Nebraska
+NEC185,York County,Nebraska
+NVC001,Churchill County,Nevada
+NVC003,Clark County,Nevada
+NVC005,Douglas County,Nevada
+NVC007,Elko County,Nevada
+NVC009,Esmeralda County,Nevada
+NVC011,Eureka County,Nevada
+NVC013,Humboldt County,Nevada
+NVC015,Lander County,Nevada
+NVC017,Lincoln County,Nevada
+NVC019,Lyon County,Nevada
+NVC021,Mineral County,Nevada
+NVC023,Nye County,Nevada
+NVC027,Pershing County,Nevada
+NVC029,Storey County,Nevada
+NVC031,Washoe County,Nevada
+NVC033,White Pine County,Nevada
+NVC510,Carson City,Nevada
+NHC001,Belknap County,New Hampshire
+NHC003,Carroll County,New Hampshire
+NHC005,Cheshire County,New Hampshire
+NHC007,Coos County,New Hampshire
+NHC009,Grafton County,New Hampshire
+NHC011,Hillsborough County,New Hampshire
+NHC013,Merrimack County,New Hampshire
+NHC015,Rockingham County,New Hampshire
+NHC017,Strafford County,New Hampshire
+NHC019,Sullivan County,New Hampshire
+NJC001,Atlantic County,New Jersey
+NJC003,Bergen County,New Jersey
+NJC005,Burlington County,New Jersey
+NJC007,Camden County,New Jersey
+NJC009,Cape May County,New Jersey
+NJC011,Cumberland County,New Jersey
+NJC013,Essex County,New Jersey
+NJC015,Gloucester County,New Jersey
+NJC017,Hudson County,New Jersey
+NJC019,Hunterdon County,New Jersey
+NJC021,Mercer County,New Jersey
+NJC023,Middlesex County,New Jersey
+NJC025,Monmouth County,New Jersey
+NJC027,Morris County,New Jersey
+NJC029,Ocean County,New Jersey
+NJC031,Passaic County,New Jersey
+NJC033,Salem County,New Jersey
+NJC035,Somerset County,New Jersey
+NJC037,Sussex County,New Jersey
+NJC039,Union County,New Jersey
+NJC041,Warren County,New Jersey
+NMC001,Bernalillo County,New Mexico
+NMC003,Catron County,New Mexico
+NMC005,Chaves County,New Mexico
+NMC006,Cibola County,New Mexico
+NMC007,Colfax County,New Mexico
+NMC009,Curry County,New Mexico
+NMC011,De Baca County,New Mexico
+NMC013,Doña Ana County,New Mexico
+NMC015,Eddy County,New Mexico
+NMC017,Grant County,New Mexico
+NMC019,Guadalupe County,New Mexico
+NMC021,Harding County,New Mexico
+NMC023,Hidalgo County,New Mexico
+NMC025,Lea County,New Mexico
+NMC027,Lincoln County,New Mexico
+NMC028,Los Alamos County,New Mexico
+NMC029,Luna County,New Mexico
+NMC031,McKinley County,New Mexico
+NMC033,Mora County,New Mexico
+NMC035,Otero County,New Mexico
+NMC037,Quay County,New Mexico
+NMC039,Rio Arriba County,New Mexico
+NMC041,Roosevelt County,New Mexico
+NMC043,Sandoval County,New Mexico
+NMC045,San Juan County,New Mexico
+NMC047,San Miguel County,New Mexico
+NMC049,Santa Fe County,New Mexico
+NMC051,Sierra County,New Mexico
+NMC053,Socorro County,New Mexico
+NMC055,Taos County,New Mexico
+NMC057,Torrance County,New Mexico
+NMC059,Union County,New Mexico
+NMC061,Valencia County,New Mexico
+NYC001,Albany County,New York
+NYC003,Allegany County,New York
+NYC005,Bronx County,New York
+NYC007,Broome County,New York
+NYC009,Cattaraugus County,New York
+NYC011,Cayuga County,New York
+NYC013,Chautauqua County,New York
+NYC015,Chemung County,New York
+NYC017,Chenango County,New York
+NYC019,Clinton County,New York
+NYC021,Columbia County,New York
+NYC023,Cortland County,New York
+NYC025,Delaware County,New York
+NYC027,Dutchess County,New York
+NYC029,Erie County,New York
+NYC031,Essex County,New York
+NYC033,Franklin County,New York
+NYC035,Fulton County,New York
+NYC037,Genesee County,New York
+NYC039,Greene County,New York
+NYC041,Hamilton County,New York
+NYC043,Herkimer County,New York
+NYC045,Jefferson County,New York
+NYC047,Kings County,New York
+NYC049,Lewis County,New York
+NYC051,Livingston County,New York
+NYC053,Madison County,New York
+NYC055,Monroe County,New York
+NYC057,Montgomery County,New York
+NYC059,Nassau County,New York
+NYC061,New York County,New York
+NYC063,Niagara County,New York
+NYC065,Oneida County,New York
+NYC067,Onondaga County,New York
+NYC069,Ontario County,New York
+NYC071,Orange County,New York
+NYC073,Orleans County,New York
+NYC075,Oswego County,New York
+NYC077,Otsego County,New York
+NYC079,Putnam County,New York
+NYC081,Queens County,New York
+NYC083,Rensselaer County,New York
+NYC085,Richmond County,New York
+NYC087,Rockland County,New York
+NYC089,St. Lawrence County,New York
+NYC091,Saratoga County,New York
+NYC093,Schenectady County,New York
+NYC095,Schoharie County,New York
+NYC097,Schuyler County,New York
+NYC099,Seneca County,New York
+NYC101,Steuben County,New York
+NYC103,Suffolk County,New York
+NYC105,Sullivan County,New York
+NYC107,Tioga County,New York
+NYC109,Tompkins County,New York
+NYC111,Ulster County,New York
+NYC113,Warren County,New York
+NYC115,Washington County,New York
+NYC117,Wayne County,New York
+NYC119,Westchester County,New York
+NYC121,Wyoming County,New York
+NYC123,Yates County,New York
+NCC001,Alamance County,N. Carolina
+NCC003,Alexander County,N. Carolina
+NCC005,Alleghany County,N. Carolina
+NCC007,Anson County,N. Carolina
+NCC009,Ashe County,N. Carolina
+NCC011,Avery County,N. Carolina
+NCC013,Beaufort County,N. Carolina
+NCC015,Bertie County,N. Carolina
+NCC017,Bladen County,N. Carolina
+NCC019,Brunswick County,N. Carolina
+NCC021,Buncombe County,N. Carolina
+NCC023,Burke County,N. Carolina
+NCC025,Cabarrus County,N. Carolina
+NCC027,Caldwell County,N. Carolina
+NCC029,Camden County,N. Carolina
+NCC031,Carteret County,N. Carolina
+NCC033,Caswell County,N. Carolina
+NCC035,Catawba County,N. Carolina
+NCC037,Chatham County,N. Carolina
+NCC039,Cherokee County,N. Carolina
+NCC041,Chowan County,N. Carolina
+NCC043,Clay County,N. Carolina
+NCC045,Cleveland County,N. Carolina
+NCC047,Columbus County,N. Carolina
+NCC049,Craven County,N. Carolina
+NCC051,Cumberland County,N. Carolina
+NCC053,Currituck County,N. Carolina
+NCC055,Dare County,N. Carolina
+NCC057,Davidson County,N. Carolina
+NCC059,Davie County,N. Carolina
+NCC061,Duplin County,N. Carolina
+NCC063,Durham County,N. Carolina
+NCC065,Edgecombe County,N. Carolina
+NCC067,Forsyth County,N. Carolina
+NCC069,Franklin County,N. Carolina
+NCC071,Gaston County,N. Carolina
+NCC073,Gates County,N. Carolina
+NCC075,Graham County,N. Carolina
+NCC077,Granville County,N. Carolina
+NCC079,Greene County,N. Carolina
+NCC081,Guilford County,N. Carolina
+NCC083,Halifax County,N. Carolina
+NCC085,Harnett County,N. Carolina
+NCC087,Haywood County,N. Carolina
+NCC089,Henderson County,N. Carolina
+NCC091,Hertford County,N. Carolina
+NCC093,Hoke County,N. Carolina
+NCC095,Hyde County,N. Carolina
+NCC097,Iredell County,N. Carolina
+NCC099,Jackson County,N. Carolina
+NCC101,Johnston County,N. Carolina
+NCC103,Jones County,N. Carolina
+NCC105,Lee County,N. Carolina
+NCC107,Lenoir County,N. Carolina
+NCC109,Lincoln County,N. Carolina
+NCC111,McDowell County,N. Carolina
+NCC113,Macon County,N. Carolina
+NCC115,Madison County,N. Carolina
+NCC117,Martin County,N. Carolina
+NCC119,Mecklenburg County,N. Carolina
+NCC121,Mitchell County,N. Carolina
+NCC123,Montgomery County,N. Carolina
+NCC125,Moore County,N. Carolina
+NCC127,Nash County,N. Carolina
+NCC129,New Hanover County,N. Carolina
+NCC131,Northampton County,N. Carolina
+NCC133,Onslow County,N. Carolina
+NCC135,Orange County,N. Carolina
+NCC137,Pamlico County,N. Carolina
+NCC139,Pasquotank County,N. Carolina
+NCC141,Pender County,N. Carolina
+NCC143,Perquimans County,N. Carolina
+NCC145,Person County,N. Carolina
+NCC147,Pitt County,N. Carolina
+NCC149,Polk County,N. Carolina
+NCC151,Randolph County,N. Carolina
+NCC153,Richmond County,N. Carolina
+NCC155,Robeson County,N. Carolina
+NCC157,Rockingham County,N. Carolina
+NCC159,Rowan County,N. Carolina
+NCC161,Rutherford County,N. Carolina
+NCC163,Sampson County,N. Carolina
+NCC165,Scotland County,N. Carolina
+NCC167,Stanly County,N. Carolina
+NCC169,Stokes County,N. Carolina
+NCC171,Surry County,N. Carolina
+NCC173,Swain County,N. Carolina
+NCC175,Transylvania County,N. Carolina
+NCC177,Tyrrell County,N. Carolina
+NCC179,Union County,N. Carolina
+NCC181,Vance County,N. Carolina
+NCC183,Wake County,N. Carolina
+NCC185,Warren County,N. Carolina
+NCC187,Washington County,N. Carolina
+NCC189,Watauga County,N. Carolina
+NCC191,Wayne County,N. Carolina
+NCC193,Wilkes County,N. Carolina
+NCC195,Wilson County,N. Carolina
+NCC197,Yadkin County,N. Carolina
+NCC199,Yancey County,N. Carolina
+NDC001,Adams County,N. Dakota
+NDC003,Barnes County,N. Dakota
+NDC005,Benson County,N. Dakota
+NDC007,Billings County,N. Dakota
+NDC009,Bottineau County,N. Dakota
+NDC011,Bowman County,N. Dakota
+NDC013,Burke County,N. Dakota
+NDC015,Burleigh County,N. Dakota
+NDC017,Cass County,N. Dakota
+NDC019,Cavalier County,N. Dakota
+NDC021,Dickey County,N. Dakota
+NDC023,Divide County,N. Dakota
+NDC025,Dunn County,N. Dakota
+NDC027,Eddy County,N. Dakota
+NDC029,Emmons County,N. Dakota
+NDC031,Foster County,N. Dakota
+NDC033,Golden Valley County,N. Dakota
+NDC035,Grand Forks County,N. Dakota
+NDC037,Grant County,N. Dakota
+NDC039,Griggs County,N. Dakota
+NDC041,Hettinger County,N. Dakota
+NDC043,Kidder County,N. Dakota
+NDC045,LaMoure County,N. Dakota
+NDC047,Logan County,N. Dakota
+NDC049,McHenry County,N. Dakota
+NDC051,McIntosh County,N. Dakota
+NDC053,McKenzie County,N. Dakota
+NDC055,McLean County,N. Dakota
+NDC057,Mercer County,N. Dakota
+NDC059,Morton County,N. Dakota
+NDC061,Mountrail County,N. Dakota
+NDC063,Nelson County,N. Dakota
+NDC065,Oliver County,N. Dakota
+NDC067,Pembina County,N. Dakota
+NDC069,Pierce County,N. Dakota
+NDC071,Ramsey County,N. Dakota
+NDC073,Ransom County,N. Dakota
+NDC075,Renville County,N. Dakota
+NDC077,Richland County,N. Dakota
+NDC079,Rolette County,N. Dakota
+NDC081,Sargent County,N. Dakota
+NDC083,Sheridan County,N. Dakota
+NDC085,Sioux County,N. Dakota
+NDC087,Slope County,N. Dakota
+NDC089,Stark County,N. Dakota
+NDC091,Steele County,N. Dakota
+NDC093,Stutsman County,N. Dakota
+NDC095,Towner County,N. Dakota
+NDC097,Traill County,N. Dakota
+NDC099,Walsh County,N. Dakota
+NDC101,Ward County,N. Dakota
+NDC103,Wells County,N. Dakota
+NDC105,Williams County,N. Dakota
+OHC001,Adams County,Ohio
+OHC003,Allen County,Ohio
+OHC005,Ashland County,Ohio
+OHC007,Ashtabula County,Ohio
+OHC009,Athens County,Ohio
+OHC011,Auglaize County,Ohio
+OHC013,Belmont County,Ohio
+OHC015,Brown County,Ohio
+OHC017,Butler County,Ohio
+OHC019,Carroll County,Ohio
+OHC021,Champaign County,Ohio
+OHC023,Clark County,Ohio
+OHC025,Clermont County,Ohio
+OHC027,Clinton County,Ohio
+OHC029,Columbiana County,Ohio
+OHC031,Coshocton County,Ohio
+OHC033,Crawford County,Ohio
+OHC035,Cuyahoga County,Ohio
+OHC037,Darke County,Ohio
+OHC039,Defiance County,Ohio
+OHC041,Delaware County,Ohio
+OHC043,Erie County,Ohio
+OHC045,Fairfield County,Ohio
+OHC047,Fayette County,Ohio
+OHC049,Franklin County,Ohio
+OHC051,Fulton County,Ohio
+OHC053,Gallia County,Ohio
+OHC055,Geauga County,Ohio
+OHC057,Greene County,Ohio
+OHC059,Guernsey County,Ohio
+OHC061,Hamilton County,Ohio
+OHC063,Hancock County,Ohio
+OHC065,Hardin County,Ohio
+OHC067,Harrison County,Ohio
+OHC069,Henry County,Ohio
+OHC071,Highland County,Ohio
+OHC073,Hocking County,Ohio
+OHC075,Holmes County,Ohio
+OHC077,Huron County,Ohio
+OHC079,Jackson County,Ohio
+OHC081,Jefferson County,Ohio
+OHC083,Knox County,Ohio
+OHC085,Lake County,Ohio
+OHC087,Lawrence County,Ohio
+OHC089,Licking County,Ohio
+OHC091,Logan County,Ohio
+OHC093,Lorain County,Ohio
+OHC095,Lucas County,Ohio
+OHC097,Madison County,Ohio
+OHC099,Mahoning County,Ohio
+OHC101,Marion County,Ohio
+OHC103,Medina County,Ohio
+OHC105,Meigs County,Ohio
+OHC107,Mercer County,Ohio
+OHC109,Miami County,Ohio
+OHC111,Monroe County,Ohio
+OHC113,Montgomery County,Ohio
+OHC115,Morgan County,Ohio
+OHC117,Morrow County,Ohio
+OHC119,Muskingum County,Ohio
+OHC121,Noble County,Ohio
+OHC123,Ottawa County,Ohio
+OHC125,Paulding County,Ohio
+OHC127,Perry County,Ohio
+OHC129,Pickaway County,Ohio
+OHC131,Pike County,Ohio
+OHC133,Portage County,Ohio
+OHC135,Preble County,Ohio
+OHC137,Putnam County,Ohio
+OHC139,Richland County,Ohio
+OHC141,Ross County,Ohio
+OHC143,Sandusky County,Ohio
+OHC145,Scioto County,Ohio
+OHC147,Seneca County,Ohio
+OHC149,Shelby County,Ohio
+OHC151,Stark County,Ohio
+OHC153,Summit County,Ohio
+OHC155,Trumbull County,Ohio
+OHC157,Tuscarawas County,Ohio
+OHC159,Union County,Ohio
+OHC161,Van Wert County,Ohio
+OHC163,Vinton County,Ohio
+OHC165,Warren County,Ohio
+OHC167,Washington County,Ohio
+OHC169,Wayne County,Ohio
+OHC171,Williams County,Ohio
+OHC173,Wood County,Ohio
+OHC175,Wyandot County,Ohio
+OKC001,Adair County,Oklahoma
+OKC003,Alfalfa County,Oklahoma
+OKC005,Atoka County,Oklahoma
+OKC007,Beaver County,Oklahoma
+OKC009,Beckham County,Oklahoma
+OKC011,Blaine County,Oklahoma
+OKC013,Bryan County,Oklahoma
+OKC015,Caddo County,Oklahoma
+OKC017,Canadian County,Oklahoma
+OKC019,Carter County,Oklahoma
+OKC021,Cherokee County,Oklahoma
+OKC023,Choctaw County,Oklahoma
+OKC025,Cimarron County,Oklahoma
+OKC027,Cleveland County,Oklahoma
+OKC029,Coal County,Oklahoma
+OKC031,Comanche County,Oklahoma
+OKC033,Cotton County,Oklahoma
+OKC035,Craig County,Oklahoma
+OKC037,Creek County,Oklahoma
+OKC039,Custer County,Oklahoma
+OKC041,Delaware County,Oklahoma
+OKC043,Dewey County,Oklahoma
+OKC045,Ellis County,Oklahoma
+OKC047,Garfield County,Oklahoma
+OKC049,Garvin County,Oklahoma
+OKC051,Grady County,Oklahoma
+OKC053,Grant County,Oklahoma
+OKC055,Greer County,Oklahoma
+OKC057,Harmon County,Oklahoma
+OKC059,Harper County,Oklahoma
+OKC061,Haskell County,Oklahoma
+OKC063,Hughes County,Oklahoma
+OKC065,Jackson County,Oklahoma
+OKC067,Jefferson County,Oklahoma
+OKC069,Johnston County,Oklahoma
+OKC071,Kay County,Oklahoma
+OKC073,Kingfisher County,Oklahoma
+OKC075,Kiowa County,Oklahoma
+OKC077,Latimer County,Oklahoma
+OKC079,Le Flore County,Oklahoma
+OKC081,Lincoln County,Oklahoma
+OKC083,Logan County,Oklahoma
+OKC085,Love County,Oklahoma
+OKC087,McClain County,Oklahoma
+OKC089,McCurtain County,Oklahoma
+OKC091,McIntosh County,Oklahoma
+OKC093,Major County,Oklahoma
+OKC095,Marshall County,Oklahoma
+OKC097,Mayes County,Oklahoma
+OKC099,Murray County,Oklahoma
+OKC101,Muskogee County,Oklahoma
+OKC103,Noble County,Oklahoma
+OKC105,Nowata County,Oklahoma
+OKC107,Okfuskee County,Oklahoma
+OKC109,Oklahoma County,Oklahoma
+OKC111,Okmulgee County,Oklahoma
+OKC113,Osage County,Oklahoma
+OKC115,Ottawa County,Oklahoma
+OKC117,Pawnee County,Oklahoma
+OKC119,Payne County,Oklahoma
+OKC121,Pittsburg County,Oklahoma
+OKC123,Pontotoc County,Oklahoma
+OKC125,Pottawatomie County,Oklahoma
+OKC127,Pushmataha County,Oklahoma
+OKC129,Roger Mills County,Oklahoma
+OKC131,Rogers County,Oklahoma
+OKC133,Seminole County,Oklahoma
+OKC135,Sequoyah County,Oklahoma
+OKC137,Stephens County,Oklahoma
+OKC139,Texas County,Oklahoma
+OKC141,Tillman County,Oklahoma
+OKC143,Tulsa County,Oklahoma
+OKC145,Wagoner County,Oklahoma
+OKC147,Washington County,Oklahoma
+OKC149,Washita County,Oklahoma
+OKC151,Woods County,Oklahoma
+OKC153,Woodward County,Oklahoma
+ORC001,Baker County,Oregon
+ORC003,Benton County,Oregon
+ORC005,Clackamas County,Oregon
+ORC007,Clatsop County,Oregon
+ORC009,Columbia County,Oregon
+ORC011,Coos County,Oregon
+ORC013,Crook County,Oregon
+ORC015,Curry County,Oregon
+ORC017,Deschutes County,Oregon
+ORC019,Douglas County,Oregon
+ORC021,Gilliam County,Oregon
+ORC023,Grant County,Oregon
+ORC025,Harney County,Oregon
+ORC027,Hood River County,Oregon
+ORC029,Jackson County,Oregon
+ORC031,Jefferson County,Oregon
+ORC033,Josephine County,Oregon
+ORC035,Klamath County,Oregon
+ORC037,Lake County,Oregon
+ORC039,Lane County,Oregon
+ORC041,Lincoln County,Oregon
+ORC043,Linn County,Oregon
+ORC045,Malheur County,Oregon
+ORC047,Marion County,Oregon
+ORC049,Morrow County,Oregon
+ORC051,Multnomah County,Oregon
+ORC053,Polk County,Oregon
+ORC055,Sherman County,Oregon
+ORC057,Tillamook County,Oregon
+ORC059,Umatilla County,Oregon
+ORC061,Union County,Oregon
+ORC063,Wallowa County,Oregon
+ORC065,Wasco County,Oregon
+ORC067,Washington County,Oregon
+ORC069,Wheeler County,Oregon
+ORC071,Yamhill County,Oregon
+PAC001,Adams County,Pennsylvania
+PAC003,Allegheny County,Pennsylvania
+PAC005,Armstrong County,Pennsylvania
+PAC007,Beaver County,Pennsylvania
+PAC009,Bedford County,Pennsylvania
+PAC011,Berks County,Pennsylvania
+PAC013,Blair County,Pennsylvania
+PAC015,Bradford County,Pennsylvania
+PAC017,Bucks County,Pennsylvania
+PAC019,Butler County,Pennsylvania
+PAC021,Cambria County,Pennsylvania
+PAC023,Cameron County,Pennsylvania
+PAC025,Carbon County,Pennsylvania
+PAC027,Centre County,Pennsylvania
+PAC029,Chester County,Pennsylvania
+PAC031,Clarion County,Pennsylvania
+PAC033,Clearfield County,Pennsylvania
+PAC035,Clinton County,Pennsylvania
+PAC037,Columbia County,Pennsylvania
+PAC039,Crawford County,Pennsylvania
+PAC041,Cumberland County,Pennsylvania
+PAC043,Dauphin County,Pennsylvania
+PAC045,Delaware County,Pennsylvania
+PAC047,Elk County,Pennsylvania
+PAC049,Erie County,Pennsylvania
+PAC051,Fayette County,Pennsylvania
+PAC053,Forest County,Pennsylvania
+PAC055,Franklin County,Pennsylvania
+PAC057,Fulton County,Pennsylvania
+PAC059,Greene County,Pennsylvania
+PAC061,Huntingdon County,Pennsylvania
+PAC063,Indiana County,Pennsylvania
+PAC065,Jefferson County,Pennsylvania
+PAC067,Juniata County,Pennsylvania
+PAC069,Lackawanna County,Pennsylvania
+PAC071,Lancaster County,Pennsylvania
+PAC073,Lawrence County,Pennsylvania
+PAC075,Lebanon County,Pennsylvania
+PAC077,Lehigh County,Pennsylvania
+PAC079,Luzerne County,Pennsylvania
+PAC081,Lycoming County,Pennsylvania
+PAC083,McKean County,Pennsylvania
+PAC085,Mercer County,Pennsylvania
+PAC087,Mifflin County,Pennsylvania
+PAC089,Monroe County,Pennsylvania
+PAC091,Montgomery County,Pennsylvania
+PAC093,Montour County,Pennsylvania
+PAC095,Northampton County,Pennsylvania
+PAC097,Northumberland County,Pennsylvania
+PAC099,Perry County,Pennsylvania
+PAC101,Philadelphia County,Pennsylvania
+PAC103,Pike County,Pennsylvania
+PAC105,Potter County,Pennsylvania
+PAC107,Schuylkill County,Pennsylvania
+PAC109,Snyder County,Pennsylvania
+PAC111,Somerset County,Pennsylvania
+PAC113,Sullivan County,Pennsylvania
+PAC115,Susquehanna County,Pennsylvania
+PAC117,Tioga County,Pennsylvania
+PAC119,Union County,Pennsylvania
+PAC121,Venango County,Pennsylvania
+PAC123,Warren County,Pennsylvania
+PAC125,Washington County,Pennsylvania
+PAC127,Wayne County,Pennsylvania
+PAC129,Westmoreland County,Pennsylvania
+PAC131,Wyoming County,Pennsylvania
+PAC133,York County,Pennsylvania
+RIC001,Bristol County,Rhode Island
+RIC003,Kent County,Rhode Island
+RIC005,Newport County,Rhode Island
+RIC007,Providence County,Rhode Island
+RIC009,Washington County,Rhode Island
+SCC001,Abbeville County,S. Carolina
+SCC003,Aiken County,S. Carolina
+SCC005,Allendale County,S. Carolina
+SCC007,Anderson County,S. Carolina
+SCC009,Bamberg County,S. Carolina
+SCC011,Barnwell County,S. Carolina
+SCC013,Beaufort County,S. Carolina
+SCC015,Berkeley County,S. Carolina
+SCC017,Calhoun County,S. Carolina
+SCC019,Charleston County,S. Carolina
+SCC021,Cherokee County,S. Carolina
+SCC023,Chester County,S. Carolina
+SCC025,Chesterfield County,S. Carolina
+SCC027,Clarendon County,S. Carolina
+SCC029,Colleton County,S. Carolina
+SCC031,Darlington County,S. Carolina
+SCC033,Dillon County,S. Carolina
+SCC035,Dorchester County,S. Carolina
+SCC037,Edgefield County,S. Carolina
+SCC039,Fairfield County,S. Carolina
+SCC041,Florence County,S. Carolina
+SCC043,Georgetown County,S. Carolina
+SCC045,Greenville County,S. Carolina
+SCC047,Greenwood County,S. Carolina
+SCC049,Hampton County,S. Carolina
+SCC051,Horry County,S. Carolina
+SCC053,Jasper County,S. Carolina
+SCC055,Kershaw County,S. Carolina
+SCC057,Lancaster County,S. Carolina
+SCC059,Laurens County,S. Carolina
+SCC061,Lee County,S. Carolina
+SCC063,Lexington County,S. Carolina
+SCC065,McCormick County,S. Carolina
+SCC067,Marion County,S. Carolina
+SCC069,Marlboro County,S. Carolina
+SCC071,Newberry County,S. Carolina
+SCC073,Oconee County,S. Carolina
+SCC075,Orangeburg County,S. Carolina
+SCC077,Pickens County,S. Carolina
+SCC079,Richland County,S. Carolina
+SCC081,Saluda County,S. Carolina
+SCC083,Spartanburg County,S. Carolina
+SCC085,Sumter County,S. Carolina
+SCC087,Union County,S. Carolina
+SCC089,Williamsburg County,S. Carolina
+SCC091,York County,S. Carolina
+SDC003,Aurora County,S. Dakota
+SDC005,Beadle County,S. Dakota
+SDC007,Bennett County,S. Dakota
+SDC009,Bon Homme County,S. Dakota
+SDC011,Brookings County,S. Dakota
+SDC013,Brown County,S. Dakota
+SDC015,Brule County,S. Dakota
+SDC017,Buffalo County,S. Dakota
+SDC019,Butte County,S. Dakota
+SDC021,Campbell County,S. Dakota
+SDC023,Charles Mix County,S. Dakota
+SDC025,Clark County,S. Dakota
+SDC027,Clay County,S. Dakota
+SDC029,Codington County,S. Dakota
+SDC031,Corson County,S. Dakota
+SDC033,Custer County,S. Dakota
+SDC035,Davison County,S. Dakota
+SDC037,Day County,S. Dakota
+SDC039,Deuel County,S. Dakota
+SDC041,Dewey County,S. Dakota
+SDC043,Douglas County,S. Dakota
+SDC045,Edmunds County,S. Dakota
+SDC047,Fall River County,S. Dakota
+SDC049,Faulk County,S. Dakota
+SDC051,Grant County,S. Dakota
+SDC053,Gregory County,S. Dakota
+SDC055,Haakon County,S. Dakota
+SDC057,Hamlin County,S. Dakota
+SDC059,Hand County,S. Dakota
+SDC061,Hanson County,S. Dakota
+SDC063,Harding County,S. Dakota
+SDC065,Hughes County,S. Dakota
+SDC067,Hutchinson County,S. Dakota
+SDC069,Hyde County,S. Dakota
+SDC071,Jackson County,S. Dakota
+SDC073,Jerauld County,S. Dakota
+SDC075,Jones County,S. Dakota
+SDC077,Kingsbury County,S. Dakota
+SDC079,Lake County,S. Dakota
+SDC081,Lawrence County,S. Dakota
+SDC083,Lincoln County,S. Dakota
+SDC085,Lyman County,S. Dakota
+SDC087,McCook County,S. Dakota
+SDC089,McPherson County,S. Dakota
+SDC091,Marshall County,S. Dakota
+SDC093,Meade County,S. Dakota
+SDC095,Mellette County,S. Dakota
+SDC097,Miner County,S. Dakota
+SDC099,Minnehaha County,S. Dakota
+SDC101,Moody County,S. Dakota
+SDC102,Oglala Lakota County,S. Dakota
+SDC103,Pennington County,S. Dakota
+SDC105,Perkins County,S. Dakota
+SDC107,Potter County,S. Dakota
+SDC109,Roberts County,S. Dakota
+SDC111,Sanborn County,S. Dakota
+SDC115,Spink County,S. Dakota
+SDC117,Stanley County,S. Dakota
+SDC119,Sully County,S. Dakota
+SDC121,Todd County,S. Dakota
+SDC123,Tripp County,S. Dakota
+SDC125,Turner County,S. Dakota
+SDC127,Union County,S. Dakota
+SDC129,Walworth County,S. Dakota
+SDC135,Yankton County,S. Dakota
+SDC137,Ziebach County,S. Dakota
+TNC001,Anderson County,Tennessee
+TNC003,Bedford County,Tennessee
+TNC005,Benton County,Tennessee
+TNC007,Bledsoe County,Tennessee
+TNC009,Blount County,Tennessee
+TNC011,Bradley County,Tennessee
+TNC013,Campbell County,Tennessee
+TNC015,Cannon County,Tennessee
+TNC017,Carroll County,Tennessee
+TNC019,Carter County,Tennessee
+TNC021,Cheatham County,Tennessee
+TNC023,Chester County,Tennessee
+TNC025,Claiborne County,Tennessee
+TNC027,Clay County,Tennessee
+TNC029,Cocke County,Tennessee
+TNC031,Coffee County,Tennessee
+TNC033,Crockett County,Tennessee
+TNC035,Cumberland County,Tennessee
+TNC037,Davidson County,Tennessee
+TNC039,Decatur County,Tennessee
+TNC041,DeKalb County,Tennessee
+TNC043,Dickson County,Tennessee
+TNC045,Dyer County,Tennessee
+TNC047,Fayette County,Tennessee
+TNC049,Fentress County,Tennessee
+TNC051,Franklin County,Tennessee
+TNC053,Gibson County,Tennessee
+TNC055,Giles County,Tennessee
+TNC057,Grainger County,Tennessee
+TNC059,Greene County,Tennessee
+TNC061,Grundy County,Tennessee
+TNC063,Hamblen County,Tennessee
+TNC065,Hamilton County,Tennessee
+TNC067,Hancock County,Tennessee
+TNC069,Hardeman County,Tennessee
+TNC071,Hardin County,Tennessee
+TNC073,Hawkins County,Tennessee
+TNC075,Haywood County,Tennessee
+TNC077,Henderson County,Tennessee
+TNC079,Henry County,Tennessee
+TNC081,Hickman County,Tennessee
+TNC083,Houston County,Tennessee
+TNC085,Humphreys County,Tennessee
+TNC087,Jackson County,Tennessee
+TNC089,Jefferson County,Tennessee
+TNC091,Johnson County,Tennessee
+TNC093,Knox County,Tennessee
+TNC095,Lake County,Tennessee
+TNC097,Lauderdale County,Tennessee
+TNC099,Lawrence County,Tennessee
+TNC101,Lewis County,Tennessee
+TNC103,Lincoln County,Tennessee
+TNC105,Loudon County,Tennessee
+TNC107,McMinn County,Tennessee
+TNC109,McNairy County,Tennessee
+TNC111,Macon County,Tennessee
+TNC113,Madison County,Tennessee
+TNC115,Marion County,Tennessee
+TNC117,Marshall County,Tennessee
+TNC119,Maury County,Tennessee
+TNC121,Meigs County,Tennessee
+TNC123,Monroe County,Tennessee
+TNC125,Montgomery County,Tennessee
+TNC127,Moore County,Tennessee
+TNC129,Morgan County,Tennessee
+TNC131,Obion County,Tennessee
+TNC133,Overton County,Tennessee
+TNC135,Perry County,Tennessee
+TNC137,Pickett County,Tennessee
+TNC139,Polk County,Tennessee
+TNC141,Putnam County,Tennessee
+TNC143,Rhea County,Tennessee
+TNC145,Roane County,Tennessee
+TNC147,Robertson County,Tennessee
+TNC149,Rutherford County,Tennessee
+TNC151,Scott County,Tennessee
+TNC153,Sequatchie County,Tennessee
+TNC155,Sevier County,Tennessee
+TNC157,Shelby County,Tennessee
+TNC159,Smith County,Tennessee
+TNC161,Stewart County,Tennessee
+TNC163,Sullivan County,Tennessee
+TNC165,Sumner County,Tennessee
+TNC167,Tipton County,Tennessee
+TNC169,Trousdale County,Tennessee
+TNC171,Unicoi County,Tennessee
+TNC173,Union County,Tennessee
+TNC175,Van Buren County,Tennessee
+TNC177,Warren County,Tennessee
+TNC179,Washington County,Tennessee
+TNC181,Wayne County,Tennessee
+TNC183,Weakley County,Tennessee
+TNC185,White County,Tennessee
+TNC187,Williamson County,Tennessee
+TNC189,Wilson County,Tennessee
+TXC001,Anderson County,Texas
+TXC003,Andrews County,Texas
+TXC005,Angelina County,Texas
+TXC007,Aransas County,Texas
+TXC009,Archer County,Texas
+TXC011,Armstrong County,Texas
+TXC013,Atascosa County,Texas
+TXC015,Austin County,Texas
+TXC017,Bailey County,Texas
+TXC019,Bandera County,Texas
+TXC021,Bastrop County,Texas
+TXC023,Baylor County,Texas
+TXC025,Bee County,Texas
+TXC027,Bell County,Texas
+TXC029,Bexar County,Texas
+TXC031,Blanco County,Texas
+TXC033,Borden County,Texas
+TXC035,Bosque County,Texas
+TXC037,Bowie County,Texas
+TXC039,Brazoria County,Texas
+TXC041,Brazos County,Texas
+TXC043,Brewster County,Texas
+TXC045,Briscoe County,Texas
+TXC047,Brooks County,Texas
+TXC049,Brown County,Texas
+TXC051,Burleson County,Texas
+TXC053,Burnet County,Texas
+TXC055,Caldwell County,Texas
+TXC057,Calhoun County,Texas
+TXC059,Callahan County,Texas
+TXC061,Cameron County,Texas
+TXC063,Camp County,Texas
+TXC065,Carson County,Texas
+TXC067,Cass County,Texas
+TXC069,Castro County,Texas
+TXC071,Chambers County,Texas
+TXC073,Cherokee County,Texas
+TXC075,Childress County,Texas
+TXC077,Clay County,Texas
+TXC079,Cochran County,Texas
+TXC081,Coke County,Texas
+TXC083,Coleman County,Texas
+TXC085,Collin County,Texas
+TXC087,Collingsworth County,Texas
+TXC089,Colorado County,Texas
+TXC091,Comal County,Texas
+TXC093,Comanche County,Texas
+TXC095,Concho County,Texas
+TXC097,Cooke County,Texas
+TXC099,Coryell County,Texas
+TXC101,Cottle County,Texas
+TXC103,Crane County,Texas
+TXC105,Crockett County,Texas
+TXC107,Crosby County,Texas
+TXC109,Culberson County,Texas
+TXC111,Dallam County,Texas
+TXC113,Dallas County,Texas
+TXC115,Dawson County,Texas
+TXC117,Deaf Smith County,Texas
+TXC119,Delta County,Texas
+TXC121,Denton County,Texas
+TXC123,DeWitt County,Texas
+TXC125,Dickens County,Texas
+TXC127,Dimmit County,Texas
+TXC129,Donley County,Texas
+TXC131,Duval County,Texas
+TXC133,Eastland County,Texas
+TXC135,Ector County,Texas
+TXC137,Edwards County,Texas
+TXC139,Ellis County,Texas
+TXC141,El Paso County,Texas
+TXC143,Erath County,Texas
+TXC145,Falls County,Texas
+TXC147,Fannin County,Texas
+TXC149,Fayette County,Texas
+TXC151,Fisher County,Texas
+TXC153,Floyd County,Texas
+TXC155,Foard County,Texas
+TXC157,Fort Bend County,Texas
+TXC159,Franklin County,Texas
+TXC161,Freestone County,Texas
+TXC163,Frio County,Texas
+TXC165,Gaines County,Texas
+TXC167,Galveston County,Texas
+TXC169,Garza County,Texas
+TXC171,Gillespie County,Texas
+TXC173,Glasscock County,Texas
+TXC175,Goliad County,Texas
+TXC177,Gonzales County,Texas
+TXC179,Gray County,Texas
+TXC181,Grayson County,Texas
+TXC183,Gregg County,Texas
+TXC185,Grimes County,Texas
+TXC187,Guadalupe County,Texas
+TXC189,Hale County,Texas
+TXC191,Hall County,Texas
+TXC193,Hamilton County,Texas
+TXC195,Hansford County,Texas
+TXC197,Hardeman County,Texas
+TXC199,Hardin County,Texas
+TXC201,Harris County,Texas
+TXC203,Harrison County,Texas
+TXC205,Hartley County,Texas
+TXC207,Haskell County,Texas
+TXC209,Hays County,Texas
+TXC211,Hemphill County,Texas
+TXC213,Henderson County,Texas
+TXC215,Hidalgo County,Texas
+TXC217,Hill County,Texas
+TXC219,Hockley County,Texas
+TXC221,Hood County,Texas
+TXC223,Hopkins County,Texas
+TXC225,Houston County,Texas
+TXC227,Howard County,Texas
+TXC229,Hudspeth County,Texas
+TXC231,Hunt County,Texas
+TXC233,Hutchinson County,Texas
+TXC235,Irion County,Texas
+TXC237,Jack County,Texas
+TXC239,Jackson County,Texas
+TXC241,Jasper County,Texas
+TXC243,Jeff Davis County,Texas
+TXC245,Jefferson County,Texas
+TXC247,Jim Hogg County,Texas
+TXC249,Jim Wells County,Texas
+TXC251,Johnson County,Texas
+TXC253,Jones County,Texas
+TXC255,Karnes County,Texas
+TXC257,Kaufman County,Texas
+TXC259,Kendall County,Texas
+TXC261,Kenedy County,Texas
+TXC263,Kent County,Texas
+TXC265,Kerr County,Texas
+TXC267,Kimble County,Texas
+TXC269,King County,Texas
+TXC271,Kinney County,Texas
+TXC273,Kleberg County,Texas
+TXC275,Knox County,Texas
+TXC277,Lamar County,Texas
+TXC279,Lamb County,Texas
+TXC281,Lampasas County,Texas
+TXC283,La Salle County,Texas
+TXC285,Lavaca County,Texas
+TXC287,Lee County,Texas
+TXC289,Leon County,Texas
+TXC291,Liberty County,Texas
+TXC293,Limestone County,Texas
+TXC295,Lipscomb County,Texas
+TXC297,Live Oak County,Texas
+TXC299,Llano County,Texas
+TXC301,Loving County,Texas
+TXC303,Lubbock County,Texas
+TXC305,Lynn County,Texas
+TXC307,McCulloch County,Texas
+TXC309,McLennan County,Texas
+TXC311,McMullen County,Texas
+TXC313,Madison County,Texas
+TXC315,Marion County,Texas
+TXC317,Martin County,Texas
+TXC319,Mason County,Texas
+TXC321,Matagorda County,Texas
+TXC323,Maverick County,Texas
+TXC325,Medina County,Texas
+TXC327,Menard County,Texas
+TXC329,Midland County,Texas
+TXC331,Milam County,Texas
+TXC333,Mills County,Texas
+TXC335,Mitchell County,Texas
+TXC337,Montague County,Texas
+TXC339,Montgomery County,Texas
+TXC341,Moore County,Texas
+TXC343,Morris County,Texas
+TXC345,Motley County,Texas
+TXC347,Nacogdoches County,Texas
+TXC349,Navarro County,Texas
+TXC351,Newton County,Texas
+TXC353,Nolan County,Texas
+TXC355,Nueces County,Texas
+TXC357,Ochiltree County,Texas
+TXC359,Oldham County,Texas
+TXC361,Orange County,Texas
+TXC363,Palo Pinto County,Texas
+TXC365,Panola County,Texas
+TXC367,Parker County,Texas
+TXC369,Parmer County,Texas
+TXC371,Pecos County,Texas
+TXC373,Polk County,Texas
+TXC375,Potter County,Texas
+TXC377,Presidio County,Texas
+TXC379,Rains County,Texas
+TXC381,Randall County,Texas
+TXC383,Reagan County,Texas
+TXC385,Real County,Texas
+TXC387,Red River County,Texas
+TXC389,Reeves County,Texas
+TXC391,Refugio County,Texas
+TXC393,Roberts County,Texas
+TXC395,Robertson County,Texas
+TXC397,Rockwall County,Texas
+TXC399,Runnels County,Texas
+TXC401,Rusk County,Texas
+TXC403,Sabine County,Texas
+TXC405,San Augustine County,Texas
+TXC407,San Jacinto County,Texas
+TXC409,San Patricio County,Texas
+TXC411,San Saba County,Texas
+TXC413,Schleicher County,Texas
+TXC415,Scurry County,Texas
+TXC417,Shackelford County,Texas
+TXC419,Shelby County,Texas
+TXC421,Sherman County,Texas
+TXC423,Smith County,Texas
+TXC425,Somervell County,Texas
+TXC427,Starr County,Texas
+TXC429,Stephens County,Texas
+TXC431,Sterling County,Texas
+TXC433,Stonewall County,Texas
+TXC435,Sutton County,Texas
+TXC437,Swisher County,Texas
+TXC439,Tarrant County,Texas
+TXC441,Taylor County,Texas
+TXC443,Terrell County,Texas
+TXC445,Terry County,Texas
+TXC447,Throckmorton County,Texas
+TXC449,Titus County,Texas
+TXC451,Tom Green County,Texas
+TXC453,Travis County,Texas
+TXC455,Trinity County,Texas
+TXC457,Tyler County,Texas
+TXC459,Upshur County,Texas
+TXC461,Upton County,Texas
+TXC463,Uvalde County,Texas
+TXC465,Val Verde County,Texas
+TXC467,Van Zandt County,Texas
+TXC469,Victoria County,Texas
+TXC471,Walker County,Texas
+TXC473,Waller County,Texas
+TXC475,Ward County,Texas
+TXC477,Washington County,Texas
+TXC479,Webb County,Texas
+TXC481,Wharton County,Texas
+TXC483,Wheeler County,Texas
+TXC485,Wichita County,Texas
+TXC487,Wilbarger County,Texas
+TXC489,Willacy County,Texas
+TXC491,Williamson County,Texas
+TXC493,Wilson County,Texas
+TXC495,Winkler County,Texas
+TXC497,Wise County,Texas
+TXC499,Wood County,Texas
+TXC501,Yoakum County,Texas
+TXC503,Young County,Texas
+TXC505,Zapata County,Texas
+TXC507,Zavala County,Texas
+UTC001,Beaver County,Utah
+UTC003,Box Elder County,Utah
+UTC005,Cache County,Utah
+UTC007,Carbon County,Utah
+UTC009,Daggett County,Utah
+UTC011,Davis County,Utah
+UTC013,Duchesne County,Utah
+UTC015,Emery County,Utah
+UTC017,Garfield County,Utah
+UTC019,Grand County,Utah
+UTC021,Iron County,Utah
+UTC023,Juab County,Utah
+UTC025,Kane County,Utah
+UTC027,Millard County,Utah
+UTC029,Morgan County,Utah
+UTC031,Piute County,Utah
+UTC033,Rich County,Utah
+UTC035,Salt Lake County,Utah
+UTC037,San Juan County,Utah
+UTC039,Sanpete County,Utah
+UTC041,Sevier County,Utah
+UTC043,Summit County,Utah
+UTC045,Tooele County,Utah
+UTC047,Uintah County,Utah
+UTC049,Utah County,Utah
+UTC051,Wasatch County,Utah
+UTC053,Washington County,Utah
+UTC055,Wayne County,Utah
+UTC057,Weber County,Utah
+VTC001,Addison County,Vermont
+VTC003,Bennington County,Vermont
+VTC005,Caledonia County,Vermont
+VTC007,Chittenden County,Vermont
+VTC009,Essex County,Vermont
+VTC011,Franklin County,Vermont
+VTC013,Grand Isle County,Vermont
+VTC015,Lamoille County,Vermont
+VTC017,Orange County,Vermont
+VTC019,Orleans County,Vermont
+VTC021,Rutland County,Vermont
+VTC023,Washington County,Vermont
+VTC025,Windham County,Vermont
+VTC027,Windsor County,Vermont
+VAC001,Accomack County,Virginia
+VAC003,Albemarle County,Virginia
+VAC005,Alleghany County,Virginia
+VAC007,Amelia County,Virginia
+VAC009,Amherst County,Virginia
+VAC011,Appomattox County,Virginia
+VAC013,Arlington County,Virginia
+VAC015,Augusta County,Virginia
+VAC017,Bath County,Virginia
+VAC019,Bedford County,Virginia
+VAC021,Bland County,Virginia
+VAC023,Botetourt County,Virginia
+VAC025,Brunswick County,Virginia
+VAC027,Buchanan County,Virginia
+VAC029,Buckingham County,Virginia
+VAC031,Campbell County,Virginia
+VAC033,Caroline County,Virginia
+VAC035,Carroll County,Virginia
+VAC036,Charles City County,Virginia
+VAC037,Charlotte County,Virginia
+VAC041,Chesterfield County,Virginia
+VAC043,Clarke County,Virginia
+VAC045,Craig County,Virginia
+VAC047,Culpeper County,Virginia
+VAC049,Cumberland County,Virginia
+VAC051,Dickenson County,Virginia
+VAC053,Dinwiddie County,Virginia
+VAC057,Essex County,Virginia
+VAC059,Fairfax County,Virginia
+VAC061,Fauquier County,Virginia
+VAC063,Floyd County,Virginia
+VAC065,Fluvanna County,Virginia
+VAC067,Franklin County,Virginia
+VAC069,Frederick County,Virginia
+VAC071,Giles County,Virginia
+VAC073,Gloucester County,Virginia
+VAC075,Goochland County,Virginia
+VAC077,Grayson County,Virginia
+VAC079,Greene County,Virginia
+VAC081,Greensville County,Virginia
+VAC083,Halifax County,Virginia
+VAC085,Hanover County,Virginia
+VAC087,Henrico County,Virginia
+VAC089,Henry County,Virginia
+VAC091,Highland County,Virginia
+VAC093,Isle of Wight County,Virginia
+VAC095,James City County,Virginia
+VAC097,King and Queen County,Virginia
+VAC099,King George County,Virginia
+VAC101,King William County,Virginia
+VAC103,Lancaster County,Virginia
+VAC105,Lee County,Virginia
+VAC107,Loudoun County,Virginia
+VAC109,Louisa County,Virginia
+VAC111,Lunenburg County,Virginia
+VAC113,Madison County,Virginia
+VAC115,Mathews County,Virginia
+VAC117,Mecklenburg County,Virginia
+VAC119,Middlesex County,Virginia
+VAC121,Montgomery County,Virginia
+VAC125,Nelson County,Virginia
+VAC127,New Kent County,Virginia
+VAC131,Northampton County,Virginia
+VAC133,Northumberland County,Virginia
+VAC135,Nottoway County,Virginia
+VAC137,Orange County,Virginia
+VAC139,Page County,Virginia
+VAC141,Patrick County,Virginia
+VAC143,Pittsylvania County,Virginia
+VAC145,Powhatan County,Virginia
+VAC147,Prince Edward County,Virginia
+VAC149,Prince George County,Virginia
+VAC153,Prince William County,Virginia
+VAC155,Pulaski County,Virginia
+VAC157,Rappahannock County,Virginia
+VAC159,Richmond County,Virginia
+VAC161,Roanoke County,Virginia
+VAC163,Rockbridge County,Virginia
+VAC165,Rockingham County,Virginia
+VAC167,Russell County,Virginia
+VAC169,Scott County,Virginia
+VAC171,Shenandoah County,Virginia
+VAC173,Smyth County,Virginia
+VAC175,Southampton County,Virginia
+VAC177,Spotsylvania County,Virginia
+VAC179,Stafford County,Virginia
+VAC181,Surry County,Virginia
+VAC183,Sussex County,Virginia
+VAC185,Tazewell County,Virginia
+VAC187,Warren County,Virginia
+VAC191,Washington County,Virginia
+VAC193,Westmoreland County,Virginia
+VAC195,Wise County,Virginia
+VAC197,Wythe County,Virginia
+VAC199,York County,Virginia
+VAC510,Alexandria city,Virginia
+VAC520,Bristol city,Virginia
+VAC530,Buena Vista city,Virginia
+VAC540,Charlottesville city,Virginia
+VAC550,Chesapeake city,Virginia
+VAC570,Colonial Heights city,Virginia
+VAC580,Covington city,Virginia
+VAC590,Danville city,Virginia
+VAC595,Emporia city,Virginia
+VAC600,Fairfax city,Virginia
+VAC610,Falls Church city,Virginia
+VAC620,Franklin city,Virginia
+VAC630,Fredericksburg city,Virginia
+VAC640,Galax city,Virginia
+VAC650,Hampton city,Virginia
+VAC660,Harrisonburg city,Virginia
+VAC670,Hopewell city,Virginia
+VAC678,Lexington city,Virginia
+VAC680,Lynchburg city,Virginia
+VAC683,Manassas city,Virginia
+VAC685,Manassas Park city,Virginia
+VAC690,Martinsville city,Virginia
+VAC700,Newport News city,Virginia
+VAC710,Norfolk city,Virginia
+VAC720,Norton city,Virginia
+VAC730,Petersburg city,Virginia
+VAC735,Poquoson city,Virginia
+VAC740,Portsmouth city,Virginia
+VAC750,Radford city,Virginia
+VAC760,Richmond city,Virginia
+VAC770,Roanoke city,Virginia
+VAC775,Salem city,Virginia
+VAC790,Staunton city,Virginia
+VAC800,Suffolk city,Virginia
+VAC810,Virginia Beach city,Virginia
+VAC820,Waynesboro city,Virginia
+VAC830,Williamsburg city,Virginia
+VAC840,Winchester city,Virginia
+WAC001,Adams County,Washington
+WAC003,Asotin County,Washington
+WAC005,Benton County,Washington
+WAC007,Chelan County,Washington
+WAC009,Clallam County,Washington
+WAC011,Clark County,Washington
+WAC013,Columbia County,Washington
+WAC015,Cowlitz County,Washington
+WAC017,Douglas County,Washington
+WAC019,Ferry County,Washington
+WAC021,Franklin County,Washington
+WAC023,Garfield County,Washington
+WAC025,Grant County,Washington
+WAC027,Grays Harbor County,Washington
+WAC029,Island County,Washington
+WAC031,Jefferson County,Washington
+WAC033,King County,Washington
+WAC035,Kitsap County,Washington
+WAC037,Kittitas County,Washington
+WAC039,Klickitat County,Washington
+WAC041,Lewis County,Washington
+WAC043,Lincoln County,Washington
+WAC045,Mason County,Washington
+WAC047,Okanogan County,Washington
+WAC049,Pacific County,Washington
+WAC051,Pend Oreille County,Washington
+WAC053,Pierce County,Washington
+WAC055,San Juan County,Washington
+WAC057,Skagit County,Washington
+WAC059,Skamania County,Washington
+WAC061,Snohomish County,Washington
+WAC063,Spokane County,Washington
+WAC065,Stevens County,Washington
+WAC067,Thurston County,Washington
+WAC069,Wahkiakum County,Washington
+WAC071,Walla Walla County,Washington
+WAC073,Whatcom County,Washington
+WAC075,Whitman County,Washington
+WAC077,Yakima County,Washington
+WVC001,Barbour County,West Virginia
+WVC003,Berkeley County,West Virginia
+WVC005,Boone County,West Virginia
+WVC007,Braxton County,West Virginia
+WVC009,Brooke County,West Virginia
+WVC011,Cabell County,West Virginia
+WVC013,Calhoun County,West Virginia
+WVC015,Clay County,West Virginia
+WVC017,Doddridge County,West Virginia
+WVC019,Fayette County,West Virginia
+WVC021,Gilmer County,West Virginia
+WVC023,Grant County,West Virginia
+WVC025,Greenbrier County,West Virginia
+WVC027,Hampshire County,West Virginia
+WVC029,Hancock County,West Virginia
+WVC031,Hardy County,West Virginia
+WVC033,Harrison County,West Virginia
+WVC035,Jackson County,West Virginia
+WVC037,Jefferson County,West Virginia
+WVC039,Kanawha County,West Virginia
+WVC041,Lewis County,West Virginia
+WVC043,Lincoln County,West Virginia
+WVC045,Logan County,West Virginia
+WVC047,McDowell County,West Virginia
+WVC049,Marion County,West Virginia
+WVC051,Marshall County,West Virginia
+WVC053,Mason County,West Virginia
+WVC055,Mercer County,West Virginia
+WVC057,Mineral County,West Virginia
+WVC059,Mingo County,West Virginia
+WVC061,Monongalia County,West Virginia
+WVC063,Monroe County,West Virginia
+WVC065,Morgan County,West Virginia
+WVC067,Nicholas County,West Virginia
+WVC069,Ohio County,West Virginia
+WVC071,Pendleton County,West Virginia
+WVC073,Pleasants County,West Virginia
+WVC075,Pocahontas County,West Virginia
+WVC077,Preston County,West Virginia
+WVC079,Putnam County,West Virginia
+WVC081,Raleigh County,West Virginia
+WVC083,Randolph County,West Virginia
+WVC085,Ritchie County,West Virginia
+WVC087,Roane County,West Virginia
+WVC089,Summers County,West Virginia
+WVC091,Taylor County,West Virginia
+WVC093,Tucker County,West Virginia
+WVC095,Tyler County,West Virginia
+WVC097,Upshur County,West Virginia
+WVC099,Wayne County,West Virginia
+WVC101,Webster County,West Virginia
+WVC103,Wetzel County,West Virginia
+WVC105,Wirt County,West Virginia
+WVC107,Wood County,West Virginia
+WVC109,Wyoming County,West Virginia
+WIC001,Adams County,Wisconsin
+WIC003,Ashland County,Wisconsin
+WIC005,Barron County,Wisconsin
+WIC007,Bayfield County,Wisconsin
+WIC009,Brown County,Wisconsin
+WIC011,Buffalo County,Wisconsin
+WIC013,Burnett County,Wisconsin
+WIC015,Calumet County,Wisconsin
+WIC017,Chippewa County,Wisconsin
+WIC019,Clark County,Wisconsin
+WIC021,Columbia County,Wisconsin
+WIC023,Crawford County,Wisconsin
+WIC025,Dane County,Wisconsin
+WIC027,Dodge County,Wisconsin
+WIC029,Door County,Wisconsin
+WIC031,Douglas County,Wisconsin
+WIC033,Dunn County,Wisconsin
+WIC035,Eau Claire County,Wisconsin
+WIC037,Florence County,Wisconsin
+WIC039,Fond du Lac County,Wisconsin
+WIC041,Forest County,Wisconsin
+WIC043,Grant County,Wisconsin
+WIC045,Green County,Wisconsin
+WIC047,Green Lake County,Wisconsin
+WIC049,Iowa County,Wisconsin
+WIC051,Iron County,Wisconsin
+WIC053,Jackson County,Wisconsin
+WIC055,Jefferson County,Wisconsin
+WIC057,Juneau County,Wisconsin
+WIC059,Kenosha County,Wisconsin
+WIC061,Kewaunee County,Wisconsin
+WIC063,La Crosse County,Wisconsin
+WIC065,Lafayette County,Wisconsin
+WIC067,Langlade County,Wisconsin
+WIC069,Lincoln County,Wisconsin
+WIC071,Manitowoc County,Wisconsin
+WIC073,Marathon County,Wisconsin
+WIC075,Marinette County,Wisconsin
+WIC077,Marquette County,Wisconsin
+WIC078,Menominee County,Wisconsin
+WIC079,Milwaukee County,Wisconsin
+WIC081,Monroe County,Wisconsin
+WIC083,Oconto County,Wisconsin
+WIC085,Oneida County,Wisconsin
+WIC087,Outagamie County,Wisconsin
+WIC089,Ozaukee County,Wisconsin
+WIC091,Pepin County,Wisconsin
+WIC093,Pierce County,Wisconsin
+WIC095,Polk County,Wisconsin
+WIC097,Portage County,Wisconsin
+WIC099,Price County,Wisconsin
+WIC101,Racine County,Wisconsin
+WIC103,Richland County,Wisconsin
+WIC105,Rock County,Wisconsin
+WIC107,Rusk County,Wisconsin
+WIC109,St. Croix County,Wisconsin
+WIC111,Sauk County,Wisconsin
+WIC113,Sawyer County,Wisconsin
+WIC115,Shawano County,Wisconsin
+WIC117,Sheboygan County,Wisconsin
+WIC119,Taylor County,Wisconsin
+WIC121,Trempealeau County,Wisconsin
+WIC123,Vernon County,Wisconsin
+WIC125,Vilas County,Wisconsin
+WIC127,Walworth County,Wisconsin
+WIC129,Washburn County,Wisconsin
+WIC131,Washington County,Wisconsin
+WIC133,Waukesha County,Wisconsin
+WIC135,Waupaca County,Wisconsin
+WIC137,Waushara County,Wisconsin
+WIC139,Winnebago County,Wisconsin
+WIC141,Wood County,Wisconsin
+WYC001,Albany County,Wyoming
+WYC003,Big Horn County,Wyoming
+WYC005,Campbell County,Wyoming
+WYC007,Carbon County,Wyoming
+WYC009,Converse County,Wyoming
+WYC011,Crook County,Wyoming
+WYC013,Fremont County,Wyoming
+WYC015,Goshen County,Wyoming
+WYC017,Hot Springs County,Wyoming
+WYC019,Johnson County,Wyoming
+WYC021,Laramie County,Wyoming
+WYC023,Lincoln County,Wyoming
+WYC025,Natrona County,Wyoming
+WYC027,Niobrara County,Wyoming
+WYC029,Park County,Wyoming
+WYC031,Platte County,Wyoming
+WYC033,Sheridan County,Wyoming
+WYC035,Sublette County,Wyoming
+WYC037,Sweetwater County,Wyoming
+WYC039,Teton County,Wyoming
+WYC041,Uinta County,Wyoming
+WYC043,Washakie County,Wyoming
+WYC045,Weston County,Wyoming
+PRC001,Adjuntas Municipio,Puerto Rico
+PRC003,Aguada Municipio,Puerto Rico
+PRC005,Aguadilla Municipio,Puerto Rico
+PRC007,Aguas Buenas Municipio,Puerto Rico
+PRC009,Aibonito Municipio,Puerto Rico
+PRC011,Añasco Municipio,Puerto Rico
+PRC013,Arecibo Municipio,Puerto Rico
+PRC015,Arroyo Municipio,Puerto Rico
+PRC017,Barceloneta Municipio,Puerto Rico
+PRC019,Barranquitas Municipio,Puerto Rico
+PRC021,Bayamón Municipio,Puerto Rico
+PRC023,Cabo Rojo Municipio,Puerto Rico
+PRC025,Caguas Municipio,Puerto Rico
+PRC027,Camuy Municipio,Puerto Rico
+PRC029,Canóvanas Municipio,Puerto Rico
+PRC031,Carolina Municipio,Puerto Rico
+PRC033,Cataño Municipio,Puerto Rico
+PRC035,Cayey Municipio,Puerto Rico
+PRC037,Ceiba Municipio,Puerto Rico
+PRC039,Ciales Municipio,Puerto Rico
+PRC041,Cidra Municipio,Puerto Rico
+PRC043,Coamo Municipio,Puerto Rico
+PRC045,Comerío Municipio,Puerto Rico
+PRC047,Corozal Municipio,Puerto Rico
+PRC049,Culebra Municipio,Puerto Rico
+PRC051,Dorado Municipio,Puerto Rico
+PRC053,Fajardo Municipio,Puerto Rico
+PRC054,Florida Municipio,Puerto Rico
+PRC055,Guánica Municipio,Puerto Rico
+PRC057,Guayama Municipio,Puerto Rico
+PRC059,Guayanilla Municipio,Puerto Rico
+PRC061,Guaynabo Municipio,Puerto Rico
+PRC063,Gurabo Municipio,Puerto Rico
+PRC065,Hatillo Municipio,Puerto Rico
+PRC067,Hormigueros Municipio,Puerto Rico
+PRC069,Humacao Municipio,Puerto Rico
+PRC071,Isabela Municipio,Puerto Rico
+PRC073,Jayuya Municipio,Puerto Rico
+PRC075,Juana Díaz Municipio,Puerto Rico
+PRC077,Juncos Municipio,Puerto Rico
+PRC079,Lajas Municipio,Puerto Rico
+PRC081,Lares Municipio,Puerto Rico
+PRC083,Las Marías Municipio,Puerto Rico
+PRC085,Las Piedras Municipio,Puerto Rico
+PRC087,Loíza Municipio,Puerto Rico
+PRC089,Luquillo Municipio,Puerto Rico
+PRC091,Manatí Municipio,Puerto Rico
+PRC093,Maricao Municipio,Puerto Rico
+PRC095,Maunabo Municipio,Puerto Rico
+PRC097,Mayagüez Municipio,Puerto Rico
+PRC099,Moca Municipio,Puerto Rico
+PRC101,Morovis Municipio,Puerto Rico
+PRC103,Naguabo Municipio,Puerto Rico
+PRC105,Naranjito Municipio,Puerto Rico
+PRC107,Orocovis Municipio,Puerto Rico
+PRC109,Patillas Municipio,Puerto Rico
+PRC111,Peñuelas Municipio,Puerto Rico
+PRC113,Ponce Municipio,Puerto Rico
+PRC115,Quebradillas Municipio,Puerto Rico
+PRC117,Rincón Municipio,Puerto Rico
+PRC119,Río Grande Municipio,Puerto Rico
+PRC121,Sabana Grande Municipio,Puerto Rico
+PRC123,Salinas Municipio,Puerto Rico
+PRC125,San Germán Municipio,Puerto Rico
+PRC127,San Juan Municipio,Puerto Rico
+PRC129,San Lorenzo Municipio,Puerto Rico
+PRC131,San Sebastián Municipio,Puerto Rico
+PRC133,Santa Isabel Municipio,Puerto Rico
+PRC135,Toa Alta Municipio,Puerto Rico
+PRC137,Toa Baja Municipio,Puerto Rico
+PRC139,Trujillo Alto Municipio,Puerto Rico
+PRC141,Utuado Municipio,Puerto Rico
+PRC143,Vega Alta Municipio,Puerto Rico
+PRC145,Vega Baja Municipio,Puerto Rico
+PRC147,Vieques Municipio,Puerto Rico
+PRC149,Villalba Municipio,Puerto Rico
+PRC151,Yabucoa Municipio,Puerto Rico
+PRC153,Yauco Municipio,Puerto Rico

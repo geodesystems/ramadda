@@ -1,7 +1,24 @@
 
+.alerts {
+}
+
+.alerts .ramadda-toggleblock {
+    background:#e8e8e8;
+    border-top-right-radius:var(--default-radius);
+    border-top-left-radius:var(--default-radius);    
+    border-radius:var(--default-radius);    
+    margin-top:0.5em;
+}
+
 .alert-header {
     font-weight:bold;
-    font-size:120%;
+    display:inline-block;
+    padding:6px;
+}
+
+.alerts .fa-caret-down, .alerts .fa-caret-right {
+    color:#000 !important;
+    font-size:14pt;
 }
 
 

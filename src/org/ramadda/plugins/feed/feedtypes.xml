@@ -56,6 +56,43 @@ fields=date[type=date format="yyyy-MM-dd HH:mm"],min_temperature[type=double lab
 </wiki>
   </type>
 
+  <type name="type_nws_alerts" description="NWS Alerts"
+	priority="20"
+	supercategory="Geoscience" category="Geoscience Data" 
+	handler="org.ramadda.plugins.feed.AlertsTypeHandler" foruser="true" >  
+     <property name="icon" value="/feed/nws3.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>     
+     <wikimacro name="nws_alerts" label="NWS Alerts"><![CDATA[{{nws_alerts #noAlertsMessage=""}}]]></wikimacro>
+     <column name="areas" type="string" label="Areas" size="1000" rows="5" columns="60"
+	     help="See &lt;a target=_help href='${root}/feed/alerts.html#areas'&gt;alerts.html&lt;/a&gt; for help"
+	     />
+     <column name="zones" type="string" label="Zones" size="1000" rows="5" columns="60"
+	     help="See &lt;a target=_help href='${root}/feed/alerts.html#zones'&gt;alerts.html&lt;/a&gt; for help"
+	     />
+     <column name="header_messages" type="string" label="Header Messages" size="10000" rows="5" columns="60"
+	     help="See &lt;a target=_help href='${root}/feed/alerts.html#event_type'&gt;alerts.html&lt;/a&gt; for help"
+	     >
+       <suffix><![CDATA[
+       One per line:<br>&lt;event&gt;:&lt;message&gt;<br>
+       e.g.:
+<pre>
+heat:Some message when heat
+AQ:Some message for air quality
+</pre>
+]]></suffix>
+     </column>
+     <wiki><![CDATA[+section title={{name}}
+{{description}}
+{{nws_alerts}}
+-section
+]]>
+</wiki>
+  </type>
+  
+
+
   <type name="sunrisesunset"  description="Sunrise/Sunset Display"   handler="org.ramadda.plugins.feed.SunriseSunsetTypeHandler" foruser="true" category="Gadgets" supercategory="Miscellaneous">  
      <property name="icon" value="/feed/sunrise.png"/>
      <property name="form.resource.show" value="false"/>
