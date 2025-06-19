@@ -5298,18 +5298,41 @@ RepositoryMap.prototype = {
 		let div = HU.div([ATTR_STYLE,HU.css('border-bottom:1px solid #ccc;margin-top:8px;margin-bottom:8px;')]);
 		if(debugPopup)
 		    console.log('showMarkerPopup: seenMarkers:', markers.length);
-                markerText = "";
+		let textList = [];
                 for (let i = 0; i < markers.length; i++) {
                     otherMarker = markers[i];
-                    if (i > 0)
-                        markerText += div;
                     if (otherMarker.inputProps) {
 			otherMarker.text = otherMarker.textGetter?otherMarker.textGetter(marker):this.getPopupText(otherMarker.inputProps.text);
                     }
 		    let text = otherMarker.text?otherMarker.text:otherMarker.textGetter?otherMarker.textGetter(marker):"NA";
-                    markerText += text;
+		    textList.push(text);
                     if (i > 10) break;
                 }
+                markerText = "";
+		let cols = +(this.params.displayColumns??1);
+		let clazz='';
+		if(cols>1) {
+		    clazz='col-md-'+ Math.round(12/cols);
+
+		}
+		textList.forEach((t,idx)=>{
+		    if(cols>1) {
+			if(idx%cols==0) {
+			    if(idx>0) markerText+='\n</div closerow>\n';
+			    markerText+='<div  class="row row-tight">\n';
+			}
+			let open = HU.open('div',[ATTR_CLASS, clazz,
+						  ATTR_STYLE,HU.css('padding-bottom','8px !important',
+								    'padding-right','8px !important',
+								    )]);
+			markerText+=open;
+		    }
+		    markerText+=t;
+		    if(cols<=1)
+			markerText+=div;
+		    if(cols>1) markerText+='</div>\n';
+		});
+		if(cols>1) markerText+='</div>\n';
             }
 	}
 	return markerText;

@@ -835,10 +835,17 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         }
 
 
+        String displayColumns = (String) props.get("displayColumns");
+        if (displayColumns != null) {
+            mapInfo.addProperty("displayColumns", displayColumns);
+        }	
+
+
         String simple = (String) props.get("simple");
         if (simple != null) {
             mapInfo.addProperty("simple", "" + simple.equals("true"));
         }
+
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 Utils.split(mapLayers, ";", true, true));
