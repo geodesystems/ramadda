@@ -52,8 +52,13 @@ NwsAlerts.prototype = {
     },
     init:function() {
 //	this.writeEvents();
+	this.uid =HU.getUniqueId();
 	this.headerID =HU.getUniqueId();
 	this.getDiv().append(HU.div([ATTR_ID,this.headerID],''));
+	this.getDiv().append(HU.div([ATTR_ID,this.uid+'point'],''));	
+	this.getDiv().append(HU.div([ATTR_ID,this.uid+'zone'],''));
+	this.getDiv().append(HU.div([ATTR_ID,this.uid+'area'],''));		
+
 	this.seenHeader={};
 	this.allUrls = []
 	if(this.opts.all) this.allUrls.push({url:this.base});
@@ -185,7 +190,6 @@ NwsAlerts.prototype = {
 	    }
 	    let html;
 	    let showToggle = this.getFullProperty('showToggle',type,value,multiples);
-	    
 	    if(showToggle) {
 		let toggleOpen = this.getFullProperty('toggleOpen',type,value,multiples);
 		label = HU.span([ATTR_CLASS,'alert-header'],label);
@@ -193,7 +197,7 @@ NwsAlerts.prototype = {
 	    }     else {
 		html = HU.div([ATTR_CLASS,'alert-header'],label)+innerContents;
 	    }
-	    this.getDiv().append(html);
+	    this.getDiv(type).append(html);
 	    if(accordion) {
 		accordion.init({active:-1,xdecorate:true});
 	    }
@@ -207,7 +211,9 @@ NwsAlerts.prototype = {
 	});
     },
 
-    getDiv:function() {
+    getDiv:function(type) {
+	if(type)
+	    return jqid(this.uid+type);
 	return jqid(this.div);
     },
     finish:function() {
