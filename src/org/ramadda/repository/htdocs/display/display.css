@@ -91,13 +91,20 @@ table.dataTable {
 
 .display-tooltip {
     max-width:600px;
+    overflow-x:hidden,
     margin:0px;
-    /* shadow popup */ background-color : #FFF;
+    /* shadow popup */
+    background : #FFF;
     border:1px solid #ccc;
     border-radius: 4px;
     z-index:1000;
     box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px;
     -webkit-box-shadow: rgba(116, 129, 141, 0.4) 3px 3px 10px -2px; 
+}
+
+.display-chart-tooltip {
+    max-width:1000px;
+    overflow-x:hidden;
 }
 
 .display-images-tooltip {
