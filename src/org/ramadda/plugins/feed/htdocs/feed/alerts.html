@@ -95,16 +95,34 @@ When editing the entry simply set the latitude/longitude.
 The display of the alerts can be embedded in other pages with the <i>nws_alerts</i> wiki tag.
 <pre>{<foo>{nws_alerts  entry="the alert entry"}}</pre>
 
+:heading2 Specifying areas/zones
 The areas or zones can be overwritten with:
 <pre>
 {<foo>{nws_alerts areas="CO,SD" zones="KSZ081,SDZ049"}}
 </pre>
 
-There can be multiple alerts. To only show unique alerts do:
+:heading2 Unique alerts
+There can be multiple zones/areas producing mulitple alerts. Some of the alerts
+coming from different zones/areas can be the same alert. To only show unique alerts do:
 <pre>
 {<foo>{nws_alerts alertsUnique=true}}
 </pre>
 
+
+:heading2 Priority loading
+Because the order the alerts are loaded is not deterministic when there are multiple zones/areas
+then the order they show up in the display can be any order, e.g., if you had a state (e.g., SD) and
+a county (e.g, SDC121) then if the state alerts load first the county alerts might be subsumed by the ones
+loaded by the state. To prioritize the loading you can set the following property for a zone/area, e.g. "SD":
+
+<pre>
+{<foo>{nws_alerts loadFirst.SD=false}}
+</pre>
+
+This will cause the other areas/zones to be loaded first (e.g, the counties) then the whole state will be loaded.
+
+
+:heading2 Labels
 Header labels can be specified with "alertLabel.&lt;area or zone&gt;", e.g.:
 
 <pre>
@@ -114,6 +132,8 @@ alertLabel.point="Boulder Area Alerts"
 alertLabel="Label for all alerts"}}
 </pre>
 
+
+:heading2 Toggles
 You can specify that the toggle is not shown with:
 <pre>
 {<foo>{nws_alerts 
@@ -131,6 +151,9 @@ toggleOpen.point=false
 toggleOpen=false
 }}
 </pre>
+
+
+
 
 
 

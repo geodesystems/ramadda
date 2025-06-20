@@ -51,14 +51,31 @@ NwsAlerts.prototype = {
 	Utils.makeDownloadFile('wx.html',txt);
 
     },
+
+    jq:function(id) {
+	return jqid(this.domId(id));
+
+    },
+    domId:function(id) {
+	return this.uid+id;
+    },
+    getDiv:function(type) {
+	if(type)
+	    return this.jq(type);
+	return jqid(this.div);
+    },
     init:function() {
 //	this.writeEvents();
 	this.uid =HU.getUniqueId();
 	this.headerID =HU.getUniqueId();
+	let loading = HU.center(
+	    HU.image(RamaddaUtil.getCdnUrl('/icons/mapprogress.gif'),[ATTR_STYLE,'width:50px;'])+
+		HU.div('Loading alerts'));
+	this.getDiv().append(HU.div([ATTR_ID,this.domId('progress')],loading));
 	this.getDiv().append(HU.div([ATTR_ID,this.headerID],''));
-	this.getDiv().append(HU.div([ATTR_ID,this.uid+'point'],''));	
-	this.getDiv().append(HU.div([ATTR_ID,this.uid+'zone'],''));
-	this.getDiv().append(HU.div([ATTR_ID,this.uid+'area'],''));		
+	this.getDiv().append(HU.div([ATTR_ID,this.domId('point')],''));	
+	this.getDiv().append(HU.div([ATTR_ID,this.domId('zone')],''));
+	this.getDiv().append(HU.div([ATTR_ID,this.domId('area')],''));		
 
 	this.seenHeader={};
 	this.allUrls = []
@@ -84,11 +101,36 @@ NwsAlerts.prototype = {
 	    this.finish();
 	}
 	this.seen={};
+	this.pending = 0;
+	this.tbdUrls = [];
+
+//	setTimeout(()=>{
 	this.allUrls.forEach(item=>{
 	    if(Utils.stringDefined(item.url)) {
+		let loadFirst = Utils.getProperty(this.getFullProperty('loadFirst',item.type,item.value,true));
+		if(!loadFirst) {
+		    this.tbdUrls.push(item);
+		    return;
+		}
+		this.pending++;
 		this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
 	    }
 	});
+	//now check if there are any second phase urls to load
+	if(this.tbdUrls.length) {
+	    let check = ()=>{
+		if(this.pending>0) {
+		    setTimeout(check,50);
+		    return;
+		}
+		this.tbdUrls.forEach(item=>{
+		    this.loadAlert(item.url,item.type,item.value,this.allUrls.length>1);
+		});
+	    }
+	    setTimeout(check,50);
+	}
+//	},2000);
+
     },
     loadAlert:function(url,type,value,multiples) {    
 	if(!Utils.stringDefined(url)) return;
@@ -99,6 +141,7 @@ NwsAlerts.prototype = {
 	    });
 	}
         $.getJSON(url, data=>{
+	    this.pending--;
 	    this.loadedCount++;
 	    let now = new Date();
 	    let innerContents = '';
@@ -216,6 +259,7 @@ NwsAlerts.prototype = {
 	    }
 	    this.finish();
 	}).fail(data=>{
+	    this.pending--;
 	    this.loadedCount++;
 	    this.getDiv().append(HU.div('NWS Alerts: failed to read alert: ' + url));
 	    console.error('NWS Alerts: failed to read alert: ' +url);
@@ -223,13 +267,8 @@ NwsAlerts.prototype = {
 	    this.finish();
 	});
     },
-
-    getDiv:function(type) {
-	if(type)
-	    return jqid(this.uid+type);
-	return jqid(this.div);
-    },
     finish:function() {
+	this.jq('progress').hide();
 	if(this.allUrls.length!=this.loadedCount) return;
 	if(this.alertCount==0) {
 	    this.getDiv().html(this.opts.noAlertsMessage);

@@ -95,6 +95,8 @@ toggleOpen=false
 toggleOpen.SD=false
 showToggle=false
 showToggle.SD=false 
+#load the alerts at the end for handling unique alerts
+loadFirst.SD=false
 </pre>
 ]]></suffix>
      </column>
