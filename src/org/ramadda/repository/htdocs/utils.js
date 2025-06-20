@@ -3958,6 +3958,9 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 
 
 	if(args.target) {
+	    if($(args.target).length==0) {
+		console.log('initPageSearch: no target div found:' + args.target);
+	    }
 	    $(args.target).html(input);
 	} else {
 	    document.write(input);
