@@ -1992,6 +1992,7 @@ public class Utils extends IO {
 	label = Utils.replaceAll(label,delimiter,"thedelimiter");
 	label = Utils.replaceAll(label,
 				 "!","",
+				 "@",delimiter,
 				 ":+", delimiter,
 				 "&+", delimiter,
 				 "\\s+", delimiter,
