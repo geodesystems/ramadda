@@ -3954,9 +3954,10 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 	    let right = HU.formTable();
 	    right+=HU.formEntry('Legend position:',
 				HU.select('',[ATTR_ID,this.domId('legendposition')],[{label:'Left',value:'left'},
-										  {label:'Right',value:'right'},
-										  {label:'In Map',value:'map'},
-										  {label:'None',value:'none'}],
+										     {label:'Right',value:'right'},
+										     {label:'In Map',value:'map'},
+										     {label:'Editor',value:'editor'},
+										     {label:'None',value:'none'}],
 					  this.getMapProperty('legendPosition','left')));
 	    right+=HU.formEntry('Legend width:',
 				HU.input('',this.getMapProperty('legendWidth',''),[ATTR_ID,this.domId('legendwidth'),'size','4']));
@@ -5455,11 +5456,16 @@ HU.input('','',[ATTR_CLASS,'pathoutput','size','60',ATTR_STYLE,'margin-bottom:0.
 		legendContainer = $('#'+legendDiv);
 	    } else if(legendPosition=='left') {
 		legendContainer=leftLegend;
+	    } else if(legendPosition=='editor') {
+		if(this.canChange()) {
+		    legendContainer=leftLegend;
+		}
 	    } else   if(legendPosition=='right') {
 		legendContainer=rightLegend;
 	    } else   if(legendPosition=='map') {
 		legendContainer = this.jq(ID_LEGEND_MAP_WRAPPER);
 	    } else {
+
 	    }
 
 	    if(legendContainer && !inMap) {
