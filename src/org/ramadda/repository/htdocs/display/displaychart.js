@@ -2409,7 +2409,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    let tt = this.getProperty("tooltip");
 	    let style = HU.css('font-size','80%') +this.getTooltipStyle('');
-	    let content =   HU.div([ATTR_CLASS,'ui-tooltip',ATTR_STYLE,style],
+	    let content =   HU.div([ATTR_CLASS,'display-tooltip display-chart-tooltip',ATTR_STYLE,style],
 				   this.getRecordHtml(record, null, tt));
 
 	    tooltip.innerHTML = content;
