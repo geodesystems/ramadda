@@ -1,25 +1,12 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point.netcdf;
 
-
 import org.ramadda.util.IO;
 import org.ramadda.data.point.*;
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.*;
@@ -40,7 +27,6 @@ import ucar.nc2.time.CalendarDateRange;
 
 import ucar.unidata.util.IOUtil;
 
-
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -49,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Hashtable;
 import java.util.List;
-
-
 
 /**
  * Class description
@@ -62,18 +46,12 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class NetcdfPointFile extends PointFile {
 
-    /** _more_ */
     public static final String NETCDF_ATTR_SUMMARY = "summary";
-
-
 
     /**
      * ctor
      */
     public NetcdfPointFile() {}
-
-
-
 
     /**
      * ctor
@@ -83,7 +61,6 @@ public class NetcdfPointFile extends PointFile {
     public NetcdfPointFile(IO.Path path) throws IOException {
         super(path);
     }
-
 
     /**
      * ctor
@@ -96,14 +73,6 @@ public class NetcdfPointFile extends PointFile {
         super(path, properties);
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private String getFileToUse() throws Exception {
         String filename = getFilename();
 
@@ -122,7 +91,6 @@ public class NetcdfPointFile extends PointFile {
 
 	String ncml =null;
 	String ncmlFileName=null;
-
 
         List<Metadata> metadataList =
             repository.getMetadataManager().findMetadata(
@@ -148,8 +116,6 @@ public class NetcdfPointFile extends PointFile {
 	    }
 	}
 
-
-
 	if(ncml==null) {
 	    String property = entry.getTypeHandler().getTypeProperty("netcdf.ncml",(String)null);
 	    if(property!=null) {
@@ -158,7 +124,6 @@ public class NetcdfPointFile extends PointFile {
 	    }
 	}
 
-
 	if(ncml!=null) {
 	    ncml = ncml.replace("${location}", filename);
 	    File ncmlFile = repository.getStorageManager().getScratchFile(ncmlFileName);
@@ -166,20 +131,9 @@ public class NetcdfPointFile extends PointFile {
 	    filename = ncmlFile.toString();
 	}
 
-
         return filename;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     *
-     * @param failureOk _more_
-     * @return _more_
-     */
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
 
@@ -206,7 +160,6 @@ public class NetcdfPointFile extends PointFile {
                                         cnt++, "");
             dateField.setType(dateField.TYPE_DATE);
             fields.add(dateField);
-
 
             FeatureDatasetPoint pod  = getDataset(getFileToUse());
             List                vars = pod.getDataVariables();
@@ -238,19 +191,9 @@ public class NetcdfPointFile extends PointFile {
             throw new RuntimeException(exc);
         }
 
-
         return fields;
     }
 
-    /**
-     * _more_
-     *
-     * @param input _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     public static PointFeatureIterator getPointIterator(
             FeatureDatasetPoint input)
             throws Exception {
@@ -276,14 +219,6 @@ public class NetcdfPointFile extends PointFile {
         return collection.getPointFeatureIterator(16384);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean isCapable(String action) {
         if (action.equals(ACTION_TRACKS)) {
@@ -297,15 +232,6 @@ public class NetcdfPointFile extends PointFile {
         return super.isCapable(action);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     *
-     * @return _more_
-     */
     public boolean canLoad(String file) {
         if (true) {
             return false;
@@ -316,7 +242,6 @@ public class NetcdfPointFile extends PointFile {
             return false;
         }
     }
-
 
     /**
      * This just passes through to FileType.doMakeRecord
@@ -333,7 +258,6 @@ public class NetcdfPointFile extends PointFile {
                     "Given file is not a recognized point data file");
             }
             PointFeatureIterator dataIterator = getPointIterator(pod);
-	    System.err.println(dataIterator.getClass().getName());
             NetcdfRecord record = new NetcdfRecord(this, getFields(),
 						   dataIterator);
 
@@ -343,19 +267,6 @@ public class NetcdfPointFile extends PointFile {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     * @param record _more_
-     * @param howMany _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     @Override
     public boolean skip(VisitInfo visitInfo, BaseRecord record, int howMany)
             throws Exception {
@@ -370,22 +281,8 @@ public class NetcdfPointFile extends PointFile {
         return true;
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         visitInfo.setRecordIO(readHeader(visitInfo.getRecordIO()));
-
 
         NetcdfDataset   dataset  = NetcdfDataset.openDataset(getFileToUse());
         String          platform = "";
@@ -408,28 +305,12 @@ public class NetcdfPointFile extends PointFile {
         return visitInfo;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     @Override
     public RecordIO readHeader(RecordIO recordIO) throws IOException {
         //        recordIO.getDataInputStream().read(header);
         return recordIO;
     }
 
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
     public long getNumRecords() {
         if (super.getNumRecords() <= 0) {
             try {
@@ -444,31 +325,10 @@ public class NetcdfPointFile extends PointFile {
         return super.getNumRecords();
     }
 
-
-
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         PointFile.test(args, NetcdfPointFile.class);
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param path _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
     private FeatureDatasetPoint getDataset(String path) throws Exception {
         //        System.err.println("Opening:" + path);
         Formatter buf = new Formatter();
@@ -483,10 +343,5 @@ public class NetcdfPointFile extends PointFile {
 
         return pods;
     }
-
-
-
-
-
 
 }

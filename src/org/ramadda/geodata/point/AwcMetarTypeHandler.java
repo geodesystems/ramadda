@@ -3,6 +3,7 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
+
 package org.ramadda.geodata.point;
 
 import org.ramadda.data.services.*;

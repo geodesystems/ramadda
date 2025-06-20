@@ -19,28 +19,42 @@
      <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
 	<wiki><![CDATA[
 +section title={{name}}
-+accordion decorate=false collapsible=true activeSegment=-1
-+segment Metadata
-{{information  details="true"  showTitle="false"  }} 
--segment
--accordion
-
+:navtop
 {{description wikify=true}}
-{{display_fieldslist   
-displayStyle="font-size:80%;"
-numericOnly=true  showPopup=true
+{{property max=10000}}
+:heading Charts
+{{group fieldslist.showSelectAll=false fieldslist.displayStyle="font-size:80%;" fieldslist.numericOnly=true  fieldslist.showPopup=true }}
++row
++col-6
+{{display_animation sleepTime=5}}
+{{display_fieldslist  fields=TEMPERATURE_REVERSE_FLOW_SENSOR  fieldsSelected.shareGroup="chart1" }}
+{{display_linechart showMenu=true fieldsSelected.acceptGroup="chart1"  fields=TEMPERATURE_REVERSE_FLOW_SENSOR}}
+{{display_fieldslist  fields=TURBULENCE
+displayStyle="font-size:80%;" numericOnly=true  showPopup=true  fieldsSelected.shareGroup="chart2" }}
+{{display_linechart showMenu=true fieldsSelected.acceptGroup="chart2" fields=TURBULENCE}} 
+-col
++col-6
+{{display_map   height="400px" colorByFields=* colorTable=plotly_bluered 
+pathWidth=4 strokeColor=red  radius=0
+colorBy=TEMPERATURE_REVERSE_FLOW_SENSOR isPath="true" markerIcon="/icons/plane.png" 
 }}
-{{display_linechart fields=TEMPERATURE_REVERSE_FLOW_SENSOR}} 
-{{display_map  doAnimation=true height="400px"
-animationMode=sliding
-animationStartShowAll=true   
-animationMode=cumulative 
-colorByFields=*
-colorBy=TEMPERATURE_REVERSE_FLOW_SENSOR isPath="true" markerIcon="/icons/plane.png" strokeColor=red  radius=0
-colorTable=plotly_bluered
-pathWidth=4
-}} 
+-col
+
+----
+
+:heading Table
+{{group fieldslist.showSelectAll=false fieldslist.displayStyle="font-size:80%;" fieldslist.numericOnly=true  fieldslist.showPopup=true }}
+{{display_fieldslist    fieldsSelected.shareGroup="table" }}
+{{display_download  fieldsSelected.acceptroup="table" }}
+{{display_table  fieldsSelected.acceptGroup="table" }}
+
+----
+
+:heading Information
+{{information  details="true"  showTitle="false"  }} 
+
 -section
+
 ]]></wiki>
 </type>
 

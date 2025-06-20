@@ -1,24 +1,11 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point.netcdf;
 
-
 import org.ramadda.data.point.*;
-
 
 import org.ramadda.data.record.*;
 import org.ramadda.util.IO;
@@ -37,20 +24,14 @@ import ucar.nc2.time.CalendarDateRange;
 
 import ucar.unidata.util.IOUtil;
 
-
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 
 import java.util.ArrayList;
 
-
-
-
 import java.util.Formatter;
 import java.util.List;
-
-
 
 /**
  * Class description
@@ -66,9 +47,6 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
      */
     public NetcdfTrajectoryFile() {}
 
-
-
-
     /**
      * ctor
      *
@@ -78,14 +56,6 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
         super(path);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param action _more_
-     *
-     * @return _more_
-     */
     @Override
     public boolean isCapable(String action) {
 
@@ -99,17 +69,6 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
         return super.isCapable(action);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param visitInfo _more_
-     *
-     * @return _more_
-     *
-     *
-     * @throws Exception _more_
-     */
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         String platform = "";
@@ -119,20 +78,8 @@ public class NetcdfTrajectoryFile extends NetcdfPointFile {
         return visitInfo;
     }
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
     public static void main(String[] args) throws Exception {
         PointFile.test(args, NetcdfTrajectoryFile.class);
     }
-
-
-
-
 
 }

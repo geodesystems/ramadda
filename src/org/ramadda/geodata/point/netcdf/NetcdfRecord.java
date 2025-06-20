@@ -1,21 +1,9 @@
-/*
-* Copyright (c) 2008-2019 Geode Systems LLC
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-* 
-*     http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+/**
+   Copyright (c) 2008-2025 Geode Systems LLC
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package org.ramadda.geodata.point.netcdf;
-
 
 import org.ramadda.data.point.*;
 
@@ -42,9 +30,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-
-
-
 /**
  * Class description
  *
@@ -55,20 +40,10 @@ import java.util.List;
 @SuppressWarnings({"unchecked","deprecation"})
 public class NetcdfRecord extends DataRecord {
 
-    /** _more_ */
     private PointFeatureIterator iterator;
 
-    /** _more_ */
     private List<RecordField> dataFields = new ArrayList<RecordField>();
 
-
-    /**
-     * _more_
-     *
-     * @param file _more_
-     * @param fields _more_
-     * @param iterator _more_
-     */
     public NetcdfRecord(RecordFile file, List<RecordField> fields,
                         PointFeatureIterator iterator) {
         super(file, fields);
@@ -79,16 +54,6 @@ public class NetcdfRecord extends DataRecord {
         }
     }
 
-
-    /**
-     * _more_
-     *
-     * @param recordIO _more_
-     *
-     * @return _more_
-     *
-     * @throws IOException _more_
-     */
     @Override
     public ReadStatus read(RecordIO recordIO) throws IOException {
         if ( !iterator.hasNext()) {
@@ -128,9 +93,7 @@ public class NetcdfRecord extends DataRecord {
             cnt++;
         }
 
-
         return ReadStatus.OK;
     }
-
 
 }
