@@ -324,6 +324,7 @@ showHeading=true
 +if property=show_text_search
 +center
 <span style="display:inline-block;">
+{{group}}
 {{display_simplesearch  inputSize=200px width=200px
 ancestor=this  placeholder="Search in page" doPageSearch=true  
 pageSearchSelector=.search-component,.entry-list-row-data}} 
