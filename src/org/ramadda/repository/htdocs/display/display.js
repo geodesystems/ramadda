@@ -1308,7 +1308,8 @@ function DisplayThing(argId, argProperties) {
 
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row+='\n';
-		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([ATTR_STYLE,valueStyle], displayValue));
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"],
+				 HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
 		    }
@@ -1746,7 +1747,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'height',doGetter:false,ex:'400px'},
 	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'imageWidth',canCache:true},		
-	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
+	{p:'includeFieldDescriptionInTooltip',canCache:true,d:false},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
 	{p:'labelStyle',ex:''},			
@@ -1944,8 +1945,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	{p:DisplayEvent.filterChanged.share,ex:true,tt:'Share filter changed'},
 	{p:DisplayEvent.filterChanged.accept,ex:true,tt:'Accept filter changed'},
-	{p:DisplayEvent.filterChanged.shareGroup,tt:'Only share in this group'},
-	{p:DisplayEvent.filterChanged.acceptGroup,tt:'Only share in this group'},
+	{p:DisplayEvent.filterChanged.shareGroup,ex:'some group id',tt:'Only share in this group'},
+	{p:DisplayEvent.filterChanged.acceptGroup,ex:'some group id',tt:'Only share in this group'},
 
 	{p:DisplayEvent.filteredDataChanged.share,ex:true,tt:'Share filtered data changed'},
 	{p:DisplayEvent.filteredDataChanged.accept,ex:true,tt:'Accept filtered data changed'},
