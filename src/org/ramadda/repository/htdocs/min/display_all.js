@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Thu Jun 19 17:32:23 MDT 2025";
+var build_date="RAMADDA build date: Fri Jun 20 06:43:33 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -5334,7 +5334,8 @@ function DisplayThing(argId, argProperties) {
 
 		    row += HU.td(labelColAttrs,HU.div(labelAttrs, label));
 		    row+='\n';
-		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"], HU.div([ATTR_STYLE,valueStyle], displayValue));
+		    row += HU.td(["field-id",field.getId(),"field-value",fieldValue, "align","left"],
+				 HU.div([ATTR_STYLE,valueStyle], displayValue));
 		    if(includeDesc) {
 			row +=HU.td([],field.getDescription()??"");
 		    }
@@ -5772,7 +5773,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	{p:'height',doGetter:false,ex:'400px'},
 	{p:'noWrapper',ex:true,tt:'Don\'t make the header and footer. Just this core display'},
 	{p:'imageWidth',canCache:true},		
-	{p:'includeFieldDescriptionInTooltip',canCache:true,d:true},
+	{p:'includeFieldDescriptionInTooltip',canCache:true,d:false},
 	{p:'recordTemplate',doGetter:false,ex:'${default}',tt:'Template for popups etc. Can be ${default attrs} or \'${field} .. ${fieldn}...\''},
 	{p:'recordHtmlStyle',canCache:true},
 	{p:'labelStyle',ex:''},			
@@ -5970,8 +5971,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 	{p:DisplayEvent.filterChanged.share,ex:true,tt:'Share filter changed'},
 	{p:DisplayEvent.filterChanged.accept,ex:true,tt:'Accept filter changed'},
-	{p:DisplayEvent.filterChanged.shareGroup,tt:'Only share in this group'},
-	{p:DisplayEvent.filterChanged.acceptGroup,tt:'Only share in this group'},
+	{p:DisplayEvent.filterChanged.shareGroup,ex:'some group id',tt:'Only share in this group'},
+	{p:DisplayEvent.filterChanged.acceptGroup,ex:'some group id',tt:'Only share in this group'},
 
 	{p:DisplayEvent.filteredDataChanged.share,ex:true,tt:'Share filtered data changed'},
 	{p:DisplayEvent.filteredDataChanged.accept,ex:true,tt:'Accept filtered data changed'},
@@ -21912,7 +21913,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    let tt = this.getProperty("tooltip");
 	    let style = HU.css('font-size','80%') +this.getTooltipStyle('');
-	    let content =   HU.div([ATTR_CLASS,'ui-tooltip',ATTR_STYLE,style],
+	    let content =   HU.div([ATTR_CLASS,'display-tooltip display-chart-tooltip',ATTR_STYLE,style],
 				   this.getRecordHtml(record, null, tt));
 
 	    tooltip.innerHTML = content;
@@ -25642,6 +25643,9 @@ function RamaddaMessageDisplay(displayManager, id, properties) {
 function RamaddaFieldslistDisplay(displayManager, id, properties) {
     const ID_POPUP = 'popup';
     const ID_POPUP_BUTTON = 'popupbutton';    
+    const ID_CLEARALL = 'clearall';
+    const ID_SEARCH = 'pagesearch';    
+    const ID_SETALL = 'setall';    
     const SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_FIELDSLIST, properties);
     let myProps =[
 	{label:"Fields List"},
@@ -25654,6 +25658,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 	{p:'includeLatLon',d:false,ex:true},				
 	{p:'selectable',ex:true},
 	{p:'showFieldDetails',ex:true},
+	{p:'showSelectAll',d:true,ex:false},	
 	{p:'showPopup',d:false,ex:true,tt:'Popup the selector'},	
 	{p:'selectOne',ex:true},
 	{p:'some_field.color',ex:'red',tt:'add a color block'},
@@ -25772,20 +25777,48 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		if(selectable) c += ' display-fields-field-selectable ';
 		if(selectable && selected) c += ' display-fields-field-selected ';
 		let title = '';
-		if(selectable)
-		    title = 'Click to toggle. Shift-click toggle all';
-		block =HU.div([TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
+		if(selectable)    title = 'Click to toggle. Shift-click toggle all';
+		block =HU.div([ATTR_TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
 		fs.push(block);
 	    });
 	    let fhtml = Utils.wrap(fs,'','');
 	    html += fhtml;
 
 	    let label = this.getSelectLabel(this.getFilterSelect()?this.getFilterSelectLabel('Select Filter Fields'):'Select fields');
-	    if(this.getShowPopup()) {
-		html = HU.div([ID,this.domId(ID_POPUP_BUTTON)], label) +
-		    HU.div([ID,this.domId(ID_POPUP),STYLE,'display:none;max-height:300px;overflow-y:auto;width:600px;'], html);
+	    let header ='';
+	    header+=HU.span([ATTR_ID,this.getDomId(ID_CLEARALL),ATTR_CLASS,'ramadda-button'],
+			    'Clear all');
+	    header+=HU.space(1);
+	    if(this.getShowSelectAll()) {
+		header+=HU.span([ATTR_ID,this.getDomId(ID_SETALL),ATTR_CLASS,'ramadda-button'],
+				'Set all');
 	    }
+	    let search=HU.div([ATTR_ID,this.domId(ID_SEARCH)],'');
+	    header = HU.leftRightTable(header,search);
+	    header = HU.div([ATTR_STYLE,HU.css('margin','4px')],header);
+	    html = HU.div([ATTR_STYLE,'max-height:300px;overflow-y:auto;width:600px;'], html);
+	    let htmlId=HU.getUniqueId('fields');
+	    html=HU.div([ATTR_ID,htmlId],html);
+	    html=header+html;
+
+	    if(this.getShowPopup()) {
+		html = HU.div([ATTR_ID,this.domId(ID_POPUP_BUTTON)], label) +
+		    HU.div([ATTR_ID,this.domId(ID_POPUP),ATTR_STYLE,'display:none;margin:4px;'], html);
+	    }
+
+
 	    this.setContents(html);
+
+	    HU.initPageSearch('.display-fields-field','#'+ htmlId,'Search fields',false,{target:'#'+ this.domId(ID_SEARCH)}); 
+
+	    this.jq(ID_CLEARALL).button().click(()=>{
+		this.toggleAll(false);
+		this.handleFieldSelect();
+	    });
+	    this.jq(ID_SETALL).button().click(()=>{
+		this.toggleAll(true);
+		this.handleFieldSelect();
+	    });
 	    if(this.getShowPopup()) {
 		this.jq(ID_POPUP_BUTTON).button().click(()=>{
 		    this.fieldsDialog = HU.makeDialog({contentId:this.domId(ID_POPUP),title:label,inPlace:true,anchor:this.domId(ID_POPUP_BUTTON),draggable:true,header:true,sticky:true});
@@ -25831,6 +25864,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		});
 
 
+		this.fieldBoxes=fieldBoxes;
 		fieldBoxes.click(function(event) {
 		    if(event.metaKey) {
 			_this.printFields();
@@ -25850,13 +25884,7 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 			allSelected=selected;
 		    }
 		    if(doAll) {
-			fieldBoxes.attr('field-selected',allSelected);
-			if(allSelected) {
-			    fieldBoxes.addClass('display-fields-field-selected');
-			} else {
-			    fieldBoxes.removeClass('display-fields-field-selected');
-			}
-
+			_this.toggleAll(allSelected);
 		    }
 
 		    $(this).attr('field-selected',selected);
@@ -25868,6 +25896,14 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 
 		    _this.handleFieldSelect();
 		});
+	    }
+	},
+	toggleAll:function(allSelected) {
+	    this.fieldBoxes.attr('field-selected',allSelected);
+	    if(allSelected) {
+		this.fieldBoxes.addClass('display-fields-field-selected');
+	    } else {
+		this.fieldBoxes.removeClass('display-fields-field-selected');
 	    }
 	},
 	printFields:function() {
