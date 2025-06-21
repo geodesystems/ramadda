@@ -3791,7 +3791,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    return make404(request);
 	}
 
-	debug=path.endsWith("ramaddamap.js");
+	//	debug=path.endsWith("ramaddamap.js");
 
 	if(debug)
 	    System.err.println("\tpath clean:" + path);
@@ -3822,7 +3822,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
-	System.err.println("cached path:" + path);
+	    if(debug)
+		System.err.println("cached path:" + path);
             InputStream inputStream = new ByteArrayInputStream(bytes);
             return makeResult(request, path, inputStream, mimeType, true);
         }
