@@ -3255,7 +3255,7 @@ public class TypeHandler extends RepositoryManager {
 	    for(MetadataPattern mp: metadataPatterns) {
 		Matcher matcher = mp.pattern.matcher(fileName);
 		if ( !matcher.find()) {
-		    System.err.println("filename pattern: no match:" + mp.spattern +" file:" + fileName);
+		    //		    System.err.println("filename pattern: no match:" + mp.spattern +" file:" + fileName);
 		    continue;
 		}
 
