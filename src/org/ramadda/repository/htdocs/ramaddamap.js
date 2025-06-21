@@ -785,14 +785,20 @@ RepositoryMap.prototype = {
     setInitialCenter: function(lon,lat) {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
     },
-    finishMapInit: function() {
-	mapDebug('test');
+    initForMobile(div) {
+	mapDebug('mobile');
 	let mapDiv = jqid(this.mapDivId);
 	mapDiv.css('touch-action','none').css('-ms-touch-action','none');
-	document.getElementById(this.mapDivId).addEventListener('touchmove', function(e) {
+	div.addEventListener('touchmove', function(e) {
+	    mapDebug('touch move');
 	    e.preventDefault();
 	}, { passive: false });
-
+    },
+    finishMapInit: function() {
+	let mapDivObject= document.getElementById(this.mapDivId);
+	if(mapDivObject) {
+	    this.initForMobile(mapDivObject);
+	}
         let _this = this;
         if (this.params.showSearch) {
             this.searchDiv = this.mapDivId + "_search";
