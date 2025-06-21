@@ -155,8 +155,11 @@ NwsAlerts.prototype = {
 	    let watches = [];
 	    let other = [];
 	    let myAlertCount=0;
+//	    console.dir(data);
+	    let severeCount=0;
 	    data.features.forEach((alert,idx)=>{
 		let props = alert.properties;
+//		console.log(props.severity)
 		if(this.seen[props.id] && this.opts.alertsUnique) {
 		    return;
 		}
@@ -164,9 +167,10 @@ NwsAlerts.prototype = {
 		myAlertCount++;
 		let pre = props.description??'';
 		pre = pre.replace(/^\* */gm,'&bull; ');
-		pre = pre.replace(/(HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
+		pre = pre.replace(/(HAZARD|SOURCE|IMPACTS|HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
 //		pre = collapseShortLines(pre);
-		pre = pre.replace(/(HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)/g,(_,match)=>{return Utils.camelCase(match);});
+		pre = pre.replace(/(HAZARD|SOURCE|IMPACTS|HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)/g,(_,match)=>{return Utils.camelCase(match);});
+		let footer =''
 		if(Utils.stringDefined(props.instruction)) {
 		    pre+='\n\n' + '&bull; '+ HU.b('Instructions')+': ';
 		    pre+=props.instruction;
@@ -185,6 +189,11 @@ NwsAlerts.prototype = {
 		    significance = code.substring(2,3);		    
 		    let info = this.phenomena[phenon]??{};
 		    let icon = info.emoji;
+		    footer+='Alert: '+ phenon;
+		    if(info && info.type) 
+			footer+=' - '+info.label+' - '+ info.type;
+
+
 		    if(icon) {
 			if(icon.startsWith('/'))
 			    icon = HU.image(RamaddaUtils.getUrl(icon));
@@ -195,6 +204,7 @@ NwsAlerts.prototype = {
 			//console.log(code,phenon,significance);
 			title = phenon +' '+ title;
 		    }
+//		    title=HU.span([ATTR_STYLE,"xdisplay:inline-block;background:red"], title);
 
 		    this.debug('alert: type='+ type +' value:' + value +' phenomena:' + phenon +(info.label?' ' + info.label:'') +' event:'+ props.event);
 		    let headerMessage=this.getProperty('headerMessage.'+phenon,
@@ -215,16 +225,24 @@ NwsAlerts.prototype = {
 			contents += HU.center(link);
 		    }
 		}
+
 		contents += pre;
+		contents+=HU.div([ATTR_STYLE,HU.css('font-size','80%','text-align','right')],footer);
 		contents = HU.div([ATTR_CLASS,'alerts-contents'],contents);
-		
-
-
-//		contents += HU.pre([],pre);
 		let l = (significance=='W'?warnings:(significance=='A'?watches:other));
 		if(code=='SPS') l=warnings;
+		let headerStyle=HU.css('margin-left','10px','margin-bottom','5px');		
+		let headerClass='';
+		if(props.severity=='Severe' || props.severity=='Extreme') {
+		    severeCount++;
+		    l = warnings;
+		    headerStyle+=HU.css('background','#f8d7da');
+		}
+		
 
-		l.push({significance:significance,
+		l.push({'class':headerClass,
+			style:headerStyle,
+			significance:significance,
 			label:title,contents:contents});
 		this.alertCount++;
 		//		console.log(props.severity,props.certainty);
@@ -243,6 +261,9 @@ NwsAlerts.prototype = {
 		    label +=  ' - ' + list.length+' alerts';
 		else if(list.length==1)
 		    label +=  ' - ' + list.length+' alert';
+	    }
+	    if(severeCount>0) {
+		label+= ' - &#10071; ' + severeCount +' severe';
 	    }
 	    let html;
 	    let showToggle = this.getFullProperty('showToggle',type,value,multiples);
@@ -478,6 +499,7 @@ NwsAlerts.prototype = {
 	    "emoji": "\ud83d\udca8"
 	},
 	"SV": {
+	    type:'storm',
 	    "label": "Severe Thunderstorm",
 	    "emoji": "\u26c8\ufe0f"
 	},
