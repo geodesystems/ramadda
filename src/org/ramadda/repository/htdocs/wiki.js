@@ -2042,6 +2042,7 @@ WikiEditor.prototype = {
 	    {p:'displayDivSticky',ex:true,tt:'Keep the popup display in the div'},	    
 	    {p:'listEntries',ex:'true'},
 	    {p:'listInMap',ex:'true'},
+	    {p:'showEntriesSearch',ex:'true'},	    
 	    {p:'showCheckbox',ex:'true'},
 	    {p:'listHeader'},
 	    {p:'listWidth',ex:'300px'},

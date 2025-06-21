@@ -1102,7 +1102,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     private void layoutMap(Request request, Appendable sb, MapInfo map,Hashtable props,
-                           boolean showList,   int numEntries,
+                           boolean listEntries,   int numEntries,
                            String height,
                            List<String> categories,
                            Hashtable<String, StringBuilder> catMap,
@@ -1114,7 +1114,7 @@ public class MapManager extends RepositoryManager implements WikiConstants,
         boolean entriesListInMap = Utils.getProperty(props, "listInMap",false);
 	height = HU.makeDim(height, "px");
 	StringBuilder toc = new StringBuilder();
-	if(showList || entriesListInMap) {
+	if(listEntries || entriesListInMap) {
 	    toc.append(navTop);
 	    boolean doToggle = /*(numEntries > 5) &&*/ (categories.size() > 1);
 	    for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
@@ -1129,21 +1129,31 @@ public class MapManager extends RepositoryManager implements WikiConstants,
 		}
 	    }
 	}
-	if(entriesListInMap) showList = false;
+	if(entriesListInMap) listEntries = false;
         getPageHandler().addDisplayImports(request, sb);
         int weight = 12;
-        if (showList ||stringDefined(extraNav)) {
+	boolean showEntriesSearch=listEntries && Utils.getProperty(props,"showEntriesSearch",false);
+        if (listEntries ||stringDefined(extraNav)) {
             weight -= 3;
             HU.open(sb, HU.TAG_DIV, HU.cssClass("row row-tight"));
             HU.open(sb, HU.TAG_DIV,
                            HU.cssClass("col-md-3"));
             HU.open(sb, HU.TAG_DIV, HU.cssClass("ramadda-links"));
+	    String uid =HU.getUniqueId("mapentries");
+	    if(showEntriesSearch) {
+		String args = JU.map("inputSize","20");
+		HU.script(sb,HU.call("HtmlUtils.initPageSearch",
+				     HU.squote(".ramadda-earth-nav"),
+				     HU.squote("#" + uid),
+				     HU.squote("Search"),
+				     "false",args));
+	    }
 	    HU.open(sb,  HU.TAG_DIV,
-			   HU.cssClass(CSS_CLASS_EARTH_ENTRIES + ((map == null)
-								  ? ""
-								  : " " + map.getVariableName())) +
+		    HU.attrs("id",uid,"class",CSS_CLASS_EARTH_ENTRIES + ((map == null)
+									 ? ""
+									 : " " + map.getVariableName())) +
 		    HU.style(HU.css("max-height", height,"overflow-y","auto")));
-            if (!showList) {
+            if (!listEntries) {
                 sb.append(extraNav);
             } else {
 		sb.append(toc);
