@@ -3,6 +3,11 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
+function    mapDebug(msg) {
+    jqid('mapdebug').append(msg+'<br>');
+}
+
+
 
 function RepositoryMap(mapId, params) {
     let _this = this;
@@ -781,6 +786,13 @@ RepositoryMap.prototype = {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
     },
     finishMapInit: function() {
+	mapDebug('test');
+	let mapDiv = jqid(this.mapDivId);
+	mapDiv.css('touch-action','none').css('-ms-touch-action','none');
+	document.getElementById(this.mapDivId).addEventListener('touchmove', function(e) {
+	    e.preventDefault();
+	}, { passive: false });
+
         let _this = this;
         if (this.params.showSearch) {
             this.searchDiv = this.mapDivId + "_search";
