@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 public class CoreBoxImageImportHandler extends ImportHandler {
 
+    private static final String TYPE_CORE_IMAGE = "type_borehole_coreimage";
     public CoreBoxImageImportHandler() {
         super(null);
     }
@@ -92,6 +93,7 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 	    } finally {
 		IO.close(fos);
 	    }
+
 	    files.add(new FileHolder(f,path));
 	}
 
@@ -113,13 +115,12 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 		sb.append("Could not find parent core image for:" + path+"<br>");
 		continue;
 	    }
-	    //	    System.err.println("Parent:" + parent.path +" child:"+ fileHolder.path);
 	    parent.files.add(fileHolder);
 	}
 
 	for (String key : map.keySet()) {
 	    FileHolder parent = map.get(key);
-	    Entry coreEntry = makeEntry(request, "type_borehole_coreimage",
+	    Entry coreEntry = makeEntry(request, TYPE_CORE_IMAGE,
 					parent, parentEntry);
 
 	    coreEntry.setValue("top_depth",new Double(Double.NaN));
@@ -154,6 +155,7 @@ public class CoreBoxImageImportHandler extends ImportHandler {
     private Entry  makeEntry(Request request,
 			     String type,
 			     FileHolder file, Entry parentEntry) throws Exception     {
+
 	File f =  getStorageManager().moveToStorage(request, file.file);
 	Resource resource = new Resource(f, Resource.TYPE_STOREDFILE);
 	TypeHandler typeHandler;
@@ -176,7 +178,8 @@ public class CoreBoxImageImportHandler extends ImportHandler {
 	entry.setResource(resource);
 	entry.setCreateDate(now.getTime());
 	entry.setParentEntry(parentEntry);
-	entry.setName(makeName(file.file.getName()));
+	entry.setName(makeName(file,type));
+
 	entry.getTypeHandler().initializeNewEntry(request, entry, TypeHandler.NewType.NEW);
 	return entry;
 
@@ -184,10 +187,20 @@ public class CoreBoxImageImportHandler extends ImportHandler {
     
 
 
-    private String makeName(String path)    {
-	String name = IO.getFileTail(path);
+    private String makeName(FileHolder file,String type)    {
+	String path = file.path;
+	String parent = StringUtil.findPattern(file.path,"([^/]+)/[^/]+$");
+
+	String name = IO.getFileTail(file.path);
 	name = name.replaceAll("_", " ");
 	name = IO.stripExtension(name);
+	if(name.equals("measurement")) {
+	    if(parent!=null) {
+		name = parent + " - " + name;
+	    }
+	    if(type!=null && type.equals(TYPE_CORE_IMAGE)) name += " image";
+	    else if(file.path.endsWith(".xml")) name += " metadata";	    
+	}
 	return name;
     }
 			

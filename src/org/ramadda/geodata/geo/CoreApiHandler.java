@@ -297,7 +297,8 @@ public class CoreApiHandler extends RepositoryManager implements RequestHandler 
 			    double d1=convertPrediktera(resolution, XU.getAttribute(areaNode,"depth",Double.NaN));
 			    String label = "";
 			    if(!Double.isNaN(d1)) {
-				label  =Utils.decimals(d1,2)+"";
+				//for now don't create a label
+				//				label  =Utils.decimals(d1,2)+"";
 			    }
 			    lastDepth=d1;
 			    lastPixel = aposition;

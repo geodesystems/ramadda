@@ -19,7 +19,9 @@ var ID_CV_DISPLAYS_ADD='cv_displays_add';
 
 
 var ID_CV_SHOWLABELS = 'showlabels';
+var ID_CV_SHOWALLDEPTHS= 'showalldepths';
 var ID_CV_MEASURE = 'measure';
+var ID_CV_ASFEET = 'asfeet';
 var ID_CV_SAMPLE = 'sample';
 var ID_CV_DOROTATION = 'dorotation';
 var ID_CV_COLUMN_WIDTH = 'columnwidth';
@@ -358,10 +360,13 @@ function RamaddaCoreDisplay(displayManager, id, args) {
 
 	showLegend:true,
 	showLabels:true,
+	showAllDepths:false,
+	asFeet:false,
 	showBoxes:true,
 	showHighlight:false,
 	showMenuBar:true,
-	bgPadding:2
+	bgPaddingX:4,
+	bgPaddingY:2	
     }
 
     Utils.split('showPieces,hasBoxes',',').forEach(prop=>{
@@ -510,7 +515,9 @@ RamaddaCoreDisplay.prototype = {
 	});
     },
 
-    format:function(n) {
+    formatDepth:function(n) {
+	if(this.opts.asFeet)
+	    n = n*3.28084;
 	let f =  Utils.formatNumber(n);
 	return f;
     },
@@ -519,7 +526,7 @@ RamaddaCoreDisplay.prototype = {
 	let y = this.worldToCanvas(depth);	    
 	let displays = this.getDisplayManager().getDisplays();
 	let html =
-	    HU.div([],HU.b('Selected depth: ') + this.format(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
+	    HU.div([],HU.b('Selected depth: ') + this.formatDepth(depth))  + HU.div([ATTR_CLASS,'ramadda-thin-hr']);
 	if(!this.recordSelect) {
 	    this.recordSelect={
 	    }
@@ -629,9 +636,8 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	    this.drawLayer.add(this.measureState.line);
 	    let world  =this.canvasToWorld(pos.y);	    
-//	    console.log('rel:',pos.y,' pos:', this.stage.getPointerPosition().y,' world:',world,'format:',this.format(world));
 	    this.measureState.text1 = this.makeText(this.drawLayer,
-						    this.format(world),
+						    this.formatDepth(world),
 						    this.measureState.start.x+5,
 						    pos.y,
 						    {fontSize: 12,	background:'#fff',fill: 'black',});
@@ -644,7 +650,7 @@ RamaddaCoreDisplay.prototype = {
 	    const pos = this.stage.getRelativePointerPosition();
 	    if(this.measureState.text2)this.destroy(this.measureState.text2);
 	    this.measureState.text2 = this.makeText(this.drawLayer,
-					       this.format(this.canvasToWorld(pos.y)),
+					       this.formatDepth(this.canvasToWorld(pos.y)),
 					       this.measureState.start.x+5,
 					       pos.y,
 					       {fontSize: 12,	background:'#fff',fill: 'black',});
@@ -792,6 +798,10 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_SHOWLABELS)],this.getShowLabels(),'Show Labels'));
 
 	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_SHOWALLDEPTHS),
+				 [ATTR_ID,this.domId(ID_CV_SHOWALLDEPTHS)],this.opts.showAllDepths,'Show All Depths'));
+	
+	html+=HU.div([],
 		     HU.checkbox(this.domId(ID_CV_SHOWBOXES),
 				 [ATTR_ID,this.domId(ID_CV_SHOWBOXES)],this.opts.showBoxes,'Show Boxes'));    
 	html+=HU.div([],
@@ -810,6 +820,10 @@ RamaddaCoreDisplay.prototype = {
 				 [ATTR_ID,this.domId(ID_CV_DOROTATION)],this.opts.doRotation,'Do Rotation'));
 
 
+	html+=HU.div([],
+		     HU.checkbox(this.domId(ID_CV_ASFEET),
+				 [ATTR_ID,this.domId(ID_CV_ASFEET)],this.opts.asFeet,'As Feet'));
+	
 
 	/*
 	html+= HU.div([],
@@ -881,6 +895,14 @@ RamaddaCoreDisplay.prototype = {
 	    _this.opts.doRotation = $(this).is(':checked');
 	    _this.drawCollections(true);
 	});	
+	this.jq(ID_CV_ASFEET).change(function(){
+	    _this.opts.asFeet = $(this).is(':checked');
+	    _this.drawCollections(true);
+	});
+	this.jq(ID_CV_SHOWALLDEPTHS).change(function(){
+	    _this.opts.showAllDepths = $(this).is(':checked');
+	    _this.drawCollections(true);
+	});		
 
 	this.jq(ID_CV_SHOWPIECES).change(function(){
 	    _this.setShowPieces($(this).is(':checked'));
@@ -1013,7 +1035,7 @@ RamaddaCoreDisplay.prototype = {
 	    });
 	    sorted.forEach(entry=>{
 		let label = entry.label;
-		label+=' ' +this.format(entry.topDepth) +' - ' +this.format(entry.bottomDepth);
+		label+=' ' +this.formatDepth(entry.topDepth) +' - ' +this.formatDepth(entry.bottomDepth);
 		let url = RamaddaUtil.getEntryUrl(entry.entryId);
 		label = HU.href(url,label,['target','_entry']);
 
@@ -1338,11 +1360,12 @@ RamaddaCoreDisplay.prototype = {
 	    text.scale(s);
 	    if(text.backgroundRect) {
 		let rect= text.backgroundRect;
-		let padding=this.opts.bgPadding;
-		rect.width(text.width()+padding*2);
-		rect.height(text.height()+padding*2);
-		rect.y(text.y()-text.offsetY()-padding);
-		rect.x(text.x()-text.offsetX()*_scale-padding);
+		let paddingX=this.opts.bgPaddingX;
+		let paddingY=this.opts.bgPaddingY;		
+		rect.width(text.width()+paddingX*2);
+		rect.height(text.height()+paddingY*2);
+		rect.y(text.y()-text.offsetY()-paddingY);
+		rect.x(text.x()-text.offsetX()*_scale-paddingX);
 		rect.scale(s);
 	    }
 	});
@@ -1419,10 +1442,12 @@ RamaddaCoreDisplay.prototype = {
 	this.stage.on('wheel', (e) => {
 	    e.evt.preventDefault(); 
 	    let scale = this.stage.scaleX();
+	    let oscale = scale;
 	    const pointer = this.stage.getPointerPosition();
-	    const zoomSpeed = 0.005;
+	    const zoomSpeed = 0.03;
 	    const direction = e.evt.deltaY > 0 ? -1 : 1;
-	    scale += direction * zoomSpeed;
+	    const scaleBy = 1 + direction  * zoomSpeed;
+	    scale = scale*scaleBy;
 	    scale = Math.max(0.005, Math.min(100, scale));
 	    const newPos = {
 		x: pointer.x - (pointer.x - this.stage.x()) * (scale / this.stage.scaleX()),
@@ -1513,12 +1538,13 @@ RamaddaCoreDisplay.prototype = {
 	    textX-=text.width();
 	}
 	if(opts.background || opts.outline)  {
-	    let padding=this.opts.bgPadding;;
+	    let paddingX=this.opts.bgPaddingX;
+	    let paddingY=this.opts.bgPaddingY;	    
 	    let bg = new Konva.Rect({
-		x: textX-padding,
-		y: text.y()-padding,
-		width: text.width()+padding*2,
-		height: text.height()+padding*2,
+		x: textX-paddingX,
+		y: text.y()-paddingY,
+		width: text.width()+paddingX*2,
+		height: text.height()+paddingY*2,
 		fill: opts.background,
 		stroke:opts.outline,
 		strokeWidth: opts.strokeWidth,
@@ -1651,7 +1677,7 @@ RamaddaCoreDisplay.prototype = {
 	    let y = this.worldToCanvas(i);
 	    if(i==0) y1=y;
 	    y2=y;
-	    let l1 = this.makeText(this.legendLayer,this.format(i),
+	    let l1 = this.makeText(this.legendLayer,this.formatDepth(i),
 				   axisWidth-tickWidth,y,{doOffsetWidth:true});
 	    this.legendText.push(l1);
 	    let tick1 = new Konva.Line({
@@ -1705,8 +1731,8 @@ RamaddaCoreDisplay.prototype = {
     editEntry:function(entry,y1,y2) {
 	let _this = this;
 	let html = '';
-	y1 = this.format(y1);
-	y2 = this.format(y2);	
+	y1 = this.formatDepth(y1);
+	y2 = this.formatDepth(y2);	
 	html+=HU.formTable();
 	html+=HU.formEntry('Name:',HU.input('',entry.label,  [ATTR_ID,this.domId('editname')]));
 	html+=HU.formEntry('Top:',HU.input('',y1,  [ATTR_ID,this.domId('edittop')]));
@@ -1832,7 +1858,7 @@ RamaddaCoreDisplay.prototype = {
 
     makeTicks:function(entry,group,top,bottom,x,y1,y2) {
 	let tickWidth=CV_TICK_WIDTH;
-	let l1 = this.makeText(group,this.format(top),
+	let l1 = this.makeText(group,this.formatDepth(top),
 			       x-tickWidth,y1,{doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick1 = new Konva.Line({
 	    points: [x-tickWidth, y1, x, y1],
@@ -1840,7 +1866,7 @@ RamaddaCoreDisplay.prototype = {
 	    strokeWidth: CV_STROKE_WIDTH,
 	});
 	group.add(tick1);
-	let l2 = this.makeText(group,this.format(bottom),
+	let l2 = this.makeText(group,this.formatDepth(bottom),
 			       x-tickWidth,y2, {doOffsetWidth:true,fontSize:CV_FONT_SIZE_SMALL});
 	let tick2 = new Konva.Line({
 	    points: [x-tickWidth, y2, x, y2],
@@ -2016,9 +2042,13 @@ RamaddaCoreDisplay.prototype = {
 			}
 			entry.boxShapes.push(mark);
 			group.add(mark);
-			if(Utils.stringDefined(box.label)) {
+			let label = box.label;
+			if((this.opts.showAllDepths || box.marker) && !Utils.stringDefined(box.label)) {
+			    label = this.formatDepth(box.top);
+			}
+			if(label) {
 			    let styleObj = {background:'rgb(224, 255, 255)',fill:'black',fontSize:CV_FONT_SIZE_SMALL};
-			    let l = this.makeText(group,box.label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
+			    let l = this.makeText(group,label,boxAttrs.x+labelOffset+2,boxAttrs.y, styleObj);
 			    entry.boxShapes.push(l);
 			}
 		    }
@@ -2144,8 +2174,8 @@ RamaddaCoreDisplay.prototype = {
 	group.on('dragmove', (e)=> {
 	    let pos  = getPos(e.target);
 //	    console.log(pos.top,pos.bottom);
-	    group.ticks.l1.text(this.format(pos.top));
-	    group.ticks.l2.text(this.format(pos.bottom));	    
+	    group.ticks.l1.text(this.formatDepth(pos.top));
+	    group.ticks.l2.text(this.formatDepth(pos.bottom));	    
 	});
 
 	group.on('dragend', (e)=> {
