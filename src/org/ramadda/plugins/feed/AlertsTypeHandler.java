@@ -71,8 +71,11 @@ public class AlertsTypeHandler extends GenericTypeHandler {
 	}
 
 	StringBuilder sb = new StringBuilder();
-	sb.append(HU.importJS(getRepository().getHtdocsUrl("/feed/alerts.js")));
-	sb.append(HU.cssLink(getRepository().getHtdocsUrl("/feed/alerts.css")));
+	if (request.getExtraProperty("addedalerts") == null) {
+	    request.putExtraProperty("addedalerts", "true");
+	    sb.append(HU.importJS(getRepository().getHtdocsUrl("/feed/alerts.js")));
+	    sb.append(HU.cssLink(getRepository().getHtdocsUrl("/feed/alerts.css")));
+	}
 	String id = HU.getUniqueId("alerts");
 	sb.append(HU.div("",HU.attrs("id",id,"class","alerts")));
 	
