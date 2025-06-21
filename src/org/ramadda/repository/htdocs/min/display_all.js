@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jun 21 14:42:35 MDT 2025";
+var build_date="RAMADDA build date: Sat Jun 21 16:35:21 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -8158,6 +8158,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return highlight;
 	},
 
+	getCsv: function(fields, records,copy,cnt,subset,file) {
+            fields = fields || this.getData().getRecordFields();
+	    let csv = DataUtils.getCsv(fields, records,subset,cnt);
+	    if(copy) {
+		Utils.copyToClipboard(csv);
+		alert("Copied to clipboard");
+	    } else {
+		Utils.makeDownloadFile(file, csv);
+	    }
+	},
+
 	filterDataPhase2:function(records) {
 	    return records;
 	},
@@ -9896,6 +9907,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
         },
         fetchUrl: function(as, url) {
+	    if(as=='csv') {
+		this.getCsv(null, this.filterData(),false,-1,null,
+			    'download.csv');
+		return;
+	    }
             if (url == null) {
                 url = this.jsonUrl;
             }
@@ -9904,6 +9920,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (as != null && as != "json") {
                 url = url.replace("points.json", "points." + as);
             }
+	    console.log(url);
             window.open(url, '_blank');
         },
         getMenuItems: function(menuItems) {
@@ -10501,7 +10518,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 labels.push("Download CSV");
             }
             for (let i = 0; i < calls.length; i++) {
-                let inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                let inner = HU.getIconImage(images[i], ["width","18px",ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
                 toolbar += HU.onClick(calls[i], inner);
             }
@@ -26177,18 +26194,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    return null;
 	},
 
-	getCsv: function(fields, records,copy) {
-            fields = fields || this.getData().getRecordFields();
-	    
-	    let cnt = parseInt(this.jq('number_records').val().trim());
-	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction(),cnt);
-	    if(copy) {
-		Utils.copyToClipboard(csv);
-		alert("Copied to clipboard");
-	    } else {
-		Utils.makeDownloadFile(this.getPropertyFileName()+".csv", csv);
-	    }
-	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
 	    let cnt = parseInt(this.jq('number_records').val().trim());
@@ -26285,8 +26290,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 
 		if(json) 
 		    this.getJson(fields, records);
-		else	
-		    this.getCsv(fields, records,copy);
+		else	{
+		    let cnt = parseInt(this.jq('number_records').val().trim());
+		    this.getCsv(fields, records,copy,cnt,this.getSubsetFunction(),
+				this.getPropertyFileName()+".csv");
+		}
 		if(this.dialog) this.dialog.remove();
 		this.dialog =null;	    };
 	    if(this.getPropertyAskFields(true)) {
@@ -26326,7 +26334,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 
 
 	    } else  {
-		this.getCsv(null, records);
+		let cnt = parseInt(this.jq('number_records').val().trim());
+		this.getCsv(null, records,cnt,this.getSubsetFunction(),
+			   this.getPropertyFileName()+".csv");
 	    }
 	},
     });
@@ -38583,6 +38593,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 
+	{p:'showBoundsFilter'},
 	{p:'showBounds',ex:'true',d:false},
 	{p:'boundsStrokeColor',d:'blue'},
 	{p:'boundsFillColor',d:'transparent'},
@@ -41407,7 +41418,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	addFilters: function(filters) {
 	    SUPER.addFilters.call(this, filters);
-	    if(this.getProperty("showBoundsFilter")) {
+	    if(this.getShowBoundsFilter()) {
 		filters.push(new BoundsFilter(this));
 	    }
 	},
