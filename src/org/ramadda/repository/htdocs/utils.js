@@ -6562,7 +6562,11 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	}
         let img1 = opts.imgopen;
         let img2 = opts.imgclosed;
-        let clickArgs = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2),opts.animated], ',');
+        let clickArgs = HU.join([HU.squote(id),
+				 HU.squote(imgid),
+				 HU.squote(img1),
+				 HU.squote(img2),
+				 Utils.isDefined(opts.animated)?opts.animated:'null'], ',');
         let click = 'HtmlUtils.toggleBlockVisibility(' + clickArgs + ');';
         let img = HU.span([ATTR_ID,imgid], HU.makeToggleImage(visible ? img1 : img2));
         let header = HtmlUtils.div([ATTR_STYLE,opts.headerStyle,ATTR_CLASS, opts.headerClass, 'onClick', click],  img +  ' ' + label);
