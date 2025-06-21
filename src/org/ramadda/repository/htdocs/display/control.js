@@ -416,8 +416,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let selected = this.selectedMap[f.getId()];
 		if(selectable) c += ' display-fields-field-selectable ';
 		if(selectable && selected) c += ' display-fields-field-selected ';
-		let title = '';
-		if(selectable)    title = 'Click to toggle. Shift-click toggle all';
+		let title = f.getId();
+		if(selectable)    title += ' - Click to toggle. Shift-click toggle all';
 		block =HU.div([ATTR_TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
 		fs.push(block);
 	    });
