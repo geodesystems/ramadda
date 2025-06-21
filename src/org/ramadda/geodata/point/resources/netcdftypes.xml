@@ -1,6 +1,7 @@
 <types supercategory="Geoscience" category="Point Data">
 
-  <type name="type_point_netcdf"  description="NetCDF Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
+  <type name="type_point_netcdf"  description="NetCDF Point File"
+	super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
      <property name="record.file.class" value="org.ramadda.geodata.point.netcdf.NetcdfPointFile"/>
   </type>
 
@@ -15,9 +16,52 @@
      <column  name="platform"  type="enumerationplus" label="Platform" cansearch="true"/>
   </type>
 
-  <type name="type_point_netcdf_t28"  super="type_point_netcdf_trajectory" description="T28 NetCDF Trajectory Data">
-     <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
-	<wiki><![CDATA[
+
+<type  name="type_netcdf_t28" 
+       pattern="(?i).*ghcnd.*\.nc"
+       description="GHCND Data" 
+       super="type_point_netcdf" 
+       >
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title={{name}}
+:navtop
+{{description wikify=true}}
+{{property max=10000}}
+:heading Charts
+{{group fieldslist.showSelectAll=false fieldslist.displayStyle="font-size:80%;" fieldslist.numericOnly=true  fieldslist.showPopup=true }}
+{{display_fieldslist  fields=maximum_air_temperature  fieldsSelected.shareGroup="chart1" }}
+{{display_linechart showMenu=true fieldsSelected.acceptGroup="chart1"  
+fields=maximum_air_temperature}}
+{{display_fieldslist  fields=precipitation_amount
+displayStyle="font-size:80%;" numericOnly=true  showPopup=true  fieldsSelected.shareGroup="chart2" }}
+{{display_linechart showMenu=true fieldsSelected.acceptGroup="chart2" fields=precipitation_amount}} 
+
+----
+
+:heading Table
+{{group fieldslist.showSelectAll=false fieldslist.displayStyle="font-size:80%;" fieldslist.numericOnly=true  fieldslist.showPopup=true }}
+{{display_fieldslist    fieldsSelected.shareGroup="table" }}
+{{display_download  fieldsSelected.acceptroup="table" }}
+{{display_table  fieldsSelected.acceptGroup="table" }}
+
+----
+
+:heading Information
+{{information  details="true"  showTitle="false"  }} 
+
+-section]]></wiki>
+</type>
+
+
+
+  <type name="type_point_netcdf_t28"
+	pattern="(?i).*t28.*\.nc"
+	super="type_point_netcdf_trajectory"
+	description="T28 NetCDF Trajectory Data">
+    <property name="netcdf.ncml" value="/org/ramadda/geodata/point/resources/t28.ncml"/>
+    <wiki><![CDATA[
 +section title={{name}}
 :navtop
 {{description wikify=true}}
