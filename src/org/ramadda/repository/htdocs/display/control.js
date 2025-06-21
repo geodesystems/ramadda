@@ -817,18 +817,6 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 	    return null;
 	},
 
-	getCsv: function(fields, records,copy) {
-            fields = fields || this.getData().getRecordFields();
-	    
-	    let cnt = parseInt(this.jq('number_records').val().trim());
-	    let csv = DataUtils.getCsv(fields, records,this.getSubsetFunction(),cnt);
-	    if(copy) {
-		Utils.copyToClipboard(csv);
-		alert("Copied to clipboard");
-	    } else {
-		Utils.makeDownloadFile(this.getPropertyFileName()+".csv", csv);
-	    }
-	},
 	getJson: function(fields, records) {
             fields = fields || this.getData().getRecordFields();
 	    let cnt = parseInt(this.jq('number_records').val().trim());
@@ -925,8 +913,11 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 
 		if(json) 
 		    this.getJson(fields, records);
-		else	
-		    this.getCsv(fields, records,copy);
+		else	{
+		    let cnt = parseInt(this.jq('number_records').val().trim());
+		    this.getCsv(fields, records,copy,cnt,this.getSubsetFunction(),
+				this.getPropertyFileName()+".csv");
+		}
 		if(this.dialog) this.dialog.remove();
 		this.dialog =null;	    };
 	    if(this.getPropertyAskFields(true)) {
@@ -966,7 +957,9 @@ function RamaddaDownloadDisplay(displayManager, id, properties) {
 
 
 	    } else  {
-		this.getCsv(null, records);
+		let cnt = parseInt(this.jq('number_records').val().trim());
+		this.getCsv(null, records,cnt,this.getSubsetFunction(),
+			   this.getPropertyFileName()+".csv");
 	    }
 	},
     });

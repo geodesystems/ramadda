@@ -4132,6 +4132,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	    return highlight;
 	},
 
+	getCsv: function(fields, records,copy,cnt,subset,file) {
+            fields = fields || this.getData().getRecordFields();
+	    let csv = DataUtils.getCsv(fields, records,subset,cnt);
+	    if(copy) {
+		Utils.copyToClipboard(csv);
+		alert("Copied to clipboard");
+	    } else {
+		Utils.makeDownloadFile(file, csv);
+	    }
+	},
+
 	filterDataPhase2:function(records) {
 	    return records;
 	},
@@ -5870,6 +5881,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             });
         },
         fetchUrl: function(as, url) {
+	    if(as=='csv') {
+		this.getCsv(null, this.filterData(),false,-1,null,
+			    'download.csv');
+		return;
+	    }
             if (url == null) {
                 url = this.jsonUrl;
             }
@@ -5878,6 +5894,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (as != null && as != "json") {
                 url = url.replace("points.json", "points." + as);
             }
+	    console.log(url);
             window.open(url, '_blank');
         },
         getMenuItems: function(menuItems) {
@@ -6475,7 +6492,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 labels.push("Download CSV");
             }
             for (let i = 0; i < calls.length; i++) {
-                let inner = HU.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                let inner = HU.getIconImage(images[i], ["width","18px",ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
                 toolbar += HU.onClick(calls[i], inner);
             }

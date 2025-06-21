@@ -97,6 +97,7 @@ function RamaddaBaseMapDisplay(displayManager, id, type,  properties) {
 
 	{p:'annotationLayerTop',ex:'true',tt:'If showing the extra annotation layer put it on top'},
 
+	{p:'showBoundsFilter'},
 	{p:'showBounds',ex:'true',d:false},
 	{p:'boundsStrokeColor',d:'blue'},
 	{p:'boundsFillColor',d:'transparent'},
@@ -2921,7 +2922,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	},
 	addFilters: function(filters) {
 	    SUPER.addFilters.call(this, filters);
-	    if(this.getProperty("showBoundsFilter")) {
+	    if(this.getShowBoundsFilter()) {
 		filters.push(new BoundsFilter(this));
 	    }
 	},
