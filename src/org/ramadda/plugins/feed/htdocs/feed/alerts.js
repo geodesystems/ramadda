@@ -272,13 +272,13 @@ NwsAlerts.prototype = {
 	    if(showToggle) {
 		let toggleOpen = this.getFullProperty('toggleOpen',type,value,multiples);
 		label = HU.span([ATTR_CLASS,'alert-header'],label);
-		html = HU.toggleBlock(label,innerContents,toggleOpen);
+		html = HU.toggleBlock(label,innerContents,toggleOpen,{animated:400});
 	    }     else {
 		html = HU.div([ATTR_CLASS,'alert-header'],label)+innerContents;
 	    }
 	    this.getDiv(type).append(html);
 	    if(accordion) {
-		accordion.init({active:-1,xdecorate:true});
+		accordion.init({active:-1,animate:400});
 	    }
 	    this.finish();
 	}).fail(data=>{
