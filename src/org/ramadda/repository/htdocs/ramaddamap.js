@@ -3,10 +3,12 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-function    mapDebug(msg) {
-    jqid('mapdebug').append(msg+'<br>');
-}
 
+function    mobileMapDebug(msg) {
+    let debug = jqid('mapdebug');
+    if(debug.length>0)
+	debug.append(msg+'<br>');
+}
 
 
 function RepositoryMap(mapId, params) {
@@ -786,7 +788,7 @@ RepositoryMap.prototype = {
         this.defaultLocation = MapUtils.createLonLat(lon, lat);
     },
     initForMobile(div) {
-	mapDebug('mobile');
+	mobileMapDebug('mobile-1');
 	let mapDiv = jqid(this.mapDivId);
 	mapDiv.css('touch-action','none').css('-ms-touch-action','none');
 	div.addEventListener('touchmove', function(e) {
@@ -795,9 +797,11 @@ RepositoryMap.prototype = {
 	}, { passive: false });
     },
     finishMapInit: function() {
-	let mapDivObject= document.getElementById(this.mapDivId);
-	if(mapDivObject) {
-	    this.initForMobile(mapDivObject);
+	if(Utils.isMobile()) {
+	    let mapDivObject= document.getElementById(this.mapDivId);
+	    if(mapDivObject) {
+		this.initForMobile(mapDivObject);
+	    }
 	}
         let _this = this;
         if (this.params.showSearch) {
