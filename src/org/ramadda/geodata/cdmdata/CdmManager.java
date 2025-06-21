@@ -1044,9 +1044,14 @@ public class CdmManager extends RepositoryManager implements CdmConstants {
      */
     public boolean canLoadAsGrid(Entry entry) {
 	boolean debug = false;
-        if (isCdmGrid(entry)) {
+	if (isCdmGrid(entry)) {
 	    return true;
 	}
+	if(entry.getTypeHandler().isType("type_point")) {
+	    if(debug) System.err.println("\texcluded  by type_point");
+	    return false;
+	}
+
 	if(debug) System.err.println("canLoadAsGrid:" +entry);
         if (isAggregation(entry)) {
 	    if(debug) System.err.println("\tisAgg");
@@ -1112,6 +1117,18 @@ public class CdmManager extends RepositoryManager implements CdmConstants {
      */
     public boolean canLoadAsCdmGrid(Entry entry) {
 	boolean debug = false;
+
+	//a hack
+	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
+	    return false;
+	}
+
+	if(entry.getTypeHandler().isType("type_point")) {
+	    if(debug) System.err.println("\texcluded  by type_point");
+	    return false;
+	}
+
+
 	if(debug) System.err.println("canLoadAsCdmGrid:" + entry);
         if (isCdmGrid(entry)) {
 	    if(debug) System.err.println("\tisCdmGrid");
@@ -1126,19 +1143,17 @@ public class CdmManager extends RepositoryManager implements CdmConstants {
             return true;
         }
         if (excludedByPattern(entry, TYPE_CDM_GRID)) {
+	    if(debug) System.err.println("\texcluded  by TYPE_CDM_GRID");
             return false;
         }
         if (includedByPattern(entry, TYPE_CDM_GRID)) {
+	    if(debug) System.err.println("\tincluded  by TYPE_CDM_GRID");
             return true;
         }
         if ( !canLoadAsCdm(entry)) {
+	    if(debug) System.err.println("\texcluded  by canLoadAsCdm");
             return false;
         }
-
-	//a hack
-	if(entry.getTypeHandler().isType("cdm_radar_level2")) {
-	    return false;
-	}
 
 
         Boolean b = (Boolean) gridEntries.get(entry.getId());
