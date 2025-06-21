@@ -166,6 +166,7 @@ NwsAlerts.prototype = {
 		this.seen[props.id]=true;
 		myAlertCount++;
 		let pre = props.description??'';
+		pre = pre.replace(/IMPACT\./g,'IMPACTS.');
 		pre = pre.replace(/^\* */gm,'&bull; ');
 		pre = pre.replace(/(HAZARD|SOURCE|IMPACTS|HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
 //		pre = collapseShortLines(pre);
@@ -191,7 +192,8 @@ NwsAlerts.prototype = {
 		    let icon = info.emoji;
 		    footer+='Alert: '+ phenon;
 		    if(info && info.type) 
-			footer+=' - '+info.label+' - '+ info.type;
+			footer+=' - '+ info.type;
+		    footer+=' - '+props.severity;
 
 
 		    if(icon) {
@@ -487,10 +489,12 @@ NwsAlerts.prototype = {
 	    "emoji": "\ud83c\udf28\ufe0f"
 	},
 	"SR": {
+	    type:'flood',
 	    "label": "Storm Surge",
 	    "emoji": "\ud83c\udf0a"
 	},
 	"SS": {
+	    type:'flood',
 	    "label": "Storm Surge",
 	    "emoji": "\ud83c\udf0a"
 	},
@@ -508,18 +512,22 @@ NwsAlerts.prototype = {
 	    "emoji": "\ud83d\udea4"
 	},
 	"TO": {
+	    type:'storm',
 	    "label": "Tornado",
 	    "emoji": "\ud83c\udf2a\ufe0f"
 	},
 	"TR": {
+	    type:'storm',
 	    "label": "Tropical Storm",
 	    "emoji": "\ud83c\udf00"
 	},
 	"TS": {
+	    type:'flood',
 	    "label": "Tsunami",
 	    "emoji": "\ud83c\udf0a"
 	},
 	"TY": {
+	    type:'storm',
 	    "label": "Typhoon",
 	    "emoji": "\ud83c\udf00"
 	},
@@ -532,6 +540,7 @@ NwsAlerts.prototype = {
 	    "emoji": "\ud83c\udf0b"
 	},
 	"WC": {
+	    type:'cold',
 	    "label": "Wind Chill",
 	    "emoji": "\ud83e\udd76"
 	},
