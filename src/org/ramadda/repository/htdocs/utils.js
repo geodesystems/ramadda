@@ -4764,7 +4764,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 	let id = HU.getUniqueId('accordion_');
 	let html = HU.open('div',[ATTR_CLASS,'ui-accordion ui-widget ui-helper-reset',ATTR_ID,id]);
 	list.forEach(item=>{
-	    html+=HU.tag('h3',[ATTR_CLASS,'ui-accordion-header ui-helper-reset ui-corner-top',ATTR_STYLE,'border:0px;background:none;'],
+	    html+=HU.tag('h3',[ATTR_CLASS,'ui-accordion-header ui-helper-reset ui-corner-top',ATTR_STYLE,'border:0px;background:none;'+(item.style??'')],
 			 HU.href('#',HU.span([ATTR_CLASS,CLASS_CLICKABLE],item.header??item.label)));
 	    html+=HU.div([ATTR_ID,HU.getUniqueId('accordion_'),ATTR_CLASS,'ramadda-accordion-contents'],item.contents);
 	})
