@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Fri Jun 20 22:14:42 MDT 2025";
+var build_date="RAMADDA build date: Sat Jun 21 03:44:20 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -25776,8 +25776,8 @@ function RamaddaFieldslistDisplay(displayManager, id, properties) {
 		let selected = this.selectedMap[f.getId()];
 		if(selectable) c += ' display-fields-field-selectable ';
 		if(selectable && selected) c += ' display-fields-field-selected ';
-		let title = '';
-		if(selectable)    title = 'Click to toggle. Shift-click toggle all';
+		let title = f.getId();
+		if(selectable)    title += ' - Click to toggle. Shift-click toggle all';
 		block =HU.div([ATTR_TITLE,title,'field-selected',selected, 'field-id', f.getId(),ATTR_CLASS,c], block);
 		fs.push(block);
 	    });
