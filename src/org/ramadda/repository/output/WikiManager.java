@@ -2708,7 +2708,7 @@ public class WikiManager extends RepositoryManager
             if (wikify) {
                 //Pass in the wikiUtil so any state (e.g., headings) gets passed up
                 desc = wikifyEntry(request, entry, wikiUtil, desc, false,
-                                   wikiUtil.getNotTags(), true);
+                                   wikiUtil.getNotTags(), false);
                 //                desc = makeWikiUtil(request, false).wikify(desc, null);
             }
             if (getProperty(wikiUtil, props, "convert_newline", false)) {
