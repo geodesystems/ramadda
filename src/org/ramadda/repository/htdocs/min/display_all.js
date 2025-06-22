@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sun Jun 22 13:04:35 MDT 2025";
+var build_date="RAMADDA build date: Sun Jun 22 17:31:01 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -26560,9 +26560,37 @@ function RamaddaMenuDisplay(displayManager, id, properties) {
 	{p:'showButtons',d:false,ex:true},
 	{p:'maxPerRow',tt:'When showing buttons how many buttons per row',ex:6},	
 	{p:'buttonStyle',d:''},
-	{p:'buttonStyleOn',d:''},	
+	{p:'buttonStyleOn',d:''},
+	{p:'acceptEntrySelect',ex:true,tt:'Accept entry select from maps'}
     ];
+
+
     defineDisplay(addRamaddaDisplay(this), SUPER, myProps, {    
+	initDisplay:function() {
+	    SUPER.initDisplay.call(this);
+	    if(this.getProperty('acceptEntrySelect')) {
+		RamaddaUtils.addEntryListener((entryId,source)=>{
+		    if(!this.records || this.records.length==0) return;
+		    let idField;
+		    this.records[0].getFields().every(f=>{
+			if(f.getId()=='id') {
+			    idField=f;
+			    return false;
+			}
+			return true;
+		    });
+
+		    if(!idField) return;
+		    this.records.every((r,idx)=>{
+			if(idField.getValue(r)==entryId) {
+			    this.jq(ID_MENU).val(idx).trigger("change");
+			    return false;
+			}
+			return true;
+		    });
+		});
+	    }
+	},
         needsData: function() {
             return true;
         },
