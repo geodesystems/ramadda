@@ -70,7 +70,7 @@ csvcommands4=-change,0-100,(?i)nd,NaN,-change
 csvcommands5=0-100,<.*,0,-change,0-100
 csvcommands6=>,,-change,0-100,(?i)non-detect
 csvcommands7=0.,-change,0-100,C,
-csvcommands8=-firstcolumns,sampledate,-addheader,default.type double tkn.label {Total Nitrogen} tp.label {Total Phosphorus} tss.label {Total Suspended Solids} id.type string  au_id.type string station_id.type string sampledate.type date
+csvcommands8=-firstcolumns,sampledate,-addheader,watertemperature.unit C tkn.unit {mg/L}    tss.unit {mg/L}  nitratenitrite.unit {mg/L}  ecoli.unit {#/100mL} tp.unit {mg/L} default.type double tkn.label {Total Nitrogen} tp.label {Total Phosphorus} tss.label {Total Suspended Solids} id.type string  au_id.type string station_id.type string sampledate.type date
 ]]></property>
 
 <!-- Wiki text-->
