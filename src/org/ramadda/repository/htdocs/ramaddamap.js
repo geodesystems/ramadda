@@ -4958,6 +4958,7 @@ RepositoryMap.prototype = {
 
     addPoint:  function(id, point, attrs, text, textGetter) {
 	let feature = this.createPoint(id,point,attrs,text,textGetter);
+	feature.entryId=id;
 	this.getMarkersLayer().addFeatures([feature],{silent:true});
 	if(!this.pointsMap) this.pointsMap={};
 	this.pointsMap[id]=feature;
