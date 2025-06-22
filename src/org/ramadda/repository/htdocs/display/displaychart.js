@@ -329,7 +329,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},	
 	{p:'some_field.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 
-	{p:'fixedLine0',ex:'"value:10,lineWidth:2,color:red"'},
+	{p:'fixedLine0',ex:'"value:10,lineWidth:2,color:red,#depends:fieldid,#axisMin:0,#axisMax:100"'},
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
 
@@ -1222,8 +1222,9 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    }
 	    while(this.getProperty('fixedLine'+idx)) {
 		let info = {
-		    color: 'blue',
-		    lineWidth: 2,
+		    color: this.getProperty('fixedLine.color','blue'),
+		    lineWidth: this.getProperty('fixedLine.lineWidth',2),
+		    pointShape:this.getProperty('fixedLine.pointShape',null),
 		    label: 'value ' + idx,
 		    value: 0,
 		};
@@ -1529,8 +1530,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 					    HU.div([ATTR_CLASS, "display-chart-legend"],this.annotations.getLegend())
 					    +"</td></tr></table>");
 		}
-//xxxx
-
 		dataTable.addColumn({
                     type: 'string',
                     role: 'annotation',
@@ -2169,22 +2168,33 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let v= Utils.getProperty(this.getProperty(f.getId()+'.' + prop,this.getProperty(prop,dflt)));
 		return v;
 	    }
+	    let map = {};
 	    selectedFields.forEach((f,idx)=>{
 		let min = this.getProperty(f.getId()+'.vAxisMinValue');
 		let max = this.getProperty(f.getId()+'.vAxisMaxValue');		
 		let viewWindow = {};
 		if(Utils.isDefined(min)) viewWindow.min= parseFloat(min);
 		if(Utils.isDefined(max)) viewWindow.max= parseFloat(max);		
-		vaxes[idx] = { viewWindow: viewWindow}
-		vaxes[idx].title=getProp(f,'vAxisTitle')
-		let ts = vaxes[idx].textStyle={};
+		let info = vaxes[idx] = { viewWindow: viewWindow};
+		map[f.getId()]=info;
+		info.title=getProp(f,'vAxisTitle')
+		let ts = info.textStyle={};
 		ts.color= getProp(f,'vAxis.text.color');
 		ts.fontSize=getProp(f,'vAxis.text.fontSize');
 		ts.fontName = getProp(f,'vAxis.text.fontName');
 		ts.bold=getProp(f,'vAxis.text.bold');
 		ts.italic=getProp(f,'vAxis.text.italic');		
 	    })
-
+	    let cnt = selectedFields.length;
+	    this.getExtraLines(selectedFields,'minmax').forEach((info,idx)=>{
+		let viewWindow = {};
+		if(info.depends && map[info.depends]) {
+		    viewWindow = $.extend(viewWindow,map[info.depends].viewWindow);
+		}
+		if(Utils.isDefined(info.axisMin)) viewWindow.min= parseFloat(info.axisMin);
+		if(Utils.isDefined(info.axisMax)) viewWindow.max= parseFloat(info.axisMax);		
+		let axisInfo = vaxes[cnt+idx] = { viewWindow: viewWindow};
+	    });
 	    chartOptions.vAxes = vaxes;
 
 	    if(this.getProperty("vAxisFixedRange") || this.getProperty("vAxisSelectedFields") || this.getProperty("vAxisAllFields")) {
@@ -2205,7 +2215,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    chartOptions.vAxis.maxValue = max;
 		}
 	    }
-
 	},
 	doMultiChartsByField:function() {
 	    return this.getProperty('doMultiChartsByField');
@@ -2527,6 +2536,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 	{p:'&lt;field&gt;.vAxisMaxValue',ex:'',tt:'Max value for the field'},	
 	{p:'vAxisSharedRange',ex:'true',tt:'use the same max value across all time series'},
 	{p:'vAxisReverse',ex:'true',tt:'Reverse the v axis'},
+	{p:'vAxisFixedRange',ex:true},
 	{p:"hAxisFixedRange"},
 	{p:"vAxisSelectedFields",ex:'true',tt:'Use selected fields to find min/max for the range'},
 	{p:"vAxisAllFields",ex:'true',tt:'Use all field values to find min/max for the range'},
@@ -3786,7 +3796,7 @@ function BubbleDisplay(displayManager, id, properties) {
 		chartOptions.hAxis.minValue = x.min;
 		chartOptions.hAxis.maxValue = x.max;
 	    }
-	    if(this.getProperty("vAxisFixedRange")) {
+	    if(this.getVAxisFixedRange()) {
 		let y = this.getColumnValues(records, selectedFields[2]);
 		chartOptions.vAxis.minValue = y.min;
 		chartOptions.vAxis.maxValue = y.max;
