@@ -1328,7 +1328,6 @@ RepositoryMap.prototype = {
         }
     },
     handleFeatureclick: function(layer, feature, center,event,extraStyle) {
-	
 
         if (!layer)
             layer = feature.layer;
@@ -1346,7 +1345,6 @@ RepositoryMap.prototype = {
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
         }
-
 
 	if(!this.params.doSelect) {
 	    if(debugSelect || debugPopup) console.log("\tparams no select");
@@ -5223,6 +5221,13 @@ RepositoryMap.prototype = {
 
 
     showMarkerPopup:  function(marker, fromClick, simplePopup) {
+
+	if(marker.entryId) {
+	    let id = marker.entryId.replace(/_/g,'-');
+	    RamaddaUtils.handleEntrySelect(id,this);
+	}	
+
+
 	if(debugPopup) console.log("showMarkerPopup");
 
         if (this.entryClickHandler && window[this.entryClickHandler]) {
@@ -5307,6 +5312,7 @@ RepositoryMap.prototype = {
 	} else {
 	    this.showMarkerPopupInner(marker,fromClick, simplePopup,markerText,inputProps);
 	}
+
 
     },
 

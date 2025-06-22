@@ -4,9 +4,22 @@
 */
 
 
+
+
 var RamaddaUtils;
 var RamaddaUtil;
 var Ramadda = RamaddaUtils = RamaddaUtil  = {
+    entryListeners:[],
+    addEntryListener:function(listener) {
+	this.entryListeners.push(listener);
+    },
+
+    handleEntrySelect:function(entryId,source) {
+	this.entryListeners.forEach(listener=>{
+	    listener(entryId,source);
+	});
+    },
+
     contents:{},
     currentRamaddaBase:null,
 
