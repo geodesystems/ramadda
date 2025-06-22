@@ -1,0 +1,125 @@
+<!-- 
+Copy this into your ramadda home/plugins directory and restart RAMADDA
+-->
+<type  name="type_sdwq" 
+ description="South Dakota Water Quality" 
+ handler="org.ramadda.data.services.PointTypeHandler" 
+ super="type_point" 
+ supercategory="Geoscience" 
+ category="Water Data" 
+>
+
+<!-- Columns-->
+<column  name="auid"  label="Assessment Unit ID"  type="enumerationplus" />
+<property name="bubble">
+<![CDATA[                                                                                           
++section  title={{name}}                                                                            
+{{group linechart.height=400px linechart.showMenu=true
+stats.width="600px" statsTableWidth=50% 
+showTable=false showMenu=false  showDefault=false  showMin=true showMax=true showAverage=true 
+showTableHeader=false
+showFieldType=false}}
+{{display_fieldslist  showPopup=true fields="tkn"}} 
++center
+{{display_stats fields="tkn" }} 
+-center
+{{display_linechart   fields="tkn"  pointShape="circle"  lineWidth=0 pointSize=8}}                                                                                                                                  
+-section                                                                                            
+]]></property>
+
+
+<wikimacro name="sdwq_charts" label="WQ Chart" tags="forpointcollection">
+<![CDATA[                                                                                                                                    
++template charttab
++tab ${label}
+{{group linechart.height=400px linechart.showMenu=true
+stats.width="600px" statsTableWidth=50% 
+showTable=false showMenu=false  showDefault=false  showMin=true showMax=true showAverage=true 
+showTableHeader=false
+showFieldType=false}}
+{{display_fieldslist  showPopup=true fields="${field}"}} 
++center
+{{display_stats fields="${field}" }} 
+-center
+{{display_linechart   fields="${field}"  pointShape="circle"  lineWidth=0 pointSize=8}} 
+-tab
+-template 
+
++tabs 
+:apply charttab label="Total Nitrogen" field=tkn
+:apply charttab label="Total Phosporus" field=tp
+:apply charttab label="E Coli" field=ecoli
+:apply charttab label="Total Suspended Solids" field=tss
+:apply charttab field=ph label="PH"
+:apply charttab field=ammonia label=Ammonia
+-tabs                                                                                         
+                                                                                                                                       
+]]></wikimacro>
+<!-- Properties-->
+<property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property  name="icon"  value="/icons/chart.png" />
+<property  name="form.area.show"  value="false" />
+<property  name="form.location.show"  value="true" />
+
+<!-- SeeSV commands-->
+<property  name="record.properties" ><![CDATA[
+csvcommands1=-json,,,-change,0-100
+csvcommands2=null,NaN,-change,0-100,Non-detect
+csvcommands3=NaN,-change,0-100,(?i)surface,0
+csvcommands4=-change,0-100,(?i)nd,NaN,-change
+csvcommands5=0-100,<.*,0,-change,0-100
+csvcommands6=>,,-change,0-100,(?i)non-detect
+csvcommands7=0.,-change,0-100,C,
+csvcommands8=-firstcolumns,sampledate,-addheader,default.type double tkn.label {Total Nitrogen} tp.label {Total Phosphorus} tss.label {Total Suspended Solids} id.type string  au_id.type string station_id.type string sampledate.type date
+]]></property>
+
+<!-- Wiki text-->
+<wiki><![CDATA[
++section title="SD Water Quality: {{name}}"
+:navtop
+{{description wikify=true}}
++template charttab
++tab ${label}
+{{group linechart.height=400px linechart.showMenu=true
+stats.width="600px" statsTableWidth=50% 
+showTable=false showMenu=false  showDefault=false  showMin=true showMax=true showAverage=true 
+showTableHeader=false
+showFieldType=false}}
+{{display_fieldslist  showPopup=true fields="${field}"}} 
++center
+{{display_stats fields="${field}" }} 
+-center
+{{display_linechart   
+#fixedLine0="label:limit0,depends:tkn,value:10,lineWidth:2,color:red,pointShape:none" 
+#fixedLine1="label:limit1,depends:dissolvedoxygen,value:20,lineWidth:2,color:green,pointShape:none" 
+fields="${field}"  pointShape="circle"  lineWidth=0 pointSize=8}} 
+-tab
+-template 
+
++tabs 
+:apply charttab label="Total Nitrogen" field=tkn
+:apply charttab label="Total Phosporus" field=tp
+:apply charttab label="E Coli" field=ecoli
+:apply charttab label="Total Suspended Solids" field=tss
+:apply charttab field=ph label="PH"
+:apply charttab field=ammonia label=Ammonia
+-tabs
+:heading Table
+{{display_download}}
+{{display_table}}
+
+----
+
+:heading Information
++row
++col-8
+{{information  showBase="true"  showDetails="true"  showTitle="false"  #menus="file,edit,view,feeds,other,service" 
+ #menusTitle="Services"  }} 
+-col
++col-4
+Note: The location is approximate. It is for one of the sites that make up the Assessment Unit ID.
+{{map}}
+-col
+-row
+-section]]></wiki>
+</type>
