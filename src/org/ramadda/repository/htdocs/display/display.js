@@ -2029,7 +2029,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	 ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',
 	 tt:'Calculate # days to double'},
 	{p:'convertData',label:'Add fixed',
-	 ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
+	 ex:'"addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
 	 tt:'add fixed value'},	
 	{p:'convertData',label:'Accumulate data',
 	 ex:'accum(fields=);',
