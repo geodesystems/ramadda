@@ -41,7 +41,16 @@ showFieldType=false}}
 +center
 {{display_stats fields="${field}" }} 
 -center
-{{display_linechart   fields="${field}"  pointShape="circle"  lineWidth=0 pointSize=8}} 
+
+{{display_linechart   fields="${field}"  pointShape="circle"  lineWidth=0 pointSize=8
+fixedLine.lineWidth=2 fixedLine.color=red fixedLine.pointShape=none
+tss.vAxisMinValue=0 tss.vAxisMaxValue=2500 
+ecoli.vAxisMinValue=0 ecoli.vAxisMaxValue=5000
+fixedLine0="label:Fish life propagation- 30-Day Average - 90,depends:tss,value:90,color:red"
+fixedLine1="label:Fish life propagation- Single Sample Max - 158,depends:tss,value:158,color:purple"
+fixedLine2="label:Limited-contact recreation- 30-Day Geo Mean - 630,value: 630,depends:ecoli,color:purple"
+fixedLine3="label:Limited-contact recreation- Single Sample Max - 1178,depends:ecoli,value:1178,color:red"
+}} 
 -tab
 -template 
 
