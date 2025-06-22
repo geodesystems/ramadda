@@ -1,4 +1,4 @@
-var build_date="RAMADDA build date: Sat Jun 21 16:35:21 MDT 2025";
+var build_date="RAMADDA build date: Sun Jun 22 06:21:10 MDT 2025";
 
 /**
    Copyright (c) 2008-2025 Geode Systems LLC
@@ -6055,7 +6055,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 	 ex:'doublingRate(fields=f1\\\\,f2, keyFields=f3);',
 	 tt:'Calculate # days to double'},
 	{p:'convertData',label:'Add fixed',
-	 ex:'addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
+	 ex:'"addFixed(id=max_pool_elevation\\\\,value=3700,type=double);"',
 	 tt:'add fixed value'},	
 	{p:'convertData',label:'Accumulate data',
 	 ex:'accum(fields=);',
@@ -19850,6 +19850,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	{p:'nohighlight.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},	
 	{p:'some_field.pointShape',d:null,ex:'circle|triangle|square|diamond|star'},
 
+	{p:'fixedLine0',ex:'"value:10,lineWidth:2,color:red"'},
 	{p:'dragToZoom',d:true},
 	{p:'dragToPan',d:false},	
 
@@ -20603,7 +20604,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    let seriesInfo = {};
             let useMultipleAxes = this.getProperty("useMultipleAxes", true);
 	    let extraMap = {};
-	    this.getExtraLines().forEach(info=>{
+	    this.getExtraLines(null,'extraMap').forEach(info=>{
 		let id = Utils.makeId(info.label);
 		extraMap[id] = info;
 	    });
@@ -20615,10 +20616,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		let highlight = highlightMap[id];
 		let s = {
 		};
+		let debug = extraMap[id] !=null;
 		["labelInLegend", "seriesType","lineDashStyle","pointSize", "lineWidth","color","pointShape"].forEach(a=>{
 		    let dflt = this.getProperty((highlight?"highlight.":"nohighlight.") + a,this.getProperty(a));
 		    if(a=='pointSize') dflt = this.getPointSize();
 		    let value = this.getProperty(id+"." + a,null);
+//		    if(debug)console.log('extra:' + id+ ' ' +a +'=' + value);
+		    
 
 		    if(!Utils.isDefined(value)) {
 			value = this.getProperty(id.replace(/_/g,'')+"." + a,null);
@@ -20632,7 +20636,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			value =extraMap[id][a];
 		    }
 		    
-
 		    if(Utils.isDefined(value) && a=="lineDashStyle") {
 			let tmp = [];
 			let delim = ",";
@@ -20644,6 +20647,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		    if(a=="seriesType") a = "type";
 		    s[a] = value;
+		    if(value=='none')  {
+			if(a=='pointShape')  s.pointsVisible=false;
+			delete s[a];
+		    }
 		});
 		if(!s.color) s.color = colors[idx%colors.length];
 		if(highlightFields.length>0) {
@@ -20724,22 +20731,30 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 	    });
 	    return trendlinesInfo;
 	},
-	getExtraLines:function() {
-	    if(this.extraLines) return this.extraLines;
+	getExtraLines:function(fields,from) {
 	    this.extraLines = [];
 	    let idx=0;
+	    let fieldMap;
+	    if(fields) {
+		fieldMap={};
+		fields.forEach(f=>{
+		    fieldMap[f.getId()]=true;
+		});
+	    }
 	    while(this.getProperty('fixedLine'+idx)) {
 		let info = {
 		    color: 'blue',
 		    lineWidth: 2,
-		    label: '',
+		    label: 'value ' + idx,
 		    value: 0,
 		};
+		let depends=null;
 		Utils.split(this.getProperty('fixedLine'+idx),",",true,true).forEach(tok=>{
 		    let tuple = Utils.split(tok,':');
 		    if(tuple.length!=2) return;
 		    let key = tuple[0];
 		    let value = tuple[1];
+		    if(key=='depends') depends=value;
 		    if(key=='value') {
 			info.value=+value;
 		    } else {
@@ -20747,14 +20762,18 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 		    }
 		});
 		if(!isNaN(info.value)) {
-		    this.extraLines.push(info);
+		    if(depends && fieldMap &&!fieldMap[depends]) {
+//			console.log('skipping');
+		    } else {
+			this.extraLines.push(info);
+		    }
 		}
 		idx++;
 	    }
 	    return this.extraLines;
 	},
         makeDataTable: function(dataList, props, selectedFields, chartOptions) {
-	    let extraLines = this.getExtraLines();
+	    let extraLines = this.getExtraLines(selectedFields,'makeDataTable');
 	    let indexIsString = this.getProperty("indexIsString", this.getProperty("forceStrings",false));
 	    let useStringInLegend = this.getProperty("useStringInLegend");
 
@@ -20948,6 +20967,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			    dataTable.addColumn('number', headerLabel);
 			}
 		    }
+
 		    this.extraLines.forEach(info=>{
 			dataTable.addColumn('number', info.label);
 		    });
@@ -21853,7 +21873,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 			max = Utils.max(max,v);			
 		    });
 		}
-		this.getExtraLines().forEach(info=>{
+		this.getExtraLines(selectedFields,'minmax').forEach(info=>{
 		    min = Utils.min(min,info.value);
 		    max = Utils.max(max,info.value);			
 		});
