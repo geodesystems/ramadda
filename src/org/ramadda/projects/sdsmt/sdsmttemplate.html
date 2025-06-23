@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" type="image/png" href="${cdnpath}/favicon.png"/>
+<properties>
+name=SDSMT
+id=sdsmt
+</properties>
+${imports}
+${headfinal}
+<link href="${cdnpath}/fixedmapheader.css"  rel="stylesheet"  type="text/css" />
+</head>
+<body>
+<div class="ramadda-header">
+  <div class="ramadda-header-fixedtitle"></div>
+  <div class="ramadda-pageheader">${pageheader}</div>
+  <div style="position:absolute;left:6px;top:2px;display: flex;   align-items: flex-end;">
+    <div><a href="${logo.url}">
+	<img valign="bottom" class="ramadda-logo-image"  src="${root}/sdsmt/SDSMT_Ramadda_Logo.png" ></a>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:0px;left:6px">${entry.header}</div>
+  <div style="position:absolute;right:0px;bottom:0px;">${links}</div>
+</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-innercontent">
+<!-- content begin-->
+${content}
+<!-- content end-->
+</div> 
+</div> 
+<div class="ramadda-footer">
+${footer}
+${footer.acknowledgement}  
+</div>
+${bottom}
+</body>
+</html>
