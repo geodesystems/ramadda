@@ -6266,6 +6266,7 @@ var HU = HtmlUtils = window.HtmlUtils  = window.HtmlUtil = {
 		    select.change();
 		}
 	    });
+	    $("#"+inputId).focus();
 	    $("#"+inputId).keyup(function(event) {
 		let text = $(this).val().trim().toLowerCase();
 		tags.each(function() {
