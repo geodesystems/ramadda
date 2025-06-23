@@ -6,14 +6,27 @@
     <property name="form.datatype.show" value="false"/>
     <property name="form.date.show" value="false"/>
     <property name="form.altitude.show" value="false"/>
+    <column name="showmap" type="boolean"
+	    label="Show map"  showinhtml="false" default="false"/>
 
     <wiki><![CDATA[
 +section title={{name}}
 {{description wikify=true}}
+
++if property=showmap
+
+:heading Map
+{{map  width="100%"  showCircles="true" doPopup=false
+height="300px"  orderby=name ascending=true listEntries="true"   
+entriesListHeader=""  }} 
+
+----
+-if
+
+
 +center
-{{display_menu 
-message=""
-entryTypes=type_point
+{{display_menu acceptEntrySelect=true
+message="" entryTypes=type_point
 doEntries=true
 setEntry.acceptGroup=month
 setEntry.shareGroup=file
