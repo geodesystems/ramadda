@@ -1044,7 +1044,7 @@ public class EntryManager extends RepositoryManager {
 	    } else {
 		getPageHandler().sectionOpen(request, sb,"Entry Type",false);
 		sb.append("Click on the name to view details. Click on the Type ID to copy<br>");
-		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type')");
+		HU.script(sb,"HtmlUtils.initPageSearch('.ramadda-type',null,'Find Type',null,{focus:true})");
 		sb.append("<table width=100%><tr><td xwidth=33%  class=ramadda-table-heading>Type name </td><td xwidth=33% class=ramadda-table-heading>Type ID</td><td xwidth=33% class=ramadda-table-heading>Category</td><td class=ramadda-table-heading>Parent Type</td></tr>");
 		for (TypeHandler typeHandler : typeHandlers) {
 		    String icon = HU.img(typeHandler.getTypeIconUrl(),"",HU.attr("width",ICON_WIDTH));
@@ -4152,7 +4152,7 @@ public class EntryManager extends RepositoryManager {
                                           "Choose entry type");
 
 	sb.append("<center>");
-	HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type')");
+	HU.script(sb,"HtmlUtils.initPageSearch('.type-list-item','.type-list-container','Find Type',null,{focus:true})");
 	sb.append("</center>");
 	for(EntryManager.SuperType superType:getEntryManager().getCats()) {
 	    boolean didSuper = false;
