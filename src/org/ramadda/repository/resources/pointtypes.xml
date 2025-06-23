@@ -23,7 +23,6 @@ entriesListHeader=""  }}
 ----
 -if
 
-
 +center
 {{display_menu acceptEntrySelect=true
 message="" entryTypes=type_point
@@ -43,7 +42,7 @@ wiki="{{import showTitle=false macro=forpointcollection}}"
 message="" setEntry.acceptGroup=file
 entry="child:orderby:date;ascending:false;type:type_point"
 fieldsPatterns=".*temp.*,.*rh.*,.*pres.*" 
-height=60vh padRight=true chartLeft="80" chartRight="80"
+height=80vh padRight=true chartLeft="80" chartRight="80"
 addTooltip=false useMultipleAxes=true
 }}
 ----
