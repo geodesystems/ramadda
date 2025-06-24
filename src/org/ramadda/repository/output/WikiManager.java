@@ -7956,7 +7956,12 @@ public class WikiManager extends RepositoryManager
 			l2.call( "Accordion", "Accordion layout\nimg:accordion.png","+accordion decorate=false collapsible=true activeSegment=0 _newline_+segment segment  title_newline_", "-segment_newline_-accordion_newline_"),
 			l2.call( "Slides", "Slides layout\nimg:slides.png","+slides slidesToShow=1 bigArrow=true  centerMode=true variableWidth=true arrows=true  dots=true  infinite=false style=_qt__qt__nl_+slide Title_nl_", "-slide_nl_-slides_nl_"),
 			//			l2.call("Grid box", "+grid #decorated=true #columns=_qt_1fr 2fr_qt_ _nl_:filler_nl_+gridbox #flex=1 #style=_qt__qt_ #width=_qt__qt_ #title=_qt_Title 1_qt__nl_-gridbox_nl_+gridbox #title=_qt_Title 2_qt__nl_-gridbox_nl_:filler_nl_", "-grid"),
-			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") 
+			l2.call("Scroll panels","For full page story scrolling\nimg:scroll.png","+scroll_newline_+panel color=gradient1|gradient2 #fromColor=red #toColor=blue  name=home style=_quote__quote_ _newline_+center_newline_<div class=scroll-indicator>Scroll Down</div>_newline_-center_newline_-panel_newline_+panel color=gradient2 name=panel1_newline__newline_-panel_newline_+panel color=blue name=panel2_newline__newline_-panel_newline_", "-scroll") ,
+			l2.call( "Bulleted list", "Bullet list. One per line","* bullet 1_nl_* bullet 2_nl_** 2 level_nl_", ""),
+			l2.call( "Comment section","Commented out section",
+				 "+skip_nl__nl_", "-skip"),
+			l2.call( "Inline comment","Inline commented",
+				 ":rem comment", "")			
 
 			); 
 
@@ -8032,10 +8037,10 @@ public class WikiManager extends RepositoryManager
 			l.call( "Macro", ":macro name value_nl_${name}_nl_", ""),
 			l.call( "Template", "+template template_name_nl_... ${var1} ... ${var2}_nl_", "-template"),
 			l.call( "Apply template", "+apply template_name_nl_:var var1 Some value_nl_+var var2_nl_Some other value_nl_..._nl_-var_nl_", "-apply"),
-			l.call( "Inline apply", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
+			l.call( "Template inline", ":apply template_name var1=\"some value\" var2=\"Some other value\"", ""),
 			l2.call( "Javascript", "Include Javascript","+js_newline_", "-js"),
 			l.call( "CSS", "+css_newline_", "-css"),
-			l.call( "PRE", "+pre_newline_", "-pre"),
+			l.call( "PRE", "+pre addCopy=false addDownload=false_newline_", "-pre"),
                         l2.call( "Xml", "Include XML","+xml addCopy=true addDownload=true downloadFile=download.xml_nl__nl_", "-xml"),
 			l.call( "Code", "```_newline__newline_", "```"),
 			l2.call( "Property", "Name value properties",
@@ -8045,6 +8050,12 @@ public class WikiManager extends RepositoryManager
 			l.call( "Title", ":title {{name link=true}}", ""),
 			l2.call( "Heading", "A heading. Is added to any :navtop's",
 				 ":heading your heading", ""),
+			l2.call( "Left Heading", "Left-aligned heading. Is added to any :navtop's",
+				 ":lheading your heading", ""),
+			l2.call( "No nav heading", "A heading. Is not added to the :navtop's",
+				 ":nonavheading your heading", ""),			
+			l2.call( "Heading 2", "2nd level heading.",
+				 ":heading2", ""),			
 			l.call( "Heading-1", ":h1 your heading", ""),
 			l.call( "Heading-2", ":h2 your heading", ""),
 			l.call( "Heading-3", ":h3 your heading", ""),	    
@@ -8254,7 +8265,7 @@ public class WikiManager extends RepositoryManager
         HU.open(buttons, "div",
                 HU.cssClass("ramadda-menubar")
                 + HU.attrs("id", textAreaId + "_toolbar"));
-	buttons.append(HU.span(HU.img(getIconUrl("fas fa-binoculars")),
+	buttons.append(HU.span(HU.img(getIconUrl("fas fa-magnifying-glass")),
 			       HU.attrs("style","margin-left:6px;margin-right:2px;","title","Search for tags", "class",
 					"wiki-editor-menu-icon ramadda-clickable","id", textAreaId + "_toolbar_search")));
 	buttons.append(HU.span(HU.img(getIconUrl("fas fa-pen-to-square")),
