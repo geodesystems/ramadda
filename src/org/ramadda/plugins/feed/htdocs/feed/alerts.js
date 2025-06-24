@@ -157,27 +157,26 @@ NwsAlerts.prototype = {
 	    let myAlertCount=0;
 //	    console.dir(data);
 	    let severeCount=0;
+	    let fmt = (t)=>{
+		return  HU.b('&bull; '+t+': ');
+	    }
 	    data.features.forEach((alert,idx)=>{
 		let props = alert.properties;
-//		console.log(props.severity)
 		if(this.seen[props.id] && this.opts.alertsUnique) {
 		    return;
 		}
 		this.seen[props.id]=true;
 		myAlertCount++;
 		let pre = props.description??'';
-		pre = pre.replace(/IMPACT\./g,'IMPACTS.');
+		pre =pre.replace(/^\*([A-Z ]+)\.\.\./mg,(_,match)=>{return fmt(Utils.camelCase(match));});
 		pre = pre.replace(/^\* */gm,'&bull; ');
-		pre = pre.replace(/(HAZARD|SOURCE|IMPACTS|HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)\.\.\./g,"<b>$1</b>: ");
-//		pre = collapseShortLines(pre);
-		pre = pre.replace(/(HAZARD|SOURCE|IMPACTS|HEALTH INFORMATION|WHAT|WHERE|WHEN|IMPACTS)/g,(_,match)=>{return Utils.camelCase(match);});
 		let footer =''
 		if(Utils.stringDefined(props.instruction)) {
-		    pre+='\n\n' + '&bull; '+ HU.b('Instructions')+': ';
+		    pre+='\n\n' + fmt('Instructions');
 		    pre+=props.instruction;
 		}
 		if(Utils.stringDefined(props.areaDesc)) {
-		    pre+='\n\n' + '&bull; '+ HU.b('Area')+': ';
+		    pre+='\n\n' + fmt('Area');
 		    pre+=props.areaDesc;
 		}		
 		let title = props.headline;
