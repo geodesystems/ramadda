@@ -2430,8 +2430,10 @@ public abstract class Converter extends Processor {
                 }
                 this.isRegex = true;
             } else {
-                this.isRegex = StringUtil.containsRegExp(pattern);
-                patterns.add(new String[] { Utils.convertPattern(pattern),
+		String convertedPattern = Utils.convertPattern(pattern);
+                this.isRegex = StringUtil.containsRegExp(convertedPattern);
+		//		System.err.println("orig:" + pattern +" converted:" + convertedPattern);
+                patterns.add(new String[] { convertedPattern,
 					    value });
             }
         }
