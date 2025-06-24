@@ -2649,7 +2649,7 @@ public class Seesv implements SeesvCommands {
         new Cmd(CMD_ALIAS, "Set a field alias",
 		new Arg(ARG_NAME,"Name"),
 		new Arg("alias","Alias")),
-        new Cmd(CMD_VALUE, "Define a macro value for later use",
+        new Cmd(CMD_VALUE, "Define a macro value for later use - use %name% to reference macro value",
 		new Arg(ARG_NAME,ARG_NAME),
 		new Arg("value","Value")),
         new Cmd(CMD_CHANGERAW,  "Change the entire input text",
@@ -4288,7 +4288,9 @@ public class Seesv implements SeesvCommands {
 	    });
 
 	defineFunction(CMD_CHANGE,3,(ctx,args,i) -> {
-		ctx.addProcessor(new Converter.ColumnChanger(ctx,getCols(args.get(++i)),args.get(++i),  args.get(++i)));
+		List<String> cols = getCols(args.get(++i));
+		//		System.err.println("cols:" + cols);
+		ctx.addProcessor(new Converter.ColumnChanger(ctx,cols,args.get(++i),  args.get(++i)));
 		return i;
 	    });
 
