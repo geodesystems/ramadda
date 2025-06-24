@@ -1,15 +1,28 @@
 set urls {
-    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-COTTONWOOD_01
-    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-WHITE_04
+
+
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-LITTLE_WHITE_01
+
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-WHITE_02
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-WHITE_03
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-WHITE_04
+
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-BATTLE_01_USGS
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-RAPID_05
+
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-CHEYENNE_01    
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-CHEYENNE_02    
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-CHEYENNE_03
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-CHEYENNE_04
+
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-MI-R-MEDICINE_01
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-BEAVER_01_USGS
-    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-CHEYENNE_04
+
+    https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-WH-R-COTTONWOOD_01
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-MI-R-FRANCIS_CASE_01
     https://apps.sd.gov/NR92WQMAP/WQDashboard/Stream/SD-CH-R-GRACE_COOLIDGE_01
-}
 
+}
 
 
 
@@ -55,13 +68,15 @@ foreach url $urls {
     regexp {<td>(-?\d+\.\d+)</td>\s*<td>(-?\d+\.\d+)</td>} $c -> latitude longitude
     set c [readFile $f]
     regexp {modelParameters *= *([^;]+);} $c match json
+    set name $site
+##    regexp {<label><strong>Waterbody:</strong></label> *<span>([^<]+)</span>} $c match name
+    puts $name
     set jsonFile [file join data [file tail $url].json]
     set fp [open $jsonFile w]
     puts $fp $json
     close $fp
 
-    set name $site
-    append ::xml [openEntry type_sdwq  {} {} "$name" latitude $latitude longitude $longitude file $jsonFile]
+    append ::xml [openEntry type_sdwq  {} {} "$name" isnew true latitude $latitude longitude $longitude file $jsonFile]
     set desc "+credit\nData is from the South Dakota  \[<_sdwq>$url DANR Water Quality MAP\] site\n-credit"
     append ::xml [col description $desc]
     append ::xml [col auid $site]	
