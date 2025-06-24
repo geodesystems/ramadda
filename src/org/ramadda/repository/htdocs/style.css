@@ -1002,11 +1002,12 @@ a.ramadda-entry-nav-page {
 .ramadda-menubar {
     max-width:100%;
     white-space:nowrap;
-    overflow-x:scroll;
+    overflow-x:auto;
+    -ms-overflow-style: none;
     vertical-align:bottom;
     display:inline-block;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;  
+    border-top-left-radius: 8px;
+    border-top-right-radius:8px;  
     border:1px solid #ccc;
     border-bottom:0px;
     background:#F0F0F0;
@@ -1014,6 +1015,11 @@ a.ramadda-entry-nav-page {
     padding-top:2px;
     padding-bottom:0px;
 }
+
+.ramadda-menubar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and newer Edge */
+}
+
 
 .csv-header {
     border-bottom: 1px solid #000;
