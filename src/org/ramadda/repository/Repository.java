@@ -1463,10 +1463,26 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	    humanIPs.put(request.getIp(),count);
 	}
 	StringBuilder sb = new StringBuilder();
-	getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
+	boolean barebones = true;
+	//	barebones=false;
+
+	if(barebones) {
+	    sb.append("<!DOCTYPE html><html><body>");
+	    HU.cssPreloadLink(sb, getPageHandler().getCdnPath("/style.css"));
+	    String logo= getPageHandler().getLogoImage(null);
+	    getPageHandler().sectionOpen(request,sb,getRepositoryName(),false);
+	    if(Utils.stringDefined(logo)) sb.append(HU.center(HU.img(logo,"",HU.attrs("width","80px"))));
+	} else {
+	    getPageHandler().sectionOpen(request,sb,"Please prove you are a human",false);
+	}
 	String message = getProperty(PROP_ISHUMAN_MESSAGE,"");
 	if(Utils.stringDefined(message)) {
-	    sb.append(getPageHandler().showDialogNote(message.replace("\\n","<br>")));
+	    message = message.replace("\\n","<br>");
+	    if(barebones) {
+		sb.append(HU.div(message,HU.attrs("class","human-message")));
+	    } else {
+		sb.append(getPageHandler().showDialogNote(message));
+	    }
 	}
 
 	if(isHuman!=null) {
@@ -1475,14 +1491,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 
 	sb.append(HU.formPost(request.getRequestPath()));
-	sb.append(HU.submit("Yes, I am a human","submit"));
+	sb.append(HU.submitClass("Yes, I am a human","submit","button-submit"));
 	sb.append(HU.hidden(ATTR_ISHUMAN,"",HU.attrs("id",ATTR_ISHUMAN)));
 	request.addFormHiddenArguments(sb,Utils.makeHashSet(ATTR_ISHUMAN));
 	sb.append(HU.formClose());
 	sb.append("\n");
-	sb.append(HU.script("document.addEventListener('mousemove', () => {jqid('" + ATTR_ISHUMAN+"').val('yes');});\n"));
-	//	sb.append(HU.script("document.getElementById(\"jsCheck\").value = 'passed';"));
+	HU.importJS(sb, getPageHandler().getCdnPath("/human.js"));
+
+	String message2="Note: this will add a &quot;cookie&quot; to your request to show that you are human";
+	sb.append(HU.div(message2,HU.attrs("class","human-message")));
+
+	
+
+
 	getPageHandler().sectionClose(request,sb);
+	if(barebones)
+	    sb.append("</body></html>");
 	String logMessage = "checking:" + " IP:" + request.getIp() +" count: " +count;
 	String entryId = request.getString(ARG_ENTRYID,null);
 	if(entryId!=null) logMessage+=" entry:" + entryId;
@@ -1492,6 +1516,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	if(count>5) {
 	    Misc.sleepSeconds(5);
 	}
+	if(barebones) 
+	    result.setShouldDecorate(false);
 	return result;
     }
 
