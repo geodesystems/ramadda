@@ -1,4 +1,15 @@
 For example, if you want to process 2 files - input1.csv and input2.csv - and
+only shows a couple of columns do:
+seesv: seesv -multifiles "" -columns "c1,c2" input1.csv input2.csv
+This results in output files:
+<pre>
+input1.csv.csv
+input2.csv.csv
+</pre>
+
+
+You can specify a template to use for the output file names.
+With input files - input1.csv and input2.csv - to
 write them out as new_input1.csv and new_input2.csv do the following.
 Note: the "\$" is to escape the "$" on the command line.
 
