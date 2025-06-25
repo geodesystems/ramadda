@@ -169,6 +169,7 @@ NwsAlerts.prototype = {
 		myAlertCount++;
 		let pre = props.description??'';
 		pre =pre.replace(/^\*([A-Z ]+)\.\.\./mg,(_,match)=>{return fmt(Utils.camelCase(match));});
+		pre =pre.replace(/^([A-Z ]+)\.\.\./mg,(_,match)=>{return fmt(Utils.camelCase(match));});
 		pre = pre.replace(/^\* */gm,'&bull; ');
 		let footer =''
 		if(Utils.stringDefined(props.instruction)) {
