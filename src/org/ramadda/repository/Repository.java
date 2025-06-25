@@ -1464,7 +1464,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
 	}
 	StringBuilder sb = new StringBuilder();
 	boolean barebones = true;
-	//	barebones=false;
+	if(request.isMobile()) {
+	    barebones=false;
+	}
 
 	if(barebones) {
 	    sb.append("<!DOCTYPE html><html><body>");
